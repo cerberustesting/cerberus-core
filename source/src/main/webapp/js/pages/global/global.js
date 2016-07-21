@@ -992,7 +992,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
-                    console.log(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
+                    //console.debug(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }

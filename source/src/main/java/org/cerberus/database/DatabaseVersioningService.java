@@ -6221,6 +6221,41 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ('testdatalib', 'separator', '', 'en', 'Separator', '<p>Separator used parsing a CSV.</p>')");
         SQLInstruction.add(SQLS.toString());
         
+        
+        //854 label table creation
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `label` (");
+        SQLS.append("`Id` INT NOT NULL AUTO_INCREMENT,");
+        SQLS.append("`System` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`Label` VARCHAR(100) NOT NULL DEFAULT '',");
+        SQLS.append("`Color` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`ParentLabel` VARCHAR(100) NOT NULL DEFAULT '',");
+        SQLS.append("`Description` VARCHAR(250) NOT NULL DEFAULT '',");
+        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`id`), ");
+        SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC));");
+        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+        
+        //854 testcaselabel table creation
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testcaselabel` (`Id` INT NOT NULL AUTO_INCREMENT,`Test` varchar(45) NOT NULL,`TestCase` varchar(45) NOT NULL,`LabelId` INT NOT NULL,");
+        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`Id`),");
+        SQLS.append(" UNIQUE KEY `IX_testcaselabel_03` (`Test`,`TestCase`,`LabelId`),");
+        SQLS.append(" KEY `IX_testcaselabel_01` (`Test`,`TestCase`),");
+        SQLS.append(" KEY `IX_testcaselabel_02` (`LabelId`),");
+        SQLS.append(" CONSTRAINT `FK_testcaselabel_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append(" CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE) ");
+        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+  
         return SQLInstruction;
     }
 

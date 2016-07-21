@@ -28,7 +28,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
+import org.cerberus.crud.dao.ITestCaseLabelDAO;
+import org.cerberus.crud.entity.Label;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -67,7 +70,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTCase factoryTestCase;
-
+    
     private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
 
     private final String OBJECT_NAME = "TestCase";
@@ -143,10 +146,11 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tc ");
-
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tec ");
+        query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
+        query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
+            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         }
 
         searchSQL.append("WHERE 1=1");
@@ -155,22 +159,23 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" AND app.`system` = ? ");
         }
         if (!StringUtil.isNullOrEmpty(test)) {
-            searchSQL.append(" AND tc.`test` = ?");
+            searchSQL.append(" AND tec.`test` = ?");
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (tc.`testcase` like ?");
-            searchSQL.append(" or tc.`test` like ?");
-            searchSQL.append(" or tc.`application` like ?");
-            searchSQL.append(" or tc.`project` like ?");
-            searchSQL.append(" or tc.`creator` like ?");
-            searchSQL.append(" or tc.`lastmodifier` like ?");
-            searchSQL.append(" or tc.`tcactive` like ?");
-            searchSQL.append(" or tc.`status` like ?");
-            searchSQL.append(" or tc.`group` like ?");
-            searchSQL.append(" or tc.`priority` like ?");
-            searchSQL.append(" or tc.`tcdatecrea` like ?");
-            searchSQL.append(" or tc.`description` like ?)");
+            searchSQL.append(" and (tec.`testcase` like ?");
+            searchSQL.append(" or tec.`test` like ?");
+            searchSQL.append(" or tec.`application` like ?");
+            searchSQL.append(" or tec.`project` like ?");
+            searchSQL.append(" or tec.`creator` like ?");
+            searchSQL.append(" or tec.`lastmodifier` like ?");
+            searchSQL.append(" or tec.`tcactive` like ?");
+            searchSQL.append(" or tec.`status` like ?");
+            searchSQL.append(" or tec.`group` like ?");
+            searchSQL.append(" or tec.`priority` like ?");
+            searchSQL.append(" or tec.`tcdatecrea` like ?");
+            searchSQL.append(" or tec.`description` like ?");
+            searchSQL.append(" or lab.`label` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -183,10 +188,12 @@ public class TestCaseDAO implements ITestCaseDAO {
         }
         query.append(searchSQL);
 
+        query.append(" group by tec.test, tec.testcase ");
+        
         if (!StringUtil.isNullOrEmpty(column)) {
             query.append(" order by ").append(column).append(" ").append(dir);
         }
-
+        
         if (amount != 0) {
             query.append(" limit ").append(start).append(" , ").append(amount);
         } else {
@@ -210,6 +217,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                     preStat.setString(i++, test);
                 }
                 if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -310,7 +318,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public TCase findTestCaseByKey(String test, String testCase) throws CerberusException {
         boolean throwExcep = false;
         TCase result = null;
-        final String query = "SELECT * FROM testcase WHERE test = ? AND testcase = ?";
+        final String query = "SELECT * FROM testcase tec WHERE test = ? AND testcase = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -583,9 +591,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCriteria(String test, String application, String country, String active) {
         List<TCase> list = null;
-        final String query = "SELECT tc.* FROM testcase tc JOIN testcasecountry tcc "
-                + "WHERE tc.test=tcc.test AND tc.testcase=tcc.testcase "
-                + "AND tc.test = ? AND tc.application = ? AND tcc.country = ? AND tc.tcactive = ? ";
+        final String query = "SELECT tec.* FROM testcase tec JOIN testcasecountry tcc "
+                + "WHERE tec.test=tcc.test AND tec.testcase=tcc.testcase "
+                + "AND tec.test = ? AND tec.application = ? AND tcc.country = ? AND tec.tcactive = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -634,11 +642,11 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCampaignName(String campaign) {
         List<TCase> list = null;
-        final String query = new StringBuilder("select tc.* ")
-                .append("from testcase tc ")
+        final String query = new StringBuilder("select tec.* ")
+                .append("from testcase tec ")
                 .append("inner join testbatterycontent tbc ")
-                .append("on tbc.Test = tc.Test ")
-                .append("and tbc.TestCase = tc.TestCase ")
+                .append("on tbc.Test = tec.Test ")
+                .append("and tbc.TestCase = tec.TestCase ")
                 .append("inner join campaigncontent cc ")
                 .append("on cc.testbattery = tbc.testbattery ")
                 .append("where cc.campaign = ? ")
@@ -692,59 +700,59 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system) {
         List<TCase> list = null;
         String query = new StringBuilder()
-                .append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application ")
-                .append(" WHERE (t2.test LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.test", testCase.getTest()))
-                .append(") AND (t2.project LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.project", testCase.getProject()))
-                .append(") AND (t2.ticket LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.ticket", testCase.getTicket()))
-                .append(") AND (t2.bugid LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.bugid", testCase.getBugID()))
-                .append(") AND (t2.origine LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.origine", testCase.getOrigin()))
+                .append("SELECT tec.* FROM testcase tec LEFT OUTER JOIN application a ON a.application=tec.application ")
+                .append(" WHERE (tec.test LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.test", testCase.getTest()))
+                .append(") AND (tec.project LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.project", testCase.getProject()))
+                .append(") AND (tec.ticket LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.ticket", testCase.getTicket()))
+                .append(") AND (tec.bugid LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.bugid", testCase.getBugID()))
+                .append(") AND (tec.origine LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.origine", testCase.getOrigin()))
                 .append(") AND (a.system LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("a.system", system))
-                .append(") AND (t2.application LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.application", testCase.getApplication()))
-                .append(") AND (t2.priority LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfMinusOne("t2.priority", testCase.getPriority()))
-                .append(") AND (t2.status LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.status", testCase.getStatus()))
-                .append(") AND (t2.group LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.group", testCase.getGroup()))
-                .append(") AND (t2.activePROD LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activePROD", testCase.getRunPROD()))
-                .append(") AND (t2.activeUAT LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeUAT", testCase.getRunUAT()))
-                .append(") AND (t2.activeQA LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.activeQA", testCase.getRunQA()))
-                .append(") AND (t2.description LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.description", text))
-                .append(" OR t2.howto LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.howto", text))
-                .append(" OR t2.behaviororvalueexpected LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.behaviororvalueexpected", text))
-                .append(" OR t2.comment LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.comment", text))
-                .append(") AND (t2.TcActive LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.TcActive", testCase.getActive()))
-                .append(") AND (t2.frombuild LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.frombuild", testCase.getFromSprint()))
-                .append(") AND (t2.fromrev LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.fromrev", testCase.getFromRevision()))
-                .append(") AND (t2.tobuild LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.tobuild", testCase.getToSprint()))
-                .append(") AND (t2.torev LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.torev", testCase.getToRevision()))
-                .append(") AND (t2.targetbuild LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetbuild", testCase.getTargetSprint()))
-                .append(") AND (t2.targetrev LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.targetrev", testCase.getTargetRevision()))
-                .append(") AND (t2.testcase LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.testcase", testCase.getTestCase()))
-                .append(") AND (t2.function LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("t2.function", testCase.getFunction()))
+                .append(") AND (tec.application LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.application", testCase.getApplication()))
+                .append(") AND (tec.priority LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfMinusOne("tec.priority", testCase.getPriority()))
+                .append(") AND (tec.status LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.status", testCase.getStatus()))
+                .append(") AND (tec.group LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.group", testCase.getGroup()))
+                .append(") AND (tec.activePROD LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activePROD", testCase.getRunPROD()))
+                .append(") AND (tec.activeUAT LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activeUAT", testCase.getRunUAT()))
+                .append(") AND (tec.activeQA LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.activeQA", testCase.getRunQA()))
+                .append(") AND (tec.description LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.description", text))
+                .append(" OR tec.howto LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.howto", text))
+                .append(" OR tec.behaviororvalueexpected LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.behaviororvalueexpected", text))
+                .append(" OR tec.comment LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.comment", text))
+                .append(") AND (tec.TcActive LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.TcActive", testCase.getActive()))
+                .append(") AND (tec.frombuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.frombuild", testCase.getFromSprint()))
+                .append(") AND (tec.fromrev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.fromrev", testCase.getFromRevision()))
+                .append(") AND (tec.tobuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.tobuild", testCase.getToSprint()))
+                .append(") AND (tec.torev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.torev", testCase.getToRevision()))
+                .append(") AND (tec.targetbuild LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.targetbuild", testCase.getTargetSprint()))
+                .append(") AND (tec.targetrev LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.targetrev", testCase.getTargetRevision()))
+                .append(") AND (tec.testcase LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.testcase", testCase.getTestCase()))
+                .append(") AND (tec.function LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.function", testCase.getFunction()))
                 .append(")").toString();
 
         // Debug message on SQL.
@@ -816,23 +824,23 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT * FROM testcase tc ");
-        query.append("LEFT JOIN application app ON tc.application = app.application ");
-        query.append("LEFT JOIN testbatterycontent tb ON tc.test = tb.test AND tc.testcase = tb.testcase ");
+        query.append("SELECT * FROM testcase tec ");
+        query.append("LEFT JOIN application app ON tec.application = app.application ");
+        query.append("LEFT JOIN testbatterycontent tb ON tec.test = tb.test AND tec.testcase = tb.testcase ");
         query.append("LEFT JOIN campaigncontent cc ON tb.testbattery = cc.testbattery ");
-        query.append("WHERE 1=1 AND tc.tcactive = 'Y' ");
-        query.append(createInClauseFromList(test, "tc.test"));
-        query.append(createInClauseFromList(idProject, "tc.project"));
-        query.append(createInClauseFromList(app, "tc.application"));
-        query.append(createInClauseFromList(creator, "tc.creator"));
-        query.append(createInClauseFromList(implementer, "tc.implementer"));
+        query.append("WHERE 1=1 AND tec.tcactive = 'Y' ");
+        query.append(createInClauseFromList(test, "tec.test"));
+        query.append(createInClauseFromList(idProject, "tec.project"));
+        query.append(createInClauseFromList(app, "tec.application"));
+        query.append(createInClauseFromList(creator, "tec.creator"));
+        query.append(createInClauseFromList(implementer, "tec.implementer"));
         query.append(createInClauseFromList(system, "app.system"));
         query.append(createInClauseFromList(testBattery, "tb.testbattery"));
         query.append(createInClauseFromList(campaign, "cc.campaign"));
-        query.append(createInClauseFromList(priority, "tc.priority"));
-        query.append(createInClauseFromList(group, "tc.group"));
-        query.append(createInClauseFromList(status, "tc.status"));
-        query.append("GROUP BY tc.test, tc.testcase ");
+        query.append(createInClauseFromList(priority, "tec.priority"));
+        query.append(createInClauseFromList(group, "tec.group"));
+        query.append(createInClauseFromList(status, "tec.status"));
+        query.append("GROUP BY tec.test, tec.testcase ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -910,36 +918,36 @@ public class TestCaseDAO implements ITestCaseDAO {
      * @since 0.9.1
      */
     private TCase loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String test = resultSet.getString("Test");
-        String testCase = resultSet.getString("TestCase");
-        String tcapplication = resultSet.getString("Application");
-        String project = resultSet.getString("Project");
-        String ticket = resultSet.getString("Ticket");
-        String description = resultSet.getString("Description");
-        String behavior = resultSet.getString("BehaviorOrValueExpected");
-        int priority = resultSet.getInt("Priority");
-        String status = resultSet.getString("Status");
-        String tcactive = resultSet.getString("TcActive");
-        String group = resultSet.getString("Group");
-        String origin = resultSet.getString("Origine");
-        String refOrigin = resultSet.getString("RefOrigine");
-        String howTo = resultSet.getString("HowTo");
-        String comment = resultSet.getString("Comment");
-        String fromSprint = resultSet.getString("FromBuild");
-        String fromRevision = resultSet.getString("FromRev");
-        String toSprint = resultSet.getString("ToBuild");
-        String toRevision = resultSet.getString("ToRev");
-        String bugID = resultSet.getString("BugID");
-        String targetSprint = resultSet.getString("TargetBuild");
-        String targetRevision = resultSet.getString("TargetRev");
-        String creator = resultSet.getString("Creator");
-        String implementer = resultSet.getString("Implementer");
-        String lastModifier = resultSet.getString("LastModifier");
-        String runQA = resultSet.getString("activeQA");
-        String runUAT = resultSet.getString("activeUAT");
-        String runPROD = resultSet.getString("activePROD");
-        String function = resultSet.getString("function");
-        String dateCrea = resultSet.getString("tcdatecrea");
+        String test = resultSet.getString("tec.Test");
+        String testCase = resultSet.getString("tec.TestCase");
+        String tcapplication = resultSet.getString("tec.Application");
+        String project = resultSet.getString("tec.Project");
+        String ticket = resultSet.getString("tec.Ticket");
+        String description = resultSet.getString("tec.Description");
+        String behavior = resultSet.getString("tec.BehaviorOrValueExpected");
+        int priority = resultSet.getInt("tec.Priority");
+        String status = resultSet.getString("tec.Status");
+        String tcactive = resultSet.getString("tec.TcActive");
+        String group = resultSet.getString("tec.Group");
+        String origin = resultSet.getString("tec.Origine");
+        String refOrigin = resultSet.getString("tec.RefOrigine");
+        String howTo = resultSet.getString("tec.HowTo");
+        String comment = resultSet.getString("tec.Comment");
+        String fromSprint = resultSet.getString("tec.FromBuild");
+        String fromRevision = resultSet.getString("tec.FromRev");
+        String toSprint = resultSet.getString("tec.ToBuild");
+        String toRevision = resultSet.getString("tec.ToRev");
+        String bugID = resultSet.getString("tec.BugID");
+        String targetSprint = resultSet.getString("tec.TargetBuild");
+        String targetRevision = resultSet.getString("tec.TargetRev");
+        String creator = resultSet.getString("tec.Creator");
+        String implementer = resultSet.getString("tec.Implementer");
+        String lastModifier = resultSet.getString("tec.LastModifier");
+        String runQA = resultSet.getString("tec.activeQA");
+        String runUAT = resultSet.getString("tec.activeUAT");
+        String runPROD = resultSet.getString("tec.activePROD");
+        String function = resultSet.getString("tec.function");
+        String dateCrea = resultSet.getString("tec.tcdatecrea");
 
         return factoryTestCase.create(test, testCase, origin, refOrigin, creator, implementer,
                 lastModifier, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
@@ -950,7 +958,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<String> findUniqueDataOfColumn(String column) {
         List<String> list = null;
-        final String query = "SELECT DISTINCT tc." + column + " FROM testcase tc ORDER BY tc." + column + " ASC";
+        final String query = "SELECT DISTINCT tec." + column + " FROM testcase tec ORDER BY tec." + column + " ASC";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1098,34 +1106,34 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TCase> findTestCaseByGroupInCriteria(TCase testCase, String system) {
         List<TCase> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT t2.* FROM testcase t2 LEFT OUTER JOIN application a ON a.application=t2.application WHERE 1=1");
+        query.append("SELECT tec.* FROM testcase tec LEFT OUTER JOIN application a ON a.application=tec.application WHERE 1=1");
         if (!StringUtil.isNull(testCase.getTest())) {
-            query.append(" AND t2.test IN (");
+            query.append(" AND tec.test IN (");
             query.append(testCase.getTest());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getProject())) {
-            query.append(" AND t2.project IN (");
+            query.append(" AND tec.project IN (");
             query.append(testCase.getProject());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getTicket())) {
-            query.append(" AND t2.ticket IN (");
+            query.append(" AND tec.ticket IN (");
             query.append(testCase.getTicket());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getTicket())) {
-            query.append(" AND t2.ticket IN (");
+            query.append(" AND tec.ticket IN (");
             query.append(testCase.getTicket());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getBugID())) {
-            query.append(" AND t2.bugid IN (");
+            query.append(" AND tec.bugid IN (");
             query.append(testCase.getBugID());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getOrigin())) {
-            query.append(" AND t2.origine IN (");
+            query.append(" AND tec.origine IN (");
             query.append(testCase.getOrigin());
             query.append(") ");
         }
@@ -1135,111 +1143,111 @@ public class TestCaseDAO implements ITestCaseDAO {
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getApplication())) {
-            query.append(" AND t2.application IN (");
+            query.append(" AND tec.application IN (");
             query.append(testCase.getApplication());
             query.append(") ");
         }
         if (testCase.getPriority() != -1) {
-            query.append(" AND t2.priority IN (");
+            query.append(" AND tec.priority IN (");
             query.append(testCase.getPriority());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getStatus())) {
-            query.append(" AND t2.status IN (");
+            query.append(" AND tec.status IN (");
             query.append(testCase.getStatus());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getGroup())) {
-            query.append(" AND t2.group IN (");
+            query.append(" AND tec.group IN (");
             query.append(testCase.getGroup());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getRunPROD())) {
-            query.append(" AND t2.activePROD IN (");
+            query.append(" AND tec.activePROD IN (");
             query.append(testCase.getRunPROD());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getRunUAT())) {
-            query.append(" AND t2.activeUAT IN (");
+            query.append(" AND tec.activeUAT IN (");
             query.append(testCase.getRunUAT());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getRunQA())) {
-            query.append(" AND t2.activeQA IN (");
+            query.append(" AND tec.activeQA IN (");
             query.append(testCase.getRunQA());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getShortDescription())) {
-            query.append(" AND t2.description LIKE '%");
+            query.append(" AND tec.description LIKE '%");
             query.append(testCase.getShortDescription());
             query.append("%'");
         }
         if (!StringUtil.isNull(testCase.getHowTo())) {
-            query.append(" AND t2.howto LIKE '%");
+            query.append(" AND tec.howto LIKE '%");
             query.append(testCase.getHowTo());
             query.append("%'");
         }
         if (!StringUtil.isNull(testCase.getDescription())) {
-            query.append(" AND t2.behaviororvalueexpected LIKE '%");
+            query.append(" AND tec.behaviororvalueexpected LIKE '%");
             query.append(testCase.getDescription());
             query.append("%'");
         }
         if (!StringUtil.isNull(testCase.getComment())) {
-            query.append(" AND t2.comment LIKE '%");
+            query.append(" AND tec.comment LIKE '%");
             query.append(testCase.getComment());
             query.append("%'");
         }
         if (!StringUtil.isNull(testCase.getActive())) {
-            query.append(" AND t2.TcActive IN (");
+            query.append(" AND tec.TcActive IN (");
             query.append(testCase.getActive());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getFromSprint())) {
-            query.append(" AND t2.frombuild IN (");
+            query.append(" AND tec.frombuild IN (");
             query.append(testCase.getFromSprint());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getFromRevision())) {
-            query.append(" AND t2.fromrev IN (");
+            query.append(" AND tec.fromrev IN (");
             query.append(testCase.getFromRevision());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getToSprint())) {
-            query.append(" AND t2.tobuild IN (");
+            query.append(" AND tec.tobuild IN (");
             query.append(testCase.getToSprint());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getToRevision())) {
-            query.append(" AND t2.torev IN (");
+            query.append(" AND tec.torev IN (");
             query.append(testCase.getToRevision());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getTargetSprint())) {
-            query.append(" AND t2.targetbuild IN (");
+            query.append(" AND tec.targetbuild IN (");
             query.append(testCase.getTargetSprint());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getTargetRevision())) {
-            query.append(" AND t2.targetrev IN (");
+            query.append(" AND tec.targetrev IN (");
             query.append(testCase.getTargetRevision());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getTestCase())) {
-            query.append(" AND t2.testcase IN (");
+            query.append(" AND tec.testcase IN (");
             query.append(testCase.getTestCase());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getFunction())) {
-            query.append(" AND t2.function IN (");
+            query.append(" AND tec.function IN (");
             query.append(testCase.getFunction());
             query.append(") ");
         }
         if (!StringUtil.isNull(testCase.getCreator())) {
-            query.append(" AND t2.Creator IN (");
+            query.append(" AND tec.Creator IN (");
             query.append(testCase.getCreator());
             query.append(") ");
         }
-        query.append(" ORDER BY t2.test, t2.testcase");
+        query.append(" ORDER BY tec.test, tec.testcase");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1391,14 +1399,14 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         List<TCase> list = null;
-        final StringBuilder query = new StringBuilder("select tc.* ")
-                .append("from testcase tc ")
+        final StringBuilder query = new StringBuilder("select tec.* ")
+                .append("from testcase tec ")
                 .append("inner join testcasecountry tcc ")
-                .append("on tcc.Test = tc.Test ")
-                .append("and tcc.TestCase = tc.TestCase ")
+                .append("on tcc.Test = tec.Test ")
+                .append("and tcc.TestCase = tec.TestCase ")
                 .append("inner join testbatterycontent tbc ")
-                .append("on tbc.Test = tc.Test ")
-                .append("and tbc.TestCase = tc.TestCase ")
+                .append("on tbc.Test = tec.Test ")
+                .append("and tbc.TestCase = tec.TestCase ")
                 .append("inner join campaigncontent cc ")
                 .append("on cc.testbattery = tbc.testbattery ")
                 .append("where cc.campaign = ? ");
@@ -1464,8 +1472,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TCase> findTestCaseByTestSystem(String test, String system) {
         List<TCase> list = null;
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ");
-        sb.append(" WHERE tc.test = ? and app.system = ? ");
+        sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ");
+        sb.append(" WHERE tec.test = ? and app.system = ? ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1514,10 +1522,10 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause) {
         List<TCase> list = null;
         StringBuilder sb = new StringBuilder();
-        sb.append("SELECT * FROM testcase tc join application app on tc.application=app.application ")
+        sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ")
                 .append("left join testbatterycontent tbc ")
-                .append("on tbc.Test = tc.Test ")
-                .append("and tbc.TestCase = tc.TestCase ")
+                .append("on tbc.Test = tec.Test ")
+                .append("and tbc.TestCase = tec.TestCase ")
                 .append("left join campaigncontent cc ")
                 .append("on cc.testbattery = tbc.testbattery ");
         sb.append(" WHERE 1=1 ");
@@ -1535,7 +1543,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         sb.append(functionClause);
         sb.append(campaignClause);
         sb.append(batteryClause);
-        sb.append(" GROUP BY tc.test, tc.testcase ");
+        sb.append(" GROUP BY tec.test, tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + sb.toString());
@@ -1579,7 +1587,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
         String result = "";
-        final String sql = "SELECT system from application a join testcase tc on tc.application=a.Application where tc.test= ? and tc.testcase= ?";
+        final String sql = "SELECT system from application a join testcase tec on tec.application=a.Application where tec.test= ? and tec.testcase= ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1626,10 +1634,10 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TCase> list = new ArrayList<TCase>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcase tc  ");
-        query.append("inner join testcasestep  tcs on tc.test = tcs.test and tc.testcase = tcs.testcase ");
-        query.append("WHERE tc.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
-        query.append("group by tc.testcase order by tc.testcase ");
+        query.append("SELECT * FROM testcase tec  ");
+        query.append("inner join testcasestep  tcs on tec.test = tcs.test and tec.testcase = tcs.testcase ");
+        query.append("WHERE tec.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
+        query.append("group by tec.testcase order by tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -1772,10 +1780,12 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         query.append("SELECT distinct ");
         query.append(columnName);
-        query.append(" as distinctValues FROM testcase tc ");
+        query.append(" as distinctValues FROM testcase tec ");
+        query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
+        query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
 
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tc.application ");
+            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
         }
 
         searchSQL.append("WHERE 1=1");
@@ -1784,22 +1794,23 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" AND app.`system` = ? ");
         }
         if (!StringUtil.isNullOrEmpty(test)) {
-            searchSQL.append(" AND tc.`test` = ?");
+            searchSQL.append(" AND tec.`test` = ?");
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (tc.`testcase` like ?");
-            searchSQL.append(" or tc.`test` like ?");
-            searchSQL.append(" or tc.`application` like ?");
-            searchSQL.append(" or tc.`project` like ?");
-            searchSQL.append(" or tc.`creator` like ?");
-            searchSQL.append(" or tc.`lastmodifier` like ?");
-            searchSQL.append(" or tc.`tcactive` like ?");
-            searchSQL.append(" or tc.`status` like ?");
-            searchSQL.append(" or tc.`group` like ?");
-            searchSQL.append(" or tc.`priority` like ?");
-            searchSQL.append(" or tc.`tcdatecrea` like ?");
-            searchSQL.append(" or tc.`description` like ?)");
+            searchSQL.append(" and (tec.`testcase` like ?");
+            searchSQL.append(" or tec.`test` like ?");
+            searchSQL.append(" or tec.`application` like ?");
+            searchSQL.append(" or tec.`project` like ?");
+            searchSQL.append(" or tec.`creator` like ?");
+            searchSQL.append(" or tec.`lastmodifier` like ?");
+            searchSQL.append(" or tec.`tcactive` like ?");
+            searchSQL.append(" or tec.`status` like ?");
+            searchSQL.append(" or tec.`group` like ?");
+            searchSQL.append(" or tec.`priority` like ?");
+            searchSQL.append(" or tec.`tcdatecrea` like ?");
+            searchSQL.append(" or lab.`label` like ?");
+            searchSQL.append(" or tec.`description` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");

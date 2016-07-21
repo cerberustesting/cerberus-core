@@ -35,16 +35,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
@@ -81,6 +85,7 @@ public class ReadTestCase extends HttpServlet {
     private ITestCaseStepService testCaseStepService;
     private ITestCaseStepActionService testCaseStepActionService;
     private ITestCaseStepActionControlService testCaseStepActionControlService;
+    private ITestCaseLabelService testCaseLabelService;
 
     private static final Logger LOG = Logger.getLogger(ReadTestCase.class);
 
@@ -216,6 +221,7 @@ public class ReadTestCase extends HttpServlet {
 
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -238,7 +244,8 @@ public class ReadTestCase extends HttpServlet {
         AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
-
+        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null);
+        
         LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
             String key = country.getTest() + "_" + country.getTestCase();
@@ -247,6 +254,19 @@ public class ReadTestCase extends HttpServlet {
                 testCaseWithCountry.get(key).put(country.getCountry(), country.getCountry());
             } else {
                 testCaseWithCountry.put(key, new JSONObject().put(country.getCountry(), country.getCountry()));
+            }
+        }
+        
+        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+            String key = label.getTest() + "_" + label.getTestcase();
+
+            if (testCaseWithLabel.containsKey(key)) {
+                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                testCaseWithLabel.get(key).put(jo);
+            } else {
+                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                testCaseWithLabel.put(key, new JSONArray().put(jo));
             }
         }
 
@@ -264,7 +284,8 @@ public class ReadTestCase extends HttpServlet {
                     value.put("hasPermissionsUpdate", isTest);
                 }
                 value.put("countryList", testCaseWithCountry.get(key));
-
+                value.put("labels", testCaseWithLabel.get(key));
+               
                 jsonArray.put(value);
             }
         }

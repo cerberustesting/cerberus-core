@@ -746,49 +746,63 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "test",
-            "sName": "tc.test",
+            "sName": "tec.test",
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
             "sDefaultContent": ""
         },
         {
             "data": "testCase",
-            "sName": "tc.testCase",
+            "sName": "tec.testCase",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
+            "data": "labels",
+            "sName": "lab.label",
+            "title": "Labels",
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function ( data, type, full, meta ) {
+                var labelValue = '';
+                $.each(data, function(i, e){
+                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+                });
+                return labelValue;
+    }
+        },
+        {
             "data": "application",
-            "sName": "tc.application",
+            "sName": "tec.application",
             "title": doc.getDocOnline("application", "Application"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "project",
-            "sName": "tc.project",
+            "sName": "tec.project",
             "title": doc.getDocOnline("project", "idproject"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "creator",
-            "sName": "tc.creator",
+            "sName": "tec.creator",
             "title": doc.getDocOnline("testcase", "Creator"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "lastModifier",
-            "sName": "tc.lastmodifier",
+            "sName": "tec.lastmodifier",
             "title": doc.getDocOnline("testcase", "LastModifier"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "active",
-            "sName": "tc.tcactive",
+            "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
@@ -811,49 +825,49 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "status",
-            "sName": "tc.status",
+            "sName": "tec.status",
             "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "priority",
-            "sName": "tc.priority",
+            "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "origin",
-            "sName": "tc.origine",
+            "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "refOrigin",
-            "sName": "tc.refOrigine",
+            "sName": "tec.refOrigine",
             "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
             "sDefaultContent": ""
         },
         {
             "data": "group",
-            "sName": "tc.group",
+            "sName": "tec.group",
             "title": doc.getDocOnline("invariant", "GROUP"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "shortDescription",
-            "sName": "tc.description",
+            "sName": "tec.description",
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
             "data": "tcDateCrea",
-            "sName": "tc.tcDateCrea",
+            "sName": "tec.tcDateCrea",
             "title": doc.getDocOnline("testcase", "TCDateCrea"),
             "sWidth": "150px",
             "sDefaultContent": ""

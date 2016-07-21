@@ -1,0 +1,108 @@
+/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.cerberus.crud.entity;
+
+import java.sql.Timestamp;
+
+/**
+ * @author bcivel
+ */
+public class TestCaseLabel {
+
+    private Integer id;
+    private String test;
+    private String testcase;
+    private Integer labelId;
+    private String usrCreated;
+    private Timestamp dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
+    private Label label;
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getTestcase() {
+        return testcase;
+    }
+
+    public void setTestcase(String testcase) {
+        this.testcase = testcase;
+    }
+
+    public Integer getLabelId() {
+        return labelId;
+    }
+
+    public void setLabelId(Integer labelId) {
+        this.labelId = labelId;
+    }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String usrCreated) {
+        this.usrCreated = usrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Timestamp dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String usrModif) {
+        this.usrModif = usrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+}

@@ -856,6 +856,22 @@
         <servlet-name>ForgotPasswordEmailConfirmation</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.ForgotPasswordEmailConfirmation</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>CreateLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.label.CreateLabel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.label.UpdateLabel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.label.DeleteLabel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.label.ReadLabel</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1692,6 +1708,22 @@
         <servlet-name>ForgotPasswordEmailConfirmation</servlet-name>
         <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateLabel</servlet-name>
+        <url-pattern>/CreateLabel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateLabel</servlet-name>
+        <url-pattern>/UpdateLabel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteLabel</servlet-name>
+        <url-pattern>/DeleteLabel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadLabel</servlet-name>
+        <url-pattern>/ReadLabel</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -1824,6 +1856,7 @@
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
+            <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
@@ -1855,6 +1888,10 @@
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/UpdateTestCase2</url-pattern>
             <url-pattern>/CreateTestCase2</url-pattern>
+            <url-pattern>/CreateLabel</url-pattern>
+            <url-pattern>/ReadLabel</url-pattern>
+            <url-pattern>/UpdateLabel</url-pattern>
+            <url-pattern>/DeleteLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
