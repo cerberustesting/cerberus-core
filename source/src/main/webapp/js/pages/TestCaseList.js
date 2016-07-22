@@ -64,6 +64,8 @@ function initPage() {
     // handle the click for specific action buttons
     $("#editEntryButton").click(editEntryModalSaveHandler);
     $("#addEntryButton").click(addEntryModalSaveHandler);
+    //PREPARE MASS ACTION
+    //$("#massActionBrpButton").click(massActionModalSaveHandler);
     // In Add TestCase form, if we change the test, we get the latest testcase from that test.
     $("#testAdd").change(function () {
         feedTestCase(null);
@@ -71,6 +73,8 @@ function initPage() {
 
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
+    //PREPARE MASS ACTION
+    //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
 }
 
 function displayPageLabel(doc) {
@@ -116,6 +120,8 @@ function displayPageLabel(doc) {
     $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
     $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+    //PREPARE MASS ACTION
+    //$("[name='massActionBrpField']").html(doc.getDocOnline("page_testcaselist", "massAction"));
 
     $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
@@ -153,9 +159,12 @@ function loadTable(selectTest, sortColumn) {
         if (sortColumn === undefined)
             sortColumn = 2;
 
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
+        
+        //PREPARE MASS ACTION
+        //$("#selectAll").click(selectAll);
 
     });
 }
@@ -165,11 +174,19 @@ function renderOptionsForTestCaseList(data) {
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
+            var contentToAdd = "<div class='marginBottom10'>";
+            contentToAdd+="<button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
-
+//PREPARE MASS ACTION
+//var contentToAddAfter = "<button id='createBrpMassButton' type='button' class='pull-right btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
+            
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
+            //PREPARE MASS ACTION
+            //$("#showHideColumnsButton").parent().after(contentToAddAfter);
+            
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
+            //PREPARE MASS ACTION
+            //$('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
 }
@@ -689,12 +706,91 @@ function setCountry(checkbox) {
         error: showUnexpectedError
     });
 }
+/** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
 
-function aoColumnsFunc(countries) {
+function selectAll() {
+    if ($(this).prop("checked"))
+        $("[data-line='select']").prop("checked", true);
+    else
+        $("[data-line='select']").removeProp("checked");
+}
+
+function massActionModalSaveHandler() {
+    clearResponseMessage($('#massActionBrpModal'));
+
+    var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+
+    showLoaderInModal('#massActionBrpModal');
+
+    var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionBrpModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            var oTable = $("#buildrevisionparametersTable").dataTable();
+            oTable.fnDraw(true);
+            $('#massActionBrpModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionBrpModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function massActionModalCloseHandler() {
+    // reset form values
+    $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#massActionBrpModal'));
+}
+
+function massActionClick() {
+    var doc = new Doc();
+    console.debug("Mass Action");
+    clearResponseMessageMainPage();
+    // When creating a new item, Define here the default value.
+    var formList = $('#massActionForm');
+    if (formList.serialize().indexOf("id-") === -1) {
+        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+        showMessage(localMessage, null);
+    } else {
+        $('#massActionBrpModal').modal('show');
+    }
+}
+ * 
+ *
+ */
+
+function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
 
     var countryLen = countries.length;
     var aoColumns = [
+//PREPARE MASS ACTION
+//        {"data": null,
+//            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
+//            "bSortable": false,
+//            "sWidth": "30px",
+//            "bSearchable": false,
+//            "mRender": function (data, type, obj) {
+//                console.log(obj);
+//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+//
+//                var selectBrp = '<input id="selectLine" \n\
+//                                class="selectBrp margin-right5" \n\
+//                                name="id-' + obj["test"] + obj["testCase"] + '" data-line="select" data-id="' + obj["test"] + obj["testCase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+//                                </input>';
+//                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+//                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
+//                }
+//                return '<div class="center btn-group width50"></div>';
+//
+//            }
+//        },
         {
             "data": null,
             "bSortable": false,
@@ -761,7 +857,7 @@ function aoColumnsFunc(countries) {
         {
             "data": "labels",
             "sName": "lab.label",
-            "title": "Labels",
+            "title": doc.getDocOnline("label", "label"),
             "sWidth": "170px",
             "sDefaultContent": "",
             "render": function ( data, type, full, meta ) {

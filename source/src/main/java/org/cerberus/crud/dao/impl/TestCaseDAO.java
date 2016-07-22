@@ -89,7 +89,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByTest(String test) {
         List<TCase> list = null;
-        final String query = "SELECT * FROM testcase WHERE test = ?";
+        final String query = "SELECT * FROM testcase tes WHERE test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

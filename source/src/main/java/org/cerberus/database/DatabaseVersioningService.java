@@ -6255,6 +6255,55 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE) ");
         SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
+        
+        //855 documentation on label
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`,`DocDesc`) VALUES ");
+        SQLS.append("('label', 'id', 'en', 'ID', '')");
+        SQLS.append(",('label', 'label', 'en', 'Label', '<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>')");
+        SQLS.append(",('label', 'color', 'en', 'Color', '<p>This field is the color that will be applyied to the label. It could be any value understable by the brower.</p><p>Examples: blue |  #00FF00 | #000 </p>')");
+        SQLS.append(",('label', 'parentid', 'en', 'Parent LabelID', '<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>')");
+        SQLS.append(",('label', 'description', 'en', 'Description', '<p>Description of the label.</p>')");
+        SQLS.append(",('testcaselabel', 'labelId', 'en', 'Label ID', '')");
+        SQLS.append(",('label', 'id', 'fr', 'ID', '')");
+        SQLS.append(",('label', 'label', 'fr', 'Label', '<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>')");
+        SQLS.append(",('label', 'color', 'fr', 'Couleur', '<p>Cette valeur représente la couleur appliquée au label. Cela peut-être toute valeur reconnue comme couleur par le navigateur.</p><p>Exemples: blue |  #00FF00 | #000 </p>')");
+        SQLS.append(",('label', 'parentid', 'fr', 'ID du label parent', '<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>')");
+        SQLS.append(",('label', 'description', 'fr', 'Description', '<p>Description du label.</p>')");
+        SQLS.append(",('testcaselabel', 'labelId', 'fr', 'ID du label', '')");
+        SQLS.append(",('page_label', 'btn_create', 'en', 'Create Label', '')");
+        SQLS.append(",('page_label', 'btn_create', 'fr', 'Créer un Label', '')");
+        SQLS.append(",('page_label', 'title', 'en', 'LABEL', 'This page can be used in order to manage the labels.')");
+        SQLS.append(",('page_label', 'title', 'fr', 'LABEL', 'Cette page permet de gérer et créer des labels.')");
+        SQLS.append(",('page_header', 'menuLabel', 'en', 'Label','')");
+        SQLS.append(",('page_header', 'menuLabel', 'fr', 'Label','')");
+        SQLS.append(",('page_label', 'btn_delete', 'en', 'Delete Label','')");
+        SQLS.append(",('page_label', 'btn_delete', 'fr', 'Effacer le Label', '')");
+        SQLS.append(",('page_label', 'btn_view', 'en', 'View Label', '')");
+        SQLS.append(",('page_label', 'btn_view', 'fr', 'Voir le Label', '')");
+        SQLS.append(",('page_label', 'btn_edit', 'en', 'Edit Label', '')");
+        SQLS.append(",('page_label', 'btn_edit', 'fr', 'Editer le Label', '')");
+        SQLS.append(",('page_global', 'btn_showHideColumns', 'en', 'Show/Hide', '')");
+        SQLS.append(",('page_global', 'btn_showHideColumns', 'fr', 'Afficher/Cacher', '')");
+        SQLS.append(",('page_global', 'tooltip_showHideColumns', 'en', 'Show/hide columns', '')");
+        SQLS.append(",('page_global', 'tooltip_showHideColumns', 'fr', 'Afficher/cacher des colonnes', '')");
+        SQLS.append(",('page_global', 'btn_savetableconfig', 'en', 'Save', '')");
+        SQLS.append(",('page_global', 'btn_savetableconfig', 'fr', 'Sauvegarder', '')");
+        SQLS.append(",('page_global', 'tooltip_savetableconfig', 'en', 'Save the table configuration.', 'Save the table configuration. Filters and column display is stored in user preferences')");
+        SQLS.append(",('page_global', 'tooltip_savetableconfig', 'fr', 'Sauvegarder la configuration de la table.', 'Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur')");
+        SQLS.append(",('page_global', 'btn_restoreuserpreferences', 'en', 'Load', '')");
+        SQLS.append(",('page_global', 'btn_restoreuserpreferences', 'fr', 'Charger', '')");
+        SQLS.append(",('page_global', 'tooltip_restoreuserpreferences', 'en', 'Restore the table configuration', 'Restore the table configuration from the user preferences. Filters and column display are available in user preferences')");
+        SQLS.append(",('page_global', 'tooltip_restoreuserpreferences', 'fr', 'Restaurer la configuration de la table', 'Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur')");
+        SQLS.append(",('page_global', 'btn_clearfilter', 'en', '', '')");
+        SQLS.append(",('page_global', 'btn_clearfilter', 'fr', '', '')");
+        SQLS.append(",('page_global', 'tooltip_clearfilter', 'en', 'Clear filters applied', '')");
+        SQLS.append(",('page_global', 'tooltip_clearfilter', 'fr', 'Effacer les filtres appliqués', '')");
+        SQLS.append(",('page_label', 'display', 'en', 'Display', 'Display the generated label from the label and the color defined')");
+        SQLS.append(",('page_label', 'display', 'fr', 'Affichage', 'Affiche le label généré à partir du label et de la couleur définis')");
+        SQLS.append(",('label', 'system', 'en', 'System')");
+        SQLS.append(",('label', 'system', 'fr', 'Système')");
+        SQLInstruction.add(SQLS.toString());
   
         return SQLInstruction;
     }

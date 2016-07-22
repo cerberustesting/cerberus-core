@@ -111,6 +111,26 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
 };
 
 /**
+ * Function that manage the documentation in text format.
+ * @param {docTable} Table of the documentation data.
+ * @param {docField} Field of the documentation data.
+ * @returns {String} text value of the field name from the documentation
+ */
+Doc.prototype.getDocDescription = function (docTable, docField) {
+    try {
+        if (!(this.table.hasOwnProperty(docTable)))
+            throw "docTable " + docTable + " not found";
+        if (!(this.table[docTable].hasOwnProperty(docField)))
+            throw "docField " + docField + " not found";
+        return this.table[docTable][docField].docDesc;
+    } catch (err) {
+        var res;
+        res = docField + " -- Missing doc !!!";
+        return res;
+    }
+};
+
+/**
  * Function that manage the documentation in html format.
  * @param {docTable} Table of the documentation data.
  * @param {docField} Field of the documentation data.

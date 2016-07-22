@@ -290,6 +290,7 @@ public class ReadTestCase extends HttpServlet {
             }
         }
 
+        object.put("hasPermissions", isTest);
         object.put("hasPermissionsCreate", isTest);
         object.put("hasPermissionsDelete", isTestAdmin);
         object.put("contentTable", jsonArray);

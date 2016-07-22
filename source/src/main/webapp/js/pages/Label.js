@@ -45,18 +45,18 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_label", "title"));
     $("#title").html(doc.getDocOnline("page_label", "title"));
-    $("[name='createLabelField']").html(doc.getDocLabel("page_label", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_label", "button_delete"));
-    $("[name='editLabelField']").html(doc.getDocLabel("page_label", "button_edit"));
+    $("[name='createLabelField']").html(doc.getDocLabel("page_label", "btn_create"));
+    $("[name='confirmationField']").html(doc.getDocLabel("page_label", "btn_delete"));
+    $("[name='editLabelField']").html(doc.getDocLabel("page_label", "btn_edit"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
     $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
     $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
-    $("[name='labelField']").html(doc.getDocOnline("label", "Label"));
-    $("[name='descriptionField']").html(doc.getDocOnline("label", "Description"));
-    $("[name='colorField']").html(doc.getDocOnline("label", "Color"));
-    $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentLabel"));
-
+    $("[name='labelField']").html(doc.getDocOnline("label", "label"));
+    $("[name='descriptionField']").html(doc.getDocOnline("label", "description"));
+    $("[name='colorField']").html(doc.getDocOnline("label", "color"));
+    $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentid"));
+    $("[name='parentLabel']").attr("readonly","readonly");
 
     $("[name='tabsEdit1']").html(doc.getDocOnline("page_label", "tabDef"));
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
@@ -71,7 +71,7 @@ function renderOptionsForLabel(data) {
     if (data["hasPermissions"]) {
         if ($("#createLabelButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createLabelButton' type='button' class='btn btn-default'>\n\
-            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_label", "button_create") + "</button></div>";
+            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_label", "btn_create") + "</button></div>";
 
             $("#labelsTable_wrapper div#labelsTable_length").before(contentToAdd);
             $('#labelList #createLabelButton').click(addEntryClick);
@@ -253,15 +253,15 @@ function aoColumnsFunc(tableId) {
 
                 var editLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="editLabel" title="' + doc.getDocLabel("page_label", "button_edit") + '" type="button">\n\
+                                    name="editLabel" title="' + doc.getDocLabel("page_label", "btn_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewLabel = '<button id="editLabel" onclick="editEntryClick(\'' + obj["id"] + '\', \'' + obj["system"] + '\');"\n\
                                     class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="editLabel" title="' + doc.getDocLabel("page_label", "button_edit") + '" type="button">\n\
+                                    name="editLabel" title="' + doc.getDocLabel("page_label", "btn_view") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteLabel = '<button id="deleteLabel" onclick="deleteEntryClick(\'' + obj["id"] + '\');" \n\
                                     class="deleteLabel btn btn-default btn-xs margin-right5" \n\
-                                    name="deleteLabel" title="' + doc.getDocLabel("page_label", "button_delete") + '" type="button">\n\
+                                    name="deleteLabel" title="' + doc.getDocLabel("page_label", "btn_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
                     return '<div class="center btn-group width150">' + editLabel + deleteLabel + '</div>';
@@ -274,13 +274,13 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("label", "system")},
         {"data": "label",
             "sName": "label",
-            "title": doc.getDocOnline("label", "Label")},
+            "title": doc.getDocOnline("label", "label")},
         {"data": "color",
             "sName": "color",
-            "title": doc.getDocOnline("label", "Color")},
+            "title": doc.getDocOnline("label", "color")},
         {"data": "display",
             "sName": "display",
-            "title": doc.getDocOnline("label", "Display"),
+            "title": doc.getDocOnline("page_label", "display"),
             "bSortable": false,
             "bSearchable": false,
             "render": function (data, type, full, meta) {
@@ -289,10 +289,10 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "parentLabel",
             "sName": "parentLabel",
-            "title": doc.getDocOnline("label", "ParentLabel")},
+            "title": doc.getDocOnline("label", "parentid")},
         {"data": "description",
             "sName": "description",
-            "title": doc.getDocOnline("label", "Description")}
+            "title": doc.getDocOnline("label", "description")}
 
     ];
     return aoColumns;
