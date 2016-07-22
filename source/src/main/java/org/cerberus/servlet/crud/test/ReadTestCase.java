@@ -244,6 +244,9 @@ public class ReadTestCase extends HttpServlet {
         AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
+        /**
+         * Find the list of labels
+         */
         AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null);
         
         LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
@@ -257,6 +260,9 @@ public class ReadTestCase extends HttpServlet {
             }
         }
         
+        /**
+         * Iterate on the label retrieved and generate HashMap based on the key Test_TestCase
+         */
         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
             String key = label.getTest() + "_" + label.getTestcase();

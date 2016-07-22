@@ -6304,7 +6304,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('label', 'system', 'en', 'System')");
         SQLS.append(",('label', 'system', 'fr', 'Système')");
         SQLInstruction.add(SQLS.toString());
-  
+        
+        //856 Add a sample tag
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO label (`system`,`label`, `color`,`UsrCreated`, `UsrModif`) ");
+        SQLS.append("SELECT `value` , 'MyFirstLabel', '#000000' , 'admin' , 'admin' from invariant where idname = 'SYSTEM'");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

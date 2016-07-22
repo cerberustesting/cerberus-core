@@ -89,7 +89,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TCase> findTestCaseByTest(String test) {
         List<TCase> list = null;
-        final String query = "SELECT * FROM testcase tes WHERE test = ?";
+        final String query = "SELECT * FROM testcase tec WHERE test = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1710,7 +1710,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase) {
         AnswerItem ans = new AnswerItem();
         TCase result = null;
-        final String query = "SELECT * FROM `testcase` WHERE `test` = ? AND `testcase` = ?";
+        final String query = "SELECT * FROM `testcase` tec WHERE tec.`test` = ? AND tec.`testcase` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 

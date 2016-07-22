@@ -819,7 +819,7 @@ function aoColumnsFunc(countries, tableId) {
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                  var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
+                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
                                     title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
@@ -827,7 +827,7 @@ function aoColumnsFunc(countries, tableId) {
                                     </a>';
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
-                    buttons += duplicateEntry;
+                    //buttons += duplicateEntry;
                 } else {
                     buttons += viewEntry;
                 }
@@ -854,20 +854,20 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "70px",
             "sDefaultContent": ""
         },
-        {
-            "data": "labels",
-            "sName": "lab.label",
-            "title": doc.getDocOnline("label", "label"),
-            "sWidth": "170px",
-            "sDefaultContent": "",
-            "render": function ( data, type, full, meta ) {
-                var labelValue = '';
-                $.each(data, function(i, e){
-                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
-                });
-                return labelValue;
-    }
-        },
+//        {
+//            "data": "labels",
+//            "sName": "lab.label",
+//            "title": doc.getDocOnline("label", "label"),
+//            "sWidth": "170px",
+//            "sDefaultContent": "",
+//            "render": function ( data, type, full, meta ) {
+//                var labelValue = '';
+//                $.each(data, function(i, e){
+//                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+//                });
+//                return labelValue;
+//    }
+//        },
         {
             "data": "application",
             "sName": "tec.application",

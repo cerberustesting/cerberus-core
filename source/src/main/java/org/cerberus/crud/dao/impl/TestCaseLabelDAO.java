@@ -344,10 +344,10 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         query.append(" WHERE 1=1");
 
         if (!Strings.isNullOrEmpty(test)) {
-            query.append(" AND tcc.test = ?");
+            query.append(" AND tel.test = ?");
         }
         if (!Strings.isNullOrEmpty(testCase)) {
-            query.append(" AND tcc.testcase = ?");
+            query.append(" AND tel.testcase = ?");
         }
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

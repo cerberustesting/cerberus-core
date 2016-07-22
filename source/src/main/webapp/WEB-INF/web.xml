@@ -872,6 +872,10 @@
         <servlet-name>ReadLabel</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.label.ReadLabel</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadTestCaseLabel</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.ReadTestCaseLabel</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1723,6 +1727,10 @@
     <servlet-mapping>
         <servlet-name>ReadLabel</servlet-name>
         <url-pattern>/ReadLabel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseLabel</servlet-name>
+        <url-pattern>/ReadTestCaseLabel</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>

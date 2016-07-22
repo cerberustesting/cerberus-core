@@ -114,7 +114,7 @@ Doc.prototype.getDocLabel = function (docTable, docField) {
  * Function that manage the documentation in text format.
  * @param {docTable} Table of the documentation data.
  * @param {docField} Field of the documentation data.
- * @returns {String} text value of the field name from the documentation
+ * @returns {String} text value of the Description from the documentation
  */
 Doc.prototype.getDocDescription = function (docTable, docField) {
     try {

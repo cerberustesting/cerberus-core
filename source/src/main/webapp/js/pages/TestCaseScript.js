@@ -63,6 +63,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#manageProp").click(function () {
             $("#propertiesModal").modal('show');
         });
+        
+        $("#manageLabel").click(function () {
+            $("#manageLabelModal").modal('show');
+        });
+        
+        loadLabelFilter();
+        loadTestCaseLabel(test, testcase);
 
         $("#saveStep").click(saveStep);
         $("#cancelEdit").click(cancelEdit);
@@ -1757,4 +1764,53 @@ function setPlaceholderProperty() {
             }
         }
     });
+}
+
+
+/**
+ * 
+ * 
+ */
+function loadLabelFilter() {
+    var jqxhr = $.get("ReadLabel?system="+getUser().defaultSystem, "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            var index;
+            for (index = 0; index < data.contentTable.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                var labelTag = '<div style="float:left"><span class="label label-primary" style="background-color:'+data.contentTable[index].color+'">'+data.contentTable[index].label+'</span></div> ';
+                var option = $('<li class="list-group-item"></li>').attr("value", data.contentTable[index].label).html(labelTag);
+                $('#selectLabel').append(option);
+            }
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * 
+ * 
+ */
+function loadTestCaseLabel(test, testcase) {
+    var jqxhr = $.get("ReadTestCaseLabel?test="+test+"&testcase="+testcase, "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            var index;
+            var labelTag = '';
+            for (index = 0; index < data.contentTable.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                labelTag += '<div style="float:left"><span class="label label-primary" style="background-color:'+data.contentTable[index].label.color+'">'+data.contentTable[index].label.label+'</span></div>';
+            }
+            $('#labelList').html(labelTag);
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
