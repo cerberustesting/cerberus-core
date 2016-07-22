@@ -139,5 +139,5 @@ public interface ITestCaseLabelService {
      * @param duplicate
      * @throws CerberusException 
      */
-    void compareListAndUpdateInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException;
+    void compareListAndInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException;
 }

@@ -63,13 +63,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#manageProp").click(function () {
             $("#propertiesModal").modal('show');
         });
-        
+
         $("#manageLabel").click(function () {
             $("#manageLabelModal").modal('show');
         });
-        
-        loadLabelFilter();
-        loadTestCaseLabel(test, testcase);
+
+        loadLabelFilter(test, testcase);
+
 
         $("#saveStep").click(saveStep);
         $("#cancelEdit").click(cancelEdit);
@@ -284,7 +284,7 @@ function drawProperty(property, testcaseinfo) {
     propertyInput.change(function () {
         property.property = $(this).val();
     });
-    
+
     descriptionInput.change(function () {
         property.description = $(this).val();
     });
@@ -323,7 +323,7 @@ function drawProperty(property, testcaseinfo) {
     row1.append(nature);
     row1.append(description);
     table.append(row1);
-    
+
     row2.append(deleteBtnRow);
     row2.append(value);
     table.append(row2);
@@ -1767,12 +1767,12 @@ function setPlaceholderProperty() {
 }
 
 
-/**
- * 
- * 
+/******************************************************************************
+ * LABEL MANAGEMENT
+ * Load label list
  */
-function loadLabelFilter() {
-    var jqxhr = $.get("ReadLabel?system="+getUser().defaultSystem, "", "json");
+function loadLabelFilter(test, testcase) {
+    var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -1781,13 +1781,16 @@ function loadLabelFilter() {
             var index;
             for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var labelTag = '<div style="float:left"><span class="label label-primary" style="background-color:'+data.contentTable[index].color+'">'+data.contentTable[index].label+'</span></div> ';
-                var option = $('<li class="list-group-item"></li>').attr("value", data.contentTable[index].label).html(labelTag);
+                var labelTag = '<div style="float:left"><input id="labelId' + data.contentTable[index].id + '" data-labelid="'+data.contentTable[index].id+'" type="checkbox">\n\
+                <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
+                var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
+                        .attr("value", data.contentTable[index].label).html(labelTag);
                 $('#selectLabel').append(option);
             }
         } else {
             showMessageMainPage(messageType, data.message);
         }
+        loadTestCaseLabel(test, testcase);
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -1796,8 +1799,8 @@ function loadLabelFilter() {
  * 
  */
 function loadTestCaseLabel(test, testcase) {
-    var jqxhr = $.get("ReadTestCaseLabel?test="+test+"&testcase="+testcase, "", "json");
-
+    var jqxhr = $.get("ReadTestCaseLabel?test=" + test + "&testcase=" + testcase, "", "json");
+//Get the label of the selected testcase
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
 
@@ -1805,12 +1808,38 @@ function loadTestCaseLabel(test, testcase) {
             var index;
             var labelTag = '';
             for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                labelTag += '<div style="float:left"><span class="label label-primary" style="background-color:'+data.contentTable[index].label.color+'">'+data.contentTable[index].label.label+'</span></div>';
+                //For each testcaselabel, put at the top of the list and check them
+                var element = $("#itemLabelId" + data.contentTable[index].label.id);
+                element.remove();
+                $("#selectLabel").prepend(element);
+                $("#labelId" + data.contentTable[index].label.id).prop("checked", true);
             }
-            $('#labelList').html(labelTag);
         } else {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
+
+
+//On save, save the label list
+    $("#saveManageLabelButton").on('click', function () {
+        var labelListForm = $("#labelListForm input:checked");
+        var labelList = '';
+        $.each(labelListForm, function (i, e) {
+            labelList += "&labelid=" + $(e).attr("data-labelid");
+        });
+
+        var jqxhr = $.get("SaveTestCaseLabel?test=" + test + "&testcase=" + testcase + labelList, "", "json");
+
+        $.when(jqxhr).then(function (data) {
+            var messageType = getAlertType(data.messageType);
+
+            if (messageType === "success") {
+                $("#manageLabelModal").modal('hide');
+                showMessageMainPage(messageType, data.message);
+            } else {
+                showMessageMainPage(messageType, data.message);
+            }
+        }).fail(handleErrorAjaxAfterTimeout);
+
+    });
 }

@@ -854,20 +854,20 @@ function aoColumnsFunc(countries, tableId) {
             "sWidth": "70px",
             "sDefaultContent": ""
         },
-//        {
-//            "data": "labels",
-//            "sName": "lab.label",
-//            "title": doc.getDocOnline("label", "label"),
-//            "sWidth": "170px",
-//            "sDefaultContent": "",
-//            "render": function ( data, type, full, meta ) {
-//                var labelValue = '';
-//                $.each(data, function(i, e){
-//                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
-//                });
-//                return labelValue;
-//    }
-//        },
+        {
+            "data": "labels",
+            "sName": "lab.label",
+            "title": doc.getDocOnline("label", "label"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function ( data, type, full, meta ) {
+                var labelValue = '';
+                $.each(data, function(i, e){
+                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+                });
+                return labelValue;
+    }
+        },
         {
             "data": "application",
             "sName": "tec.application",

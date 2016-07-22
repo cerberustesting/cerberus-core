@@ -6,17 +6,13 @@
                 <h4 class="modal-title" id="manageLabelModalTitle">Add Label</h4>
             </div>
             <div class="modal-body">
-                 <h3 class="modal-title-line">Label</h3>
+                <h3 class="modal-title-line">Label</h3>
                 <form id="labelListForm" class="well well-sm">
                     <div class="form-group" id="labelList">
+                        <ul id="selectLabel" class="list-group">
+                    </ul>
                     </div>
                 </form>
-                <h3 class="modal-title-line">
-                <a data-toggle="collapse" href="#collapse1">Select Label</a></h3>
-                <div id="collapse1" class="panel-collapse collapse">
-                    <ul id="selectLabel" class="list-group">
-                    </ul>
-                </div>
             </div>
             <div class="modal-body center container"> 
                 <div id="DialogMessagesAlertManageLabelMain" class="width600">
@@ -32,7 +28,7 @@
             </div> 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="closeManageLabelButton" data-dismiss="modal">Close</button> 
-                <button type="button" class="btn btn-primary" id="manageLabelButton">Add</button> 
+                <button type="button" class="btn btn-primary" id="saveManageLabelButton">Save</button> 
             </div>
         </div> 
     </div> 

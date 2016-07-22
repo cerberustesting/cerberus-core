@@ -101,7 +101,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public Answer deleteList(List<TestCaseLabel> objectList) {
         Answer ans = new Answer(null);
         for (TestCaseLabel objectToDelete : objectList) {
-            ans = this.create(objectToDelete);
+            ans = this.delete(objectToDelete);
         }
         return ans;
     }
@@ -139,26 +139,23 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
     
     @Override
-    public void compareListAndUpdateInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException {
+    public void compareListAndInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException {
         /**
          * Iterate on (TestCaseLabel From Page - TestCaseLabel From
-         * Database) If TestCaseLabel in Database has same key : Update and
+         * Database) If TestCaseLabel in Database has same key : 
          * remove from the list. If TestCaseLabel in database does ot exist
          * : Insert it.
          */
-        List<TestCaseLabel> listToUpdateOrInsert = new ArrayList(newList);
-        listToUpdateOrInsert.removeAll(oldList);
-        List<TestCaseLabel> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
-
-        for (TestCaseLabel objDifference : listToUpdateOrInsertToIterate) {
-            for (TestCaseLabel objInDatabase : oldList) {
-                if (objDifference.getId().equals(objInDatabase.getId())) {
-                    this.update(objDifference);
-                    listToUpdateOrInsert.remove(objDifference);
+        List<TestCaseLabel> listToInsert = new ArrayList(newList);
+        listToInsert.removeAll(oldList);
+        for (TestCaseLabel newListElement : newList) {
+            for (TestCaseLabel oldListElement : oldList) {
+                if (newListElement.hasSameKey(oldListElement)) {
+                    listToInsert.remove(newListElement);
                 }
             }
         }
-        this.createList(listToUpdateOrInsert);
+        this.createList(listToInsert);
 
         /**
          * Iterate on (TestCaseLabel From Database - TestCaseLabel
@@ -172,7 +169,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
 
             for (TestCaseLabel objDifference : listToDeleteToIterate) {
                 for (TestCaseLabel objInPage : newList) {
-                    if (objDifference.getId().equals(objInPage.getId())) {
+                    if (objDifference.hasSameKey(objInPage)) {
                         listToDelete.remove(objDifference);
                     }
                 }

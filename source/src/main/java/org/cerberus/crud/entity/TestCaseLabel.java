@@ -105,4 +105,24 @@ public class TestCaseLabel {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
+    
+    public boolean hasSameKey(TestCaseLabel obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseLabel other = (TestCaseLabel) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
+            return false;
+        }
+        if (this.labelId != other.labelId) {
+            return false;
+        }
+        return true;
+    }
 }

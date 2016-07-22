@@ -795,3 +795,7 @@ table.dataTable thead th {
     max-height: 350px;
     overflow: auto;
 }
+
+.list-label{
+    height : 40px;
+}
