@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.datalib;
 
+import java.util.HashMap;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
@@ -30,14 +31,46 @@ import org.cerberus.util.answer.AnswerList;
  * @author bcivel
  */
 public interface IDataLibService {
-    
-    AnswerItem getStaticFromDataSet(AnswerList dataSet);
-    
-    AnswerItem getRandomFromDataSet(AnswerList dataSet);
-    
-    AnswerItem getRandomNewFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
-    
-    AnswerItem getNotInUseFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
-    
-    AnswerItem getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
+
+    AnswerItem<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
+
+    /**
+     * This method return the first ObjectData from DataSet
+     *
+     * @param dataSet
+     * @return The first item from dataObjectList
+     */
+    AnswerItem<HashMap<String, String>> getStaticFromDataSet(AnswerList dataSet);
+
+    /**
+     * This method return an ObjectData from DataSet picked randomly
+     *
+     * @param dataSet
+     * @return An item from dataObjectList choosen randomly
+     */
+    AnswerItem<HashMap<String, String>> getRandomFromDataSet(AnswerList dataSet);
+
+    /**
+     * This method return an ObjectData from DataSet picked randomly after
+     * excluding ObjectData already used in previous execution
+     *
+     * @param dataSet
+     * @param tCExecution : TestCaseExecution
+     * @param testCaseProperties : TestCaseCountryProperties
+     * @return An item from dataObjectList choosen randomly
+     */
+    AnswerItem<HashMap<String, String>> getRandomNewFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+
+    /**
+     * This method return an ObjectData from dataObjectList that is not used in
+     * another execution
+     *
+     * @param dataSet
+     * @param tCExecution : TestCaseExecution
+     * @param testCaseProperties
+     * @return An item from dataObjectList excluding the one used in other
+     * execution choosen randomly
+     */
+    AnswerItem<HashMap<String, String>> getNotInUseFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+
 }

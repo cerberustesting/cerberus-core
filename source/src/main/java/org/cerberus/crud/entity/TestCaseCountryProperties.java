@@ -47,6 +47,7 @@ public class TestCaseCountryProperties {
     /**
      * Invariant String.
      */
+    public static final String TYPE_TEXT = "text";
     public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
     public static final String TYPE_EXECUTESQL = "executeSql";
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
@@ -57,7 +58,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETATTRIBUTEFROMHTML = "getAttributeFromHtml";
     public static final String TYPE_GETFROMXML = "getFromXml";
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
-    public static final String TYPE_FROMCOOKIE = "getFromCookie";
+    public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMJSON = "getFromJson";
     public static final String TYPE_GETFROMDATALIB_BETA = "getFromDataLib_BETA";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";

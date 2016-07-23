@@ -30,7 +30,6 @@ import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.engine.entity.TestDataLibResult;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -163,11 +162,6 @@ public class TestDataLibDataService implements ITestDataLibDataService {
         }
 
         return ans;
-    }
-
-    @Override
-    public AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry) {
-        return result.getValue(subDataEntry);
     }
 
     private boolean containsDuplicates(List<TestDataLibData> subDataList) {

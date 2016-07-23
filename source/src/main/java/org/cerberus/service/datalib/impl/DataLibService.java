@@ -34,8 +34,6 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestDataLibDataService;
-import org.cerberus.engine.entity.TestDataLibResult;
-import org.cerberus.engine.entity.TestDataLibResultStatic;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.datalib.IDataLibService;
@@ -62,8 +60,8 @@ public class DataLibService implements IDataLibService {
     private ITestDataLibDataService testDataLibDataService;
 
     @Override
-    public AnswerItem<TestDataLibResult> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
-        AnswerItem<TestDataLibResult> result = null;
+    public AnswerItem<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+        AnswerItem<HashMap<String, String>> result = null;
 
         /**
          * Gets the list of columns to get from TestDataLibData.
@@ -83,43 +81,13 @@ public class DataLibService implements IDataLibService {
         /**
          * Save the result to the Lib object.
          */
-        TestDataLibResult tdlResult = new TestDataLibResultStatic();
-        tdlResult.setDataLibRawData((HashMap<String, String>) dataObject.getItem());
-        tdlResult.setTestDataLibID(lib.getTestDataLibID());
+        HashMap<String, String> resultObject = (HashMap<String, String>) dataObject.getItem();
 
-        result.setItem(tdlResult);
+        result.setItem(resultObject);
 
         return result;
     }
 
-    /**
-     * This method route to the method regarding the nature
-     * @param nature : Nature of the property
-     * @param dataObjectList : List of dataObject
-     * @param tCExecution : TestCaseExecution
-     * @param testCaseCountryProperties : TestCaseCountryProperties
-     * @return one item (dataObject) from the dataObjectList
-     */
-    private AnswerItem<HashMap<String, String>> getDataSetFromList(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
-        switch (nature) {
-            case TestCaseCountryProperties.NATURE_STATIC:
-                return getStaticFromDataSet(dataObjectList);
-            case TestCaseCountryProperties.NATURE_RANDOM:
-                return getRandomFromDataSet(dataObjectList);
-            case TestCaseCountryProperties.NATURE_RANDOMNEW:
-                return getRandomNewFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
-            case TestCaseCountryProperties.NATURE_NOTINUSE:
-                return getNotInUseFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
-        }
-        //TODO throw exception when Nature not known
-        return null;
-    }
-
-    /**
-     * This method return the first ObjectData from DataSet
-     * @param dataObjectList : List of dataObject
-     * @return The first item from dataObjectList
-     */
     @Override
     public AnswerItem<HashMap<String, String>> getStaticFromDataSet(AnswerList dataObjectList) {
         AnswerItem<HashMap<String, String>> result = new AnswerItem();
@@ -128,11 +96,6 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
-    /**
-     * This method return an ObjectData from DataSet picked randomly
-     * @param dataObjectList : List of dataObject
-     * @return An item from dataObjectList choosen randomly
-     */
     @Override
     public AnswerItem<HashMap<String, String>> getRandomFromDataSet(AnswerList dataObjectList) {
         AnswerItem<HashMap<String, String>> result = new AnswerItem();
@@ -144,13 +107,6 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
-    /**
-     * This method return an ObjectData from DataSet picked randomly after excluding ObjectData already used in previous execution
-     * @param dataObjectList : List of dataObject
-     * @param tCExecution : TestCaseExecution
-     * @param testCaseProperties : TestCaseCountryProperties
-     * @return An item from dataObjectList choosen randomly
-     */
     @Override
     public AnswerItem<HashMap<String, String>> getRandomNewFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties) {
         AnswerItem<HashMap<String, String>> result = new AnswerItem();
@@ -194,13 +150,6 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
-    /**
-     * This method return an ObjectData from dataObjectList that is not used in another execution
-     * @param dataObjectList : List of dataObject
-     * @param tCExecution : TestCaseExecution
-     * @param testCaseCountryProperty : TestCaseCountryProperties
-     * @return An item from dataObjectList excluding the one used in other execution choosen randomly
-     */
     @Override
     public AnswerItem<HashMap<String, String>> getNotInUseFromDataSet(AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
         AnswerItem<HashMap<String, String>> result = new AnswerItem();
@@ -249,9 +198,34 @@ public class DataLibService implements IDataLibService {
     }
 
     /**
+     * This method route to the method regarding the nature
+     *
+     * @param nature : Nature of the property
+     * @param dataObjectList : List of dataObject
+     * @param tCExecution : TestCaseExecution
+     * @param testCaseCountryProperties : TestCaseCountryProperties
+     * @return one item (dataObject) from the dataObjectList
+     */
+    private AnswerItem<HashMap<String, String>> getDataSetFromList(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
+        switch (nature) {
+            case TestCaseCountryProperties.NATURE_STATIC:
+                return getStaticFromDataSet(dataObjectList);
+            case TestCaseCountryProperties.NATURE_RANDOM:
+                return getRandomFromDataSet(dataObjectList);
+            case TestCaseCountryProperties.NATURE_RANDOMNEW:
+                return getRandomNewFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
+            case TestCaseCountryProperties.NATURE_NOTINUSE:
+                return getNotInUseFromDataSet(dataObjectList, tCExecution, testCaseCountryProperties);
+        }
+        //TODO throw exception when Nature not known
+        return null;
+    }
+
+    /**
      * Get the list of subData
+     *
      * @param lib
-     * @return 
+     * @return
      */
     private HashMap<String, String> getListOfSubData(TestDataLib lib) {
         AnswerList answerData = new AnswerList();
@@ -265,27 +239,32 @@ public class DataLibService implements IDataLibService {
                 for (TestDataLibData tdld : objectDataList) {
                     row.put(tdld.getColumn(), tdld.getSubData());
                 }
+                break;
             case TestDataLib.TYPE_SQL:
                 for (TestDataLibData tdld : objectDataList) {
                     row.put(tdld.getColumn(), tdld.getSubData());
                 }
+                break;
             case TestDataLib.TYPE_SOAP:
                 for (TestDataLibData tdld : objectDataList) {
                     row.put(tdld.getParsingAnswer(), tdld.getSubData());
                 }
+                break;
             case TestDataLib.TYPE_STATIC:
                 for (TestDataLibData tdld : objectDataList) {
                     row.put(tdld.getValue(), tdld.getSubData());
                 }
+                break;
         }
         return row;
     }
 
     /**
      * Get the dataObject List depending on the type
+     *
      * @param lib
      * @param columnList
-     * @return 
+     * @return
      */
     private AnswerList getDataObjectList(TestDataLib lib, HashMap<String, String> columnList) {
         AnswerList result = new AnswerList();
@@ -293,16 +272,18 @@ public class DataLibService implements IDataLibService {
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
                 result = fileService.parseCSVFile(lib.getEnvelope(), lib.getMethod(), columnList);
-                return result;
+                break;
             case TestDataLib.TYPE_SQL:
                 result = null;
+                break;
             case TestDataLib.TYPE_SOAP:
                 result = null;
+                break;
             case TestDataLib.TYPE_STATIC:
                 result = null;
+                break;
         }
 
-        
         return result;
     }
 }

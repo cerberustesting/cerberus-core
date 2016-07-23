@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
-import org.cerberus.engine.entity.TestDataLibResult;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -139,13 +138,5 @@ public interface ITestDataLibDataService {
      * @return
      */
     Answer validate(List<TestDataLibData> subDataList);
-
-    /**
-     *
-     * @param result
-     * @param subDataEntry
-     * @return
-     */
-    AnswerItem<String> fetchSubData(TestDataLibResult result, TestDataLibData subDataEntry);
 
 }
