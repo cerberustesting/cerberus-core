@@ -392,6 +392,10 @@ public class ReadTestDataLib extends HttpServlet {
             testDataLib.setServicePath(StringEscapeUtils.unescapeHtml4(testDataLib.getServicePath()));
             testDataLib.setMethod(StringEscapeUtils.unescapeHtml4(testDataLib.getMethod()));
             testDataLib.setEnvelope(StringEscapeUtils.unescapeXml(testDataLib.getEnvelope()));
+            
+            //CSV
+            testDataLib.setCsvUrl(StringEscapeUtils.unescapeHtml4(testDataLib.getCsvUrl()));
+            testDataLib.setSeparator(StringEscapeUtils.unescapeHtml4(testDataLib.getSeparator()));
         }
 
         Gson gson = new Gson();

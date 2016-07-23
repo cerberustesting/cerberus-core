@@ -29,6 +29,7 @@ public class TestDataLibData {
     private String value;
     private String column;
     private String parsingAnswer;
+    private String columnPosition;
     private String description;
 
     
@@ -86,6 +87,14 @@ public class TestDataLibData {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getColumnPosition() {
+        return columnPosition;
+    }
+
+    public void setColumnPosition(String columnPosition) {
+        this.columnPosition = columnPosition;
     }
 
 }

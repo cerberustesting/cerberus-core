@@ -64,6 +64,8 @@ function initPage() {
     // handle the click for specific action buttons
     $("#editEntryButton").click(editEntryModalSaveHandler);
     $("#addEntryButton").click(addEntryModalSaveHandler);
+    //PREPARE MASS ACTION
+    //$("#massActionBrpButton").click(massActionModalSaveHandler);
     // In Add TestCase form, if we change the test, we get the latest testcase from that test.
     $("#testAdd").change(function () {
         feedTestCase(null);
@@ -71,6 +73,8 @@ function initPage() {
 
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
+    //PREPARE MASS ACTION
+    //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
 }
 
 function displayPageLabel(doc) {
@@ -116,6 +120,8 @@ function displayPageLabel(doc) {
     $("[name='editEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_edit"));
     $("[name='addEntryField']").html(doc.getDocLabel("page_testcaselist", "btn_create"));
     $("[name='linkField']").html(doc.getDocLabel("page_testcaselist", "link"));
+    //PREPARE MASS ACTION
+    //$("[name='massActionBrpField']").html(doc.getDocOnline("page_testcaselist", "massAction"));
 
     $("[name='testInfoField']").html(doc.getDocLabel("page_testcaselist", "testInfo"));
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
@@ -153,9 +159,12 @@ function loadTable(selectTest, sortColumn) {
         if (sortColumn === undefined)
             sortColumn = 2;
 
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data), [sortColumn, 'asc']);
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
+        
+        //PREPARE MASS ACTION
+        //$("#selectAll").click(selectAll);
 
     });
 }
@@ -165,11 +174,19 @@ function renderOptionsForTestCaseList(data) {
     //check if user has permissions to perform the add and import operations
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
-            var contentToAdd = "<div class='marginBottom10'><button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
+            var contentToAdd = "<div class='marginBottom10'>";
+            contentToAdd+="<button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
-
+//PREPARE MASS ACTION
+//var contentToAddAfter = "<button id='createBrpMassButton' type='button' class='pull-right btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
+            
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
+            //PREPARE MASS ACTION
+            //$("#showHideColumnsButton").parent().after(contentToAddAfter);
+            
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
+            //PREPARE MASS ACTION
+            //$('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
 }
@@ -689,12 +706,91 @@ function setCountry(checkbox) {
         error: showUnexpectedError
     });
 }
+/** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
 
-function aoColumnsFunc(countries) {
+function selectAll() {
+    if ($(this).prop("checked"))
+        $("[data-line='select']").prop("checked", true);
+    else
+        $("[data-line='select']").removeProp("checked");
+}
+
+function massActionModalSaveHandler() {
+    clearResponseMessage($('#massActionBrpModal'));
+
+    var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
+    var formList = $('#massActionForm');
+    var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+
+    showLoaderInModal('#massActionBrpModal');
+
+    var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionBrpModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            var oTable = $("#buildrevisionparametersTable").dataTable();
+            oTable.fnDraw(true);
+            $('#massActionBrpModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionBrpModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function massActionModalCloseHandler() {
+    // reset form values
+    $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#massActionBrpModal'));
+}
+
+function massActionClick() {
+    var doc = new Doc();
+    console.debug("Mass Action");
+    clearResponseMessageMainPage();
+    // When creating a new item, Define here the default value.
+    var formList = $('#massActionForm');
+    if (formList.serialize().indexOf("id-") === -1) {
+        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+        showMessage(localMessage, null);
+    } else {
+        $('#massActionBrpModal').modal('show');
+    }
+}
+ * 
+ *
+ */
+
+function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
 
     var countryLen = countries.length;
     var aoColumns = [
+//PREPARE MASS ACTION
+//        {"data": null,
+//            "title": '<input id="selectAll" title="' + doc.getDocLabel("page_global", "tooltip_massAction") + '" type="checkbox"></input>',
+//            "bSortable": false,
+//            "sWidth": "30px",
+//            "bSearchable": false,
+//            "mRender": function (data, type, obj) {
+//                console.log(obj);
+//                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+//
+//                var selectBrp = '<input id="selectLine" \n\
+//                                class="selectBrp margin-right5" \n\
+//                                name="id-' + obj["test"] + obj["testCase"] + '" data-line="select" data-id="' + obj["test"] + obj["testCase"] + '" title="' + doc.getDocLabel("page_global", "tooltip_massActionLine") + '" type="checkbox">\n\
+//                                </input>';
+//                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+//                    return '<div class="center btn-group width50">' + selectBrp + '</div>';
+//                }
+//                return '<div class="center btn-group width50"></div>';
+//
+//            }
+//        },
         {
             "data": null,
             "bSortable": false,
@@ -723,7 +819,7 @@ function aoColumnsFunc(countries) {
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                  var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
+                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
                                     title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
@@ -731,7 +827,7 @@ function aoColumnsFunc(countries) {
                                     </a>';
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
-                    buttons += duplicateEntry;
+                    //buttons += duplicateEntry;
                 } else {
                     buttons += viewEntry;
                 }
@@ -746,49 +842,63 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "test",
-            "sName": "tc.test",
+            "sName": "tec.test",
             "title": doc.getDocOnline("test", "Test"),
             "sWidth": "120px",
             "sDefaultContent": ""
         },
         {
             "data": "testCase",
-            "sName": "tc.testCase",
+            "sName": "tec.testCase",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
+            "data": "labels",
+            "sName": "lab.label",
+            "title": doc.getDocOnline("label", "label"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function ( data, type, full, meta ) {
+                var labelValue = '';
+                $.each(data, function(i, e){
+                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+                });
+                return labelValue;
+    }
+        },
+        {
             "data": "application",
-            "sName": "tc.application",
+            "sName": "tec.application",
             "title": doc.getDocOnline("application", "Application"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "project",
-            "sName": "tc.project",
+            "sName": "tec.project",
             "title": doc.getDocOnline("project", "idproject"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "creator",
-            "sName": "tc.creator",
+            "sName": "tec.creator",
             "title": doc.getDocOnline("testcase", "Creator"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "lastModifier",
-            "sName": "tc.lastmodifier",
+            "sName": "tec.lastmodifier",
             "title": doc.getDocOnline("testcase", "LastModifier"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "active",
-            "sName": "tc.tcactive",
+            "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
             "sWidth": "70px",
@@ -811,49 +921,49 @@ function aoColumnsFunc(countries) {
         },
         {
             "data": "status",
-            "sName": "tc.status",
+            "sName": "tec.status",
             "title": doc.getDocOnline("testcase", "Status"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "priority",
-            "sName": "tc.priority",
+            "sName": "tec.priority",
             "title": doc.getDocOnline("invariant", "PRIORITY"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "origin",
-            "sName": "tc.origine",
+            "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "refOrigin",
-            "sName": "tc.refOrigine",
+            "sName": "tec.refOrigine",
             "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
             "sDefaultContent": ""
         },
         {
             "data": "group",
-            "sName": "tc.group",
+            "sName": "tec.group",
             "title": doc.getDocOnline("invariant", "GROUP"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "shortDescription",
-            "sName": "tc.description",
+            "sName": "tec.description",
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
             "data": "tcDateCrea",
-            "sName": "tc.tcDateCrea",
+            "sName": "tec.tcDateCrea",
             "title": doc.getDocOnline("testcase", "TCDateCrea"),
             "sWidth": "150px",
             "sDefaultContent": ""

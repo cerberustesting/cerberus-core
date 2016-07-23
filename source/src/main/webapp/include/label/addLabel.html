@@ -1,0 +1,63 @@
+<!--Add an label -->
+<div data-backdrop="static" class="modal fade center" id="addLabelModal" tabindex="-1" role="dialog" aria-labelledby="addLabelModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addLabelModalLabel" name="createLabelField">Create Label</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addLabelModalForm" name="addLabelModalForm"  title="Add Aplication" role="form">
+                    <div class="container-fluid center">
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="System" name="systemField">System</label>
+                                <select class="form-control"  id="system" name="system">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="label" name="labelField">Label</label>
+                                <input type="text" class="form-control" name="label" id="label" aria-describedby="basic-addon1" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="color" name="colorField">Color</label>
+                                <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="parentLabel" name="parentLabelField">Parent Label</label>
+                                <input type="text" class="form-control" name="parentLabel" id="parentLabel" aria-describedby="basic-addon1" maxlength="100">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="description" name="descriptionField">Description</label>
+                                <textarea type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="250"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addLabelButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

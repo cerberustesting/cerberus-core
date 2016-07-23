@@ -992,7 +992,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
-                    console.log(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
+                    //console.debug(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }
@@ -1042,24 +1042,31 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         oTable.fnSetFilteringDelay(500);
     }
 
+    var doc = new Doc();
+    var showHideButtonLabel = doc.getDocLabel("page_global", "btn_showHideColumns");
+    var showHideButtonTooltip = doc.getDocLabel("page_global", "tooltip_showHideColumns");
+    var saveTableConfigurationButtonLabel = doc.getDocLabel("page_global", "btn_savetableconfig");
+    var saveTableConfigurationButtonTooltip = doc.getDocDescription("page_global", "tooltip_savetableconfig");
+    var restoreFilterButtonLabel = doc.getDocLabel("page_global", "btn_restoreuserpreferences");
+    var restoreFilterButtonTooltip = doc.getDocDescription("page_global", "tooltip_restoreuserpreferences");
     if (tableConfigurations.showColvis) {
         //Display button show/hide columns and Save table configuration
         $("#saveTableConfigurationButton").remove();
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").click(function () {
-            $("#" + tableConfigurations.divIdrobots + " thead").empty()
-        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
+                .addClass("btn btn-default").attr("data-toggle","tooltip").attr("title",showHideButtonTooltip).click(function () {
+            $("#" + tableConfigurations.divIdrobots + " thead").empty();
+        }).html("<span class='glyphicon glyphicon-cog'></span> "+showHideButtonLabel);
         $("#showHideColumnsButton").parent().before(
-                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
-                .click(function () {
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> "+saveTableConfigurationButtonLabel)
+                .attr("data-toggle","tooltip").attr("title",saveTableConfigurationButtonTooltip).click(function () {
                     updateUserPreferences();
                 })
                 );
         $("#saveTableConfigurationButton").before(
-                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
-                .click(function () {
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> "+restoreFilterButtonLabel)
+                .attr("data-toggle","tooltip").attr("title",restoreFilterButtonTooltip).click(function () {
                     location.reload();
                 })
                 );

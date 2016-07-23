@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,7 +94,8 @@ public class UpdateTestDataLib extends HttpServlet {
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
         String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
         String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
-
+        String csvUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("csvUrl"), "", charset);
+        String separator = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("separator"), "", charset);
 
         Integer testdatalibid = 0;
         boolean testdatalibid_error = true;
@@ -163,6 +165,8 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setServicePath(servicePath);
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
+                    lib.setCsvUrl(csvUrl);
+                    lib.setSeparator(separator);
                     lib.setLastModifier(request.getRemoteUser());
 
                     ans = libService.update(lib);

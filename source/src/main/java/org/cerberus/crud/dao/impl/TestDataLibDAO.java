@@ -468,6 +468,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             searchSQL.append(" or tdl.`servicepath` like ?");
             searchSQL.append(" or tdl.`method` like ?");
             searchSQL.append(" or tdl.`envelope` like ?");
+            searchSQL.append(" or tdl.`csvUrl` like ?");
+            searchSQL.append(" or tdl.`separator` like ?");
             searchSQL.append(" or tdl.`description` like ?");
             searchSQL.append(" or tdl.`system` like ?");
             searchSQL.append(" or tdl.`environment` like ?");
@@ -525,6 +527,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             try {
                 int i = 1;
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -691,8 +695,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
-                + "`script`, `databaseUrl`, `servicePath`, `method`, `envelope`, `description`, `creator`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                + "`script`, `databaseUrl`, `servicePath`, `method`, `envelope`, `csvUrl`,`separator`, `description`, `creator`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -715,8 +719,10 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(10, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
                 preStat.setString(11, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
                 preStat.setString(12, testDataLib.getEnvelope()); //is the one that allows null values
-                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
-                preStat.setString(14, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
+                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCsvUrl()));
+                preStat.setString(14, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSeparator()));
+                preStat.setString(15, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
+                preStat.setString(16, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
 
                 preStat.executeUpdate();
 
@@ -827,7 +833,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         MessageEvent msg;
         String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
-                + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `description`= ? , `LastModifier`= ?, `LastModified` = NOW() WHERE "
+                + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() WHERE "
                 + "`TestDataLibID`= ?";
 
         // Debug message on SQL.
@@ -851,9 +857,11 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 preStat.setString(9, testDataLib.getServicePath());
                 preStat.setString(10, testDataLib.getMethod());
                 preStat.setString(11, testDataLib.getEnvelope());
-                preStat.setString(12, testDataLib.getDescription());
-                preStat.setString(13, testDataLib.getLastModifier());
-                preStat.setInt(14, testDataLib.getTestDataLibID());
+                preStat.setString(12, testDataLib.getCsvUrl());
+                preStat.setString(13, testDataLib.getSeparator());
+                preStat.setString(14, testDataLib.getDescription());
+                preStat.setString(15, testDataLib.getLastModifier());
+                preStat.setInt(16, testDataLib.getTestDataLibID());
 
                 int rowsUpdated = preStat.executeUpdate();
 
@@ -911,6 +919,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String servicePath = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.servicePath"));
         String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.method"));
         String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.envelope"));
+        String csvUrl = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.csvUrl"));
+        String separator = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.separator"));
         String description = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.description"));
         String creator = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.Creator"));
         Timestamp created = resultSet.getTimestamp("tdl.Created");
@@ -919,16 +929,18 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String subDataValue = null;
         String subDataColumn = null;
         String subDataParsingAnswer = null;
+        String subDataColumnPosition = null;
         try {
             subDataValue = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.Value"));
             subDataColumn = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.Column"));
             subDataParsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.parsingAnswer"));
+            subDataColumnPosition = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdd.columnPosition"));
         } catch (Exception ex) {
             MyLogger.log(TestDataLibDAO.class.getName(), Level.WARN, ex.toString());
         }
 
         return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, databaseUrl, servicePath,
-                method, envelope, description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer);
+                method, envelope, csvUrl, separator,  description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer, subDataColumnPosition);
     }
 
     @Override
@@ -959,6 +971,8 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             searchSQL.append(" or tdl.`servicepath` like ?");
             searchSQL.append(" or tdl.`method` like ?");
             searchSQL.append(" or tdl.`envelope` like ?");
+            searchSQL.append(" or tdl.`csvUrl` like ?");
+            searchSQL.append(" or tdl.`separator` like ?");
             searchSQL.append(" or tdl.`description` like ?");
             searchSQL.append(" or tdl.`system` like ?");
             searchSQL.append(" or tdl.`environment` like ?");
@@ -985,6 +999,16 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

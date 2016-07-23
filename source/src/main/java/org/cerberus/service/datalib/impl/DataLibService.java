@@ -266,12 +266,12 @@ public class DataLibService implements IDataLibService {
      * @param columnList
      * @return
      */
-    private AnswerList getDataObjectList(TestDataLib lib, HashMap<String, String> columnList) {
+    private AnswerList<List<HashMap<String, String>>> getDataObjectList(TestDataLib lib, HashMap<String, String> columnList) {
         AnswerList result = new AnswerList();
 
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
-                result = fileService.parseCSVFile(lib.getEnvelope(), lib.getMethod(), columnList);
+                result = fileService.parseCSVFile(lib.getCsvUrl(), lib.getSeparator(), columnList);
                 break;
             case TestDataLib.TYPE_SQL:
                 result = null;

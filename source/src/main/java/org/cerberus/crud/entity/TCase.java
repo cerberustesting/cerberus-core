@@ -59,6 +59,7 @@ public class TCase {
     private List<TestCaseCountryProperties> testCaseCountryProperties;
     private List<TestCaseStep> testCaseStep;
     private List<TestCaseStepBatch> testCaseStepBatch;
+    private List<TestCaseLabel> testCaseLabel;
 
     public String getTcDateCrea() {
         return tcDateCrea;
@@ -338,5 +339,13 @@ public class TCase {
 
     public void setToSprint(String toSprint) {
         this.toSprint = toSprint;
+    }
+
+    public List<TestCaseLabel> getTestCaseLabel() {
+        return testCaseLabel;
+    }
+
+    public void setTestCaseLabel(List<TestCaseLabel> testCaseLabel) {
+        this.testCaseLabel = testCaseLabel;
     }
 }

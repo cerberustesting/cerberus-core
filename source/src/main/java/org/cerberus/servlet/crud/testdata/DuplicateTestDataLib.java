@@ -102,6 +102,8 @@ public class DuplicateTestDataLib extends HttpServlet {
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
         String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
         String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
+        String csvUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("csvUrl"), "", charset);
+        String separator = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("separator"), "", charset);
 
         /**
          * Checking all constrains before calling the services.
@@ -125,7 +127,7 @@ public class DuplicateTestDataLib extends HttpServlet {
             IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
             TestDataLib lib = factoryLibService.create(testdatalibid, name, system, environment, country, group, type, database, script,
-                    databaseUrl, servicePath, method, envelope, description, request.getRemoteUser(), null, "", null, null, null, null);
+                    databaseUrl, servicePath, method, envelope, csvUrl, separator, description, request.getRemoteUser(), null, "", null, null, null, null, null);
 
             AnswerItem existsAnswer = libService.readByKey(lib.getName(), lib.getSystem(), lib.getEnvironment(), lib.getCountry());
 

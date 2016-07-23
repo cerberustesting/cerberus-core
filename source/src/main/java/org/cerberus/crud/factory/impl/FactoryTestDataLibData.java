@@ -32,7 +32,7 @@ public class FactoryTestDataLibData implements IFactoryTestDataLibData {
 
     @Override
     public TestDataLibData create(Integer testDataLibDataID, Integer testDataLibID, String subData, String value, String column,
-            String parsingAnswer, String description) {
+            String parsingAnswer, String columnPosition, String description) {
         TestDataLibData newData = new TestDataLibData();
         newData.setTestDataLibDataID(testDataLibDataID);
         newData.setTestDataLibID(testDataLibID);
@@ -40,6 +40,7 @@ public class FactoryTestDataLibData implements IFactoryTestDataLibData {
         newData.setValue(value);
         newData.setColumn(column);
         newData.setParsingAnswer(parsingAnswer);
+        newData.setColumnPosition(columnPosition);
         newData.setDescription(description);
         return newData;
     }

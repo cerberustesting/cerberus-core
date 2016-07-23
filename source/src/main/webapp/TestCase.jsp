@@ -1645,6 +1645,12 @@
                                     <br>
                                     <div id="wob"><h4>Properties</h4>
                                     </div>
+                                    <% double widthValue = 55 - (1.5 * countryListTestcase.size()); 
+                                    if (canEdit) {%>
+                                        <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
+                                        <input type="button" class="buttonSaveChanges" value="Add Property" id="AddProperty"
+                                               onclick="addPropertyNew('<%=widthValue%>')">
+                                     <%}%>   
                                     <div id="propertiesPartDiv">
                                         <a name="propertyAnchor"></a>
                                         <%
@@ -1683,7 +1689,7 @@
                                             <div id="propertyRow0"></div><%
 
                                                 int incrementProperty = 0;
-                                                double widthValue = 55 - (1.5 * countryListTestcase.size());
+                                                //double widthValue = 55 - (1.5 * countryListTestcase.size());
 
                                                 for (TestCaseCountryProperties tccp : tccpList) {
                                                     incrementProperty++;

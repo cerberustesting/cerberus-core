@@ -373,6 +373,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         gSearch.append(" or `parsinganswer` like '%");
         gSearch.append(searchTerm);
         gSearch.append("%'");
+        gSearch.append(" or `columnPosition` like '%");
+        gSearch.append(searchTerm);
+        gSearch.append("%'");
         gSearch.append(" or `description` like '%");
         gSearch.append("%') ");
 
@@ -550,8 +553,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         Answer ans = new Answer();
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?)");
+        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `columnPosition`,`description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -567,7 +570,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                 preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getValue()));
                 preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getColumn()));
                 preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getParsingAnswer()));
-                preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getDescription()));
+                preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getColumnPosition()));
+                preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(testDataLibData.getDescription()));
 
                 preStat.executeUpdate();
                 msg = MessageEventUtil.createInsertSuccessMessageDAO(OBJECT_NAME);
@@ -603,8 +607,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     public Answer create(List<TestDataLibData> subdataSet) {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `description`) ");
-        query.append("VALUES (?,?,?,?,?,?)");
+        query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`,`columnPosition`, `description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?)");
         MessageEvent msg;
 
         Connection connection = this.databaseSpring.connect();
@@ -621,7 +625,8 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                     preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
                     preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
                     preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
-                    preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
+                    preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumnPosition()));
+                    preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
                     preStat.addBatch();
                 }
 
@@ -677,7 +682,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         MessageEvent msg;
 
         StringBuilder query = new StringBuilder();
-        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , `description`= ? where "
+        query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , `columnPosition`= ?, `description`= ? where "
                 + "`testdatalibdataid`= ? ");
 
                     // Debug message on SQL.
@@ -691,8 +696,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                 preStat.setString(1, testDataLibData.getValue());
                 preStat.setString(2, testDataLibData.getColumn());
                 preStat.setString(3, testDataLibData.getParsingAnswer());
-                preStat.setString(4, testDataLibData.getDescription());
-                preStat.setInt(5, testDataLibData.getTestDataLibDataID());
+                preStat.setString(4, testDataLibData.getColumnPosition());
+                preStat.setString(5, testDataLibData.getDescription());
+                preStat.setInt(6, testDataLibData.getTestDataLibDataID());
 
                 int totalRows = preStat.executeUpdate();
 
@@ -732,7 +738,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     public Answer update(ArrayList<TestDataLibData> entriesToUpdate) {
         Answer answer = new Answer();
         StringBuilder query = new StringBuilder();
-        query.append("update testdatalibdata set `subdata` = ?, `value`= ?, `column`= ? , `parsinganswer`= ? , "
+        query.append("update testdatalibdata set `subdata` = ?, `value`= ?, `column`= ? , `parsinganswer`= ? , `columnPosition` = ? ,"
                 + "`description`= ? where `testdatalibdataid`= ? ");
         //TODO:FN for now it is not being verified if the testdatalib is used by tests
         MessageEvent msg = null;
@@ -750,8 +756,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                     preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
                     preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
                     preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(subdata.getParsingAnswer()));
-                    preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
-                    preStat.setInt(6, subdata.getTestDataLibDataID());
+                    preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumnPosition()));
+                    preStat.setString(6, ParameterParserUtil.returnEmptyStringIfNull(subdata.getDescription()));
+                    preStat.setInt(7, subdata.getTestDataLibDataID());
 
                     preStat.addBatch();
                 }
@@ -957,8 +964,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         String value = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Value"));
         String column = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("Column"));
         String parsingAnswer = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("ParsingAnswer"));
+        String columnPosition = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("columnPosition"));
         String description = resultSet.getString("Description");
 
-        return factoryTestDataLibData.create(testDataLibDataID, testDataLibID, subData, value, column, parsingAnswer, description);
+        return factoryTestDataLibData.create(testDataLibDataID, testDataLibID, subData, value, column, parsingAnswer, columnPosition, description);
     }
 }

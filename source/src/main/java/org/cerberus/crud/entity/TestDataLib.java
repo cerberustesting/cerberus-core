@@ -38,6 +38,8 @@ public class TestDataLib {
     private String servicePath;
     private String method;
     private String envelope;
+    private String csvUrl;
+    private String separator;
     private String description;
     private String creator;
     private Timestamp created;
@@ -49,6 +51,7 @@ public class TestDataLib {
     private String subDataValue;
     private String subDataColumn;
     private String subDataParsingAnswer;
+    private String subDataColumnPosition;
 
     public static final String TYPE_SQL = "SQL";
     public static final String TYPE_STATIC = "STATIC";
@@ -223,4 +226,28 @@ public class TestDataLib {
         this.subDataParsingAnswer = subDataParsingAnswer;
     }
 
+    public String getSubDataColumnPosition() {
+        return subDataColumnPosition;
+    }
+
+    public void setSubDataColumnPosition(String subDataColumnPosition) {
+        this.subDataColumnPosition = subDataColumnPosition;
+    }
+
+    public String getCsvUrl() {
+        return csvUrl;
+    }
+
+    public void setCsvUrl(String csvUrl) {
+        this.csvUrl = csvUrl;
+    }
+
+    public String getSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
+    }
+    
 }

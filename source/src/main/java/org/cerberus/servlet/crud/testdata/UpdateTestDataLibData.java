@@ -253,8 +253,9 @@ public class UpdateTestDataLibData extends HttpServlet {
                 String value = ParameterParserUtil.parseStringParam(obj.get("value").toString(), "");
                 String column = ParameterParserUtil.parseStringParam(obj.get("column").toString(), "");
                 String parsinganswer = ParameterParserUtil.parseStringParam(obj.get("parsinganswer").toString(), "");
+                String columnPosition = ParameterParserUtil.parseStringParam(obj.get("columnPosition").toString(), "");
 
-                TestDataLibData item = factoryLibService.create(testdatalibdataid, testdatalibid, subdata, value, column, parsinganswer, description);
+                TestDataLibData item = factoryLibService.create(testdatalibdataid, testdatalibid, subdata, value, column, parsinganswer,columnPosition, description);
                 entries.add(item);
             } catch (NumberFormatException ex) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);

@@ -39,6 +39,7 @@ function initPage() {
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="column" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
+                <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" value="" type="text" class="dataClass form-control input-xs" maxlength="45"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="description" value="" type="text" class="descriptionClass form-control input-xs" maxlength="1000"  /></div></td>\n\
                 \n\
             </tr>');
@@ -58,6 +59,7 @@ function initPage() {
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" type="text" class="dataClass form-control input-xs"  /></div></td>\n\
+                <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" type="text" class="dataClass form-control input-xs"  /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="description" value="" type="text" class="descriptionClass form-control input-xs"  /></div></td>\n\
                 \n\
             </tr>');
@@ -94,12 +96,19 @@ function initPage() {
         if ($(this).val() === "SQL") {
             $("#panelSQL").collapse("show");
             $("#panelSOAP").collapse("hide");
+            $("#panelCSV").collapse("hide");
         } else if ($(this).val() === "SOAP") {
             $("#panelSQL").collapse("hide");
             $("#panelSOAP").collapse("show");
+            $("#panelCSV").collapse("hide");
+        } else if ($(this).val() === "CSV") {
+            $("#panelSQL").collapse("hide");
+            $("#panelSOAP").collapse("hide");
+            $("#panelCSV").collapse("show");
         } else {
             $("#panelSQL").collapse("hide");
             $("#panelSOAP").collapse("hide");
+            $("#panelCSV").collapse("hide");
         }
     });
 
@@ -110,12 +119,19 @@ function initPage() {
         if ($(this).val() === "SQL") {
             $("#panelSQLEdit").collapse("show");
             $("#panelSOAPEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
         } else if ($(this).val() === "SOAP") {
             $("#panelSQLEdit").collapse("hide");
             $("#panelSOAPEdit").collapse("show");
+            $("#panelCSVEdit").collapse("hide");
+        } else if ($(this).val() === "CSV") {
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSOAPEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("show");
         } else {
             $("#panelSQLEdit").collapse("hide");
             $("#panelSOAPEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
         }
     });
     /*
@@ -125,12 +141,19 @@ function initPage() {
         if ($(this).val() === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
             $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("hide");
         } else if ($(this).val() === "SOAP") {
             $("#panelSQLDuplicate").collapse("hide");
             $("#panelSOAPDuplicate").collapse("show");
+            $("#panelCSVDuplicate").collapse("hide");
+        } else if ($(this).val() === "CSV") {
+            $("#panelSQLDuplicate").collapse("hide");
+            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("show");
         } else {
             $("#panelSQLDuplicate").collapse("hide");
             $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("hide");
         }
     });
     /**
@@ -212,6 +235,7 @@ function displayUpdateTestDataLibLabels(doc) {
     //soap and sql specific configurations
     $("#sqlConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
     $("#soapConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
+    $("#csvConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
 
     $("#lbl_description_edit").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database_edit").html(doc.getDocOnline("testdatalib", "database"));
@@ -220,6 +244,7 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_edit").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_csvUrl_edit").html(doc.getDocOnline("testdatalib", "csvUrl"));
     //buttons    
     $("#cancelTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#saveTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
@@ -258,6 +283,7 @@ function displayDuplicateTestDataLibLabels(doc) {
     $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_csvUrl_duplicate").html(doc.getDocOnline("testdatalib", "csvUrl"));
 
     //auxiliar for group edition
     $("#lbl_choose_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
@@ -280,6 +306,7 @@ function displayManageTestDataLibDataLabels(doc) {
     $("#valueHeaderManage").html(doc.getDocOnline("testdatalibdata", "value"));
     $("#columnHeaderManage").html(doc.getDocOnline("testdatalibdata", "column"));
     $("#parsingAnswerHeaderManage").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
+    $("#columnPositionHeaderManage").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
     $("#descriptionHeaderManage").html(doc.getDocOnline("testdatalibdata", "description"));
 
     //subdataLabelManage will be filled depending on the type of the library entry
@@ -303,6 +330,7 @@ function displayListTestDataLibDataLabels(doc) {
     $("#viewTestDataLibValue").html(doc.getDocOnline("testdatalibdata", "value"));
     $("#viewTestDataLibColumn").html(doc.getDocOnline("testdatalibdata", "column"));
     $("#viewTestDataLibParsingAnswer").html(doc.getDocOnline("testdatalibdata", "parsinganswer"));
+    $("#viewTestDataLibColumnPosition").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
     $("#viewTestDataLibDescription").html(doc.getDocOnline("testdatalibdata", "description"));
 
     $("#closeSubDataManage").text(doc.getDocLabel("page_global", "buttonClose"));
@@ -337,6 +365,7 @@ function displayCreateTestDataLibLabels(doc) {
     //soap and sql specific configurations
     $("#sqlConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
     $("#soapConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
+    $("#csvConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
 
     //group information 
     $("#lbl_choose_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
@@ -355,6 +384,8 @@ function displayCreateTestDataLibLabels(doc) {
     $("#lbl_service_path").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_csvUrl").html(doc.getDocOnline("testdatalib", "csvUrl"));
+    $("#lbl_separator").html(doc.getDocOnline("testdatalib", "separator"));
 
     //documentation for sub-data entries
     //total number of entries
@@ -363,6 +394,7 @@ function displayCreateTestDataLibLabels(doc) {
     $("#valueHeader").html(doc.getDocOnline("testdatalibdata", "value"));
     $("#columnHeader").html(doc.getDocOnline("testdatalibdata", "column"));
     $("#parsingAnswerHeader").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
+    $("#columnPositionHeader").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
     $("#descriptionHeader").html(doc.getDocOnline("testdatalibdata", "description"));
     $("#unmutableRowNotEditable").prop("title", doc.getDocOnline("page_testdatalib_m_createlib", "tooltip_defaultsubdata")); //tooltip for row that is not editable or removable
 
@@ -612,6 +644,7 @@ function createLibButtonClickHandler() {
         //ensure that the panels are collapsed
         $('#addTestDataLibModal #panelSOAP').collapse("hide");
         $('#addTestDataLibModal #panelSQL').collapse("hide");
+        $('#addTestDataLibModal #panelCSV').collapse("hide");
 
 
         loadSelectElement(systemsList, $('#addTestDataLibModal #system'), true, '');
@@ -706,7 +739,8 @@ function saveChangesSubDataClickHandler() {
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
         item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
         removeObjects.push(item);
     });
     //gets the elements that will be updated
@@ -718,7 +752,8 @@ function saveChangesSubDataClickHandler() {
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
         item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
         updateObjects.push(item);
     });
 
@@ -732,7 +767,8 @@ function saveChangesSubDataClickHandler() {
         item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
         item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
         item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
+        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
         var foundRepeated = false;
 
         //check if is defined in the insert objects
@@ -978,6 +1014,8 @@ function editTestDataLib(testDataLibID) {
         $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#editTestDataLibModal #method').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
+        $('#editTestDataLibModal #separator').prop("value", obj.separator);
 
         $('#editTestDataLibModal #script').prop("value", obj.script);
 
@@ -1015,13 +1053,20 @@ function editTestDataLib(testDataLibID) {
             if (obj.type === "SQL") {
                 $("#panelSQLEdit").collapse("show");
                 $("#panelSOAPEdit").collapse("hide");
+                $("#panelCSVEdit").collapse("hide");
             } else if (obj.type === "SOAP") {
                 $("#panelSOAPEdit").collapse("show");
                 $("#panelSQLEdit").collapse("hide");
+                $("#panelCSVEdit").collapse("hide");
+            } else if (obj.type === "CSV") {
+                $("#panelCSVEdit").collapse("show");
+                $("#panelSQLEdit").collapse("hide");
+                $("#panelSOAPEdit").collapse("hide");
             } else {
                 //hide all if the type is static
                 $("#panelSQLEdit").collapse("hide");
                 $("#panelSOAPEdit").collapse("hide");
+                $("#panelCSVEdit").collapse("hide");
             }
 
             //SYSTEM
@@ -1132,7 +1177,7 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
 }
 
-function appendNewSubDataRow(rowtestDataLibDataId, testDataLibId, subData, value, column, parsingAnswer, description) {
+function appendNewSubDataRow(rowtestDataLibDataId, testDataLibId, subData, value, column, parsingAnswer, columnPosition, description) {
     var doc = new Doc();
     var isReadOnly = '';
     var onClickEvent = 'onclick="editDeleteRowTestDataLibData(this)"';
@@ -1154,6 +1199,7 @@ class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="
         <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" value="' + value + '" /></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs" value="' + column + '" /></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="parsingAnswer" type="text" class="dataClass form-control input-xs" value="' + parsingAnswer + '" /></div></td>\n\
+        <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" type="text" class="dataClass form-control input-xs" value="' + columnPosition + '" /></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="description" type="text" class="descriptionClass form-control input-xs" value="' + description + '" /></div></td></tr>');
 
 }
@@ -1196,7 +1242,7 @@ function editSubData(testDataLibID) {
 
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewSubDataRow(obj.testDataLibDataID, obj.testDataLibID, obj.subData, obj.value, obj.column, obj.parsingAnswer, obj.description);
+            appendNewSubDataRow(obj.testDataLibDataID, obj.testDataLibID, obj.subData, obj.value, obj.column, obj.parsingAnswer,obj.columnPosition, obj.description);
         });
         //show modal
         $('#manageTestDataLibDataModal').modal('show');
@@ -1226,6 +1272,8 @@ function duplicateEntry(testDataLibID) {
         $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#duplicateTestDataLibModal #method').prop("value", obj.method);
         $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#duplicateTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
+        $('#duplicateTestDataLibModal #separator').prop("value", obj.separator);
 
         $('#duplicateTestDataLibModal #script').prop("value", obj.script);
 
@@ -1263,13 +1311,20 @@ function duplicateEntry(testDataLibID) {
             if (obj.type === "SQL") {
                 $("#panelSQLDuplicate").collapse("show");
                 $("#panelSOAPDuplicate").collapse("hide");
+                $("#panelCSVDuplicate").collapse("hide");
             } else if (obj.type === "SOAP") {
                 $("#panelSOAPDuplicate").collapse("show");
                 $("#panelSQLDuplicate").collapse("hide");
+                $("#panelCSVDuplicate").collapse("hide");
+            } else if (obj.type === "CSV") {
+                $("#panelSOAPDuplicate").collapse("hide");
+                $("#panelSQLDuplicate").collapse("hide");
+                $("#panelCSVDuplicate").collapse("show");
             } else {
                 //hide all if the type is static
                 $("#panelSQLDuplicate").collapse("hide");
                 $("#panelSOAPDuplicate").collapse("hide");
+                $("#panelCSVDuplicate").collapse("hide");
             }
 
             //SYSTEM
@@ -1371,6 +1426,9 @@ function aoColumnsViewTestDataLibData() {
                 aoColumns.push({className: "width150", "sName": "parsingAnswer", "data": "parsingAnswer", "title": doc.getDocOnline("testdatalibdata", "parsingAnswer")});
                 break;
             case 5:
+                aoColumns.push({className: "width150", "sName": "columnPosition", "data": "columnPosition", "title": doc.getDocOnline("testdatalibdata", "columnPosition")});
+                break;
+            case 6:
                 aoColumns.push({className: "width150", "sName": "Description", "data": "description", "title": doc.getDocOnline("testdatalibdata", "description")});
                 break;
 
@@ -1519,6 +1577,18 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "envelope")
         },
         {
+            "sName": "tdl.csvUrl",
+            "data": "csvUrl",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "csvUrl")
+        },
+        {
+            "sName": "tdl.separator",
+            "data": "separator",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "separator")
+        },
+        {
             "sName": "tdl.Created",
             "data": "created",
             "sWidth": "150px",
@@ -1555,6 +1625,13 @@ function aoColumnsFuncTestDataLib(tableId) {
             "bSortable": false,
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalibdata", "parsingAnswer")
+        },
+        {
+            "sName": "tdd.ColumnPosition",
+            "data": "subDataColumnPosition",
+            "bSortable": false,
+            "sWidth": "70px",
+            "title": doc.getDocOnline("testdatalibdata", "columnPosition")
         }
     ];
 
