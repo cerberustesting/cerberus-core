@@ -256,7 +256,7 @@ function drawProperty(property, testcaseinfo) {
 
     var row1 = $("<tr name='masterProp'></tr>");
     var row2 = $("<tr></tr>");
-    var deleteBtnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
+    var btnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
     var propertyName = $("<td></td>").append(propertyInput);
     var description = $("<td></td>").append(descriptionInput);
     var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
@@ -324,7 +324,7 @@ function drawProperty(property, testcaseinfo) {
     row1.append(description);
     table.append(row1);
 
-    row2.append(deleteBtnRow);
+    row2.append(btnRow);
     row2.append(value);
     table.append(row2);
 }
@@ -341,12 +341,13 @@ function drawInheritedProperty(propList) {
         var row1 = $("<tr></tr>");
         var row2 = $("<tr></tr>");
         var row3 = $("<tr></tr>");
+        var btnRow = $("<td></td>");
         var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
         var description = $("<td></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.description).prop("readonly", true));
         var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
         var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
-        var value = $("<td colspan=8></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
+        var value = $("<td colspan=7></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
         var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length).prop("readonly", true));
         var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit).prop("readonly", true));
         var nature = $("<td></td>").append(selectNature.clone().val(property.nature).prop("disabled", "disabled"));
@@ -362,6 +363,7 @@ function drawInheritedProperty(propList) {
         row1.append(description);
         table.append(row1);
 
+        row2.append(btnRow);
         row2.append(value);
         table.append(row2);
 
@@ -1781,7 +1783,7 @@ function loadLabelFilter(test, testcase) {
             var index;
             for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var labelTag = '<div style="float:left"><input id="labelId' + data.contentTable[index].id + '" data-labelid="'+data.contentTable[index].id+'" type="checkbox">\n\
+                var labelTag = '<div style="float:left"><input id="labelId' + data.contentTable[index].id + '" data-labelid="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
                 var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
