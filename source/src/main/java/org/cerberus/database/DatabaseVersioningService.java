@@ -6236,7 +6236,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
         SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
         SQLS.append(" PRIMARY KEY (`id`), ");
-        SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC));");
+        SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC))");
         SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
         
@@ -6301,8 +6301,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global', 'tooltip_clearfilter', 'fr', 'Effacer les filtres appliqués', '')");
         SQLS.append(",('page_label', 'display', 'en', 'Display', 'Display the generated label from the label and the color defined')");
         SQLS.append(",('page_label', 'display', 'fr', 'Affichage', 'Affiche le label généré à partir du label et de la couleur définis')");
-        SQLS.append(",('label', 'system', 'en', 'System')");
-        SQLS.append(",('label', 'system', 'fr', 'Système')");
+        SQLS.append(",('label', 'system', 'en', 'System', '')");
+        SQLS.append(",('label', 'system', 'fr', 'Système', '')");
         SQLInstruction.add(SQLS.toString());
         
         //856 Add a sample tag

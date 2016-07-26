@@ -44,7 +44,7 @@ public class FileService implements IFileService {
     private static final Logger LOG = Logger.getLogger(FileService.class);
 
     @Override
-    public AnswerList parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
+    public AnswerList<List<HashMap<String, String>>> parseCSVFile(String urlToCSVFile, String separator, HashMap<String, String> columnsToGet) {
         String str = "";
         AnswerList result = new AnswerList();
         List<HashMap<String, String>> csv = new ArrayList();

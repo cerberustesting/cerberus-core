@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestDataLibDataDAO;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
@@ -54,6 +55,9 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestDataLibData factoryTestDataLibData;
+
+    private static final Logger LOG = Logger.getLogger(TestDataLibDataDAO.class);
+
     private final String OBJECT_NAME = "Test Data Library - Sub data";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 10000000;
@@ -65,6 +69,13 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
 
         TestDataLibData result = null;
         final String query = "SELECT * FROM testdatalibdata where `testdatalibID`=? and `subData` like ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.testDataLibID : " + testDataLibID);
+            LOG.debug("SQL.param.subData : " + subData);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -126,6 +137,12 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         TestDataLibData result = null;
         final String query = "SELECT * FROM testdatalibdata where `testdatalibdataid`=? ";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.testDataLibDataID : " + testDataLibDataID);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -184,7 +201,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         MessageEvent msg;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testdatalibdata where `testDataLibID` = ? ");
-        
+
         if ("Y".equalsIgnoreCase(columnEmpty)) {
             query.append(" and `Column`='' ");
         } else if ("N".equalsIgnoreCase(columnEmpty)) {
@@ -194,6 +211,12 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
             query.append(" and `ParsingAnswer`='' ");
         } else if ("N".equalsIgnoreCase(parsingAnswerEmpty)) {
             query.append(" and `ParsingAnswer`!='' ");
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.application : " + testDataLibID);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -263,6 +286,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         List<TestDataLibData> list = new ArrayList<TestDataLibData>();
         MessageEvent msg;
         final String query = "SELECT * FROM testdatalibdata";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -375,6 +403,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
             query.append(" limit ").append(start).append(" , ").append(amount).append(" ");
         }
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -453,6 +486,12 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         query.append("on tdld.testDataLibID = tdl.testDataLibID ");
         query.append("and tdl.`name` LIKE ? ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.testDataLibName : " + testDataLibName);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -517,6 +556,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         query.append("INSERT INTO testdatalibdata (`TestDataLibID`, `subData`, `value`, `column`, `parsinganswer`, `columnPosition`,`description`) ");
         query.append("VALUES (?,?,?,?,?,?,?)");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -572,6 +616,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 for (TestDataLibData subdata : subdataSet) {
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query);
+                    }
                     preStat.setInt(1, subdata.getTestDataLibID());
                     preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
                     preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
@@ -637,6 +685,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         query.append("update testdatalibdata set `value`= ?, `column`= ? , `parsinganswer`= ? , `columnPosition`= ?, `description`= ? where "
                 + "`testdatalibdataid`= ? ");
 
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query);
+                    }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -696,6 +748,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 for (TestDataLibData subdata : entriesToUpdate) {
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query.toString());
+                    }
                     preStat.setString(1, ParameterParserUtil.returnEmptyStringIfNull(subdata.getSubData()));
                     preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(subdata.getValue()));
                     preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(subdata.getColumn()));
@@ -752,6 +808,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         query.append("delete from testdatalibdata where `testdatalibdataid`=? ");
         //TODO:FN this delete should be analysed in order to avaoid delete sub-data entries that are being used by test cases
 
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query.toString());
+                        LOG.debug("SQL.param.TestDataLibDataID : " + testDataLibData.getTestDataLibDataID());
+                    }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -798,6 +859,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         MessageEvent msg = null;
         String query = "delete from testdatalibdata where `testdatalibID`= ? ";
 
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query);
+                        LOG.debug("SQL.param.TestDataLibID : " + testDataLib.getTestDataLibID());
+                    }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -844,6 +910,11 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 for (TestDataLibData subdata : subdataSet) {
+                    // Debug message on SQL.
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("SQL : " + query);
+                        LOG.debug("SQL.param.TestDataLibID : " + subdata.getTestDataLibDataID());
+                    }
                     preStat.setInt(1, subdata.getTestDataLibDataID());
                     preStat.addBatch();
                 }

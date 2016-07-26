@@ -17,8 +17,6 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.engine.entity.TestDataLibResult;
-import java.util.HashMap;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.util.answer.AnswerItem;
@@ -80,7 +78,6 @@ public class TestCaseExecution {
     private String seleniumPort;
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
-    private HashMap<String, TestDataLibResult> dataLibraryExecutionDataList;
     private MessageGeneral resultMessage;
     private Selenium selenium;
     private String executionUUID;
@@ -548,14 +545,6 @@ public class TestCaseExecution {
         this.testCaseExecutionDataList = testCaseExecutionDataList;
     }
 
-    public HashMap<String, TestDataLibResult> getDataLibraryExecutionDataList() {
-        return dataLibraryExecutionDataList;
-    }
-
-    public void setDataLibraryExecutionDataList(HashMap<String, TestDataLibResult> dataLibraryExecutionDataList) {
-        this.dataLibraryExecutionDataList = dataLibraryExecutionDataList;
-    }
-
     public String getExecutor() {
         return executor;
     }
@@ -578,6 +567,22 @@ public class TestCaseExecution {
 
     public AnswerList getTestCaseStepExecutionAnswerList() {
         return testCaseStepExecutionAnswerList;
+    }
+
+    public AnswerItem getLastSOAPCalled() {
+        return lastSOAPCalled;
+    }
+
+    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
+        this.lastSOAPCalled = lastSOAPCalled;
+    }
+
+    public List<RobotCapability> getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(List<RobotCapability> capabilities) {
+        this.capabilities = capabilities;
     }
 
     public JSONObject toJson() {
@@ -619,22 +624,6 @@ public class TestCaseExecution {
             LOG.error(ex.toString());
         }
         return result;
-    }
-
-    public AnswerItem getLastSOAPCalled() {
-        return lastSOAPCalled;
-    }
-
-    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
-        this.lastSOAPCalled = lastSOAPCalled;
-    }
-
-    public List<RobotCapability> getCapabilities() {
-        return capabilities;
-    }
-
-    public void setCapabilities(List<RobotCapability> capabilities) {
-        this.capabilities = capabilities;
     }
 
 }
