@@ -63,7 +63,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  *
@@ -403,7 +402,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         Integer priority = Integer.parseInt(request.getParameter("editPriority"));
         String group = request.getParameter("editGroup");
         String status = request.getParameter("editStatus");
-        String shortDescription = HtmlUtils.htmlEscape(request.getParameter("editDescription"));
+        String shortDescription = request.getParameter("editDescription");
         String description = request.getParameter("valueDetail");
         String howTo = request.getParameter("howtoDetail");
         String active = request.getParameter("editTcActive");
@@ -414,7 +413,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String bugID = request.getParameter("editBugID");
         String targetSprint = request.getParameter("editTargetBuild");
         String targetRevision = request.getParameter("editTargetRev");
-        String comment = HtmlUtils.htmlEscape(request.getParameter("editComment"));
+        String comment = request.getParameter("editComment");
         String function = request.getParameter("editFunction");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
                 runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
@@ -497,7 +496,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
                 int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
-                String desc = HtmlUtils.htmlEscape(getParameterIfExists(request, "step_description_" + inc));
+                String desc = getParameterIfExists(request, "step_description_" + inc);
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
                 String useStepChanged = getParameterIfExists(request, "step_useStepChanged_" + inc);
                 String useStepTest = getParameterIfExists(request, "step_useStepTest_" + inc) == null ? "" : getParameterIfExists(request, "step_useStepTest_" + inc);
@@ -643,7 +642,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
                 String forceExeStatus = getParameterIfExists(request, "action_forceexestatus_" + stepInc + "_" + inc);
-                String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "action_description_" + stepInc + "_" + inc));
+                String description = getParameterIfExists(request, "action_description_" + stepInc + "_" + inc);
                 String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);
                 if (delete == null) {
                     TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, -1, sequence, sort, action, object, property, forceExeStatus, description, screenshot);
@@ -668,7 +667,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String controlValue = getParameterIfExists(request, "control_value_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String controlProperty = getParameterIfExists(request, "control_property_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String fatal = getParameterIfExists(request, "control_fatal_" + stepInc + "_" + actionInc + "_" + inc);
-                String description = HtmlUtils.htmlEscape(getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc));
+                String description = getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc);
                 String screenshot = getParameterIfExists(request, "control_screenshot_" + stepInc + "_" + actionInc + "_" + inc);
                 if (delete == null) {
                     testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, -1, -1, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
