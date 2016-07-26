@@ -799,3 +799,8 @@ table.dataTable thead th {
 .list-label{
     height : 40px;
 }
+
+.colorpicker {
+  z-index: 9999;
+}
+

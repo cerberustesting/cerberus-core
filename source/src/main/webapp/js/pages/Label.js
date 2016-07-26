@@ -56,7 +56,7 @@ function displayPageLabel() {
     $("[name='descriptionField']").html(doc.getDocOnline("label", "description"));
     $("[name='colorField']").html(doc.getDocOnline("label", "color"));
     $("[name='parentLabelField']").html(doc.getDocOnline("label", "parentid"));
-    $("[name='parentLabel']").attr("readonly","readonly");
+    $("[name='parentLabel']").attr("readonly", "readonly");
 
     $("[name='tabsEdit1']").html(doc.getDocOnline("page_label", "tabDef"));
     $("[name='tabsEdit2']").html(doc.getDocOnline("page_label", "tabEnv"));
@@ -165,6 +165,10 @@ function addEntryClick() {
     formAdd.find("#system").prop("value", getUser().defaultSystem);
 
     $('#addLabelModal').modal('show');
+
+    //ColorPicker
+    $("[name='colorDiv']").colorpicker();
+    $("[name='colorDiv']").colorpicker('setValue', '#000000');
 }
 
 function editEntryModalSaveHandler() {
@@ -235,6 +239,10 @@ function editEntryClick(id, system) {
             $('#editLabelButton').attr('class', '');
             $('#editLabelButton').attr('hidden', 'hidden');
         }
+
+        //ColorPicker
+        $("[name='colorDiv']").colorpicker();
+        $("[name='colorDiv']").colorpicker('setValue', obj["color"]);
 
         formEdit.modal('show');
     });

@@ -11,8 +11,8 @@
                 <!--add form-->
                 <form id="addLabelModalForm" name="addLabelModalForm"  title="Add Aplication" role="form">
                     <div class="container-fluid center">
-                         <!-- messages area-->
-                         <div id="DialogMessagesArea">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
                             <div class="alert" id="DialogMessagesAlert"  style="display:none;">
                                 <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
                                 <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -36,7 +36,10 @@
                         <div class="row">
                             <div class="form-group col-xs-12">
                                 <label for="color" name="colorField">Color</label>
-                                <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
+                                <div name="colorDiv" class="input-group colorpicker-component">
+                                    <input type="text" class="form-control" name="color" id="color" aria-describedby="basic-addon1" maxlength="45">
+                                    <span class="input-group-addon"><i></i></span>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
