@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,6 +94,7 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         String system = policy.sanitize(request.getParameter("system"));
         String country = policy.sanitize(request.getParameter("country"));
         String environment = policy.sanitize(request.getParameter("environment"));
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
@@ -102,7 +104,10 @@ public class ReadCountryEnvParam_log extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (1 == 1) {
+            if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(request.getParameter("system"),appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
                 answer = findCountryEnvParamList(request.getParameter("system"), request.getParameter("country"), request.getParameter("environment"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
@@ -216,6 +221,33 @@ public class ReadCountryEnvParam_log extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(cepl));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        ceplService = appContext.getBean(ICountryEnvParam_logService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,system,country,Environment,Build,Revision,Chain,Disable,datecre,creator");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList ceplList = ceplService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", ceplList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(ceplList.getResultMessage());
+        return answer;
     }
 
 }

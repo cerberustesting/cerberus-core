@@ -123,4 +123,9 @@ public class LabelService implements ILabelService {
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return labelDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+    }
+
 }

@@ -89,4 +89,14 @@ public interface ILabelDAO {
      */
     Label loadFromResultSet(ResultSet rs) throws SQLException;
 
+    /**
+     * 
+     * @param system
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 }

@@ -38,4 +38,13 @@ public interface IBatchInvariantDAO {
     public Answer delete(BatchInvariant object);
 
     public Answer update(BatchInvariant object);
+
+    /**
+     * 
+     * @param system
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

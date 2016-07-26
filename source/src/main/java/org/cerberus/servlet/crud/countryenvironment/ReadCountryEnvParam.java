@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,6 +100,7 @@ public class ReadCountryEnvParam extends HttpServlet {
         String envGp = policy.sanitize(request.getParameter("envgp"));
         boolean unique = ParameterParserUtil.parseBooleanParam(request.getParameter("unique"), false);
         boolean forceList = ParameterParserUtil.parseBooleanParam(request.getParameter("forceList"), false);
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
@@ -113,6 +115,9 @@ public class ReadCountryEnvParam extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (unique) {
                 answer = findUniqueEnvironmentList(system, active, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName) && request.getParameter("system") != null) {
+                answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findCountryEnvParamList(system, country, environment, build, revision, active, envGp, appContext, userHasPermissions, request);
@@ -194,15 +199,15 @@ public class ReadCountryEnvParam extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        
+
         AnswerList resp = cepService.readByVariousByCriteria(system, country, environment, build, revision, active, envGp, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
@@ -283,6 +288,33 @@ public class ReadCountryEnvParam extends HttpServlet {
             result.put("maintenanceEnd", defaultTime);
         }
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        cepService = appContext.getBean(ICountryEnvParamService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,country,environment,description,build,revision,distriblist,emailbodyrevision,type,emailbodychain,emailbodydisableenvironment,active,maintenanceact,maintenancestr,maintenanceeend");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList cepList = cepService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", cepList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(cepList.getResultMessage());
+        return answer;
     }
 
 }

@@ -84,7 +84,7 @@ public class ReadDeployType extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -97,12 +97,18 @@ public class ReadDeployType extends HttpServlet {
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
 
+        //Get Parameters
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("deploytype") == null) {
+            if (!columnName.isEmpty()) {
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("deploytype") == null) {
                 answer = findDeployTypeList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
@@ -186,15 +192,15 @@ public class ReadDeployType extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        
+
         AnswerList resp = deployTypeService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
@@ -236,12 +242,39 @@ public class ReadDeployType extends HttpServlet {
 
         return item;
     }
-    
+
     private JSONObject convertDeployTypeToJSONObject(DeployType deployType) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(deployType));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        deployTypeService = appContext.getBean(IDeployTypeService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = deployTypeService.readDistinctValuesByCriteria( searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

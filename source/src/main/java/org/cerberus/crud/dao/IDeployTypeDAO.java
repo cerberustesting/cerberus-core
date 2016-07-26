@@ -84,4 +84,13 @@ public interface IDeployTypeDAO {
      * @throws SQLException
      */
     public DeployType loadFromResultSet(ResultSet rs) throws SQLException;
+
+    /**
+     * 
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

@@ -66,4 +66,9 @@ public class DeployTypeService implements IDeployTypeService {
         return deployTypeDAO.update(deployType);
     }
 
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return deployTypeDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+    }
+
 }

@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.buildrevisionchange;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -117,6 +118,7 @@ public class ReadBuildRevisionParameters extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%REASON%", "id must be an integer value."));
             brpid_error = true;
         }
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
@@ -137,6 +139,9 @@ public class ReadBuildRevisionParameters extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("system") != null) && (request.getParameter("build") != null) && (request.getParameter("revision") != null) && (request.getParameter("getNonSVNRelease") != null)) { // getNonSVNRelease parameter trigger the list of Manual Release with corresponding links.
                 answer = findManualBuildRevisionParametersBySystem(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("lastbuild"), request.getParameter("lastrevision"), appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if ((request.getParameter("system") != null) && !Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(request.getParameter("system"), appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findBuildRevisionParametersList(request.getParameter("system"), request.getParameter("build"), request.getParameter("revision"), request.getParameter("application"), appContext, userHasPermissions, request);
@@ -376,6 +381,33 @@ public class ReadBuildRevisionParameters extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(brp));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        brpService = appContext.getBean(IBuildRevisionParametersService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "ID,Build,Revision,Release,Application,Project,TicketIDFixed,BugIDFixed,Link,ReleaseOwner,Subject,datecre,jenkinsbuildid,mavengroupid,mavenartifactid,mavenversion");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList brpList = brpService.readDistinctValuesByCriteria(system,  searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", brpList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(brpList.getResultMessage());
+        return answer;
     }
 
 }

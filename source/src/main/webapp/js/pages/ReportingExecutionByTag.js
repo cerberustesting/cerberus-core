@@ -825,6 +825,7 @@ function customConfig(config) {
     config.lang.colVis = customColvisConfig;
     config.orderClasses = false;
     config.bDeferRender = true;
+    config.displayLength = 10000;
 }
 
 function getRowClass(status) {

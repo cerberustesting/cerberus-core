@@ -120,4 +120,9 @@ public class CountryEnvParam_logService implements ICountryEnvParam_logService {
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return countryEnvParamLogDao.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+    }
+
 }

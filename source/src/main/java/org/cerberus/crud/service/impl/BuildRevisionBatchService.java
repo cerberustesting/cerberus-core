@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.dao.IBuildRevisionBatchDAO;
 import org.cerberus.crud.entity.BuildRevisionBatch;
 
@@ -112,6 +113,11 @@ public class BuildRevisionBatchService implements IBuildRevisionBatchService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return buildRevisionBatchDao.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 
 }

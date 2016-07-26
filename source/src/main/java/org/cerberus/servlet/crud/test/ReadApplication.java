@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.test;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,10 +83,13 @@ public class ReadApplication extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        //Get Parameters
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         /**
          * Parsing and securing all required parameters.
@@ -107,6 +111,10 @@ public class ReadApplication extends HttpServlet {
                 if (request.getParameter("application") != null) {
                     String application = policy.sanitize(request.getParameter("application"));
                     answer = findApplicationByKey(application, appContext, userHasPermissions);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (!Strings.isNullOrEmpty(columnName)&&request.getParameter("system") != null) {
+                    String system = policy.sanitize(request.getParameter("system"));
+                    answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
@@ -191,15 +199,15 @@ public class ReadApplication extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
-        
+
         AnswerList resp = applicationService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
@@ -247,6 +255,33 @@ public class ReadApplication extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(application));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        applicationService = appContext.getBean(IApplicationService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Application,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList applicationList = applicationService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", applicationList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(applicationList.getResultMessage());
+        return answer;
     }
 
 }

@@ -19,6 +19,8 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.BuildRevisionBatch;
 
 import org.cerberus.util.answer.Answer;
@@ -81,4 +83,14 @@ public interface IBuildRevisionBatchDAO {
      * @throws SQLException
      */
     BuildRevisionBatch loadFromResultSet(ResultSet resultSet) throws SQLException;
+
+    /**
+     * 
+     * @param system
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

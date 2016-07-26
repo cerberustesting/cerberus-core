@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.buildrevisionchange;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -121,6 +122,7 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             seqid_error = true;
         }
         String system = policy.sanitize(request.getParameter("system"));
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Integrator");
@@ -132,6 +134,9 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("system") != null) && (request.getParameter("level") != null) && !(lvlid_error) && (request.getParameter("seq") != null) && !(seqid_error)) { // ID parameter is specified so we return the unique record of object.
                 answer = findBuildRevisionInvariantByKey(system, lvlid, seqid, appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the list of objects.
                 answer = findBuildRevisionInvariantList(system, lvlid, appContext, userHasPermissions, request);
@@ -270,6 +275,33 @@ public class ReadBuildRevisionInvariant extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(brp));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        briService = appContext.getBean(IBuildRevisionInvariantService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "system,level,seq,versionname");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList briList = briService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", briList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(briList.getResultMessage());
+        return answer;
     }
 
 

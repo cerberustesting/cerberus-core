@@ -44,5 +44,14 @@ public interface IDeployTypeService {
 
     public Answer update(DeployType deployType);
 
+    /**
+     * 
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
         
 }

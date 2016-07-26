@@ -92,4 +92,13 @@ public interface ILogEventService {
      * @param log
      */
     void createPublicCalls(String page, String action, String log, HttpServletRequest request);
+
+    /**
+     * 
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

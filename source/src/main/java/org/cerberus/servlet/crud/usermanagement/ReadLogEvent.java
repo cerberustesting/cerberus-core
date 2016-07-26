@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.usermanagement;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,13 +105,19 @@ public class ReadLogEvent extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%REASON%", "logeventid must be an integer value."));
             idlog_error = true;
         }
+        
+        //Get Parameters
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(msg);
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("logeventid") == null) {
+            if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("logeventid") == null) {
                 answer = findLogEventList(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if ((request.getParameter("logeventid") != null) && !(idlog_error)) {
@@ -248,5 +255,32 @@ public class ReadLogEvent extends HttpServlet {
         item.setResultMessage(answer.getResultMessage());
 
         return item;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        logEventService = appContext.getBean(ILogEventService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Time,login,Page,Action,log");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList logList = logEventService.readDistinctValuesByCriteria( searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", logList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(logList.getResultMessage());
+        return answer;
     }
 }

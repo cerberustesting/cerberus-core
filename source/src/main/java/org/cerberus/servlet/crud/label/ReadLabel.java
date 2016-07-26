@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.label;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class ReadLabel extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
+
         // Default message to unexpected error.
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -94,6 +95,9 @@ public class ReadLabel extends HttpServlet {
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("Test");
+
+        //Get Parameters
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -107,6 +111,9 @@ public class ReadLabel extends HttpServlet {
                 if (request.getParameter("id") != null) {
                     Integer id = Integer.valueOf(policy.sanitize(request.getParameter("id")));
                     answer = findLabelByKey(id, appContext, userHasPermissions);
+                    jsonResponse = (JSONObject) answer.getItem();
+                } else if (request.getParameter("system") != null && !Strings.isNullOrEmpty(columnName)) {
+                    answer = findDistinctValuesOfColumn(request.getParameter("system"),appContext, request, columnName);
                     jsonResponse = (JSONObject) answer.getItem();
                 } else if (request.getParameter("system") != null) {
                     String system = policy.sanitize(request.getParameter("system"));
@@ -186,15 +193,15 @@ public class ReadLabel extends HttpServlet {
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Label,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "1"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "System,Label,Color,Display,parentLabelId,Description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
@@ -250,6 +257,33 @@ public class ReadLabel extends HttpServlet {
         display.put("color", label.getColor());
         result.put("display", display);
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        labelService = appContext.getBean(ILabelService.class);
+        
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "System,Label,Color,Display,parentLabelId,Description");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList testCaseList = labelService.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", testCaseList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseList.getResultMessage());
+        return answer;
     }
 
 }

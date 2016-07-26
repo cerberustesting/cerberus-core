@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 import org.cerberus.crud.entity.BuildRevisionBatch;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -122,4 +123,13 @@ public interface IBuildRevisionBatchService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    /**
+     * 
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

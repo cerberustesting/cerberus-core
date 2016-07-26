@@ -95,4 +95,14 @@ public interface ICountryEnvParam_logDAO {
      * @throws SQLException
      */
     CountryEnvParam_log loadFromResultSet(ResultSet resultSet) throws SQLException;
+
+    /**
+     * 
+     * @param system
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

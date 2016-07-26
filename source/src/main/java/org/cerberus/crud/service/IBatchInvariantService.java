@@ -105,5 +105,15 @@ public interface IBatchInvariantService {
      */
     void convert(Answer answer) throws CerberusException;
 
+    /**
+     * 
+     * @param system
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return 
+     */
+    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 
 }
