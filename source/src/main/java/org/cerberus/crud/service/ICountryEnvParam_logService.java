@@ -143,5 +143,5 @@ public interface ICountryEnvParam_logService {
      * @param columnName
      * @return 
      */
-    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

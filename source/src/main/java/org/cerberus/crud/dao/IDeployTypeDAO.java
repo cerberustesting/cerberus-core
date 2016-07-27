@@ -92,5 +92,5 @@ public interface IDeployTypeDAO {
      * @param columnName
      * @return 
      */
-    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

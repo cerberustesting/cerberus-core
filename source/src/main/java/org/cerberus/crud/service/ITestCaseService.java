@@ -174,7 +174,7 @@ public interface ITestCaseService {
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
                                             String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status);
 
-    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
  
     public Answer update(TCase testCase);
 

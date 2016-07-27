@@ -200,7 +200,7 @@ public class BuildRevisionParametersService implements IBuildRevisionParametersS
     }
 
     @Override
-    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return buildRevisionParametersDAO.readDistinctValuesByCriteria(system, searchParameter, individualSearch, columnName);
     }
 

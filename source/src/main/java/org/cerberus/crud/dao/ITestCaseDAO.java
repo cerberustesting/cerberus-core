@@ -121,7 +121,7 @@ public interface ITestCaseDAO {
 
     public AnswerItem readByKey(String test, String testCase);
     
-    public AnswerList readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
     
     public Answer update(TCase testCase);
 

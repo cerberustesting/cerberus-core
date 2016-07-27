@@ -46,5 +46,5 @@ public interface IBatchInvariantDAO {
      * @param individualSearch
      * @param columnName 
      */
-    public AnswerList readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }
