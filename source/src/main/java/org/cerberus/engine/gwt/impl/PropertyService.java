@@ -225,7 +225,7 @@ public class PropertyService implements IPropertyService {
             List<TestCaseExecutionData> dataList = tCExecution.getTestCaseExecutionDataList();
 
             /*  First check if property has already been calculated 
-                 *  if action is calculateProperty, then set isKnownData to false. 
+             *  if action is calculateProperty, then set isKnownData to false. 
              */
             tecd = getExecutionDataFromList(dataList, eachTccp, forceCalculation, tecd);
 
@@ -613,7 +613,7 @@ public class PropertyService implements IPropertyService {
                 break;
 
             case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB:
-                testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
             case TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA:
@@ -850,7 +850,7 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
+    private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String result = null;
         try {
             SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseExecutionData.getValue1());
@@ -862,9 +862,22 @@ public class PropertyService implements IPropertyService {
                  }else{
                  attachement = soapLib.getAttachmentUrl();
                  }*/
+                String decodedEnveloppe = soapLib.getEnvelope();
+                String decodedServicePath = soapLib.getServicePath();
+                String decodedMethod = soapLib.getMethod();
+
+                if (soapLib.getEnvelope().contains("%")) {
+                    decodedEnveloppe = decodeValueWithExistingProperties(soapLib.getEnvelope(), testCaseStepActionExecution, false);
+                }
+                if (soapLib.getServicePath().contains("%")) {
+                    decodedServicePath = decodeValueWithExistingProperties(soapLib.getServicePath(), testCaseStepActionExecution, false);
+                }
+                if (soapLib.getMethod().contains("%")) {
+                    decodedMethod = decodeValueWithExistingProperties(soapLib.getMethod(), testCaseStepActionExecution, false);
+                }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
-                AnswerItem soapCall = soapService.callSOAP(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
+                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
                 tCExecution.setLastSOAPCalled(soapCall);
 
                 //Record the Request and Response.
@@ -900,6 +913,12 @@ public class PropertyService implements IPropertyService {
 
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
+        } catch (CerberusEventException ex) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, ex.toString());
+            MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+            message.setDescription(message.getDescription().replace("%SOAPNAME%", testCaseExecutionData.getValue1()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
+            testCaseExecutionData.setPropertyResultMessage(message);
         }
         return testCaseExecutionData;
     }

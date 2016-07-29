@@ -857,23 +857,34 @@ public class ActionService implements IActionService {
                 servicePath = soapLibrary.getServicePath();
             }
             /**
-             * Decode Envelope replacing properties encapsulated with %
+             * Decode Envelope, ServicePath and Method replacing properties encapsulated with %
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
-            if (soapLibrary.getEnvelope().contains("%")) {
-                try {
+            String decodedServicePath = soapLibrary.getServicePath();
+            String decodedMethod = soapLibrary.getMethod();
+
+            try {
+                if (soapLibrary.getEnvelope().contains("%")) {
                     decodedEnveloppe = propertyService.decodeValueWithExistingProperties(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
-                    //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
-                    if (testCaseStepActionExecution.isStopExecution()) {
-                        return testCaseStepActionExecution.getActionResultMessage();
-                    }
-                } catch (CerberusEventException cee) {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                    message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
-                    return message;
                 }
+                if (soapLibrary.getServicePath().contains("%")) {
+                    decodedServicePath = propertyService.decodeValueWithExistingProperties(soapLibrary.getServicePath(), testCaseStepActionExecution, false);
+                }
+                if (soapLibrary.getMethod().contains("%")) {
+                    decodedMethod = propertyService.decodeValueWithExistingProperties(soapLibrary.getMethod(), testCaseStepActionExecution, false);
+                }
+
+                //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
+                if (testCaseStepActionExecution.isStopExecution()) {
+                    return testCaseStepActionExecution.getActionResultMessage();
+                }
+            } catch (CerberusEventException cee) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+                message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
+                return message;
             }
+
             /*
              * Add attachment
              */
@@ -885,7 +896,7 @@ public class ActionService implements IActionService {
              } else {
              attachement = soapLibrary.getAttachmentUrl();
              }*/
-            AnswerItem lastSoapCalled = soapService.callSOAP(decodedEnveloppe, servicePath, soapLibrary.getMethod(), attachement);
+            AnswerItem lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
             tCExecution.setLastSOAPCalled(lastSoapCalled);
             return lastSoapCalled.getResultMessage();
         } catch (CerberusException ex) {
