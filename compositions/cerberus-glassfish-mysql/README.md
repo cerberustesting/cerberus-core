@@ -18,15 +18,29 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
 
  3. Execute the following command:
 
+	To run the docker-compose normally
+	
     `docker-compose up`
+	
+	To run the docker-compose asynchronously
+	
+	`docker-compose up -d`
+	
+	To run the docker-compose and remove already existing images
+	
+	`docker-compose up -d --remove-orphans`
+	
+4. [Optional] Adding more nodes to your selenium grid
 
- 4. Waiting for images startup
+	`docker-compose scale firefox=3 chrome=3`
 
- 5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
+ 5. Wait for the images to startup
 
- 6. If this is your first time with Cerberus, the gui will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
+ 6. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
 
- 7. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
+ 7. If this is your first time with Cerberus, the gui will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
+
+ 8. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
 
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
