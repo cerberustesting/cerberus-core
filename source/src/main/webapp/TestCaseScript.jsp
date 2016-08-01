@@ -55,7 +55,7 @@
                         <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case info</button>
                         <button class="btn btn-block btn-primary side-item" id="manageProp">Manage properties</button>
                         <button class="btn btn-block btn-primary side-item" id="manageLabel">Manage label</button>
-                        <!--<button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>-->
+                        <button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>
                         <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case</button>
                     </div>
                 </div>

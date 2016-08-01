@@ -115,7 +115,7 @@ public class SaveTestCaseLabel extends HttpServlet {
              * All data seems cleans so we can call the services.
              */
             List<TestCaseLabel> toSave = new ArrayList();
-            if (labelIdList.length!=0) {
+            if (null!= labelIdList && labelIdList.length!=0) {
                 Timestamp creationDate = new Timestamp(new Date().getTime());
                 for (String lableId : labelIdList){
                 toSave.add(testCaseLabelFactory.create(0, test, testcase, Integer.valueOf(lableId), usr, creationDate, usr, creationDate, null));

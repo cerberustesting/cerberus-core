@@ -1334,7 +1334,7 @@
                                                                         <%}else{
                                                                             String action_action_id = "action_action_" + incrementStep + "_" + incrementAction;
                                                                             %>
-                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999" />
+                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
                                                                         <%}%>
                                                                     </div>
                                                                     <div class="technical_part" style="width: 35%; float:left; background-color: transparent">
@@ -1395,7 +1395,7 @@
                                                                         <%}else{
                                                                             String action_action_id = "action_forceexestatus_" + incrementStep + "_" + incrementAction;
                                                                             %>
-                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getForceExeStatus()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999" />
+                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getForceExeStatus()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:50%; color:#999999" />
                                                                         <%}%>
                                                                     </div>
                                                                 </div>
