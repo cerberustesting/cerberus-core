@@ -30,7 +30,7 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
 	
 	`docker-compose up -d --remove-orphans`
 	
-4. [Optional] Adding more nodes to your selenium grid
+4. [Optional] Adding more nodes to your selenium grid:
 
 	`docker-compose scale firefox=3 chrome=3`
 
