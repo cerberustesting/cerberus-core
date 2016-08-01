@@ -305,8 +305,8 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
-        return testCaseDao.readByTestByCriteria(system, test, start, amount, column, dir, searchTerm, individualSearch);
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
+        return testCaseDao.readByTestByCriteria(system, test, start, amount, sortInformation, searchTerm, individualSearch);
     }
 
     @Override

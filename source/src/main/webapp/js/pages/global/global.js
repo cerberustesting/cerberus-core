@@ -852,6 +852,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.scrollCollapse = false;
     this.lang = getDataTableLanguage();
     this.stateDuration = 0;
+    this.colreorder = false;
 }
 
 /**
@@ -894,6 +895,7 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
     this.bDeferRender = false;
     this.aaSorting = aaSorting;
     this.stateDuration = 0;
+    this.colreorder = false;
 }
 
 function returnMessageHandler(response) {
@@ -930,9 +932,9 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer) {
-    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rBti<"marginTop5"p>';
+    var domConf = 'CBlf<"pull-right"p>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
-        domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
+        domConf = 'l<"showInlineElement pull-left marginLeft5"fp>rti<"marginTop5">';
     }
 
     var configs = {};
@@ -1000,6 +1002,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["buttons"] = [
             'colvis'
         ];
+        configs["colReorder"] = tableConfigurations.colreorder;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1025,7 +1028,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
 
-                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource);
+                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
                 $('[data-toggle="tooltip"]').tooltip();
 
                 if (callbackFunction !== undefined)
@@ -1055,20 +1058,20 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").attr("data-toggle","tooltip").attr("title",showHideButtonTooltip).click(function () {
+                .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
-        }).html("<span class='glyphicon glyphicon-cog'></span> "+showHideButtonLabel);
+        }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#showHideColumnsButton").parent().before(
-                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> "+saveTableConfigurationButtonLabel)
-                .attr("data-toggle","tooltip").attr("title",saveTableConfigurationButtonTooltip).click(function () {
-                    updateUserPreferences();
-                })
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
+                .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
+            updateUserPreferences();
+        })
                 );
         $("#saveTableConfigurationButton").before(
-                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> "+restoreFilterButtonLabel)
-                .attr("data-toggle","tooltip").attr("title",restoreFilterButtonTooltip).click(function () {
-                    location.reload();
-                })
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
+                .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
+            location.reload();
+        })
                 );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
@@ -1078,10 +1081,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     //Build the Message that appear when filter is fed
     var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span></div>";
-    $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+    $("#" + tableConfigurations.divId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
-    $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
+    $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
 
     return oTable;
 }
@@ -1095,7 +1098,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
-    var domConf = 'Cl<"showInlineElement pull-left marginLeft5"f>rBti<"marginTop5"p>';
+    var domConf = 'CBlf<"pull-right"p>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
@@ -1141,6 +1144,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["buttons"] = [
             'colvis'
         ];
+        configs["colReorder"] = tableConfigurations.colreorder;
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
@@ -1166,7 +1170,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }
-            };
+        };
         configs["buttons"] = [
             'colvis'
         ];
@@ -1189,7 +1193,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
                 error: showUnexpectedError
             });
             $.when(oSettings.jqXHR).then(function (data) {
-                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource);
+                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
                 $('[data-toggle="tooltip"]').tooltip();
             });
         };
@@ -1247,7 +1251,7 @@ function resetFilters(table) {
     table.search('').columns().search('').draw();
 }
 
-function displayColumnSearch(tableId, contentUrl) {
+function displayColumnSearch(tableId, contentUrl, oSettings) {
     //Hide filtered alert message displayed when filtered column
     $("#filterAlertDiv").hide();
     //Load the table
@@ -1266,6 +1270,8 @@ function displayColumnSearch(tableId, contentUrl) {
         // Delete and Build a new tr in the header to display the editable mark        
         //So first delete in case on page reload
         $("#filterHeader").remove();
+        $('.dataTables_scrollBody').find("#filterHeader").remove();
+
         //Set the table with relative position position for the editable box.
         $("#" + tableId + "_wrapper").attr("style", "position: relative");
         //Remove the relative position of the header
@@ -1396,7 +1402,7 @@ function displayColumnSearch(tableId, contentUrl) {
         //call the displayColumnSearch when table configuration is changed
         $("#showHideColumnsButton").click(function () {
             $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
-                displayColumnSearch(tableId, contentUrl);
+                displayColumnSearch(tableId, contentUrl, oSettings);
             });
         });
     });

@@ -1325,7 +1325,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
-                                                                    <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
+                                                                    <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
@@ -1357,7 +1357,7 @@
                                                                             </div>
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 20%; float:left; background-color:transparent">
+                                                                    <div class="technical_part" style="width: 25%; float:left; background-color:transparent">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"

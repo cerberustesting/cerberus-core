@@ -227,10 +227,26 @@ public class ReadTestCase extends HttpServlet {
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
+        //Get Sorting information
+        int numberOfColumnToSort = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortingCols"), "1"));
+        int columnToSortParameter = 0;
+        String sort = "asc";
+        StringBuilder sortInformation = new StringBuilder();
+        for (int c = 0; c < numberOfColumnToSort; c++){
+            columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_"+c), "0"));
+            sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_"+c), "asc");
+            String columnName = columnToSort[columnToSortParameter];
+            sortInformation.append(columnName).append(" ").append(sort);
+            
+            if (c!=numberOfColumnToSort-1){
+            sortInformation.append(" , ");
+            }
+        }
+        
+        
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
@@ -239,9 +255,9 @@ public class ReadTestCase extends HttpServlet {
             }
         }
 
-        String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        
+        
+        AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
         /**

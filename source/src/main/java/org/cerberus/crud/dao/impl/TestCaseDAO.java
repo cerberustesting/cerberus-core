@@ -134,7 +134,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -190,8 +190,8 @@ public class TestCaseDAO implements ITestCaseDAO {
 
         query.append(" group by tec.test, tec.testcase ");
         
-        if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by ").append(column).append(" ").append(dir);
+        if (!StringUtil.isNullOrEmpty(sortInformation)) {
+            query.append(" order by ").append(sortInformation);
         }
         
         if (amount != 0) {
