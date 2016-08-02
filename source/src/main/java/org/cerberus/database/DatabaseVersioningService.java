@@ -6310,6 +6310,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO label (`system`,`label`, `color`,`UsrCreated`, `UsrModif`) ");
         SQLS.append("SELECT `value` , 'MyFirstLabel', '#000000' , 'admin' , 'admin' from invariant where idname = 'SYSTEM'");
         SQLInstruction.add(SQLS.toString());
+
+        // 857-858 add the "rightClick" action
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'rightClick', '310', 'Right click on an element', 'Right click');\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'rightClick', 'en', 'Right click on an element.', '<code class=\\'doc-fixed\\'>rightClick</code> will allow you to right click on an element inside the current page.<br><br>Usage :<br>\\n<doc class=\\\"usage\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Field</th>\\n        <th class=\\'ex\\'>Usage</th>\\n        <tr>\\n            <td class=\\'ex\\'>Object</td>\\n            <td class=\\'ex\\'>Identifier and name of the element to right click in the form of : identifier=html_reference.</td>\\n        </tr>\\n        <tr>\\n            <td class=\\'ex\\'>Property</td>\\n            <td class=\\'ex\\'>Property name (only used to activate or not right click depending on if the property exist for the\\n                country).\\n            </td>\\n        </tr>\\n    </table>\\n</doc><br><br>Examples :<br>\\n<doc class=\\\"examples\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Object</th>\\n        <th class=\\'ex\\'>Property</th>\\n        <th class=\\'ex\\'>Result</th>\\n        <tr>\\n            <td class=\\'ex\\'>id=html_reference</td>\\n            <td class=\\'ex\\'></td>\\n            <td class=\\'ex\\'>element that has id equal to html_reference will be right clicked</td>\\n        </tr>\\n    </table>\\n</doc>');\n");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

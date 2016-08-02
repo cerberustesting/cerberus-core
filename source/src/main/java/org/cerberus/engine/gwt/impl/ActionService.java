@@ -137,11 +137,14 @@ public class ActionService implements IActionService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + object + " and property : " + property);
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        //TODO On JDK 7 implement switch with string
+        //TODO On JDK 7 implement switch with string [Edit @abourdon: prefer use of chain of responsibility pattern instead of a big switch]
         if (testCaseStepActionExecution.getAction().equals("click")) {
             res = this.doActionClick(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
+        } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
+            res = this.doActionRightClick(tCExecution, object, property);
+        }
+        else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
