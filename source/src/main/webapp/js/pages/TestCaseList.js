@@ -863,7 +863,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function ( data, type, full, meta ) {
                 var labelValue = '';
                 $.each(data, function(i, e){
-                    labelValue +='<div style="float:left"><span class="label label-primary" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+                    labelValue +='<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
                 });
                 return labelValue;
     }
@@ -1004,3 +1004,11 @@ function aoColumnsFunc(countries, tableId) {
 
     return aoColumns;
 }
+
+function filterOnLabel(element){
+    var newLabel = $(element).get(0).textContent;
+    var colIndex = $(element).parent().parent().get(0).cellIndex;
+    $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
+}
+
+
