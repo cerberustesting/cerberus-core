@@ -270,7 +270,7 @@ function renderOptionsForEnv(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createEnvButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_environment", "button_create") + "</button></div>";
 
-            $("#environmentsTable_wrapper div.ColVis").before(contentToAdd);
+            $("#environmentsTable_wrapper div#environmentsTable_length").before(contentToAdd);
             $('#environmentList #createEnvButton').click(addEntryClick);
         }
     }

@@ -65,7 +65,7 @@ function renderOptionsForBatchInvariant(data) {
             var contentToAdd = "<div class='marginBottom10'><button id='createBatchInvariantButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_batchinvariant", "button_create") + "</button></div>";
 
-            $("#batchinvariantsTable_wrapper batchinvariantsTable_length").before(contentToAdd);
+            $("#batchinvariantsTable_wrapper div#batchinvariantsTable_length").before(contentToAdd);
             $('#batchinvariantList #createBatchInvariantButton').click(addEntryClick);
         }
     }

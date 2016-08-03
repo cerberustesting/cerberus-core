@@ -1098,7 +1098,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
-    var domConf = 'RC<"clear">lf<"pull-right"p>rti<"marginTop5">';
+    var domConf = 'RCB<"clear">lf<"pull-right"p>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
         domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }

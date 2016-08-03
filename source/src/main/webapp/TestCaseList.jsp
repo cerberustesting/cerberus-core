@@ -12,6 +12,7 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
+        <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
     <body>
@@ -22,6 +23,7 @@
             <%@ include file="include/testcaselist/editTestCase.html"%>
             <%@ include file="include/testcaselist/addTestCase.html"%>
             <%@ include file="include/testcaselist/massActionTestCase.html"%>
+            <%@ include file="include/testcasescript/manageLabel.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 

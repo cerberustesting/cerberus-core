@@ -162,7 +162,7 @@ function loadTable(selectTest, sortColumn) {
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [sortColumn, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
-        
+
         //PREPARE MASS ACTION
         //$("#selectAll").click(selectAll);
 
@@ -175,15 +175,15 @@ function renderOptionsForTestCaseList(data) {
     if (data["hasPermissionsCreate"]) {
         if ($("#createTestCaseButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'>";
-            contentToAdd+="<button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
+            contentToAdd += "<button id='createTestCaseButton' type='button' class='btn btn-default'>\n\
            <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcaselist", "btn_create") + "</button></div>";
 //PREPARE MASS ACTION
 //var contentToAddAfter = "<button id='createBrpMassButton' type='button' class='pull-right btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
-            
+
             $("#testCaseTable_wrapper #testCaseTable_length").before(contentToAdd);
             //PREPARE MASS ACTION
             //$("#showHideColumnsButton").parent().after(contentToAddAfter);
-            
+
             $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
             //PREPARE MASS ACTION
             //$('#testCaseList #createBrpMassButton').click(massActionClick);
@@ -707,60 +707,60 @@ function setCountry(checkbox) {
     });
 }
 /** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
-
-function selectAll() {
-    if ($(this).prop("checked"))
-        $("[data-line='select']").prop("checked", true);
-    else
-        $("[data-line='select']").removeProp("checked");
-}
-
-function massActionModalSaveHandler() {
-    clearResponseMessage($('#massActionBrpModal'));
-
-    var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
-    var formList = $('#massActionForm');
-    var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
-
-    showLoaderInModal('#massActionBrpModal');
-
-    var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#massActionBrpModal');
-        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
-            oTable.fnDraw(true);
-            $('#massActionBrpModal').modal('hide');
-            showMessage(data);
-        } else {
-            showMessage(data, $('#massActionBrpModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function massActionModalCloseHandler() {
-    // reset form values
-    $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#massActionBrpModal'));
-}
-
-function massActionClick() {
-    var doc = new Doc();
-    console.debug("Mass Action");
-    clearResponseMessageMainPage();
-    // When creating a new item, Define here the default value.
-    var formList = $('#massActionForm');
-    if (formList.serialize().indexOf("id-") === -1) {
-        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
-        showMessage(localMessage, null);
-    } else {
-        $('#massActionBrpModal').modal('show');
-    }
-}
+ 
+ function selectAll() {
+ if ($(this).prop("checked"))
+ $("[data-line='select']").prop("checked", true);
+ else
+ $("[data-line='select']").removeProp("checked");
+ }
+ 
+ function massActionModalSaveHandler() {
+ clearResponseMessage($('#massActionBrpModal'));
+ 
+ var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
+ var formList = $('#massActionForm');
+ var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+ 
+ showLoaderInModal('#massActionBrpModal');
+ 
+ var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
+ $.when(jqxhr).then(function (data) {
+ // unblock when remote call returns 
+ hideLoaderInModal('#massActionBrpModal');
+ if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+ var oTable = $("#buildrevisionparametersTable").dataTable();
+ oTable.fnDraw(true);
+ $('#massActionBrpModal').modal('hide');
+ showMessage(data);
+ } else {
+ showMessage(data, $('#massActionBrpModal'));
+ }
+ }).fail(handleErrorAjaxAfterTimeout);
+ }
+ 
+ function massActionModalCloseHandler() {
+ // reset form values
+ $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+ // remove all errors on the form fields
+ $(this).find('div.has-error').removeClass("has-error");
+ // clear the response messages of the modal
+ clearResponseMessage($('#massActionBrpModal'));
+ }
+ 
+ function massActionClick() {
+ var doc = new Doc();
+ console.debug("Mass Action");
+ clearResponseMessageMainPage();
+ // When creating a new item, Define here the default value.
+ var formList = $('#massActionForm');
+ if (formList.serialize().indexOf("id-") === -1) {
+ var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+ showMessage(localMessage, null);
+ } else {
+ $('#massActionBrpModal').modal('show');
+ }
+ }
  * 
  *
  */
@@ -817,7 +817,7 @@ function aoColumnsFunc(countries, tableId) {
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                 var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
@@ -825,6 +825,10 @@ function aoColumnsFunc(countries, tableId) {
                                     title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
+                var editLabel = '<button id="editLabel" onclick="editLabelClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                                class="editLabel btn btn-default btn-xs margin-right5" \n\
+                                name="editLabel" title="' + doc.getDocLabel("page_testcaselist", "btn_editLabel") + '" type="button">\n\
+                                <span class="glyphicon glyphicon-tag"></span></button>';
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
                     //buttons += duplicateEntry;
@@ -834,8 +838,10 @@ function aoColumnsFunc(countries, tableId) {
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
+                buttons += editLabel;
                 buttons += testCaseLink;
                 buttons += testCaseBetaLink;
+                
 
                 return '<div class="center btn-group width150">' + buttons + '</div>';
             }
@@ -860,13 +866,13 @@ function aoColumnsFunc(countries, tableId) {
             "title": doc.getDocOnline("label", "label"),
             "sWidth": "170px",
             "sDefaultContent": "",
-            "render": function ( data, type, full, meta ) {
+            "render": function (data, type, full, meta) {
                 var labelValue = '';
-                $.each(data, function(i, e){
-                    labelValue +='<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="background-color:'+e.color+'">'+e.name+'</span></div> ';
+                $.each(data, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
                 });
                 return labelValue;
-    }
+            }
         },
         {
             "data": "application",
@@ -1005,10 +1011,20 @@ function aoColumnsFunc(countries, tableId) {
     return aoColumns;
 }
 
-function filterOnLabel(element){
+function filterOnLabel(element) {
     var newLabel = $(element).get(0).textContent;
     var colIndex = $(element).parent().parent().get(0).cellIndex;
     $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
+}
+
+function editLabelClick(test, testcase) {
+    loadLabelFilter(test, testcase);
+    $("#manageLabelModal").modal('show');
+    $("#saveManageLabelButton").on('click', function () {
+        var oTable = $("#testCaseTable").dataTable();
+        oTable.fnDraw(true);
+    });
+
 }
 
 

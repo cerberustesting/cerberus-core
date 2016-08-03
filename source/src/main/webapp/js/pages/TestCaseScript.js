@@ -1780,6 +1780,7 @@ function loadLabelFilter(test, testcase) {
         var messageType = getAlertType(data.messageType);
 
         if (messageType === "success") {
+            $('#selectLabel').empty();
             var index;
             for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
