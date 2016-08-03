@@ -354,64 +354,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
         }
 
-        // Finally, be compliant with legacy code.
-        // FIXME: remove this code when initialization will be done
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") && caps.getPlatform().is(Platform.ANDROID)) {
-            if (caps.getCapability("decviceName") == null) {
-                caps.setCapability("deviceName", "Android");
-            }
-            if (caps.getCapability("platformName") == null) {
-                caps.setCapability("platformName", "Android");
-            }
-            if (caps.getCapability("platform") == null) {
-                caps.setCapability("platform", Platform.ANDROID);
-            }
-            if (caps.getCapability("app") == null) {
-                caps.setCapability("app", "Chrome");
-            }
-            if (caps.getCapability("browserName") == null) {
-                caps.setCapability("browserName", "");
-            }
-            if (caps.getCapability("automationName") == null) {
-                caps.setCapability("automationName", "Appium");
-            }
-        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            if (caps.getCapability("browserName") == null) {
-                caps.setCapability("browserName", "");
-            }
-            if (caps.getCapability("deviceName") == null) {
-                caps.setCapability("deviceName", "Android");
-            }
-            if (caps.getCapability("automationName") == null) {
-                caps.setCapability("automationName", "Appium");
-            }
-            if (caps.getCapability("platformName") == null) {
-                caps.setCapability("platformName", "Android");
-            }
-            if (caps.getCapability("autoWebview") == null) {
-                caps.setCapability("autoWebview", true);
-            }
-        } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-            if (caps.getCapability("browserName") == null) {
-                caps.setCapability("browserName", "");
-            }
-            if (caps.getCapability("deviceName") == null) {
-                caps.setCapability("deviceName", "iPhone 5s");
-            }
-            if (caps.getCapability("automationName") == null) {
-                caps.setCapability("automationName", "Appium");
-            }
-            if (caps.getCapability("platformName") == null) {
-                caps.setCapability("platformName", "iOS");
-            }
-            if (caps.getCapability("platformVersion") == null) {
-                caps.setCapability("platformVersion", "9.1");
-            }
-            if (caps.getCapability("autoWebview") == null) {
-                caps.setCapability("autoWebview", true);
-            }
-        }
-
         return caps;
     }
 
