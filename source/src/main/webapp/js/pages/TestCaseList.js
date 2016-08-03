@@ -797,7 +797,7 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "130px",
+            "sWidth": "170px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
@@ -829,6 +829,11 @@ function aoColumnsFunc(countries, tableId) {
                                 class="editLabel btn btn-default btn-xs margin-right5" \n\
                                 name="editLabel" title="' + doc.getDocLabel("page_testcaselist", "btn_editLabel") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-tag"></span></button>';
+                var runTest = '<button id="runTest" class="btn btn-default btn-xs margin-right5"\n\
+                                    title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    <span class="glyphicon glyphicon-play"></span>\n\
+                                    </button>';
+                
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
                     //buttons += duplicateEntry;
@@ -839,11 +844,13 @@ function aoColumnsFunc(countries, tableId) {
                     buttons += deleteEntry;
                 }
                 buttons += editLabel;
+                buttons += runTest;
                 buttons += testCaseLink;
                 buttons += testCaseBetaLink;
                 
+                
 
-                return '<div class="center btn-group width150">' + buttons + '</div>';
+                return '<div class="center btn-group width250">' + buttons + '</div>';
             }
         },
         {
