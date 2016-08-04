@@ -38,7 +38,6 @@
             <%@ include file="include/testcaselist/editTestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
             <%@ include file="include/testcasescript/addStep.html"%>
-            <%@ include file="include/testcasescript/manageLabel.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <h1 class="testTestCase"><span id="test"></span> / <span id="testCase"></span> - <span id="description"></span></h1>
@@ -54,7 +53,6 @@
                         <div class="side-item">Last Execution was <a style="color : green">OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a></div>
                         <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case info</button>
                         <button class="btn btn-block btn-primary side-item" id="manageProp">Manage properties</button>
-                        <button class="btn btn-block btn-primary side-item" id="manageLabel">Manage label</button>
                         <button class="btn btn-block btn-primary side-item" id="saveScript">Save Script</button>
                         <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case</button>
                     </div>

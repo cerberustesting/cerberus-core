@@ -91,4 +91,6 @@ public interface ITestCaseCountryPropertiesService {
     Answer deleteList(List<TestCaseCountryProperties> objectList);
 
     Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountryProperties> newList);
+    
+    Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase);
 }

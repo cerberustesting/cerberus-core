@@ -64,17 +64,16 @@ function initPage() {
     // handle the click for specific action buttons
     $("#editEntryButton").click(editEntryModalSaveHandler);
     $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#duplicateEntryButton").click(duplicateEntryModalSaveHandler);
     //PREPARE MASS ACTION
     //$("#massActionBrpButton").click(massActionModalSaveHandler);
-    // In Add TestCase form, if we change the test, we get the latest testcase from that test.
-    $("#testAdd").change(function () {
-        feedTestCase(null);
-    });
-
+    
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
+    $('#duplicateEntryModal').on('hidden.bs.modal', {extra: "#duplicateEntryModal"}, modalFormCleaner);
     //PREPARE MASS ACTION
     //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 function displayPageLabel(doc) {
@@ -190,7 +189,28 @@ function renderOptionsForTestCaseList(data) {
         }
     }
 }
+/********************************************************
+//DELETE TESTCASE 
+/********************************************************
 
+/* Function called on click on delete button 
+ * This function display a confirmation modal
+ * @param {type} test
+ * @param {type} testCase
+ * @returns {undefined}
+ */
+function deleteEntryClick(test, testCase) {
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
+    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, test, testCase, "", "");
+}
+
+/*
+ * Function called when confirmation button pressed 
+ * @returns {undefined}
+ */
 function deleteEntryHandlerClick() {
     var test = $('#confirmationModal').find('#hiddenField1').prop("value");
     var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
@@ -215,14 +235,68 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntryClick(test, testCase) {
+/********************************************************
+//CREATE TESTCASE 
+/********************************************************/
+ 
+/*
+ * Function called on click on create button
+ * The creation Modal is displayed with test selected, and some default values from user preferences
+ * @returns {undefined}
+ */
+function addEntryClick() {
     clearResponseMessageMainPage();
-    var doc = new Doc();
-    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
-    showModalConfirmation(deleteEntryHandlerClick, "Delete", messageComplete, test, testCase, "", "");
-}
+    var pref = JSON.parse(localStorage.getItem("createTC"));
+    var form = $("#addEntryModalForm");
 
+    // Test by default comes from the URL (and the combo filter).
+    var test = GetURLParameter('test');
+    if (test !== "") {
+        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
+    }
+    // TestCase is taken from the last value in database +1. This is an auto sequence. 
+    feedTestCase(null, "addEntryModalForm");
+    
+    // In Add TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#addEntryModalForm select[name="test"]').change(function () {
+        feedTestCase(null, "addEntryModalForm");
+    });
+
+    // By default we desactivate the execution of the testcase in production environment.
+    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
+
+    // The rest of the field come from the LocalStorage.
+    if (pref !== null) {
+        form.find("#origin").val(pref.origin);
+        form.find("#refOrigin").val(pref.refOrigin);
+        form.find(".countrycb").each(function () {
+            if (pref[$(this).prop("name")] !== "off") {
+                $(this).prop("checked", true);
+            } else {
+                $(this).prop("checked", false);
+            }
+        });
+        form.find("#project").val(pref.project);
+        form.find("#ticket").val(pref.ticket);
+        form.find("#function").val(pref.function);
+        form.find("#application").val(pref.application);
+        form.find("#status").val(pref.status);
+        form.find("#group").val(pref.group);
+        form.find("#priority").val(pref.priority);
+        form.find("#bugId").val(pref.bugId);
+        form.find("#activeQA").val(pref.activeQA);
+        form.find("#activeUAT").val(pref.activeUAT);
+        form.find("#activeProd").val(pref.activeProd);
+    }
+
+    $('#addEntryModal').modal('show');
+}
+ 
+ 
+/* 
+ * By clicking on save button, 
+ * @returns {undefined}
+ */
 function addEntryModalSaveHandler() {
     clearResponseMessage($('#addEntryModal'));
     var formAdd = $("#addEntryModal #addEntryModalForm");
@@ -257,10 +331,13 @@ function addEntryModalSaveHandler() {
     createEntry("CreateTestCase2", formAdd, "#testCaseTable");
 }
 
-function feedTestCase(test) {
+/********************************************************
+//GENERATE TESTCASE NUMBER (CREATE AND DUPLICATE)
+/********************************************************/
+function feedTestCase(test, modalForm) {
 // Predefine the testcase value.
     if ((test === null) || (test === undefined))
-        test = $('#testAdd').val();
+        test = $('#'+modalForm+' select[name="test"]').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -282,56 +359,49 @@ function feedTestCase(test) {
                 tcnumber = "0001A";
             }
 
-            $('#addEntryModalForm #testCase').val(tcnumber);
+            $('#'+modalForm+' [name="testCase"]').val(tcnumber);
         },
         error: showUnexpectedError
     });
 
 }
 
-function addEntryClick() {
-    clearResponseMessageMainPage();
-    var pref = JSON.parse(localStorage.getItem("createTC"));
-    var form = $("#addEntryModalForm");
+/********************************************************
+//DUPLICATE TESTCASE 
+/********************************************************/
 
-    // Test by default comes from the URL (and the combo filter).
-    var test = GetURLParameter('test');
-    if (test !== "") {
-        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
-    }
-    // TestCase is taken from the last value in database +1. This is an auto sequence. 
-    feedTestCase();
+/**
+ * Feed Duplicate Entry Formulary
+ * @param {type} test
+ * @param {type} testCase
+ * @returns {undefined}
+ */
+function duplicateEntryClick(test, testCase){
+    feedTestCaseModal(test, testCase, "duplicateEntryModal");
+    feedTestCase(test, "duplicateEntryModalForm");
+    
+    // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
+    $('#duplicateEntryModalForm select[name="test"]').change(function () {
+        feedTestCase(null, "duplicateEntryModalForm");
+    });
+}
+/**
+ * On click on duplicate button event, submit formulary
+ * @returns {undefined}
+ */
+function duplicateEntryModalSaveHandler() {
+    clearResponseMessage($('#duplicateEntryModal'));
 
-    // By default we desactivate the execution of the testcase in production environment.
-    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
-
-    // The rest of the field come from the LocalStorage.
-    if (pref !== null) {
-        form.find("#origin").val(pref.origin);
-        form.find("#refOrigin").val(pref.refOrigin);
-        form.find(".countrycb").each(function () {
-            if (pref[$(this).prop("name")] !== "off") {
-                $(this).prop("checked", true);
-            } else {
-                $(this).prop("checked", false);
-            }
-        });
-        form.find("#project").val(pref.project);
-        form.find("#ticket").val(pref.ticket);
-        form.find("#function").val(pref.function);
-        form.find("#application").val(pref.application);
-        form.find("#status").val(pref.status);
-        form.find("#group").val(pref.group);
-        form.find("#priority").val(pref.priority);
-        form.find("#bugId").val(pref.bugId);
-        form.find("#activeQA").val(pref.activeQA);
-        form.find("#activeUAT").val(pref.activeUAT);
-        form.find("#activeProd").val(pref.activeProd);
-    }
-
-    $('#addEntryModal').modal('show');
+    var formEdit = $('#duplicateEntryModalForm');
+    
+    showLoaderInModal('#duplicateEntryModal');
+    duplicateEntry("DuplicateTestCase", formEdit, "#testCaseTable");
 }
 
+
+/********************************************************
+//EDIT TESTCASE 
+/********************************************************/
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
 
@@ -343,11 +413,18 @@ function editEntryModalSaveHandler() {
 }
 
 function editEntryClick(test, testCase) {
+    feedTestCaseModal(test, testCase, "editEntryModal");
+}
+
+/********************************************************
+//EDIT AND DUPLICATE >> FEED TESTCASE MODAL
+/********************************************************/
+function feedTestCaseModal(test, testCase, modalId) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
-        var formEdit = $('#editEntryModal');
+        var formEdit = $('#'+modalId);
         var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
 
@@ -378,6 +455,9 @@ function editEntryClick(test, testCase) {
         });
 
         //test info
+        formEdit.find("#originalTest").prop("value", data.test);
+        formEdit.find("#originalTestCase").prop("value", data.testCase);
+        formEdit.find("#newTest").prop("value", data.test);
         formEdit.find("#test").prop("value", data.test);
         formEdit.find("#testCase").prop("value", data.testCase);
 
@@ -412,8 +492,8 @@ function editEntryClick(test, testCase) {
         formEdit.find("#bugId").prop("value", data.bugID);
         formEdit.find("#comment").prop("value", data.comment);
 
-        //We desactivate or activate the access to the fields depending on if user has the credentials.
-        if (!(data["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
+        //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
+        if (!(data["hasPermissionsUpdate"]) && modalId === "editEntryModal") { // If readonly, we only readonly all fields
             //test case info
             formEdit.find("#implementer").prop("readonly", "readonly");
             formEdit.find("#origin").prop("disabled", "disabled");
@@ -482,6 +562,11 @@ function editEntryClick(test, testCase) {
             // Save button is displayed.
             $('#editEntryButton').attr('class', 'btn btn-primary');
             $('#editEntryButton').removeProp('hidden');
+            //Duplicate button is displayed if hasPermissionsCreate
+            if (data["hasPermissionsCreate"]){
+            $('#duplicateEntryButton').attr('class', 'btn btn-primary');
+            $('#duplicateEntryButton').removeProp('hidden');   
+            }
         }
 
 
@@ -490,6 +575,9 @@ function editEntryClick(test, testCase) {
     });
 }
 
+/********************************************************
+//TRANSVERSAL >> FEED COMBO FIELDS
+/********************************************************/
 function appendBuildRevList(system, editData) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
@@ -642,10 +730,10 @@ function loadTestComboAddTestCase(selectTest) {
                 var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
                 var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
                 var option = $('<option></option>').attr("value", encodedString).text(text);
-                $('#testAdd').append($('<option></option>').text(text).val(encodedString));
+                $('select[name="test"]').append($('<option></option>').text(text).val(encodedString));
             }
             if (selectTest !== undefined) {
-                $('#testAdd').val(selectTest);
+                $('select[name="test"]').val(selectTest);
             }
 
         } else {
@@ -671,6 +759,11 @@ function setActive(checkbox) {
         data: {test: test, testCase: testCase, active: active},
         dataType: "json",
         success: function (data) {
+            if (active === "Y") {
+                $("#runTest" + test + testCase).removeAttr("disabled");
+            } else {
+                $('#runTest' + test + testCase).attr("disabled", "disabled");
+            }
             clearResponseMessageMainPage();
             var messageType = getAlertType(data.messageType);
             //show message in the main page
@@ -678,6 +771,7 @@ function setActive(checkbox) {
         },
         error: showUnexpectedError
     });
+
 }
 
 function setCountry(checkbox) {
@@ -797,46 +891,46 @@ function aoColumnsFunc(countries, tableId) {
             "bSearchable": false,
             "title": doc.getDocOnline("page_global", "columnAction"),
             "sDefaultContent": "",
-            "sWidth": "170px",
+            "sWidth": "190px",
             "mRender": function (data, type, obj) {
                 var buttons = "";
 
-                var testCaseLink = '<a id="testCaseLink" class="btn btn-primary btn-xs margin-right5"\n\
-                                    title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                var testCaseLink = '<button id="testCaseLink" class="btn btn-primary btn-inverse btn-xs margin-right5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick=window.location="./TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </a>';
+                                    </button>';
                 var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
+                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
                 var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
+                                name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';
                 var deleteEntry = '<button id="deleteEntry" onclick="deleteEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="deleteEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
+                                        name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
                 var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
-                                        name="duplicateEntry" title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
+                                        name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var testCaseBetaLink = '<a id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
-                                    title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" href="TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                var testCaseBetaLink = '<button id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" onclick=window.location="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </a>';
+                                    </button>';
                 var editLabel = '<button id="editLabel" onclick="editLabelClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                name="editLabel" title="' + doc.getDocLabel("page_testcaselist", "btn_editLabel") + '" type="button">\n\
+                                name="editLabel" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_editLabel") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-tag"></span></button>';
-                var runTest = '<button id="runTest" class="btn btn-default btn-xs margin-right5"\n\
-                                    title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                var runTest = '<button id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '" class="btn btn-default btn-xs margin-right5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </button>';
-                
+
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;
-                    //buttons += duplicateEntry;
+                    buttons += duplicateEntry;
                 } else {
                     buttons += viewEntry;
                 }
@@ -847,8 +941,8 @@ function aoColumnsFunc(countries, tableId) {
                 buttons += runTest;
                 buttons += testCaseLink;
                 buttons += testCaseBetaLink;
-                
-                
+
+
 
                 return '<div class="center btn-group width250">' + buttons + '</div>';
             }
@@ -876,7 +970,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function (data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
                 });
                 return labelValue;
             }
@@ -921,12 +1015,14 @@ function aoColumnsFunc(countries, tableId) {
                     if (data === "Y") {
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                     } else if (data === "N") {
+                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                     }
                 } else {
                     if (data === "Y") {
                         return '<input type="checkbox" checked disabled />';
                     } else {
+                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
                         return '<input type="checkbox" disabled />';
                     }
                 }
@@ -1016,6 +1112,84 @@ function aoColumnsFunc(countries, tableId) {
     }
 
     return aoColumns;
+}
+
+/******************************************************************************
+ * LABEL MANAGEMENT
+ * Load label list
+ */
+function loadLabelFilter(test, testcase) {
+    var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            $('#selectLabel').empty();
+            var index;
+            for (index = 0; index < data.contentTable.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                var labelTag = '<div style="float:left"><input id="labelId' + data.contentTable[index].id + '" data-labelid="' + data.contentTable[index].id + '" type="checkbox">\n\
+                <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
+                var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
+                        .attr("value", data.contentTable[index].label).html(labelTag);
+                $('#selectLabel').append(option);
+            }
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+        loadTestCaseLabel(test, testcase);
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * 
+ * 
+ */
+function loadTestCaseLabel(test, testcase) {
+    var jqxhr = $.get("ReadTestCaseLabel?test=" + test + "&testcase=" + testcase, "", "json");
+//Get the label of the selected testcase
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            var index;
+            var labelTag = '';
+            for (index = 0; index < data.contentTable.length; index++) {
+                //For each testcaselabel, put at the top of the list and check them
+                var element = $("#itemLabelId" + data.contentTable[index].label.id);
+                element.remove();
+                $("#selectLabel").prepend(element);
+                $("#labelId" + data.contentTable[index].label.id).prop("checked", true);
+            }
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+
+
+//On save, save the label list
+    $("#saveManageLabelButton").on('click', function () {
+        var labelListForm = $("#labelListForm input:checked");
+        var labelList = '';
+        $.each(labelListForm, function (i, e) {
+            labelList += "&labelid=" + $(e).attr("data-labelid");
+        });
+
+        var jqxhr = $.get("SaveTestCaseLabel?test=" + test + "&testcase=" + testcase + labelList, "", "json");
+
+        $.when(jqxhr).then(function (data) {
+            var messageType = getAlertType(data.messageType);
+
+            if (messageType === "success") {
+                $("#manageLabelModal").modal('hide');
+                showMessageMainPage(messageType, data.message);
+            } else {
+                showMessageMainPage(messageType, data.message);
+            }
+        }).fail(handleErrorAjaxAfterTimeout);
+
+    });
 }
 
 function filterOnLabel(element) {

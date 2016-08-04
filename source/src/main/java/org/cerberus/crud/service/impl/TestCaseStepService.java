@@ -24,10 +24,14 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,10 +148,10 @@ public class TestCaseStepService implements ITestCaseStepService {
             }
             updateTestCaseStepUsingTestCaseStepInList(tcsToDelete);
             this.deleteListTestCaseStep(tcsToDelete);
-            
+
         }
     }
-    
+
     private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {
         for (TestCaseStep tcsDifference : testCaseStepList) {
             if (tcsDifference.isIsStepInUseByOtherTestCase()) {
@@ -184,10 +188,36 @@ public class TestCaseStepService implements ITestCaseStepService {
     public List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException {
         return testCaseStepDAO.getStepLibraryBySystemTestTestCase(system, test, testCase);
     }
-    
+
     @Override
     public AnswerList readByTestTestCase(String test, String testcase) {
         return testCaseStepDAO.readByTestTestCase(test, testcase);
+    }
+
+    @Override
+    public Answer duplicateList(List<TestCaseStep> listOfSteps, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseStep> listToCreate = new ArrayList();
+        for (TestCaseStep objectToDuplicate : listOfSteps) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestCase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        return createList(listToCreate);
+    }
+
+    @Override
+    public Answer create(TestCaseStep object) {
+        return testCaseStepDAO.create(object);
+    }
+
+    @Override
+    public Answer createList(List<TestCaseStep> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseStep objectToCreate : objectList) {
+            ans = testCaseStepDAO.create(objectToCreate);
+        }
+        return ans;
     }
 
 }

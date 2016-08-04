@@ -35,6 +35,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -321,7 +322,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                 preStat.setInt(5, tcs.getUseStepStep() == null ? 0 : tcs.getUseStepStep());
                 preStat.setString(6, tcs.getInLibrary() == null ? "N" : tcs.getInLibrary());
                 preStat.setInt(7, tcs.getSort());
-                
+
                 preStat.setString(8, tcs.getTest());
                 preStat.setString(9, tcs.getTestCase());
                 preStat.setInt(10, tcs.getStep());
@@ -751,6 +752,43 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         return response;
     }
 
+    @Override
+    public Answer create(TestCaseStep testCaseStep) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO `testcasestep` (`Test`,`TestCase`,`Step`,`Sort`,`Description`,`useStep`,`useStepTest`,`useStepTestCase`,`useStepStep`, `inLibrary`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            // Prepare and execute query
+            preStat.setString(1, testCaseStep.getTest());
+            preStat.setString(2, testCaseStep.getTestCase());
+            preStat.setInt(3, testCaseStep.getStep());
+            preStat.setInt(4, testCaseStep.getSort());
+            preStat.setString(5, testCaseStep.getDescription());
+            preStat.setString(6, testCaseStep.getUseStep() == null ? "N" : testCaseStep.getUseStep());
+            preStat.setString(7, testCaseStep.getUseStepTest() == null ? "" : testCaseStep.getUseStepTest());
+            preStat.setString(8, testCaseStep.getUseStepTestCase() == null ? "" : testCaseStep.getUseStepTestCase());
+            preStat.setInt(9, testCaseStep.getUseStepStep() == null ? 0 : testCaseStep.getUseStepStep());
+            preStat.setString(10, testCaseStep.getInLibrary() == null ? "N" : testCaseStep.getInLibrary());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create TestCaseStep: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
     private TestCaseStep loadFromResultSet(ResultSet resultSet) throws SQLException {
         if (resultSet == null) {
             return null;
@@ -766,7 +804,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         String useStepTestCase = resultSet.getString("useStepTestCase") == null ? "" : resultSet.getString("useStepTestCase");
         int useStepStep = resultSet.getInt("useStepStep") == 0 ? 0 : resultSet.getInt("useStepStep");
         String inLibrary = resultSet.getString("inLibrary") == null ? "" : resultSet.getString("inLibrary");
-        
+
         return factoryTestCaseStep.create(test, testcase, step, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
     }
 }

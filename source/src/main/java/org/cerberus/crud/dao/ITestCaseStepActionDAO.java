@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -36,7 +37,7 @@ public interface ITestCaseStepActionDAO {
     
     List<TestCaseStepAction> findActionByTestTestCaseStep(String test, String testcase, int stepNumber);
 
-    void create(TestCaseStepAction testCaseStepAction) throws CerberusException;
+    void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException;
 
     boolean changeTestCaseStepActionSequence(String test, String testCase, int step, int oldSequence, int newSequence);
 
@@ -47,4 +48,6 @@ public interface ITestCaseStepActionDAO {
     List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
     
     AnswerList readByTestTestCase(String test, String testcase);
+    
+    Answer create(TestCaseStepAction testCaseStepAction);
 }

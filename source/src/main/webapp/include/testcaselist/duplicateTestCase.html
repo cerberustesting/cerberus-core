@@ -1,15 +1,15 @@
 <!--Edit test page-->
-<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="duplicateEntryModal" tabindex="-1" role="dialog" aria-labelledby="duplicateEntryModalLabel" aria-hidden="true">
     <div class="modal-admin nomargintop nomarginbottom center">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editEntryModalLabel" name="editEntryField">Edit Test Case</h4>
+                <h4 class="modal-title" id="duplicateEntryModalLabel" name="duplicateEntryField">Duplicate Test Case</h4>
             </div>
             <div class="modal-body">
 
                 <!--edit form-->
-                <form id="editEntryModalForm" name="editEntryModalForm"  title="EditTestCase" role="form">
+                <form id="duplicateEntryModalForm" name="duplicateEntryModalForm"  title="DuplicateTestCase" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -22,24 +22,34 @@
                         </div>
                         <div class="row">
                             <div class="form-group form-group-sm col-xs-3">
-                                <label class="control-label" for="test" name="testField">Test</label>
-                                <input type="text" class="form-control input-sm" name="test" id="test" aria-describedby="basic-addon1" readonly>
+                                <label class="control-label" for="originalTest" name="originalTestField">Original Test</label>
+                                <input type="text" class="form-control input-sm" name="originalTest" id="originalTest" aria-describedby="basic-addon1" readonly>
                             </div>
                             <div class="form-group form-group-sm col-xs-3">
-                                <label class="control-label" for="testCase" name="testCaseField">Test Case</label>
-                                <input type="text" class="form-control input-sm" name="testCase" id="testCase" readonly>
+                                <label class="control-label" for="originalTestCase" name="originalTestCaseField">Original Test Case</label>
+                                <input type="text" class="form-control input-sm" name="originalTestCase" id="originalTestCase" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label class="control-label" for="newTest" name="testField">Test</label>
+                                <select type="text" class="form-control input-sm" name="test" id="newTest" aria-describedby="basic-addon1"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label class="control-label" for="newTestCase" name="testCaseField">Test Case</label>
+                                <input type="text" class="form-control input-sm" name="testCase" id="newTestCase">
                             </div>
                         </div>
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDescritpion">Description</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabInformation">Information</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="editTab3Text" name="tabParameters">Parameters</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-4" id="editTab4Text" name="tabActivation">Activation Criteria</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-5" id="editTab5Text" name="tabCountry">Countries</a></li>
-                            <!--<li><a data-toggle="tab" href="#tabsEdit-6" id="editTab6Text" name="tabLabel">Label</a></li>-->
+                            <li class="active"><a data-toggle="tab" href="#tabsDuplicate-1" id="duplicateTab1Text" name="tabDescritpion">Description</a></li>
+                            <li><a data-toggle="tab" href="#tabsDuplicate-2" id="duplicateTab2Text" name="tabInformation">Information</a></li>
+                            <li><a data-toggle="tab" href="#tabsDuplicate-3" id="duplicateTab3Text" name="tabParameters">Parameters</a></li>
+                            <li><a data-toggle="tab" href="#tabsDuplicate-4" id="duplicateTab4Text" name="tabActivation">Activation Criteria</a></li>
+                            <li><a data-toggle="tab" href="#tabsDuplicate-5" id="duplicateTab5Text" name="tabCountry">Countries</a></li>
+                            <!--<li><a data-toggle="tab" href="#tabsDuplicate-6" id="duplicateTab6Text" name="tabLabel">Label</a></li>-->
                         </ul>
                         <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsDuplicate-1">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-xs-12">
                                         <label for="shortDesc" name="shortDescField">TestCase short description</label>
@@ -57,7 +67,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
+                            <div class="center tab-pane fade marginTop25" id="tabsDuplicate-2">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-xs-6">
                                         <label class="control-label" for="testDesc" name="descriptionField">Test description</label>
@@ -105,7 +115,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
+                            <div class="center tab-pane fade marginTop25" id="tabsDuplicate-3">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-xs-4">
                                         <label for="application" name="applicationField">Application</label>
@@ -139,7 +149,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
+                            <div class="center tab-pane fade marginTop25" id="tabsDuplicate-4">
                                 <div class="row">
                                     <div class="form-group form-group-sm col-xs-1">
                                         <label for="active" name="activeField">Active</label>
@@ -185,7 +195,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-5">
+                            <div class="center tab-pane fade marginTop25" id="tabsDuplicate-5">
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
@@ -193,7 +203,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-6">
+                            <div class="center tab-pane fade marginTop25" id="tabsDuplicate-6">
                             </div>
                         </div>
                     </div>
@@ -201,7 +211,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editEntryButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="duplicateEntryButton" class="btn btn-primary" name="buttonDuplicate">Duplicate</button>
             </div>
         </div>
     </div>

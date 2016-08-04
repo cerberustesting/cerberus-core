@@ -36,6 +36,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -540,6 +541,45 @@ public class TestCaseStepActionControlDAO implements ITestCaseStepActionControlD
 
         response.setResultMessage(msg);
         return response;
+    }
+
+    @Override
+    public Answer create(TestCaseStepActionControl testCaseStepActionControl) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasestepactioncontrol (`test`, `testCase`, `step`, `sequence`, `control`, `sort`, `type`, `controlvalue`, `controlproperty`, `fatal`, `ControlDescription`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            // Prepare and execute query
+            preStat.setString(1, testCaseStepActionControl.getTest());
+            preStat.setString(2, testCaseStepActionControl.getTestCase());
+            preStat.setInt(3, testCaseStepActionControl.getStep());
+            preStat.setInt(4, testCaseStepActionControl.getSequence());
+            preStat.setInt(5, testCaseStepActionControl.getControl());
+            preStat.setInt(6, testCaseStepActionControl.getSort());
+            preStat.setString(7, testCaseStepActionControl.getType());
+            preStat.setString(8, testCaseStepActionControl.getControlValue());
+            preStat.setString(9, testCaseStepActionControl.getControlProperty());
+            preStat.setString(10, testCaseStepActionControl.getFatal());
+            preStat.setString(11, testCaseStepActionControl.getDescription());
+            preStat.setString(12, testCaseStepActionControl.getScreenshotFilename());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to TestCaseStepActionControl: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 
     private TestCaseStepActionControl loadFromResultSet(ResultSet resultSet) throws SQLException {

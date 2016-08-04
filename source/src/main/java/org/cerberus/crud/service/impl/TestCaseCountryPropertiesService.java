@@ -283,4 +283,17 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
         return finalAnswer;
     }
 
+    @Override
+    public Answer duplicateList(List<TestCaseCountryProperties> objectList, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseCountryProperties> listToCreate = new ArrayList();
+        for (TestCaseCountryProperties objectToDuplicate : objectList) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestCase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        ans = createList(listToCreate);
+        return ans;
+    }
+
 }

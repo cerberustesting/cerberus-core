@@ -140,4 +140,6 @@ public interface ITestCaseLabelService {
      * @throws CerberusException 
      */
     void compareListAndInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException;
+
+    Answer duplicateList(List<TestCaseLabel> dataList, String test, String testCase);
 }

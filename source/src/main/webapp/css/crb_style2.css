@@ -804,3 +804,7 @@ table.dataTable thead th {
   z-index: 9999;
 }
 
+.tooltip {
+    position: fixed;
+}
+

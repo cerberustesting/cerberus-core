@@ -20,7 +20,6 @@
                                 </button>
                             </div>
                         </div>
-                        <h3 class="modal-subtitle" name="testInfoField">Test Info</h3>
                         <div class="row">
                             <div class="form-group form-group-sm col-xs-3">
                                 <label class="control-label" for="test" name="testField">Test</label>
@@ -31,87 +30,107 @@
                                 <input type="text" class="form-control input-sm" name="testCase" id="testCase">
                             </div>
                         </div>
-                        <h3 class="modal-subtitle" name="testCaseInfoField">TestCase Info</h3>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="origin" name="originField">Origin</label>
-                                <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabDescritpion">Description</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabInformation">Information</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabParameters">Parameters</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-4" id="createTab4Text" name="tabActivation">Activation Criteria</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-5" id="createTab5Text" name="tabCountry">Countries</a></li>
+                            <!--<li><a data-toggle="tab" href="#tabsCreate-6" id="createTab6Text" name="tabLabel">Label</a></li>-->
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-1">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-10">
+                                        <label for="shortDesc" name="shortDescField">TestCase short description</label>
+                                        <input type="text" class="form-control input-sm" name="shortDesc" id="shortDesc"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-6">
+                                        <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
+                                        <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control" style="height: 200px"></textarea> 
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-6">
+                                        <label for="howTo" name="howToField">How to</label>
+                                        <textarea id="howTo" name="howTo" class="form-control" style="height: 200px"></textarea> 
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="refOrigin" name="refOriginField">Ref Origin</label>
-                                <input type="text" class="form-control input-sm" name="refOrigin" id="refOrigin"/>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-2">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="origin" name="originField">Origin</label>
+                                        <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="refOrigin" name="refOriginField">Ref Origin</label>
+                                        <input type="text" class="form-control input-sm" name="refOrigin" id="refOrigin"/>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="project" name="projectField">Project</label>
+                                        <select type="text" class="form-control input-sm" name="project" id="project"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="ticket" name="ticketField">Ticket</label>
+                                        <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="function" name="functionField">Function</label>
+                                        <input type="text" class="form-control input-sm" name="function" id="function"/>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="project" name="projectField">Project</label>
-                                <select type="text" class="form-control input-sm" name="project" id="project"></select>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-3">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="application" name="applicationField">Application</label>
+                                        <select type="text" class="form-control input-sm" name="application" id="application"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="status" name="statusField">Status</label>
+                                        <select type="text" class="form-control input-sm" name="status" id="status"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-2">
+                                        <label for="group" name="groupField">Group</label>
+                                        <select type="text" class="form-control input-sm" name="group" id="group">
+                                        </select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <label for="priority" name="priorityField">Priority</label>
+                                        <select type="text" class="form-control input-sm" name="priority" id="priority"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <label for="bugId" name="bugIdField">Bug ID</label>
+                                        <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <label for="actQA" name="actQAField">Active QA</label>
+                                        <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
+                                        </select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <label for="actUAT" name="actUATField">Active UAT</label>
+                                        <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <label for="actProd" name="actProdField">Active Prod</label>
+                                        <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
+                                    </div>
+                                    <input type="hidden" name="active" value="Y">
+                                </div>
                             </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="ticket" name="ticketField">Ticket</label>
-                                <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-4">
                             </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="function" name="functionField">Function</label>
-                                <input type="text" class="form-control input-sm" name="function" id="function"/>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-5">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
+                                        <div id="countryList" name="countryList" style="margin-top: 5px;"></div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <h3 class="modal-subtitle" name="testCaseParameterField">TestCase Parameters</h3>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-3">
-                                <label for="application" name="applicationField">Application</label>
-                                <select type="text" class="form-control input-sm" name="application" id="application"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="status" name="statusField">Status</label>
-                                <select type="text" class="form-control input-sm" name="status" id="status"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-2">
-                                <label for="group" name="groupField">Group</label>
-                                <select type="text" class="form-control input-sm" name="group" id="group">
-                                </select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="priority" name="priorityField">Priority</label>
-                                <select type="text" class="form-control input-sm" name="priority" id="priority"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="bugId" name="bugIdField">Bug ID</label>
-                                <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="actQA" name="actQAField">Active QA</label>
-                                <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
-                                </select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="actUAT" name="actUATField">Active UAT</label>
-                                <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
-                            </div>
-                            <div class="form-group form-group-sm col-xs-1">
-                                <label for="actProd" name="actProdField">Active Prod</label>
-                                <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
-                            </div>
-                            <input type="hidden" name="active" value="Y">
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6">
-                                <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
-                                <div id="countryList" name="countryList" style="margin-top: 5px;"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-10">
-                                <label for="shortDesc" name="shortDescField">TestCase short description</label>
-                                <input type="text" class="form-control input-sm" name="shortDesc" id="shortDesc"/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group form-group-sm col-xs-6">
-                                <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
-                                <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control" style="height: 200px"></textarea> 
-                            </div>
-                            <div class="form-group form-group-sm col-xs-6">
-                                <label for="howTo" name="howToField">How to</label>
-                                <textarea id="howTo" name="howTo" class="form-control" style="height: 200px"></textarea> 
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-6">
                             </div>
                         </div>
                     </div>

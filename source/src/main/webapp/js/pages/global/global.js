@@ -1527,6 +1527,31 @@ function updateEntry(servletName, form, tableID) {
 }
 
 /**
+ * Duplicate the entry and display the message retrieved by the ajax call (does not change pagination)
+ * @param {type} servletName
+ * @param {type} form
+ * @param {type} tableID
+ * @returns {void}
+ */
+function duplicateEntry(servletName, form, tableID) {
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(form.serialize());
+
+    var jqxhr = $.post(servletName, dataForm);
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal("#duplicateEntryModal");
+        if (getAlertType(data.messageType) === 'success') {
+            var oTable = $(tableID).dataTable();
+            oTable.fnDraw(false);
+            showMessage(data);
+            $("#duplicateEntryModal").modal('hide');
+        } else {
+            showMessage(data, $("#duplicateEntryModal"));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
  * This function is used to stop the propagtion of the click on the "?" anchor present on dataTables header so when we click on it, the sorting of the column doesn't change.
  * It should be called directly in the <a> tag with the onclick attribute
  * @param {type} event

@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -85,4 +86,10 @@ public interface ITestCaseStepService {
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
     
     AnswerList readByTestTestCase(String test, String testcase);
+    
+    Answer create(TestCaseStep object);
+    
+    Answer createList(List<TestCaseStep> objectList);
+
+    Answer duplicateList(List<TestCaseStep> objectList, String test, String testCase);
 }

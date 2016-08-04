@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -57,4 +58,6 @@ public interface ITestCaseStepDAO {
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
     
     AnswerList readByTestTestCase(String test, String testcase);
+    
+    Answer create(TestCaseStep testCaseStep);
 }

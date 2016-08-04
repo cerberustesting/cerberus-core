@@ -28,6 +28,7 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,5 +150,32 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     @Override
     public AnswerList readByTestTestCase(String test, String testcase) {
         return testCaseStepActionControlDao.readByTestTestCase(test, testcase);
+    }
+
+    @Override
+    public Answer create(TestCaseStepActionControl object) {
+        return testCaseStepActionControlDao.create(object);
+    }
+
+    @Override
+    public Answer createList(List<TestCaseStepActionControl> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseStepActionControl objectToCreate : objectList) {
+            ans = create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer duplicateList(List<TestCaseStepActionControl> objectList, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseStepActionControl> listToCreate = new ArrayList();
+        for (TestCaseStepActionControl objectToDuplicate : objectList) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestCase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        ans = createList(listToCreate);
+        return ans;
     }
 }

@@ -178,5 +178,17 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         }
     }
 
+    @Override
+    public Answer duplicateList(List<TestCaseLabel> dataList, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseLabel> listToCreate = new ArrayList();
+        for (TestCaseLabel objectToDuplicate : dataList) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestcase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        return createList(listToCreate);
+    }
+
     
 }

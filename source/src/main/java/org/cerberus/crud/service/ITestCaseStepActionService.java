@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -52,4 +53,10 @@ public interface ITestCaseStepActionService {
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList, boolean duplicate) throws CerberusException;
     
     public AnswerList readByTestTestCase(String test, String testcase);
+    
+    Answer create(TestCaseStepAction object);
+    
+    Answer createList(List<TestCaseStepAction> objectList);
+
+    Answer duplicateList(List<TestCaseStepAction> objectList, String test, String testCase);
 }

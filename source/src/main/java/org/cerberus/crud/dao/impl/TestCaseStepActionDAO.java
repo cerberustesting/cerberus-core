@@ -36,6 +36,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -296,7 +297,7 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     }
 
     @Override
-    public void create(TestCaseStepAction testCaseStepAction) throws CerberusException {
+    public void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
         query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `action`, `object`, `property`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
@@ -484,6 +485,44 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             }
         }
         return false;
+    }
+
+    @Override
+    public Answer create(TestCaseStepAction testCaseStepAction) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `action`, `object`, `property`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            // Prepare and execute query
+            preStat.setString(1, testCaseStepAction.getTest());
+            preStat.setString(2, testCaseStepAction.getTestCase());
+            preStat.setInt(3, testCaseStepAction.getStep());
+            preStat.setInt(4, testCaseStepAction.getSequence());
+            preStat.setInt(5, testCaseStepAction.getSort());
+            preStat.setString(6, testCaseStepAction.getAction());
+            preStat.setString(7, testCaseStepAction.getObject());
+            preStat.setString(8, testCaseStepAction.getProperty());
+            preStat.setString(9, testCaseStepAction.getForceExeStatus());
+            preStat.setString(10, testCaseStepAction.getDescription());
+            preStat.setString(11, testCaseStepAction.getScreenshotFilename());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create TestCaseStepAction: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 
     private TestCaseStepAction loadFromResultSet(ResultSet resultSet) throws SQLException {

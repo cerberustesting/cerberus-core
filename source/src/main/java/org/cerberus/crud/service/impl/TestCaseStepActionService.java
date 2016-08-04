@@ -28,6 +28,7 @@ import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +55,7 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     @Override
     public void insertTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
-        testCaseStepActionDAO.create(testCaseStepAction);
+        testCaseStepActionDAO.createTestCaseStepAction(testCaseStepAction);
     }
 
     @Override
@@ -150,5 +151,32 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     @Override
     public AnswerList  readByTestTestCase(String test, String testcase) {
        return testCaseStepActionDAO.readByTestTestCase(test, testcase);
+    }
+    
+    @Override
+    public Answer create(TestCaseStepAction object) {
+        return testCaseStepActionDAO.create(object);
+    }
+    
+    @Override
+    public Answer createList(List<TestCaseStepAction> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseStepAction objectToCreate : objectList) {
+            ans = create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer duplicateList(List<TestCaseStepAction> objectList, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseStepAction> listToCreate = new ArrayList();
+        for (TestCaseStepAction objectToDuplicate : objectList) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestCase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        ans = createList(listToCreate);
+        return ans;
     }
 }
