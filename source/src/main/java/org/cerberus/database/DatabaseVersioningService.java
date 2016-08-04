@@ -6318,7 +6318,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'rightClick', 'en', 'Right click on an element.', '<code class=\\'doc-fixed\\'>rightClick</code> will allow you to right click on an element inside the current page.<br><br>Usage :<br>\\n<doc class=\\\"usage\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Field</th>\\n        <th class=\\'ex\\'>Usage</th>\\n        <tr>\\n            <td class=\\'ex\\'>Object</td>\\n            <td class=\\'ex\\'>Identifier and name of the element to right click in the form of : identifier=html_reference.</td>\\n        </tr>\\n        <tr>\\n            <td class=\\'ex\\'>Property</td>\\n            <td class=\\'ex\\'>Property name (only used to activate or not right click depending on if the property exist for the\\n                country).\\n            </td>\\n        </tr>\\n    </table>\\n</doc><br><br>Examples :<br>\\n<doc class=\\\"examples\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Object</th>\\n        <th class=\\'ex\\'>Property</th>\\n        <th class=\\'ex\\'>Result</th>\\n        <tr>\\n            <td class=\\'ex\\'>id=html_reference</td>\\n            <td class=\\'ex\\'></td>\\n            <td class=\\'ex\\'>element that has id equal to html_reference will be right clicked</td>\\n        </tr>\\n    </table>\\n</doc>');\n");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // 859 documentation on new Test case list page buttons
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaselist', 'btn_duplicate', '', 'en', 'Duplicate Test Case', '')");
+        SQLS.append(",('page_testcaselist', 'btn_duplicate', '', 'fr', 'Dupliquer le Cas de Test', '')");
+        SQLS.append(",('page_testcaselist', 'btn_editLabel', '', 'en', 'Edit Test Case labels', '')");
+        SQLS.append(",('page_testcaselist', 'btn_editLabel', '', 'fr', 'Modifier les étiquettes du Cas de Test', '')");
+        SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'en', 'Run Test Case', '')");
+        SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'fr', 'Exécuter le Cas de Test', '')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
