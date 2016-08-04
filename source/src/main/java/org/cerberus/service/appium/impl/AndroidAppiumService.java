@@ -82,6 +82,7 @@ public class AndroidAppiumService extends AppiumService {
                     Matcher candidateLine = IS_KEYBOARD_OPEN_PATTERN.matcher(scanner.nextLine());
                     if (candidateLine.matches() && IS_KEYBOARD_OPEN_VALUE.equals(candidateLine.group(1))) {
                         isKeyboardOpened = true;
+                        break;
                     }
                 }
             }
