@@ -6188,7 +6188,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `countryenvironmentparameters` CHANGE COLUMN `URLLOGIN` `URLLOGIN` VARCHAR(150) NOT NULL DEFAULT '' ;");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add columns in testdatalib and testdatatlibdata to related to CSV type.
         // Add CSV TESTDATATYPE invariant 
         // Add documentation
@@ -6198,7 +6198,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `CsvUrl` VARCHAR(250) NOT NULL DEFAULT '' AFTER `Envelope`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalibdata` "); 
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
         SQLS.append("ADD COLUMN `ColumnPosition` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ParsingAnswer`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -6220,9 +6220,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(", ('testdatalib', 'separator', '', 'fr', 'Séparateur', '<p>Séparateur à utiliser pour le décryptage du CSV.</p>')");
         SQLS.append(", ('testdatalib', 'separator', '', 'en', 'Separator', '<p>Separator used parsing a CSV.</p>')");
         SQLInstruction.add(SQLS.toString());
-        
-        
-        //854 label table creation
+
+        // label table creation
+        //-- ------------------------ 854
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `label` (");
         SQLS.append("`Id` INT NOT NULL AUTO_INCREMENT,");
@@ -6239,8 +6239,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC))");
         SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
-        
-        //854 testcaselabel table creation
+
+        // testcaselabel table creation
+        //-- ------------------------ 855
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `testcaselabel` (`Id` INT NOT NULL AUTO_INCREMENT,`Test` varchar(45) NOT NULL,`TestCase` varchar(45) NOT NULL,`LabelId` INT NOT NULL,");
         SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
@@ -6255,8 +6256,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE) ");
         SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
-        
-        //855 documentation on label
+
+        // Documentation on label
+        //-- ------------------------ 856
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`,`DocDesc`) VALUES ");
         SQLS.append("('label', 'id', 'en', 'ID', '')");
@@ -6304,14 +6306,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('label', 'system', 'en', 'System', '')");
         SQLS.append(",('label', 'system', 'fr', 'Système', '')");
         SQLInstruction.add(SQLS.toString());
-        
-        //856 Add a sample tag
+
+        // Add a sample tag
+        //-- ------------------------ 857
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO label (`system`,`label`, `color`,`UsrCreated`, `UsrModif`) ");
         SQLS.append("SELECT `value` , 'MyFirstLabel', '#000000' , 'admin' , 'admin' from invariant where idname = 'SYSTEM'");
         SQLInstruction.add(SQLS.toString());
 
-        // 857-858 add the "rightClick" action
+        // Add the "rightClick" action
+        //-- ------------------------ 858-859
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'rightClick', '310', 'Right click on an element', 'Right click');\n");
         SQLInstruction.add(SQLS.toString());
@@ -6319,7 +6323,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'rightClick', 'en', 'Right click on an element.', '<code class=\\'doc-fixed\\'>rightClick</code> will allow you to right click on an element inside the current page.<br><br>Usage :<br>\\n<doc class=\\\"usage\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Field</th>\\n        <th class=\\'ex\\'>Usage</th>\\n        <tr>\\n            <td class=\\'ex\\'>Object</td>\\n            <td class=\\'ex\\'>Identifier and name of the element to right click in the form of : identifier=html_reference.</td>\\n        </tr>\\n        <tr>\\n            <td class=\\'ex\\'>Property</td>\\n            <td class=\\'ex\\'>Property name (only used to activate or not right click depending on if the property exist for the\\n                country).\\n            </td>\\n        </tr>\\n    </table>\\n</doc><br><br>Examples :<br>\\n<doc class=\\\"examples\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Object</th>\\n        <th class=\\'ex\\'>Property</th>\\n        <th class=\\'ex\\'>Result</th>\\n        <tr>\\n            <td class=\\'ex\\'>id=html_reference</td>\\n            <td class=\\'ex\\'></td>\\n            <td class=\\'ex\\'>element that has id equal to html_reference will be right clicked</td>\\n        </tr>\\n    </table>\\n</doc>');\n");
         SQLInstruction.add(SQLS.toString());
 
-        // 859 documentation on new Test case list page buttons
+        // Documentation on new Test case list page buttons
+        //-- ------------------------ 860
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('page_testcaselist', 'btn_duplicate', '', 'en', 'Duplicate Test Case', '')");
@@ -6328,6 +6333,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist', 'btn_editLabel', '', 'fr', 'Modifier les étiquettes du Cas de Test', '')");
         SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'en', 'Run Test Case', '')");
         SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'fr', 'Exécuter le Cas de Test', '')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New sql timeout parameters.
+        //-- ------------------------ 861
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append(" ('', 'cerberus_propertyexternalsql_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL executed from a property calculation will fail.')");
+        SQLS.append(",('', 'cerberus_actionexecutesqlupdate_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlUpdate will fail.')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

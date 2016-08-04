@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +104,8 @@ public class SQLService implements ISQLService {
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
                     try {
-                        List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit());
+                        Integer sqlTimeout = parameterService.getParameterByKey("cerberus_externalsql_timeout", system, 60);
+                        List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit(), sqlTimeout);
 
                         if (list != null && !list.isEmpty()) {
                             if (testCaseProperties.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) {
@@ -194,8 +196,9 @@ public class SQLService implements ISQLService {
                             row.put(tdld.getColumn(), tdld.getSubData());
                         }
 
+                        Integer sqlTimeout = parameterService.getParameterByKey("cerberus_propertyexternalsql_timeout", system, 60);
                         //performs a query that returns several rows containing n columns
-                        AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, rowLimit, system, row);
+                        AnswerList responseList = this.queryDatabaseNColumns(connectionName, sql, rowLimit, sqlTimeout, system, row);
 
                         //if the query returns sucess then we can get the data
                         if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
@@ -322,17 +325,8 @@ public class SQLService implements ISQLService {
         return answer;
     }
 
-    /**
-     * Performs a query in the database
-     *
-     * @param connectionName
-     * @param sql
-     * @param limit
-     * @return
-     * @throws CerberusEventException
-     */
     @Override
-    public List<String> queryDatabase(String connectionName, String sql, int limit) throws CerberusEventException {
+    public List<String> queryDatabase(String connectionName, String sql, int limit, int defaultTimeOut) throws CerberusEventException {
         List<String> list = null;
         boolean throwEx = false;
         int maxSecurityFetch = 100;
@@ -343,6 +337,7 @@ public class SQLService implements ISQLService {
         Connection connection = this.databaseSpring.connect(connectionName);
         try {
             PreparedStatement preStat = connection.prepareStatement(sql);
+            preStat.setQueryTimeout(defaultTimeOut);
             if (limit > 0 && limit < maxSecurityFetch) {
                 preStat.setMaxRows(limit);
             } else {
@@ -360,6 +355,7 @@ public class SQLService implements ISQLService {
              }
              */
             try {
+                LOG.info("Sending to external Database (queryDatabase) : '" + connectionName + "' SQL '" + sql + "'");
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<String>();
                 try {
@@ -373,6 +369,12 @@ public class SQLService implements ISQLService {
                 } finally {
                     resultSet.close();
                 }
+            } catch (SQLTimeoutException exception) {
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_TIMEOUT);
+                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(defaultTimeOut)));
+                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+
             } catch (SQLException exception) {
                 MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
@@ -429,199 +431,8 @@ public class SQLService implements ISQLService {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
-        //TODO clean code
-        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
-                tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry());
-
-        if (!pastValues.isEmpty()) {
-            for (String value : list) {
-                if (!pastValues.contains(value)) {
-                    return value;
-                }
-            }
-        } else {
-            return list.get(0);
-        }
-        return null;
-    }
-
-    private String calculateNatureNotInUse(List<String> list, String propName, TestCaseExecution tCExecution) {
-        try {
-//            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
-            this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
-            // boucle sur list
-            for (String value : list) {
-                /**
-                 * TODO
-                 */
-//        List<TestCaseExecutionData> pastValues = this.testCaseExecutionDataService.findTestCaseExecutionDataByCriteria1(propName, value, exelist);
-            }
-        } catch (CerberusException ex) {
-            return list.get(0);
-        }
-
-        return null;
-    }
-
-    private String calculateNatureNotInUseNew(List<String> list, String propName, TestCaseExecution tCExecution) {
-        boolean notFound = true;
-        TestCaseExecutionData pastValue;
-
-        try {
-            List<TestCaseExecution> testCaseExecutionsLastTenMinutes = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
-
-            // loop on list
-            for (String value : list) {
-                if (value != null) {
-                    // loop on past execution.
-                    for (TestCaseExecution testCaseExecution : testCaseExecutionsLastTenMinutes) {
-                        // retrieve past value
-                        pastValue = this.testCaseExecutionDataDAO.findTestCaseExecutionDataByKey(testCaseExecution.getId(), propName);
-
-                        // compare it, if equal
-                        if (value.equals(pastValue.getValue())) {
-                            // modify notFound boolean
-                            notFound = false;
-
-                            // and break loop
-                            break;
-                        }
-                    }
-
-                    // if value not found in the last 10 minutes execution, we use it now !
-                    if (notFound) {
-                        return value;
-                    }
-                }
-            }
-        } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
-        }
-
-        // if issue during search or if all are already used, we use the first
-        return list.get(0);
-    }
-
-    private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, String system, HashMap<String, String> columnsToGet) {
-        AnswerList listResult = new AnswerList();
-        List<HashMap<String, String>> list;
-        int maxSecurityFetch = 100;
-        try {
-            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
-            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
-        } catch (CerberusException ex) {
-            LOG.error(ex);
-        }
-        int maxFetch = maxSecurityFetch;
-        if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
-            maxFetch = rowLimit;
-        } else {
-            maxFetch = maxSecurityFetch;
-        }
-        int nbFetch = 0;
-        int nbColMatch = 0;
-        String error_desc = "";
-
-        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
-        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-
-        Connection connection = this.databaseSpring.connect(connectionName);
-        try {
-            PreparedStatement preStat = connection.prepareStatement(sql);
-            try {
-                LOG.info("Sending to external Database : '" + connectionName + "' SQL '" + sql + "'");
-                ResultSet resultSet = preStat.executeQuery();
-
-                int nrColumns = resultSet.getMetaData().getColumnCount();
-
-                list = new ArrayList<HashMap<String, String>>();
-                try {
-                    while ((resultSet.next()) && (nbFetch < maxFetch)) {
-
-                        nbColMatch = 0;
-                        HashMap<String, String> row = new HashMap<String, String>();
-
-                        for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
-                            String column = entry.getKey();
-                            String name = entry.getValue();
-                            try {
-                                String valueSQL = resultSet.getString(column);
-                                row.put(name, valueSQL); // We put the result of the subData.
-                                nbColMatch++;
-                            } catch (SQLException exception) {
-                                if (nbFetch == 0) {
-                                    if ("".equals(error_desc)) {
-                                        error_desc = column;
-                                    } else {
-                                        error_desc = error_desc + ", " + column;
-                                    }
-                                }
-                            }
-                        }
-
-                        list.add(row);
-                        nbFetch++;
-
-                    }
-                    listResult.setDataList(list);
-                    listResult.setTotalRows(list.size());
-
-                    if (list.isEmpty()) { // No data was fetched.
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA);
-                    } else if (nbColMatch == 0) { // None of the columns could be match.
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
-                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
-                    } else if (!("".equals(error_desc))) { // At least a column could not be parsed
-                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
-                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
-                    }
-
-                } catch (SQLException exception) {
-                    MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-
-                } finally {
-                    if (resultSet != null) {
-                        resultSet.close();
-                    }
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
-                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
-                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
-                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-            } finally {
-                if (preStat != null) {
-                    preStat.close();
-                }
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-        } catch (NullPointerException exception) {
-            //TODO check where exception occur
-            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
-            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        listResult.setResultMessage(msg);
-        return listResult;
-    }
-
     @Override
-    public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql) {
+    public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql, int defaultTimeOut) {
         String connectionName;
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
@@ -637,9 +448,18 @@ public class SQLService implements ISQLService {
                 Connection connection = this.databaseSpring.connect(connectionName);
                 try {
                     PreparedStatement preStat = connection.prepareStatement(sql);
+                    preStat.setQueryTimeout(defaultTimeOut);
+
                     try {
+                        LOG.info("Sending to external Database (executeUpdate) : '" + connectionName + "' SQL '" + sql + "'");
                         preStat.executeUpdate();
                         msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                    } catch (SQLTimeoutException exception) {
+                        MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
+                        msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                        msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(defaultTimeOut)));
+                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                     } catch (SQLException exception) {
                         MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
                         msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
@@ -735,5 +555,209 @@ public class SQLService implements ISQLService {
             msg.setDescription(msg.getDescription().replace("%DB%", database));
         }
         return msg;
+    }
+
+    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+        //TODO clean code
+        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
+                tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
+                tCExecution.getCountry());
+
+        if (!pastValues.isEmpty()) {
+            for (String value : list) {
+                if (!pastValues.contains(value)) {
+                    return value;
+                }
+            }
+        } else {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    private String calculateNatureNotInUse(List<String> list, String propName, TestCaseExecution tCExecution) {
+        try {
+//            List<TCExecution> exelist = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+            this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+            // boucle sur list
+            for (String value : list) {
+                /**
+                 * TODO
+                 */
+//        List<TestCaseExecutionData> pastValues = this.testCaseExecutionDataService.findTestCaseExecutionDataByCriteria1(propName, value, exelist);
+            }
+        } catch (CerberusException ex) {
+            return list.get(0);
+        }
+
+        return null;
+    }
+
+    private String calculateNatureNotInUseNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+        boolean notFound = true;
+        TestCaseExecutionData pastValue;
+
+        try {
+            List<TestCaseExecution> testCaseExecutionsLastTenMinutes = this.testCaseExecutionService.findTCExecutionbyCriteria1(DateUtil.getMySQLTimestampTodayDeltaMinutes(10), "%", "%", "%", "%", "%", "PE", "%");
+
+            // loop on list
+            for (String value : list) {
+                if (value != null) {
+                    // loop on past execution.
+                    for (TestCaseExecution testCaseExecution : testCaseExecutionsLastTenMinutes) {
+                        // retrieve past value
+                        pastValue = this.testCaseExecutionDataDAO.findTestCaseExecutionDataByKey(testCaseExecution.getId(), propName);
+
+                        // compare it, if equal
+                        if (value.equals(pastValue.getValue())) {
+                            // modify notFound boolean
+                            notFound = false;
+
+                            // and break loop
+                            break;
+                        }
+                    }
+
+                    // if value not found in the last 10 minutes execution, we use it now !
+                    if (notFound) {
+                        return value;
+                    }
+                }
+            }
+        } catch (CerberusException exception) {
+            MyLogger.log(PropertyService.class.getName(), Level.ERROR, exception.toString());
+        }
+
+        // if issue during search or if all are already used, we use the first
+        return list.get(0);
+    }
+
+    private AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet) {
+        AnswerList listResult = new AnswerList();
+        List<HashMap<String, String>> list;
+        int maxSecurityFetch = 100;
+        try {
+            String maxSecurityFetch1 = parameterService.findParameterByKey("cerberus_testdatalib_fetchmax", system).getValue();
+            maxSecurityFetch = Integer.valueOf(maxSecurityFetch1);
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        int maxFetch = maxSecurityFetch;
+        if (rowLimit > 0 && rowLimit < maxSecurityFetch) {
+            maxFetch = rowLimit;
+        } else {
+            maxFetch = maxSecurityFetch;
+        }
+        int nbFetch = 0;
+        int nbColMatch = 0;
+        String error_desc = "";
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
+        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+
+        Connection connection = this.databaseSpring.connect(connectionName);
+        try {
+            PreparedStatement preStat = connection.prepareStatement(sql);
+            preStat.setQueryTimeout(defaultTimeOut);
+            try {
+                LOG.info("Sending to external Database (queryDatabaseNColumns) : '" + connectionName + "' SQL '" + sql + "'");
+                ResultSet resultSet = preStat.executeQuery();
+
+                int nrColumns = resultSet.getMetaData().getColumnCount();
+
+                list = new ArrayList<HashMap<String, String>>();
+                try {
+                    while ((resultSet.next()) && (nbFetch < maxFetch)) {
+
+                        nbColMatch = 0;
+                        HashMap<String, String> row = new HashMap<String, String>();
+
+                        for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
+                            String column = entry.getKey();
+                            String name = entry.getValue();
+                            try {
+                                String valueSQL = resultSet.getString(column);
+                                row.put(name, valueSQL); // We put the result of the subData.
+                                nbColMatch++;
+                            } catch (SQLException exception) {
+                                if (nbFetch == 0) {
+                                    if ("".equals(error_desc)) {
+                                        error_desc = column;
+                                    } else {
+                                        error_desc = error_desc + ", " + column;
+                                    }
+                                }
+                            }
+                        }
+
+                        list.add(row);
+                        nbFetch++;
+
+                    }
+                    listResult.setDataList(list);
+                    listResult.setTotalRows(list.size());
+
+                    if (list.isEmpty()) { // No data was fetched.
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NODATA);
+                    } else if (nbColMatch == 0) { // None of the columns could be match.
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_NOCOLUMNMATCH);
+                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
+                    } else if (!("".equals(error_desc))) { // At least a column could not be parsed
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SQL_COLUMNNOTMATCHING);
+                        msg.setDescription(msg.getDescription().replace("%BADCOLUMNS%", error_desc));
+                    }
+
+                } catch (SQLTimeoutException exception) {
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_TIMEOUT);
+                    msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                    msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(defaultTimeOut)));
+                    msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+
+                } catch (SQLException exception) {
+                    MyLogger.log(SQLService.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLTimeoutException exception) {
+                LOG.warn("TimeOut " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_TIMEOUT);
+                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(defaultTimeOut)));
+                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+            } catch (SQLException exception) {
+                LOG.warn(exception.toString());
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_ERROR);
+                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+        } catch (NullPointerException exception) {
+            //TODO check where exception occur
+            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_CANNOTACCESSJDBC);
+            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
+            }
+        }
+        listResult.setResultMessage(msg);
+        return listResult;
     }
 }

@@ -143,8 +143,8 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
             res = this.doActionRightClick(tCExecution, object, property);
-        }
-        else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
+            
+        } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
@@ -860,7 +860,8 @@ public class ActionService implements IActionService {
                 servicePath = soapLibrary.getServicePath();
             }
             /**
-             * Decode Envelope, ServicePath and Method replacing properties encapsulated with %
+             * Decode Envelope, ServicePath and Method replacing properties
+             * encapsulated with %
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
             String decodedServicePath = soapLibrary.getServicePath();
@@ -1027,8 +1028,9 @@ public class ActionService implements IActionService {
         if (object.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
         } else {
+            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlupdate_timeout", tCExecution.getApplication().getSystem(), 60);
             return sqlService.executeUpdate(tCExecution.getApplication().getSystem(),
-                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
+                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property, sqlTimeout);
         }
     }
 

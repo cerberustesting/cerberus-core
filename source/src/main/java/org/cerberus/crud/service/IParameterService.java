@@ -31,6 +31,8 @@ import org.cerberus.exception.CerberusException;
 public interface IParameterService {
 
     Parameter findParameterByKey(String key, String system) throws CerberusException;
+    
+    Integer getParameterByKey(String key, String system, Integer defaultValue);
 
     List<Parameter> findAllParameter() throws CerberusException;
 

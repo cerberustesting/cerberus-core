@@ -34,19 +34,14 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface ISQLService {
 
-    TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution);
-
-    List<String> queryDatabase(String connectionName, String sql, int limit) throws CerberusEventException;
-
     /**
-     * @param list List of String in which it will take a value randomly
-     * @return A Random String from a List of String
+     *
+     * @param testCaseExecutionData
+     * @param testCaseProperties
+     * @param tCExecution
+     * @return
      */
-    String getRandomStringFromList(List<String> list);
-
-    String getRandomNewStringFromList(List<String> resultset, List<String> pastValues);
-
-    String getRandomStringNotInUse(List<String> resultSet, List<String> valuesInUse);
+    TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution);
 
     /**
      * Performs an SQL query that retrieves information from several columns.
@@ -62,12 +57,66 @@ public interface ISQLService {
      * @param tCExecution - Execution context is required for RANDOMNEW and
      * NOTINUSE Natures (that requires test, testcase, build, environment,
      * etc,...)
-     * @param dataLibID ID of the dataLib beeing calculated. This is used to get the detail list of columns to retreive.
+     * @param dataLibID ID of the dataLib beeing calculated. This is used to get
+     * the detail list of columns to retreive.
      * @return a row with several columns
      */
     AnswerItem<HashMap<String, String>> calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution, Integer dataLibID);
 
-    public MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
+    /**
+     * Performs a query in the database
+     *
+     * @param connectionName
+     * @param sql
+     * @param limit
+     * @param defaultTimeOut
+     * @return
+     * @throws CerberusEventException
+     */
+    List<String> queryDatabase(String connectionName, String sql, int limit, int defaultTimeOut) throws CerberusEventException;
 
-    public MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
+    /**
+     * @param list List of String in which it will take a value randomly
+     * @return A Random String from a List of String
+     */
+    String getRandomStringFromList(List<String> list);
+
+    /**
+     *
+     * @param resultset
+     * @param pastValues
+     * @return
+     */
+    String getRandomNewStringFromList(List<String> resultset, List<String> pastValues);
+
+    /**
+     *
+     * @param resultSet
+     * @param valuesInUse
+     * @return
+     */
+    String getRandomStringNotInUse(List<String> resultSet, List<String> valuesInUse);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param db
+     * @param sql
+     * @param defaultTimeOut
+     * @return
+     */
+    MessageEvent executeUpdate(String system, String country, String environment, String db, String sql, int defaultTimeOut);
+
+    /**
+     *
+     * @param system
+     * @param country
+     * @param environment
+     * @param db
+     * @param sql
+     * @return
+     */
+    MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
 }

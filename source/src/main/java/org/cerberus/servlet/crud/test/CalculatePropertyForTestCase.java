@@ -41,6 +41,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -158,7 +159,9 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
                         if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
                             ISQLService sqlService = appContext.getBean(ISQLService.class);
-                            result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1).get(0);
+                            IParameterService parameterService = appContext.getBean(IParameterService.class);
+                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_propertyexternalsql_timeout", system, 60);
+                            result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1, sqlTimeout).get(0);
                             description = sl.getDescription();
                         }
                     }
