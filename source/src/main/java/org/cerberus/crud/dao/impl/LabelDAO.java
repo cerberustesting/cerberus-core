@@ -126,7 +126,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" or `usrCreated` like ?");
             searchSQL.append(" or `dateCreated` like ?");
             searchSQL.append(" or `usrModif` like ?");
-            searchSQL.append(" or `dateModif` like ?");
+            searchSQL.append(" or `dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -367,7 +367,7 @@ public class LabelDAO implements ILabelDAO {
             searchSQL.append(" or `usrCreated` like ?");
             searchSQL.append(" or `dateCreated` like ?");
             searchSQL.append(" or `usrModif` like ?");
-            searchSQL.append(" or `dateModif` like ?");
+            searchSQL.append(" or `dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");

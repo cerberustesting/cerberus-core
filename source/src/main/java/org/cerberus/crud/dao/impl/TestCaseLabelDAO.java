@@ -130,7 +130,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             searchSQL.append(" or tel.`usrCreated` like ?");
             searchSQL.append(" or tel.`dateCreated` like ?");
             searchSQL.append(" or tel.`usrModif` like ?");
-            searchSQL.append(" or tel.`dateModif` like ?");
+            searchSQL.append(" or tel.`dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
