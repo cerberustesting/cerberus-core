@@ -27,6 +27,10 @@ import org.cerberus.crud.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.springframework.stereotype.Service;
 
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Specific Android implementation of the {@link AppiumService}
  * <p>
@@ -39,6 +43,21 @@ public class AndroidAppiumService extends AppiumService {
      * The associated {@link Logger} to this class
      */
     private static final Logger LOGGER = Logger.getLogger(AndroidAppiumService.class);
+
+    /**
+     * Specific ADB command to know if keyboard is currently opened from the connected device
+     */
+    private static final String IS_KEYBOAD_OPEN_COMMAND = "adb shell dumpsys input_method | grep mInputShown";
+
+    /**
+     * {@link #IS_KEYBOARD_OPEN_PATTERN} {@link Pattern} related to retrieve keyboard open state
+     */
+    private static final Pattern IS_KEYBOARD_OPEN_PATTERN = Pattern.compile(".*mInputShown=([^\\s]+).*");
+
+    /**
+     * The value from #IS_KEYBOAD_OPEN_COMMAND if keyboard is currently opened from the connected device
+     */
+    private static final String IS_KEYBOARD_OPEN_VALUE = "true";
 
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
@@ -56,8 +75,23 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-            ((AndroidDriver) session.getAppiumDriver()).hideKeyboard();
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
+            // First, check if keyboard is currently opened
+            boolean isKeyboardOpened = false;
+            try (Scanner scanner = new Scanner(Runtime.getRuntime().exec(IS_KEYBOAD_OPEN_COMMAND).getInputStream())) {
+                while (scanner.hasNext()) {
+                    Matcher candidateLine = IS_KEYBOARD_OPEN_PATTERN.matcher(scanner.nextLine());
+                    if (candidateLine.matches() && IS_KEYBOARD_OPEN_VALUE.equals(candidateLine.group(1))) {
+                        isKeyboardOpened = true;
+                    }
+                }
+            }
+
+            // Then hide keyboard if necessary
+            if (isKeyboardOpened) {
+                session.getAppiumDriver().hideKeyboard();
+                return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD_ALREADYHIDDEN);
         } catch (Exception e) {
             LOGGER.warn("Unable to hide keyboard due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
