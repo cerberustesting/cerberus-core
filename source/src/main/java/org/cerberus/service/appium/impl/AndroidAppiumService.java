@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.stereotype.Service;
 
 import java.util.Scanner;
@@ -45,24 +46,23 @@ public class AndroidAppiumService extends AppiumService {
     private static final Logger LOGGER = Logger.getLogger(AndroidAppiumService.class);
 
     /**
-     * Specific ADB command to know if keyboard is currently opened from the connected device
+     * The {@link Pattern} related error when keyboard is absent
      */
-    private static final String IS_KEYBOAD_OPEN_COMMAND = "adb shell dumpsys input_method | grep mInputShown";
-
-    /**
-     * {@link #IS_KEYBOARD_OPEN_PATTERN} {@link Pattern} related to retrieve keyboard open state
-     */
-    private static final Pattern IS_KEYBOARD_OPEN_PATTERN = Pattern.compile(".*mInputShown=([^\\s]+).*");
-
-    /**
-     * The value from #IS_KEYBOAD_OPEN_COMMAND if keyboard is currently opened from the connected device
-     */
-    private static final String IS_KEYBOARD_OPEN_VALUE = "true";
+    private static final Pattern IS_KEYBOARD_ABSENT_ERROR_PATTERN = Pattern.compile("Original error: Soft keyboard not present");
 
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
+        // First, check if key name exists
+        KeyCode keyToPress;
         try {
-            ((AndroidDriver) session.getAppiumDriver()).pressKeyCode(KeyCode.valueOf(keyName).getCode());
+            keyToPress = KeyCode.valueOf(keyName);
+        } catch (IllegalArgumentException e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
+        }
+
+        // Then press the key
+        try {
+            ((AndroidDriver) session.getAppiumDriver()).pressKeyCode(keyToPress.getCode());
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOGGER.warn("Unable to key press due to " + e.getMessage(), e);
@@ -75,36 +75,30 @@ public class AndroidAppiumService extends AppiumService {
     @Override
     public MessageEvent hideKeyboard(Session session) {
         try {
-            // First, check if keyboard is currently opened
-            boolean isKeyboardOpened = false;
-            try (Scanner scanner = new Scanner(Runtime.getRuntime().exec(IS_KEYBOAD_OPEN_COMMAND).getInputStream())) {
-                while (scanner.hasNext()) {
-                    Matcher candidateLine = IS_KEYBOARD_OPEN_PATTERN.matcher(scanner.nextLine());
-                    if (candidateLine.matches() && IS_KEYBOARD_OPEN_VALUE.equals(candidateLine.group(1))) {
-                        isKeyboardOpened = true;
-                        break;
-                    }
-                }
-            }
-
-            // Then hide keyboard if necessary
-            if (isKeyboardOpened) {
-                session.getAppiumDriver().hideKeyboard();
-                return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
-            }
-            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD_ALREADYHIDDEN);
+            session.getAppiumDriver().hideKeyboard();
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD);
         } catch (Exception e) {
+            // Instead of http://stackoverflow.com/questions/35030794/soft-keyboard-not-present-cannot-hide-keyboard-appium-android?answertab=votes#tab-top
+            // and testing if keyboard is already hidden by executing an ADB command,
+            // we prefer to parse error message to know if it's just due to keyboard which is already hidden.
+            // This way, we are more portable because it is not necessary to connect to the Appium server and send the ADB command.
+            if (IS_KEYBOARD_ABSENT_ERROR_PATTERN.matcher(e.getMessage()).find()) {
+                return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD_ALREADYHIDDEN);
+            }
             LOGGER.warn("Unable to hide keyboard due to " + e.getMessage(), e);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
         }
     }
 
     /**
-     * Translator between Cerberus and Android key codes
+     * Translator between Cerberus key names and Android key codes
      */
     private enum KeyCode {
 
-        ENTER(AndroidKeyCode.ENTER), SEARCH(AndroidKeyCode.ENTER);
+        RETURN(AndroidKeyCode.ENTER),
+        ENTER(AndroidKeyCode.ENTER),
+        SEARCH(AndroidKeyCode.ENTER),
+        BACKSPACE(AndroidKeyCode.BACKSPACE);
 
         private int code;
 

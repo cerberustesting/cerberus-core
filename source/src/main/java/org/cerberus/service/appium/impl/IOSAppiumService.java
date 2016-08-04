@@ -19,12 +19,11 @@
  */
 package org.cerberus.service.appium.impl;
 
-import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.ios.IOSKeyCode;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
+import org.openqa.selenium.Keys;
 import org.springframework.stereotype.Service;
 
 /**
@@ -40,16 +39,30 @@ public class IOSAppiumService extends AppiumService {
      */
     private static final Logger LOGGER = Logger.getLogger(IOSAppiumService.class);
 
+    /**
+     * Because of https://github.com/appium/java-client/issues/402
+     * we are unfortunately unable to press to whatever key on the IOS keyboard.
+     * This is due to an IOS limitation
+     * <p>
+     * Then this method only press on recognized keys by IOS, which are enumerated from {@link KeyCode}
+     *
+     * @param session the associated {@link Session}
+     * @param keyName the key name to be pressed
+     * @return a {@link MessageEvent} containing result value
+     */
     @Override
     public MessageEvent keyPress(Session session, String keyName) {
+        // First, check if the key name is correct, due to the IOS limitation
+        KeyCode keyToPress;
         try {
-            // Check if the key name is well known
-            KeyCode.valueOf(keyName);
+            keyToPress = KeyCode.valueOf(keyName);
+        } catch (IllegalArgumentException e) {
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_KEYPRESS_NOT_AVAILABLE).resolveDescription("KEY", keyName);
+        }
 
-            // Do the keyPress for the ENTER or SEARCH key
-            ((IOSDriver) session.getAppiumDriver()).getKeyboard().sendKeys("\n");
-
-            // Finally return success
+        // Then do the key press
+        try {
+            session.getAppiumDriver().getKeyboard().pressKey(keyToPress.getCode());
             return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT).resolveDescription("KEY", keyName);
         } catch (Exception e) {
             LOGGER.warn("Unable to key press due to " + e.getMessage());
@@ -59,28 +72,41 @@ public class IOSAppiumService extends AppiumService {
         }
     }
 
+    /**
+     * Due to https://discuss.appium.io/t/appium-ios-guide-hiding-the-keyboard-on-real-devices/8221,
+     * IOS keyboard can be only hidden by taping on a keyboard key.
+     * As same as the tutorial, the {@link Keys#RETURN} (so the {@link KeyCode#RETURN} in Cerberus language) is used to hide keyboard.
+     *
+     * @param session
+     * @return
+     */
     @Override
     public MessageEvent hideKeyboard(Session session) {
-        MessageEvent keyPressResult = keyPress(session, KeyCode.ENTER.name());
+        MessageEvent keyPressResult = keyPress(session, KeyCode.RETURN.name());
         return new MessageEvent(keyPressResult.getCode() == MessageEventEnum.ACTION_SUCCESS_KEYPRESS_NO_ELEMENT.getCode() ?
                 MessageEventEnum.ACTION_SUCCESS_HIDEKEYBOARD :
                 MessageEventEnum.ACTION_FAILED_HIDEKEYBOARD);
     }
 
     /**
-     * Translator between Cerberus and IOS key codes
+     * The only valid IOS key codes to be able to be pressed
+     * <p>
+     * See https://github.com/appium/java-client/issues/402 for more information
      */
     private enum KeyCode {
 
-        ENTER(IOSKeyCode.ENTER), SEARCH(IOSKeyCode.ENTER);
+        RETURN(Keys.RETURN.toString()),
+        ENTER(Keys.ENTER.toString()),
+        SEARCH(Keys.ENTER.toString()),
+        BACKSPACE(Keys.BACK_SPACE.toString());
 
-        private int code;
+        private String code;
 
-        KeyCode(int code) {
+        KeyCode(String code) {
             this.code = code;
         }
 
-        public int getCode() {
+        public String getCode() {
             return code;
         }
 
