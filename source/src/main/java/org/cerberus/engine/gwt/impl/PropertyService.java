@@ -438,9 +438,11 @@ public class PropertyService implements IPropertyService {
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
                 }
                 // For each subdata of the getFromDataLib_BETA property, we try to replace with PROPERTY(SUBDATA).
-                for (String key : tced.getDataLibRawData().keySet()) {
-                    if (tced.getDataLibRawData().get(key) != null) {
-                        stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "(" + key + ")%", tced.getDataLibRawData().get(key));
+                if (!(tced.getDataLibRawData() == null)) {
+                    for (String key : tced.getDataLibRawData().keySet()) {
+                        if (tced.getDataLibRawData().get(key) != null) {
+                            stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "(" + key + ")%", tced.getDataLibRawData().get(key));
+                        }
                     }
                 }
             } else if (tced.getValue() != null) {
