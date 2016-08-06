@@ -484,6 +484,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  * Only calculate property if it is feed.
                  */
                 LOG.debug(logPrefix + "Calculating property : " + propertyToCalculate);
+                String propertyToCalculate_value = "";
                 try {
                     /**
                      * Calculating the data (Property).
@@ -496,13 +497,15 @@ public class ExecutionRunService implements IExecutionRunService {
                             throw new CerberusEventException(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL));
                         }*/
                     }
-                    propertyService.decodeValueWithExistingProperties("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
+                    propertyToCalculate_value = propertyService.decodeValueWithExistingProperties("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
                 } catch (CerberusEventException ex) {
                     Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
                 TestCaseExecutionData testCaseExecutionData = null;
+                // We get back here the TestCaseExecutionData from a previous calculation based on the Property name. In case Property nema is PROP(SUBDATA), we consider only PROP.
+                String masterPropertyName = propertyToCalculate.split("\\(")[0];
                 for (TestCaseExecutionData tced : testCaseStepExecution.gettCExecution().getTestCaseExecutionDataList()) {
-                    if (tced.getProperty().equals(propertyToCalculate)) {
+                    if (tced.getProperty().equals(masterPropertyName)) {
                         testCaseExecutionData = tced;
                         break;
                     }
@@ -520,8 +523,8 @@ public class ExecutionRunService implements IExecutionRunService {
                     /**
                      * If property could be calculated, we execute the action.
                      */
-                    testCaseStepActionExecution.setProperty(testCaseExecutionData.getValue());
-                    testCaseStepActionExecution.setPropertyName(testCaseExecutionData.getProperty());
+                    testCaseStepActionExecution.setProperty(propertyToCalculate_value);
+                    testCaseStepActionExecution.setPropertyName(propertyToCalculate);
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
                     testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
                 } else {
@@ -570,7 +573,8 @@ public class ExecutionRunService implements IExecutionRunService {
             } else /**
              * If no property defined, we just execute the action.
              */
-             if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject())) {
+            {
+                if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject())) {
                     //TODO check which actions can be executed without property and object
                     //if there is no object and also we are using the calculateProperty, then the step execution should be stopped 
                     MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);
@@ -590,6 +594,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
                     testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
                 }
+            }
 
             /**
              * If Action or property reported to stop the testcase, we stop it
