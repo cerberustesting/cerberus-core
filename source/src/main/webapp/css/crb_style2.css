@@ -478,13 +478,13 @@ ul.nav li.dropdown:hover > ul.dropdown-menu {
 /** 4 - LOGIN */
 
 .login-box {
-    width: 333px;
-    height: 352px;
+    width: 503px;
+    height: 362px;
     padding: 58px 76px 0 76px;
     color: #ebebeb;
     font: 12px Arial, Helvetica, sans-serif;
     background: url(../images/login-box-backg.png) no-repeat left top;
-    box-sizing: initial;
+/*    box-sizing: initial;*/
 }
 
 .login-box img {
