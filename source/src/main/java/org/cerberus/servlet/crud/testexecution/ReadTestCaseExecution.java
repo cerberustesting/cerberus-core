@@ -92,23 +92,25 @@ public class ReadTestCaseExecution extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
-            int sEcho = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("sEcho"), "0"));
+            // Data/Filter Parameters.
             String Tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
             String test = ParameterParserUtil.parseStringParam(request.getParameter("test"), "");
             String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
             String system = ParameterParserUtil.parseStringParam(request.getParameter("system"), "");
             long executionId = ParameterParserUtil.parseLongParam(request.getParameter("executionId"), 0);
+            // Switch Parameters.
             boolean executionWithDependency = ParameterParserUtil.parseBooleanParam("executionWithDependency", false);
             String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+            boolean byColumns = ParameterParserUtil.parseBooleanParam(request.getParameter("byColumns"), false);
 
             if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
                 //In this specific case, do nothing as distinct will be done client side
-            } else if (sEcho == 0 && !Tag.equals("")) {
+            } else if (!Tag.equals("") && byColumns) {
                 //Return the columns to display in the execution table
                 answer = findExecutionColumns(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (sEcho != 0 && !Tag.equals("")) {
+            } else if (!Tag.equals("") && !byColumns) {
                 //Return the list of execution for the execution table
                 answer = findExecutionList(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -277,10 +279,10 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
@@ -293,8 +295,25 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONObject countryFilter = getCountryList(request, appContext);
         LinkedHashMap<String, JSONObject> ttc = new LinkedHashMap<String, JSONObject>();
 
+        String globalStart = "";
+        String globalEnd = "";
+        String globalStatus = "Finished";
+
         for (TestCaseWithExecution testCaseWithExecution : testCaseWithExecutions) {
             try {
+                if (testCaseWithExecution.getStart() != null) {
+                    if ((globalStart.isEmpty()) || (globalStart.compareTo(testCaseWithExecution.getStart()) > 0)) {
+                        globalStart = testCaseWithExecution.getStart();
+                    }
+                }
+                if (testCaseWithExecution.getEnd() != null) {
+                    if ((globalEnd.isEmpty()) || (globalEnd.compareTo(testCaseWithExecution.getEnd()) < 0)) {
+                        globalEnd = testCaseWithExecution.getEnd();
+                    }
+                }
+                if (testCaseWithExecution.getControlStatus().equalsIgnoreCase("PE")) {
+                    globalStatus = "Pending...";
+                }
                 String controlStatus = testCaseWithExecution.getControlStatus();
                 if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseWithExecution.getCountry()).equals("on")) {
                     JSONObject execution = testCaseExecutionToJSONObject(testCaseWithExecution);
@@ -331,6 +350,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         }
 
         JSONObject jsonResponse = new JSONObject();
+
+        jsonResponse.put("globalEnd", globalEnd.toString());
+        jsonResponse.put("globalStart", globalStart.toString());
+        jsonResponse.put("globalStatus", globalStatus);
+
         jsonResponse.put("testList", ttc.values());
         jsonResponse.put("iTotalRecords", ttc.size());
         jsonResponse.put("iTotalDisplayRecords", ttc.size());

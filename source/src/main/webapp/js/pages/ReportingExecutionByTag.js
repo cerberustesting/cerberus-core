@@ -311,7 +311,7 @@ function loadReportList() {
 
     if (selectTag !== "") {
         //configure and create the dataTable
-        var jqxhr = $.getJSON("ReadTestCaseExecution", "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
+        var jqxhr = $.getJSON("ReadTestCaseExecution", "byColumns=Y&" + "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
         $.when(jqxhr).then(function (data) {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
