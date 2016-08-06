@@ -1742,7 +1742,7 @@
                                                         <tr style="width:100%">
                                                             <td class="wob" style="width:100%">
                                                                 <div style="width:100%">
-                                                                    <input class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;width:100%;font-weight: bold;"
+                                                                    <input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' class="wob properties_id_<%=rowNumber%> property_name" style="background-color:transparent;width:100%;font-weight: bold;"
                                                                name="properties_property_<%=incrementProperty%>" id="properties_property_<%=incrementProperty%>" placeholder="Feed Property name" value="<%=tccp.getProperty()%>">
                                                                 </div>
                                                             </td>
@@ -2194,7 +2194,7 @@
                         <tr style="width:100%">
                             <td class="wob" style="width:100%">
                                 <div style="width:100%">
-                                    <input class="wob property_name" style="background-color:transparent;width:100%;font-weight: bold;"
+                                    <input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' class="wob property_name" style="background-color:transparent;width:100%;font-weight: bold;"
                            data-id="properties_property_template">
                                 </div>
                             </td>

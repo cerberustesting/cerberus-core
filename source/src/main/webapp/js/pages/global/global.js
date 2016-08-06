@@ -1080,7 +1080,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
     //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span></div>";
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'  style='cursor:pointer;'></span></div>";
     $("#" + tableConfigurations.divId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
@@ -1234,7 +1234,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
     $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
 
 //Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign'></span></div>";
+    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='glyphicon glyphicon-remove-sign' style='cursor:pointer;'></span></div>";
     $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
 
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
@@ -1245,7 +1245,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
 
 /**
  * Function that allow to reset the filter selected
- * @param {type} table
+ * @param {type} oTable
  * @returns {undefined}
  */
 function resetFilters(oTable) {
@@ -1314,7 +1314,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
         var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
         var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
-        var display = '<span class="glyphicon glyphicon-filter" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
+        var display = '<span class="glyphicon glyphicon-filter" style="cursor:pointer;" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
         var valueFiltered = [];
         if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
             //Build the Alert Message for filtered column information
@@ -1329,7 +1329,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             });
             filteredTooltip += '</div>';
             filteredInformation.push(" ] AND ");
-            display = "<span class='glyphicon glyphicon-filter columnFiltered' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
+            display = "<span class='glyphicon glyphicon-filter columnFiltered' style='cursor:pointer;' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
         }
 
         //init column filter only if column visible
@@ -1839,6 +1839,32 @@ function isEmpty(val) {
 function isEmptyorALL(val) {
     return (val === undefined || val === null || val.length <= 0 || val === 'ALL') ? true : false;
 }
+
+
+/**
+ * Method used to restrict usage of some specific caracters.
+ * @param {String} val value to test
+ * @returns {boolean} true if is null, undefined of len >= 0
+ */
+var propertyNameRestriction = /[\(\.\,\)\'\"]/g;
+var subDataNameRestriction = /[\(\.\,\)\'\"]/g;
+var testDataLibNameRestriction = /[\(\.\,\)\'\"]/g;
+
+function restrictCharacters(myfield, e, restrictionType) {
+    if (!e)
+        var e = window.event;
+    if (e.keyCode)
+        code = e.keyCode;
+    else if (e.which)
+        code = e.which;
+    var character = String.fromCharCode(code);
+    if (character.match(restrictionType)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 
 /**
  * Function that allows us to retrieve all url parameters. Also, it groups values by parameter name. E.g., ?country=BE&country=CH

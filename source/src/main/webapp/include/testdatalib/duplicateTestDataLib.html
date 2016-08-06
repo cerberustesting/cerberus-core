@@ -29,7 +29,7 @@
                             <div class="form-group col-xs-4">                                
                                 <label id="lbl_name_duplicate" for="name">Name</label>
                                 <div>
-                                    <input id="name" name="name" class="form-control"  />     
+                                    <input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id="name" name="name" class="form-control"  />     
                                 </div>
                             </div> 
 

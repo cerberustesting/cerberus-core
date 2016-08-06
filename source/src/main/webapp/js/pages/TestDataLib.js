@@ -35,7 +35,7 @@ function initPage() {
 
         $('#addSubDataTableBody').append('<tr class="trData" id="row' + (i + 1) + '">\n\\n\
                 <td ><div class="nomarginbottom marginTop5"> <button onclick="deleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" type="text" class="subDataClass form-control input-xs"  maxlength="200"  /></div></td>\n\
+                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" type="text" class="subDataClass form-control input-xs"  maxlength="200"  /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="column" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
@@ -55,7 +55,7 @@ function initPage() {
 
         $('#editSubDataTableBody').append('<tr class="trData" id="row' + (j + 1) + '" testdatalibid="' + testdatalibid + '" data-operation="insert" >\n\\n\
                 <td ><div class="nomarginbottom marginTop5"> <button onclick="editDeleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" type="text" class="subDataClass form-control input-xs"   /></div></td>\n\
+                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" type="text" class="subDataClass form-control input-xs"   /></div></td>\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
                 <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" type="text" class="dataClass form-control input-xs"  /></div></td>\n\
@@ -1195,7 +1195,7 @@ function appendNewSubDataRow(rowtestDataLibDataId, testDataLibId, subData, value
         <button ' + onClickEvent + ' ' + buttonTitle + '\n\
 class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-' + buttonStyle + '"></span></button></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input ' + isReadOnly + ' name="subdata" type="text" class="subDataClass form-control input-xs" value="' + subData + '"/><span></span></div></td>\n\\n\
+        <input ' + isReadOnly + ' name="subdata" type="text" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" class="subDataClass form-control input-xs" value="' + subData + '"/><span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" value="' + value + '" /></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs" value="' + column + '" /></div></td>\n\
         <td><div class="nomarginbottom form-group form-group-sm"><input name="parsingAnswer" type="text" class="dataClass form-control input-xs" value="' + parsingAnswer + '" /></div></td>\n\
@@ -1255,7 +1255,7 @@ function editSubData(testDataLibID) {
  * @param {type} testDataLibID
  * @returns {undefined}
  */
-function duplicateEntry(testDataLibID) {
+function duplicateEntryTestData(testDataLibID) {
 
     clearResponseMessageMainPage();
     //load the data from the row 
@@ -1471,7 +1471,7 @@ function aoColumnsFuncTestDataLib(tableId) {
                             <span class="glyphicon glyphicon-trash"></span></button>';
                 var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
-                                 type="button" onclick="duplicateEntry(' + data + ')">\n\
+                                 type="button" onclick="duplicateEntryTestData(' + data + ')">\n\
                                 <span class="fa fa-files-o"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
                 var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
