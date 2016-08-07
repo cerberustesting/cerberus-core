@@ -164,7 +164,7 @@ public class ReadTestDataLibData extends HttpServlet {
     private AnswerItem readById(ApplicationContext appContext, int testDatalib) throws JSONException {
         JSONObject jsonResponse = new JSONObject();
         ITestDataLibDataService testDataLibDataService = appContext.getBean(ITestDataLibDataService.class);
-        AnswerList answer = testDataLibDataService.readByVarious(testDatalib, null, null);
+        AnswerList answer = testDataLibDataService.readByVarious(testDatalib, null, null, null);
 
         //retrieves the data for the entry
         JSONArray jsonArray = new JSONArray();

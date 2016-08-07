@@ -92,7 +92,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList<List<HashMap<String, String>>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
+    public AnswerList<HashMap<String, String>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
         AnswerList answer = new AnswerList();
         AnswerList answerData = new AnswerList();
         MessageEvent msg;
@@ -118,7 +118,7 @@ public class TestDataLibService implements ITestDataLibService {
         objectList = answer.getDataList();
         for (TestDataLib tdl : objectList) {
 
-            answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null);
+            answerData = testDataLibDataService.readByVarious(tdl.getTestDataLibID(), null, null, null);
             List<TestDataLibData> objectDataList = new ArrayList<TestDataLibData>();
             objectDataList = answerData.getDataList();
             HashMap<String, String> row = new HashMap<String, String>();
@@ -247,7 +247,7 @@ public class TestDataLibService implements ITestDataLibService {
         answer = testDataLibDAO.create(lib);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            answer = testDataLibDataService.readByVarious(originalID, null, null);
+            answer = testDataLibDataService.readByVarious(originalID, null, null, null);
             if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 //if there were no problems retrieving the sub-data list
                 //gets the subdatalist

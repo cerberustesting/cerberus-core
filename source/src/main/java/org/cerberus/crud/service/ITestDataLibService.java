@@ -125,7 +125,7 @@ public interface ITestDataLibService {
      * to get the potencial parameters.
      * @return
      */
-    AnswerList<List<HashMap<String, String>>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system);
+    AnswerList<HashMap<String, String>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system);
 
     /**
      *

@@ -54,9 +54,10 @@ public interface ITestDataLibDataService {
      * @param testDataLibID
      * @param columnEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
      * @param parsingAnswerEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
+     * @param valueEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
      * @return
      */
-    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty);
+    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty);
 
     /**
      *

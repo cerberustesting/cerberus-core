@@ -32,6 +32,13 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IDataLibService {
 
+    /**
+     *
+     * @param lib
+     * @param testCaseCountryProperty
+     * @param tCExecution
+     * @return
+     */
     AnswerItem<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
 
     /**
@@ -40,7 +47,7 @@ public interface IDataLibService {
      * @param dataSet
      * @return The first item from dataObjectList
      */
-    AnswerItem<HashMap<String, String>> getStaticFromDataSet(AnswerList dataSet);
+    AnswerItem<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataSet);
 
     /**
      * This method return an ObjectData from DataSet picked randomly
@@ -48,7 +55,7 @@ public interface IDataLibService {
      * @param dataSet
      * @return An item from dataObjectList choosen randomly
      */
-    AnswerItem<HashMap<String, String>> getRandomFromDataSet(AnswerList dataSet);
+    AnswerItem<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataSet);
 
     /**
      * This method return an ObjectData from DataSet picked randomly after
@@ -59,7 +66,7 @@ public interface IDataLibService {
      * @param testCaseProperties : TestCaseCountryProperties
      * @return An item from dataObjectList choosen randomly
      */
-    AnswerItem<HashMap<String, String>> getRandomNewFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+    AnswerItem<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
 
     /**
      * This method return an ObjectData from dataObjectList that is not used in
@@ -71,6 +78,6 @@ public interface IDataLibService {
      * @return An item from dataObjectList excluding the one used in other
      * execution choosen randomly
      */
-    AnswerItem<HashMap<String, String>> getNotInUseFromDataSet(AnswerList dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+    AnswerItem<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
 
 }

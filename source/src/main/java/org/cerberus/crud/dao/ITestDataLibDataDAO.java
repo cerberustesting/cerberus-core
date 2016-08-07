@@ -50,9 +50,12 @@ public interface ITestDataLibDataDAO {
     /**
      *
      * @param testDataLibID resultSet
+     * @param columnEmpty
+     * @param parsingAnswerEmpty
+     * @param valueEmpty
      * @return
      */
-    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty);
+    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty);
 
     /**
      *

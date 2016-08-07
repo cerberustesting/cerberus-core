@@ -26,7 +26,7 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -43,25 +43,6 @@ public interface ISQLService {
      */
     TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution);
 
-    /**
-     * Performs an SQL query that retrieves information from several columns.
-     *
-     * @param sql - SQL query to be executed
-     * @param db - database
-     * @param system - system where the query should be performed
-     * @param country - country where the query should be performed
-     * @param environment - environment where the query should be performed
-     * @param testCaseCountryProperty
-     * @param keyColumn - string with the column that contain the key (used for
-     * some propertyNature).
-     * @param tCExecution - Execution context is required for RANDOMNEW and
-     * NOTINUSE Natures (that requires test, testcase, build, environment,
-     * etc,...)
-     * @param dataLibID ID of the dataLib beeing calculated. This is used to get
-     * the detail list of columns to retreive.
-     * @return a row with several columns
-     */
-    AnswerItem<HashMap<String, String>> calculateOnDatabaseNColumns(String sql, String db, String system, String country, String environment, TestCaseCountryProperties testCaseCountryProperty, String keyColumn, TestCaseExecution tCExecution, Integer dataLibID);
 
     /**
      * Performs a query in the database
@@ -81,21 +62,7 @@ public interface ISQLService {
      */
     String getRandomStringFromList(List<String> list);
 
-    /**
-     *
-     * @param resultset
-     * @param pastValues
-     * @return
-     */
-    String getRandomNewStringFromList(List<String> resultset, List<String> pastValues);
 
-    /**
-     *
-     * @param resultSet
-     * @param valuesInUse
-     * @return
-     */
-    String getRandomStringNotInUse(List<String> resultSet, List<String> valuesInUse);
 
     /**
      *
@@ -119,4 +86,17 @@ public interface ISQLService {
      * @return
      */
     MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
+    
+    /**
+     *
+     * @param connectionName
+     * @param sql
+     * @param rowLimit
+     * @param defaultTimeOut
+     * @param system
+     * @param columnsToGet
+     * @return
+     */
+    AnswerList queryDatabaseNColumns(String connectionName, String sql, int rowLimit, int defaultTimeOut, String system, HashMap<String, String> columnsToGet);
+
 }
