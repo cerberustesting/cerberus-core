@@ -21,7 +21,6 @@ package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
@@ -34,8 +33,6 @@ import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -43,9 +40,7 @@ import java.util.List;
  * @author bcivel
  */
 @Service
-public class ExecutionThreadPoolService implements IParameterService.ParameterAware {
-
-    private static final String THREAD_POOL_SIZE_CONFIGURATION_KEY = "cerberus_execution_threadpool_size";
+public class ExecutionThreadPoolService {
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
@@ -127,30 +122,6 @@ public class ExecutionThreadPoolService implements IParameterService.ParameterAw
         paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(lastInQueue.getRetries()));
         return paramRequestMaker;
-    }
-
-    @Override
-    public void parameterChanged(Parameter parameter) {
-        try {
-            threadPool.setSize(Integer.valueOf(parameter.getValue()));
-        } catch (Exception e) {
-            LOG.warn("Unable to set size from property change event", e);
-        }
-    }
-
-    @PostConstruct
-    private void init() {
-        try {
-            threadPool.setSize(Integer.valueOf(parameterService.findParameterByKey(THREAD_POOL_SIZE_CONFIGURATION_KEY, "").getValue()));
-            parameterService.register(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
-        } catch (CerberusException e) {
-            LOG.warn("Unable to initialize thread pool", e);
-        }
-    }
-
-    @PreDestroy
-    private void destroy() {
-        parameterService.unregister(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
     }
 
 }

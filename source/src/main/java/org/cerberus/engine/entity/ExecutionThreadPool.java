@@ -19,6 +19,10 @@
  */
 package org.cerberus.engine.entity;
 
+import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.IParameterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +38,17 @@ import java.util.concurrent.TimeUnit;
  * @author abourdon
  */
 @Component
-public class ExecutionThreadPool {
+public class ExecutionThreadPool implements IParameterService.ParameterAware {
+
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOGGER = Logger.getLogger(ExecutionThreadPool.class);
+
+    /**
+     * The configuration key to get configured thread pool size
+     */
+    private static final String THREAD_POOL_SIZE_CONFIGURATION_KEY = "cerberus_execution_threadpool_size";
 
     /**
      * The default thread pool size
@@ -49,8 +63,19 @@ public class ExecutionThreadPool {
      */
     private ThreadPoolExecutor executor;
 
+    /**
+     * The associated {@link IParameterService}
+     */
+    @Autowired
+    private IParameterService parameterService;
+
+    /**
+     * Set the number of maximum simultaneous active threads this {@link ExecutionThreadPool} can have
+     *
+     * @param size the number of maximum simultaneous active threads to set
+     */
     public synchronized void setSize(Integer size) {
-        int currentSize = getSize();
+        int currentSize = getPoolSize();
         if (size < currentSize) {
             executor.setCorePoolSize(size);
             executor.setMaximumPoolSize(size);
@@ -60,31 +85,104 @@ public class ExecutionThreadPool {
         }
     }
 
-    public synchronized Integer getSize() {
+    /**
+     * Get the number of {@link Runnable} tasks this {@link ExecutionThreadPool} can execute in the same time
+     *
+     * @return the number of {@link Runnable} tasks this {@link ExecutionThreadPool} can execute in the same time
+     */
+    public synchronized int getPoolSize() {
         // Should be equal to executor.getMaximumPoolSize()
         return executor.getCorePoolSize();
     }
 
+    /**
+     * Get the number of currently active threads
+     *
+     * @return the number of currently active threads
+     */
+    public synchronized int getInExecution() {
+        return executor.getActiveCount();
+    }
+
+    /**
+     * Get the approximate number of active and pending executions
+     *
+     * @return the approximate number of active and pending executions
+     */
+    public synchronized long getInQueue() {
+        return (int) executor.getTaskCount() - executor.getCompletedTaskCount();
+    }
+
+    /**
+     * Submit a new {@link Runnable} to a new thread from this {@link ExecutionThreadPool}.
+     * <p>
+     * If the maximum of simultaneous active threads is reached, then this task is kept in queue until a thread is released
+     *
+     * @param task the {@link Runnable} to submit to this {@link ExecutionThreadPool}
+     * @see #getPoolSize()
+     */
     public synchronized void submit(Runnable task) {
         executor.submit(task);
     }
 
+    /**
+     * Reset this {@link ExecutionThreadPool} by trying to stop any submitted tasks and make the {@link #getInExecution()} equals to 0
+     *
+     * @see #getInExecution()
+     */
     public synchronized void reset() {
-        int currentSIze = getSize();
-        stop();
-        init(currentSIze);
+        int currentSIze = getPoolSize();
+        stopExecutor();
+        initExecutor(currentSIze);
     }
 
-    public synchronized Integer getInExecution() {
-        return executor.getActiveCount();
+    /**
+     * React to {@link Parameter} changes, especially the {@link #THREAD_POOL_SIZE_CONFIGURATION_KEY} to update the pool size
+     *
+     * @param parameter the changing {@link Parameter}
+     * @see #setSize(Integer)
+     */
+    @Override
+    public void parameterChanged(Parameter parameter) {
+        try {
+            setSize(Integer.valueOf(parameter.getValue()));
+        } catch (Exception e) {
+            LOGGER.warn("Unable to set size from property change event", e);
+        }
     }
 
+    /**
+     * Initialize this {@link ExecutionThreadPool} by creating thread pool executor and register to {@link Parameter} changes
+     */
     @PostConstruct
     private void init() {
-        init(DEFAULT_THREAD_POOL_SIZE);
+        initExecutor(getInitialSize());
+        initRegistration();
     }
 
-    private void init(int poolSize) {
+    /**
+     * Get the configured thread pool size from database.
+     * <p>
+     * If an error occured, then get the {@link #DEFAULT_THREAD_POOL_SIZE} value
+     *
+     * @return the configured thread pool size from database, or {@link #DEFAULT_THREAD_POOL_SIZE} if an error occurred
+     */
+    private int getInitialSize() {
+        int applicableSize = DEFAULT_THREAD_POOL_SIZE;
+        try {
+            applicableSize = Integer.valueOf(parameterService.findParameterByKey(THREAD_POOL_SIZE_CONFIGURATION_KEY, "").getValue());
+        } catch (Exception e) {
+            LOGGER.warn("Unable to set configured thread pool size", e);
+        }
+        return applicableSize;
+    }
+
+    /**
+     * Initialize the inner thread pool executor
+     *
+     * @param poolSize the thread pool size to set to the inner thread pool executor
+     */
+    private void initExecutor(int poolSize) {
         // The same as Executors#newFixedThreadPool(int) but with access to the
         // ThreadPoolExecutor API and so more controls than the ExecutorService one provided by
         // Executors#newFixedThreadPool(int)
@@ -96,8 +194,33 @@ public class ExecutionThreadPool {
         );
     }
 
+    /**
+     * Initialize the registration to {@link Parameter} changes
+     */
+    private void initRegistration() {
+        parameterService.register(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
+    }
+
+    /**
+     * Stop this {@link ExecutionThreadPool} by stopping registration to {@link Parameter} changes and stopping the inner thread pool
+     */
     @PreDestroy
     private void stop() {
+        stopRegistration();
+        stopExecutor();
+    }
+
+    /**
+     * Unregister this {@link ExecutionThreadPool} from {@link Parameter} changes
+     */
+    private void stopRegistration() {
+        parameterService.unregister(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
+    }
+
+    /**
+     * Shutdown the inner thread pool by trying to stop any of its active or pending tasks
+     */
+    private void stopExecutor() {
         if (!executor.isShutdown()) {
             executor.shutdownNow();
         }

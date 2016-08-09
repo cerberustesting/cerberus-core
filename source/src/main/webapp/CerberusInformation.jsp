@@ -118,8 +118,8 @@
                                     <table class="table table-bordered table-hover nomarginbottom dataTable" id="threadTable">
                                         <thead>
                                             <tr>
-                                                <th class="text-center" id="systemHeader" name="systemHeader">Size Of Pending Execution In Queue</th>
-                                                <th class="text-center" id="systemHeader" name="systemHeader">Number of Workers In Execution</th>
+                                                <th class="text-center" id="systemHeader" name="systemHeader">Number of Current and Pending Executions / Size of Execution Queue</th>
+                                                <th class="text-center" id="systemHeader" name="systemHeader">Number of Workers in Execution</th>
                                             </tr>
                                         </thead>
                                         <tbody id="threadTableBody">

@@ -70,8 +70,8 @@ public class ReadCerberusDetailInformation extends HttpServlet {
         Infos infos = new Infos();
 
         try {
-            jsonResponse.put("size_queue", etp.getSize());
-            jsonResponse.put("queue_in_execution", etp.getInExecution());
+            jsonResponse.put("size_queue", etp.getPoolSize());
+            jsonResponse.put("queue_in_execution", etp.getInQueue());
             jsonResponse.put("simultaneous_execution", euuid.size());
             JSONArray executionArray = new JSONArray();
             for (Object ex : euuid.getExecutionUUIDList().values()) {
