@@ -19,27 +19,22 @@
  */
 package org.cerberus.engine.threadpool;
 
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.concurrent.Future;
-import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.ExecutionThreadPool;
 
 /**
- *
  * @author bcivel
  */
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
     private String executionUrl;
-    private ExecutionThreadPool execThreadPool;
     private String tag;
-    private Future<?> future;
 
     private static final Logger LOG = Logger.getLogger(ExecutionWorkerThread.class);
 
@@ -47,40 +42,25 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         this.executionUrl = url;
     }
 
-    public void setExecThreadPool(ExecutionThreadPool etp) {
-        this.execThreadPool = etp;
-    }
-
     public void setTag(String tag) {
         this.tag = tag;
     }
 
-    public void setFuture(Future<?> future) {
-        this.future = future;
-    }
 
     @Override
     public void run() {
         try {
             processCommand(executionUrl);
-        } catch (MalformedURLException ex) {
-            LOG.error(ex.toString());
-        } catch (IOException ex) {
-            LOG.error(ex.toString());
         } catch (Exception ex) {
-            LOG.error(ex.toString());
-        } finally {
-            execThreadPool.decrement(tag, future);
+            LOG.warn(ex.toString());
         }
     }
 
-    private void processCommand(String url) throws MalformedURLException, IOException {
+    private void processCommand(String url) throws IOException {
         URL urlToCall = new URL(url);
         HttpURLConnection c = null;
         BufferedReader br = null;
         try {
-            execThreadPool.incrementInExecution();
-
             c = (HttpURLConnection) urlToCall.openConnection();
             c.setConnectTimeout(600000);
             c.setReadTimeout(600000);
@@ -103,7 +83,6 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (null != c) {
                 c.disconnect();
             }
-            execThreadPool.decrementInExecution();
         }
     }
 

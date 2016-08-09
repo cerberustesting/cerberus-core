@@ -29,6 +29,11 @@ import org.cerberus.enums.MessageGeneralEnum;
 public class MessageGeneral {
 
     /**
+     * Variable delimiter on the {@link MessageEvent#description} field
+     */
+    public static final char VARIABLE_DELIMITER = '%';
+
+    /**
      * Message is a generic Message that is used to feedback the result of any Cerberus execution.
      * For every message, we have:
      * - a number
@@ -60,6 +65,23 @@ public class MessageGeneral {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Resolve description by injecting the given value for the given key
+     * <p>
+     * A key is a {@link MessageGeneral} variable that follows the given pattern:
+     * {@link MessageGeneral#VARIABLE_DELIMITER}[variable name]{@link MessageGeneral#VARIABLE_DELIMITER}
+     *
+     * @param key   the variable name to replace on the {@link MessageGeneral} description
+     * @param value the value to replace for the given variable name
+     * @return this {@link MessageGeneral} instance
+     */
+    public MessageGeneral resolveDescription(String key, String value) {
+        if (description != null) {
+            description = description.replace(VARIABLE_DELIMITER + key + VARIABLE_DELIMITER, value);
+        }
+        return this;
     }
 
     @Override
