@@ -110,7 +110,7 @@ public class ExecutionThreadPool implements IParameterService.ParameterAware {
      * @return the approximate number of active and pending executions
      */
     public synchronized long getInQueue() {
-        return (int) executor.getTaskCount() - executor.getCompletedTaskCount();
+        return executor.getTaskCount() - executor.getCompletedTaskCount();
     }
 
     /**
