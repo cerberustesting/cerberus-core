@@ -19,121 +19,82 @@
  */
 package org.cerberus.engine.entity;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 /**
+ * The execution thread pool to control Test Cases executions
  *
  * @author bcivel
+ * @author abourdon
  */
 @Component
 public class ExecutionThreadPool {
 
-    private ExecutorService executor;
-    private Integer totalNumberOfThread;
-    private Integer size;
-    private Integer inExecution;
-    private boolean numberOfPoolInitialized;
-    Map<String, List<Future<?>>> map = new HashMap<String, List<Future<?>>>();
+    /**
+     * The default thread pool size
+     */
+    public static final int DEFAULT_THREAD_POOL_SIZE = 3;
+
+    /**
+     * The inner {@link ThreadPoolExecutor} that control Test Cases executions.
+     * <p>
+     * When instanciated, this {@link ThreadPoolExecutor} act the same as a {@link java.util.concurrent.Executors#newFixedThreadPool(int)},
+     * but with the ability to tune its core pool size
+     */
+    private ThreadPoolExecutor executor;
+
+    public synchronized void setSize(Integer size) {
+        executor.setMaximumPoolSize(size);
+        executor.setCorePoolSize(size);
+    }
+
+    public synchronized Integer getSize() {
+        // Should be equal to executor.getMaximumPoolSize()
+        return executor.getCorePoolSize();
+    }
+
+    public synchronized void submit(Runnable task) {
+        executor.submit(task);
+    }
+
+    public synchronized void reset() {
+        int currentSIze = getSize();
+        stop();
+        init(currentSIze);
+    }
+
+    public synchronized Integer getInExecution() {
+        return executor.getActiveCount();
+    }
 
     @PostConstruct
-    public void init() {
-        executor = Executors.newFixedThreadPool(3);
-        totalNumberOfThread = 3;
-        size = 0;
-        inExecution = 0;
-        numberOfPoolInitialized = false;
+    private void init() {
+        init(DEFAULT_THREAD_POOL_SIZE);
     }
 
-    public ExecutorService getExecutor() {
-        return executor;
+    private void init(int poolSize) {
+        // The same as Executors#newFixedThreadPool(int) but with access to the
+        // ThreadPoolExecutor API and so more controls than the ExecutorService one provided by
+        // Executors#newFixedThreadPool(int)
+        executor = new ThreadPoolExecutor(
+                poolSize,
+                poolSize,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>()
+        );
     }
 
-    public void setExecutor(ExecutorService executor) {
-        this.executor = executor;
-    }
-
-    public void setNumberOfPool(Integer numberOfPool) {
-        this.executor = Executors.newFixedThreadPool(numberOfPool);
-        totalNumberOfThread = numberOfPool;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public Integer getNumberOfThread() {
-        return totalNumberOfThread;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
-
-    public void increment(String tag, Future<?> future) {
-        /**
-         * Feed the map to get the list of Future execution
-         */
-        if (map.containsKey(tag)) {
-            map.get(tag).add(future);
-        } else {
-            List<Future<?>> f = new ArrayList();
-            f.add(future);
-            map.put(tag, f);
-        }
-        /**
-         * Increment counter;
-         */
-        this.size++;
-    }
-
-    public void decrement(String tag, Future<?> future) {
-        if (map.containsKey(tag)) {
-            map.get(tag).remove(future);
-        } 
-        this.size--;
-    }
-
-    public void reset() {
-        this.stop();
-        init();
-    }
-
-    public void stop() {
+    @PreDestroy
+    private void stop() {
         if (!executor.isShutdown()) {
             executor.shutdownNow();
         }
-    }
-
-    public Integer getInExecution() {
-        return inExecution;
-    }
-
-    public void setInExecution(Integer inExecution) {
-        this.inExecution = inExecution;
-    }
-
-    public void incrementInExecution() {
-        this.inExecution++;
-    }
-
-    public void decrementInExecution() {
-        this.inExecution--;
-    }
-
-    public boolean isNumberOfPoolInitialized() {
-        return numberOfPoolInitialized;
-    }
-
-    public void setNumberOfPoolInitialized(boolean numberOfPoolInitialized) {
-        this.numberOfPoolInitialized = numberOfPoolInitialized;
     }
 
 }

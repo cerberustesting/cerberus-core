@@ -19,7 +19,11 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
@@ -30,8 +34,9 @@ import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
 /**
- *
  * @author bcivel
  */
 @Service
@@ -39,6 +44,8 @@ public class ParameterService implements IParameterService {
 
     @Autowired
     private IParameterDAO parameterDao;
+
+    private Map<String, Set<ParameterAware>> propertyRegistration;
 
     private static final Logger LOG = Logger.getLogger(ParameterService.class);
 
@@ -86,25 +93,71 @@ public class ParameterService implements IParameterService {
     @Override
     public void updateParameter(Parameter parameter) throws CerberusException {
         parameterDao.updateParameter(parameter);
+        firePropertyChange(parameter);
     }
 
     @Override
     public void insertParameter(Parameter parameter) throws CerberusException {
         parameterDao.insertParameter(parameter);
+        firePropertyChange(parameter);
     }
 
     @Override
     public void saveParameter(Parameter parameter) throws CerberusException {
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
-
-        LOG.debug("Saving Parameter");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Saving Parameter");
+        }
         try {
             parameterDao.findParameterByKey(parameter.getSystem(), parameter.getParam());
-            parameterDao.updateParameter(parameter);
-            LOG.debug("Parameter Updated");
+            updateParameter(parameter);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Parameter Updated");
+            }
+
         } catch (CerberusException ex) {
-            parameterDao.insertParameter(parameter);
-            LOG.debug("Parameter Inserted");
+            insertParameter(parameter);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Parameter Inserted");
+            }
+        }
+    }
+
+    @Override
+    public void register(String key, ParameterAware parameterAware) {
+        synchronized (propertyRegistration) {
+            Set<ParameterAware> existingRegistration = propertyRegistration.get(key);
+            if (existingRegistration == null) {
+                existingRegistration = new HashSet<>();
+            }
+            existingRegistration.add(parameterAware);
+            propertyRegistration.put(key, existingRegistration);
+        }
+    }
+
+    @Override
+    public void unregister(String key, ParameterAware parameterAware) {
+        synchronized (propertyRegistration) {
+            Set<ParameterAware> existingRegistration = propertyRegistration.get(key);
+            if (existingRegistration != null) {
+                existingRegistration.remove(parameterAware);
+            }
+        }
+    }
+
+    @PostConstruct
+    private void init() {
+        propertyRegistration = new HashMap<>();
+    }
+
+    private void firePropertyChange(Parameter parameter) {
+        Set<ParameterAware> existingRegistration;
+        synchronized (propertyRegistration) {
+            existingRegistration = new HashSet<>(propertyRegistration.get(parameter.getParam()));
+        }
+        if (existingRegistration != null) {
+            for (ParameterAware parameterAware : existingRegistration) {
+                parameterAware.parameterChanged(parameter);
+            }
         }
     }
 }

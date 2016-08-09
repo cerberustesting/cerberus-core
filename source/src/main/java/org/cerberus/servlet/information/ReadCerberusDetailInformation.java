@@ -92,7 +92,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("simultaneous_execution_list", executionArray);
             jsonResponse.put("simultaneous_session", sc.getTotalActiveSession());
             jsonResponse.put("active_users", sc.getActiveUsers());
-            jsonResponse.put("number_of_thread", etp.getNumberOfThread());
+            jsonResponse.put("number_of_thread", etp.getInExecution());
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
             

@@ -19,29 +19,35 @@
  */
 package org.cerberus.engine.threadpool;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.concurrent.RejectedExecutionException;
 import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.ExecutionThreadPool;
+import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.engine.entity.ExecutionThreadPool;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 /**
- *
  * @author bcivel
  */
 @Service
-public class ExecutionThreadPoolService {
+public class ExecutionThreadPoolService implements IParameterService.ParameterAware {
+
+    private static final String THREAD_POOL_SIZE_CONFIGURATION_KEY = "cerberus_execution_threadpool_size";
+
+    private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
     @Autowired
     ITestCaseExecutionInQueueService tceiqService;
@@ -50,34 +56,22 @@ public class ExecutionThreadPoolService {
     @Autowired
     IParameterService parameterService;
 
-    private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
-
-    @Async
-    public void putExecutionInQueue(String url, String tag) throws CerberusException, InterruptedException {
+    public void putExecutionInQueue(String url, String tag) throws CerberusException {
         ExecutionWorkerThread task = new ExecutionWorkerThread();
         task.setExecutionUrl(url);
-        task.setExecThreadPool(threadPool);
         task.setTag(tag);
         try {
-            Future<?> future = threadPool.getExecutor().submit(task);
-            threadPool.increment(tag, future);
-            task.setFuture(future);
-        } catch (RejectedExecutionException e) {
-            LOG.error("RejectedExecutionException : " + e);
+            threadPool.submit(task);
+        } catch (Exception e) {
+            String message = "Unable to submit new task " + task;
+            LOG.warn(message, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR).resolveDescription("REASON", message));
         }
     }
 
     public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
 
         try {
-            /**
-             * Verify if numberOfPool to use has been initialized. If not
-             * initialize.
-             */
-            if (!threadPool.isNumberOfPoolInitialized()) {
-                threadPool.setNumberOfPool(Integer.valueOf(parameterService.findParameterByKey("cerberus_execution_threadpool_size", "").getValue()));
-                threadPool.setNumberOfPoolInitialized(true);
-            }
             /**
              * Find all testCase in Queue not Procedeed
              */
@@ -133,6 +127,30 @@ public class ExecutionThreadPoolService {
         paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(lastInQueue.getRetries()));
         return paramRequestMaker;
+    }
+
+    @Override
+    public void parameterChanged(Parameter parameter) {
+        try {
+            threadPool.setSize(Integer.valueOf(parameter.getValue()));
+        } catch (Exception e) {
+            LOG.warn("Unable to set size from property change event", e);
+        }
+    }
+
+    @PostConstruct
+    private void init() {
+        try {
+            threadPool.setSize(Integer.valueOf(parameterService.findParameterByKey(THREAD_POOL_SIZE_CONFIGURATION_KEY, "").getValue()));
+            parameterService.register(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
+        } catch (CerberusException e) {
+            LOG.warn("Unable to initialize thread pool", e);
+        }
+    }
+
+    @PreDestroy
+    private void destroy() {
+        parameterService.unregister(THREAD_POOL_SIZE_CONFIGURATION_KEY, this);
     }
 
 }
