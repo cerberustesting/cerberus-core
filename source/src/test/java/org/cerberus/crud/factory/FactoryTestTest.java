@@ -17,26 +17,28 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.factory.IFactoryTest;
-import static org.junit.Assert.assertEquals;
-
+import org.cerberus.crud.factory.impl.FactoryTest;
+import org.cerberus.crud.service.IParameterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * {Insert class description here}
  *
  * @author Benoit CIVEL
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class FactoryTestTest {
 
-    @Autowired
-    private IFactoryTest factory;
+    @InjectMocks
+    private FactoryTest factory;
 
     @Test
     public void testCanCreateTest() {

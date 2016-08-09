@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 public final class Infos {
 
 	/** {@link ResourceBundle} to the <code>infos</code> translation file */
-	public static final ResourceBundle TRANSLATOR_INFOS = ResourceBundle.getBundle("/lang/infos");
+	public static final ResourceBundle TRANSLATOR_INFOS = ResourceBundle.getBundle("lang.infos");
 
 	/** Version separator */
 	public static final String VERSION_SEPARATOR = "-";
