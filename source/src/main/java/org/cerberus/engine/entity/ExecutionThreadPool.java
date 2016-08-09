@@ -50,8 +50,14 @@ public class ExecutionThreadPool {
     private ThreadPoolExecutor executor;
 
     public synchronized void setSize(Integer size) {
-        executor.setMaximumPoolSize(size);
-        executor.setCorePoolSize(size);
+        int currentSize = getSize();
+        if (size < currentSize) {
+            executor.setCorePoolSize(size);
+            executor.setMaximumPoolSize(size);
+        } else if (size > currentSize) {
+            executor.setMaximumPoolSize(size);
+            executor.setCorePoolSize(size);
+        }
     }
 
     public synchronized Integer getSize() {
