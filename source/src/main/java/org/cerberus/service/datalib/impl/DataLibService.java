@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -36,6 +35,7 @@ import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.engine.entity.SOAPExecution;
@@ -60,6 +60,8 @@ import org.w3c.dom.NodeList;
 /**
  *
  * @author bcivel
+ * @author vertigo17
+ *
  */
 @Service
 public class DataLibService implements IDataLibService {
@@ -69,7 +71,7 @@ public class DataLibService implements IDataLibService {
     @Autowired
     IFileService fileService;
     @Autowired
-    private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -86,11 +88,17 @@ public class DataLibService implements IDataLibService {
     private IXmlUnitService xmlUnitService;
 
     @Override
-    public AnswerItem<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
+    public AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
         AnswerItem<HashMap<String, String>> resultColumns;
         AnswerList<HashMap<String, String>> resultData;
-        AnswerItem<HashMap<String, String>> result;
+        AnswerList<HashMap<String, String>> result;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
+
+        // Length contains the nb of rows that the result must fetch. If defned at 0 we force at 1.
+        int nbRowsRequested = testCaseCountryProperty.getLength();
+        if (nbRowsRequested < 1) {
+            nbRowsRequested = 1;
+        }
 
         /**
          * Gets the list of columns to get from TestDataLibData.
@@ -101,8 +109,8 @@ public class DataLibService implements IDataLibService {
         if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA.getCode()) {
             columnList = resultColumns.getItem();
         } else if (resultColumns.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATA.getCode()) {
-            result = new AnswerItem();
-            result.setItem(null);
+            result = new AnswerList();
+            result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_SUBDATAISSUE);
             msg.setDescription(msg.getDescription().replace("%SUBDATAMESSAGE%", resultColumns.getMessageDescription()));
             result.setResultMessage(msg);
@@ -113,24 +121,33 @@ public class DataLibService implements IDataLibService {
          * Get List of DataObject in a format List<Map<String>>
          */
         int rowLimit = testCaseCountryProperty.getRowLimit();
-        if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than 1 record.
-            rowLimit = 1;
+        if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
+            rowLimit = nbRowsRequested;
         }
         resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution.getApplication().getSystem(), tCExecution.getCountryEnvironmentParameters().getCountry(), tCExecution.getCountryEnvironmentParameters().getEnvironment());
 
         //Manage error message.
         if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_DATA.getCode()) {
-//
+
+            if (resultData.getDataList().size() < nbRowsRequested) { // We check if the data provided is enought to provide the answer.
+                result = new AnswerList();
+                result.setDataList(null);
+                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_NOTENOUGHTDATA);
+                msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()).replace("%NBREQUEST%", Integer.toString(nbRowsRequested)));
+                result.setResultMessage(msg);
+                return result;
+            }
+
         } else if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NODATA.getCode()) {
-            result = new AnswerItem();
-            result.setItem(null);
+            result = new AnswerList();
+            result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_NODATA);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()));
             result.setResultMessage(msg);
             return result;
         } else {
-            result = new AnswerItem();
-            result.setItem(null);
+            result = new AnswerList();
+            result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_DATAISSUE);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription()));
             result.setResultMessage(msg);
@@ -140,18 +157,18 @@ public class DataLibService implements IDataLibService {
         /**
          * Get the dataObject from the list depending on the nature
          */
-        result = filterWithNature(testCaseCountryProperty.getNature(), resultData, tCExecution, testCaseCountryProperty);
+        result = filterWithNature(testCaseCountryProperty.getNature(), resultData, tCExecution, testCaseCountryProperty, nbRowsRequested);
 
         //Manage error message.
         if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURE.getCode()) {
             msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_GLOBAL);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
-                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", result.getItem().toString()));
+                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", result.getDataList().toString()));
             result.setResultMessage(msg);
 
         } else if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NATURENOMORERECORD.getCode()) {
             //if the script does not return 
-            result.setItem(null);
+            result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_NODATALEFT);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
                     .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()));
@@ -159,7 +176,7 @@ public class DataLibService implements IDataLibService {
 
         } else {
             //other error had occured
-            result.setItem(null);
+            result.setDataList(null);
             msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GLOBAL_GENERIC);
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
                     .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()));
@@ -179,47 +196,92 @@ public class DataLibService implements IDataLibService {
      * @param testCaseCountryProperties : TestCaseCountryProperties
      * @return one item (dataObject) from the dataObjectList
      */
-    private AnswerItem<HashMap<String, String>> filterWithNature(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties) {
+    private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
         switch (nature) {
             case TestCaseCountryProperties.NATURE_STATIC:
-                return filterWithNatureSTATIC(dataObjectList);
+                return filterWithNatureSTATIC(dataObjectList, outputRequestedDimention);
             case TestCaseCountryProperties.NATURE_RANDOM:
-                return filterWithNatureRANDOM(dataObjectList);
+                return filterWithNatureRANDOM(dataObjectList, outputRequestedDimention);
             case TestCaseCountryProperties.NATURE_RANDOMNEW:
-                return filterWithNatureRANDOMNEW(dataObjectList, tCExecution, testCaseCountryProperties);
+                return filterWithNatureRANDOMNEW(dataObjectList, tCExecution, testCaseCountryProperties, outputRequestedDimention);
             case TestCaseCountryProperties.NATURE_NOTINUSE:
-                return filterWithNatureNOTINUSE(dataObjectList, tCExecution, testCaseCountryProperties);
+                return filterWithNatureNOTINUSE(dataObjectList, tCExecution, testCaseCountryProperties, outputRequestedDimention);
         }
         //TODO throw exception when Nature not known
         return null;
     }
 
+    private List<Integer> getRandomListOfInteger(int inputRange, int nbOfResult) {
+        List<Integer> listTempRandom;
+        listTempRandom = new ArrayList<Integer>();
+        for (int i = 0; i < inputRange; i++) {
+            listTempRandom.add(i);
+        }
+        List<Integer> listRandom;
+        listRandom = new ArrayList<Integer>();
+        for (int i = 0; i < nbOfResult; i++) {
+            Random r = new Random();
+            int position = r.nextInt(listTempRandom.size());
+            listRandom.add(listTempRandom.remove(position));
+        }
+        return listRandom;
+    }
+
     @Override
-    public AnswerItem<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataObjectList) {
-        AnswerItem<HashMap<String, String>> result = new AnswerItem();
-        result.setItem((HashMap<String, String>) dataObjectList.getDataList().get(0));
-        result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURESTATIC));
+    public AnswerList<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedDimention) {
+        AnswerList<HashMap<String, String>> result = new AnswerList();
+
+        List<HashMap<String, String>> resultObject;
+        resultObject = new ArrayList<HashMap<String, String>>();
+
+        for (int i = 0; i < outputRequestedDimention; i++) {
+            resultObject.add(dataObjectList.getDataList().get(i));
+        }
+
+        result.setDataList(resultObject);
+        String rowMessage = "";
+        if (outputRequestedDimention < 2) {
+            rowMessage = "row";
+        } else {
+            rowMessage = Integer.toString(outputRequestedDimention) + " rows";
+        }
+        result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURESTATIC).resolveDescription("ROW", rowMessage));
         return result;
     }
 
     @Override
-    public AnswerItem<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataObjectList) {
-        AnswerItem<HashMap<String, String>> result = new AnswerItem();
-        Random r = new Random();
-        int position = r.nextInt(dataObjectList.getDataList().size());
-        result.setItem((HashMap<String, String>) dataObjectList.getDataList().get(position));
+    public AnswerList<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataObjectList, int outputRequestedDimention) {
+        AnswerList<HashMap<String, String>> result = new AnswerList();
+        String selectedList = "";
+
+        List<HashMap<String, String>> resultObject;
+        resultObject = new ArrayList<HashMap<String, String>>();
+
+        List<Integer> listTempRandom = getRandomListOfInteger(dataObjectList.getDataList().size(), outputRequestedDimention);
+
+        for (int i : listTempRandom) {
+            selectedList += Integer.toString(i) + ",";
+            resultObject.add(dataObjectList.getDataList().get(i));
+        }
+        selectedList = StringUtil.removeLastChar(selectedList, 1);
+        result.setDataList(resultObject);
+
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOM)
-                .resolveDescription("POS", Integer.toString(position)).resolveDescription("TOTALPOS", Integer.toString(dataObjectList.getDataList().size())));
+                .resolveDescription("POS", selectedList).resolveDescription("TOTALPOS", Integer.toString(dataObjectList.getDataList().size())));
         return result;
     }
 
     @Override
-    public AnswerItem<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties) {
-        AnswerItem<HashMap<String, String>> result = new AnswerItem();
-        List<HashMap<String, String>> list;
+    public AnswerList<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties, int outputRequestedDimention) {
+        AnswerList<HashMap<String, String>> result = new AnswerList();
+        List<HashMap<String, String>> list; // Temporary list in order to treat the input list
+
+        List<HashMap<String, String>> resultObject;
+        resultObject = new ArrayList<HashMap<String, String>>();
+
         int initNB = dataObjectList.getDataList().size();
-        // We get the list of values that are already used.
-        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(),
+        // We get the list of values that were already used.
+        List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(),
                 testCaseProperties.getProperty(), tCExecution.getTest(), tCExecution.getTestCase(),
                 tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(), tCExecution.getCountry());
 
@@ -241,14 +303,31 @@ public class DataLibService implements IDataLibService {
         list.removeAll(listToremove);
 
         if (list != null && !list.isEmpty()) { // We pick a random value from the left entries of the list.
-            Random r = new Random();
-            int position = r.nextInt(list.size());
-            result.setItem(list.get(position));
-            result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOMNEW)
-                    .resolveDescription("TOTNB", Integer.toString(initNB))
-                    .resolveDescription("REMNB", Integer.toString(removedNB))
-                    .resolveDescription("POS", Integer.toString(position + 1))
-                    .resolveDescription("TOTALPOS", Integer.toString(list.size())));
+
+            if (list.size() < outputRequestedDimention) { // Still some results available but not enougth compared to what we requested.
+                result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_RANDOMNEW_NOTENOUGTHRECORDS)
+                        .resolveDescription("REMNB", Integer.toString(listToremove.size()))
+                        .resolveDescription("TOTNB", Integer.toString(initNB))
+                        .resolveDescription("NBREQUEST", Integer.toString(outputRequestedDimention)));
+            } else {
+                // Get a random list.
+                List<Integer> listTempRandom = getRandomListOfInteger(dataObjectList.getDataList().size(), outputRequestedDimention);
+                String selectedList = "";
+                // Pick the result from list.
+                for (int i : listTempRandom) {
+                    selectedList += Integer.toString(i) + ",";
+                    resultObject.add(dataObjectList.getDataList().get(i));
+                }
+                selectedList = StringUtil.removeLastChar(selectedList, 1);
+                result.setDataList(resultObject);
+
+                result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURERANDOMNEW)
+                        .resolveDescription("TOTNB", Integer.toString(initNB))
+                        .resolveDescription("REMNB", Integer.toString(removedNB))
+                        .resolveDescription("POS", selectedList)
+                        .resolveDescription("TOTALPOS", Integer.toString(list.size())));
+
+            }
         } else { // No more entries available.
             result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_RANDOMNEW_NOMORERECORD)
                     .resolveDescription("TOTNB", Integer.toString(initNB)));
@@ -257,16 +336,20 @@ public class DataLibService implements IDataLibService {
     }
 
     @Override
-    public AnswerItem<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty) {
-        AnswerItem<HashMap<String, String>> result = new AnswerItem();
-        List<HashMap<String, String>> list = dataObjectList.getDataList();
+    public AnswerList<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, int outputRequestedDimention) {
+        AnswerList<HashMap<String, String>> result = new AnswerList();
+        List<HashMap<String, String>> list = dataObjectList.getDataList(); // Temporary list in order to treat the input list
+
+        List<HashMap<String, String>> resultObject;
+        resultObject = new ArrayList<HashMap<String, String>>();
+
         int initNB = dataObjectList.getDataList().size();
-        // We get the list of values that are already used.
+        // We get the list of values that are beeing used.
         Integer peTimeout;
         try {
             peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", tCExecution.getApplication().getSystem()).getValue());
 
-            List<String> pastValues = this.testCaseExecutionDataDAO.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
+            List<String> pastValues = this.testCaseExecutionDataService.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 
             int removedNB = 0;
             // We save all rows that needs to be removed to listToremove.
@@ -285,14 +368,30 @@ public class DataLibService implements IDataLibService {
             list.removeAll(listToremove);
 
             if (list != null && !list.isEmpty()) { // We pick a random value from the left entries of the list.
-                Random r = new Random();
-                int position = r.nextInt(list.size());
-                result.setItem(list.get(position));
-                result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURENOTINUSE)
-                        .resolveDescription("TOTNB", Integer.toString(initNB))
-                        .resolveDescription("REMNB", Integer.toString(removedNB))
-                        .resolveDescription("POS", Integer.toString(position + 1))
-                        .resolveDescription("TOTALPOS", Integer.toString(list.size())));
+
+                if (list.size() < outputRequestedDimention) { // Still some results available but not enougth compared to what we requested.
+                    result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTINUSE_NOTENOUGTHRECORDS)
+                            .resolveDescription("REMNB", Integer.toString(listToremove.size()))
+                            .resolveDescription("TOTNB", Integer.toString(initNB))
+                            .resolveDescription("NBREQUEST", Integer.toString(outputRequestedDimention)));
+                } else {
+                    // Get a random list.
+                    List<Integer> listTempRandom = getRandomListOfInteger(dataObjectList.getDataList().size(), outputRequestedDimention);
+                    String selectedList = "";
+                    // Pick the result from list.
+                    for (int i : listTempRandom) {
+                        selectedList += Integer.toString(i) + ",";
+                        resultObject.add(dataObjectList.getDataList().get(i));
+                    }
+                    selectedList = StringUtil.removeLastChar(selectedList, 1);
+                    result.setDataList(resultObject);
+
+                    result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURENOTINUSE)
+                            .resolveDescription("TOTNB", Integer.toString(initNB))
+                            .resolveDescription("REMNB", Integer.toString(removedNB))
+                            .resolveDescription("POS", selectedList)
+                            .resolveDescription("TOTALPOS", Integer.toString(list.size())));
+                }
             } else { // No more entries available.
                 result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOTINUSE_NOMORERECORD)
                         .resolveDescription("TOTNB", Integer.toString(initNB)));

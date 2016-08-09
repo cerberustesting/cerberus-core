@@ -20,9 +20,13 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -30,33 +34,117 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseExecutionDataService {
 
-    TestCaseExecutionData findTestCaseExecutionDataByKey(long id, String property);
-
-    void insertTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
-
-    void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
+    /**
+     *
+     * @param id
+     * @param property
+     * @param index
+     * @return
+     */
+    public AnswerItem readByKey(long id, String property, int index);
 
     /**
      *
      * @param id
-     * @return List of testCaseExecutionData that correspond to the Id.
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
      */
-    List<TestCaseExecutionData> findTestCaseExecutionDataById(long id);
-    
+    public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
     /**
      *
+     * @param id
+     * @return
+     */
+    public AnswerList<TestCaseExecutionData> readById(long id);
+
+    /**
+     *
+     * @param id
      * @param property
-     * @param value
-     * @param controlStatus
-     * @param nbMinutes
-     * @return List of TestCaseExecutionData that match the Id.
+     * @param index
+     * @return
      */
-    List<TestCaseExecutionData> findTestCaseExecutionDataByCriteria1(String property, String value, String controlStatus, Integer nbMinutes);
-    
+    public boolean exist(long id, String property, int index);
+
     /**
      *
-     * @param testCaseExecutionData
+     * @param id
+     * @param propName
+     * @param test
+     * @param testCase
+     * @param build
+     * @param environment
+     * @param country
+     * @return
+     */
+    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country);
+
+    /**
+     *
+     * @param id
+     * @param propName
+     * @param environment
+     * @param country
+     * @param timeoutInSecond
+     * @return
+     */
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer create(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer update(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
      * @throws CerberusException
      */
-    void insertOrUpdateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
+    public TestCaseExecutionData convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    public List<TestCaseExecutionData> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    public void convert(Answer answer) throws CerberusException;
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer save(TestCaseExecutionData object);
+
 }

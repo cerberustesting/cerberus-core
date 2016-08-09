@@ -56,7 +56,7 @@ public interface IApplicationDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<Application>> readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Application> readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
@@ -90,7 +90,7 @@ public interface IApplicationDAO {
      *
      * @return
      */
-    AnswerList<List<String>> readDistinctSystem();
+    AnswerList<String> readDistinctSystem();
 
     /**
      * Uses data of ResultSet to create object {@link Application}
@@ -104,13 +104,13 @@ public interface IApplicationDAO {
     Application loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
-     * 
+     *
      * @param system
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

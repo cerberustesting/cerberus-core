@@ -430,7 +430,7 @@
 
                         ITestCaseExecutionDataService testCaseExecutionDataService = appContext.getBean(ITestCaseExecutionDataService.class);
 
-                        List<TestCaseExecutionData> dataList = testCaseExecutionDataService.findTestCaseExecutionDataById(iD);%>
+                        List<TestCaseExecutionData> dataList = testCaseExecutionDataService.convert(testCaseExecutionDataService.readById(iD));%>
 
                     <%
                         String myStep = "";

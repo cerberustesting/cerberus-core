@@ -23,7 +23,6 @@ import java.util.HashMap;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -39,23 +38,26 @@ public interface IDataLibService {
      * @param tCExecution
      * @return
      */
-    AnswerItem<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
+    AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
 
     /**
      * This method return the first ObjectData from DataSet
      *
      * @param dataSet
+     * @param outPutDimention
      * @return The first item from dataObjectList
      */
-    AnswerItem<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataSet);
+    AnswerList<HashMap<String, String>> filterWithNatureSTATIC(AnswerList<HashMap<String, String>> dataSet, int outPutDimention);
 
     /**
      * This method return an ObjectData from DataSet picked randomly
      *
      * @param dataSet
-     * @return An item from dataObjectList choosen randomly
+     * @param outPutDimention Define the nb of row that must be return in the
+     * result.
+     * @return A list of items from dataObjectList taken from the top.
      */
-    AnswerItem<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataSet);
+    AnswerList<HashMap<String, String>> filterWithNatureRANDOM(AnswerList<HashMap<String, String>> dataSet, int outPutDimention);
 
     /**
      * This method return an ObjectData from DataSet picked randomly after
@@ -64,9 +66,12 @@ public interface IDataLibService {
      * @param dataSet
      * @param tCExecution : TestCaseExecution
      * @param testCaseProperties : TestCaseCountryProperties
-     * @return An item from dataObjectList choosen randomly
+     * @param outPutDimention Define the nb of row that must be return in the
+     * result.
+     * @return A list of items from dataObjectList excluding the ones already
+     * used in previous executions. (choosen randomly is more than enough)
      */
-    AnswerItem<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+    AnswerList<HashMap<String, String>> filterWithNatureRANDOMNEW(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties, int outPutDimention);
 
     /**
      * This method return an ObjectData from dataObjectList that is not used in
@@ -75,9 +80,11 @@ public interface IDataLibService {
      * @param dataSet
      * @param tCExecution : TestCaseExecution
      * @param testCaseProperties
-     * @return An item from dataObjectList excluding the one used in other
-     * execution choosen randomly
+     * @param outPutDimention Define the nb of row that must be return in the
+     * result.
+     * @return A list of item from dataObjectList excluding the one used in
+     * other execution. (choosen randomly is more than enough)
      */
-    AnswerItem<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties);
+    AnswerList<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties, int outPutDimention);
 
 }

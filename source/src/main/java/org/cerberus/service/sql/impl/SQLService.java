@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.sql.impl;
 
-import org.cerberus.engine.gwt.impl.PropertyService;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,15 +31,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.apache.log4j.Level;
-import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.database.DatabaseSpring;
@@ -49,9 +47,7 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.sql.ISQLService;
-import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +64,7 @@ public class SQLService implements ISQLService {
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
     @Autowired
     private ITestCaseExecutionService testCaseExecutionService;
     @Autowired
@@ -378,7 +374,7 @@ public class SQLService implements ISQLService {
 
     private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
         //TODO clean code
-        List<String> pastValues = this.testCaseExecutionDataDAO.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
+        List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
                 tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
                 tCExecution.getCountry());
 

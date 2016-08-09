@@ -66,7 +66,7 @@ public class TestCaseCountryProperties {
     public static final String NATURE_RANDOM = "RANDOM";
     public static final String NATURE_RANDOMNEW = "RANDOMNEW";
     public static final String NATURE_NOTINUSE = "NOTINUSE";
-    
+
     public List<TestCaseCountry> getTccList() {
         return tccList;
     }
@@ -74,7 +74,7 @@ public class TestCaseCountryProperties {
     public void setTccList(List<TestCaseCountry> tccList) {
         this.tccList = tccList;
     }
-    
+
     public String getValue2() {
         return value2;
     }
@@ -138,7 +138,7 @@ public class TestCaseCountryProperties {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public int getRowLimit() {
         return rowLimit;
     }
@@ -194,7 +194,7 @@ public class TestCaseCountryProperties {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        
+
         if ((this.test == null) ? (obj.test != null) : !this.test.equals(obj.test)) {
             return false;
         }
@@ -280,6 +280,5 @@ public class TestCaseCountryProperties {
     public String toString() {
         return "TestCaseCountryProperties{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + ", property=" + property + ", type=" + type + ", database=" + database + ", value1=" + value1 + ", value2=" + value2 + ", length=" + length + ", rowLimit=" + rowLimit + ", nature=" + nature + '}';
     }
-    
-    
+
 }

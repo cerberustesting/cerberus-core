@@ -6343,6 +6343,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('', 'cerberus_actionexecutesqlupdate_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlUpdate will fail.')");
         SQLInstruction.add(SQLS.toString());
 
+        // New Index column in testcaseexecutiondata in order to support multirow property.
+        //-- ------------------------ 862
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("ADD COLUMN `Index` INT NOT NULL DEFAULT 1 AFTER `Property`,");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`ID`, `Property`, `Index`) ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

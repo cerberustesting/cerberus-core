@@ -651,7 +651,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     //specific messagem for duplicated issue
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "Insert "));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "Insert ").replace("%REASON%", exception.toString()));
                 } else {
                     msg = MessageEventUtil.createInsertUnexpectedErrorMessageDAO();
 

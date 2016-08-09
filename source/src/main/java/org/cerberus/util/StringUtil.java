@@ -19,8 +19,6 @@
  */
 package org.cerberus.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -144,9 +142,9 @@ public final class StringUtil {
     /**
      * Generate a random string using current time and charset
      *
-     * @param length of the random string to generate
-     * @param charset use to generate random value
-     * @return random string, empty if charset is null or length <= 0
+     * @param string1 String to treat.
+     * @param length nb of characters to keep.
+     * @return the {length} first caracter of the string1.
      */
     public static String getLeftString(String string1, int length) {
         if (string1 == null) {
@@ -159,8 +157,22 @@ public final class StringUtil {
     }
 
     /**
+     * Remove last n char from a string
      *
-     * @param testIn String that needs to be cleaned
+     * @param s String to treat.
+     * @param length nb of characters to remove.
+     * @return a string on which the last {length} characters has been removed.
+     */
+    public static String removeLastChar(String s, int length) {
+        if (s == null || s.length() == 0) {
+            return s;
+        }
+        return s.substring(0, s.length() - 1);
+    }
+
+    /**
+     *
+     * @param textIn
      * @return a clean string.
      */
     public static String getCleanCSVTextField(String textIn) {

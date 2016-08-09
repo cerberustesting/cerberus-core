@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import java.util.Date;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
@@ -33,11 +32,12 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionData {
 
     @Override
-    public TestCaseExecutionData create(long id, String property, String description, String value, String type, String value1,String value2,
-                                        String returnCode,String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
+    public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
+            String returnCode, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
+        testCaseExecutionData.setIndex(index);
         testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setValue(value);
         testCaseExecutionData.setType(type);
@@ -54,22 +54,4 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
 
     }
 
-    @Override
-    public TestCaseExecutionData create(long id, String property, String description, String type, String value1, String value2, MessageEvent message) {
-        TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
-        testCaseExecutionData.setId(id);
-        testCaseExecutionData.setProperty(property);
-        testCaseExecutionData.setDescription(description);
-        testCaseExecutionData.setType(type);
-        testCaseExecutionData.setValue1(value1);
-        testCaseExecutionData.setValue2(value2);
-        testCaseExecutionData.setPropertyResultMessage(message);
-        
-        long now = new Date().getTime();
-        testCaseExecutionData.setStart(now);
-        testCaseExecutionData.setEnd(now);
-        testCaseExecutionData.setStartLong(now);
-        testCaseExecutionData.setEndLong(now);
-        return testCaseExecutionData;
-    }
 }

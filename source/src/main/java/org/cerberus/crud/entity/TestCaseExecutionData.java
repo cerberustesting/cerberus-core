@@ -18,6 +18,7 @@
 package org.cerberus.crud.entity;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -27,6 +28,7 @@ public class TestCaseExecutionData {
 
     private long id;
     private String property;
+    private int index;
     private String description;
     private String value;
     private String type;
@@ -46,13 +48,21 @@ public class TestCaseExecutionData {
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
-    private HashMap<String, String> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+    private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
 
-    public HashMap<String, String> getDataLibRawData() {
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public List<HashMap<String, String>> getDataLibRawData() {
         return dataLibRawData;
     }
 
-    public void setDataLibRawData(HashMap<String, String> dataLibRawData) {
+    public void setDataLibRawData(List<HashMap<String, String>> dataLibRawData) {
         this.dataLibRawData = dataLibRawData;
     }
 
@@ -165,7 +175,7 @@ public class TestCaseExecutionData {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getRC() {
         return RC;
     }
@@ -210,6 +220,5 @@ public class TestCaseExecutionData {
     public String toString() {
         return "TestCaseExecutionData{" + "id=" + id + ", property=" + property + ", value=" + value + ", type=" + type + ", value1=" + value1 + ", value2=" + value2 + ", RC=" + RC + ", rMessage=" + rMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", propertyResultMessage=" + propertyResultMessage.toString() + ", executionResultMessage=" + executionResultMessage + ", stopExecution=" + stopExecution + '}';
     }
-    
-    
+
 }

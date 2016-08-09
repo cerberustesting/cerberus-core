@@ -17,10 +17,16 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -31,11 +37,27 @@ import org.cerberus.exception.CerberusException;
  */
 public interface ITestCaseExecutionDataDAO {
 
-    TestCaseExecutionData findTestCaseExecutionDataByKey(long id, String property);
+    /**
+     *
+     * @param id
+     * @param property
+     * @param index
+     * @return
+     */
+    public AnswerItem<TestCaseExecutionData> readByKey(long id, String property, int index);
 
-    void insertTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
-
-    void updateTestCaseExecutionData(TestCaseExecutionData testCaseExecutionData) throws CerberusException;
+    /**
+     *
+     * @param id
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      * Get the list of values of past execution data on the property @propName
@@ -51,7 +73,7 @@ public interface ITestCaseExecutionDataDAO {
      * @param country
      * @return
      */
-    List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country);
+    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country);
 
     /**
      * Get the list of values currently in used in the given COUNTRY,
@@ -59,19 +81,42 @@ public interface ITestCaseExecutionDataDAO {
      * seconds in timeout will be used to remove too old executions. ID
      * execution will be excluded from the list.
      *
+     * @param id
      * @param propName
      * @param environment
      * @param timeoutInSecond
      * @param country
      * @return
      */
-    List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond);
+    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond);
 
     /**
      *
-     * @param id
-     * @return List of TestCaseExecutionData that match the Id.
+     * @param object
+     * @return
      */
-    List<TestCaseExecutionData> findTestCaseExecutionDataById(long id);
+    public Answer create(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer delete(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    public Answer update(TestCaseExecutionData object);
+
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
+    public TestCaseExecutionData loadFromResultSet(ResultSet resultSet) throws SQLException;
 
 }

@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import com.google.common.base.Strings;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -128,7 +127,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<List<Application>> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<Application> readBySystemByCriteria(String system, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -409,7 +408,7 @@ public class ApplicationDAO implements IApplicationDAO {
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
@@ -526,7 +525,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctSystem() {
+    public AnswerList<String> readDistinctSystem() {
         MessageEvent msg;
         AnswerList answer = new AnswerList();
         List<String> result = new ArrayList<String>();
@@ -611,7 +610,7 @@ public class ApplicationDAO implements IApplicationDAO {
     }
 
     @Override
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));

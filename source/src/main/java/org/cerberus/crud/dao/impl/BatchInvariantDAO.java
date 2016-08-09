@@ -276,7 +276,7 @@ public class BatchInvariantDAO implements IBatchInvariantDAO {
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));

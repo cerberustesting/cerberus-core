@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.log4j.Level;
-import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
 import org.cerberus.crud.entity.Identifier;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -38,14 +37,11 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
-import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.engine.entity.SOAPExecution;
@@ -102,15 +98,9 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private ITestDataLibService testDataLibService;
     @Autowired
-    private ITestDataLibDataService testDataLibDataService;
-    @Autowired
     private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
-    private IFactoryTestCaseCountryProperties factoryTCCountryProperties;
-    @Autowired
     private ITestCaseExecutionDataService testCaseExecutionDataService;
-    @Autowired
-    private ITestCaseExecutionDataDAO testCaseExecutionDataDAO;
     @Autowired
     private IJsonService jsonService;
     @Autowired
@@ -121,8 +111,6 @@ public class PropertyService implements IPropertyService {
     private IRecorderService recorderService;
     @Autowired
     private IParameterService parameterService;
-    @Autowired
-    private ICountryEnvironmentDatabaseService countryEnvironmentDatabaseService;
     @Autowired
     private IDataLibService dataLibService;
 
@@ -204,7 +192,7 @@ public class PropertyService implements IPropertyService {
              * First create testCaseExecutionData object
              */
             now = new Date().getTime();
-            tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), eachTccp.getDescription(), null, eachTccp.getType(),
+            tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
             tecd.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
@@ -232,7 +220,16 @@ public class PropertyService implements IPropertyService {
                 calculateProperty(tecd, testCaseStepActionExecution, eachTccp, forceCalculation);
                 //saves the result 
                 try {
-                    testCaseExecutionDataService.insertOrUpdateTestCaseExecutionData(tecd);
+                    testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tecd));
+                    if (tecd.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all ros retreived in order to support nature such as NOTINUSe or RANDOMNEW.
+                        for (int i = 1; i < (tecd.getDataLibRawData().size()); i++) {
+                            now = new Date().getTime();
+                            TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tecd.getId(), tecd.getProperty(), (i + 1), tecd.getDescription(), tecd.getDataLibRawData().get(i).get(""), tecd.getType(),
+                                    "", "", tecd.getRC(), "", now, now, now, now, null);
+                            testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
+                        }
+
+                    }
                 } catch (CerberusException cex) {
                     LOG.error(cex.getMessage(), cex);
                 }
@@ -418,24 +415,55 @@ public class PropertyService implements IPropertyService {
     }
 
     private String decodeStringWithAlreadyCalculatedProperties(String stringToReplace, TestCaseExecution tCExecution) {
+        String variableValue = "";
+        String variableString1 = "";
+        String variableString2 = "";
 
         for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
 
             if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA))) { // Type could be null in case property do not exist.
+                /* Replacement in case of TestDataLib */
+
                 // Key value of the DataLib.
                 if (tced.getValue() != null) {
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
                 }
+
                 // For each subdata of the getFromDataLib_BETA property, we try to replace with PROPERTY(SUBDATA).
                 if (!(tced.getDataLibRawData() == null)) {
-                    for (String key : tced.getDataLibRawData().keySet()) {
-                        if (tced.getDataLibRawData().get(key) != null) {
-                            stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "(" + key + ")%", tced.getDataLibRawData().get(key));
-                            stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "." + key + "%", tced.getDataLibRawData().get(key));
+                    int ind = 0;
+                    for (HashMap<String, String> dataRow : tced.getDataLibRawData()) { // We loop every row result.
+                        for (String key : dataRow.keySet()) { // We loop every subdata
+                            if (dataRow.get(key) != null) {
+                                variableValue = dataRow.get(key);
+
+                                variableString1 = tced.getProperty() + "(" + (ind + 1) + ")" + "(" + key + ")";
+                                stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
+                                variableString2 = tced.getProperty() + "." + (ind + 1) + "." + key;
+                                stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
+
+                                if (key.equals("")) { // If subdata is empty we can omit the () or .
+                                    variableString1 = tced.getProperty() + "(" + (ind + 1) + ")";
+                                    stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
+                                    variableString2 = tced.getProperty() + "." + (ind + 1);
+                                    stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
+                                }
+
+                                if (ind == 0) { // Dimention of the data is not mandatory for the 1st row.
+                                    variableString1 = tced.getProperty() + "(" + key + ")";
+                                    stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
+                                    variableString2 = tced.getProperty() + "." + key;
+                                    stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
+                                }
+
+                            }
                         }
+                        ind++;
                     }
                 }
+
             } else if (tced.getValue() != null) {
+                /* Replacement in case of normal PROPERTY */
                 stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
             }
         }
@@ -1061,7 +1089,7 @@ public class PropertyService implements IPropertyService {
         MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB);
 
         TestDataLib testDataLib;
-        HashMap<String, String> result = null;
+        List<HashMap<String, String>> result = null;
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
@@ -1071,7 +1099,7 @@ public class PropertyService implements IPropertyService {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = (TestDataLib) answer.getItem();
 
-            AnswerItem serviceAnswer;
+            AnswerList serviceAnswer;
 
             //check if there are properties defined in the data specification
             try {
@@ -1100,7 +1128,7 @@ public class PropertyService implements IPropertyService {
             serviceAnswer = dataLibService.getFromDataLib(testDataLib, testCaseCountryProperty, tCExecution);
 
             res = serviceAnswer.getResultMessage();
-            result = (HashMap<String, String>) serviceAnswer.getItem(); //test data library returned by the service
+            result = (List<HashMap<String, String>>) serviceAnswer.getDataList(); //test data library returned by the service
 
 //            }
             if (result != null) {
@@ -1108,7 +1136,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setDataLibRawData(result);
 
                 // Value of testCaseExecutionData object takes the master subdata entry "".
-                String value = (String) result.get("");
+                String value = (String) result.get(0).get("");
                 testCaseExecutionData.setValue(value);
 
             }

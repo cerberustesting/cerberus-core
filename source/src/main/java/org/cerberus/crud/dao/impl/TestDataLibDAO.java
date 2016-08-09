@@ -746,7 +746,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
                 } else {
                     msg = MessageEventUtil.createInsertUnexpectedErrorMessageDAO();
                 }
@@ -875,7 +875,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
                 MyLogger.log(TestDataLibDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data lib ").replace("%OPERATION%", "UPDATE").replace("%REASON%", exception.toString()));
                 } else {
                     msg = MessageEventUtil.createUpdateUnexpectedErrorMessageDAO();
                 }

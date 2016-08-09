@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
-import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageEvent;
@@ -430,7 +429,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
 
                 if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
                 } else {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
