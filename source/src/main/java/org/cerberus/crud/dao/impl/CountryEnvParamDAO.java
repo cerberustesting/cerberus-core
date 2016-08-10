@@ -892,6 +892,7 @@ public class CountryEnvParamDAO implements ICountryEnvParamDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.maintenancestr : " + cep.getMaintenanceStr());
         }
         Connection connection = this.databaseSpring.connect();
         try {

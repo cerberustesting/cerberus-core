@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
@@ -41,6 +40,19 @@ public class BuildRevisionParameters {
     private String mavenArtifactId;
     private String mavenVersion;
     private String repositoryUrl;
+
+    /**
+     * From here are data outside database model.
+     */
+    private String appDeployType;
+
+    public String getAppDeployType() {
+        return appDeployType;
+    }
+
+    public void setAppDeployType(String appDeployType) {
+        this.appDeployType = appDeployType;
+    }
 
     public String getRepositoryUrl() {
         return repositoryUrl;

@@ -858,19 +858,19 @@
     </servlet>
     <servlet>
         <servlet-name>CreateLabel</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.label.CreateLabel</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateLabel</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateLabel</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.label.UpdateLabel</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateLabel</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteLabel</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.label.DeleteLabel</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteLabel</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadLabel</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.label.ReadLabel</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadLabel</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseLabel</servlet-name>

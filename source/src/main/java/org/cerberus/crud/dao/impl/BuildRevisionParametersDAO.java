@@ -504,7 +504,9 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        brpList.add(this.loadFromResultSet(resultSet));
+                        BuildRevisionParameters brpItem = this.loadFromResultSet(resultSet);
+                        brpItem.setAppDeployType(resultSet.getString("app.deploytype"));
+                        brpList.add(brpItem);
                     }
 
                     //get the total number of rows
@@ -577,6 +579,7 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         List<BuildRevisionParameters> brpList = new ArrayList<BuildRevisionParameters>();
+        BuildRevisionParameters brpItem = null;
         StringBuilder searchSQL = new StringBuilder();
 
         StringBuilder query = new StringBuilder();
@@ -604,6 +607,8 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
         query.append(" JOIN buildrevisionparameters brp   ON brp.id = toto.maxid ");
         query.append(" JOIN buildrevisioninvariant bri1 on bri1.versionname = brp.build  and bri1.`system` = ?  and bri1.`level` = 1 ");
         query.append(" JOIN buildrevisioninvariant bri2 on bri2.versionname = brp.revision  and bri2.`system` = ?  and bri2.`level` = 2 ");
+        query.append(" JOIN application app ");
+        query.append(" ON app.application=toto.application ");
         query.append(" ORDER BY bri1.seq asc , bri2.seq asc , brp.Application asc;");
 
         // Debug message on SQL.
@@ -641,7 +646,11 @@ public class BuildRevisionParametersDAO implements IBuildRevisionParametersDAO {
                     //gets the data
                     while (resultSet.next()) {
                         BuildRevisionParameters newBRP;
-                        newBRP = factoryBuildRevisionParameters.create(ParameterParserUtil.parseIntegerParam(resultSet.getString("maxid"), 0), ParameterParserUtil.parseStringParam(resultSet.getString("build"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("revision"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), ""), "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null, null);
+                        newBRP = factoryBuildRevisionParameters.create(ParameterParserUtil.parseIntegerParam(resultSet.getString("maxid"), 0)
+                                , ParameterParserUtil.parseStringParam(resultSet.getString("build"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("revision"), "")
+                                , ParameterParserUtil.parseStringParam(resultSet.getString("rel"), ""), ParameterParserUtil.parseStringParam(resultSet.getString("application"), "")
+                                , "", "", "", ParameterParserUtil.parseStringParam(resultSet.getString("link"), ""), "", "", null, null, null, null, null, null);
+                        newBRP.setAppDeployType(ParameterParserUtil.parseStringParam(resultSet.getString("app.deploytype"), ""));
                         brpList.add(newBRP);
                     }
 

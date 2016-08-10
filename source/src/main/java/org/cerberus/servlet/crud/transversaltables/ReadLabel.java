@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.label;
+package org.cerberus.servlet.crud.transversaltables;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;

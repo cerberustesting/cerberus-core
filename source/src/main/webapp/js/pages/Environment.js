@@ -846,7 +846,9 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find("#currentRevision").prop("value", revision);
     formEvent.find('#newBuild').val(build);
     formEvent.find('#newRevision').val(revision);
-
+    // Select next Revision.
+    $('#newRevision option:selected').next().attr('selected', 'selected');
+    
     $("#eventEnableButton").prop("disabled", "disabled");
 
     // Clean Old field values.
@@ -883,7 +885,7 @@ function eventEnablePreview() {
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
         // We force the table to be smaller than 950px.
         formEvent.find("#notifBody").append("<div><table><tbody><tr><td style=\"max-width: 950px;\">" + data.notificationBody + "</td></tr></tbody></table></div>");
-        $("#eventEnableButton").removeProp("disabled");
+        $("#eventEnableButton").removeAttr("disabled");
     }).fail(handleErrorAjaxAfterTimeout);
     // Installation instructions tab refresh
     refreshlistInstallInstructions();
@@ -947,7 +949,7 @@ function refreshlistInstallInstructions() {
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, "", obj.mavenVersion, obj.install);
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeploy, obj.release, "", obj.mavenVersion, obj.install);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -955,7 +957,7 @@ function refreshlistInstallInstructions() {
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getNonSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.release, obj.link, "", "");
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeployType, obj.release, obj.link, "", "");
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -964,7 +966,7 @@ function refreshlistInstallInstructions() {
 /**
  * Render 1 line on installation instructions modal.
  */
-function appendNewInstallRow(build, revision, application, release, link, version, install) {
+function appendNewInstallRow(build, revision, application, appdeploytype, release, link, version, install) {
     var doc = new Doc();
     if ((version === null) || (version === "undefined") || (version === ""))
         version = "";
@@ -986,16 +988,16 @@ function appendNewInstallRow(build, revision, application, release, link, versio
     //for each install instructions adds a new row
     $('#installInstructionsTableBody').append('<tr> \n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + build + '"/><span></span></div></td>\n\\n\
+            ' + build + '<span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="build" type="text" class="releaseClass form-control input-xs" value="' + revision + '"/><span></span></div></td>\n\\n\
+            ' + revision + '<span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="application" type="text" class="releaseClass form-control input-xs" value="' + application + '"/><span></span></div></td>\n\\n\
+            ' + application + '<span></span> ['+ appdeploytype +']</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            <input readonly name="release" type="text" class="releaseClass form-control input-xs" value="' + release + '"/><span></span></div></td>\n\\n\
+            ' + release + '<span></span></div></td>\n\\n\
         <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\n\
-            <input readonly name="version" type="text" class="releaseClass form-control input-xs" value="' + version + '" /></div></td>\n\
+            ' + version + '</div></td>\n\
         </tr>');
 }
 
