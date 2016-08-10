@@ -855,27 +855,30 @@ public class ActionService implements IActionService {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
             String servicePath;
             if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl();
+                servicePath = tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl() + soapLibrary.getServicePath();
             } else {
                 servicePath = soapLibrary.getServicePath();
+            }
+            if (!(StringUtil.isURL(servicePath))) {
+                servicePath = "http://" + servicePath;
             }
             /**
              * Decode Envelope, ServicePath and Method replacing properties
              * encapsulated with %
              */
             String decodedEnveloppe = soapLibrary.getEnvelope();
-            String decodedServicePath = soapLibrary.getServicePath();
+            String decodedServicePath = servicePath;
             String decodedMethod = soapLibrary.getMethod();
 
             try {
                 if (soapLibrary.getEnvelope().contains("%")) {
-                    decodedEnveloppe = propertyService.decodeValueWithExistingProperties(soapLibrary.getEnvelope(), testCaseStepActionExecution, false);
+                    decodedEnveloppe = propertyService.decodeValueWithExistingProperties(decodedEnveloppe, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getServicePath().contains("%")) {
-                    decodedServicePath = propertyService.decodeValueWithExistingProperties(soapLibrary.getServicePath(), testCaseStepActionExecution, false);
+                    decodedServicePath = propertyService.decodeValueWithExistingProperties(decodedServicePath, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getMethod().contains("%")) {
-                    decodedMethod = propertyService.decodeValueWithExistingProperties(soapLibrary.getMethod(), testCaseStepActionExecution, false);
+                    decodedMethod = propertyService.decodeValueWithExistingProperties(decodedMethod, testCaseStepActionExecution, false);
                 }
 
                 //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
