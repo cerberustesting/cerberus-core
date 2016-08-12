@@ -244,6 +244,7 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_edit").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv_edit").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl_edit").html(doc.getDocOnline("testdatalib", "csvUrl"));
     //buttons    
     $("#cancelTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
@@ -283,6 +284,7 @@ function displayDuplicateTestDataLibLabels(doc) {
     $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv_duplicate").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl_duplicate").html(doc.getDocOnline("testdatalib", "csvUrl"));
 
     //auxiliar for group edition
@@ -384,6 +386,7 @@ function displayCreateTestDataLibLabels(doc) {
     $("#lbl_service_path").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl").html(doc.getDocOnline("testdatalib", "csvUrl"));
     $("#lbl_separator").html(doc.getDocOnline("testdatalib", "separator"));
 
@@ -655,6 +658,7 @@ function createLibButtonClickHandler() {
         //database
         loadSelectElement(databaseList, $('#addTestDataLibModal #databaseUrl'), true, '');
         loadSelectElement(databaseList, $('#addTestDataLibModal #database'), true, '');
+        loadSelectElement(databaseList, $('#addTestDataLibModal #databaseCsv'), true, '');
 
         var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
 
@@ -1086,6 +1090,8 @@ function editTestDataLib(testDataLibID) {
             $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
             loadSelectElement(databaseList, $('#editTestDataLibModal #databaseUrl'), true, '');
             $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+            loadSelectElement(databaseList, $('#editTestDataLibModal #databaseCsv'), true, '');
+            $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
 
 
             //loads groups from database
@@ -1344,6 +1350,8 @@ function duplicateEntryTestData(testDataLibID) {
             $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
             loadSelectElement(databaseList, $('#duplicateTestDataLibModal #databaseUrl'), true, '');
             $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+            loadSelectElement(databaseList, $('#duplicateTestDataLibModal #databaseCsv'), true, '');
+            $('#duplicateTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
 
 
             //loads groups from database
@@ -1377,7 +1385,10 @@ function saveDuplicateTestDataLibClickHandler() {
     var formEdit = $('#duplicateTestDataLibModal').find('form#duplicateTestLibData');
     showLoaderInModal('#duplicateTestDataLibModal');
 
-    var jqxhr = $.post("DuplicateTestDataLib", formEdit.serialize(), "json");
+    // Get the header data from the form.
+    var dataForm = convertSerialToJSONObject(formEdit.serialize());
+    
+    var jqxhr = $.post("DuplicateTestDataLib", dataForm);
     $.when(jqxhr).then(function (data) {
         // unblock when remote call returns 
         hideLoaderInModal('#duplicateTestDataLibModal');
@@ -1443,6 +1454,7 @@ function aoColumnsFuncTestDataLib(tableId) {
 
     var aoColumns = [
         {
+            "sName": "tdl.TestDataLibID",
             "data": "testDataLibID",
             "bSortable": false,
             "bSearchable": false,
@@ -1575,6 +1587,12 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "envelope",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "envelope")
+        },
+        {
+            "sName": "tdl.DatabaseCsv",
+            "data": "databaseCsv",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "databaseCsv")
         },
         {
             "sName": "tdl.csvUrl",

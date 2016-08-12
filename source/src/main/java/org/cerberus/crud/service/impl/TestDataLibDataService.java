@@ -56,8 +56,8 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty) {
-        return testDataLibDataDAO.readByVarious(testDataLibID, columnEmpty, parsingAnswerEmpty, valueEmpty);
+    public AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty) {
+        return testDataLibDataDAO.readByVarious(testDataLibID, columnEmpty, parsingAnswerEmpty, columnPositionEmpty);
     }
 
     @Override

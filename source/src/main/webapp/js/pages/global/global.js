@@ -1858,7 +1858,11 @@ function restrictCharacters(myfield, e, restrictionType) {
     else if (e.which)
         code = e.which;
     var character = String.fromCharCode(code);
+    if ((e.keyCode === 39) || (e.keyCode === 40)) {
+        return true;
+    }
     if (character.match(restrictionType)) {
+        console.debug("Key not allowed in that field. keyCode : '" + e.keyCode + "', character : '" + character + "', code : '" + code + "'");
         return false;
     } else {
         return true;

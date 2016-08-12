@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 public class FactoryCountryEnvironmentDatabase implements IFactoryCountryEnvironmentDatabase {
 
     @Override
-    public CountryEnvironmentDatabase create(String system, String country, String environment, String database, String connectionPoolName, String soapUrl) {
+    public CountryEnvironmentDatabase create(String system, String country, String environment, String database, String connectionPoolName, String soapUrl, String csvUrl) {
         CountryEnvironmentDatabase ced = new CountryEnvironmentDatabase();
         ced.setSystem(system);
         ced.setCountry(country);
@@ -38,6 +38,7 @@ public class FactoryCountryEnvironmentDatabase implements IFactoryCountryEnviron
         ced.setDatabase(database);
         ced.setConnectionPoolName(connectionPoolName);
         ced.setSoapUrl(soapUrl);
+        ced.setCsvUrl(csvUrl);
         return ced;
     }
 

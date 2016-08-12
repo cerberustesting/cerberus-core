@@ -247,9 +247,10 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String database = tcsaJson.getString("database");
             String connectionPool = tcsaJson.getString("connectionPoolName");
             String soapUrl = tcsaJson.getString("soapUrl");
+            String csvUrl = tcsaJson.getString("csvUrl");
 
             if (!delete) {
-                CountryEnvironmentDatabase ceb = cebFactory.create(system, country, environment, database, connectionPool, soapUrl);
+                CountryEnvironmentDatabase ceb = cebFactory.create(system, country, environment, database, connectionPool, soapUrl, csvUrl);
                 cebList.add(ceb);
             }
         }

@@ -195,7 +195,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
     }
 
     @Override
-    public AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty) {
+    public AnswerList<TestDataLibData> readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty) {
         List<TestDataLibData> testDataLibListData = new ArrayList<TestDataLibData>();
         AnswerList answer = new AnswerList();
         MessageEvent msg;
@@ -212,10 +212,10 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         } else if ("N".equalsIgnoreCase(parsingAnswerEmpty)) {
             query.append(" and `ParsingAnswer`!='' ");
         }
-        if ("Y".equalsIgnoreCase(valueEmpty)) {
-            query.append(" and `Value`='' ");
-        } else if ("N".equalsIgnoreCase(valueEmpty)) {
-            query.append(" and `Value`!='' ");
+        if ("Y".equalsIgnoreCase(columnPositionEmpty)) {
+            query.append(" and `columnPosition`='' ");
+        } else if ("N".equalsIgnoreCase(columnPositionEmpty)) {
+            query.append(" and `columnPosition`!='' ");
         }
 
         // Debug message on SQL.
