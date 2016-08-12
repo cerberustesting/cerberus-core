@@ -378,6 +378,10 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplication().getApplication());
         stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
         stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
         stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
@@ -421,7 +425,7 @@ public class PropertyService implements IPropertyService {
 
         for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
 
-            if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA))) { // Type could be null in case property do not exist.
+            if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB))) { // Type could be null in case property do not exist.
                 /* Replacement in case of TestDataLib */
 
                 // Key value of the DataLib.
@@ -429,7 +433,7 @@ public class PropertyService implements IPropertyService {
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
                 }
 
-                // For each subdata of the getFromDataLib_BETA property, we try to replace with PROPERTY(SUBDATA).
+                // For each subdata of the getFromDataLib property, we try to replace with PROPERTY(SUBDATA).
                 if (!(tced.getDataLibRawData() == null)) {
                     int ind = 0;
                     for (HashMap<String, String> dataRow : tced.getDataLibRawData()) { // We loop every row result.
@@ -636,7 +640,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA:
+            case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
                 testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 

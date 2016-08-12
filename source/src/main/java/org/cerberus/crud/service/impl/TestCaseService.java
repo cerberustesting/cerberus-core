@@ -296,7 +296,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList findTestCasesThatUseTestDataLib(int testDataLibId, String name, String country) {
-        return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, "getFromDataLib_BETA");
+        return testCaseCountryPropertiesService.findTestCaseCountryPropertiesByValue1(testDataLibId, name, country, TestCaseCountryProperties.TYPE_GETFROMDATALIB);
     }
 
     @Override

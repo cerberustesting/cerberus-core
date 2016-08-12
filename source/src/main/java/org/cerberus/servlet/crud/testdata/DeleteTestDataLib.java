@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -124,7 +125,7 @@ public class DeleteTestDataLib extends HttpServlet {
                 //check if the lib can be deleted by search the lib name in the property                
                 ITestCaseCountryPropertiesService propService = appContext.getBean(ITestCaseCountryPropertiesService.class);
 
-                AnswerList testCasesAnswer = propService.findTestCaseCountryPropertiesByValue1(lib.getTestDataLibID(), lib.getName(), lib.getCountry(), "getFromDataLib_BETA");
+                AnswerList testCasesAnswer = propService.findTestCaseCountryPropertiesByValue1(lib.getTestDataLibID(), lib.getName(), lib.getCountry(), TestCaseCountryProperties.TYPE_GETFROMDATALIB);
 
                 List<TestListDTO> list = (List<TestListDTO>) testCasesAnswer.getDataList();
 
