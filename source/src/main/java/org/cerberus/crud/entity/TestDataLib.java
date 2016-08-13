@@ -54,8 +54,8 @@ public class TestDataLib {
     private String subDataParsingAnswer;
     private String subDataColumnPosition;
 
+    public static final String TYPE_INTERNAL = "INTERNAL";
     public static final String TYPE_SQL = "SQL";
-    public static final String TYPE_STATIC = "STATIC";
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_CSV = "CSV";
 

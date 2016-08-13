@@ -640,9 +640,9 @@ function createLibButtonClickHandler() {
         var doc = new Doc();
 
 
-        //when creating the testdatalibrary entry the static is the default select
+        //when creating the testdatalibrary entry the INTERNAL is the default select
         loadSelectElement(testDataTypeList, $('#addTestDataLibModal #type'));
-        $('#addTestDataLibModal #type option[value="STATIC"]').attr("selected", "selected");
+        $('#addTestDataLibModal #type option[value="INTERNAL"]').attr("selected", "selected");
 
         //ensure that the panels are collapsed
         $('#addTestDataLibModal #panelSOAP').collapse("hide");

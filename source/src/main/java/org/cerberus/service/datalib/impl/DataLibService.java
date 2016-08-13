@@ -533,7 +533,7 @@ public class DataLibService implements IDataLibService {
                 }
                 break;
 
-            case TestDataLib.TYPE_STATIC:
+            case TestDataLib.TYPE_INTERNAL:
                 // For static Type, there is no need to fetch the subdata as subdata are loaded at the same time of the data.
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA);
                 result.setResultMessage(msg);
@@ -984,22 +984,22 @@ public class DataLibService implements IDataLibService {
                 result.setResultMessage(msg);
                 break;
 
-            case TestDataLib.TYPE_STATIC:
-                result = testDataLibService.readSTATICWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system);
+            case TestDataLib.TYPE_INTERNAL:
+                result = testDataLibService.readINTERNALWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system);
                 //if the sql service returns a success message then we can process it
                 if ((result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !result.getDataList().isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_INTERNAL);
                     msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size())));
                     result.setResultMessage(msg);
 
                 } else if ((result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getDataList().isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATICNODATA);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_INTERNALNODATA);
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", lib.getSystem())
                             .replace("%ENV%", lib.getEnvironment()).replace("%COUNTRY%", lib.getCountry()));
                     result.setResultMessage(msg);
 
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_INTERNAL);
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", lib.getSystem())
                             .replace("%ENV%", lib.getEnvironment()).replace("%COUNTRY%", lib.getCountry()));
                     result.setResultMessage(msg);

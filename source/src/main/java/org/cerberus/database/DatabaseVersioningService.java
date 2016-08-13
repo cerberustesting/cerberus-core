@@ -6391,7 +6391,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Make getFromDataLib official.
         //-- ------------------------ 867
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='getFromDataLib' WHERE `idname`='PROPERTYTYPE' and`value`='getFromDataLib_BETA';");
+        SQLS.append("UPDATE `invariant` SET `value`='getFromDataLib' WHERE `idname`='PROPERTYTYPE' and `value`='getFromDataLib_BETA';");
         SQLInstruction.add(SQLS.toString());
 
         // Adding Url Source for CSV datasource..
@@ -6401,6 +6401,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testdatalib` ADD COLUMN `DatabaseCsv` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Envelope`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Rename STATIC to INTERNAL in TestDataLib.
+        //-- ------------------------ 870-871
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalib` SET Type='INTERNAL' WHERE `Type`='STATIC';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='INTERNAL', `description`='Internal Cerberus test data.' WHERE `idname`='TESTDATATYPE' and`value`='STATIC';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

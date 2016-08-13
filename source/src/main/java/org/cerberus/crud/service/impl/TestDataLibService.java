@@ -92,7 +92,7 @@ public class TestDataLibService implements ITestDataLibService {
     }
 
     @Override
-    public AnswerList<HashMap<String, String>> readSTATICWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
+    public AnswerList<HashMap<String, String>> readINTERNALWithSubdataByCriteria(String dataName, String dataSystem, String dataCountry, String dataEnvironment, int rowLimit, String system) {
         AnswerList answer = new AnswerList();
         AnswerList answerData = new AnswerList();
         MessageEvent msg;
@@ -113,7 +113,7 @@ public class TestDataLibService implements ITestDataLibService {
         } else {
             maxFetch = maxSecurityFetch;
         }
-        answer = this.readByVariousByCriteria(dataName, dataSystem, dataEnvironment, dataCountry, "STATIC", 0, maxFetch, null, null, null, null);
+        answer = this.readByVariousByCriteria(dataName, dataSystem, dataEnvironment, dataCountry, "INTERNAL", 0, maxFetch, null, null, null, null);
         List<TestDataLib> objectList = new ArrayList<TestDataLib>();
         objectList = answer.getDataList();
         for (TestDataLib tdl : objectList) {

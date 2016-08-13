@@ -45,7 +45,7 @@ function getSubDataLabel(type) {
     var doc = getDoc();
     var docTestdatalibdata = doc.testdatalibdata;
     var labelEntry = "Entry";
-    if (type === "STATIC") {
+    if (type === "INTERNAL") {
         labelEntry = displayDocLink(docTestdatalibdata.value);
     } else if (type === "SQL") {
         labelEntry = displayDocLink(docTestdatalibdata.column);
