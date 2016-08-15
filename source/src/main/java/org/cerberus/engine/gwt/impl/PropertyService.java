@@ -1098,7 +1098,7 @@ public class PropertyService implements IPropertyService {
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
                 tCExecution.getApplication().getSystem(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry(), null);
+                tCExecution.getCountry());
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = (TestDataLib) answer.getItem();

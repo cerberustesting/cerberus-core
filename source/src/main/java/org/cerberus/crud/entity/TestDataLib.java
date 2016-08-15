@@ -18,6 +18,7 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 /**
  *
@@ -53,11 +54,20 @@ public class TestDataLib {
     private String subDataColumn;
     private String subDataParsingAnswer;
     private String subDataColumnPosition;
+    private List<TestDataLibData> subDataLib;
 
     public static final String TYPE_INTERNAL = "INTERNAL";
     public static final String TYPE_SQL = "SQL";
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_CSV = "CSV";
+
+    public List<TestDataLibData> getSubDataLib() {
+        return subDataLib;
+    }
+
+    public void setSubDataLib(List<TestDataLibData> subDataLib) {
+        this.subDataLib = subDataLib;
+    }
 
     public String getDatabaseCsv() {
         return databaseCsv;

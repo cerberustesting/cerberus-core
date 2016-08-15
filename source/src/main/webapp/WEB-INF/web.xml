@@ -785,24 +785,12 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DuplicateTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.DuplicateTestDataLib</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestDataLibData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLibData</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLib</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ImportTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.ImportTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestDataLibData</servlet-name>
@@ -1637,24 +1625,12 @@
         <url-pattern>/CreateTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DuplicateTestDataLib</servlet-name>
-        <url-pattern>/DuplicateTestDataLib</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <url-pattern>/DeleteTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestDataLibData</servlet-name>
-        <url-pattern>/UpdateTestDataLibData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateTestDataLib</servlet-name>
         <url-pattern>/UpdateTestDataLib</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ImportTestDataLib</servlet-name>
-        <url-pattern>/ImportTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestDataLibData</servlet-name>

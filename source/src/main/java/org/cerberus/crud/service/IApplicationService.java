@@ -61,7 +61,7 @@ public interface IApplicationService {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
@@ -74,7 +74,7 @@ public interface IApplicationService {
      * @param columnName
      * @param sort
      * @param searchParameter
-     * @param string
+     * @param individualSearch
      * @return
      */
     AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);

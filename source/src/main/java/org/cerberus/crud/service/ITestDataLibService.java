@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestDataLib;
-import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -43,17 +42,7 @@ public interface ITestDataLibService {
      * @param type
      * @return
      */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country, String type);
-
-    /**
-     *
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
-     * @return
-     */
-    AnswerItem readByKey(String name, String system, String environment, String country);
+    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
 
     /**
      *
@@ -94,15 +83,6 @@ public interface ITestDataLibService {
      */
     AnswerList readByVariousByCriteria(String name, String system, String environment, String country, String type, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-     /**
-     * Read distinct Value of specified column
-     * @param searchTerm
-     * @param individualSearch
-     * @param columnName
-     * @return 
-     */
-    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
-
     /**
      * Auxiliary method that retrieves all the group names that were already
      * defined for a type.
@@ -110,6 +90,16 @@ public interface ITestDataLibService {
      * @return list of group values for the type
      */
     AnswerList readDistinctGroups();
+
+    /**
+     * Read distinct Value of specified column
+     *
+     * @param searchTerm
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     /**
      * Method that gets all the Static DataLib that match the criterias
@@ -129,45 +119,46 @@ public interface ITestDataLibService {
 
     /**
      *
-     * @param testDataLib TestDataLib to insert
+     * @param object
+     * @return
+     */
+    Answer create(TestDataLib object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(TestDataLib object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(TestDataLib object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
      * @throws CerberusException
      */
-    void create(TestDataLib testDataLib) throws CerberusException;
+    TestDataLib convert(AnswerItem answerItem) throws CerberusException;
 
     /**
      *
-     * @param testDataLib
-     * @param subDataList
+     * @param answerList
      * @return
+     * @throws CerberusException
      */
-    Answer create(TestDataLib testDataLib, List<TestDataLibData> subDataList);
+    List<TestDataLib> convert(AnswerList answerList) throws CerberusException;
 
     /**
      *
-     * @param entries
-     * @return
+     * @param answer
+     * @throws CerberusException
      */
-    Answer create(HashMap<TestDataLib, List<TestDataLibData>> entries);
+    void convert(Answer answer) throws CerberusException;
 
-    /**
-     * Deletes a testdatalib entry
-     *
-     * @param testDataLib
-     * @return
-     */
-    Answer delete(TestDataLib testDataLib);
-
-    /**
-     *
-     * @param testDataLib TestData to update using the key
-     * @return
-     */
-    Answer update(TestDataLib testDataLib);
-
-    /**
-     *
-     * @param lib
-     * @return
-     */
-    Answer duplicate(TestDataLib lib);
 }

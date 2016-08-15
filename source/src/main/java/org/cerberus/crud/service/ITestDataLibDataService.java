@@ -19,8 +19,10 @@ package org.cerberus.crud.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.entity.TestDataLibData;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -52,9 +54,12 @@ public interface ITestDataLibDataService {
      * Reads a list with basis on the test data library id
      *
      * @param testDataLibID
-     * @param columnEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
-     * @param parsingAnswerEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
-     * @param columnPositionEmpty Y will filter with empty string. N will filter not empty, null disable the filter.
+     * @param columnEmpty Y will filter with empty string. N will filter not
+     * empty, null disable the filter.
+     * @param parsingAnswerEmpty Y will filter with empty string. N will filter
+     * not empty, null disable the filter.
+     * @param columnPositionEmpty Y will filter with empty string. N will filter
+     * not empty, null disable the filter.
      * @return
      */
     AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
@@ -93,14 +98,6 @@ public interface ITestDataLibDataService {
     Answer create(TestDataLibData testDataLibData);
 
     /**
-     * Creates several TestDataLibData entries
-     *
-     * @param completeSubDataList - entries to insert
-     * @return
-     */
-    Answer create(List<TestDataLibData> completeSubDataList);
-
-    /**
      *
      * @param testDataLibData TestData to update using the key
      * @return
@@ -115,29 +112,51 @@ public interface ITestDataLibDataService {
     Answer delete(TestDataLibData testDataLibData);
 
     /**
-     * Deletes all sub-data entries that belong to a testdatalibrary entry
      *
-     * @param testDataLib
+     * @param objectList
      * @return
      */
-    Answer delete(TestDataLib testDataLib);
-
-    /**
-     * Method that performs a CUD of operations in one set of testdatalibrary
-     * entries
-     *
-     * @param entriesToInsert
-     * @param entriesToUpdate
-     * @param entriesToRemove
-     * @return
-     */
-    Answer createUpdateDelete(ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate, ArrayList<TestDataLibData> entriesToRemove);
+    public Answer createList(List<TestDataLibData> objectList);
 
     /**
      *
-     * @param subDataList
+     * @param objectList
      * @return
      */
-    Answer validate(List<TestDataLibData> subDataList);
+    public Answer deleteList(List<TestDataLibData> objectList);
+
+    /**
+     * Update all TestDataLibData from the sourceList to the perimeter of the
+     * testDataLibId list. All existing TestDataLibData from newList will be
+     * updated, the new ones added and missing ones deleted.
+     *
+     * @param testDataLibId
+     * @param newList
+     * @return
+     */
+    Answer compareListAndUpdateInsertDeleteElements(Integer testDataLibId, List<TestDataLibData> newList);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestDataLibData convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestDataLibData> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 
 }

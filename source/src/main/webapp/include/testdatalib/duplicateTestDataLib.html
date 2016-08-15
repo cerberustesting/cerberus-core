@@ -72,27 +72,6 @@
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsdup-1">
 
-                            <!--group information -->
-                            <div class="row">
-                                <div class="form-group col-xs-6">
-                                    <label id="lbl_choose_group_duplicate" for="groupduplicate">Choose an existing group</label>
-                                    <span>
-                                        <select class="form-control"  id="groupduplicate" name="group">                                                
-                                        </select>
-                                    </span>                                         
-                                </div> 
-                                <div class="form-group col-xs-6">
-                                    <label id="lbl_enter_group_duplicate"  for="groupinputduplicate">or enter new group</label>
-                                    <input id="groupinputduplicate" name="group" class="form-control" />     
-                                </div>                  
-                            </div>
-                            <!--description-->
-                            <div class="row">
-                                <div class="form-group col-xs-12">
-                                    <label id="lbl_description_duplicate" for="libdescription">Description</label>
-                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
-                                </div>
-                            </div>  
                             <!--SOAP-->
                             <div class="row" >
                                 <div class="col-xs-12" id="soapConfigurationsPanelEdit">
@@ -183,8 +162,44 @@
                                     </div>
                                 </div>
                             </div>
+                            <!--group information -->
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label id="lbl_enter_group_duplicate"  for="groupinputduplicate">Group</label>
+                                    <input id="group" name="group" class="form-control" />     
+                                </div>                  
+                            </div>
+                            <!--description-->
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <label id="lbl_description_duplicate" for="libdescription">Description</label>
+                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
+                                </div>
+                            </div>  
                         </div>       
                         <div class="center tab-pane fade marginTop25" id="tabsdup-2">
+                            <div id="dupPanelSubData">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="dupSubDataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                                    <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
+                                                    <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
+                                                    <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
+                                                    <th class="text-center" id="columnPositionHeader" name="columnPositionHeader">Column Position</th>
+                                                    <th class="text-center" id="descriptionHeader" name="descriptionHeader">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="subdataTableBody_dup">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default" id="dupSubData">Add Subdata</button>
+                                    </div>
+                                </div>  
+                            </div>   
                         </div>       
                     </div>       
                 </form>  

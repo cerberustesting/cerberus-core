@@ -8,208 +8,182 @@
             </div>
             <div class="modal-body"> 
                 <form id="addTestDataLibModalForm" name="addTestDataLibModalForm"  role="form">
-
-                    <!--  The form that will be parsed by jQuery before submit  -->
-                    <div id="tabs" class="center container ">
-                        <!-- messages area-->
-                        <div id="DialogMessagesArea" class="">
-                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
-                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
-                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
-                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
-                                </button>
-                            </div>
+                    <!-- messages area-->
+                    <div id="DialogMessagesArea" class="">
+                        <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                            <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                            <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                            </button>
                         </div>
-                        <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
-                        <div id="panelCommon" class="row">
-                            <div  class="form-group col-xs-6">
-                                <label id="lbl_name" for="name">Name</label>
-                                <input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' type="text" class="form-control" name="name" id="name" maxlength="200" />
-                            </div> 
-                            <div class="form-group col-xs-6">
-                                <label id="lbl_type" for="type">Select Type</label>
-                                <select class="form-control"  id="type" name="type">
-                                </select>
-                            </div>  
-                        </div>
-
-                        <div class="row" style="margin-top:10px">
-                            <div class="form-group col-xs-4">
-                                <label id="lbl_system" for="system">System</label>
-                                <select id="system" name="system" class="form-control">
-                                </select>
-
-                            </div>        
-                            <div class="form-group col-xs-4">
-                                <label id="lbl_environment" for="environment">Environment</label>
-                                <select id="environment" name="environment" class="form-control">
-                                </select>
-                            </div>    
-                            <div class="form-group col-xs-4">
-                                <label id="lbl_country" for="country">Country</label>
-                                <select id="country" name="country" class="form-control">
-                                </select>
-                            </div>    
+                    </div>
+                    <input type="hidden" value="-1" id="ID" name="ID" class="ncdetailstext" />
+                    <div id="panelCommon" class="row">
+                        <div  class="form-group col-xs-6">
+                            <label id="lbl_name" for="name">Name</label>
+                            <input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' type="text" class="form-control" name="name" id="name" maxlength="200" />
+                        </div> 
+                        <div class="form-group col-xs-6">
+                            <label id="lbl_type" for="type">Select Type</label>
+                            <select class="form-control"  id="type" name="type">
+                            </select>
                         </div>  
-                        <!-- tabs definition-->
-                        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data</a></li>
-                        </ul>
-                        <div class="tab-content">   
-                            <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
+                    </div>
 
-                                <!--group infomation -->
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label id="lbl_choose_group">Choose an existing group</label>
-                                        <span>
-                                            <select class="form-control"  id="group" name="group">                                                
-                                            </select>
-                                        </span>                                         
-                                    </div> 
-                                    <div class="form-group col-xs-6">
-                                        <label id="lbl_enter_group" for="groupinput">or enter new group</label>
-                                        <input id="groupinput" name="group" class="form-control" type="text" maxlength="200"  />     
-                                    </div>                  
-                                </div>
-
-                                <!--description-->
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label id="lbl_description" for="libdescription">Description</label>
-                                        <textarea id="libdescription" name="libdescription"   
-                                                  class="form-control"></textarea> 
-                                    </div>
-                                </div>           
-                                <!--SOAP-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="soapConfigurationsPanel">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAP">
-                                                <label id="soapConfigurationsLbl">SOAP Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                            </div>
-                                            <div id="panelSOAP" class="panel-body collapse">
-                                                <div class="row">
-                                                    <div class="form-group  col-xs-3"> 
-                                                        <label id="lbl_databaseUrl_edit" for="databaseUrl">Database URL</label> 
-                                                        <select class="form-control" id="databaseUrl" name="databaseUrl">
-                                                        </select> 
-                                                    </div>    
-                                                    <div class="form-group col-xs-5" >
-                                                        <label id="lbl_service_path" for="servicepath">Service Path</label>
-                                                        <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
-                                                    </div>
-                                                    <div class="form-group col-xs-4">
-                                                        <label id="lbl_method" for="method">Method</label>
-                                                        <input id="method" name="method" class="form-control" maxlength="45"  />
-                                                    </div>
-                                                </div>    
-                                                <div class="row form-group col-xs-12">
-                                                    <label id="lbl_envelope" for="envelope">Envelope</label>                    
-                                                    <textarea id="envelope" name="envelope" 
-                                                              class="form-control"></textarea>     
-                                                </div> 
-                                            </div> 
+                    <div class="row">
+                        <div class="form-group col-xs-4">
+                            <label id="lbl_system" for="system">System</label>
+                            <select id="system" name="system" class="form-control">
+                            </select>
+                        </div>        
+                        <div class="form-group col-xs-4">
+                            <label id="lbl_environment" for="environment">Environment</label>
+                            <select id="environment" name="environment" class="form-control">
+                            </select>
+                        </div>    
+                        <div class="form-group col-xs-4">
+                            <label id="lbl_country" for="country">Country</label>
+                            <select id="country" name="country" class="form-control">
+                            </select>
+                        </div>    
+                    </div>  
+                    <!-- tabs definition-->
+                    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                        <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabs-1">Definition</a></li>
+                        <li><a data-toggle="tab" href="#tabs-2" id="tab2Text">Sub data</a></li>
+                    </ul>
+                    <div class="tab-content">   
+                        <div class="center marginTop25 tab-pane fade in active" id="tabs-1">
+                            <!--SOAP-->
+                            <div class="row" >
+                                <div class="col-xs-12" id="soapConfigurationsPanel">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAP">
+                                            <label id="soapConfigurationsLbl">SOAP Configurations </label>
+                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
-                                    </div>
-                                </div>
-                                <!--SQL-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="sqlConfigurationsPanel">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQL">
-                                                <label id="sqlConfigurationsLbl">SQL Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                            </div>
-                                            <div id="panelSQL" class="panel-body collapse">
-                                                <div class="row form-group  col-xs-6"> 
-                                                    <label id="lbl_database" for="database">Database</label> 
-                                                    <select class="form-control" id="database" name="database">
+                                        <div id="panelSOAP" class="panel-body collapse">
+                                            <div class="row">
+                                                <div class="form-group  col-xs-3"> 
+                                                    <label id="lbl_databaseUrl_edit" for="databaseUrl">Database URL</label> 
+                                                    <select class="form-control" id="databaseUrl" name="databaseUrl">
                                                     </select> 
                                                 </div>    
-                                                <div class="row">
-                                                    <div class="form-group col-xs-12"> 
-                                                        <label id="lbl_script" for="script">Script</label> 
-                                                        <textarea id="Script" name="script" 
-                                                                  class="form-control"></textarea>     
-                                                    </div>                       
+                                                <div class="form-group col-xs-5" >
+                                                    <label id="lbl_service_path" for="servicepath">Service Path</label>
+                                                    <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
                                                 </div>
-
+                                                <div class="form-group col-xs-4">
+                                                    <label id="lbl_method" for="method">Method</label>
+                                                    <input id="method" name="method" class="form-control" maxlength="45"  />
+                                                </div>
+                                            </div>    
+                                            <div class="row form-group col-xs-12">
+                                                <label id="lbl_envelope" for="envelope">Envelope</label>                    
+                                                <textarea id="envelope" name="envelope" 
+                                                          class="form-control"></textarea>     
                                             </div> 
-                                        </div>
+                                        </div> 
                                     </div>
                                 </div>
-                                <!--CSV-->
-                                <div class="row" >
-                                    <div class="col-xs-12" id="csvConfigurationsPanel">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSV">
-                                                <label id="csvConfigurationsLbl">CSV Configurations </label>
-                                                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                            </div>
-                                            <div id="panelCSV" class="panel-body collapse">
-                                                <div class="row">
-                                                    <div class="form-group  col-xs-3"> 
-                                                        <label id="lbl_databaseCsv_edit" for="databaseCsv">Database URL</label> 
-                                                        <select class="form-control" id="databaseCsv" name="databaseCsv">
-                                                        </select> 
-                                                    </div>    
-                                                    <div class="form-group col-xs-6"> 
-                                                        <label id="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
-                                                        <input id="csvUrl" name="csvUrl" 
-                                                                  class="form-control">     
-                                                    </div>
-                                                    <div class="form-group col-xs-3"> 
-                                                        <label id="lbl_separator" for="separator">Separator</label> 
-                                                        <input id="separator" name="separator" 
-                                                                  class="form-control">     
-                                                    </div>
-                                                </div>
-
-                                            </div> 
+                            </div>
+                            <!--SQL-->
+                            <div class="row" >
+                                <div class="col-xs-12" id="sqlConfigurationsPanel">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQL">
+                                            <label id="sqlConfigurationsLbl">SQL Configurations </label>
+                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
+                                        <div id="panelSQL" class="panel-body collapse">
+                                            <div class="row form-group  col-xs-6"> 
+                                                <label id="lbl_database" for="database">Database</label> 
+                                                <select class="form-control" id="database" name="database">
+                                                </select> 
+                                            </div>    
+                                            <div class="row">
+                                                <div class="form-group col-xs-12"> 
+                                                    <label id="lbl_script" for="script">Script</label> 
+                                                    <textarea id="Script" name="script" 
+                                                              class="form-control"></textarea>     
+                                                </div>                       
+                                            </div>
+
+                                        </div> 
                                     </div>
                                 </div>
-                            </div>       
-                            <div class="center tab-pane fade marginTop25" id="tabs-2">
-                                <div id="panelSubData">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom" id="addSubDataTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th id="subdataHeader" class="text-center">Sub-data</th>
-                                                        <th id="valueHeader" class="text-center">Value</th>
-                                                        <th id="columnHeader" class="text-center">Column</th>
-                                                        <th id="parsingAnswerHeader" class="text-center">Parsing Answer</th>
-                                                        <th id="columnPositionHeader" class="text-center">Column Position</th>
-                                                        <th id="descriptionHeader" class="text-center">Description</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="addSubDataTableBody">
-                                                    <tr id="unmutableRow">
-                                                        <td><div class="nomarginbottom marginTop5"><button class="pull-left btn btn-default btn-xs"  id="unmutableRowNotEditable" disabled="disabled"><span class="glyphicon glyphicon-minus"></span></button></div></td>
-                                                        <td><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubData" value="" class="subDataClass form-control" name="subdata" readonly="readonly"/></div></td>
-                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataValue"  name="value"  class="dataClass form-control input-xs" /></div></td>
-                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataColumn" name="column" class="dataClass form-control input-xs" /></div></td>
-                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataParsingAnswer" name="parsinganswer" class="dataClass form-control input-xs" /></div></td>
-                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataColumnPosition" name="columnPosition" class="dataClass form-control input-xs" /></div></td>
-                                                        <td class="text-center"><div class="nomarginbottom form-group form-group-sm"><input id="defaultSubDataDescription"  name="description"  class="descriptionClass form-control input-xs" /></div></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <div class="nomargintop">
-                                                <a id="newSubData_addRow" class="pull-left btn btn-link manageRowsFont" title="Add a new row in the table for creating a new sub-data entry.">Add new</a>
-                                                <a id='newSubData_deleteAll' class="pull-right btn btn-link manageRowsFont" title="Deletes all sub-data entries in the table.">Delete All</a>
-                                            </div>
+                            </div>
+                            <!--CSV-->
+                            <div class="row" >
+                                <div class="col-xs-12" id="csvConfigurationsPanel">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSV">
+                                            <label id="csvConfigurationsLbl">CSV Configurations </label>
+                                            <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
-                                    </div>  
-                                </div>   
+                                        <div id="panelCSV" class="panel-body collapse">
+                                            <div class="row">
+                                                <div class="form-group  col-xs-3"> 
+                                                    <label id="lbl_databaseCsv_edit" for="databaseCsv">Database URL</label> 
+                                                    <select class="form-control" id="databaseCsv" name="databaseCsv">
+                                                    </select> 
+                                                </div>    
+                                                <div class="form-group col-xs-6"> 
+                                                    <label id="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
+                                                    <input id="csvUrl" name="csvUrl" 
+                                                           class="form-control">     
+                                                </div>
+                                                <div class="form-group col-xs-3"> 
+                                                    <label id="lbl_separator" for="separator">Separator</label> 
+                                                    <input id="separator" name="separator" 
+                                                           class="form-control">     
+                                                </div>
+                                            </div>
+
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                            <!--group infomation -->
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label id="lbl_enter_group" for="groupinput">or enter new group</label>
+                                    <input id="group" name="group" class="form-control" type="text" maxlength="200"  />     
+                                </div>                  
+                            </div>
+
+                            <!--description-->
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <label id="lbl_description" for="libdescription">Description</label>
+                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
+                                </div>
+                            </div>           
+                        </div>       
+                        <div class="center tab-pane fade marginTop25" id="tabs-2">
+                            <div id="panelSubData">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="addSubDataTable">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                                    <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
+                                                    <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
+                                                    <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
+                                                    <th class="text-center" id="columnPositionHeader" name="columnPositionHeader">Column Position</th>
+                                                    <th class="text-center" id="descriptionHeader" name="descriptionHeader">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="subdataTableBody">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default" id="addSubData">Add Subdata</button>
+                                    </div>
+                                </div>  
                             </div>   
-                        </div> 
+                        </div>   
                     </div> 
                 </form> 
 

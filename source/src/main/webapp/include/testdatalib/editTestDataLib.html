@@ -5,11 +5,11 @@
             <div class="modal-header">
                 <button type="button" class="close margin-right25" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="editTestDataLibModalLabel"><span id="editTestDataLibTitle">Edit Test Data Lib: </span> <span id="NameEdit" ></span> </h4>
-
             </div>
             <div class="modal-body"> 
                 <form id="editTestLibData" role="form" >
-                    <div id="DialogMessagesAreaEdit" class="width800">
+                    <!-- messages area-->
+                    <div id="DialogMessagesAreaEdit" class="width1200">
                         <div class="alert" id="DialogMessagesAlertEdit"  style="display:none;">
                             <strong><span class="alert-description" id="DialogAlertDescriptionEdit"></span></strong>
                             <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -48,73 +48,23 @@
                         </div>         
                         <div class="form-group col-xs-4">
                             <label id="lbl_environment_edit"  for="environment">Environment</label>
-                            <div>
                                 <select class="form-control" id="environment" name="environment">
                                 </select>  
-                            </div>
                         </div> 
                         <div class="form-group col-xs-4">
                             <label id="lbl_country_edit" for="country">Country</label>
-                            <div>
                                 <select class="form-control"  id="country" name="country">
                                 </select>  
-                            </div>         
                         </div>            
                     </div>    
                     <!-- tabs definition-->
                     <ul id="edittabs" class="nav nav-tabs" data-tabs="tabs">
                         <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsedit-1">Definition</a></li>
                         <li><a data-toggle="tab" href="#tabsedit-2" id="tab2Text">Sub data</a></li>
+                        <li><a data-toggle="tab" href="#tabsedit-3" id="tab3Text">Tracability</a></li>
                     </ul>
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1">
-                            <!--group infomation -->
-                            <div class="row">
-                                <div class="form-group col-xs-6">
-                                    <label id="lbl_choose_group_edit" for="groupedit">Choose an existing group</label>
-                                    <span>
-                                        <select class="form-control"  id="groupedit" name="group">                                                
-                                        </select>
-                                    </span>                                         
-                                </div> 
-                                <div class="form-group col-xs-6">
-                                    <label id="lbl_enter_group_edit"  for="groupinputedit">or enter new group</label>
-                                    <input id="groupinputedit" name="group" class="form-control" />     
-                                </div>                  
-                            </div>
-                            <!--description-->
-                            <div class="row">
-                                <div class="form-group col-xs-12">
-                                    <label id="lbl_description_edit" for="libdescription">Description</label>
-                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="form-group col-xs-3">
-                                    <label id="lbl_name_edit" for="created">Created</label>
-                                    <div>
-                                        <input id="created" name="created" class="form-control" readonly="readonly" />     
-                                    </div>
-                                </div> 
-                                <div class="form-group col-xs-3">
-                                    <label id="lbl_name_edit" for="creator">Creator</label>
-                                    <div>
-                                        <input id="creator" name="creator" class="form-control" readonly="readonly" />     
-                                    </div>
-                                </div> 
-                                <div class="form-group col-xs-3">
-                                    <label id="lbl_name_edit" for="lastModified">Last Modified</label>
-                                    <div>
-                                        <input id="lastModified" name="lastModified" class="form-control" readonly="readonly" />     
-                                    </div>
-                                </div> 
-                                <div class="form-group col-xs-3">
-                                    <label id="lbl_name_edit" for="lastModifier">Last Modifier</label>
-                                    <div>
-                                        <input id="lastModifier" name="lastModifier" class="form-control" readonly="readonly" />     
-                                    </div>
-                                </div> 
-                            </div>
                             <!--SOAP-->
                             <div class="row" >
                                 <div class="col-xs-12" id="soapConfigurationsPanelEdit">
@@ -205,9 +155,82 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>       
+                            <!--group infomation -->
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <label id="lbl_enter_group_edit"  for="groupedit">or enter new group</label>
+                                    <input id="group" name="group" class="form-control" />     
+                                </div>                  
+                            </div>
+                            
+                            <!--description-->
+                            <div class="row">
+                                <div class="form-group col-xs-12">
+                                    <label id="lbl_description_edit" for="libdescription">Description</label>
+                                    <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
+                                </div>
+                            </div>
+                        </div>
                         <div class="center tab-pane fade marginTop25" id="tabsedit-2">
-                        </div>       
+                            <div id="listPanelSubdata">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <table class="table table-bordered table-hover nomarginbottom" id="SubdataTable_edit">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 5%;"></th>
+                                                    <th class="text-center" id="subdataHeader" name="subdataHeader">Sub Data</th>
+                                                    <th class="text-center" id="valueHeader" name="valueHeader">Value</th>
+                                                    <th class="text-center" id="columnHeader" name="columnHeader">Column</th>
+                                                    <th class="text-center" id="parsingAnswerHeader" name="parsingAnswerHeader">Parsing Answer</th>
+                                                    <th class="text-center" id="columnPositionHeader" name="columnPositionHeader">Column Position</th>
+                                                    <th class="text-center" id="descriptionHeader" name="descriptionHeader">Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="subdataTableBody_edit">
+                                            </tbody>
+                                        </table>
+                                        <button type="button" class="btn btn-default" id="addSubData_edit">Add Subdata</button>
+                                    </div>
+                                </div>  
+                            </div>   
+                        </div>
+                        <div class="center tab-pane fade marginTop25" id="tabsedit-3">
+                            <div id="listPanelTraca">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="form-group col-xs-3">
+                                                <label id="lbl_name_edit" for="created">Created</label>
+                                                <div>
+                                                    <input id="created" name="created" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-xs-3">
+                                                <label id="lbl_name_edit" for="creator">Creator</label>
+                                                <div>
+                                                    <input id="creator" name="creator" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div> 
+                                        <div class="row">
+                                            <div class="form-group col-xs-3">
+                                                <label id="lbl_name_edit" for="lastModified">Last Modified</label>
+                                                <div>
+                                                    <input id="lastModified" name="lastModified" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-xs-3">
+                                                <label id="lbl_name_edit" for="lastModifier">Last Modifier</label>
+                                                <div>
+                                                    <input id="lastModifier" name="lastModifier" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>   
+                        </div>
                     </div>       
                 </form>  
             </div>
