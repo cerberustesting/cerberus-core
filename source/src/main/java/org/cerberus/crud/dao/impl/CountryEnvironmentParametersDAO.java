@@ -69,10 +69,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public AnswerItem readByKey(String system, String country, String environment, String application) {
         AnswerItem ans = new AnswerItem();
         CountryEnvironmentParameters result = null;
-        final String query = "SELECT * FROM countryenvironmentparameters WHERE `system` = ? AND country = ? AND environment = ? AND application = ?";
+        final String query = "SELECT * FROM countryenvironmentparameters cea WHERE cea.`system` = ? AND cea.country = ? AND cea.environment = ? AND cea.application = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.country : " + country);
+            LOG.debug("SQL.param.environment : " + environment);
+            LOG.debug("SQL.param.application : " + application);
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -127,13 +136,20 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public List<String[]> getEnvironmentAvailable(String country, String application) {
         List<String[]> list = null;
-        final String query = "SELECT ce.Environment Environment, ce.Build Build, ce.Revision Revision "
-                + "FROM countryenvironmentparameters cea, countryenvparam ce, invariant i "
-                + "WHERE ce.system = cea.system AND ce.country = cea.country AND ce.environment = cea.environment "
+        final String query = "SELECT cev.Environment Environment, cev.Build Build, cev.Revision Revision "
+                + "FROM countryenvironmentparameters cea, countryenvparam cev, invariant inv "
+                + "WHERE cev.system = cea.system AND cev.country = cea.country AND cev.environment = cea.environment "
                 + "AND cea.Application = ? AND cea.country= ? "
-                + "AND ce.active='Y' AND i.idname = 'ENVIRONMENT' AND i.Value = ce.Environment "
-                + "ORDER BY i.sort";
+                + "AND cev.active='Y' AND inv.idname = 'ENVIRONMENT' AND inv.Value = ce.Environment "
+                + "ORDER BY inv.sort";
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.application : " + application);
+            LOG.debug("SQL.param.country : " + country);
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
@@ -182,10 +198,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         List<CountryEnvironmentParameters> result = new ArrayList<CountryEnvironmentParameters>();
         boolean throwex = false;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT `system`, country, environment, Application, IP, domain, URL, URLLOGIN FROM countryenvironmentparameters ");
-        query.append(" WHERE `system` LIKE ? AND country LIKE ? AND environment LIKE ? AND Application LIKE ? ");
-        query.append("AND IP LIKE ? AND URL LIKE ? AND URLLOGIN LIKE ? AND domain like ? ");
+        query.append("SELECT * FROM countryenvironmentparameters cea ");
+        query.append(" WHERE cea.`system` LIKE ? AND cea.country LIKE ? AND cea.environment LIKE ? AND cea.Application LIKE ? ");
+        query.append("AND cea.IP LIKE ? AND cea.URL LIKE ? AND cea.URLLOGIN LIKE ? AND cea.domain like ? ");
 
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getSystem()));
+            LOG.debug("SQL.param.country : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getCountry()));
+            LOG.debug("SQL.param.environment : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getEnvironment()));
+            LOG.debug("SQL.param.application : " + ParameterParserUtil.wildcardIfEmpty(countryEnvironmentParameter.getApplication()));
+        }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -202,15 +227,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        String system = resultSet.getString("system");
-                        String country = resultSet.getString("country");
-                        String application = resultSet.getString("application");
-                        String environment = resultSet.getString("environment");
-                        String ip = resultSet.getString("IP");
-                        String domain = resultSet.getString("domain");
-                        String url = resultSet.getString("URL");
-                        String urlLogin = resultSet.getString("URLLOGIN");
-                        result.add(factoryCountryEnvironmentParameters.create(system, country, environment, application, ip, domain, url, urlLogin));
+                        String system = resultSet.getString("cea.system");
+                        String country = resultSet.getString("cea.country");
+                        String application = resultSet.getString("cea.application");
+                        String environment = resultSet.getString("cea.environment");
+                        String ip = resultSet.getString("cea.IP");
+                        String domain = resultSet.getString("cea.domain");
+                        String url = resultSet.getString("cea.URL");
+                        String urlLogin = resultSet.getString("cea.URLLOGIN");
+                        String var1 = resultSet.getString("cea.Var1");
+                        String var2 = resultSet.getString("cea.Var2");
+                        String var3 = resultSet.getString("cea.Var3");
+                        String var4 = resultSet.getString("cea.Var4");
+                        result.add(factoryCountryEnvironmentParameters.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4));
                     }
                 } catch (SQLException exception) {
                     MyLogger.log(CountryEnvironmentParametersDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
@@ -250,34 +279,34 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvironmentparameters ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM countryenvironmentparameters cea");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`system` like ?");
-            searchSQL.append(" or `country` like ?");
-            searchSQL.append(" or `environment` like ?");
-            searchSQL.append(" or `application` like ?");
-            searchSQL.append(" or `ip` like ?");
-            searchSQL.append(" or `domain` like ?");
-            searchSQL.append(" or `URL` like ?");
-            searchSQL.append(" or `URLLOGIN` like ?)");
+            searchSQL.append(" and (cea.`system` like ?");
+            searchSQL.append(" or cea.`country` like ?");
+            searchSQL.append(" or cea.`environment` like ?");
+            searchSQL.append(" or cea.`application` like ?");
+            searchSQL.append(" or cea.`ip` like ?");
+            searchSQL.append(" or cea.`domain` like ?");
+            searchSQL.append(" or cea.`URL` like ?");
+            searchSQL.append(" or cea.`URLLOGIN` like ?)");
         }
         if (!StringUtil.isNullOrEmpty(individualSearch)) {
             searchSQL.append(" and (`?`)");
         }
         if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+            searchSQL.append(" and (cea.`System` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(country)) {
-            searchSQL.append(" and (`country` = ? )");
+            searchSQL.append(" and (cea.`country` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(environment)) {
-            searchSQL.append(" and (`environment` = ? )");
+            searchSQL.append(" and (cea.`environment` = ? )");
         }
         if (!StringUtil.isNullOrEmpty(application)) {
-            searchSQL.append(" and (`application` = ? )");
+            searchSQL.append(" and (cea.`application` = ? )");
         }
         query.append(searchSQL);
 
@@ -294,7 +323,12 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.country : " + country);
+            LOG.debug("SQL.param.environment : " + environment);
+            LOG.debug("SQL.param.application : " + application);
         }
+        
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -400,8 +434,8 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     public Answer create(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentparameters` (`system`, `country`, `environment`, `application`, `ip`, `domain`, `url`, `urllogin`, `Var1`, `Var2`, `Var3`, `Var4`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -419,6 +453,10 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(6, object.getDomain());
                 preStat.setString(7, object.getUrl());
                 preStat.setString(8, object.getUrlLogin());
+                preStat.setString(9, object.getVar1());
+                preStat.setString(10, object.getVar2());
+                preStat.setString(11, object.getVar3());
+                preStat.setString(12, object.getVar4());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -500,7 +538,7 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     @Override
     public Answer update(CountryEnvironmentParameters object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?  where `system`=? and `country`=? and `environment`=? and `application`=? ";
+        final String query = "UPDATE `countryenvironmentparameters` SET `IP`=?, `URL`=?, `URLLOGIN`=?, `domain`=?, Var1=?, Var2=?, Var3=?, Var4=?  where `system`=? and `country`=? and `environment`=? and `application`=? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -514,10 +552,14 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
                 preStat.setString(2, object.getUrl());
                 preStat.setString(3, object.getUrlLogin());
                 preStat.setString(4, object.getDomain());
-                preStat.setString(5, object.getSystem());
-                preStat.setString(6, object.getCountry());
-                preStat.setString(7, object.getEnvironment());
-                preStat.setString(8, object.getApplication());
+                preStat.setString(5, object.getVar1());
+                preStat.setString(6, object.getVar2());
+                preStat.setString(7, object.getVar3());
+                preStat.setString(8, object.getVar4());
+                preStat.setString(9, object.getSystem());
+                preStat.setString(10, object.getCountry());
+                preStat.setString(11, object.getEnvironment());
+                preStat.setString(12, object.getApplication());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -546,15 +588,19 @@ public class CountryEnvironmentParametersDAO implements ICountryEnvironmentParam
     }
 
     private CountryEnvironmentParameters loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String system = resultSet.getString("System");
-        String count = resultSet.getString("Country");
-        String env = resultSet.getString("Environment");
-        String application = resultSet.getString("application");
-        String ip = resultSet.getString("ip");
-        String domain = resultSet.getString("domain");
-        String url = resultSet.getString("url");
-        String urllogin = resultSet.getString("urllogin");
-        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin);
+        String system = resultSet.getString("cea.System");
+        String count = resultSet.getString("cea.Country");
+        String env = resultSet.getString("cea.Environment");
+        String application = resultSet.getString("cea.application");
+        String ip = resultSet.getString("cea.ip");
+        String domain = resultSet.getString("cea.domain");
+        String url = resultSet.getString("cea.url");
+        String urllogin = resultSet.getString("cea.urllogin");
+        String var1 = resultSet.getString("cea.Var1");
+        String var2 = resultSet.getString("cea.Var2");
+        String var3 = resultSet.getString("cea.Var3");
+        String var4 = resultSet.getString("cea.Var4");
+        return factoryCountryEnvironmentParameters.create(system, count, env, application, ip, domain, url, urllogin, var1, var2, var3, var4);
     }
 
 }

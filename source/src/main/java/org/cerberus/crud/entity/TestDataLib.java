@@ -38,6 +38,7 @@ public class TestDataLib {
     private String servicePath;
     private String method;
     private String envelope;
+    private String databaseCsv;
     private String csvUrl;
     private String separator;
     private String description;
@@ -53,10 +54,18 @@ public class TestDataLib {
     private String subDataParsingAnswer;
     private String subDataColumnPosition;
 
+    public static final String TYPE_INTERNAL = "INTERNAL";
     public static final String TYPE_SQL = "SQL";
-    public static final String TYPE_STATIC = "STATIC";
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_CSV = "CSV";
+
+    public String getDatabaseCsv() {
+        return databaseCsv;
+    }
+
+    public void setDatabaseCsv(String databaseCsv) {
+        this.databaseCsv = databaseCsv;
+    }
     
     public String getDatabaseUrl() {
         return databaseUrl;

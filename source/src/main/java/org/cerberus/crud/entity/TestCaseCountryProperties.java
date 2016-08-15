@@ -60,7 +60,7 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
     public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMJSON = "getFromJson";
-    public static final String TYPE_GETFROMDATALIB_BETA = "getFromDataLib_BETA";
+    public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
     public static final String NATURE_STATIC = "STATIC";
     public static final String NATURE_RANDOM = "RANDOM";

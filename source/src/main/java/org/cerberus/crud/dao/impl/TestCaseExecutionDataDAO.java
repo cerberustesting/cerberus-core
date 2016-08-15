@@ -76,7 +76,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public AnswerItem<TestCaseExecutionData> readByKey(long id, String property, int index) {
         AnswerItem ans = new AnswerItem();
         TestCaseExecutionData result = null;
-        final String query = "SELECT * FROM testcaseexecutiondata exd WHERE id = ? AND property = ? AND index = ?";
+        final String query = "SELECT * FROM testcaseexecutiondata exd WHERE id = ? AND property = ? AND `index` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -481,7 +481,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public Answer delete(TestCaseExecutionData object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM testcaseexecutiondata WHERE id = ? AND property = ? AND index = ? ";
+        final String query = "DELETE FROM testcaseexecutiondata WHERE id = ? AND property = ? AND `index` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -528,7 +528,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public Answer update(TestCaseExecutionData object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? WHERE id = ? AND property = ? AND index = ?";
+        final String query = "UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? WHERE id = ? AND property = ? AND `index` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

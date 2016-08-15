@@ -151,12 +151,17 @@
                                             </div>
                                             <div id="panelCSV" class="panel-body collapse">
                                                 <div class="row">
-                                                    <div class="form-group col-xs-8"> 
+                                                    <div class="form-group  col-xs-3"> 
+                                                        <label id="lbl_databaseCsv_edit" for="databaseCsv">Database URL</label> 
+                                                        <select class="form-control" id="databaseCsv" name="databaseCsv">
+                                                        </select> 
+                                                    </div>    
+                                                    <div class="form-group col-xs-6"> 
                                                         <label id="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
                                                         <input id="csvUrl" name="csvUrl" 
                                                                   class="form-control">     
                                                     </div>
-                                                    <div class="form-group col-xs-4"> 
+                                                    <div class="form-group col-xs-3"> 
                                                         <label id="lbl_separator" for="separator">Separator</label> 
                                                         <input id="separator" name="separator" 
                                                                   class="form-control">     

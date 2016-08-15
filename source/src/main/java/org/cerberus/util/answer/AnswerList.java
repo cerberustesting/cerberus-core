@@ -23,44 +23,51 @@ import java.util.List;
 import org.cerberus.crud.entity.MessageEvent;
 
 /**
- * Auxiliary class that is used to store an answer that contains a message and a list containing the expected results.
- * @author FNogueira 
+ * Auxiliary class that is used to store an answer that contains a message and a
+ * list containing the expected results.
+ *
+ * @author FNogueira
  * @param <E>
  */
-public class AnswerList <E extends Object> extends Answer{
+public class AnswerList<E extends Object> extends Answer {
+
     /**
      * Content retrieved from the database that match some criteria
      */
     private List<E> dataList;
-    
+
     /**
      * Total number of rows available in the database table
      */
     private int totalRows;
-    public AnswerList(){
+
+    public AnswerList() {
         this.totalRows = 0;
     }
+
     /**
      * Public constructor that returns an answer that contains a list
+     *
      * @param dataList
-     * @param totalRows 
+     * @param totalRows
      */
     public AnswerList(List<E> dataList, int totalRows) {
         this.totalRows = totalRows;
-        this.dataList = dataList; 
+        this.dataList = dataList;
     }
-    
-    public AnswerList(List<E> dataList, int totalRows, MessageEvent resultMessage){
+
+    public AnswerList(List<E> dataList, int totalRows, MessageEvent resultMessage) {
         this.totalRows = totalRows;
         this.dataList = dataList;
         this.resultMessage = resultMessage;
     }
-    
-    public AnswerList(MessageEvent resultMessage){
+
+    public AnswerList(MessageEvent resultMessage) {
         this.totalRows = 0;
         this.dataList = null;
         this.resultMessage = resultMessage;
     }
+
     public List<E> getDataList() {
         return dataList;
     }

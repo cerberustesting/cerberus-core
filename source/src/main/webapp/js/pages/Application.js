@@ -77,8 +77,14 @@ function displayPageLabel() {
 
     $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
     $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
-    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
+    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
+    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "APPLITYPE", false);
@@ -308,7 +314,11 @@ function appendEnvironmentRow(env) {
     var ipInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "IP") + " --\">").addClass("form-control input-sm").val(env.ip);
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(env.domain);
     var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(env.url);
-    var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(env.urlLogin);
+    var urlLoginInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(env.urlLogin);
+    var var1Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var1") + " --\">").addClass("form-control input-sm").val(env.var1);
+    var var2Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var2") + " --\">").addClass("form-control input-sm").val(env.var2);
+    var var3Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var3") + " --\">").addClass("form-control input-sm").val(env.var3);
+    var var4Input = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "var4") + " --\">").addClass("form-control input-sm").val(env.var4);
     var table = $("#environmentTableBody");
 
     var row = $("<tr></tr>");
@@ -318,6 +328,8 @@ function appendEnvironmentRow(env) {
 
     var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
     var urlName = $("<td></td>").append(urlInput).append(domainInput);
+    var var1Name = $("<td></td>").append(var1Input).append(var2Input);
+    var var3Name = $("<td></td>").append(var3Input).append(var4Input);
     deleteBtn.click(function () {
         env.toDelete = (env.toDelete) ? false : true;
         if (env.toDelete) {
@@ -344,11 +356,25 @@ function appendEnvironmentRow(env) {
     urlLoginInput.change(function () {
         env.urlLogin = $(this).val();
     });
+    var1Input.change(function () {
+        env.var1 = $(this).val();
+    });
+    var2Input.change(function () {
+        env.var2 = $(this).val();
+    });
+    var3Input.change(function () {
+        env.var3 = $(this).val();
+    });
+    var4Input.change(function () {
+        env.var4 = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(environment);
     row.append(country);
     row.append(ipName);
     row.append(urlName);
+    row.append(var1Name);
+    row.append(var3Name);
     env.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     env.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("environment", env);
@@ -363,6 +389,10 @@ function addNewEnvironmentRow() {
         domain: "",
         url: "",
         urlLogin: "",
+        var1: "",
+        var2: "",
+        var3: "",
+        var4: "",
         toDelete: false
     };
     appendEnvironmentRow(newEnvironment);

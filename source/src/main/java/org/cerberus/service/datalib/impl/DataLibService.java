@@ -52,6 +52,9 @@ import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -162,8 +165,17 @@ public class DataLibService implements IDataLibService {
         //Manage error message.
         if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_NATURE.getCode()) {
             msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_GLOBAL);
+            String resultString = "";
+            try {
+                JSONArray jsonResult = null;
+                jsonResult = convertToJSONObject((List<HashMap<String, String>>) result.getDataList());
+                resultString = jsonResult.toString();
+            } catch (JSONException ex) {
+                resultString = result.getDataList().toString();
+                Logger.getLogger(DataLibService.class.getName()).log(Level.SEVERE, null, ex);
+            }
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
-                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", result.getDataList().toString()));
+                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", resultString));
             result.setResultMessage(msg);
 
         } else if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NATURENOMORERECORD.getCode()) {
@@ -260,7 +272,8 @@ public class DataLibService implements IDataLibService {
         List<Integer> listTempRandom = getRandomListOfInteger(dataObjectList.getDataList().size(), outputRequestedDimention);
 
         for (int i : listTempRandom) {
-            selectedList += Integer.toString(i) + ",";
+            int j = i + 1;
+            selectedList += Integer.toString(j) + ",";
             resultObject.add(dataObjectList.getDataList().get(i));
         }
         selectedList = StringUtil.removeLastChar(selectedList, 1);
@@ -315,7 +328,8 @@ public class DataLibService implements IDataLibService {
                 String selectedList = "";
                 // Pick the result from list.
                 for (int i : listTempRandom) {
-                    selectedList += Integer.toString(i) + ",";
+                    int j = i + 1;
+                    selectedList += Integer.toString(j) + ",";
                     resultObject.add(dataObjectList.getDataList().get(i));
                 }
                 selectedList = StringUtil.removeLastChar(selectedList, 1);
@@ -380,7 +394,8 @@ public class DataLibService implements IDataLibService {
                     String selectedList = "";
                     // Pick the result from list.
                     for (int i : listTempRandom) {
-                        selectedList += Integer.toString(i) + ",";
+                        int j = i + 1;
+                        selectedList += Integer.toString(j) + ",";
                         resultObject.add(dataObjectList.getDataList().get(i));
                     }
                     selectedList = StringUtil.removeLastChar(selectedList, 1);
@@ -419,12 +434,36 @@ public class DataLibService implements IDataLibService {
         switch (lib.getType()) {
 
             case TestDataLib.TYPE_CSV:
-                answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), "N", null, null);
-                objectDataList = answerData.getDataList();
-                for (TestDataLibData tdld : objectDataList) {
-                    row.put(tdld.getColumn(), tdld.getSubData());
+                answerData = testDataLibDataService.readByVarious(lib.getTestDataLibID(), null, null, "N");
+                if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !answerData.getDataList().isEmpty()) {
+                    objectDataList = answerData.getDataList();
+                    boolean missingKey = true;
+                    for (TestDataLibData tdld : objectDataList) {
+                        row.put(tdld.getColumnPosition(), tdld.getSubData());
+                        if (tdld.getSubData().equalsIgnoreCase("")) {
+                            missingKey = false;
+                        }
+                    }
+                    result.setItem(row);
+                    if (missingKey) {
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATACSVNOKEY);
+                        result.setResultMessage(msg);
+
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA);
+                        msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(answerData.getDataList().size())));
+                        result.setResultMessage(msg);
+                    }
+
+                } else if ((answerData.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerData.getDataList().isEmpty()) {
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_NOSUBDATACSV);
+                    result.setResultMessage(msg);
+
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SUBDATACSV);
+                    result.setResultMessage(msg);
+
                 }
-                result.setItem(row);
                 break;
 
             case TestDataLib.TYPE_SQL:
@@ -494,8 +533,8 @@ public class DataLibService implements IDataLibService {
                 }
                 break;
 
-            case TestDataLib.TYPE_STATIC:
-                // For static Type, there is no need to fetch the subdata.
+            case TestDataLib.TYPE_INTERNAL:
+                // For static Type, there is no need to fetch the subdata as subdata are loaded at the same time of the data.
                 msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA);
                 result.setResultMessage(msg);
                 result.setItem(null);
@@ -515,15 +554,117 @@ public class DataLibService implements IDataLibService {
         AnswerList result = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
         CountryEnvironmentDatabase countryEnvironmentDatabase;
+        AnswerList responseList;
+
+        List<HashMap<String, String>> list;
 
         switch (lib.getType()) {
             case TestDataLib.TYPE_CSV:
-                result = fileService.parseCSVFile(lib.getCsvUrl(), lib.getSeparator(), columnList);
+
+                /**
+                 * Before making the call we check if the Service Path is
+                 * already a propper URL. If it is not, we prefix with the
+                 * CsvUrl defined from corresponding database. This is used to
+                 * get the data from the correct environment.
+                 */
+                String servicePathCsv = lib.getCsvUrl();
+                LOG.debug("Service Path (Csv) : " + lib.getCsvUrl());
+                if (!StringUtil.isURL(servicePathCsv)) {
+                    // Url is not valid, we try to get the corresponding DatabaseURL CsvURL to prefix.
+                    if (!(StringUtil.isNullOrEmpty(lib.getDatabaseCsv()))) {
+
+                        try {
+                            countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
+                                    country, environment, lib.getDatabaseCsv()));
+                            if (countryEnvironmentDatabase == null) {
+                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
+                                msg.setDescription(msg.getDescription()
+                                        .replace("%SERVICEURL%", lib.getCsvUrl())
+                                        .replace("%SYSTEM%", system)
+                                        .replace("%COUNTRY%", country)
+                                        .replace("%ENV%", environment)
+                                        .replace("%DB%", lib.getDatabaseCsv()));
+                                result.setResultMessage(msg);
+                                return result;
+
+                            } else {
+                                String csvURL = countryEnvironmentDatabase.getCsvUrl();
+                                if (StringUtil.isNullOrEmpty(csvURL)) {
+                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLEMPTY);
+                                    msg.setDescription(msg.getDescription()
+                                            .replace("%SERVICEURL%", lib.getCsvUrl())
+                                            .replace("%SYSTEM%", system)
+                                            .replace("%COUNTRY%", country)
+                                            .replace("%ENV%", environment)
+                                            .replace("%DB%", lib.getDatabaseCsv()));
+                                    result.setResultMessage(msg);
+                                    return result;
+                                }
+                                // soapURL from database is not empty so we prefix the Service URL with it.
+                                servicePathCsv = csvURL + lib.getCsvUrl();
+
+                                if (!StringUtil.isURL(servicePathCsv)) {
+                                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKO);
+                                    msg.setDescription(msg.getDescription()
+                                            .replace("%SERVICEURL%", servicePathCsv)
+                                            .replace("%SOAPURL%", csvURL)
+                                            .replace("%SERVICEPATH%", lib.getCsvUrl())
+                                            .replace("%ENTRY%", lib.getName())
+                                            .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+                                    result.setResultMessage(msg);
+                                    return result;
+
+                                }
+
+                            }
+
+                        } catch (CerberusException ex) {
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDDATABASECSVURLNOTEXIST);
+                            msg.setDescription(msg.getDescription()
+                                    .replace("%SERVICEURL%", lib.getCsvUrl())
+                                    .replace("%SYSTEM%", system)
+                                    .replace("%COUNTRY%", country)
+                                    .replace("%ENV%", environment)
+                                    .replace("%DB%", lib.getDatabaseCsv()));
+                            result.setResultMessage(msg);
+                            return result;
+                        }
+
+                    } else { // URL is not valid and DatabaseCsv is not defined.
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_URLKOANDNODATABASE);
+                        msg.setDescription(msg.getDescription()
+                                .replace("%SERVICEURL%", lib.getCsvUrl())
+                                .replace("%ENTRY%", lib.getName())
+                                .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
+                        result.setResultMessage(msg);
+                        return result;
+                    }
+                }
+
+                // CSV Call is made here.
+                responseList = fileService.parseCSVFile(servicePathCsv, lib.getSeparator(), columnList);
+                list = responseList.getDataList();
+
+                //if the query returns sucess then we can get the data
+                if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_CSV.getCode()) {
+                    if (list != null && !list.isEmpty()) {
+                        result.setDataList(list);
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_CSV);
+                        msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size())).replace("%CSVURL%", servicePathCsv));
+
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSVDATABASENODATA);
+                        msg.setDescription(msg.getDescription().replace("%CSVURL%", servicePathCsv));
+                    }
+                } else {
+                    msg = responseList.getResultMessage();
+                }
+                result.setResultMessage(msg);
+
                 break;
 
             case TestDataLib.TYPE_SQL:
                 String connectionName;
-                List<HashMap<String, String>> list;
                 String db = lib.getDatabase();
                 try {
 
@@ -548,7 +689,7 @@ public class DataLibService implements IDataLibService {
 
                                 Integer sqlTimeout = parameterService.getParameterByKey("cerberus_propertyexternalsql_timeout", system, 60);
                                 //performs a query that returns several rows containing n columns
-                                AnswerList responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList);
+                                responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList);
 
                                 //if the query returns sucess then we can get the data
                                 if (responseList.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_SQL.getCode()) {
@@ -843,22 +984,22 @@ public class DataLibService implements IDataLibService {
                 result.setResultMessage(msg);
                 break;
 
-            case TestDataLib.TYPE_STATIC:
-                result = testDataLibService.readSTATICWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system);
+            case TestDataLib.TYPE_INTERNAL:
+                result = testDataLibService.readINTERNALWithSubdataByCriteria(lib.getName(), lib.getSystem(), lib.getCountry(), lib.getEnvironment(), rowLimit, system);
                 //if the sql service returns a success message then we can process it
                 if ((result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && !result.getDataList().isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_STATIC);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_INTERNAL);
                     msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size())));
                     result.setResultMessage(msg);
 
                 } else if ((result.getResultMessage().getCode() == MessageEventEnum.DATA_OPERATION_OK.getCode()) && result.getDataList().isEmpty()) {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATICNODATA);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_INTERNALNODATA);
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", lib.getSystem())
                             .replace("%ENV%", lib.getEnvironment()).replace("%COUNTRY%", lib.getCountry()));
                     result.setResultMessage(msg);
 
                 } else {
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_STATIC);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_INTERNAL);
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", lib.getSystem())
                             .replace("%ENV%", lib.getEnvironment()).replace("%COUNTRY%", lib.getCountry()));
                     result.setResultMessage(msg);
@@ -869,6 +1010,23 @@ public class DataLibService implements IDataLibService {
         }
 
         return result;
+    }
+
+    private JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {
+        JSONArray jsonArray = new JSONArray();
+        for (HashMap<String, String> row : object) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("KEY", row.get(""));
+            for (Map.Entry<String, String> entry : row.entrySet()) {
+                String column = entry.getKey();
+                String name = entry.getValue();
+                if (!("".equals(column))) {
+                    jsonObject.put(column, name);
+                }
+            }
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
     }
 
 }

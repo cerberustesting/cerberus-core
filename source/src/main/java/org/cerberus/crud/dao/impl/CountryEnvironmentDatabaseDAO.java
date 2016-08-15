@@ -279,8 +279,8 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     public Answer create(CountryEnvironmentDatabase object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO `countryenvironmentdatabase` (`system`, `country`, `environment`, `database`, `connectionpoolname`, `SoapUrl`) ");
-        query.append("VALUES (?,?,?,?,?,?)");
+        query.append("INSERT INTO `countryenvironmentdatabase` (`system`, `country`, `environment`, `database`, `connectionpoolname`, `SoapUrl`, `CsvUrl`) ");
+        query.append("VALUES (?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -296,6 +296,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
                 preStat.setString(4, object.getDatabase());
                 preStat.setString(5, object.getConnectionPoolName());
                 preStat.setString(6, object.getSoapUrl());
+                preStat.setString(7, object.getCsvUrl());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -377,7 +378,7 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
     @Override
     public Answer update(CountryEnvironmentDatabase object) {
         MessageEvent msg = null;
-        final String query = "UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=?, `SoapUrl`=? WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
+        final String query = "UPDATE `countryenvironmentdatabase` SET `connectionpoolname`=?, `SoapUrl`=?, `CsvUrl`=? WHERE `system`=? and `country`=? and `environment`=? and `database`=?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -389,10 +390,11 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
             try {
                 preStat.setString(1, object.getConnectionPoolName());
                 preStat.setString(2, object.getSoapUrl());
-                preStat.setString(3, object.getSystem());
-                preStat.setString(4, object.getCountry());
-                preStat.setString(5, object.getEnvironment());
-                preStat.setString(6, object.getDatabase());
+                preStat.setString(3, object.getCsvUrl());
+                preStat.setString(4, object.getSystem());
+                preStat.setString(5, object.getCountry());
+                preStat.setString(6, object.getEnvironment());
+                preStat.setString(7, object.getDatabase());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -427,7 +429,8 @@ public class CountryEnvironmentDatabaseDAO implements ICountryEnvironmentDatabas
         String database = resultSet.getString("ceb.Database");
         String connectionpoolname = resultSet.getString("ceb.ConnectionPoolName");
         String soapUrl = resultSet.getString("ceb.SoapUrl");
-        return factoryCountryEnvironmentDatabase.create(system, count, env, database, connectionpoolname, soapUrl);
+        String csvUrl = resultSet.getString("ceb.CsvUrl");
+        return factoryCountryEnvironmentDatabase.create(system, count, env, database, connectionpoolname, soapUrl, csvUrl);
     }
 
 }

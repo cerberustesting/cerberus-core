@@ -187,7 +187,7 @@ public class ReadTestDataLib extends HttpServlet {
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"),
-                "TestDataLibID,Name,System,Environment,Country,Group,Type,Database,Script,ServicePath,Method,Envelope,Description");
+                "tdl.TestDataLibID,tdl.Name,tdl.System,tdl.Environment,tdl.Country,tdl.Group,tdl.Type,tdl.Database,tdl.Script,tdl.ServicePath,tdl.Method,tdl.Envelope,tdl.databaseCsv,tdl.Description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");

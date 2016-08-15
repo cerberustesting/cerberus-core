@@ -28,5 +28,5 @@ import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 public interface IFactoryCountryEnvironmentDatabase {
 
     CountryEnvironmentDatabase create(String system, String country, String environment, String database,
-            String connectionPoolName, String soapUrl);
+            String connectionPoolName, String soapUrl, String csvUrl);
 }

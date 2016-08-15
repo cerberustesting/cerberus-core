@@ -1528,7 +1528,7 @@ function exportTestCase(test, testcase, page) {
 }
 //TODO:FN refactor after the improvement of the TestCase.jsp page
 function alertOnMissingPropertyValues(total) {
-    alert("You have " + total + " properties from type 'getFromDataLib_BETA' that are poorly defined. Please check if Value1 is defined!");
+    alert("You have " + total + " properties from type 'getFromDataLib' that are poorly defined. Please check if Value1 is defined!");
     return false;
 }
 function alertOnProperties() {
@@ -2276,7 +2276,7 @@ function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
         document.getElementById(fieldValue2Id).style.display = "none";
         document.getElementById(fieldValue1Id).style.width = size + "%";
     }
-    if(value ==="getFromDataLib_BETA"){  
+    if(value ==="getFromDataLib"){  
             
             //temporary fix. TODO:FN this should be refactored in the future after the update of the list of nature types
             //var natureElement = $("#" + fieldValue2Id).parents("div[id*='propertyRow']").find("select[id*='properties_nature_']");                         

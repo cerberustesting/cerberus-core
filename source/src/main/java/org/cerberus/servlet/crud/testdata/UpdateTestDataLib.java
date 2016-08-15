@@ -19,7 +19,6 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,6 +84,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String country = policy.sanitize(request.getParameter("country"));
         String database = policy.sanitize(request.getParameter("database"));
         String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
+        String databaseCsv = policy.sanitize(request.getParameter("databaseCsv"));
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset); //this is mandatory
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
@@ -165,6 +165,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setServicePath(servicePath);
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
+                    lib.setDatabaseCsv(databaseCsv);
                     lib.setCsvUrl(csvUrl);
                     lib.setSeparator(separator);
                     lib.setLastModifier(request.getRemoteUser());
