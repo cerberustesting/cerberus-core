@@ -18,13 +18,7 @@
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
 <%@page import="java.util.Date"%>
-<%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
-<%@page import="org.springframework.context.ApplicationContext"%>
-<%@page import="org.springframework.web.context.WebApplicationContext"%>
-<%@page import="org.cerberus.crud.entity.Invariant"%>
-<%@page import="java.util.List"%>
-<%@page import="org.cerberus.crud.service.IInvariantService"%>
-<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
+
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
