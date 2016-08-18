@@ -20,9 +20,11 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -31,4 +33,5 @@ import org.cerberus.exception.CerberusException;
 public interface IParameterSystemService {
 
     List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException;
+    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 }

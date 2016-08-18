@@ -21,31 +21,21 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         displayPageLabel();
-
-        var jqxhr = $.getJSON("GetParameterSystem", "system=" + getSys());
-
-        $.when(jqxhr).then(function (result) {
-            var configurations = new TableConfigurationsClientSide("parameterTable", result["aaData"], aoColumnsFunc(), true);
-            //configurations.tableWidth = "550px";
-            configurations.showColvis = false;
-            configurations.bPaginate = true;
-            if ($('#homePageTable').hasClass('dataTable') === false) {
-                createDataTable(configurations);
-            } else {
-                var oTable = $("#parameterTable").dataTable();
-                oTable.fnClearTable();
-                if (result["aaData"].length > 0) {
-                    oTable.fnAddData(result["aaData"]);
-                }
-            }
-
-
-        }).fail(handleErrorAjaxAfterTimeout);
+        var doc = new Doc();
+        $("#title").html(doc.getDocLabel("page_parameter", "allParameters"));
+        //configure and create the dataTable
+        var configurations = new TableConfigurationsServerSide("parametersTable", "GetParameterSystem2?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
+        createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
     });
 });
 
 function displayPageLabel() {
     var doc = new Doc();
+    // handle the click for specific action buttons
+    $("#editParameterButton").click(editEntryModalSaveHandler);
+
+    //clear the modals fields when closed
+    $('#editParameterModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     displayHeaderLabel(doc);
     displayFooter(doc);
@@ -58,13 +48,88 @@ function getSys() {
     return sel.options[selectedIndex].value;
 }
 
-function aoColumnsFunc() {
+function aoColumnsFunc(tableId) {
+    var doc = new Doc();
     var aoColumns = [
-        {"data": "0", "bSortable": true, "sName": "Parameter", "title": "Parameter", "width": "20%"},
-        {"data": "1", "bSortable": true, "sName": "ValueCerberus", "title": "Cerberus Value", "width": "20%"},
-        {"data": "2", "bSortable": true, "sName": "ValueSystem", "title": "System "+getSys()+" Value", "width": "20%"},
-        {"data": "3", "bSortable": true, "sName": "Description", "title": "Description", "width": "40%"}
-    ];
+        {"data": null,
+            "bSortable": false,
+            "bSearchable": false,
+            "title": doc.getDocLabel("page_parameter", "button_col"),
+            "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
+                var editParameter = '<button id="editParameter" onclick="editEntryClick(\'' + obj["param"] + '\', \'' + encodeURI(obj["valueCerberus"]) + '\', \'' + encodeURI(obj["valueSystem"]) + '\', \'' + obj["description"] + '\');"\n\
+                                        class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                        name="editParameter" title="' + doc.getDocLabel("page_parameter", "button_edit") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-pencil"></span></button>';
+
+                return '<div class="center btn-group width150">' + editParameter + '</div>';
+
+            }
+        },
+        {"data": "param", "sName": "Cerberus.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
+        {"data": "valueCerberus", "sName": "Cerberus.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
+        {"data": "valueSystem", "sName": "System.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
+        {"data": "description", "sName": "Cerberus.description", "title": doc.getDocLabel("page_parameter", "description_col")}
+    ];
     return aoColumns;
+}
+
+function renderOptionsForApplication(data) {
+    if ($("#blankSpace").length === 0) {
+        var contentToAdd = "<div class='marginBottom10' style='height:25px;' id='blankSpace'></div>";
+        $("#parametersTable_wrapper div#parametersTable_length").before(contentToAdd);
+    }
+}
+
+function editEntryModalSaveHandler() {
+    clearResponseMessage($('#editParameterModal'));
+    var formEdit = $('#editParameterModal #editParameterModalForm');
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    console.log(data);
+    showLoaderInModal('#editParameterModal');
+    $.ajax({
+        url: "UpdateParameter2?system="+getSys(),
+        async: true,
+        method: "POST",
+        data: {id: data.parameter,
+            valueCerberus: data.cerberusValue,
+            valueSystem: data.systemValue,
+            system: getSys()},
+        success: function (data) {
+            hideLoaderInModal('#editParameterModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#parametersTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editParameterModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editParameterModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+}
+
+function editEntryModalCloseHandler() {
+    // reset form values
+    $('#editParameterModal #editParameterModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#editParameterModal'));
+}
+
+function editEntryClick(param, cerberusValue, systemValue, description) {
+    var formEdit = $('#editParameterModal');
+
+    formEdit.find("#parameter").prop("value", param);
+    formEdit.find("#cerberusValue").prop("value", decodeURI(cerberusValue));
+    formEdit.find("#systemValue").prop("value", decodeURI(systemValue));
+    formEdit.find("#description").prop("value", description);
+
+    formEdit.modal('show');
 }

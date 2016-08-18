@@ -943,7 +943,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["dom"] = domConf;
     configs["stateDuration"] = tableConfigurations.stateDuration;
     configs["serverSide"] = tableConfigurations.serverSide;
-    configs["processing"] = tableConfigurations.processig;
+    configs["processing"] = tableConfigurations.processing;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
     configs["bPaginate"] = tableConfigurations.bPaginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;

@@ -6351,6 +6351,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`ID`, `Property`, `Index`) ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Documentation for Parameters
+        //-- ------------------------ 863
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_parameter', 'allParameters', '', 'en', 'Parameters', '')");
+        SQLS.append(",('page_parameter', 'allParameters', '', 'fr', 'Paramètres', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'en', 'Save', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'fr', 'Sauvegarder', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'en', 'Parameter', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'fr', 'Paramètre', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'en', 'Cerberus Value', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'fr', 'Valeur de Cerberus', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'en', 'System Value', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'fr', 'Valeur du système', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'en', 'Description', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'fr', 'Description', '')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -17,8 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="java.util.Date"%>
-
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -26,27 +24,74 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions.html" %>
-        <title>Parameter</title>
-        <script type="text/javascript" src="js/pages/Parameter.js"></script>
+        <%@ include file="include/dependenciesInclusions_old.html" %>
+        <title>Parameters</title>
+
     </head>
     <body>
-        <%@ include file="include/header.html"%>
-        <div id="homeTableDiv" class="panel panel-default">
-            <div class="panel-heading card" data-toggle="collapse" data-target="#applicationPanel">
-                <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                <span class="fa fa-retweet fa-fw"></span>
-                <label id="Parameter">Parameter</label>
-            </div>
-            <div class="panel-body collapse in" id="applicationPanel">
-                <table id="parameterTable" class="table table-bordered table-hover display" name="homePageTable"></table>
-                <div class="marginBottom20"></div>
-            </div>
+        <%@ include file="include/function.jsp" %>
+        <%@ include file="include/header.jsp" %>
+        <%
+            String MySystem = ParameterParserUtil.parseStringParam(request.getAttribute("MySystem").toString(), "");
+        %>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#parametersTable').dataTable({
+                    "aLengthMenu": [
+                        [20, 50, 100, 200, -1],
+                        [20, 50, 100, 200, "All"]
+                    ],
+                    "iDisplayLength" : 20,
+                    "bServerSide": false,
+                    "sAjaxSource": "GetParameterSystem?system=<%=MySystem%>",
+                    "bJQueryUI": true,
+                    "bProcessing": true,
+                    "sPaginationType": "full_numbers",
+                    "bSearchable": false, "aTargets": [ 0 ],
+                    "aoColumns": [
+                        {"sName": "Parameter"},
+                        {"sName": "ValueCerberus"},
+                        {"sName": "ValueSystem"},
+                        {"sName": "Description"}
+                    ]
+                }
+            ).makeEditable({
+                    sUpdateURL: "UpdateParameter?system=<%=MySystem%>",
+                    fnOnEdited: function(status){
+                        $(".dataTables_processing").css('visibility', 'hidden');
+                    },
+                    "aoColumns": [
+                        null,
+                        {
+                            tooltip: 'Click to edit Default Global Cerberus parameter.',
+                            type: 'textarea',
+                            submit:'Save changes'},
+                        {
+                            tooltip: 'Click to edit the Specific parameter for System <%=MySystem%>.',
+                            type: 'textarea',
+                            submit:'Save changes'},
+                        null
+                    ]
+                });
+            });
+        </script>
+        <p class="dttTitle">Parameter</p>
+        <div style="width: 100%;  font: 90% sans-serif">
+            <table id="parametersTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Cerberus Value</th>
+                        <th>System <%=MySystem%> Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
-        <br>
-
-        <footer class="footer">
-            <div class="container-fluid" id="footer"></div>
-        </footer>
+        <br><%
+            out.print(display_footer(DatePageStart));
+        %>
     </body>
 </html>
