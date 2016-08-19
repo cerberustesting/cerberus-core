@@ -10,5 +10,5 @@ SET DTBSRVPORT=3306
 SET DTBNAME=cerberus
 SET DTBUSER=cerberus
 SET DTBPASSWD=toto
-SET GLASSFISHPATH="C:\glassfish4\glassfish\bin"
+SET GLASSFISHPATH="D:\glassfish4\glassfish\bin\"
 
