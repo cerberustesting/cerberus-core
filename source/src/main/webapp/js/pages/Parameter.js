@@ -65,7 +65,8 @@ function aoColumnsFunc(tableId) {
 
                 return '<div class="center btn-group width150">' + editParameter + '</div>';
 
-            }
+            },
+            "width": "50px"
         },
         {"data": "param", "sName": "Cerberus.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
         {"data": "valueCerberus", "sName": "Cerberus.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
