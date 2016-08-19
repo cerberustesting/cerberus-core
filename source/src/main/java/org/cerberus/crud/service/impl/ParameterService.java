@@ -152,7 +152,7 @@ public class ParameterService implements IParameterService {
     private void firePropertyChange(Parameter parameter) {
         Set<ParameterAware> existingRegistration;
         synchronized (propertyRegistration) {
-            existingRegistration = new HashSet<>(propertyRegistration.get(parameter.getParam()));
+            existingRegistration = propertyRegistration.get(parameter.getParam());
         }
         if (existingRegistration != null) {
             for (ParameterAware parameterAware : existingRegistration) {
