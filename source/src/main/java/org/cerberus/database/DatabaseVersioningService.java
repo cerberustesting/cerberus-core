@@ -6367,6 +6367,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_parameter', 'system_col', '', 'fr', 'Valeur du système', '')");
         SQLS.append(",('page_parameter', 'description_col', '', 'en', 'Description', '')");
         SQLS.append(",('page_parameter', 'description_col', '', 'fr', 'Description', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'en', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'fr', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'en', 'Edit Parameter', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'fr', 'Editer le parmètre', '')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
