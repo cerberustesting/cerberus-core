@@ -39,6 +39,7 @@ import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.engine.entity.SOAPExecution;
+import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.service.datalib.IDataLibService;
@@ -89,6 +90,8 @@ public class DataLibService implements IDataLibService {
     private ISoapService soapService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private IRecorderService recorderService;
 
     @Override
     public AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution) {
@@ -1012,7 +1015,7 @@ public class DataLibService implements IDataLibService {
         return result;
     }
 
-    private JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {
+    public JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (HashMap<String, String> row : object) {
             JSONObject jsonObject = new JSONObject();

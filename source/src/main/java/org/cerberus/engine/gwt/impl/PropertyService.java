@@ -60,7 +60,6 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.DateUtil;
-import org.cerberus.util.FileUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
@@ -390,6 +389,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
+        stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
 
         /**
          * Trying to replace date variables .
@@ -905,12 +905,8 @@ public class PropertyService implements IPropertyService {
                 tCExecution.setLastSOAPCalled(soapCall);
 
                 //Record the Request and Response.
-                String requestFileName = FileUtil.generateScreenshotFilename(null, null, null, null, null, testCaseExecutionData.getProperty() + "_request", "xml");
-                String responseFileName = FileUtil.generateScreenshotFilename(null, null, null, null, null, testCaseExecutionData.getProperty() + "_response", "xml");
                 SOAPExecution se = (SOAPExecution) soapCall.getItem();
-
-                String requestFilePath = recorderService.recordSoapMessageAndGetPath(tCExecution.getId(), se.getSOAPRequest(), requestFileName);
-                String responseFilePath = recorderService.recordSoapMessageAndGetPath(tCExecution.getId(), se.getSOAPResponse(), responseFileName);
+                recorderService.recordSOAPProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, se);
 
                 if (soapCall.isCodeEquals(200)) {
                     SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
@@ -920,13 +916,9 @@ public class PropertyService implements IPropertyService {
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP);
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAPFROMLIB_NODATA);
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             }
@@ -1142,6 +1134,9 @@ public class PropertyService implements IPropertyService {
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = (String) result.get(0).get("");
                 testCaseExecutionData.setValue(value);
+
+                //Record result in filessytem.
+                recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
 
             }
             res.setDescription(res.getDescription().replace("%ENTRY%", testDataLib.getName()).replace("%ENTRYID%", String.valueOf(testDataLib.getTestDataLibID())));

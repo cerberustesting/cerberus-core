@@ -35,6 +35,7 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
+import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
@@ -143,7 +144,7 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
             res = this.doActionRightClick(tCExecution, object, property);
-            
+
         } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
@@ -202,9 +203,6 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
             res = this.doActionCalculateProperty(object, property, propertyName);
 
-        } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
-            res = this.doActionGetPageSource(testCaseStepActionExecution);
-
         } else if (testCaseStepActionExecution.getAction().equals("removeDifference")) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, object, property);
 
@@ -225,6 +223,12 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SKIPACTION);
+
+        } else if (testCaseStepActionExecution.getAction().equals("getPageSource")) {
+            res = this.doActionGetPageSource(testCaseStepActionExecution);
+            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+            logEventService.createPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
 
         } else if (testCaseStepActionExecution.getAction().equals("takeScreenshot")) {
             res = this.doActionTakeScreenshot(testCaseStepActionExecution);
@@ -905,6 +909,11 @@ public class ActionService implements IActionService {
              }*/
             AnswerItem lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
             tCExecution.setLastSOAPCalled(lastSoapCalled);
+
+            //Record the Request and Response in filesystem.
+            SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
+            recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
+
             return lastSoapCalled.getResultMessage();
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
@@ -920,9 +929,8 @@ public class ActionService implements IActionService {
         if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")
                 || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")
                 || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("IPA")) {
-            String screenshotPath = recorderService.recordScreenshotAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
+            recorderService.recordScreenshot(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
                     testCaseStepActionExecution, 0);
-            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
             return message;
         }
@@ -937,9 +945,7 @@ public class ActionService implements IActionService {
         if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("GUI")
                 || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("APK")
                 || testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType().equalsIgnoreCase("IPA")) {
-            String screenshotPath = recorderService.recordPageSourceAndGetName(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(),
-                    testCaseStepActionExecution, 0);
-            testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
+            recorderService.recordPageSource(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution(), testCaseStepActionExecution, 0);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_GETPAGESOURCE);
             return message;
         }
