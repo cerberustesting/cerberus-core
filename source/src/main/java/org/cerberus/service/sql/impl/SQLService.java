@@ -247,7 +247,7 @@ public class SQLService implements ISQLService {
     }
 
     @Override
-    public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql, int defaultTimeOut) {
+    public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql) {
         String connectionName;
         CountryEnvironmentDatabase countryEnvironmentDatabase;
         MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
@@ -261,46 +261,55 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    Connection connection = this.databaseSpring.connect(connectionName);
-                    try {
-                        PreparedStatement preStat = connection.prepareStatement(sql);
-                        preStat.setQueryTimeout(defaultTimeOut);
+                    if (connectionName.contains("cererus" + System.getProperty("org.cerberus.environment"))) {
+                        return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
+                    } else {
 
+                        Connection connection = this.databaseSpring.connect(connectionName);
                         try {
-                            LOG.info("Sending to external Database (executeUpdate) : '" + connectionName + "' SQL '" + sql + "'");
-                            preStat.executeUpdate();
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-                        } catch (SQLTimeoutException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
-                            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
-                            msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(defaultTimeOut)));
-                            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                            PreparedStatement preStat = connection.prepareStatement(sql);
+                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlupdate_timeout", system, 60);
+                            preStat.setQueryTimeout(sqlTimeout);
+
+                            try {
+                                LOG.info("Sending to external Database (executeUpdate) : '" + connectionName + "' SQL '" + sql + "'");
+                                preStat.executeUpdate();
+                                int nbUpdate = preStat.getUpdateCount();
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTESQLUPDATE)
+                                        .resolveDescription("NBROWS", String.valueOf(nbUpdate))
+                                        .resolveDescription("JDBC", connectionName).resolveDescription("SQL", sql);
+                            } catch (SQLTimeoutException exception) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
+                                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                                msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(sqlTimeout)));
+                                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                            } catch (SQLException exception) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
+                                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                            } finally {
+                                preStat.close();
+                            }
                         } catch (SQLException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
-                            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
+                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                        } catch (NullPointerException exception) {
+                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
+                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } finally {
-                            preStat.close();
-                        }
-                    } catch (SQLException exception) {
-                        MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                    } catch (NullPointerException exception) {
-                        MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                    } finally {
-                        try {
-                            if (connection != null) {
-                                connection.close();
+                            try {
+                                if (connection != null) {
+                                    connection.close();
+                                }
+                            } catch (SQLException e) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
                             }
-                        } catch (SQLException e) {
-                            MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
                         }
                     }
                 } else {
@@ -338,37 +347,53 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    Connection connection = this.databaseSpring.connect(connectionName);
-                    try {
-                        CallableStatement cs = connection.prepareCall(sql);
+                    if (connectionName.contains("cerberus" + System.getProperty("org.cerberus.environment"))) {
+                        return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
+                    } else {
+
+                        Connection connection = this.databaseSpring.connect(connectionName);
                         try {
-                            cs.execute();
-                            msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                            CallableStatement cs = connection.prepareCall(sql);
+                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlstoredprocedure_timeout", system, 60);
+                            cs.setQueryTimeout(sqlTimeout);
+                            try {
+                                cs.execute();
+                                int nbUpdate = cs.getUpdateCount();
+                                msg = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_EXECUTESQLSTOREDPROCEDURE)
+                                        .resolveDescription("NBROWS", String.valueOf(nbUpdate))
+                                        .resolveDescription("JDBC", connectionName).resolveDescription("SQL", sql);
+                            } catch (SQLTimeoutException exception) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_TIMEOUT);
+                                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                                msg.setDescription(msg.getDescription().replace("%TIMEOUT%", String.valueOf(sqlTimeout)));
+                                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                            } catch (SQLException exception) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
+                                msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
+                                msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                                msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                            } finally {
+                                cs.close();
+                            }
                         } catch (SQLException exception) {
-                            MyLogger.log(SQLService.class.getName(), Level.WARN, exception.toString());
-                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_ERROR);
-                            msg.setDescription(msg.getDescription().replace("%SQL%", sql));
+                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
+                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
+                            msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
+                        } catch (NullPointerException exception) {
+                            MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
+                            msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
+                            msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
                             msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
                         } finally {
-                            cs.close();
-                        }
-                    } catch (SQLException exception) {
-                        MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                    } catch (NullPointerException exception) {
-                        MyLogger.log(SQLService.class.getName(), Level.FATAL, exception.toString());
-                        msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_CANNOTACCESSJDBC);
-                        msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
-                        msg.setDescription(msg.getDescription().replace("%EX%", exception.toString()));
-                    } finally {
-                        try {
-                            if (connection != null) {
-                                connection.close();
+                            try {
+                                if (connection != null) {
+                                    connection.close();
+                                }
+                            } catch (SQLException e) {
+                                MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
                             }
-                        } catch (SQLException e) {
-                            MyLogger.log(SQLService.class.getName(), Level.WARN, e.toString());
                         }
                     }
                 } else {

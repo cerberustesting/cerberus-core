@@ -71,10 +71,9 @@ public interface ISQLService {
      * @param environment
      * @param db
      * @param sql
-     * @param defaultTimeOut
      * @return
      */
-    MessageEvent executeUpdate(String system, String country, String environment, String db, String sql, int defaultTimeOut);
+    MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
 
     /**
      *

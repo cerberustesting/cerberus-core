@@ -1034,22 +1034,13 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionExecuteSQLUpdate(TestCaseExecution tCExecution, String object, String property) {
-        if (object.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
-        } else {
-            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlupdate_timeout", tCExecution.getApplication().getSystem(), 60);
-            return sqlService.executeUpdate(tCExecution.getApplication().getSystem(),
-                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property, sqlTimeout);
-        }
+        return sqlService.executeUpdate(tCExecution.getApplication().getSystem(),
+                tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
     }
 
     private MessageEvent doActionExecuteSQLStoredProcedure(TestCaseExecution tCExecution, String object, String property) {
-        if (object.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
-            return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
-        } else {
-            return sqlService.executeCallableStatement(tCExecution.getApplication().getSystem(),
-                    tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
-        }
+        return sqlService.executeCallableStatement(tCExecution.getApplication().getSystem(),
+                tCExecution.getCountry(), tCExecution.getEnvironment(), object, property);
     }
 
     private MessageEvent doActionHideKeyboard(TestCaseExecution tCExecution) {

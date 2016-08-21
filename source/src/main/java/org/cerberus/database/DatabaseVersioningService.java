@@ -6464,6 +6464,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ,ucase(right(PageSourceFileName, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactioncontrolexecution where PageSourceFileName is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
         SQLInstruction.add(SQLS.toString());
         
+        // New sql timeout parameters.
+        //-- ------------------------ 879
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append(" ('', 'cerberus_actionexecutesqlstoredprocedure_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlStoredProcedure will fail.')");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 

@@ -353,7 +353,7 @@ public class RecorderService implements IRecorderService {
         if (testCaseExecution.getApplication().getType().equals("GUI")) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-                LOG.info(logPrefix + "Starting to save File.");
+                LOG.debug(logPrefix + "Starting to save Selenium log file.");
 
                 try {
                     this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, 0, "selenium_log", "txt");
@@ -386,7 +386,7 @@ public class RecorderService implements IRecorderService {
                         LOG.error(logPrefix + ex.toString());
                     }
 
-                    LOG.debug(logPrefix + "Log recorded in : " + relativeFilenameURL);
+                    LOG.debug(logPrefix + "Selenium log recorded in : " + relativeFilenameURL);
 
                 } catch (CerberusException ex) {
                     LOG.error(logPrefix + ex.toString());
