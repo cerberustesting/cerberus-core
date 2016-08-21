@@ -39,7 +39,8 @@ public enum MessageEventEnum {
      * <p/>
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
      * are from x50 to x99 (different code for each). Pending is x99.
-     */
+     * 
+    **/
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL_RANDOM(100, "OK", "Random result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -246,7 +247,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_SQL_ERROR(293, "FA", "The SQL '%SQL%' has an error : '%EX%'.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_TIMEOUT(293, "FA", "The SQL '%SQL%' timeout out after %TIMEOUT% second(s). %EX%", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_CANNOTACCESSJDBC(294, "FA", "An error occur when connecting to JDBC datasource '%JDBC%'. Please verify with your administrator that the JDBC is configured inside the application server. Error detail: %EX%", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED(295, "FA", "The JDBC connection pool name does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please define it inside the database.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_DATABASENOTCONFIGURED(295, "FA", "The Database does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please configure it at environment level.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_DATABASECONFIGUREDBUTJDBCPOOLEMPTY(295, "FA", "The JDBC Ressource is empty for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please configure it in environment screen.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot executeSqlUpdate using Cerberus connection pool. Please create new connection with dedicated rights.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_HIDEKEYBOARD(296, "FA", "Failed to hide keyboard. Check server logs.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWIPE(297, "FA", "Failed to swipe '%DIRECTION%' screen due to '%REASON%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
