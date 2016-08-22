@@ -150,6 +150,33 @@ public class SQLService implements ISQLService {
         return testCaseExecutionData;
     }
 
+
+    private String getRandomStringFromList(List<String> list) {
+        Random random = new Random();
+        if (!list.isEmpty()) {
+            return list.get(random.nextInt(list.size()));
+        }
+        return null;
+    }
+
+    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
+        //TODO clean code
+        List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
+                tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
+                tCExecution.getCountry());
+
+        if (!pastValues.isEmpty()) {
+            for (String value : list) {
+                if (!pastValues.contains(value)) {
+                    return value;
+                }
+            }
+        } else {
+            return list.get(0);
+        }
+        return null;
+    }
+
     @Override
     public List<String> queryDatabase(String connectionName, String sql, int limit, int defaultTimeOut) throws CerberusEventException {
         List<String> list = null;
@@ -236,16 +263,7 @@ public class SQLService implements ISQLService {
         }
         return list;
     }
-
-    @Override
-    public String getRandomStringFromList(List<String> list) {
-        Random random = new Random();
-        if (!list.isEmpty()) {
-            return list.get(random.nextInt(list.size()));
-        }
-        return null;
-    }
-
+    
     @Override
     public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql) {
         String connectionName;
@@ -261,7 +279,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.contains("cererus" + System.getProperty("org.cerberus.environment"))) {
+                    if (connectionName.contains("cerberus")) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
 
@@ -347,7 +365,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.contains("cerberus" + System.getProperty("org.cerberus.environment"))) {
+                    if (connectionName.contains("cerberus")) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
 
@@ -414,24 +432,6 @@ public class SQLService implements ISQLService {
             LOG.error(ex.toString());
         }
         return msg;
-    }
-
-    private String calculateNatureRandomNew(List<String> list, String propName, TestCaseExecution tCExecution) {
-        //TODO clean code
-        List<String> pastValues = this.testCaseExecutionDataService.getPastValuesOfProperty(tCExecution.getId(), propName, tCExecution.getTest(),
-                tCExecution.getTestCase(), tCExecution.getCountryEnvParam().getBuild(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry());
-
-        if (!pastValues.isEmpty()) {
-            for (String value : list) {
-                if (!pastValues.contains(value)) {
-                    return value;
-                }
-            }
-        } else {
-            return list.get(0);
-        }
-        return null;
     }
 
     @Override
