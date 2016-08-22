@@ -20,60 +20,39 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        displayPageLabel();
-        var doc = new Doc();
-        $("#title").html(doc.getDocLabel("page_parameter", "allParameters"));
-        //configure and create the dataTable
-        var configurations = new TableConfigurationsServerSide("parametersTable", "GetParameterSystem2?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
-        createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
+        initPage();
     });
 });
 
-function displayPageLabel() {
-    var doc = new Doc();
+function initPage() {
+    displayPageLabel();
+
     // handle the click for specific action buttons
     $("#editParameterButton").click(editEntryModalSaveHandler);
 
     //clear the modals fields when closed
     $('#editParameterModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
+    //configure and create the dataTable
+    var configurations = new TableConfigurationsServerSide("parametersTable", "GetParameterSystem2?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
+    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
+}
+
+function displayPageLabel() {
+    var doc = new Doc();
+
+    $("#title").html(doc.getDocLabel("page_parameter", "allParameters"));
+    $("[name='editParameterField']").html(doc.getDocLabel("page_parameter", "editparameter_field"));
+    $("[name='parameterField']").html(doc.getDocLabel("page_parameter", "parameter_field"));
+    $("[name='cerberusField']").html(doc.getDocLabel("page_parameter", "cerberus_field"));
+    $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field"));
+    $("[name='descriptionField']").html(doc.getDocLabel("page_parameter", "description_field"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_parameter", "close_btn"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_parameter", "save_btn"));
+
     displayHeaderLabel(doc);
     displayFooter(doc);
     displayGlobalLabel(doc);
-}
-
-function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
-}
-
-function aoColumnsFunc(tableId) {
-    var doc = new Doc();
-    var aoColumns = [
-        {"data": null,
-            "bSortable": false,
-            "bSearchable": false,
-            "title": doc.getDocLabel("page_parameter", "button_col"),
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
-
-                var editParameter = '<button id="editParameter" onclick="editEntryClick(\'' + obj["param"] + '\', \'' + encodeURI(obj["valueCerberus"]) + '\', \'' + encodeURI(obj["valueSystem"]) + '\', \'' + obj["description"] + '\');"\n\
-                                        class="editApplication btn btn-default btn-xs margin-right5" \n\
-                                        name="editParameter" title="' + doc.getDocLabel("page_parameter", "button_edit") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-pencil"></span></button>';
-
-                return '<div class="center btn-group width150">' + editParameter + '</div>';
-
-            },
-            "width": "50px"
-        },
-        {"data": "param", "sName": "Cerberus.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
-        {"data": "valueCerberus", "sName": "Cerberus.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
-        {"data": "valueSystem", "sName": "System.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
-        {"data": "description", "sName": "Cerberus.description", "title": doc.getDocLabel("page_parameter", "description_col")}
-    ];
-    return aoColumns;
 }
 
 function renderOptionsForApplication(data) {
@@ -81,6 +60,17 @@ function renderOptionsForApplication(data) {
         var contentToAdd = "<div class='marginBottom10' style='height:25px;' id='blankSpace'></div>";
         $("#parametersTable_wrapper div#parametersTable_length").before(contentToAdd);
     }
+}
+
+function editEntryClick(param, cerberusValue, systemValue, description) {
+    var formEdit = $('#editParameterModal');
+
+    formEdit.find("#parameter").prop("value", param);
+    formEdit.find("#cerberusValue").prop("value", decodeURI(cerberusValue));
+    formEdit.find("#systemValue").prop("value", decodeURI(systemValue));
+    formEdit.find("#description").prop("value", description);
+
+    formEdit.modal('show');
 }
 
 function editEntryModalSaveHandler() {
@@ -120,13 +110,36 @@ function editEntryModalCloseHandler() {
     clearResponseMessage($('#editParameterModal'));
 }
 
-function editEntryClick(param, cerberusValue, systemValue, description) {
-    var formEdit = $('#editParameterModal');
+function getSys() {
+    var sel = document.getElementById("MySystem");
+    var selectedIndex = sel.selectedIndex;
+    return sel.options[selectedIndex].value;
+}
 
-    formEdit.find("#parameter").prop("value", param);
-    formEdit.find("#cerberusValue").prop("value", decodeURI(cerberusValue));
-    formEdit.find("#systemValue").prop("value", decodeURI(systemValue));
-    formEdit.find("#description").prop("value", description);
+function aoColumnsFunc(tableId) {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": null,
+            "bSortable": false,
+            "bSearchable": false,
+            "title": doc.getDocLabel("page_parameter", "button_col"),
+            "mRender": function (data, type, obj) {
+                var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-    formEdit.modal('show');
+                var editParameter = '<button id="editParameter" onclick="editEntryClick(\'' + obj["param"] + '\', \'' + encodeURI(obj["valueCerberus"]) + '\', \'' + encodeURI(obj["valueSystem"]) + '\', \'' + obj["description"] + '\');"\n\
+                                        class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                        name="editParameter" title="' + doc.getDocLabel("page_parameter", "button_edit") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-pencil"></span></button>';
+
+                return '<div class="center btn-group width150">' + editParameter + '</div>';
+
+            },
+            "width": "50px"
+        },
+        {"data": "param", "sName": "Cerberus.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
+        {"data": "valueCerberus", "sName": "Cerberus.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
+        {"data": "valueSystem", "sName": "System.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
+        {"data": "description", "sName": "Cerberus.description", "title": doc.getDocLabel("page_parameter", "description_col")}
+    ];
+    return aoColumns;
 }

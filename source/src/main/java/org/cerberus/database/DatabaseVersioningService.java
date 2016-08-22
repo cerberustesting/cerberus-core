@@ -5963,6 +5963,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_notification','Cc','','en','Copy','')");
         SQLS.append(",('page_notification','Subject','','en','Subject','')");
         SQLS.append(",('page_notification','To','','en','To','')");
+        SQLS.append(",('page_parameter', 'allParameters', '', 'en', 'Parameters', '')");
+        SQLS.append(",('page_parameter', 'allParameters', '', 'fr', 'Paramètres', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'en', 'Save', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'fr', 'Sauvegarder', '')");
+        SQLS.append(",('page_parameter', 'close_btn', '', 'en', 'Close', '')");
+        SQLS.append(",('page_parameter', 'close_btn', '', 'fr', 'Fermer', '')");
+        SQLS.append(",('page_parameter', 'editparameter_field', '', 'en', 'Edit Parameter', '')");
+        SQLS.append(",('page_parameter', 'editparameter_field', '', 'fr', 'Modifier le paramètre', '')");
+        SQLS.append(",('page_parameter', 'description_field', '', 'en', 'Description', '')");
+        SQLS.append(",('page_parameter', 'description_field', '', 'fr', 'Description', '')");
+        SQLS.append(",('page_parameter', 'system_field', '', 'en', 'System Value', '')");
+        SQLS.append(",('page_parameter', 'system_field', '', 'fr', 'Valeur du Système', '')");
+        SQLS.append(",('page_parameter', 'cerberus_field', '', 'en', 'Cerberus Value', '')");
+        SQLS.append(",('page_parameter', 'cerberus_field', '', 'fr', 'Valeur de Cerberus', '')");
+        SQLS.append(",('page_parameter', 'parameter_field', '', 'en', 'Parameter', '')");
+        SQLS.append(",('page_parameter', 'parameter_field', '', 'fr', 'Paramètre', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'en', 'Parameter', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'fr', 'Paramètre', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'en', 'Cerberus Value', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'fr', 'Valeur de Cerberus', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'en', 'System Value', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'fr', 'Valeur du système', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'en', 'Description', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'fr', 'Description', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'en', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'fr', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'en', 'Edit Parameter', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'fr', 'Editer le parmètre', '')");
         SQLS.append(",('page_project','button_create','','en','Create new Project','')");
         SQLS.append(",('page_project','button_create','','fr','Créer un nouveau Projet','')");
         SQLS.append(",('page_project','button_delete','','en','Delete Project','')");
@@ -6469,28 +6497,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
         SQLS.append(" ('', 'cerberus_actionexecutesqlstoredprocedure_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlStoredProcedure will fail.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation for Parameters
-        //-- ------------------------ 863
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_parameter', 'allParameters', '', 'en', 'Parameters', '')");
-        SQLS.append(",('page_parameter', 'allParameters', '', 'fr', 'Paramètres', '')");
-        SQLS.append(",('page_parameter', 'save_btn', '', 'en', 'Save', '')");
-        SQLS.append(",('page_parameter', 'save_btn', '', 'fr', 'Sauvegarder', '')");
-        SQLS.append(",('page_parameter', 'parameter_col', '', 'en', 'Parameter', '')");
-        SQLS.append(",('page_parameter', 'parameter_col', '', 'fr', 'Paramètre', '')");
-        SQLS.append(",('page_parameter', 'cerberus_col', '', 'en', 'Cerberus Value', '')");
-        SQLS.append(",('page_parameter', 'cerberus_col', '', 'fr', 'Valeur de Cerberus', '')");
-        SQLS.append(",('page_parameter', 'system_col', '', 'en', 'System Value', '')");
-        SQLS.append(",('page_parameter', 'system_col', '', 'fr', 'Valeur du système', '')");
-        SQLS.append(",('page_parameter', 'description_col', '', 'en', 'Description', '')");
-        SQLS.append(",('page_parameter', 'description_col', '', 'fr', 'Description', '')");
-        SQLS.append(",('page_parameter', 'button_col', '', 'en', 'Actions', '')");
-        SQLS.append(",('page_parameter', 'button_col', '', 'fr', 'Actions', '')");
-        SQLS.append(",('page_parameter', 'button_edit', '', 'en', 'Edit Parameter', '')");
-        SQLS.append(",('page_parameter', 'button_edit', '', 'fr', 'Editer le parmètre', '')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
