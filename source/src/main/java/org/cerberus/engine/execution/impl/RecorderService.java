@@ -25,20 +25,25 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.xml.soap.SOAPMessage;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.webdriver.impl.WebDriverService;
-import org.cerberus.util.FileUtil;
 import org.cerberus.util.SoapUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,12 +57,25 @@ public class RecorderService implements IRecorderService {
     @Autowired
     IParameterService parameterService;
     @Autowired
+    ITestCaseExecutionFileService testCaseExecutionFileService;
+    @Autowired
     WebDriverService webdriverService;
+    @Autowired
+    IDataLibService dataLibService;
+
+    private String rootFolder; // Defined from parameter.
+    private String subFolder; // Calculated from execution ID in order to spread the files on different folder.
+    private String subFolderURL; // Same as subFolder but with / as separator.
+    private String fullPath; // Full folder path where the fle will be stored.
+    private String fileName; // Final filename.
+    private String fullFilename; // Complete filename with system dependant File Separator. --> Used to save the file on FileSystem.
+    private String relativeFilenameURL; // relative filename with / as a separator (from root folder). --> Saved into database.
+    private String level; // Level where the file will be stored.
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(RecorderService.class);
 
     @Override
-    public void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    public void recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -84,9 +102,9 @@ public class RecorderService implements IRecorderService {
         }
 
         /**
-         * Screenshot only done when : screenshot parameter is eq to 2 or
-         * screenshot parameter is eq to 1 with the correct doScreenshot flag on
-         * the last action MessageEvent.
+         * SCREENSHOT Management. Screenshot only done when : screenshot
+         * parameter is eq to 2 or screenshot parameter is eq to 1 with the
+         * correct doScreenshot flag on the last action MessageEvent.
          */
         if ((myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot))) {
 
@@ -98,36 +116,20 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    String screenshotPath = recordScreenshotAndGetName(myExecution, testCaseStepActionExecution, controlNumber);
-                    if (testCaseStepActionControlExecution == null) {
-                        testCaseStepActionExecution.setScreenshotFilename(screenshotPath);
-                    } else {
-                        testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
-                    }
+                    recordScreenshot(myExecution, testCaseStepActionExecution, controlNumber);
                 } else {
                     LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
                 }
 
-            } else if (applicationType.equals("WS")) {
-                //Record the Request and Response.
-                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-                String name = testCaseStepActionExecution.getProperty();
-                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
-                String responseFilePath = recordXMLAndGetName(tce.getId(), name, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
-                String requestFilePath = recordXMLAndGetName(tce.getId(), name + "_request", SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
-
-                if (testCaseStepActionControlExecution == null) {
-                    testCaseStepActionExecution.setScreenshotFilename(responseFilePath);
-                } else {
-                    testCaseStepActionControlExecution.setScreenshotFilename(responseFilePath);
-                }
             }
         } else {
             LOG.debug(logPrefix + "Not Doing screenshot because of the screenshot parameter or flag on the last Action result.");
         }
 
         /**
-         * Get PageSource if requested by the last Action MessageEvent.
+         * PAGESOURCE management. Get PageSource if requested by the last Action
+         * MessageEvent.
+         *
          */
         if ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))) {
 
@@ -137,49 +139,32 @@ public class RecorderService implements IRecorderService {
                  * connectivity with selenium.
                  */
                 if (!returnCode.equals("CA")) {
-                    String psPath = recordPageSourceAndGetName(myExecution, testCaseStepActionExecution, controlNumber);
-                    if (testCaseStepActionControlExecution == null) {
-                        testCaseStepActionExecution.setPageSourceFilename(psPath);
-                    } else {
-                        testCaseStepActionControlExecution.setPageSourceFilename(psPath);
-                    }
+                    recordPageSource(myExecution, testCaseStepActionExecution, controlNumber);
                 } else {
                     LOG.debug(logPrefix + "Not Doing screenshot because connectivity with selenium server lost.");
-                }
-            } else if (applicationType.equals("WS")) {
-                //Record the Request and Response.
-                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-                String name = testCaseStepActionExecution.getProperty();
-                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
-                String responseFilePath = recordXMLAndGetName(tce.getId(), name, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
-                String requestFilePath = recordXMLAndGetName(tce.getId(), name + "_request", SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
-
-                if (testCaseStepActionControlExecution == null) {
-                    testCaseStepActionExecution.setPageSourceFilename(responseFilePath);
-                } else {
-                    testCaseStepActionControlExecution.setPageSourceFilename(responseFilePath);
                 }
             }
         } else {
             LOG.debug(logPrefix + "Not getting page source because of the pageSource parameter or flag on the last Action result.");
         }
 
-        if (testCaseStepActionExecution.getActionResultMessage().isGetPageSource()) {
-            if (testCaseStepActionExecution.getAction().startsWith("callSoap")) {
-                //Record the Request and Response.
-                TestCaseExecution tce = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-                String name = testCaseStepActionExecution.getProperty();
-                SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
-                String responseFilePath = recordXMLAndGetName(tce.getId(), name, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
-                String requestFilePath = recordXMLAndGetName(tce.getId(), name + "_request", SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
-
-                testCaseStepActionExecution.setScreenshotFilename(responseFilePath);
-            }
+        /**
+         * Last call XML SOURCE management. Get Source of the XML if requested
+         * by the last Action or control MessageEvent.
+         *
+         */
+        if (applicationType.equals("WS")
+                && ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))
+                || (myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot)))) {
+            //Record the Request and Response.
+            SOAPExecution se = (SOAPExecution) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastSOAPCalled().getItem();
+            recordSOAPCall(myExecution, testCaseStepActionExecution, controlNumber, se);
         }
+
     }
 
     @Override
-    public String recordScreenshotAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
+    public void recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
 
         String test = testCaseStepActionExecution.getTest();
         String testCase = testCaseStepActionExecution.getTestCase();
@@ -192,10 +177,6 @@ public class RecorderService implements IRecorderService {
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - [" + test + " - " + testCase + " - step: " + step + " action: " + sequence + "] ";
 
         LOG.debug(logPrefix + "Doing screenshot.");
-        /**
-         * Generate FileName
-         */
-        String screenshotFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "jpg");
 
         /**
          * Take Screenshot and write it
@@ -203,27 +184,31 @@ public class RecorderService implements IRecorderService {
         File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
         if (newImage != null) {
             try {
-                String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-                File dir = new File(imgPath + runId);
+                this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "screenshot", "jpg");
+                LOG.debug(logPrefix + "FullPath " + fullPath);
+
+                File dir = new File(fullPath);
                 if (!dir.exists()) {
-                    LOG.debug(logPrefix + "Create directory for execution " + runId);
+                    LOG.debug(logPrefix + "Create directory for execution " + fullPath);
                     dir.mkdirs();
                 }
-                long maxSizeParam = 1048576; //default max size that should be saved in the database
-                Parameter paramMaxSize = parameterService.findParameterByKey("cerberus_screenshot_max_size", "");
-                if (paramMaxSize != null) {
-                    maxSizeParam = Long.valueOf(paramMaxSize.getValue());
-                }
+                // Getting the max size of the screenshot.
+                long maxSizeParam = parameterService.getParameterByKey("cerberus_screenshot_max_size", "", 1048576);
                 if (maxSizeParam < newImage.length()) {
-                    LOG.warn(logPrefix + "Screen-shot size exceeds the maximum defined in configurations " + newImage.getName() + " destination: " + screenshotFilename);
+                    LOG.warn(logPrefix + "Screen-shot size exceeds the maximum defined in configurations " + newImage.getName() + " destination: " + relativeFilenameURL);
                 }
                 //copies the temp file to the execution file
-                FileUtils.copyFile(newImage, new File(imgPath + runId + File.separator + screenshotFilename));
-                LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + screenshotFilename);
+                FileUtils.copyFile(newImage, new File(fullFilename));
+                LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + relativeFilenameURL);
+
+                // Index file created to database.
+                testCaseExecutionFileService.create(testCaseExecution.getId(), level, "Screenshot", relativeFilenameURL, "JPG", "");
 
                 //deletes the temporary file
                 FileUtils.forceDelete(newImage);
                 LOG.debug(logPrefix + "Temp file deleted with success " + newImage.getName());
+                LOG.debug(logPrefix + "Screenshot done in : " + relativeFilenameURL);
+
             } catch (IOException ex) {
                 LOG.error(logPrefix + ex.toString());
             } catch (CerberusException ex) {
@@ -232,40 +217,10 @@ public class RecorderService implements IRecorderService {
         } else {
             LOG.warn(logPrefix + "Screenshot returned null.");
         }
-
-        String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + screenshotFilename;
-        LOG.debug(logPrefix + "Screenshot done in : " + screenshotPath);
-
-        return screenshotPath;
-
     }
 
     @Override
-    public String recordXMLAndGetName(Long executionId, String fileName, String content) {
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
-
-        String xmlFilename = FileUtil.generateScreenshotFilename(null, null, null, null, null, fileName, "xml");
-        StringBuilder filePath = new StringBuilder();
-
-        try {
-            filePath.append(parameterService.findParameterByKey("cerberus_picture_path", "").getValue());
-            filePath.append(File.separator);
-            filePath.append(executionId);
-            filePath.append(File.separator);
-        } catch (CerberusException ex) {
-            LOG.error(logPrefix + ex.toString());
-        }
-
-        recordFile(filePath.toString(), xmlFilename, content);
-
-        String xmlFullFilename = Long.toString(executionId) + File.separator + xmlFilename;
-
-        return xmlFullFilename;
-    }
-
-    @Override
-    public String recordPageSourceAndGetName(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
+    public void recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -277,109 +232,189 @@ public class RecorderService implements IRecorderService {
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
 
-        String pageSourceFilename = FileUtil.generateScreenshotFilename(test, testCase, step, sequence, controlString, null, "html");
-
-        String imgPath = "";
         try {
-            imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+            this.initFilenames(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), test, testCase, step, sequence, controlString, null, 0, "pagesource", "html");
+            File dir = new File(fullPath);
+            dir.mkdirs();
+
+            File file = new File(fullFilename);
+
+            FileOutputStream fileOutputStream;
+            try {
+                fileOutputStream = new FileOutputStream(file);
+                fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
+                fileOutputStream.close();
+
+                // Index file created to database.
+                testCaseExecutionFileService.create(testCaseExecution.getId(), level, "Page Source", relativeFilenameURL, "HTML", "");
+
+            } catch (FileNotFoundException ex) {
+                LOG.error(logPrefix + ex.toString());
+
+            } catch (IOException ex) {
+                LOG.error(logPrefix + ex.toString());
+            }
+
+            LOG.debug(logPrefix + "Page Source file saved in : " + relativeFilenameURL);
         } catch (CerberusException ex) {
             LOG.error(logPrefix + ex.toString());
         }
-        File dir = new File(imgPath + testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId());
-        dir.mkdirs();
-
-        File file = new File(dir.getAbsolutePath() + File.separator + pageSourceFilename);
-
-        FileOutputStream fileOutputStream;
-        try {
-            fileOutputStream = new FileOutputStream(file);
-            fileOutputStream.write(this.webdriverService.getPageSource(testCaseExecution.getSession()).getBytes());
-            fileOutputStream.close();
-        } catch (FileNotFoundException ex) {
-            LOG.error(logPrefix + ex.toString());
-        } catch (IOException ex) {
-            LOG.error(logPrefix + ex.toString());
-        }
-
-        String screenshotPath = Long.toString(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId()) + File.separator + pageSourceFilename;
-        LOG.debug(logPrefix + "Page Source file saved in : " + screenshotPath);
-
-        return screenshotPath;
     }
 
     @Override
-    public String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution) {
+    public void recordSOAPCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, SOAPExecution se) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        String test = testCaseExecution.getTest();
+        String testCase = testCaseExecution.getTestCase();
+        String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = testCaseExecution.getId();
+
+        String xmlFullFilename = null;
+
+        try {
+
+            // REQUEST.
+            this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "request", "xml");
+            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+
+            // Index file created to database.
+            testCaseExecutionFileService.create(runId, level, "SOAP Request", relativeFilenameURL, "XML", "");
+
+            // RESPONSE.
+            this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
+            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+
+            // Index file created to database.
+            testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+
+            xmlFullFilename = relativeFilenameURL;
+
+        } catch (CerberusException ex) {
+            LOG.error(logPrefix + ex.toString());
+        }
+    }
+
+    @Override
+    public void recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPExecution se) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        try {
+
+            // REQUEST.
+            this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "request", "xml");
+            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
+
+            // Index file created to database.
+            testCaseExecutionFileService.create(runId, level, "SOAP Request", relativeFilenameURL, "XML", "");
+
+            // RESPONSE.
+            this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "response", "xml");
+            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+
+            // Index file created to database.
+            testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+
+        } catch (CerberusException ex) {
+            LOG.error(logPrefix + "SOAP XML file was not saved due to unexpected error." + ex.toString());
+        }
+    }
+
+    @Override
+    public void recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        try {
+            JSONArray jsonResult = null;
+            jsonResult = dataLibService.convertToJSONObject(result);
+
+            // RESULT.
+            this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "result", "json");
+            recordFile(fullPath, fileName, jsonResult.toString());
+
+            // Index file created to database.
+            testCaseExecutionFileService.create(runId, level, "Result", relativeFilenameURL, "JSON", "");
+
+        } catch (CerberusException | JSONException ex) {
+            LOG.error(logPrefix + "TestDataLib file was not saved due to unexpected error." + ex.toString());
+        }
+    }
+
+    @Override
+    public void recordSeleniumLog(TestCaseExecution testCaseExecution) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
         if (testCaseExecution.getApplication().getType().equals("GUI")) {
+
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
-                LOG.info(logPrefix + "Starting to save File.");
+                LOG.debug(logPrefix + "Starting to save Selenium log file.");
 
-                String logFilename = "selenium_log.txt";
-
-                String imgPath = "";
                 try {
-                    imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+                    this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, 0, "selenium_log", "txt");
+
+                    File dir = new File(fullPath);
+                    dir.mkdirs();
+
+                    File file = new File(fullFilename);
+
+                    FileOutputStream fileOutputStream;
+                    try {
+                        fileOutputStream = new FileOutputStream(file);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        DataOutputStream out = new DataOutputStream(baos);
+                        for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
+                            out.writeBytes(element);
+                        }
+                        byte[] bytes = baos.toByteArray();
+                        fileOutputStream.write(bytes);
+                        out.close();
+                        baos.close();
+                        fileOutputStream.close();
+
+                        // Index file created to database.
+                        testCaseExecutionFileService.create(testCaseExecution.getId(), level, "Selenium log", relativeFilenameURL, "TXT", "");
+
+                    } catch (FileNotFoundException ex) {
+                        LOG.error(logPrefix + ex.toString());
+                    } catch (IOException ex) {
+                        LOG.error(logPrefix + ex.toString());
+                    }
+
+                    LOG.debug(logPrefix + "Selenium log recorded in : " + relativeFilenameURL);
+
                 } catch (CerberusException ex) {
                     LOG.error(logPrefix + ex.toString());
                 }
-                File dir = new File(imgPath + testCaseExecution.getId());
-                dir.mkdirs();
-
-                File file = new File(dir.getAbsolutePath() + File.separator + logFilename);
-
-                FileOutputStream fileOutputStream;
-                try {
-                    fileOutputStream = new FileOutputStream(file);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(baos);
-                    for (String element : this.webdriverService.getSeleniumLog(testCaseExecution.getSession())) {
-                        out.writeBytes(element);
-                    }
-                    byte[] bytes = baos.toByteArray();
-                    fileOutputStream.write(bytes);
-                    out.close();
-                    baos.close();
-                    fileOutputStream.close();
-                } catch (FileNotFoundException ex) {
-                    LOG.error(logPrefix + ex.toString());
-                } catch (IOException ex) {
-                    LOG.error(logPrefix + ex.toString());
-                }
-
-                String seleniumLogPath = Long.toString(testCaseExecution.getId()) + File.separator + logFilename;
-                LOG.debug(logPrefix + "Log recorded in : " + logFilename);
-
-                return seleniumLogPath;
             }
         } else {
             LOG.debug(logPrefix + "Selenium Log not recorded because test on non GUI application");
         }
-        return null;
     }
 
     @Override
-    public String recordSoapMessageAndGetPath(Long executionId, SOAPMessage soapMessage, String fileName) {
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
-
-        //list of entries
-        String path = "";
+    public void recordUploadedFile(long executionId, TestCaseStepActionExecution tcsae, FileItem uploadedFile) {
+        String UploadedfileName = new File(uploadedFile.getName()).getName();
 
         try {
-            String mes = SoapUtil.convertSoapMessageToString(soapMessage);
+            // UPLOADED File.
+            this.initFilenames(executionId, tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStep()), String.valueOf(tcsae.getSequence()), null, null, 0, "image", "jpg");
+            File storeFile = new File(fullFilename);
+            // saves the file on disk
+            uploadedFile.write(storeFile);
 
-            //name of the generated files
-            path = parameterService.findParameterByKey("cerberus_picture_path", "").getValue() + executionId + File.separator;
+            // Index file created to database.
+            testCaseExecutionFileService.create(executionId, level, "Image", relativeFilenameURL, "JPG", "");
 
-            //save the request and response files
-            recordFile(path, fileName, mes);
-        } catch (CerberusException ex) {
-            LOG.error(logPrefix + "SOAP XML file was not saved due to unexpected error." + ex.toString());
+        } catch (Exception ex) {
+            LOG.error("File: " + UploadedfileName + " failed to be uploaded/saved: " + ex.toString());
         }
 
-        return path + fileName;
     }
 
     /**
@@ -412,4 +447,104 @@ public class RecorderService implements IRecorderService {
         }
     }
 
+    private void initFilenames(long exeID, String test, String testCase, String step, String sequence, String controlString, String property, int propertyIndex, String filename, String extention) throws CerberusException {
+
+        /**
+         * Root folder initialisation. The root folder is confugures from the
+         * parameter cerberus_mediastorage_path.
+         */
+        rootFolder = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
+        rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
+
+        /**
+         * SubFolder. Subfolder is split in order to reduce the nb of folder
+         * within a folder. 2 levels of 2 digits each. he last level is the
+         * execution id.
+         */
+        subFolder = getStorageSubFolder(exeID);
+        subFolderURL = getStorageSubFolderURL(exeID);
+
+        /**
+         * FullPath. Concatenation of the rootfolder and subfolder.
+         */
+        fullPath = rootFolder + subFolder;
+
+        /**
+         * Filename. If filename is not define, we assign it from the test,
+         * testcase, step action and control.
+         */
+        StringBuilder sbfileName = new StringBuilder();
+        if (!StringUtil.isNullOrEmpty(test)) {
+            sbfileName.append(test).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(testCase)) {
+            sbfileName.append(testCase).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(step)) {
+            sbfileName.append("S").append(step).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(sequence)) {
+            sbfileName.append("A").append(sequence).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(controlString)) {
+            sbfileName.append("C").append(controlString).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(property)) {
+            sbfileName.append(property).append("-");
+        }
+        if (propertyIndex != 0) {
+            sbfileName.append(propertyIndex).append("-");
+        }
+        if (!StringUtil.isNullOrEmpty(filename)) {
+            sbfileName.append(filename).append("-");
+        }
+        fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
+        fileName = fileName.replace(" ", "");
+
+        /**
+         * Level. 5 levels possible. Keys are defined seperated by -. 1/ Execution
+         * level --> emptyString. 2/ Step level --> test+testcase+Step 3/ Action level
+         * --> test+testcase+Step+action 4/ Control level -->
+         * test+testcase+Step+action+control 5/ Property level --> property+index
+         */
+        level = "";
+        if (!(StringUtil.isNullOrEmpty(controlString))) {
+            level = test + "-" + testCase + "-" + step + "-" + sequence + "-" + controlString;
+        } else if (!(StringUtil.isNullOrEmpty(sequence))) {
+            level = test + "-" + testCase + "-" + step + "-" + sequence;
+        } else if (!(StringUtil.isNullOrEmpty(controlString))) {
+            level = test + "-" + testCase + "-" + step;
+        } else if (!(StringUtil.isNullOrEmpty(property))) {
+            level = property + "-" + propertyIndex;
+        }
+
+        /**
+         * Final Filename with full path.
+         */
+        fullFilename = rootFolder + File.separator + subFolder + File.separator + fileName;
+        relativeFilenameURL = subFolderURL + "/" + fileName;
+
+    }
+
+    @Override
+    public String getStorageSubFolderURL(long exeID) {
+        String idString = String.valueOf(exeID);
+        String subFolderResult;
+        if (idString.length() >= 4) {
+            return idString.substring((idString.length() - 2)) + "/" + idString.substring((idString.length() - 4), (idString.length() - 2)) + "/" + idString;
+        } else {
+            return idString;
+        }
+    }
+
+    @Override
+    public String getStorageSubFolder(long exeID) {
+        String idString = String.valueOf(exeID);
+        String subFolderResult;
+        if (idString.length() >= 4) {
+            return idString.substring((idString.length() - 2)) + File.separator + idString.substring((idString.length() - 4), (idString.length() - 2)) + File.separator + idString;
+        } else {
+            return idString;
+        }
+    }
 }

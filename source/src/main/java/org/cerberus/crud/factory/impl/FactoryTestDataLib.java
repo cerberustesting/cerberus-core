@@ -35,7 +35,7 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
     public TestDataLib create(Integer testDataLibID, String name, String system, String environment,
             String country, String group, String type, String database,
             String script, String databaseUrl, String servicePath, String method,
-            String envelope, String csvUrl, String separator, String description, String creator, Timestamp created,
+            String envelope, String databaseCsv, String csvUrl, String separator, String description, String creator, Timestamp created,
             String LastModifier, Timestamp lastModified, String subDataValue, String subDataColumn, String subDataParsingAnswer, String subDataColumnPosition) {
 
         TestDataLib newData = new TestDataLib();
@@ -54,6 +54,7 @@ public class FactoryTestDataLib implements IFactoryTestDataLib {
         newData.setServicePath(servicePath);
         newData.setMethod(method);
         newData.setEnvelope(envelope);
+        newData.setDatabaseCsv(databaseCsv);
         newData.setCsvUrl(csvUrl);
         newData.setSeparator(separator);
         newData.setDescription(description);

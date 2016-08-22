@@ -247,9 +247,10 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String database = tcsaJson.getString("database");
             String connectionPool = tcsaJson.getString("connectionPoolName");
             String soapUrl = tcsaJson.getString("soapUrl");
+            String csvUrl = tcsaJson.getString("csvUrl");
 
             if (!delete) {
-                CountryEnvironmentDatabase ceb = cebFactory.create(system, country, environment, database, connectionPool, soapUrl);
+                CountryEnvironmentDatabase ceb = cebFactory.create(system, country, environment, database, connectionPool, soapUrl, csvUrl);
                 cebList.add(ceb);
             }
         }
@@ -269,9 +270,13 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String domain = tcsaJson.getString("domain");
             String url = tcsaJson.getString("url");
             String urlLogin = tcsaJson.getString("urlLogin");
+            String var1 = tcsaJson.getString("var1");
+            String var2 = tcsaJson.getString("var2");
+            String var3 = tcsaJson.getString("var3");
+            String var4 = tcsaJson.getString("var4");
 
             if (!delete) {
-                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4);
                 ceaList.add(cea);
             }
         }

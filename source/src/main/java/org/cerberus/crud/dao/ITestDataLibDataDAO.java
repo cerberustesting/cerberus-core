@@ -52,10 +52,10 @@ public interface ITestDataLibDataDAO {
      * @param testDataLibID resultSet
      * @param columnEmpty
      * @param parsingAnswerEmpty
-     * @param valueEmpty
+     * @param columnPositionEmpty
      * @return
      */
-    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty);
+    AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty);
 
     /**
      *
@@ -92,14 +92,6 @@ public interface ITestDataLibDataDAO {
     Answer create(TestDataLibData testDataLibData);
 
     /**
-     * Batch that inserts several records in the table TestDataLibData
-     *
-     * @param subdataSet - entries to insert
-     * @return Answer indicating the status of the operation
-     */
-    Answer create(List<TestDataLibData> subdataSet);
-
-    /**
      *
      * @param testDataLibData
      * @return
@@ -107,35 +99,10 @@ public interface ITestDataLibDataDAO {
     Answer update(TestDataLibData testDataLibData);
 
     /**
-     * Batch that updates several records in the table TestDataLibData.
-     *
-     * @param entriesToUpdate - entries to update
-     * @return Answer indicating the status of the operation
-     */
-    Answer update(ArrayList<TestDataLibData> entriesToUpdate);
-
-    /**
      *
      * @param testDataLibData
      * @return
      */
     Answer delete(TestDataLibData testDataLibData);
-
-    /**
-     * Deletes all testdatalibdata records that belong to a testdatalib.
-     *
-     * @param testDataLibID - remove all entries that belong to a testdatalib
-     * entry.
-     * @return Answer indicating the status of the operation
-     */
-    Answer delete(TestDataLib testDataLibID);
-
-    /**
-     * Batch that deletes several records in the table TestDataLibData.
-     *
-     * @param subdataSet
-     * @return
-     */
-    Answer delete(List<TestDataLibData> subdataSet);
 
 }

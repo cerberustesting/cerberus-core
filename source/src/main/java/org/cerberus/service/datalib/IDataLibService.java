@@ -20,10 +20,13 @@
 package org.cerberus.service.datalib;
 
 import java.util.HashMap;
+import java.util.List;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.AnswerList;
+import org.json.JSONArray;
+import org.json.JSONException;
 
 /**
  *
@@ -87,4 +90,11 @@ public interface IDataLibService {
      */
     AnswerList<HashMap<String, String>> filterWithNatureNOTINUSE(AnswerList<HashMap<String, String>> dataSet, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseProperties, int outPutDimention);
 
+    /**
+     *
+     * @param object
+     * @return
+     * @throws JSONException
+     */
+    public JSONArray convertToJSONObject(List<HashMap<String, String>> object) throws JSONException;    
 }

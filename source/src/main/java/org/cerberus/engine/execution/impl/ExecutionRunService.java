@@ -340,12 +340,17 @@ public class ExecutionRunService implements IExecutionRunService {
                 tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK));
             }
 
+            /**
+             * We record Selenium log at the end of the execution.
+             */
             try {
-                recorderService.recordSeleniumLogAndGetName(tCExecution);
+                recorderService.recordSeleniumLog(tCExecution);
             } catch (Exception ex) {
                 LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
             }
-
+            /**
+             * We stop the server session here (selenium for ex.).
+             */
             try {
                 tCExecution = this.stopTestCase(tCExecution);
             } catch (Exception ex) {
@@ -563,7 +568,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     /**
                      * Record Screenshot, PageSource
                      */
-                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+                    recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
 
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -584,7 +589,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(mes.getMessage()));
                     Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, mes.getDescription());
 
-                    recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+                    recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
 
                     MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
                     this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -625,7 +630,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Record Screenshot, PageSource
          */
         try {
-            recorderService.recordExecutionInformation(testCaseStepActionExecution, null);
+            recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
         } catch (Exception ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "Unable to record Screenshot/PageSource : " + ex.toString());
         }
@@ -716,7 +721,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Record Screenshot, PageSource
          */
-        recorderService.recordExecutionInformation(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+        recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
         /**
          * Register Control in database

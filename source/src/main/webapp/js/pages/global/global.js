@@ -45,7 +45,7 @@ function getSubDataLabel(type) {
     var doc = getDoc();
     var docTestdatalibdata = doc.testdatalibdata;
     var labelEntry = "Entry";
-    if (type === "STATIC") {
+    if (type === "INTERNAL") {
         labelEntry = displayDocLink(docTestdatalibdata.value);
     } else if (type === "SQL") {
         labelEntry = displayDocLink(docTestdatalibdata.column);
@@ -60,12 +60,17 @@ function getSubDataLabel(type) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} selectName value name of the select tag in the html
- * @param {String} idName value that filters the invariants that will be retrieved
+ * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
  * @param {String} forceReload true in order to force the reload of list from database.
- * @param {String} defaultValue [optional] to be selected
+ * @param {String} defaultValue [optional] value to be selected in combo.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, forceReload, defaultValue) {
+function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1) {
+    // Adding the specific value when defined.
+    if (addValue1 !== undefined) {
+        $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
+    }
 
 //    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
@@ -108,7 +113,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
     }
-
 }
 
 /**
@@ -1858,7 +1862,11 @@ function restrictCharacters(myfield, e, restrictionType) {
     else if (e.which)
         code = e.which;
     var character = String.fromCharCode(code);
+    if ((e.keyCode === 39) || (e.keyCode === 40)) {
+        return true;
+    }
     if (character.match(restrictionType)) {
+        console.debug("Key not allowed in that field. keyCode : '" + e.keyCode + "', character : '" + character + "', code : '" + code + "'");
         return false;
     } else {
         return true;

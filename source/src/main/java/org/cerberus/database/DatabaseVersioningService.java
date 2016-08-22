@@ -5139,6 +5139,210 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 832-833
         SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New cerberus_automaticexecution_enable parameter.
+        //-- ------------------------ 834
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_automaticexecution_enable', 'Y', 'Activation boolean in order to activate the automatic executions.Y value will allow execution. Any other value will stop the execution returning an error message..');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Description of cerberus_reporting_url parameter.
+        //-- ------------------------ 835
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `description`='URL to Cerberus reporting screen. the following variables can be used : %COUNTRY%, %ENV%,  %APPLI%, %BUILD% and %REV%.' WHERE `system`='' and`param`='cerberus_reporting_url';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Description of cerberus_reporting_url parameter.
+        //-- ------------------------ 836-839
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `ControlProperty` `ControlProperty` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NULL DEFAULT NULL  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add userPreferences column in user table.
+        //-- ------------------------ 840
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` ");
+        SQLS.append("ADD COLUMN `UserPreferences` TEXT NOT NULL AFTER `Email`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the getFromGroovy property type.
+        //-- ------------------------ 841
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromGroovy', '80', 'Getting value from a Groovy script', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add filter information for tooltip in documentation table.
+        //-- ------------------------ 842
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add comment on properties.
+        //-- ------------------------ 843-845
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add documentation to the getFromGroovy property type.
+        //-- ------------------------ 846
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean URLLOGIN column in countryenvironmentparameters table.
+        //-- ------------------------ 847-848
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE countryenvironmentparameters SET URLLOGIN = '' WHERE URLLOGIN is null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` CHANGE COLUMN `URLLOGIN` `URLLOGIN` VARCHAR(150) NOT NULL DEFAULT '' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add columns in testdatalib and testdatatlibdata to related to CSV type.
+        // Add CSV TESTDATATYPE invariant
+        // Add documentation
+        //-- ------------------------ 849-853
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `CsvUrl` VARCHAR(250) NOT NULL DEFAULT '' AFTER `Envelope`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalibdata` ");
+        SQLS.append("ADD COLUMN `ColumnPosition` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ParsingAnswer`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
+        SQLS.append("VALUES ('TESTDATATYPE', 'CSV', '40', 'Dynamic test data from CSV file');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("ADD COLUMN `Separator` VARCHAR(45) NOT NULL DEFAULT '' AFTER `CsvUrl`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // label table creation
+        //-- ------------------------ 854
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `label` (");
+        SQLS.append("`Id` INT NOT NULL AUTO_INCREMENT,");
+        SQLS.append("`System` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`Label` VARCHAR(100) NOT NULL DEFAULT '',");
+        SQLS.append("`Color` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`ParentLabel` VARCHAR(100) NOT NULL DEFAULT '',");
+        SQLS.append("`Description` VARCHAR(250) NOT NULL DEFAULT '',");
+        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`id`), ");
+        SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC))");
+        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        // testcaselabel table creation
+        //-- ------------------------ 855
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testcaselabel` (`Id` INT NOT NULL AUTO_INCREMENT,`Test` varchar(45) NOT NULL,`TestCase` varchar(45) NOT NULL,`LabelId` INT NOT NULL,");
+        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`Id`),");
+        SQLS.append(" UNIQUE KEY `IX_testcaselabel_03` (`Test`,`TestCase`,`LabelId`),");
+        SQLS.append(" KEY `IX_testcaselabel_01` (`Test`,`TestCase`),");
+        SQLS.append(" KEY `IX_testcaselabel_02` (`LabelId`),");
+        SQLS.append(" CONSTRAINT `FK_testcaselabel_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append(" CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE) ");
+        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation on label
+        //-- ------------------------ 856
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add a sample tag
+        //-- ------------------------ 857
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO label (`system`,`label`, `color`,`UsrCreated`, `UsrModif`) ");
+        SQLS.append("SELECT `value` , 'MyFirstLabel', '#000000' , 'admin' , 'admin' from invariant where idname = 'SYSTEM'");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the "rightClick" action
+        //-- ------------------------ 858-859
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'rightClick', '310', 'Right click on an element', 'Right click');\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation on new Test case list page buttons
+        //-- ------------------------ 860
+        SQLS = new StringBuilder();
+        SQLS.append("SELECT 1 FROM dual;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New sql timeout parameters.
+        //-- ------------------------ 861
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append(" ('', 'cerberus_propertyexternalsql_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL executed from a property calculation will fail.')");
+        SQLS.append(",('', 'cerberus_actionexecutesqlupdate_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlUpdate will fail.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Index column in testcaseexecutiondata in order to support multirow property.
+        //-- ------------------------ 862
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("ADD COLUMN `Index` INT NOT NULL DEFAULT 1 AFTER `Property`,");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`ID`, `Property`, `Index`) ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding generic variable columns on application environment table (countryenvironmentparameters).
+        //-- ------------------------ 863
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+        SQLS.append("ADD COLUMN `Var1` VARCHAR(200) NOT NULL DEFAULT '' AFTER `URLLOGIN`,");
+        SQLS.append("ADD COLUMN `Var2` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Var1`,");
+        SQLS.append("ADD COLUMN `Var3` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Var2`,");
+        SQLS.append("ADD COLUMN `Var4` VARCHAR(200) NOT NULL DEFAULT '' AFTER `Var3`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Make getFromDataLib official.
+        //-- ------------------------ 864
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties SET `Type` = 'getFromDataLib' where `Type` = 'getFromDataLib_BETA';");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 865-866
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -5238,6 +5442,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('countryenvironmentparameters','URL','','fr','Context Root','URL Racine de l\\'application. Equivalent du Context Root.<br>Ce chemin sera systematiquement ajouté aux chemin specifiés dans chaque cas de test.<br><br>Exemple :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>Lorsque l\\'on ouvrira <code class=\\'doc-url\\'>login.jsp</code>, Cerberus ouvrira  <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
         SQLS.append(",('countryenvironmentparameters','URLLOGIN','','en','Login URL','Path to login page. This path is used only when calling the <code class=\\'doc-action\\'>openUrlLogin</code> Action.')");
         SQLS.append(",('countryenvironmentparameters','URLLOGIN','','fr','URL de Login','Chemin vers la page de login. Ce chemin peut être utilisé à partir de l\\'action <code class=\\'doc-action\\'>openUrlLogin</code>.')");
+        SQLS.append(",('countryenvironmentparameters','Var1','','en','Variable 1','Variable can be used inside testcases with %SYS_APP_VAR1% variable.')");
+        SQLS.append(",('countryenvironmentparameters','Var1','','fr','Variable 1','Variable qui peut être utilisée dans les test avec : %SYS_APP_VAR1%')");
+        SQLS.append(",('countryenvironmentparameters','Var2','','en','Variable 2','Variable can be used inside testcases with %SYS_APP_VAR2% variable.')");
+        SQLS.append(",('countryenvironmentparameters','Var2','','fr','Variable 2','Variable qui peut être utilisée dans les test avec : %SYS_APP_VAR2%')");
+        SQLS.append(",('countryenvironmentparameters','Var3','','en','Variable 3','Variable can be used inside testcases with %SYS_APP_VAR3% variable.')");
+        SQLS.append(",('countryenvironmentparameters','Var3','','fr','Variable 3','Variable qui peut être utilisée dans les test avec : %SYS_APP_VAR3%')");
+        SQLS.append(",('countryenvironmentparameters','Var4','','en','Variable 4','Variable can be used inside testcases with %SYS_APP_VAR4% variable.')");
+        SQLS.append(",('countryenvironmentparameters','Var4','','fr','Variable 4','Variable qui peut être utilisée dans les test avec : %SYS_APP_VAR4%')");
         SQLS.append(",('countryenvlink','CountryLink','','en','Country linked','')");
         SQLS.append(",('countryenvlink','CountryLink','','fr','Pays lié','')");
         SQLS.append(",('countryenvlink','EnvironmentLink','','en','Environment linked','')");
@@ -5348,6 +5560,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('invariant','PRIORITY','','fr','Priorité','')");
         SQLS.append(",('invariant','SYSTEM','','en','System','')");
         SQLS.append(",('invariant','SYSTEM','','fr','Système','')");
+        SQLS.append(",('label','color','','en','Color','<p>This field is the color that will be applyied to the label. It could be any value understable by the brower.</p><p>Examples: blue |  #00FF00 | #000 </p>')");
+        SQLS.append(",('label','color','','fr','Couleur','<p>Cette valeur représente la couleur appliquée au label. Cela peut-être toute valeur reconnue comme couleur par le navigateur.</p><p>Exemples: blue |  #00FF00 | #000 </p>')");
+        SQLS.append(",('label','description','','en','Description','<p>Description of the label.</p>')");
+        SQLS.append(",('label','description','','fr','Description','<p>Description du label.</p>')");
+        SQLS.append(",('label','id','','en','ID','')");
+        SQLS.append(",('label','id','','fr','ID','')");
+        SQLS.append(",('label','label','','en','Label','<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>')");
+        SQLS.append(",('label','label','','fr','Label','<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>')");
+        SQLS.append(",('label','parentid','','en','Parent LabelID','<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>')");
+        SQLS.append(",('label','parentid','','fr','ID du label parent','<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>')");
+        SQLS.append(",('label','system','','en','System','')");
+        SQLS.append(",('label','system','','fr','Système','')");
         SQLS.append(",('logevent','action','','en','Action','Type of the action performed')");
         SQLS.append(",('logevent','action','','fr','Action','Type de l\\'action effetué')");
         SQLS.append(",('logevent','localip','','en','Local IP','IP of the Cerberus server that provided the service.')");
@@ -5549,7 +5773,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','btn_add','','fr','Ajouter','')");
         SQLS.append(",('page_global','btn_cancel','','en','Cancel','')");
         SQLS.append(",('page_global','btn_cancel','','fr','Annuler','')");
+        SQLS.append(",('page_global','btn_clearfilter','','en','','')");
+        SQLS.append(",('page_global','btn_clearfilter','','fr','','')");
         SQLS.append(",('page_global','btn_export','','en','Export','')");
+        SQLS.append(",('page_global','btn_restoreuserpreferences','','en','Load','')");
+        SQLS.append(",('page_global','btn_restoreuserpreferences','','fr','Charger','')");
+        SQLS.append(",('page_global','btn_savetableconfig','','en','Save','')");
+        SQLS.append(",('page_global','btn_savetableconfig','','fr','Sauvegarder','')");
+        SQLS.append(",('page_global','btn_showHideColumns','','en','Show/Hide','')");
+        SQLS.append(",('page_global','btn_showHideColumns','','fr','Afficher/Cacher','')");
         SQLS.append(",('page_global','buttonAdd','','en','Save','')");
         SQLS.append(",('page_global','buttonAdd','','fr','Sauvegarder','')");
         SQLS.append(",('page_global','buttonClose','','en','Close','')");
@@ -5579,6 +5811,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','')");
         SQLS.append(",('page_global','processing','','en','Processing…','')");
         SQLS.append(",('page_global','processing','','fr','Traitement en cours...','')");
+        SQLS.append(",('page_global','tooltip_clearfilter','','en','Clear filters applied','')");
+        SQLS.append(",('page_global','tooltip_clearfilter','','fr','Effacer les filtres appliqués','')");
+        SQLS.append(",('page_global','tooltip_column_filter_empty','','en','Filter',NULL)");
+        SQLS.append(",('page_global','tooltip_column_filter_empty','','fr','Filtre',NULL)");
+        SQLS.append(",('page_global','tooltip_column_filter_filtered','','en','Filtered value(s)',NULL)");
+        SQLS.append(",('page_global','tooltip_column_filter_filtered','','fr','Valeur(s) filtrée(s)',NULL)");
         SQLS.append(",('page_global','tooltip_delete_item','','en','This item will be removed from the database','')");
         SQLS.append(",('page_global','tooltip_delete_item','','fr','Cette ligne sera supprimée de la base','')");
         SQLS.append(",('page_global','tooltip_mark_remove','','en','Mark item to be removed from the database','')");
@@ -5587,6 +5825,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','tooltip_massAction','','fr','Selectionner ou Déselectionner tous pour Action en masse',NULL)");
         SQLS.append(",('page_global','tooltip_massActionLine','','en','Select to perform Mass Action on that line',NULL)");
         SQLS.append(",('page_global','tooltip_massActionLine','','fr','Selection pour Action en masse',NULL)");
+        SQLS.append(",('page_global','tooltip_restoreuserpreferences','','en','Restore the table configuration','Restore the table configuration from the user preferences. Filters and column display are available in user preferences')");
+        SQLS.append(",('page_global','tooltip_restoreuserpreferences','','fr','Restaurer la configuration de la table','Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur')");
+        SQLS.append(",('page_global','tooltip_savetableconfig','','en','Save the table configuration.','Save the table configuration. Filters and column display is stored in user preferences')");
+        SQLS.append(",('page_global','tooltip_savetableconfig','','fr','Sauvegarder la configuration de la table.','Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur')");
+        SQLS.append(",('page_global','tooltip_showHideColumns','','en','Show/hide columns','')");
+        SQLS.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','')");
         SQLS.append(",('page_global','unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!','')");
         SQLS.append(",('page_global','unexpected_error_message','','fr','Impossible de finaliser l\\'operation. Une erreur inattendue est survenue','')");
         SQLS.append(",('page_header','logout','','en','Logout','')");
@@ -5631,6 +5875,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuInvariantPrivate','','fr','Voir les Invariants Privés','')");
         SQLS.append(",('page_header','menuInvariantPublic','','en','Public Invariants Management','')");
         SQLS.append(",('page_header','menuInvariantPublic','','fr','Gestion des Invariants Publics','')");
+        SQLS.append(",('page_header','menuLabel','','en','Label','')");
+        SQLS.append(",('page_header','menuLabel','','fr','Label','')");
         SQLS.append(",('page_header','menuLogViewer','','en','Log Viewer','')");
         SQLS.append(",('page_header','menuLogViewer','','fr','Journal de Modifications','')");
         SQLS.append(",('page_header','menuParameter','','en','Parameters','')");
@@ -5697,6 +5943,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_integrationstatus','title','','fr','ETAT D\\'INTEGRATION','')");
         SQLS.append(",('page_integrationstatus','UAT','','en','UAT','Nb of UAT active <code class=\\'doc-crbvvoca\\'>environments</code> on that Specific Version.')");
         SQLS.append(",('page_integrationstatus','UAT','','fr','UAT','')");
+        SQLS.append(",('page_label','btn_create','','en','Create Label','')");
+        SQLS.append(",('page_label','btn_create','','fr','Créer un Label','')");
+        SQLS.append(",('page_label','btn_delete','','en','Delete Label','')");
+        SQLS.append(",('page_label','btn_delete','','fr','Effacer le Label','')");
+        SQLS.append(",('page_label','btn_edit','','en','Edit Label','')");
+        SQLS.append(",('page_label','btn_edit','','fr','Editer le Label','')");
+        SQLS.append(",('page_label','btn_view','','en','View Label','')");
+        SQLS.append(",('page_label','btn_view','','fr','Voir le Label','')");
+        SQLS.append(",('page_label','display','','en','Display','Display the generated label from the label and the color defined')");
+        SQLS.append(",('page_label','display','','fr','Affichage','Affiche le label généré à partir du label et de la couleur définis')");
+        SQLS.append(",('page_label','title','','en','LABEL','This page can be used in order to manage the labels.')");
+        SQLS.append(",('page_label','title','','fr','LABEL','Cette page permet de gérer et créer des labels.')");
         SQLS.append(",('page_logviewer','button_view','','en','Log entry detail','')");
         SQLS.append(",('page_logviewer','button_view','','fr','Detail du log','')");
         SQLS.append(",('page_logviewer','title','','en','LOG VIEWER','This page displays all the log messages from Cerberus.')");
@@ -5789,10 +6047,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist','btn_create','','fr','Créer un Cas de Test',NULL)");
         SQLS.append(",('page_testcaselist','btn_delete','','en','Delete Test Case','')");
         SQLS.append(",('page_testcaselist','btn_delete','','fr','Supprimer Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_duplicate','','en','Duplicate Test Case','')");
+        SQLS.append(",('page_testcaselist','btn_duplicate','','fr','Dupliquer le Cas de Test','')");
         SQLS.append(",('page_testcaselist','btn_edit','','en','Edit Test Case','')");
         SQLS.append(",('page_testcaselist','btn_edit','','fr','Modifer le Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_editLabel','','en','Edit Test Case labels','')");
+        SQLS.append(",('page_testcaselist','btn_editLabel','','fr','Modifier les étiquettes du Cas de Test','')");
         SQLS.append(",('page_testcaselist','btn_editScript','','en','Edit Test Case Script','')");
         SQLS.append(",('page_testcaselist','btn_editScript','','fr','Editer le script du Cas de Test','')");
+        SQLS.append(",('page_testcaselist','btn_runTest','','en','Run Test Case','')");
+        SQLS.append(",('page_testcaselist','btn_runTest','','fr','Exécuter le Cas de Test','')");
         SQLS.append(",('page_testcaselist','btn_view','','en','View Test Case','')");
         SQLS.append(",('page_testcaselist','btn_view','','fr','Voir Cas de Test','')");
         SQLS.append(",('page_testcaselist','filters','','en','Filters','Test filter')");
@@ -5845,6 +6109,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib_m_createlib','tooltip_defaultsubdata','','en','This is the default sub-data entry. It is created by default when a library is created.','')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','lbl_choose_group','','en','Choose an existing group','<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to select a name that was previously used to group other library entries from the selected type.</p> ')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','lbl_enter_group','','en','or enter new group','<p>Group is a name that associates entries that are at some extent correlated. This options allows the user to enter a new name that can be used to group entries from the selected type.</p> ')");
+        SQLS.append(",('page_testdatalib_m_createupdatelib','title_csv_configurations','','en','CSV configurations','')");
+        SQLS.append(",('page_testdatalib_m_createupdatelib','title_csv_configurations','','fr','Configuration CSV','')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','title_soap_configurations','','en','SOAP configurations','')");
         SQLS.append(",('page_testdatalib_m_createupdatelib','title_sql_configurations','','en','SQL configurations','')");
         SQLS.append(",('page_testdatalib_m_duplicatelib','title','','en','Duplicate Test Data Library','')");
@@ -5941,24 +6207,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcase','ToBuild','','en','To Sprint',' ')");
         SQLS.append(",('testcase','ToRev','','en','To Rev',' ')");
         SQLS.append(",('testcasecountryproperties','Database','','en','DTB','Database where the SQL will be executed.<br>This is only applicable if the property type is <code class=\\'doc-fixed\\'>executeSql</code> or <code class=\\'doc-fixed\\'>executeSqlFromLib</code>.')");
+        SQLS.append(",('testcasecountryproperties','Description','','en','Description','Description of the property.')");
         SQLS.append(",('testcasecountryproperties','Length','','en','Length','It is the length parameter of the property.<br>The parameter usage depend on the <code class=\\'doc-fixed\\'>type</code> of the property.')");
         SQLS.append(",('testcasecountryproperties','Nature','','en','Nature','Nature is the parameter which define the unicity of the property calculation for this testcase in every execution.<br><br>It can take the following values :')");
-        SQLS.append(",('testcasecountryproperties','Nature','NOTINUSE','en','Not currently beeing used.','<code class=\\'doc-fixed\\'>NOTINUSE</code> : When the property return a list of value, NOTINUSE will take a value on the list that is not already used on a pending execution in the last 10 minutes.')");
-        SQLS.append(",('testcasecountryproperties','Nature','RANDOM','en','Random values.','<code class=\\'doc-fixed\\'>RANDOM</code> : When the property return a list of value, RANDOM will take a random value on the list. It could be the same accross 2 different executions.')");
-        SQLS.append(",('testcasecountryproperties','Nature','RANDOMNEW','en','Always unique random values.','<code class=\\'doc-fixed\\'>RANDOMNEW</code> : When the property return a list of value, RANDOMNEW will take a random value on the list. RANDOMNEW garantee that the same value will never be selected twice on the same test case, country, environment and build (NB : revision is not part of the criterias).')");
-        SQLS.append(",('testcasecountryproperties','Nature','STATIC','en','No unicity rule.','<code class=\\'doc-fixed\\'>STATIC</code> : The property could/must be the same for all the executions')");
+        SQLS.append(",('testcasecountryproperties','Nature','NOTINUSE','en','Not currently beeing used values.','<code class=\\'doc-fixed\\'>NOTINUSE</code> : When the property return a list of value, NOTINUSE will take value(s) on the list that is not already used on a pending execution.<br><br>Criterias : Same property name, same country, same environment with execution status = PE (exclusing execution older than n minutes).<br> n can be cnfigured with cerberus_notinuse_timeout parameter.')");
+        SQLS.append(",('testcasecountryproperties','Nature','RANDOM','en','Random values.','<code class=\\'doc-fixed\\'>RANDOM</code> : When the property return a list of value, RANDOM will take a random value(s) on the list. It could be the same accross 2 different executions.')");
+        SQLS.append(",('testcasecountryproperties','Nature','RANDOMNEW','en','Always unique random values.','<code class=\\'doc-fixed\\'>RANDOMNEW</code> : When the property return a list of values, RANDOMNEW will take random value(s) on the list that were not already used.<br><br>Criterias : Same Propertyname, same country, same environment, same test, same testcase and same build.<br>NB : revision is not part of the criterias.')");
+        SQLS.append(",('testcasecountryproperties','Nature','STATIC','en','No unicity rule.','<code class=\\'doc-fixed\\'>STATIC</code> : No rules are defined. The property could be the same for all the executions')");
         SQLS.append(",('testcasecountryproperties','Property','','en','Property','This is the reference of the property.<br><br>A property is a data string that can be calculated in any moment during the <code class=\\'doc-crbvvoca\\'>test case</code>. Property can be defined directly inside the <code class=\\'doc-crbvvoca\\'>test case</code> but also calculated dynamically from an SQL or even read from the current html page.<br><br>When property is attached to an action, the associated action is executed only if the property exist in the country.<br><br>Once a property has been calculated, its value can be reused in any other property, action and controls using % before and after its reference.')");
         SQLS.append(",('testcasecountryproperties','RowLimit','','en','RowLimit','When the property calculation return a list of value, Rowlimit will limit the number of rows considered for random purposes.<br><br>For example, in 100 possible random values if rowLimit is 50, only the 50 first values will be accounted for random.')");
         SQLS.append(",('testcasecountryproperties','Type','','en','Type1','This is the type of command which will be used to calculate the property.<br><br>It can take the following values :')");
         SQLS.append(",('testcasecountryproperties','Type','executeSql','en','Get a value from an SQL execution.','<code class=\\'doc-fixed\\'>executeSQL</code> will allow you to execute an SQL Query (Value) on the DTB Database.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Value of the database that correspond to the connection pool where the SQL will be executed.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>SQL instruction to be executed. All system and property variables can be used.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Used depending on the Nature.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain.</td></tr></table></doc><br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>DTB</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'>AS400Data</td><td class=\\'ex\\'><code class=\\'doc-sql\\'>SELECT customer FROM table;</code></td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>One of the customer value returned by the SQL will be used.</td></tr><tr><td class=\\'ex\\'>MySQLData</td><td class=\\'ex\\'><code class=\\'doc-sql\\'>SELECT user FROM toto;</code></td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>The first <code class=\\'doc-fixed\\'>user</code> of <code class=\\'doc-fixed\\'>toto</code> table will be used.</td></tr></table></doc>')");
-        SQLS.append(",('testcasecountryproperties','Type','executeSqlFromLib','en','Get a value from an SQL execution from the library.','<code class=\\'doc-fixed\\'>executeSQLFromLib</code> will allow you to execute an SQL Query on the DTB Database from a library of SQL.<br>This type has the same behaviour as executeSQL type except that the SQLs are gathered from a library of SQL.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Value of the database that correspond to the connection pool where the SQL will be executed.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Reference of the SQL instruction stored inside SQL Library.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Used depending on the Nature.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain.</td></tr></table></doc><br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>DTB</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'>AS400Data</td><td class=\\'ex\\'>CUSTOMER1</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>One of the customer value returned by the SQL attached to CUSTOMER1 will be used.</td></tr><tr><td class=\\'ex\\'>MySQLData</td><td class=\\'ex\\'>USER1</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>The first value of the 1st column of the SQL attached to USER1 SQL will be used.</td></tr></table></doc>')");
+        SQLS.append(",('testcasecountryproperties','Type','executeSqlFromLib','en','[DEPRECATED] Get a value from an SQL execution from the library.','<code class=\\'doc-fixed\\'>executeSQLFromLib</code> will allow you to execute an SQL Query on the DTB Database from a library of SQL.<br>This type has the same behaviour as executeSQL type except that the SQLs are gathered from a library of SQL.<br>NB : This feature is DEPRECATED and should not be used. Please use GetFromTestDataLib in stead.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Value of the database that correspond to the connection pool where the SQL will be executed.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Reference of the SQL instruction stored inside SQL Library.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Used depending on the Nature.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain.</td></tr></table></doc><br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>DTB</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'>AS400Data</td><td class=\\'ex\\'>CUSTOMER1</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>One of the customer value returned by the SQL attached to CUSTOMER1 will be used.</td></tr><tr><td class=\\'ex\\'>MySQLData</td><td class=\\'ex\\'>USER1</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>The first value of the 1st column of the SQL attached to USER1 SQL will be used.</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getAttributeFromHtml','en','Get an attribute value from an HTML field in the current page.','<code class=\\'doc-fixed\\'>getAttributeFromHtml</code> will allow you to take an attribute value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the attribute value.<br>The different attributes identifier that can be used in order to find the HTML field are : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>ATTRIBUTE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><img id=\"Name\" src=\"toto.jpeg\"><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'>src</td><td class=\\'ex\\'>toto.jpeg</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\" name=\"inputName\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>name</td><td class=\\'ex\\'>inputName</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromCookie','en','Get a value from Cookie.','<code class=\\'doc-fixed\\'>getFromCookie</code> will allow you to get information on cookie.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Cookie Name.<br>In case the cookie is not found, empty string will be returned.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Information on cookie.<br>It could be name, value, expiry, domain, path, isHttpOnly, isSecure.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>COOKIE_NAME</td><td class=\\'ex\\'>value</td><td class=\\'ex\\'>COOKIE_VALUE</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME2</td><td class=\\'ex\\'>Expiry</td><td class=\\'ex\\'>01-01-2015</td></tr><tr><td class=\\'ex\\'>COOKIE_NAME3</td><td class=\\'ex\\'>host</td><td class=\\'ex\\'>www.cerberus-testing.org</td></tr></table></doc>')");
+        SQLS.append(",('testcasecountryproperties','Type','getFromDataLib','en','Get an object from the Data Library.','<code class=\\'doc-fixed\\'>getFromDataLib</code> will allow you to calculate a full object that include a list of string.</br>The return of the object can be used with either of the following syntax : %PROPERTY.subdata% or %PROPERTY(subdata)%.<br>Multiples rows can be retreived and you can access it using the following syntax : %PROPERTY.3.subdata% or %PROPERTY(3)(subdata)%<br>Use the Data library screen in order to configure the data library.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Data Library Name.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Number of rows the object will retreive. Use %PROPERTY.n.subdata% in order to get the corresponding row.<br>In case not enougth data can be retreive, the property will report a NA status.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Max number of rows that will be fetch from the data source. If 0 the parameter cerberus_testdatalib_fetchmax is used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain. STATIC, RANDOM, RANDOMNEW and NOTINUSE can be used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>rowLimit</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>1 row from \\'toto\\' Library.</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>10</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>10 rows of data from \\'totoPTtiti\\' Library.</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>50</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5 different rows picked by random in the 50 rows retreived from \\'toto\\' Library.</td></tr></table></doc>')");
+        SQLS.append(",('testcasecountryproperties','Type','getFromGroovy','en','Get a value from a Groovy expression.','<code class=\\'doc-fixed\\'>getFromGroovy</code> will allow you to calculate a string from a Groovy execution.\n<br/>\nUsing this feature, you can use the full power of Groovy without the need to be related to a web context as the <a href=\"/Cerberus/Documentation.jsp?DocTable=testcasecountryproperties&DocField=type&DocValue=getFromJS&Lang=en\"><code>getFromJS</code></a> property type.\n<br/>\n<br/>\nUsage:\n<br/>\n<doc class=\\'usage\\'>\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\n    <tr>\n      <th class=\\'ex\\'>Field</th>\n      <th class=\\'ex\\'>Usage</th>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>DTB</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Value</td>\n      <td class=\\'ex\\'>Groovy expression to execute.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Length</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>RowLimit</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>Nature</td>\n      <td class=\\'ex\\'>Not used.</td>\n    </tr>\n  </table>\n</doc>\n<br/>\n<br/>\nFor examples:\n<br/>\n<doc class=\\'examples\\'>\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\n    <tr>\n      <th class=\\'ex\\'>Value</th>\n      <th class=\\'ex\\'>Result</th>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>1+1</code></td>\n      <td class=\\'ex\\'>2</td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\"foobar\".replace(\"foo\", \"oof\")</code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>oofbar</code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\"foo\".toUpperCase().equals(\"FOO\")</code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true</code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>123 == 123<code></td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true<code></td>\n    </tr>\n    <tr>\n      <td class=\\'ex\\'>\n        <code class=\\'doc-fixed\\'>\n        def square = { number -> number * number };\n        square(2)\n      </code>\n      </td>\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>4</code></td>\n    </tr>\n  </table>\n</doc>\n<br/>\n<br/>\nFor more information, you can access to the fully documentation from the <a href=\"http://groovy-lang.org/documentation.html\">official Groovy website</a>.\n')");
         SQLS.append(",('testcasecountryproperties','Type','getFromHtml','en','Get a value from the current web page.','<code class=\\'doc-fixed\\'>getFromHtml</code> will allow you to take a value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the value.<br>Different attributes identifier can be used in order to find the field : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>NB : getFromHtml will get the value of the field even if it does not appear on the web page (this is not the standard behaviour of Selenium).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><span id=\"Name\">FRONT1</span><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'>FRONT1</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input name=\"crb-name\" type=\"hidden\" value=\"CERBERUS\"/></textarea></td><td class=\\'ex\\'>name=crb-name</td><td class=\\'ex\\'>CERBERUS</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>toto</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromHtmlVisible','en','Get a visible value from the current web page.','<code class=\\'doc-fixed\\'>getFromHtmlVisible</code> will allow you to take a visible value from an html field on the current webpage.</br>Cerberus will automatically wait for the field to start to appear before getting the value.<br>Different attributes identifier can be used in order to find the field : id, name, class, css, xpath, link, and data-cerberus.<br>Syntax is as follow :<br><code class=\\'doc-sql\\'>identifier=html-value</code><br><br>NB : getFromHtmlVisible will return an empty value if the field does not appear on the web page (this is the standard behaviour of Selenium).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>IDENTIFIER=HTML-VALUE</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>HTML</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><div class=\"Main\"><span id=\"Name\">FRONT1</span><span id=\"env\">PRODUCTION</span></div></textarea></td><td class=\\'ex\\'>id=Name</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input name=\"crb-name\" type=\"hidden\" value=\"CERBERUS\"/></textarea></td><td class=\\'ex\\'>name=crb-name</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly><input data-cerberus=\"ctl00\">toto</input></textarea></td><td class=\\'ex\\'>data-cerberus=ctl00</td><td class=\\'ex\\'>toto</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromJS','en','Get a value from the output of a javascript execution.','<code class=\\'doc-fixed\\'>getFromJS</code> will allow you to calculate a string from a javascript execution.</br>Using this feature, you can use the full power of javascript in order to calculate values in the context of the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Javascript to execute.<br>In case the javascript return no value, empty string will be returned.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>return s.products == undefined || s.products.toLowerCase().split(\\'event16=\\').length == 1 ? \\'\\' : \\'fail_case\\';</td><td class=\\'ex\\'>fail_case</td></tr><tr><td class=\\'ex\\'>return GetCookie(\\'UserIdentificationId\\') == undefined ? \\'\\' : GetCookie(\\'UserIdentificationId\\');</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>return s.eVar5 == undefined ? \\'\\' : s.eVar5;</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>return new Date().getTime().toString() + \"@cerberus-testing.org\";</td><td class=\\'ex\\'>1391154967143@cerberus-testing.org</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromJson','en','Get a value from a Json File','<code class=\\'doc-fixed\\'>getFromJson</code> will allow you to take an element value from a Json File.</br>Cerberus will download the Json File (Calling the URL in the Value1 field) and parse it to return the element value expected (Specified in the Value2 field).<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>URL of the Json File</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Element to Find</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Json File</th><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>text2</td><td class=\\'ex\\'>1234</td></tr><tr><td class=\\'ex\\'><textarea rows=\"3\" style=\"width: 245px;\" readonly>{\"text1\": \"yes\",\"text2\": 1234, \"array\":[\"first\", \"second\", \"third\"]}</textarea></td><td class=\\'ex\\'>http://url_of_the_json/file.json</td><td class=\\'ex\\'>array[1]</td><td class=\\'ex\\'>second</td></tr></table></doc>')");
-        SQLS.append(",('testcasecountryproperties','Type','GetFromTestData','en','Get a value from Cerberus Test Data.','<code class=\\'doc-fixed\\'>getFromTestData</code> will allow you to get a string from the Cerberus Test Data value from the key.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Key of the data to retrieve.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>%SYS_ENV%customernb1</td><td class=\\'ex\\'>Data corresponding to PRODcustomernb1 key if execution from PROD.</td></tr></table></doc>')");
+        SQLS.append(",('testcasecountryproperties','Type','getFromTestData','en','[DEPRECATED] Get a value from Cerberus Test Data.','<code class=\\'doc-fixed\\'>getFromDataLib</code> will allow you to calculate a full object that include a list of string.</br>The return of the object can be used with either of the following syntax : %PROPERTY.subdata% or %PROPERTY(subdata)%.<br>Multiples rows can be retreived and you can access it using the following syntax : %PROPERTY.3.subdata% or %PROPERTY(3)(subdata)%<br>Use the Data library screen in order to configure the data library.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Text.</td></tr><tr><td class=\\'ex\\'>Number of rows the object will retreive. Use %PROPERTY.n.subdata% in order to get the corresponding row.<br>In case not enought dat can be retreive, the property will report a NA status.</td><td class=\\'ex\\'>Size of the string if Nature is STATIC.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Limit the data retreive from the source.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain.STATIC, RANDOM, RANDOMNEW and NOTINUSE can be used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>toto</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>totoPTtiti</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>a5Gx3</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromXML','en','Get a value from an XML file.','<code class=\\'doc-fixed\\'>getFromXml</code> will allow you to get value from an XML file specifying the URL of the file and the xpath to eecute to get the data.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>URL to the Xml file to parse.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>xpath information to get data.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br>Parsing a file www.cerberus-testing.org/test.xml which contains an xml structure with ResponseCode element equals to OK and ResponseValue equals to 12345, it should be configured that way:<br><ResponseCode<doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseCode</td><td class=\\'ex\\'>OK</td></tr><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseValue</td><td class=\\'ex\\'>12345</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','text','en','Simple text.','<code class=\\'doc-fixed\\'>text</code> will allow you to calculate a string.</br>Using the Nature, random string can also be calculated.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Text.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Size of the string if Nature is STATIC.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain. Only Static and RANDOM (or RANDOMNEW) are used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>toto</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>totoPTtiti</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>a5Gx3</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Value','','en','Value','Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>')");
@@ -6000,6 +6269,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcaseexecutionwwwsum','tot_nbhits','','en','Tot_nbhits','Total number of hits of a scenario')");
         SQLS.append(",('testcaseexecutionwwwsum','tot_size','','en','Tot_size','Total size of all the elements')");
         SQLS.append(",('testcaseexecutionwwwsum','tot_tps','','en','Tot_tps','Total time cumulated for the download of all the elements')");
+        SQLS.append(",('testcaselabel','labelId','','en','Label ID','')");
+        SQLS.append(",('testcaselabel','labelId','','fr','ID du label','')");
         SQLS.append(",('testcasestep','step','','en','Step','A step is a group of actions.')");
         SQLS.append(",('testcasestepaction','Action','','en','Action','It is the action that will be executed by Cerberus.<br><br>It can take the following values :')");
         SQLS.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name to be calculated.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'>PROPERTY_NAME will be calculated</td></tr></table></doc>')");
@@ -6025,6 +6296,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Action','openUrlLogin','en','Open the Login URL.','TBD')");
         SQLS.append(",('testcasestepaction','Action','openUrlWithBase','en','Open a URL.','<code class=\\'doc-fixed\\'>openUrlWithBase</code> will allow you to open a specific URL.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'>Relative URL to open. hostname and context root will automatically be prefixed.</td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'>Property name (only used to activate or not double click depending on if the property exist for the country).</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>login/login.aspx</td><td class=\\'ex\\'></td><td class=\\'ex\\'>www.cerberus-testing.org/contextroot/login/login.aspx URL will be open.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','removeDifference','en','Remove Differences.','TBD')");
+        SQLS.append(",('testcasestepaction','Action','rightClick','en','Right click on an element.','<code class=\\'doc-fixed\\'>rightClick</code> will allow you to right click on an element inside the current page.<br><br>Usage :<br>\n<doc class=\"usage\">\n    <table cellspacing=0 cellpadding=2>\n        <th class=\\'ex\\'>Field</th>\n        <th class=\\'ex\\'>Usage</th>\n        <tr>\n            <td class=\\'ex\\'>Object</td>\n            <td class=\\'ex\\'>Identifier and name of the element to right click in the form of : identifier=html_reference.</td>\n        </tr>\n        <tr>\n            <td class=\\'ex\\'>Property</td>\n            <td class=\\'ex\\'>Property name (only used to activate or not right click depending on if the property exist for the\n                country).\n            </td>\n        </tr>\n    </table>\n</doc><br><br>Examples :<br>\n<doc class=\"examples\">\n    <table cellspacing=0 cellpadding=2>\n        <th class=\\'ex\\'>Object</th>\n        <th class=\\'ex\\'>Property</th>\n        <th class=\\'ex\\'>Result</th>\n        <tr>\n            <td class=\\'ex\\'>id=html_reference</td>\n            <td class=\\'ex\\'></td>\n            <td class=\\'ex\\'>element that has id equal to html_reference will be right clicked</td>\n        </tr>\n    </table>\n</doc>')");
         SQLS.append(",('testcasestepaction','Action','select','en','Select a value on a combo.','<b>select :</b> When the action expected is to select a value from a select box.<br><br><dd><u><i>How to feed it :</i></u> <br><br><dd><i>Action =</i> select, <i>Value =</i> the <i>id</i> of the select box.  and <i>Property =</i> the property containing the value to select.<br>It could be label=TheExactNameOfTheValue or value=the first letter or the place number of the value expected in the select box<br>For example : label=WEB   , value=W   , value=3 if the WEB is the third value in the selectbox<br><br><br>')");
         SQLS.append(",('testcasestepaction','Action','selectAndWait','en','[DEPRECATED] Select a value on a combo and wait a certain time.','<code class=\\'doc-fixed\\'>selectAndWait</code> is a deprecated action. Please don\\'t use it anymore. You can use <code class=\\'doc-action\\'>select</code> and <code class=\\'doc-action\\'>wait</code> actions in stead.')");
         SQLS.append(",('testcasestepaction','Action','skipAction','en','Skip this action.','<code class=\\'doc-fixed\\'>skipAction</code> will skip the action. Can be used in case of control that must be done without action before.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Object</td><td class=\\'ex\\'></td></tr><tr><td class=\\'ex\\'>Property</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Object</th><th class=\\'ex\\'>Property</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'></td><td class=\\'ex\\'></td><td class=\\'ex\\'>No action will be executed and engine will go to the next action or control</td></tr></table></doc>')");
@@ -6085,6 +6357,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testdatalib','country','','en','Country','<p>Country where the entry is available. If not specified, then the data entry apply to ALL countries. </p>')");
         SQLS.append(",('testdatalib','created','','en','Creation Date','')");
         SQLS.append(",('testdatalib','creator','','en','Creator','User who created the data.')");
+        SQLS.append(",('testdatalib','csvUrl','','en','CSV URL','<p>CSV URL specifies the URL where the CSV can be reached.</p>')");
+        SQLS.append(",('testdatalib','csvUrl','','fr','URL du CSV','<p>L’URL du CSV représente l’URL du fichier CSV à décrypter.</p>')");
         SQLS.append(",('testdatalib','database','','en','Database','<p>Specifies the database where the <i>script</i> attribute should be executed. </p> You can then configure the JDBC Connection pool on that database at the environment level. That allows to create testdata independant from the environement where the testcase is executed.')");
         SQLS.append(",('testdatalib','databaseUrl','','en','Database URL','<p>Specifies the database where the <i>Service Path</i> will be requested. </p> You can then configure the left part of the Service URL on that database at the environment level. That allows to create testdata independant from the environment where the testcase is executed.')");
         SQLS.append(",('testdatalib','description','','en','Description','<p>Textual description of the entry.</p>')");
@@ -6096,11 +6370,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testdatalib','method','','en','Method','<p>Method that is invoked by the SOAP request/call.</p>')");
         SQLS.append(",('testdatalib','name','','en','Name','<p>Name of the entry. It is a <b>mandatory</b> attribute.</p><p><b><u>Note</u></b>: The combination of <u>Name</u>, <u>System</u>, <u>Environment</u> and <u>Country</u> can be duplicated when the type is STATIC in order to allow a list of data to be available.</p>')");
         SQLS.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>')");
+        SQLS.append(",('testdatalib','separator','','en','Separator','<p>Separator used parsing a CSV.</p>')");
+        SQLS.append(",('testdatalib','separator','','fr','Séparateur','<p>Séparateur à utiliser pour le décryptage du CSV.</p>')");
         SQLS.append(",('testdatalib','servicepath','','en','Service Path','<p>Location of the service.</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table>')");
         SQLS.append(",('testdatalib','system','','en','System','<p>System where the entry is available. If not specified, then the data entry apply to ALL systems.</p>')");
         SQLS.append(",('testdatalib','testdatalibid','','en','ID','<p>Unique identifier of the test data library entry</p>')");
         SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of three types: STATIC, SQL and SOAP.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>STATIC</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr> <tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the result of the web service call.</td></tr></table>')");
         SQLS.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>')");
+        SQLS.append(",('testdatalibdata','columnPosition','','en','Column Position','<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>')");
+        SQLS.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>')");
         SQLS.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>')");
         SQLS.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath expression that allows the user to parse data from the SOAP response.</p>')");
         SQLS.append(",('testdatalibdata','subData','','en','Sub-data ','<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>')");
@@ -6110,245 +6388,87 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
 
-        // New cerberus_automaticexecution_enable parameter.
-        //-- ------------------------ 834
+        // Make getFromDataLib official.
+        //-- ------------------------ 867
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_automaticexecution_enable', 'Y', 'Activation boolean in order to activate the automatic executions.Y value will allow execution. Any other value will stop the execution returning an error message..');");
+        SQLS.append("UPDATE `invariant` SET `value`='getFromDataLib' WHERE `idname`='PROPERTYTYPE' and `value`='getFromDataLib_BETA';");
         SQLInstruction.add(SQLS.toString());
 
-        // Updated Description of cerberus_reporting_url parameter.
-        //-- ------------------------ 835
+        // Adding Url Source for CSV datasource..
+        //-- ------------------------ 868-869
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE `parameter` SET `description`='URL to Cerberus reporting screen. the following variables can be used : %COUNTRY%, %ENV%,  %APPLI%, %BUILD% and %REV%.' WHERE `system`='' and`param`='cerberus_reporting_url';");
+        SQLS.append("ALTER TABLE `countryenvironmentdatabase` ADD COLUMN `CsvUrl` VARCHAR(200) NOT NULL DEFAULT '' AFTER `SoapUrl`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD COLUMN `DatabaseCsv` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Envelope`;");
         SQLInstruction.add(SQLS.toString());
 
-        // Updated Description of cerberus_reporting_url parameter.
-        //-- ------------------------ 836-839
+        // Rename STATIC to INTERNAL in TestDataLib.
+        //-- ------------------------ 870-871
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `ControlProperty` `ControlProperty` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLS.append("UPDATE `testdatalib` SET Type='INTERNAL' WHERE `Type`='STATIC';");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` CHANGE COLUMN `ControlValue` `ControlValue` VARCHAR(2500) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepaction` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NOT NULL DEFAULT ''  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` CHANGE COLUMN `Object` `Object` VARCHAR(2500) NULL DEFAULT NULL  ,CHANGE COLUMN `Property` `Property` VARCHAR(2500) NULL DEFAULT NULL ;");
+        SQLS.append("UPDATE `invariant` SET `value`='INTERNAL', `description`='Internal Cerberus test data.' WHERE `idname`='TESTDATATYPE' and`value`='STATIC';");
         SQLInstruction.add(SQLS.toString());
 
-        // Add userPreferences column in user table.
-        //-- ------------------------ 840
+        // New table to host all file saved during execution.
+        //-- ------------------------ 872
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `user` ");
-        SQLS.append("ADD COLUMN `UserPreferences` TEXT NOT NULL AFTER `Email`;");
+        SQLS.append("CREATE TABLE `testcaseexecutionfile` (");
+        SQLS.append(" `ID` BIGINT(20) NOT NULL AUTO_INCREMENT ,");
+        SQLS.append(" `ExeID` BIGINT(20) unsigned NOT NULL ,");
+        SQLS.append(" `Level` VARCHAR(150) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `FileDesc` VARCHAR(100) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `Filename` VARCHAR(150) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `FileType` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append(" `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append(" `UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append(" `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`ID`) ,");
+        SQLS.append(" UNIQUE INDEX `IX_testcaseexecutionfile_01` (`ExeID` ASC, `Level` ASC, `FileDesc` ASC) ,");
+        SQLS.append(" CONSTRAINT `FK_testcaseexecutionfile_01` FOREIGN KEY (`ExeID`) REFERENCES `testcaseexecution` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
         SQLInstruction.add(SQLS.toString());
 
-        // Add the getFromGroovy property type.
-        //-- ------------------------ 841
+        // Updated cerberus_picture_path parameter.
+        //-- ------------------------ 873-874
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('PROPERTYTYPE', 'getFromGroovy', '80', 'Getting value from a Groovy script', '');");
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_mediastorage_path', `description`='Path to store the Cerberus Media files (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_picture_path';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_mediastorage_url', `description`='Link (URL) to the Cerberus Media Files. That link should point to cerberus_mediastorage_path location.' WHERE `system`='' and`param`='cerberus_picture_url';");
         SQLInstruction.add(SQLS.toString());
 
-        // Add filter information for tooltip in documentation table.
-        //-- ------------------------ 842
+        // Migrate old Screenshot and PageSource fields to new table.
+        //-- ------------------------ 875-878
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`) VALUES ");
-        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'en', 'Filter'), ");
-        SQLS.append("('page_global', 'tooltip_column_filter_empty', 'fr', 'Filtre'), ");
-        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'en', 'Filtered value(s)'), ");
-        SQLS.append("('page_global', 'tooltip_column_filter_filtered', 'fr', 'Valeur(s) filtrée(s)');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add comment on properties.
-        //-- ------------------------ 843-845
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
-        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence) level, 'Screenshot' FileDesc, replace(ScreenshotFilename, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(ScreenshotFilename, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactionexecution where ScreenshotFilename is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Description', '', 'en', 'Description', 'Description of the property.');");
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence) level, 'PageSource' FileDesc, replace(PageSourceFileName, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(PageSourceFileName, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactionexecution where PageSourceFileName is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
-        SQLS.append("ADD COLUMN `Description` VARCHAR(255) NULL DEFAULT '' AFTER `Property`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add documentation to the getFromGroovy property type.
-        //-- ------------------------ 846
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasecountryproperties', 'Type', 'getFromGroovy', 'en', 'Get a value from a Groovy expression.', '<code class=\\'doc-fixed\\'>getFromGroovy</code> will allow you to calculate a string from a Groovy execution.\\n<br/>\\nUsing this feature, you can use the full power of Groovy without the need to be related to a web context as the <a href=\\\"/Cerberus/Documentation.jsp?DocTable=testcasecountryproperties&DocField=type&DocValue=getFromJS&Lang=en\\\"><code>getFromJS</code></a> property type.\\n<br/>\\n<br/>\\nUsage:\\n<br/>\\n<doc class=\\'usage\\'>\\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\\n    <tr>\\n      <th class=\\'ex\\'>Field</th>\\n      <th class=\\'ex\\'>Usage</th>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>DTB</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Value</td>\\n      <td class=\\'ex\\'>Groovy expression to execute.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Length</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>RowLimit</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>Nature</td>\\n      <td class=\\'ex\\'>Not used.</td>\\n    </tr>\\n  </table>\\n</doc>\\n<br/>\\n<br/>\\nFor examples:\\n<br/>\\n<doc class=\\'examples\\'>\\n  <table cellspacing=\\'0\\' cellpadding=\\'2\\'>\\n    <tr>\\n      <th class=\\'ex\\'>Value</th>\\n      <th class=\\'ex\\'>Result</th>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>1+1</code></td>\\n      <td class=\\'ex\\'>2</td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\\\"foobar\\\".replace(\\\"foo\\\", \\\"oof\\\")</code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>oofbar</code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>\\\"foo\\\".toUpperCase().equals(\\\"FOO\\\")</code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true</code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>123 == 123<code></td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>true<code></td>\\n    </tr>\\n    <tr>\\n      <td class=\\'ex\\'>\\n        <code class=\\'doc-fixed\\'>\\n        def square = { number -> number * number };\\n        square(2)\\n      </code>\\n      </td>\\n      <td class=\\'ex\\'><code class=\\'doc-fixed\\'>4</code></td>\\n    </tr>\\n  </table>\\n</doc>\\n<br/>\\n<br/>\\nFor more information, you can access to the fully documentation from the <a href=\\\"http://groovy-lang.org/documentation.html\\\">official Groovy website</a>.\\n');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Clean URLLOGIN column in countryenvironmentparameters table.
-        //-- ------------------------ 847-848
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE countryenvironmentparameters SET URLLOGIN = '' WHERE URLLOGIN is null;");
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence,\"-\", Control) level, 'Screenshot' FileDesc, replace(ScreenshotFilename, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(ScreenshotFilename, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactioncontrolexecution where ScreenshotFilename is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvironmentparameters` CHANGE COLUMN `URLLOGIN` `URLLOGIN` VARCHAR(150) NOT NULL DEFAULT '' ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add columns in testdatalib and testdatatlibdata to related to CSV type.
-        // Add CSV TESTDATATYPE invariant 
-        // Add documentation
-        //-- ------------------------ 849-853
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("ADD COLUMN `CsvUrl` VARCHAR(250) NOT NULL DEFAULT '' AFTER `Envelope`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalibdata` ");
-        SQLS.append("ADD COLUMN `ColumnPosition` VARCHAR(45) NOT NULL DEFAULT '' AFTER `ParsingAnswer`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) ");
-        SQLS.append("VALUES ('TESTDATATYPE', 'CSV', '40', 'Dynamic test data from CSV file');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("ADD COLUMN `Separator` VARCHAR(45) NOT NULL DEFAULT '' AFTER `CsvUrl`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("  ('testdatalib', 'csvUrl', '', 'en', 'CSV URL', '<p>CSV URL specifies the URL where the CSV can be reached.</p>')");
-        SQLS.append(", ('testdatalibdata', 'columnPosition', '', 'en', 'Column Position', '<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>')");
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_csv_configurations', '', 'en', 'CSV configurations', '')");
-        SQLS.append(", ('testdatalib', 'csvUrl', '', 'fr', 'URL du CSV', '<p>L’URL du CSV représente l’URL du fichier CSV à décrypter.</p>')");
-        SQLS.append(", ('testdatalibdata', 'columnPosition', '', 'fr', 'Position', '<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>')");
-        SQLS.append(", ('page_testdatalib_m_createupdatelib', 'title_csv_configurations', '', 'fr', 'Configuration CSV', '')");
-        SQLS.append(", ('testdatalib', 'separator', '', 'fr', 'Séparateur', '<p>Séparateur à utiliser pour le décryptage du CSV.</p>')");
-        SQLS.append(", ('testdatalib', 'separator', '', 'en', 'Separator', '<p>Separator used parsing a CSV.</p>')");
-        SQLInstruction.add(SQLS.toString());
-
-        // label table creation
-        //-- ------------------------ 854
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `label` (");
-        SQLS.append("`Id` INT NOT NULL AUTO_INCREMENT,");
-        SQLS.append("`System` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`Label` VARCHAR(100) NOT NULL DEFAULT '',");
-        SQLS.append("`Color` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`ParentLabel` VARCHAR(100) NOT NULL DEFAULT '',");
-        SQLS.append("`Description` VARCHAR(250) NOT NULL DEFAULT '',");
-        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
-        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
-        SQLS.append(" PRIMARY KEY (`id`), ");
-        SQLS.append(" UNIQUE INDEX `IX_label_01` (`system` ASC, `label` ASC))");
-        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        SQLInstruction.add(SQLS.toString());
-
-        // testcaselabel table creation
-        //-- ------------------------ 855
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `testcaselabel` (`Id` INT NOT NULL AUTO_INCREMENT,`Test` varchar(45) NOT NULL,`TestCase` varchar(45) NOT NULL,`LabelId` INT NOT NULL,");
-        SQLS.append("`UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
-        SQLS.append("`UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
-        SQLS.append("`DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
-        SQLS.append(" PRIMARY KEY (`Id`),");
-        SQLS.append(" UNIQUE KEY `IX_testcaselabel_03` (`Test`,`TestCase`,`LabelId`),");
-        SQLS.append(" KEY `IX_testcaselabel_01` (`Test`,`TestCase`),");
-        SQLS.append(" KEY `IX_testcaselabel_02` (`LabelId`),");
-        SQLS.append(" CONSTRAINT `FK_testcaselabel_01` FOREIGN KEY (`Test`, `TestCase`) REFERENCES `testcase` (`Test`, `TestCase`) ON DELETE CASCADE ON UPDATE CASCADE,");
-        SQLS.append(" CONSTRAINT `FK_testcaselabel_02` FOREIGN KEY (`LabelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE) ");
-        SQLS.append(" ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation on label
-        //-- ------------------------ 856
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `Lang`, `DocLabel`,`DocDesc`) VALUES ");
-        SQLS.append("('label', 'id', 'en', 'ID', '')");
-        SQLS.append(",('label', 'label', 'en', 'Label', '<p>This value is the label attached to testcase for the purpose of identification or to give other information.</p>')");
-        SQLS.append(",('label', 'color', 'en', 'Color', '<p>This field is the color that will be applyied to the label. It could be any value understable by the brower.</p><p>Examples: blue |  #00FF00 | #000 </p>')");
-        SQLS.append(",('label', 'parentid', 'en', 'Parent LabelID', '<p>This value represent the labelID of the parent label. This allow to group or create hierachy in label</p>')");
-        SQLS.append(",('label', 'description', 'en', 'Description', '<p>Description of the label.</p>')");
-        SQLS.append(",('testcaselabel', 'labelId', 'en', 'Label ID', '')");
-        SQLS.append(",('label', 'id', 'fr', 'ID', '')");
-        SQLS.append(",('label', 'label', 'fr', 'Label', '<p>Cette valeur représente le label qui sera attaché au testcase à des fins d\\'identification ou de regroupement.</p>')");
-        SQLS.append(",('label', 'color', 'fr', 'Couleur', '<p>Cette valeur représente la couleur appliquée au label. Cela peut-être toute valeur reconnue comme couleur par le navigateur.</p><p>Exemples: blue |  #00FF00 | #000 </p>')");
-        SQLS.append(",('label', 'parentid', 'fr', 'ID du label parent', '<p>Cette valeur est l\\'ID du label parent. Cela permet de grouper ou de créer une hiérarchie au sein des labels</p>')");
-        SQLS.append(",('label', 'description', 'fr', 'Description', '<p>Description du label.</p>')");
-        SQLS.append(",('testcaselabel', 'labelId', 'fr', 'ID du label', '')");
-        SQLS.append(",('page_label', 'btn_create', 'en', 'Create Label', '')");
-        SQLS.append(",('page_label', 'btn_create', 'fr', 'Créer un Label', '')");
-        SQLS.append(",('page_label', 'title', 'en', 'LABEL', 'This page can be used in order to manage the labels.')");
-        SQLS.append(",('page_label', 'title', 'fr', 'LABEL', 'Cette page permet de gérer et créer des labels.')");
-        SQLS.append(",('page_header', 'menuLabel', 'en', 'Label','')");
-        SQLS.append(",('page_header', 'menuLabel', 'fr', 'Label','')");
-        SQLS.append(",('page_label', 'btn_delete', 'en', 'Delete Label','')");
-        SQLS.append(",('page_label', 'btn_delete', 'fr', 'Effacer le Label', '')");
-        SQLS.append(",('page_label', 'btn_view', 'en', 'View Label', '')");
-        SQLS.append(",('page_label', 'btn_view', 'fr', 'Voir le Label', '')");
-        SQLS.append(",('page_label', 'btn_edit', 'en', 'Edit Label', '')");
-        SQLS.append(",('page_label', 'btn_edit', 'fr', 'Editer le Label', '')");
-        SQLS.append(",('page_global', 'btn_showHideColumns', 'en', 'Show/Hide', '')");
-        SQLS.append(",('page_global', 'btn_showHideColumns', 'fr', 'Afficher/Cacher', '')");
-        SQLS.append(",('page_global', 'tooltip_showHideColumns', 'en', 'Show/hide columns', '')");
-        SQLS.append(",('page_global', 'tooltip_showHideColumns', 'fr', 'Afficher/cacher des colonnes', '')");
-        SQLS.append(",('page_global', 'btn_savetableconfig', 'en', 'Save', '')");
-        SQLS.append(",('page_global', 'btn_savetableconfig', 'fr', 'Sauvegarder', '')");
-        SQLS.append(",('page_global', 'tooltip_savetableconfig', 'en', 'Save the table configuration.', 'Save the table configuration. Filters and column display is stored in user preferences')");
-        SQLS.append(",('page_global', 'tooltip_savetableconfig', 'fr', 'Sauvegarder la configuration de la table.', 'Sauvegarder la configuration de la table. Les filtres et l\\'affichage des colonnes sont sauvegardés dans les préférences utilisateur')");
-        SQLS.append(",('page_global', 'btn_restoreuserpreferences', 'en', 'Load', '')");
-        SQLS.append(",('page_global', 'btn_restoreuserpreferences', 'fr', 'Charger', '')");
-        SQLS.append(",('page_global', 'tooltip_restoreuserpreferences', 'en', 'Restore the table configuration', 'Restore the table configuration from the user preferences. Filters and column display are available in user preferences')");
-        SQLS.append(",('page_global', 'tooltip_restoreuserpreferences', 'fr', 'Restaurer la configuration de la table', 'Restaurer la configuration de la table à partir des préférences utilisateur. Les filtres et l\\'affichage des colonnes sont chargés à partir des préférences utilisateur')");
-        SQLS.append(",('page_global', 'btn_clearfilter', 'en', '', '')");
-        SQLS.append(",('page_global', 'btn_clearfilter', 'fr', '', '')");
-        SQLS.append(",('page_global', 'tooltip_clearfilter', 'en', 'Clear filters applied', '')");
-        SQLS.append(",('page_global', 'tooltip_clearfilter', 'fr', 'Effacer les filtres appliqués', '')");
-        SQLS.append(",('page_label', 'display', 'en', 'Display', 'Display the generated label from the label and the color defined')");
-        SQLS.append(",('page_label', 'display', 'fr', 'Affichage', 'Affiche le label généré à partir du label et de la couleur définis')");
-        SQLS.append(",('label', 'system', 'en', 'System', '')");
-        SQLS.append(",('label', 'system', 'fr', 'Système', '')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add a sample tag
-        //-- ------------------------ 857
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO label (`system`,`label`, `color`,`UsrCreated`, `UsrModif`) ");
-        SQLS.append("SELECT `value` , 'MyFirstLabel', '#000000' , 'admin' , 'admin' from invariant where idname = 'SYSTEM'");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the "rightClick" action
-        //-- ------------------------ 858-859
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('ACTION', 'rightClick', '310', 'Right click on an element', 'Right click');\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('testcasestepaction', 'Action', 'rightClick', 'en', 'Right click on an element.', '<code class=\\'doc-fixed\\'>rightClick</code> will allow you to right click on an element inside the current page.<br><br>Usage :<br>\\n<doc class=\\\"usage\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Field</th>\\n        <th class=\\'ex\\'>Usage</th>\\n        <tr>\\n            <td class=\\'ex\\'>Object</td>\\n            <td class=\\'ex\\'>Identifier and name of the element to right click in the form of : identifier=html_reference.</td>\\n        </tr>\\n        <tr>\\n            <td class=\\'ex\\'>Property</td>\\n            <td class=\\'ex\\'>Property name (only used to activate or not right click depending on if the property exist for the\\n                country).\\n            </td>\\n        </tr>\\n    </table>\\n</doc><br><br>Examples :<br>\\n<doc class=\\\"examples\\\">\\n    <table cellspacing=0 cellpadding=2>\\n        <th class=\\'ex\\'>Object</th>\\n        <th class=\\'ex\\'>Property</th>\\n        <th class=\\'ex\\'>Result</th>\\n        <tr>\\n            <td class=\\'ex\\'>id=html_reference</td>\\n            <td class=\\'ex\\'></td>\\n            <td class=\\'ex\\'>element that has id equal to html_reference will be right clicked</td>\\n        </tr>\\n    </table>\\n</doc>');\n");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation on new Test case list page buttons
-        //-- ------------------------ 860
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaselist', 'btn_duplicate', '', 'en', 'Duplicate Test Case', '')");
-        SQLS.append(",('page_testcaselist', 'btn_duplicate', '', 'fr', 'Dupliquer le Cas de Test', '')");
-        SQLS.append(",('page_testcaselist', 'btn_editLabel', '', 'en', 'Edit Test Case labels', '')");
-        SQLS.append(",('page_testcaselist', 'btn_editLabel', '', 'fr', 'Modifier les étiquettes du Cas de Test', '')");
-        SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'en', 'Run Test Case', '')");
-        SQLS.append(",('page_testcaselist', 'btn_runTest', '', 'fr', 'Exécuter le Cas de Test', '')");
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence,\"-\", Control) level, 'PageSource' FileDesc, replace(PageSourceFileName, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(PageSourceFileName, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactioncontrolexecution where PageSourceFileName is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
         SQLInstruction.add(SQLS.toString());
 
         // New sql timeout parameters.
-        //-- ------------------------ 861
+        //-- ------------------------ 879
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
-        SQLS.append(" ('', 'cerberus_propertyexternalsql_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL executed from a property calculation will fail.')");
-        SQLS.append(",('', 'cerberus_actionexecutesqlupdate_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlUpdate will fail.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // New Index column in testcaseexecutiondata in order to support multirow property.
-        //-- ------------------------ 862
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
-        SQLS.append("ADD COLUMN `Index` INT NOT NULL DEFAULT 1 AFTER `Property`,");
-        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY (`ID`, `Property`, `Index`) ;");
+        SQLS.append(" ('', 'cerberus_actionexecutesqlstoredprocedure_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlStoredProcedure will fail.')");
         SQLInstruction.add(SQLS.toString());
 
         // Documentation for Parameters

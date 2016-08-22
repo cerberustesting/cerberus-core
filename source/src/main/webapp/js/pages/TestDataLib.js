@@ -28,66 +28,21 @@ function initPage() {
 
     displayPageLabel();
 
-    var i = 0;
-    var j = 0;
-    //adds new rows to the subdata table
-    $("#newSubData_addRow").click(function () {
-
-        $('#addSubDataTableBody').append('<tr class="trData" id="row' + (i + 1) + '">\n\\n\
-                <td ><div class="nomarginbottom marginTop5"> <button onclick="deleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" type="text" class="subDataClass form-control input-xs"  maxlength="200"  /></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="column" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" value="" type="text" class="dataClass form-control input-xs" maxlength="1000"  /></div></td>\n\\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" value="" type="text" class="dataClass form-control input-xs" maxlength="45"  /></div></td>\n\\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="description" value="" type="text" class="descriptionClass form-control input-xs" maxlength="1000"  /></div></td>\n\
-                \n\
-            </tr>');
-        i++;
-
-        $("#addTestDataLibModal #addSubDataTableBody tr td:nth-child(2) input:last").change(subdataNameOnChangeHandler);
-        updateSubDataTabLabel();
-    });
-    //adds a new run in the edit window
-    $("#editSubData_addRow").click(function () {
-        //gets the id from the first row
-        var testdatalibid = $("#editSubDataTableBody tr[data-operation='update']:first").attr("testdatalibid");
-
-        $('#editSubDataTableBody').append('<tr class="trData" id="row' + (j + 1) + '" testdatalibid="' + testdatalibid + '" data-operation="insert" >\n\\n\
-                <td ><div class="nomarginbottom marginTop5"> <button onclick="editDeleteRowTestDataLibData(this)" class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-trash"></span></button></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="subdata" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" type="text" class="subDataClass form-control input-xs"   /></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs"  /></div></td>\n\\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="parsinganswer" type="text" class="dataClass form-control input-xs"  /></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" type="text" class="dataClass form-control input-xs"  /></div></td>\n\
-                <td><div class="nomarginbottom form-group form-group-sm"><input name="description" value="" type="text" class="descriptionClass form-control input-xs"  /></div></td>\n\
-                \n\
-            </tr>');
-        $("#manageTestDataLibDataModal #editSubDataTableBody tr td:nth-child(2) input:last").change(subdataNameOnChangeHandler);
-        j++;
-    });
-    //delete all subdata rows     
-    $("#newSubData_deleteAll").click(function () {
-        removeAllEntries("addSubDataTable");
-        updateSubDataTabLabel();
-    });
-
     /**
      * Handles the click to save the test data lib entry
      */
-    $("#saveTestDataLib").on("click", saveTestDataLibClickHandler);
-    /**
-     * Disables the group text box when the users selects an existing group
+    $("#saveTestDataLib").on("click", editTestDataLibModalSaveHandler);
+    $("#addTestDataLibButton").click(addTestDataLibModalSaveHandler);
+    $("#saveDuplicateTestDataLib").click(duplicateTestDataLibModalSaveHandler);
+
+    /*
+     * Specification of the methods that handle the bs.modal close.
      */
-    $("#group").change(groupChangeHandler); //create modal
-    /**
-     * Disables the group text box when the users selects an existing group
-     */
-    $("#groupedit").change(groupChangeHandler); //edit modal
-    /**
-     * Disables the group text box when the users selects an existing group - duplicate modal
-     */
-    $("#groupduplicate").change(groupChangeHandler);
+    $('#editTestDataLibModal').on('hidden.bs.modal', editTestDataLibModalCloseHandler);
+    $('#addTestDataLibModal').on('hidden.bs.modal', addTestDataLibModalCloseHandler);
+    $('#duplicateTestDataLibModal').on('hidden.bs.modal', duplicateTestDataLibModalCloseHandler);
+    $('#testCaseListModal').on('hidden.bs.modal', getTestCasesUsingModalCloseHandler);
+
     /*
      * Handles the change of the type when adding a new test data lib entry
      */
@@ -111,10 +66,6 @@ function initPage() {
             $("#panelCSV").collapse("hide");
         }
     });
-
-    /*
-     * Handles the change of the type select  when editing a test data lib entry
-     */
     $('#editTestDataLibModal #type').change(function () {
         if ($(this).val() === "SQL") {
             $("#panelSQLEdit").collapse("show");
@@ -134,9 +85,6 @@ function initPage() {
             $("#panelCSVEdit").collapse("hide");
         }
     });
-    /*
-     * Handles the change of the type select  when duplicating a test data lib entry
-     */
     $('#duplicateTestDataLibModal #type').change(function () {
         if ($(this).val() === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
@@ -156,45 +104,37 @@ function initPage() {
             $("#panelCSVDuplicate").collapse("hide");
         }
     });
-    /**
-     * Method that saves new test data lib entry
-     */
-    $("#addTestDataLibButton").click(saveNewTestDataLibHandler);
+
+    // Invariant Combo loading.
+    displayInvariantList("system", "SYSTEM", false, "", "");
+    displayInvariantList("environment", "ENVIRONMENT", false, "", "");
+    displayInvariantList("country", "COUNTRY", false, "", "");
+    displayInvariantList("database", "PROPERTYDATABASE", false, "", "");
+    displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
+    displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
+    displayInvariantList("type", "TESTDATATYPE", false, "INTERNAL");
 
 
-    /**
-     * Save changes performed in the subdata list
-     */
-    $("#saveChangesSubData").click(saveChangesSubDataClickHandler);
-    /**
-     * Save changes performing during Duplicate operation
-     */
-    $("#saveDuplicateTestDataLib").click(saveDuplicateTestDataLibClickHandler);
-
-    /*
-     * Specification of the methods that handle the bs.modal close.
-     */
-    $('#testCaseListModal').on('hidden.bs.modal', testCaseListModalCloseHandler);
-    $('#manageTestDataLibDataModal').on('hidden.bs.modal', editTestDataLibDataModalCloseHandler);
-    $('#editTestDataLibModal').on('hidden.bs.modal', editTestDataLibModalCloseHandler);
-    $('#duplicateTestDataLibModal').on('hidden.bs.modal', duplicateTestDataLibModalCloseHandler);
-    $('#addTestDataLibModal').on('hidden.bs.modal', addTestDataLibModalCloseHandler);
-    $('#testCaseListModal').on('hidden.bs.modal', testCaseListModalCloseHandler);
-
-    $("#addTestDataLibModal #addSubDataTableBody tr td:nth-child(2) input").change(subdataNameOnChangeHandler);
+    // Click on add row button adds a Subdata entry.
+    $("#addSubData").click(function () {
+        addNewSubDataRow("subdataTableBody");
+    });
+    $("#addSubData_edit").click(function () {
+        addNewSubDataRow("subdataTableBody_edit")
+    });
+    $("#dupSubData").click(function () {
+        addNewSubDataRow("subdataTableBody_dup")
+    });
 
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
     //creates the main table and draws the management buttons if the user has the permissions
-    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataManager, "#testdatalib")).then(function () {
+    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib")).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
 
 }
 
-/**
- * Method that translates the content of the pages with base on the user language.
- */
 function displayPageLabel() {
     var doc = new Doc();
 
@@ -203,30 +143,14 @@ function displayPageLabel() {
 
     $("#pageTitle").html(doc.getDocLabel("page_testdatalib", "page_title"));
     $("#title").html(doc.getDocOnline("page_testdatalib", "title"));
-//    
-    //set translations for all modals required by TestDataLib page
-    displayCreateTestDataLibLabels(doc);
-    displayUpdateTestDataLibLabels(doc);
-    displayDuplicateTestDataLibLabels(doc);
-    displayManageTestDataLibDataLabels(doc);
-    displayListTestCasesLabels(doc);
-    displayListTestDataLibDataLabels(doc);
-    displayFooter(doc);
-}
 
-/**
- * Applies the translations for the modal that updates a test data lib entry
- * @param {type} doc object that contains Cerberus' documentation 
- */
-function displayUpdateTestDataLibLabels(doc) {
+    //set translations for all modals required by TestDataLib page
 
     //title 
     $("#editTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_updatelib", "title"));
     //content
-
     $("#lbl_id_edit").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
     $("#lbl_name_edit").html(doc.getDocOnline("testdatalib", "name")); //name
-
     $("#lbl_type_edit").html(doc.getDocOnline("testdatalib", "type"));
     $("#lbl_system_edit").html(doc.getDocOnline("testdatalib", "system"));
     $("#lbl_environment_edit").html(doc.getDocOnline("testdatalib", "environment"));
@@ -236,7 +160,6 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#sqlConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
     $("#soapConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
     $("#csvConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
-
     $("#lbl_description_edit").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database_edit").html(doc.getDocOnline("testdatalib", "database"));
     $("#lbl_script_edit").html(doc.getDocOnline("testdatalib", "script"));
@@ -244,29 +167,21 @@ function displayUpdateTestDataLibLabels(doc) {
     $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_edit").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv_edit").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl_edit").html(doc.getDocOnline("testdatalib", "csvUrl"));
     //buttons    
     $("#cancelTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#saveTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
-
     //auxiliar for group edition
     $("#lbl_choose_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
     $("#lbl_enter_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-}
 
-/**
- * Applies the translations for the modal that duplicates a test data lib entry.
- * @param {type} doc object that contains Cerberus' documentation 
- */
-function displayDuplicateTestDataLibLabels(doc) {
 
     //title 
     $("#duplicateTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_duplicatelib", "title"));
-
     //content    
     $("#lbl_id_duplicate").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
     $("#lbl_name_duplicate").html(doc.getDocOnline("testdatalib", "name")); //name
-
     $("#lbl_type_duplicate").html(doc.getDocOnline("testdatalib", "type"));
     $("#lbl_system_duplicate").html(doc.getDocOnline("testdatalib", "system"));
     $("#lbl_environment_duplicate").html(doc.getDocOnline("testdatalib", "environment"));
@@ -275,7 +190,6 @@ function displayDuplicateTestDataLibLabels(doc) {
     //soap and sql specific configurations
     $("#sqlConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
     $("#soapConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
-
     $("#lbl_description_duplicate").html(doc.getDocOnline("testdatalib", "description"));
     $("#lbl_database_duplicate").html(doc.getDocOnline("testdatalib", "database"));
     $("#lbl_script_duplicate").html(doc.getDocOnline("testdatalib", "script"));
@@ -283,76 +197,14 @@ function displayDuplicateTestDataLibLabels(doc) {
     $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv_duplicate").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl_duplicate").html(doc.getDocOnline("testdatalib", "csvUrl"));
-
     //auxiliar for group edition
     $("#lbl_choose_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
     $("#lbl_enter_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-
     //buttons    
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#saveDuplicateTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
-
-}
-
-/**
- * Applies the translations for the modal that allows the management of the sub-data entries for a test data library entry.
- * @param {type} doc object that contains Cerberus' documentation 
- */
-function displayManageTestDataLibDataLabels(doc) {
-    $("#manageTestDataLibDataModalLabel").html(doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "title"));
-    $("#subdataActionsHeader").html(doc.getDocOnline("page_testdatalib_m_managetestdatalibdata", "actions"));
-    $("#subdataHeaderManage").html(doc.getDocOnline("testdatalibdata", "subData"));
-    $("#valueHeaderManage").html(doc.getDocOnline("testdatalibdata", "value"));
-    $("#columnHeaderManage").html(doc.getDocOnline("testdatalibdata", "column"));
-    $("#parsingAnswerHeaderManage").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
-    $("#columnPositionHeaderManage").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
-    $("#descriptionHeaderManage").html(doc.getDocOnline("testdatalibdata", "description"));
-
-    //subdataLabelManage will be filled depending on the type of the library entry
-    $("#editSubData_addRow").text(doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "link_add_new"));
-    $("#editSubData_addRow").prop("title", doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "link_add_new_title"));
-    //buttons    
-    $("#cancelSubDataManage").text(doc.getDocLabel("page_global", "btn_cancel"));
-    $("#saveChangesSubData").text(doc.getDocLabel("page_global", "buttonAdd"));
-}
-
-/**
- * Applies the translations for the modal that displays all sub-data entries for a test data library entry.
- * @param {type} doc object that contains Cerberus' documentation 
- */
-function displayListTestDataLibDataLabels(doc) {
-    //title
-    $("#viewTestDataLibDataModalLabel").html(doc.getDocLabel("page_testdatalib_m_listtestdatalibdata", "title"));
-    //table headers
-    $("#viewTestDataLibDataID").html(doc.getDocOnline("testdatalib", "testdatalibid"));
-    $("#viewTestDataLibDataSubData").html(doc.getDocOnline("testdatalibdata", "subData"));
-    $("#viewTestDataLibValue").html(doc.getDocOnline("testdatalibdata", "value"));
-    $("#viewTestDataLibColumn").html(doc.getDocOnline("testdatalibdata", "column"));
-    $("#viewTestDataLibParsingAnswer").html(doc.getDocOnline("testdatalibdata", "parsinganswer"));
-    $("#viewTestDataLibColumnPosition").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
-    $("#viewTestDataLibDescription").html(doc.getDocOnline("testdatalibdata", "description"));
-
-    $("#closeSubDataManage").text(doc.getDocLabel("page_global", "buttonClose"));
-}
-
-/**
- * Applies the translations for the get list of test cases modal.
- * @param {type} doc object that contains Cerberus' documentation 
- * 
- */
-function displayListTestCasesLabels(doc) {
-    //title
-    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
-    //button
-    $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
-}
-
-/**
- * Applies the translations for the create new library modal.
- * @param {type} doc object that contains Cerberus' documentation 
- */
-function displayCreateTestDataLibLabels(doc) {
 
     //title
     $("#addTestDataLibModalLabel").text(doc.getDocLabel("page_testdatalib_m_createlib", "title"));//docCreate.title.docLabel
@@ -361,16 +213,13 @@ function displayCreateTestDataLibLabels(doc) {
     $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
     //tabs, tab2 is updated when the entries are managed
     $("#tab1Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab1_text"));
-
     //soap and sql specific configurations
     $("#sqlConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
     $("#soapConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
     $("#csvConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
-
     //group information 
     $("#lbl_choose_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
     $("#lbl_enter_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-
     //common information
     $("#lbl_name").html(doc.getDocOnline("testdatalib", "name"));
     $("#lbl_type").html(doc.getDocOnline("testdatalib", "type"));
@@ -384,12 +233,11 @@ function displayCreateTestDataLibLabels(doc) {
     $("#lbl_service_path").html(doc.getDocOnline("testdatalib", "servicepath"));
     $("#lbl_method").html(doc.getDocOnline("testdatalib", "method"));
     $("#lbl_envelope").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("#lbl_databaseCsv").html(doc.getDocOnline("testdatalib", "databaseCsv"));
     $("#lbl_csvUrl").html(doc.getDocOnline("testdatalib", "csvUrl"));
     $("#lbl_separator").html(doc.getDocOnline("testdatalib", "separator"));
-
     //documentation for sub-data entries
     //total number of entries
-    updateSubDataTabLabel();
     $("#subdataHeader").html(doc.getDocOnline("testdatalibdata", "subData"));
     $("#valueHeader").html(doc.getDocOnline("testdatalibdata", "value"));
     $("#columnHeader").html(doc.getDocOnline("testdatalibdata", "column"));
@@ -397,28 +245,26 @@ function displayCreateTestDataLibLabels(doc) {
     $("#columnPositionHeader").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
     $("#descriptionHeader").html(doc.getDocOnline("testdatalibdata", "description"));
     $("#unmutableRowNotEditable").prop("title", doc.getDocOnline("page_testdatalib_m_createlib", "tooltip_defaultsubdata")); //tooltip for row that is not editable or removable
-
-
     //links for managing the subdata information
     $("#link_add_new").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_add_new"));
     $("#link_delete_all").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_delete_all"));
     $("#link_add_new_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_add_new_title"));
     $("#link_delete_all_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_delete_all_title"));
-
-
     //tab2 - links to edit table
     $("#newSubData_addRow").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new"));
     $("#newSubData_addRow").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new_title"));
     $("#newSubData_deleteAll").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all"));
     $("#newSubData_deleteAll").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all_title"));
 
+    //title
+    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
+    //button
+    $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
+
+    displayFooter(doc);
 }
 
-/**
- * Auxiliary method that adds options to the testdatalib table, when the user has permissions for management operation
- * @param {type} data  sent from user 
- */
-function renderOptionsForTestDataManager(data) {
+function renderOptionsForTestDataLib(data) {
     //check if user has permissions to perform the add and import operations
     var doc = new Doc();
 
@@ -426,12 +272,10 @@ function renderOptionsForTestDataManager(data) {
         if ($("#createLibButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'><button id='createLibButton' type='bytton' class='btn btn-default'><span class='glyphicon glyphicon-plus-sign'></span> ";
             contentToAdd += doc.getDocLabel("page_testdatalib", "btn_create"); //translation for the create button;
-            contentToAdd += "</button><button id='importDataButton' type='bytton' class='btn btn-default marginLeft5'><span class='glyphicon glyphicon-import'></span> ";
-            contentToAdd += doc.getDocLabel("page_testdatalib", "btn_import"); //translation for the create button;
             contentToAdd += "</button></div>";
 
             $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
-            $('#createLibButton').click(createLibButtonClickHandler);
+            $('#createLibButton').click(addTestDataLibClick);
 
             $('#importDataButton').click(function () {
                 var translations = {};
@@ -449,105 +293,6 @@ function renderOptionsForTestDataManager(data) {
     }
 }
 
-/**
- * Handler that cleans the test case list modal when it is closed
- */
-function testCaseListModalCloseHandler() {
-    //we need to clear the item-groups that were inserted
-    $('#testCaseListModal #testCaseListGroup a[id*="cat"]').remove();
-    $('#testCaseListModal #testCaseListGroup div[id*="sub_cat"]').remove();
-}
-
-/**
- * Handler that removes the css error style when a field changes
- */
-function subdataNameOnChangeHandler() {
-    var parent = $(this).parents("div.form-group");
-    if ($(parent).hasClass('has-error')) {
-        $(parent).removeClass('has-error');
-    }
-}
-
-/**
- * Handler Method responsible for saving a new test data lib entry.
- */
-function saveNewTestDataLibHandler() {
-    //shows the modal that allows the creation of test data lib 
-    var formAdd = $("#addTestDataLibModal #addTestDataLibModalForm");
-
-    var nameElement = formAdd.find("#name");
-    //validates if the property name is not empty
-    var nameElementEmpty = nameElement.prop("value") === '';
-    if (nameElementEmpty) {
-        var doc = new Doc();
-        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "empty_name_message"));
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addTestDataLibModal'));
-        //return ;
-    } else {
-        nameElement.parents("div.form-group").removeClass("has-error");
-    }
-
-    //check if entries have repeated names
-    var noRepeated = validateSubDataEntriesRepeated($("#addTestDataLibModal"), "addSubDataTableBody", false);
-
-    if (nameElementEmpty || !noRepeated) {
-        return;
-    }
-    //end client-side validation        
-
-
-
-    showLoaderInModal('#addTestDataLibModal');
-    var jqxhr = $.post("CreateTestDataLib", formAdd.serialize());
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addTestDataLibModal');
-
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#listOfTestDataLib").dataTable();
-            //redraws table and goes to last page
-            //It is possible to go directly to the last page because that is order by id
-            //oTable.fnPageChange( 'last' );
-            oTable.fnDraw(true);
-            showMessage(data);
-            $('#addTestDataLibModal').modal('hide');
-        } else {
-            showMessage(data, $('#addTestDataLibModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout).then(function () {
-        hideLoaderInModal('#addTestDataLibModal');
-    });
-
-}
-
-/**
- * Handler that cleans the modal for editing subdata when it is closed.
- */
-function editTestDataLibDataModalCloseHandler() {
-    $('#editSubDataTableBody tr').remove();
-    clearResponseMessage($('#manageTestDataLibDataModal'));
-
-}
-
-/**
- * Handler that cleans the modal for editing a testdatalib entry when it is closed
- */
-function editTestDataLibModalCloseHandler() {
-    $('#editTestDataLibModal #editTestLibData')[0].reset();
-    clearResponseMessage($('#editTestDataLibModal'));
-}
-
-/**
- * Handler that cleans the modal for editing a testdatalib entry when it is closed
- */
-function duplicateTestDataLibModalCloseHandler() {
-    $('#duplicateTestDataLibModal #duplicateTestLibData')[0].reset();
-    clearResponseMessage($('#duplicateTestDataLibModal'));
-}
-
-/**
- * Handler method that deletes a test data lib
- */
 function deleteTestDataLibHandlerClick() {
     var testDataLibID = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteTestDataLib", {testdatalibid: testDataLibID}, "json");
@@ -569,6 +314,546 @@ function deleteTestDataLibHandlerClick() {
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function deleteTestDataLibClick(testDataLibID, name, system, environment, country, type) {
+    var doc = new Doc();
+
+    var systemLabel = system === '' ? doc.getDocLabel("page_global", "lbl_all") : system;
+    var environmentLabel = environment === '' ? doc.getDocLabel("page_global", "lbl_all") : environment;
+    var countryLabel = country === '' ? doc.getDocLabel("page_global", "lbl_all") : country;
+
+    var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete").replace("%ENTRY%", name).replace("%ID%", testDataLibID).replace("%SYSTEM%", systemLabel)
+            .replace("%ENVIRONMENT%", environmentLabel).replace("%COUNTRY%", countryLabel);
+    showModalConfirmation(deleteTestDataLibHandlerClick, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
+
+}
+
+function addTestDataLibModalCloseHandler() {
+    var doc = getDoc();
+    var docMultiSelect = doc.multiselect;
+
+    $('#addTestDataLibModal #addTestDataLibModalForm')[0].reset();
+    $('#addSubDataTableBody tr[class="trData"]').remove(); // removes all rows except the first one
+
+
+    //clears all filters
+    $(this).find("li[class='multiselect-item filter'] button").trigger("click");
+
+    //removes the active styles
+    $(this).find("li.multiselect-item").children().removeClass("active");
+    $(this).find("li").removeClass("active");
+
+    $(this).find("li input[type='checkbox']").prop("checked", false);
+
+    //changes the title labels
+    var nonSelectedText = docMultiSelect.none_selected.docLabel;
+    $(this).find("button[class='multiselect dropdown-toggle btn btn-default']").prop("title", nonSelectedText);
+    $(this).find("span[class='multiselect-selected-text']").text(nonSelectedText);
+
+
+    //selects the first option for group
+    $(this).find('#group option:first').prop("selected", "selected");
+    //selects the first option for type
+    $(this).find('#type option:first').prop("selected", "selected");
+    $(this).find('div.has-error').removeClass("has-error");
+    //clears the response messages
+    clearResponseMessage($('#addTestDataLibModal'));
+    $(this).find("#tab1Text").tab('show'); //shows the first tab as the default
+}
+
+function addTestDataLibModalSaveHandler() {
+    //shows the modal that allows the creation of test data lib 
+    var formAdd = $("#addTestDataLibModal #addTestDataLibModalForm");
+
+    //START client-side validation
+    //validates if the property name is not empty
+    var nameElement = formAdd.find("#name");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var doc = new Doc();
+        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "empty_name_message"));
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addTestDataLibModal'));
+        //return ;
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+    //check if entries have repeated names
+    var noRepeated = validateSubDataEntriesRepeated($("#addTestDataLibModal"), "addSubDataTableBody", false);
+    if (nameElementEmpty || !noRepeated) {
+        return;
+    }
+    //END client-side validation
+
+    showLoaderInModal('#addTestDataLibModal');
+    
+    // Getting Data from Database TAB
+    var table1 = $("#subdataTableBody tr");
+    var table_subdata = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_subdata.push($(table1[i]).data("subdata"));
+    }
+    
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formAdd.serialize());
+
+    $.ajax({
+        url: "CreateTestDataLib",
+        async: true,
+        method: "POST",
+        data: {system: data.system,
+            country: data.country,
+            environment: data.environment,
+            libdescription: data.libdescription,
+            csvUrl: data.csvUrl,
+            database: data.database,
+            databaseCsv: data.databaseCsv,
+            databaseUrl: data.databaseUrl,
+            envelope: data.envelope,
+            group: data.group,
+            method: data.method,
+            name: data.name,
+            script: data.script,
+            separator: data.separator,
+            servicepath: data.servicepath,
+            testdatalibid: data.testdatalibid,
+            type: data.type,
+            subDataList: JSON.stringify(table_subdata)},
+        success: function (data) {
+            hideLoaderInModal('#addTestDataLibModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#listOfTestDataLib").dataTable();
+                oTable.fnDraw(true);
+                $('#addTestDataLibModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#addTestDataLibModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+}
+
+function addTestDataLibClick() {
+    console.debug("addTest");
+    clearResponseMessageMainPage();
+
+    var doc = new Doc();
+
+    //when creating the testdatalibrary entry the INTERNAL is the default select
+    $('#addTestDataLibModal #type option[value="INTERNAL"]').attr("selected", "selected");
+
+// Cleaning the Subdata Table.
+    $('#subdataTableBody tr').remove();
+// Adding the key subdata line.
+    var newSubData = {
+        subData: "",
+        value: "",
+        column: "",
+        parsingAnswer: "",
+        columnPosition: "",
+        description: "",
+        testDataLibDataID: -1,
+        toDelete: false
+    };
+    appendSubDataRow(newSubData, "subdataTableBody");
+
+    $('#addTestDataLibModal').modal('show');
+}
+
+function duplicateTestDataLibModalCloseHandler() {
+    $('#duplicateTestDataLibModal #duplicateTestLibData')[0].reset();
+    clearResponseMessage($('#duplicateTestDataLibModal'));
+}
+
+function duplicateTestDataLibModalSaveHandler() {
+    var formAdd = $('#duplicateTestDataLibModal').find('form#duplicateTestLibData');
+    showLoaderInModal('#duplicateTestDataLibModal');
+
+    //START client-side validation
+    //validates if the property name is not empty
+    var nameElement = formAdd.find("#name");
+    var nameElementEmpty = nameElement.prop("value") === '';
+    if (nameElementEmpty) {
+        var doc = new Doc();
+        var localMessage = new Message("danger", doc.getDocLabel("page_testdatalib", "empty_name_message"));
+        nameElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addTestDataLibModal'));
+        //return ;
+    } else {
+        nameElement.parents("div.form-group").removeClass("has-error");
+    }
+    //check if entries have repeated names
+    var noRepeated = validateSubDataEntriesRepeated($("#duplicateTestDataLibModal"), "duplicateSubDataTableBody", false);
+    if (nameElementEmpty || !noRepeated) {
+        return;
+    }
+    //END client-side validation
+
+    showLoaderInModal('#duplicateTestDataLibModal');
+    
+    // Getting Data from Database TAB
+    var table1 = $("#subdataTableBody_dup tr");
+    var table_subdata = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_subdata.push($(table1[i]).data("subdata"));
+    }
+    
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formAdd.serialize());
+
+    $.ajax({
+        url: "CreateTestDataLib",
+        async: true,
+        method: "POST",
+        data: {system: data.system,
+            country: data.country,
+            environment: data.environment,
+            libdescription: data.libdescription,
+            csvUrl: data.csvUrl,
+            database: data.database,
+            databaseCsv: data.databaseCsv,
+            databaseUrl: data.databaseUrl,
+            envelope: data.envelope,
+            group: data.group,
+            method: data.method,
+            name: data.name,
+            script: data.script,
+            separator: data.separator,
+            servicepath: data.servicepath,
+            testdatalibid: data.testdatalibid,
+            type: data.type,
+            subDataList: JSON.stringify(table_subdata)},
+        success: function (data) {
+            hideLoaderInModal('#duplicateTestDataLibModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#listOfTestDataLib").dataTable();
+                oTable.fnDraw(true);
+                $('#duplicateTestDataLibModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#duplicateTestDataLibModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+}
+
+function duplicateTestDataLibClick(testDataLibID) {
+
+    clearResponseMessageMainPage();
+    //load the data from the row 
+    var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
+
+    $.when(jqxhr).then(function (data) {
+
+        var obj = data["testDataLib"];
+
+        $('#duplicateTestDataLibModal #testdatalibid').prop("value", testDataLibID);
+        $('#duplicateTestDataLibModal #name').prop("value", obj.name);
+
+        $('#duplicateTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
+        $('#duplicateTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
+        $('#duplicateTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
+        $('#duplicateTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
+        
+        //loads the information for entries
+        $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+        $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
+        $('#duplicateTestDataLibModal #method').prop("value", obj.method);
+        $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#duplicateTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
+        $('#duplicateTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
+        $('#duplicateTestDataLibModal #separator').prop("value", obj.separator);
+        $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+        $('#duplicateTestDataLibModal #script').prop("value", obj.script);
+
+        //load TYPE
+        $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
+        $('#duplicateTestDataLibModal #group').prop("value", obj.group);
+        
+        if (obj.type === "SQL") {
+            $("#panelSQLDuplicate").collapse("show");
+            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("hide");
+        } else if (obj.type === "SOAP") {
+            $("#panelSOAPDuplicate").collapse("show");
+            $("#panelSQLDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("hide");
+        } else if (obj.type === "CSV") {
+            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSQLDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("show");
+        } else {
+            //hide all if the type is static
+            $("#panelSQLDuplicate").collapse("hide");
+            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelCSVDuplicate").collapse("hide");
+        }
+
+        //loads groups from database
+        var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
+        $.when(jqxhrGroups).then(function (groupsData) {
+            //load distinct groups
+            var doc = new Doc();
+            loadSelectElement(groupsData["contentTable"], $('#duplicateTestDataLibModal #groupduplicate'), true,
+                    doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
+            //selects the group entered by the user
+
+            $('#duplicateTestDataLibModal #groupduplicate').find('option[value="' + obj.group + '"]:first').prop("selected", "selected");
+            $('#duplicateTestDataLibModal #groupduplicate').find('option:first').addClass("emptySelectOption");
+            $('#duplicateTestDataLibModal #groupduplicate').change();
+        });
+
+        loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_dup");
+
+        //after everything. then shows the modal
+        $("#duplicateTestDataLibModal").modal("show");
+
+    }).fail(handleErrorAjaxAfterTimeout);
+
+}
+
+function editTestDataLibModalCloseHandler() {
+    $('#editTestDataLibModal #editTestLibData')[0].reset();
+    clearResponseMessage($('#editTestDataLibModal'));
+}
+
+function editTestDataLibModalSaveHandler() {
+    var formEdit = $('#editTestDataLibModal').find('form#editTestLibData');
+    showLoaderInModal('#editTestDataLibModal');
+
+    // Getting Data from Database TAB
+    var table1 = $("#subdataTableBody_edit tr");
+    var table_subdata = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_subdata.push($(table1[i]).data("subdata"));
+    }
+
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+
+    $.ajax({
+        url: "UpdateTestDataLib",
+        async: true,
+        method: "POST",
+        data: {system: data.system,
+            country: data.country,
+            environment: data.environment,
+            libdescription: data.libdescription,
+            csvUrl: data.csvUrl,
+            database: data.database,
+            databaseCsv: data.databaseCsv,
+            databaseUrl: data.databaseUrl,
+            envelope: data.envelope,
+            group: data.group,
+            method: data.method,
+            name: data.name,
+            script: data.script,
+            separator: data.separator,
+            servicepath: data.servicepath,
+            testdatalibid: data.testdatalibid,
+            type: data.type,
+            subDataList: JSON.stringify(table_subdata)},
+        success: function (data) {
+            hideLoaderInModal('#editTestDataLibModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#listOfTestDataLib").dataTable();
+                oTable.fnDraw(true);
+                $('#editTestDataLibModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editTestDataLibModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+}
+
+function editTestDataLibClick(testDataLibID) {
+
+    clearResponseMessageMainPage();
+    //load the data from the row 
+    var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
+
+    $.when(jqxhr).then(function (data) {
+
+        var obj = data["testDataLib"];
+
+        $('#editTestDataLibModal #testdatalibid').prop("value", testDataLibID);
+        $('#editTestDataLibModal #name').prop("value", obj.name);
+
+        $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
+        $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
+        $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
+        $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
+        
+        //loads the information for the entries
+        $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+        $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
+        $('#editTestDataLibModal #method').prop("value", obj.method);
+        $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
+        $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
+        $('#editTestDataLibModal #separator').prop("value", obj.separator);
+        $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
+        $('#editTestDataLibModal #script').prop("value", obj.script);
+
+        $('#editTestDataLibModal #libdescription').prop("value", obj.description);
+        $('#editTestDataLibModal #group').prop("value", obj.group);
+        
+        $('#editTestDataLibModal #created').prop("value", obj.created);
+        $('#editTestDataLibModal #creator').prop("value", obj.creator);
+        $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
+        $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
+
+        if (obj.type === "SQL") {
+            $("#panelSQLEdit").collapse("show");
+            $("#panelSOAPEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
+        } else if (obj.type === "SOAP") {
+            $("#panelSOAPEdit").collapse("show");
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
+        } else if (obj.type === "CSV") {
+            $("#panelCSVEdit").collapse("show");
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSOAPEdit").collapse("hide");
+        } else {
+            //hide all if the type is static
+            $("#panelSQLEdit").collapse("hide");
+            $("#panelSOAPEdit").collapse("hide");
+            $("#panelCSVEdit").collapse("hide");
+        }
+
+
+        //loads groups from database
+        var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
+        $.when(jqxhrGroups).then(function (groupsData) {
+            //load distinct groups
+            var doc = new Doc();
+            loadSelectElement(groupsData["contentTable"], $('#editTestDataLibModal #groupedit'), true,
+                    doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
+            //selects the group entered by the user
+            $('#editTestDataLibModal #groupedit').find('option[value="' + obj.group + '"]:first').prop("selected", "selected");
+            $('#editTestDataLibModal #groupedit').find('option:first').addClass("emptySelectOption");
+            $('#editTestDataLibModal #groupedit').change();
+        });
+
+        // Permission management.
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            $('#saveTestDataLib').attr('class', '');
+            $('#saveTestDataLib').attr('hidden', 'hidden');
+        }
+        
+        // Loading the list of subdata.
+        loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_edit");
+
+        //after everything. then shows the modal
+        $('#editTestDataLibModal').modal('show');
+
+    }).fail(handleErrorAjaxAfterTimeout);
+
+
+}
+
+// Function to load the various SubData lists.
+function loadTestDataLibSubdataTable(testDataLibID, subDataTableBody) {
+    $('#' + subDataTableBody + ' tr').remove();
+    var jqxhr = $.getJSON("ReadTestDataLibData", "testdatalibid=" + testDataLibID);
+    $.when(jqxhr).then(function (result) {
+        $.each(result["contentTable"], function (idx, obj) {
+            obj.toDelete = false;
+            appendSubDataRow(obj, subDataTableBody);
+        });
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+// Function to append 1 line of Subdata in the various SubData lists.
+function appendSubDataRow(subdata, targetTableBody) {
+    var doc = new Doc();
+    var isKey = false;
+    if (subdata.subData === "") {
+        isKey = true;
+    }
+    if (isKey) {
+        var deleteBtn = $("<button type=\"button\" disabled=\"disabled\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+        var subDataInput = $("<input  maxlength=\"25\" disabled=\"disabled\">").addClass("form-control input-sm").val(subdata.subData);
+    } else {
+        var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+        var subDataInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "subData") + " --\">").addClass("form-control input-sm").val(subdata.subData);
+    }
+    var valueInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "value") + " --\">").addClass("form-control input-sm").val(subdata.value);
+    var columnInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "column") + " --\">").addClass("form-control input-sm").val(subdata.column);
+    var parsingAnswerInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "parsingAnswer") + " --\">").addClass("form-control input-sm").val(subdata.parsingAnswer);
+    var columnPositionInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "columnPosition") + " --\">").addClass("form-control input-sm").val(subdata.columnPosition);
+    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("testdatalibdata", "description") + " --\">").addClass("form-control input-sm").val(subdata.description);
+    var table = $("#" + targetTableBody);
+
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var subData = $("<td></td>").append(subDataInput);
+    var value = $("<td></td>").append(valueInput);
+    var column = $("<td></td>").append(columnInput);
+    var parsingAnswer = $("<td></td>").append(parsingAnswerInput);
+    var columnPosition = $("<td></td>").append(columnPositionInput);
+    var description = $("<td></td>").append(descriptionInput);
+    deleteBtn.click(function () {
+        subdata.toDelete = (subdata.toDelete) ? false : true;
+
+        if (subdata.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    subDataInput.change(function () {
+        subdata.subData = $(this).val();
+    });
+    valueInput.change(function () {
+        subdata.value = $(this).val();
+    });
+    columnInput.change(function () {
+        subdata.column = $(this).val();
+    });
+    parsingAnswerInput.change(function () {
+        subdata.parsingAnswer = $(this).val();
+    });
+    columnPositionInput.change(function () {
+        subdata.columnPosition = $(this).val();
+    });
+    descriptionInput.change(function () {
+        subdata.description = $(this).val();
+    });
+
+    row.append(deleteBtnRow);
+    row.append(subData);
+    row.append(value);
+    row.append(column);
+    row.append(parsingAnswer);
+    row.append(columnPosition);
+    row.append(description);
+    row.data("subdata", subdata);
+    table.append(row);
+}
+
+// Function to append 1 new line of Subdata in the various SubData lists.
+function addNewSubDataRow(dataTableBody) {
+    var nbRows = $("#" + dataTableBody + " tr").size();
+    var newSubData = {
+        subData: "SUBDATA" + nbRows,
+        value: "",
+        column: "",
+        parsingAnswer: "",
+        columnPosition: "",
+        description: "",
+        testDataLibDataID: -1,
+        toDelete: false
+    };
+    appendSubDataRow(newSubData, dataTableBody);
 }
 
 /**
@@ -597,255 +882,6 @@ function uploadTestDataLibFromXMLFile() {
         oTable.fnDraw(true);
         $('#modalUpload').modal('hide');
         showMessageMainPage(getAlertType(data.messageType), data.message);
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-/**
- * Handles the click on the create new lib
- */
-function createLibButtonClickHandler() {
-    //clearResponseMessageMainPage();
-    //showLoaderInModal("#addTestDataLibModal");
-
-    //retrieves the data from the server that allows the creation of a new library (groups, database,...)
-    var jqxhr = $.getJSON("ReadInvariant", "");
-
-    $.when(jqxhr).then(function (data) {
-        var systemsList = [];
-        var environmentList = [];
-        var countryList = [];
-        var databaseList = [];
-        var testDataTypeList = [];
-
-
-        $.each(data["contentTable"], function (idx, obj) {
-            //extract all invariants that are needed for the page
-            if (obj.idName === 'SYSTEM') {
-                systemsList.push(obj.value);
-            } else if (obj.idName === 'ENVIRONMENT') {
-                environmentList.push(obj.value);
-            } else if (obj.idName === 'COUNTRY') {
-                countryList.push(obj.value);
-            } else if (obj.idName === 'PROPERTYDATABASE') {
-                databaseList.push(obj.value);
-            } else if (obj.idName === 'TESTDATATYPE') {
-                testDataTypeList.push(obj.value);
-            }
-        });
-
-
-        var doc = new Doc();
-
-
-        //when creating the testdatalibrary entry the static is the default select
-        loadSelectElement(testDataTypeList, $('#addTestDataLibModal #type'));
-        $('#addTestDataLibModal #type option[value="STATIC"]').attr("selected", "selected");
-
-        //ensure that the panels are collapsed
-        $('#addTestDataLibModal #panelSOAP').collapse("hide");
-        $('#addTestDataLibModal #panelSQL').collapse("hide");
-        $('#addTestDataLibModal #panelCSV').collapse("hide");
-
-
-        loadSelectElement(systemsList, $('#addTestDataLibModal #system'), true, '');
-        //ENVIRONMENT
-        loadSelectElement(environmentList, $('#addTestDataLibModal #environment'), true, '');
-        //Country
-        loadSelectElement(countryList, $('#addTestDataLibModal #country'), true, '');
-        //database
-        loadSelectElement(databaseList, $('#addTestDataLibModal #databaseUrl'), true, '');
-        loadSelectElement(databaseList, $('#addTestDataLibModal #database'), true, '');
-
-        var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
-
-        $.when(jqxhrGroups).then(function (groupsData) {
-            //loads the distinct groups
-            var groupList = groupsData["contentTable"]
-            console.log(groupList);
-            loadSelectElement(groupList, $('#addTestDataLibModal #group'), true,
-                    doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
-
-            $('#addTestDataLibModal #group option:first-child').attr("selected", "selected");
-            $('#addTestDataLibModal #group option:first').addClass("emptySelectOption");
-            $('#addTestDataLibModal #group').change();
-
-            $('#addTestDataLibModal').modal('show');
-        });
-
-
-    }).fail(handleErrorAjaxAfterTimeout);
-
-
-}
-
-/**
- * Handler that cleans the modal for adding a testdatalib entry when it is closed
- */
-function addTestDataLibModalCloseHandler() {
-    var doc = getDoc();
-    var docMultiSelect = doc.multiselect;
-
-    $('#addTestDataLibModal #addTestDataLibModalForm')[0].reset();
-    $('#addSubDataTableBody tr[class="trData"]').remove(); // removes all rows except the first one
-    updateSubDataTabLabel();
-
-
-    //clears all filters
-    $(this).find("li[class='multiselect-item filter'] button").trigger("click");
-
-    //removes the active styles
-    $(this).find("li.multiselect-item").children().removeClass("active");
-    $(this).find("li").removeClass("active");
-
-    $(this).find("li input[type='checkbox']").prop("checked", false);
-
-    //changes the title labels
-    var nonSelectedText = docMultiSelect.none_selected.docLabel;
-    $(this).find("button[class='multiselect dropdown-toggle btn btn-default']").prop("title", nonSelectedText);
-    $(this).find("span[class='multiselect-selected-text']").text(nonSelectedText);
-
-
-    //selects the first option for group
-    $(this).find('#group option:first').prop("selected", "selected");
-    //selects the first option for type
-    $(this).find('#type option:first').prop("selected", "selected");
-    $(this).find('div.has-error').removeClass("has-error");
-    //clears the response messages
-    clearResponseMessage($('#addTestDataLibModal'));
-    $(this).find("#tab1Text").tab('show'); //shows the first tab as the default
-}
-
-function saveChangesSubDataClickHandler() {
-    //clears the current messages before each click on save
-    clearResponseMessage($("#manageTestDataLibDataModal"));
-
-    var dataArray = {};
-    var removeObjects = [];
-    var updateObjects = [];
-    var insertObjects = [];
-
-    var hasRepeatedNames = validateSubDataEntriesRepeated($("#manageTestDataLibDataModal"), "editSubDataTableBody", true);
-
-    if (!hasRepeatedNames) {
-        return;
-    }
-
-    //selects the elements that were marked as to remove
-    $("#editSubDataTableBody tr[data-operation='remove']").each(function () {
-        var item = {};
-        item ["testdatalibdataid"] = $(this).prop("id");
-        item ["testdatalibid"] = $(this).attr("testdatalibid");
-        item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
-        item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
-        item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
-        item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
-        removeObjects.push(item);
-    });
-    //gets the elements that will be updated
-    $("#editSubDataTableBody tr[data-operation='update']").each(function () {
-        var item = {};
-        item ["testdatalibdataid"] = $(this).prop("id");
-        item ["testdatalibid"] = $(this).attr("testdatalibid");
-        item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
-        item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
-        item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
-        item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
-        updateObjects.push(item);
-    });
-
-    var resultInsert = true;
-    //gets the elements that should be inserted
-    $("#editSubDataTableBody tr[data-operation='insert']").each(function () {
-        var item = {};
-        item ["testdatalibdataid"] = -1;
-        item ["testdatalibid"] = $(this).attr("testdatalibid");
-        item ["subdata"] = $(this).find("td:nth-child(2) input").prop("value");
-        item ["value"] = $(this).find("td:nth-child(3) input").prop("value");
-        item ["column"] = $(this).find("td:nth-child(4) input").prop("value");
-        item ["parsinganswer"] = $(this).find("td:nth-child(5) input").prop("value");
-        item ["columnPosition"] = $(this).find("td:nth-child(6) input").prop("value");
-        item ["description"] = $(this).find("td:nth-child(7) input").prop("value");
-        var foundRepeated = false;
-
-        //check if is defined in the insert objects
-        for (var j in insertObjects) {
-            if (insertObjects[j]["subdata"] === item ["subdata"]) {
-                //the user is trying to insert entries with the same name
-                $(this).find("td:nth-child(2) div.form-group").addClass('has-error');
-                foundRepeated = true;
-            }
-        }
-
-        //check if is defined in the edit objects
-        for (var i in updateObjects) {
-            if (updateObjects[i]["subdata"] === item ["subdata"]) {
-                //the user is trying to insert entries with the same name
-                $(this).find("td:nth-child(2) div.form-group").addClass('has-error');
-                foundRepeated = true;
-            }
-        }
-
-        if (foundRepeated) {
-            return resultInsert = false;
-        }
-        insertObjects.push(item);
-    });
-
-    if (!resultInsert) {
-        return;
-    }
-
-    if (removeObjects.length > 0) {
-        dataArray["remove"] = removeObjects;
-    }
-    if (updateObjects.length > 0) {
-        dataArray["update"] = updateObjects;
-    }
-    if (insertObjects.length > 0) {
-        dataArray["insert"] = insertObjects;
-    }
-
-    showLoaderInModal('#manageTestDataLibDataModal');
-    var jqxhr = $.post("UpdateTestDataLibData", {data: JSON.stringify(dataArray)}, "json");
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#manageTestDataLibDataModal');
-        console.log("data" + data);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#listOfTestDataLib").dataTable();
-            oTable.fnDraw(true);
-            $('#manageTestDataLibDataModal').modal('hide');
-            showMessage(data);
-        } else {
-            showMessage(data, $('#manageTestDataLibDataModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-
-}
-
-function saveTestDataLibClickHandler() {
-    var formEdit = $('#editTestDataLibModal').find('form#editTestLibData');
-    showLoaderInModal('#editTestDataLibModal');
-
-    // Get the header data from the form.
-    var dataForm = convertSerialToJSONObject(formEdit.serialize());
-
-    var jqxhr = $.post("UpdateTestDataLib", dataForm);
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#editTestDataLibModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#listOfTestDataLib").dataTable();
-            oTable.fnDraw(true);
-            $('#editTestDataLibModal').modal('hide');
-            showMessage(data);
-
-        } else {
-            showMessage(data, $('#editTestDataLibModal'));
-        }
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
@@ -895,232 +931,6 @@ function validateSubDataEntriesRepeated(dialog, tableBody, checkOnesMarkedToRemo
         return false;
     }
     return true;
-
-}
-
-/**
- * Auxiliary method that handles the group options.
- * @returns {undefined}
- */
-function groupChangeHandler() {
-    var suffix = "";
-    if ($(this).prop("id") === "groupedit") {
-        suffix = "edit";
-    }
-    if ($(this).prop("id") === "groupduplicate") {
-        suffix = "duplicate";
-    }
-    if ($(this).val() !== '') {
-        $(this).removeClass("emptySelectOption");
-    } else {
-        $(this).addClass("emptySelectOption");
-    }
-    var option = $(this).find("option:selected").val();
-    if (option !== "") {
-        $("#groupinput" + suffix).prop("disabled", "disabled");
-        $("#groupinput" + suffix).prop("name", "groupdisabled");
-        $(this).prop("name", "group");
-    } else {
-        $("#groupinput" + suffix).removeAttr("disabled");
-        $("#groupinput" + suffix).prop("name", "group");
-        $(this).prop("name", "groupdisabled");
-    }
-
-}
-
-
-function deleteRowTestDataLibData(element) {
-    deleteRow(element);
-    updateSubDataTabLabel();
-}
-
-function deleteRow(element) {
-    $(element).parents("tr").remove();
-}
-
-/**
- * Method that updates the tab text with number of entries that are currently defined.
- */
-function updateSubDataTabLabel() {
-    var doc = new Doc();
-
-    //$("#tab2Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text"));
-    $('#tab2Text').text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text") + " (" +
-            ($('#addSubDataTable tr[class="trData"]').size() + 1) + " " + doc.getDocLabel("page_testdatalib_m_createlib", "m_tab2_text_entries") + ")");
-}
-
-function editDeleteRowTestDataLibData(element) {
-    //if is a new record then we know that is to remove from the interface
-    var doc = new Doc();
-
-    if ($(element).parents("tr").attr("data-operation") === 'insert') {
-        deleteRow(element);
-    } else if ($(element).parents("tr").attr("data-operation") === 'remove') {
-        //the line was loaded from the database, then it should be market to be removed
-        $(element).prop("title", doc.getDocLabel("page_global", "tooltip_mark_remove"));
-        $(element).parents("tr").attr("data-operation", "update");
-        $(element).find("span:first").removeAttr("class").addClass("glyphicon glyphicon-trash")
-    } else {
-        $(element).prop("title", doc.getDocLabel("page_global", "tooltip_delete_item"));
-        $(element).parents("tr").attr("data-operation", "remove");
-        $(element).find("span:first").removeAttr("class").addClass("glyphicon glyphicon-remove colorRed");
-    }
-}
-
-function removeAllEntries(tableID) {
-    removeRows(tableID);
-}
-
-function removeRows(tableID) {
-    $('#' + tableID + ' tr[class="trData"]').remove();
-}
-
-/*************************** TestDataLib ******************************/
-/**
- * Shows the alert that asks the user if he/she wants to delete the selected testdatalib and its entries.
- * @param {type} testDataLibID - id of the entry that will be deleted
- * @param {type} name - name of the entry used to create custom message
- * @param {type} system - system of the entry used to create custom message
- * @param {type} environment - environment of the entry used to create custom message
- * @param {type} country - country of the entry used to create custom message
- * @param {type} type - type of the entry used to create custom message
- */
-function deleteTestDataLib(testDataLibID, name, system, environment, country, type) {
-    var doc = new Doc();
-
-    var systemLabel = system === '' ? doc.getDocLabel("page_global", "lbl_all") : system;
-    var environmentLabel = environment === '' ? doc.getDocLabel("page_global", "lbl_all") : environment;
-    var countryLabel = country === '' ? doc.getDocLabel("page_global", "lbl_all") : country;
-
-    var messageComplete = doc.getDocLabel("page_testdatalib", "message_delete").replace("%ENTRY%", name).replace("%ID%", testDataLibID).replace("%SYSTEM%", systemLabel)
-            .replace("%ENVIRONMENT%", environmentLabel).replace("%COUNTRY%", countryLabel);
-    showModalConfirmation(deleteTestDataLibHandlerClick, doc.getDocLabel("page_testdatalib_delete", "title"), messageComplete, testDataLibID, "", "", "");
-
-}
-
-function editTestDataLib(testDataLibID) {
-    clearResponseMessageMainPage();
-    //load the data from the row 
-    var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
-
-    $.when(jqxhr).then(function (data) {
-
-        var obj = data["testDataLib"];
-
-        $('#editTestDataLibModal #testdatalibid').prop("value", testDataLibID);
-        $('#editTestDataLibModal #name').prop("value", obj.name);
-        $('#editTestDataLibModal #libdescription').prop("value", obj.description);
-        //loads the information for soap entries
-        $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
-        $('#editTestDataLibModal #method').prop("value", obj.method);
-        $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
-        $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
-        $('#editTestDataLibModal #separator').prop("value", obj.separator);
-
-        $('#editTestDataLibModal #script').prop("value", obj.script);
-
-        var jqxhrInvariant = $.getJSON("ReadInvariant", "");
-
-        $.when(jqxhrInvariant).then(function (invariantData) {
-
-            var systemsList = [];
-            var environmentList = [];
-            var countryList = [];
-            var databaseList = [];
-            var testDataTypeList = [];
-
-
-            $.each(invariantData["contentTable"], function (idx, obj) {
-                //extract all invariants that are needed for the page
-                if (obj.idName === 'SYSTEM') {
-                    systemsList.push(obj.value);
-                } else if (obj.idName === 'ENVIRONMENT') {
-                    environmentList.push(obj.value);
-                } else if (obj.idName === 'COUNTRY') {
-                    countryList.push(obj.value);
-                } else if (obj.idName === 'PROPERTYDATABASE') {
-                    databaseList.push(obj.value);
-                } else if (obj.idName === 'TESTDATATYPE') {
-                    testDataTypeList.push(obj.value);
-                }
-            });
-
-
-            //load TYPE
-            loadSelectElement(testDataTypeList, $('#editTestDataLibModal #type'), false, '');
-            $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
-
-            if (obj.type === "SQL") {
-                $("#panelSQLEdit").collapse("show");
-                $("#panelSOAPEdit").collapse("hide");
-                $("#panelCSVEdit").collapse("hide");
-            } else if (obj.type === "SOAP") {
-                $("#panelSOAPEdit").collapse("show");
-                $("#panelSQLEdit").collapse("hide");
-                $("#panelCSVEdit").collapse("hide");
-            } else if (obj.type === "CSV") {
-                $("#panelCSVEdit").collapse("show");
-                $("#panelSQLEdit").collapse("hide");
-                $("#panelSOAPEdit").collapse("hide");
-            } else {
-                //hide all if the type is static
-                $("#panelSQLEdit").collapse("hide");
-                $("#panelSOAPEdit").collapse("hide");
-                $("#panelCSVEdit").collapse("hide");
-            }
-
-            //SYSTEM
-            loadSelectElement(systemsList, $('#editTestDataLibModal #system'), true, '');
-            $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
-
-            //ENVIRONMENT
-            loadSelectElement(environmentList, $('#editTestDataLibModal #environment'), true, '');
-            $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
-
-            //Country
-            loadSelectElement(countryList, $('#editTestDataLibModal #country'), true, '');
-            $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-
-            //database
-            loadSelectElement(databaseList, $('#editTestDataLibModal #database'), true, '');
-            $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
-            loadSelectElement(databaseList, $('#editTestDataLibModal #databaseUrl'), true, '');
-            $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
-
-
-            //loads groups from database
-            var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
-            $.when(jqxhrGroups).then(function (groupsData) {
-                //load distinct groups
-                var doc = new Doc();
-                loadSelectElement(groupsData["contentTable"], $('#editTestDataLibModal #groupedit'), true,
-                        doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
-                //selects the group entered by the user
-
-                $('#editTestDataLibModal #groupedit').find('option[value="' + obj.group + '"]:first').prop("selected", "selected");
-                $('#editTestDataLibModal #groupedit').find('option:first').addClass("emptySelectOption");
-                $('#editTestDataLibModal #groupedit').change();
-            });
-
-            $('#editTestDataLibModal #created').prop("value", obj.created);
-            $('#editTestDataLibModal #creator').prop("value", obj.creator);
-            $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
-            $('#editTestDataLibModal #lastModifier').prop("value", obj.lastModifier);
-
-            if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-
-                $('#saveTestDataLib').attr('class', '');
-                $('#saveTestDataLib').attr('hidden', 'hidden');
-            }
-
-            //after everything. then shows the modal
-            $('#editTestDataLibModal').modal('show');
-        });
-
-
-
-
-    }).fail(handleErrorAjaxAfterTimeout);
 
 }
 
@@ -1177,265 +987,13 @@ function getTestCasesUsing(testDataLibID, name, country) {
 
 }
 
-function appendNewSubDataRow(rowtestDataLibDataId, testDataLibId, subData, value, column, parsingAnswer, columnPosition, description) {
-    var doc = new Doc();
-    var isReadOnly = '';
-    var onClickEvent = 'onclick="editDeleteRowTestDataLibData(this)"';
-    var buttonTitle = doc.getDocLabel("page_global", "tooltip_mark_remove");
-    var buttonStyle = "trash";
-    if (subData === '') { //is the default entry readonly
-        buttonTitle = doc.getDocLabel("page_testdatalib_m_managetestdatalibdata", "tooltip_defaultsubdata");
-        onClickEvent = 'disabled="disabled"';
-        isReadOnly = "readonly='readonly'";
-        buttonStyle = "minus";
-    }
-    //for each subdata entry adds a new row
-    $('#editSubDataTableBody').append('<tr id="' + rowtestDataLibDataId + '" testdatalibid="' + testDataLibId + '" data-operation="update"> \n\
-        <td><div class="nomarginbottom marginTop5"> \n\
-        <button ' + onClickEvent + ' ' + buttonTitle + '\n\
-class="delete_row pull-left btn btn-default btn-xs manageRowsFont"><span class="glyphicon glyphicon-' + buttonStyle + '"></span></button></div></td>\n\
-        <td><div class="nomarginbottom form-group form-group-sm">\n\
-        <input ' + isReadOnly + ' name="subdata" type="text" onkeypress="return restrictCharacters(this, event, subDataNameRestriction);" class="subDataClass form-control input-xs" value="' + subData + '"/><span></span></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm"><input name="value" type="text" class="dataClass form-control input-xs" value="' + value + '" /></div></td>\n\\n\
-        <td><div class="nomarginbottom form-group form-group-sm"><input name="column" type="text" class="dataClass form-control input-xs" value="' + column + '" /></div></td>\n\
-        <td><div class="nomarginbottom form-group form-group-sm"><input name="parsingAnswer" type="text" class="dataClass form-control input-xs" value="' + parsingAnswer + '" /></div></td>\n\
-        <td><div class="nomarginbottom form-group form-group-sm"><input name="columnPosition" type="text" class="dataClass form-control input-xs" value="' + columnPosition + '" /></div></td>\n\
-        <td><div class="nomarginbottom form-group form-group-sm"><input name="description" type="text" class="descriptionClass form-control input-xs" value="' + description + '" /></div></td></tr>');
-
-}
-
-function viewSubDataEntries(testDataLibID) {
-    showLoaderInModal('#viewTestDataLibDataModal');
-
-    var jqxhr = $.getJSON("ReadTestDataLibData", "testdatalibid=" + testDataLibID);
-
-    $.when(jqxhr).then(function (result) {
-        var configurations = new TableConfigurationsClientSide("viewTestDataLibDataEntriesTable", result["contentTable"], aoColumnsViewTestDataLibData(), true);
-        configurations.tableWidth = "550px";
-
-        if ($('#viewTestDataLibDataEntriesTable').hasClass('dataTable') === false) {
-            createDataTable(configurations, undefined, undefined, undefined);
-        } else {
-            var oTable = $("#viewTestDataLibDataEntriesTable").dataTable();
-            oTable.fnClearTable();
-            if (result["contentTable"].length > 0) {
-                oTable.fnAddData(result["contentTable"]);
-            }
-        }
-        $('#viewTestDataLibDataModal').modal('show');
-        hideLoaderInModal('#viewTestDataLibDataModal');
-
-    }).fail(handleErrorAjaxAfterTimeout);
-
-}
-
 /**
- *
- * Method that allows the user to update the subdata entries for a testdatalib entry
- * @param {type} testDataLibID - test data lib id
- * @returns {undefined}
+ * Handler that cleans the test case list modal when it is closed
  */
-function editSubData(testDataLibID) {
-    clearResponseMessageMainPage();
-
-    var jqxhr = $.getJSON("ReadTestDataLibData", "testdatalibid=" + testDataLibID);
-
-    $.when(jqxhr).then(function (result) {
-        $.each(result["contentTable"], function (idx, obj) {
-            appendNewSubDataRow(obj.testDataLibDataID, obj.testDataLibID, obj.subData, obj.value, obj.column, obj.parsingAnswer,obj.columnPosition, obj.description);
-        });
-        //show modal
-        $('#manageTestDataLibDataModal').modal('show');
-
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-/**
- * Function that allows the user to duplicate a testdatalibrary entry
- * @param {type} testDataLibID
- * @returns {undefined}
- */
-function duplicateEntryTestData(testDataLibID) {
-
-    clearResponseMessageMainPage();
-    //load the data from the row 
-    var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
-
-    $.when(jqxhr).then(function (data) {
-
-        var obj = data["testDataLib"];
-
-        $('#duplicateTestDataLibModal #testdatalibid').prop("value", testDataLibID);
-        $('#duplicateTestDataLibModal #name').prop("value", obj.name);
-        $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
-        //loads the information for soap entries
-        $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
-        $('#duplicateTestDataLibModal #method').prop("value", obj.method);
-        $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
-        $('#duplicateTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
-        $('#duplicateTestDataLibModal #separator').prop("value", obj.separator);
-
-        $('#duplicateTestDataLibModal #script').prop("value", obj.script);
-
-        var jqxhrInvariant = $.getJSON("ReadInvariant", "");
-
-        $.when(jqxhrInvariant).then(function (invariantData) {
-
-            var systemsList = [];
-            var environmentList = [];
-            var countryList = [];
-            var databaseList = [];
-            var testDataTypeList = [];
-
-            //gets all invariants required for load this modal
-            $.each(invariantData["contentTable"], function (idx, obj) {
-                //extract all invariants that are needed for the page
-                if (obj.idName === 'SYSTEM') {
-                    systemsList.push(obj.value);
-                } else if (obj.idName === 'ENVIRONMENT') {
-                    environmentList.push(obj.value);
-                } else if (obj.idName === 'COUNTRY') {
-                    countryList.push(obj.value);
-                } else if (obj.idName === 'PROPERTYDATABASE') {
-                    databaseList.push(obj.value);
-                } else if (obj.idName === 'TESTDATATYPE') {
-                    testDataTypeList.push(obj.value);
-                }
-            });
-
-
-            //load TYPE
-            loadSelectElement(testDataTypeList, $('#duplicateTestDataLibModal #type'), false, '');
-            $('#duplicateTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
-
-            if (obj.type === "SQL") {
-                $("#panelSQLDuplicate").collapse("show");
-                $("#panelSOAPDuplicate").collapse("hide");
-                $("#panelCSVDuplicate").collapse("hide");
-            } else if (obj.type === "SOAP") {
-                $("#panelSOAPDuplicate").collapse("show");
-                $("#panelSQLDuplicate").collapse("hide");
-                $("#panelCSVDuplicate").collapse("hide");
-            } else if (obj.type === "CSV") {
-                $("#panelSOAPDuplicate").collapse("hide");
-                $("#panelSQLDuplicate").collapse("hide");
-                $("#panelCSVDuplicate").collapse("show");
-            } else {
-                //hide all if the type is static
-                $("#panelSQLDuplicate").collapse("hide");
-                $("#panelSOAPDuplicate").collapse("hide");
-                $("#panelCSVDuplicate").collapse("hide");
-            }
-
-            //SYSTEM
-            loadSelectElement(systemsList, $('#duplicateTestDataLibModal #system'), true, '');
-            $('#duplicateTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
-
-            //ENVIRONMENT
-            loadSelectElement(environmentList, $('#duplicateTestDataLibModal #environment'), true, '');
-            $('#duplicateTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
-
-            //Country
-            loadSelectElement(countryList, $('#duplicateTestDataLibModal #country'), true, '');
-            $('#duplicateTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-
-            //database
-            loadSelectElement(databaseList, $('#duplicateTestDataLibModal #database'), true, '');
-            $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
-            loadSelectElement(databaseList, $('#duplicateTestDataLibModal #databaseUrl'), true, '');
-            $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
-
-
-            //loads groups from database
-            var jqxhrGroups = $.getJSON("ReadTestDataLib", "groups");
-            $.when(jqxhrGroups).then(function (groupsData) {
-                //load distinct groups
-                var doc = new Doc();
-                loadSelectElement(groupsData["contentTable"], $('#duplicateTestDataLibModal #groupduplicate'), true,
-                        doc.getDocLabel("page_testdatalib_m_createlib", "lbl_dropdown_help"));
-                //selects the group entered by the user
-
-                $('#duplicateTestDataLibModal #groupduplicate').find('option[value="' + obj.group + '"]:first').prop("selected", "selected");
-                $('#duplicateTestDataLibModal #groupduplicate').find('option:first').addClass("emptySelectOption");
-                $('#duplicateTestDataLibModal #groupduplicate').change();
-            });
-
-
-            //after everything. then shows the modal
-            $("#duplicateTestDataLibModal").modal("show");
-
-        });
-    }).fail(handleErrorAjaxAfterTimeout);
-
-}
-
-/**
- * Duplicates an entry
- * @returns {undefined}
- */
-function saveDuplicateTestDataLibClickHandler() {
-    var formEdit = $('#duplicateTestDataLibModal').find('form#duplicateTestLibData');
-    showLoaderInModal('#duplicateTestDataLibModal');
-
-    var jqxhr = $.post("DuplicateTestDataLib", formEdit.serialize(), "json");
-    $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns 
-        hideLoaderInModal('#duplicateTestDataLibModal');
-        if (getAlertType(data.messageType) === "success") {
-            var oTable = $("#listOfTestDataLib").dataTable();
-            oTable.fnDraw(true);
-            $('#duplicateTestDataLibModal').modal('hide');
-            showMessage(data);
-
-        } else {
-            showMessage(data, $('#duplicateTestDataLibModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-
-}
-
-function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
-    $(element).empty();
-    if (includeEmpty !== null && includeEmpty) {
-        $(element).append("<option value=''>" + includeEmptyText + "</option>");
-    }
-    data.sort();
-    $.each(data, function (idx, obj) {
-        $(element).append("<option value='" + obj + "'>" + obj + "</option>");
-    });
-}
-
-function aoColumnsViewTestDataLibData() {
-    var doc = new Doc();
-    var aoColumns = [];
-    $("#viewTestDataLibDataEntriesTable th").each(function (i) {
-        switch (i) {
-            case 0 :
-                aoColumns.push({className: "width80", "sName": "TestDataLibID", "data": "testDataLibID", "title": doc.getDocOnline("testdatalib", "testdatalibid")});
-                break;
-            case 1:
-                aoColumns.push({className: "width200", "sName": "Subdata", "data": "subData", "title": doc.getDocOnline("testdatalibdata", "subData")});
-                break;
-            case 2 :
-                aoColumns.push({className: "width150", "sName": "value", "data": "value", "title": doc.getDocOnline("testdatalibdata", "value")});
-                break;
-            case 3:
-                aoColumns.push({className: "width150", "sName": "column", "data": "column", "title": doc.getDocOnline("testdatalibdata", "column")});
-                break;
-            case 4:
-                aoColumns.push({className: "width150", "sName": "parsingAnswer", "data": "parsingAnswer", "title": doc.getDocOnline("testdatalibdata", "parsingAnswer")});
-                break;
-            case 5:
-                aoColumns.push({className: "width150", "sName": "columnPosition", "data": "columnPosition", "title": doc.getDocOnline("testdatalibdata", "columnPosition")});
-                break;
-            case 6:
-                aoColumns.push({className: "width150", "sName": "Description", "data": "description", "title": doc.getDocOnline("testdatalibdata", "description")});
-                break;
-
-        }
-    });
-    return aoColumns;
-
+function getTestCasesUsingModalCloseHandler() {
+    //we need to clear the item-groups that were inserted
+    $('#testCaseListModal #testCaseListGroup a[id*="cat"]').remove();
+    $('#testCaseListModal #testCaseListGroup div[id*="sub_cat"]').remove();
 }
 
 function aoColumnsFuncTestDataLib(tableId) {
@@ -1443,6 +1001,7 @@ function aoColumnsFuncTestDataLib(tableId) {
 
     var aoColumns = [
         {
+            "sName": "tdl.TestDataLibID",
             "data": "testDataLibID",
             "bSortable": false,
             "bSearchable": false,
@@ -1450,38 +1009,32 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocLabel("testdatalib", "actions"),
             "mRender": function (data, type, oObj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
-                var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
+                var editElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLibClick(' + data + ');" \n\
                                 class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLib(' + data + ');" \n\
-                                class="editTestDataLib btn btn-default btn-xs margin-right5" \n\
+                var viewElement = '<button id="editTestDataLib' + data + '"  onclick="editTestDataLibClick(' + data + ');" \n\
+                                class="editTestDataLib btn btn-default btn-xs margin-right25" \n\
                             name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editentry") + '" type="button">\n\
                             <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var editDataElement = '<button  class="editTestDataLib btn  btn-default btn-xs margin-right5" \n\
-                            name="editTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_editsubdata") + '" type="button" onclick="editSubData(' + data + ')">\n\
-                            <span class="glyphicon glyphicon-list-alt"></span></button>';
-                var viewDataElement = '<button  class="viewSubDataEntries btn  btn-default btn-xs margin-right5" \n\
-                            name="viewSubDataEntries" title="' + doc.getDocLabel("page_testdatalib", "tooltip_viewsubdata") + '" type="button" onclick="viewSubDataEntries(' + data + ', \'' + oObj.type + '\')">\n\
-                            <span class="glyphicon glyphicon-list-alt"></span></button>';
-                var deleteElement = '<button onclick="deleteTestDataLib(' + oObj.testDataLibID + ',\'' + oObj.name
+                var deleteElement = '<button onclick="deleteTestDataLibClick(' + oObj.testDataLibID + ',\'' + oObj.name
                         + '\', ' + '\'' + oObj.system + '\', ' + '\'' + oObj.environment + '\', ' + '\'' + oObj.country + '\', '
                         + '\'' + oObj.type + '\');" class="btn btn-default btn-xs margin-right25 " \n\
                             name="deleteTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_delete") + '" type="button">\n\
                             <span class="glyphicon glyphicon-trash"></span></button>';
                 var duplicateEntryElement = '<button  class="btn btn-default btn-xs margin-right5" \n\
                             name="duplicateTestDataLib" title="' + doc.getDocLabel("page_testdatalib", "tooltip_duplicateEntry") + '"\n\
-                                 type="button" onclick="duplicateEntryTestData(' + data + ')">\n\
-                                <span class="fa fa-files-o"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
+                                 type="button" onclick="duplicateTestDataLibClick(' + data + ')">\n\
+                                <span class="glyphicon glyphicon-duplicate"></span></button>'; //TODO check if we can add this glyphicon glyphicon-duplicate
                 var viewTestCase = '<button  class="getTestCasesUsing btn  btn-default btn-xs margin-right5" \n\
                             name="getTestCasesUsing" title="' + doc.getDocLabel("page_testdatalib", "tooltip_gettestcases") + '" type="button" \n\
                             onclick="getTestCasesUsing(' + data + ', \'' + oObj.name + '\', \'' + oObj.country + '\')">\n\
                             TC</button>';
 
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
-                    return '<div class="center btn-group width250">' + editElement + editDataElement + deleteElement + duplicateEntryElement + viewTestCase + '</div>';
+                    return '<div class="center btn-group width250">' + editElement + duplicateEntryElement + deleteElement + viewTestCase + '</div>';
                 } else {
-                    return '<div class="center btn-group width250">' + viewElement + viewDataElement + viewTestCase + '</div>';
+                    return '<div class="center btn-group width250">' + viewElement + viewTestCase + '</div>';
                 }
             }
         },
@@ -1575,6 +1128,12 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "envelope",
             "sWidth": "150px",
             "title": doc.getDocOnline("testdatalib", "envelope")
+        },
+        {
+            "sName": "tdl.DatabaseCsv",
+            "data": "databaseCsv",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "databaseCsv")
         },
         {
             "sName": "tdl.csvUrl",

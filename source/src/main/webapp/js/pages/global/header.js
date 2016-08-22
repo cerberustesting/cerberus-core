@@ -100,7 +100,17 @@ function displayMenuItem(doc) {
         if ($(this).attr('class') === "dropdown-toggle") {
             $(this).html(doc.getDocLabel("page_header", id) + " <span class=\"caret\"></span>");
         } else {
-            $(this).html(doc.getDocLabel("page_header", id) + "<input type=\"button\" class=\"btn btn-danger btn-small active\" value=\"Beta\" style=\"padding: 0px; margin-left: 5px\">");
+            $(this).html(doc.getDocLabel("page_header", id) + "<input type=\"button\" class=\"btn btn-warning btn-small active\" value=\"Beta\" style=\"padding: 0px; margin-left: 5px\">");
+        }
+    });
+    // Translate Deprecated menu entries.
+    var menuItems = document.getElementsByName('menuDeprecated');
+    $(menuItems).each(function () {
+        var id = $(this).attr('id');
+        if ($(this).attr('class') === "dropdown-toggle") {
+            $(this).html(doc.getDocLabel("page_header", id) + " <span class=\"caret\"></span>");
+        } else {
+            $(this).html(doc.getDocLabel("page_header", id) + "<input type=\"button\" class=\"btn btn-danger btn-small active\" value=\"Deprecated\" style=\"padding: 0px; margin-left: 5px\">");
         }
     });
     /**

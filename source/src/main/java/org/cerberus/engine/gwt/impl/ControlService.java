@@ -207,6 +207,9 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControlType().equals("takeScreenshot")) {
                 res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
+            } else if (testCaseStepActionControlExecution.getControlType().equals("getPageSource")) {
+                res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+
             } else if (testCaseStepActionControlExecution.getControlType().equals("skipControl")) {
                 res = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SKIPCONTROL);
 
@@ -969,11 +972,25 @@ public class ControlService implements IControlService {
     private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
-            String screenshotPath = recorderService.recordScreenshotAndGetName(tCExecution,
-                    testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
-            testCaseStepActionControlExecution.setScreenshotFilename(screenshotPath);
+                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+            recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
+            return message;
+        }
+        message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+        message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        return message;
+    }
+
+    private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+        MessageEvent message;
+        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+            recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
+            message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GETPAGESOURCE);
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);

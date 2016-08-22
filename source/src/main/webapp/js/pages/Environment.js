@@ -604,6 +604,7 @@ function appendDatabaseRow(dtb) {
     var selectDatabase = getSelectInvariant("PROPERTYDATABASE", false);
     var connectionPoolInput = $("<input  maxlength=\"25\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "ConnectionPoolName") + " --\">").addClass("form-control input-sm").val(dtb.connectionPoolName);
     var soapUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "SoapUrl") + " --\">").addClass("form-control input-sm").val(dtb.soapUrl);
+    var csvUrlInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentdatabase", "CsvUrl") + " --\">").addClass("form-control input-sm").val(dtb.csvUrl);
     var table = $("#databaseTableBody");
 
     var row = $("<tr></tr>");
@@ -611,6 +612,7 @@ function appendDatabaseRow(dtb) {
     var database = $("<td></td>").append(selectDatabase.val(dtb.database));
     var connectionPoolName = $("<td></td>").append(connectionPoolInput);
     var soapUrl = $("<td></td>").append(soapUrlInput);
+    var csvUrl = $("<td></td>").append(csvUrlInput);
     deleteBtn.click(function () {
         dtb.toDelete = (dtb.toDelete) ? false : true;
 
@@ -629,10 +631,14 @@ function appendDatabaseRow(dtb) {
     soapUrlInput.change(function () {
         dtb.soapUrl = $(this).val();
     });
+    csvUrlInput.change(function () {
+        dtb.csvUrl = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(database);
     row.append(connectionPoolName);
     row.append(soapUrl);
+    row.append(csvUrl);
     dtb.database = selectDatabase.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("database", dtb);
     table.append(row);
@@ -643,6 +649,7 @@ function addNewDatabaseRow() {
         database: "",
         connectionPoolName: "",
         soapUrl: "",
+        csvUrl: "",
         toDelete: false
     };
     appendDatabaseRow(newDatabase);
@@ -928,9 +935,6 @@ function eventEnableModalConfirmHandler() {
     });
 }
 
-/**
- * Handler that cleans the modal for editing subdata when it is closed.
- */
 function refreshlistInstallInstructions() {
     $('#installInstructionsTableBody tr').remove();
 

@@ -22,23 +22,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.ITestCaseExecutionDataDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionData;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
-import org.cerberus.util.DateUtil;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
+import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionFile;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -49,43 +44,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- * {Insert class description here}
+ * Implements methods defined on IApplicationDAO
  *
- * @author Tiago Bernardes
- * @version 1.0, 02/01/2013
+ * @author tbernardes
+ * @version 1.0, 15/10/13
  * @since 0.9.0
  */
 @Repository
-public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
+public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
 
-    /**
-     * Description of the variable here.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
+    private IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile;
 
-    private static final Logger LOG = Logger.getLogger(TestCaseExecutionDataDAO.class);
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionFileDAO.class);
 
-    private final String OBJECT_NAME = "TestCase Execution Data";
+    private final String OBJECT_NAME = "Testase Execution File";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem<TestCaseExecutionData> readByKey(long id, String property, int index) {
+    public AnswerItem<TestCaseExecutionFile> readByKey(long id) {
         AnswerItem ans = new AnswerItem();
-        TestCaseExecutionData result = null;
-        final String query = "SELECT * FROM testcaseexecutiondata exd WHERE id = ? AND property = ? AND `index` = ?";
+        TestCaseExecutionFile result = null;
+        final String query = "SELECT * FROM `testcaseexecutionfile` WHERE `id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + String.valueOf(id));
-            LOG.debug("SQL.param.property : " + property);
-            LOG.debug("SQL.param.index : " + String.valueOf(index));
+            LOG.debug("SQL.param.id : " + id);
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -93,8 +83,6 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setLong(1, id);
-                preStat.setString(2, property);
-                preStat.setInt(3, index);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -139,30 +127,26 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public AnswerList<TestCaseExecutionData> readByIdByCriteria(long id, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long id, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<TestCaseExecutionData> objectList = new ArrayList<TestCaseExecutionData>();
+        List<TestCaseExecutionFile> objectList = new ArrayList<TestCaseExecutionFile>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecutiondata exd ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecutionfile exf ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (`Property` like ?");
-            searchSQL.append(" or `description` like ?");
-            searchSQL.append(" or `Value` like ?");
-            searchSQL.append(" or `Type` like ?");
-            searchSQL.append(" or `Value1` like ?");
-            searchSQL.append(" or `Value2` like ?");
-            searchSQL.append(" or `RC` like ?");
-            searchSQL.append(" or `RMessage` like ?)");
+            searchSQL.append(" and (exf.`level` like ?");
+            searchSQL.append(" or exf.`filename` like ?");
+            searchSQL.append(" or exf.`filedesc` like ?");
+            searchSQL.append(" or exf.`usrModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -174,13 +158,16 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             searchSQL.append(" )");
         }
 
-        if (!(id == -1)) {
-            searchSQL.append(" and (`id` = ? )");
+        if (!(id <= 0)) {
+            searchSQL.append(" and (exf.`exeid` = ? )");
+        }
+        if (level != null) {
+            searchSQL.append(" and (exf.`level` = ? )");
         }
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by ").append(column).append(" ").append(dir);
+            query.append(" order by `").append(column).append("` ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -203,16 +190,15 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!(id == -1)) {
+                if (!(id <= 0)) {
                     preStat.setLong(i++, id);
+                }
+                if (level != null) {
+                    preStat.setString(i++, level);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -286,164 +272,26 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public List<String> getPastValuesOfProperty(long id, String propName, String test, String testCase, String build, String environment, String country) {
-        List<String> list = null;
-        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
-                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
-                + "WHERE exe.test = ? AND exe.testcase = ? AND exe.build = ? AND exe.environment = ? "
-                + "AND exe.country = ? AND exe.id <> ? ;";
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.property : " + propName);
-            LOG.debug("SQL.param.test : " + test);
-            LOG.debug("SQL.param.testcase : " + testCase);
-            LOG.debug("SQL.param.build : " + build);
-            LOG.debug("SQL.param.environment : " + environment);
-            LOG.debug("SQL.param.country : " + country);
-            LOG.debug("SQL.param.id : " + id);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, propName);
-                preStat.setString(2, test);
-                preStat.setString(3, testCase);
-                preStat.setString(4, build);
-                preStat.setString(5, environment);
-                preStat.setString(6, country);
-                preStat.setLong(7, id);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("value"));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public List<String> getInUseValuesOfProperty(long id, String propName, String environment, String country, Integer timeoutInSecond) {
-        List<String> list = null;
-        final String query = "SELECT distinct exd.`VALUE` FROM testcaseexecution exe "
-                + "JOIN testcaseexecutiondata exd ON exd.Property = ? and exd.ID = exe.ID "
-                + "WHERE exe.environment = ? AND exe.country = ? AND exe.ControlSTATUS = 'PE' "
-                + "AND TO_SECONDS(NOW()) - TO_SECONDS(exe.start) < ? AND exe.ID <> ? ;";
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param : " + propName);
-            LOG.debug("SQL.param : " + environment);
-            LOG.debug("SQL.param : " + country);
-            LOG.debug("SQL.param : " + String.valueOf(timeoutInSecond));
-            LOG.debug("SQL.param : " + id);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                preStat.setString(1, propName);
-                preStat.setString(2, environment);
-                preStat.setString(3, country);
-                preStat.setInt(4, timeoutInSecond);
-                preStat.setLong(5, id);
-
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    list = new ArrayList<String>();
-
-                    while (resultSet.next()) {
-                        list.add(resultSet.getString("value"));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(TestCaseExecutionDataDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public Answer create(TestCaseExecutionData object) {
+    public Answer create(TestCaseExecutionFile object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaseexecutiondata(id, property, `index`, description, VALUE, TYPE, VALUE1,VALUE2, rc, rmessage, start, END, startlong, endlong)  ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("INSERT INTO testcaseexecutionfile (`exeid`, `level`, `fileDesc`, `fileName`, `fileType`, `usrcreated`) ");
+        query.append("VALUES (?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + object.getId());
-            LOG.debug("SQL.param.property : " + object.getProperty());
-            LOG.debug("SQL.param.index : " + object.getIndex());
-            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
+            LOG.debug("SQL : " + query.toString());
         }
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setLong(1, object.getId());
-                preStat.setString(2, object.getProperty());
-                preStat.setInt(3, object.getIndex());
-                preStat.setString(4, object.getDescription());
-                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-                preStat.setString(6, object.getType());
-                preStat.setString(7, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(8, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
-                preStat.setString(9, object.getRC());
-                preStat.setString(10, StringUtil.getLeftString(object.getrMessage(), 3000));
-                preStat.setTimestamp(11, new Timestamp(object.getStart()));
-                preStat.setTimestamp(12, new Timestamp(object.getEnd()));
-                preStat.setString(13, df.format(object.getStart()));
-                preStat.setString(14, df.format(object.getEnd()));
+                preStat.setLong(1, object.getExeId());
+                preStat.setString(2, object.getLevel());
+                preStat.setString(3, object.getFileDesc());
+                preStat.setString(4, object.getFileName());
+                preStat.setString(5, object.getFileType());
+                preStat.setString(6, object.getUsrCreated());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -479,25 +327,19 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public Answer delete(TestCaseExecutionData object) {
+    public Answer delete(TestCaseExecutionFile object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM testcaseexecutiondata WHERE id = ? AND property = ? AND `index` = ? ";
+        final String query = "DELETE FROM testcaseexecutionfile WHERE id = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + String.valueOf(object.getId()));
-            LOG.debug("SQL.param.property : " + object.getProperty());
-            LOG.debug("SQL.param.index : " + String.valueOf(object.getIndex()));
         }
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setLong(1, object.getId());
-                preStat.setString(2, object.getProperty());
-                preStat.setInt(3, object.getIndex());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -526,40 +368,26 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public Answer update(TestCaseExecutionData object) {
+    public Answer update(TestCaseExecutionFile object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? WHERE id = ? AND property = ? AND `index` = ?";
+        final String query = "UPDATE testcaseexecutionfile SET exeid = ?, level = ?, `filedesc` = ?, `filename` = ?, filetype = ?, usrmodif = ?, datemodif = ?  WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.id : " + object.getId());
-            LOG.debug("SQL.param.property : " + object.getProperty());
-            LOG.debug("SQL.param.index : " + object.getIndex());
-            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
         }
-
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setString(1, object.getDescription());
-                preStat.setString(2, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-                preStat.setString(3, object.getType());
-                preStat.setString(4, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(5, StringUtil.getLeftString(object.getValue2(), 2500));
-                preStat.setString(6, object.getRC());
-                preStat.setString(7, StringUtil.getLeftString(object.getrMessage(), 3000));
-                preStat.setTimestamp(8, new Timestamp(object.getStart()));
-                preStat.setTimestamp(9, new Timestamp(object.getEnd()));
-                preStat.setString(10, df.format(object.getStart()));
-                preStat.setString(11, df.format(object.getEnd()));
-                preStat.setLong(12, object.getId());
-                preStat.setString(13, object.getProperty());
-                preStat.setInt(14, object.getIndex());
+                preStat.setLong(1, object.getExeId());
+                preStat.setString(2, object.getLevel());
+                preStat.setString(3, object.getFileDesc());
+                preStat.setString(4, object.getFileName());
+                preStat.setString(5, object.getFileType());
+                preStat.setString(6, object.getUsrModif());
+                preStat.setTimestamp(7, object.getDateModif());
+                preStat.setLong(8, object.getId());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -588,29 +416,21 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     }
 
     @Override
-    public TestCaseExecutionData loadFromResultSet(ResultSet resultSet) throws SQLException {
-        long id = resultSet.getLong("exd.id");
-        String property = resultSet.getString("exd.property");
-        int index = resultSet.getInt("exd.index");
-        String description = resultSet.getString("exd.description");
-        String value = resultSet.getString("exd.value");
-        String type = resultSet.getString("exd.type");
-        String value1 = resultSet.getString("exd.value1");
-        String value2 = resultSet.getString("exd.value2");
-        String returnCode = resultSet.getString("exd.rc");
-        String returnMessage = resultSet.getString("exd.rmessage");
-        long start = resultSet.getTimestamp("exd.start").getTime();
-        long end = resultSet.getTimestamp("exd.end").getTime();
-        long startLong = resultSet.getLong("exd.startlong");
-        long endLong = resultSet.getLong("exd.endlong");
+    public TestCaseExecutionFile loadFromResultSet(ResultSet rs) throws SQLException {
+        long id = rs.getLong("exf.id");
+        long exeId = rs.getLong("exf.exeid");
+        String level = ParameterParserUtil.parseStringParam(rs.getString("exf.level"), "");
+        String fileDesc = ParameterParserUtil.parseStringParam(rs.getString("exf.filedesc"), "");
+        String fileName = ParameterParserUtil.parseStringParam(rs.getString("exf.filename"), "");
+        String fileType = ParameterParserUtil.parseStringParam(rs.getString("exf.filetype"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("exf.usrcreated"), "");
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("exf.usrmodif"), "");
+        Timestamp dateCreated = rs.getTimestamp("exf.dateCreated");
+        Timestamp dateModif = rs.getTimestamp("exf.dateModif");
 
-        factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
-        return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null);
+        //TODO remove when working in test with mockito and autowired
+        factoryTestCaseExecutionFile = new FactoryTestCaseExecutionFile();
+        return factoryTestCaseExecutionFile.create(id, exeId, level, fileDesc, fileName, fileType, usrCreated, dateCreated, usrModif, dateModif);
     }
-
-
-
-
 
 }

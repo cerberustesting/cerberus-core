@@ -20,20 +20,20 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.cerberus.crud.dao.ITestDataLibDataDAO;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.util.answer.MessageEventUtil;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +44,10 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     ITestDataLibDataDAO testDataLibDataDAO;
     @Autowired
     private DatabaseSpring dbmanager;
+
+    private final String OBJECT_NAME = "TestDataLibData";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestDataLibDataService.class);
 
     @Override
     public AnswerItem readByKey(Integer testDataLibID, String subData) {
@@ -56,8 +60,8 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String valueEmpty) {
-        return testDataLibDataDAO.readByVarious(testDataLibID, columnEmpty, parsingAnswerEmpty, valueEmpty);
+    public AnswerList readByVarious(Integer testDataLibID, String columnEmpty, String parsingAnswerEmpty, String columnPositionEmpty) {
+        return testDataLibDataDAO.readByVarious(testDataLibID, columnEmpty, parsingAnswerEmpty, columnPositionEmpty);
     }
 
     @Override
@@ -81,11 +85,6 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public Answer create(List<TestDataLibData> completeSubDataList) {
-        return testDataLibDataDAO.create(completeSubDataList);
-    }
-
-    @Override
     public Answer update(TestDataLibData testDataLibData) {
         return testDataLibDataDAO.update(testDataLibData);
     }
@@ -96,87 +95,103 @@ public class TestDataLibDataService implements ITestDataLibDataService {
     }
 
     @Override
-    public Answer delete(TestDataLib testDataLib) {
-        return testDataLibDataDAO.delete(testDataLib);
-    }
-
-    @Override
-    public Answer createUpdateDelete(ArrayList<TestDataLibData> entriesToInsert, ArrayList<TestDataLibData> entriesToUpdate,
-            ArrayList<TestDataLibData> entriesToRemove) {
-
-        dbmanager.beginTransaction();
-
-        Answer answer = new Answer();
-        //first we delete to avoid errors related to duplicate keys
-        if (entriesToRemove.size() > 0) {
-            //gets the list of entries to remove
-            answer = testDataLibDataDAO.delete(entriesToRemove);
-            if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                //if the delete does not succeed, then the transaction should be aborted
-                dbmanager.abortTransaction();
-                return answer;
-            }
+    public Answer createList(List<TestDataLibData> objectList) {
+        Answer ans = new Answer(null);
+        for (TestDataLibData objectToCreate : objectList) {
+            ans = testDataLibDataDAO.create(objectToCreate);
         }
-
-        if (entriesToUpdate.size() > 0) {
-            answer = testDataLibDataDAO.update(entriesToUpdate);
-            if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                //if the update does not succeed, then the transaction should be aborted
-                dbmanager.abortTransaction();
-                return answer;
-            }
-        }
-
-        if (entriesToInsert.size() > 0) {
-            answer = testDataLibDataDAO.create(entriesToInsert);
-            if (!answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                //if the insert does not succeed, then the transaction should be aborted
-                dbmanager.abortTransaction();
-                return answer;
-            }
-        }
-
-        dbmanager.commitTransaction();
-        //if everything succeeds, then a success message is sent back
-
-        MessageEvent ms = MessageEventUtil.createUpdateSuccessMessageDAO("Sub-data set ");
-        answer.setResultMessage(ms);
-        return answer;
-
-    }
-
-    @Override
-    public Answer validate(List<TestDataLibData> subDataList) {
-
-        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_OK));
-        //check if the entries are duplicated 
-        if (subDataList.size() > 1) {
-            //check if the entries are duplicated 
-            boolean hasDuplicates = containsDuplicates(subDataList);
-            if (hasDuplicates) {
-                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_VALIDATIONS_ERROR);
-                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "You have entries with duplicated names."));
-                ans.setResultMessage(msg);
-                return ans;
-            }
-        }
-
         return ans;
     }
 
-    private boolean containsDuplicates(List<TestDataLibData> subDataList) {
-        Set<String> entries = new HashSet<String>();
-
-        //if is not valid then creates a new message
-        for (TestDataLibData subData : subDataList) {
-            if (entries.contains(subData.getSubData())) {
-                return false; //not ok
-            }
-
-            entries.add(subData.getSubData());
+    @Override
+    public Answer deleteList(List<TestDataLibData> objectList) {
+        Answer ans = new Answer(null);
+        for (TestDataLibData objectToCreate : objectList) {
+            ans = testDataLibDataDAO.delete(objectToCreate);
         }
-
-        return true;
+        return ans;
     }
 
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(Integer testDataLibId, List<TestDataLibData> newList) {
+        Answer ans = new Answer(null);
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<TestDataLibData> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(testDataLibId, null, null, null));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+
+        /**
+         * Update and Create all objects database Objects from newList
+         */
+        List<TestDataLibData> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<TestDataLibData> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (TestDataLibData objectDifference : listToUpdateOrInsertToIterate) {
+            for (TestDataLibData objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        /**
+         * Delete all objects database Objects that do not exist from newList
+         */
+        List<TestDataLibData> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<TestDataLibData> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (TestDataLibData tcsDifference : listToDeleteToIterate) {
+            for (TestDataLibData tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
+    }
+
+    @Override
+    public TestDataLibData convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (TestDataLibData) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<TestDataLibData> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<TestDataLibData>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
 }

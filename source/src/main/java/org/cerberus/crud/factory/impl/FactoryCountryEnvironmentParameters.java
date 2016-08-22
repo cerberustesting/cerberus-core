@@ -30,7 +30,7 @@ import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 public class FactoryCountryEnvironmentParameters implements IFactoryCountryEnvironmentParameters {
 
     @Override
-    public CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip, String domain, String url, String urlLogin) {
+    public CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip, String domain, String url, String urlLogin, String var1, String var2, String var3, String var4) {
         CountryEnvironmentParameters object = new CountryEnvironmentParameters();
         object.setSystem(system);
         object.setCountry(country);
@@ -40,6 +40,10 @@ public class FactoryCountryEnvironmentParameters implements IFactoryCountryEnvir
         object.setDomain(domain);
         object.setUrl(url);
         object.setUrlLogin(urlLogin);
+        object.setVar1(var1);
+        object.setVar2(var2);
+        object.setVar3(var3);
+        object.setVar4(var4);
         return object;
     }
 }

@@ -193,7 +193,6 @@ public class SoapService implements ISoapService {
                 if (out != null) {
                     out.close();
                 }
-                MyLogger.log(SoapService.class.getName(), Level.INFO, "Connection and ByteArray closed");
             } catch (SOAPException | IOException ex) {
                 Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             } finally {

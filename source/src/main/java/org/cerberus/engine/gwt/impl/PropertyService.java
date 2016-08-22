@@ -60,7 +60,6 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.DateUtil;
-import org.cerberus.util.FileUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
@@ -378,6 +377,10 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplication().getApplication());
         stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
         stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
+        stringToDecode = stringToDecode.replace("%SYS_APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
         stringToDecode = stringToDecode.replace("%SYS_ENV%", tCExecution.getEnvironmentData());
         stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
@@ -386,6 +389,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
+        stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
 
         /**
          * Trying to replace date variables .
@@ -421,7 +425,7 @@ public class PropertyService implements IPropertyService {
 
         for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
 
-            if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA))) { // Type could be null in case property do not exist.
+            if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB))) { // Type could be null in case property do not exist.
                 /* Replacement in case of TestDataLib */
 
                 // Key value of the DataLib.
@@ -429,7 +433,7 @@ public class PropertyService implements IPropertyService {
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
                 }
 
-                // For each subdata of the getFromDataLib_BETA property, we try to replace with PROPERTY(SUBDATA).
+                // For each subdata of the getFromDataLib property, we try to replace with PROPERTY(SUBDATA).
                 if (!(tced.getDataLibRawData() == null)) {
                     int ind = 0;
                     for (HashMap<String, String> dataRow : tced.getDataLibRawData()) { // We loop every row result.
@@ -636,7 +640,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMDATALIB_BETA:
+            case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
                 testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
@@ -901,12 +905,8 @@ public class PropertyService implements IPropertyService {
                 tCExecution.setLastSOAPCalled(soapCall);
 
                 //Record the Request and Response.
-                String requestFileName = FileUtil.generateScreenshotFilename(null, null, null, null, null, testCaseExecutionData.getProperty() + "_request", "xml");
-                String responseFileName = FileUtil.generateScreenshotFilename(null, null, null, null, null, testCaseExecutionData.getProperty() + "_response", "xml");
                 SOAPExecution se = (SOAPExecution) soapCall.getItem();
-
-                String requestFilePath = recorderService.recordSoapMessageAndGetPath(tCExecution.getId(), se.getSOAPRequest(), requestFileName);
-                String responseFilePath = recorderService.recordSoapMessageAndGetPath(tCExecution.getId(), se.getSOAPResponse(), responseFileName);
+                recorderService.recordSOAPProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, se);
 
                 if (soapCall.isCodeEquals(200)) {
                     SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
@@ -916,13 +916,9 @@ public class PropertyService implements IPropertyService {
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SOAP);
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SOAPFROMLIB_NODATA);
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", requestFilePath));
-                    res.setDescription(res.getDescription().replace("%REQUEST_PATH%", responseFilePath));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             }
@@ -1094,7 +1090,7 @@ public class PropertyService implements IPropertyService {
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
                 tCExecution.getApplication().getSystem(), tCExecution.getEnvironmentData(),
-                tCExecution.getCountry(), null);
+                tCExecution.getCountry());
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {
             testDataLib = (TestDataLib) answer.getItem();
@@ -1138,6 +1134,9 @@ public class PropertyService implements IPropertyService {
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = (String) result.get(0).get("");
                 testCaseExecutionData.setValue(value);
+
+                //Record result in filessytem.
+                recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
 
             }
             res.setDescription(res.getDescription().replace("%ENTRY%", testDataLib.getName()).replace("%ENTRYID%", String.valueOf(testDataLib.getTestDataLibID())));

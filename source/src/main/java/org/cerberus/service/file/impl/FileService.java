@@ -20,13 +20,11 @@
 package org.cerberus.service.file.impl;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -53,27 +51,39 @@ public class FileService implements IFileService {
          */
         result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_GENERIC)
                 .resolveDescription("URL", urlToCSVFile));
-        
-        try  {
+
+        try {
             /**
              * Get CSV File and parse it line by line
-             */ 
+             */
             URL urlToCall = new URL(urlToCSVFile);
             BufferedReader br = new BufferedReader(new InputStreamReader(urlToCall.openStream()));
 
+            if ("".equals(separator)) {
+                separator = ",";
+            }
+            boolean noDataMapped = true;
             while (null != (str = br.readLine())) {
                 HashMap<String, String> line = new HashMap();
-                Integer columnPosition = 0;
+                Integer columnPosition = 1;
                 /**
-                 * For each line, split result by separator, and put it in result object if it has been defined in subdata
+                 * For each line, split result by separator, and put it in
+                 * result object if it has been defined in subdata
                  */
                 for (String element : str.split(separator)) {
                     if (columnsToGet.containsKey(String.valueOf(columnPosition))) {
                         line.put(columnsToGet.get(String.valueOf(columnPosition)), element);
+                        noDataMapped = false;
                     }
                     columnPosition++;
                 }
                 csv.add(line);
+            }
+            if (noDataMapped) { // No columns at all could be mapped on the full file.
+                result.setDataList(null);
+                result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_NOCOLUMEDMAPPED).resolveDescription("SEPARATOR", separator));
+                result.setTotalRows(0);
+                return result;
             }
             /**
              * Set result with datalist and resultMeassage.
@@ -84,7 +94,7 @@ public class FileService implements IFileService {
         } catch (Exception exception) {
             LOG.warn("Error Getting CSV File " + exception);
             result.setResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_CSV_FILENOTFOUND)
-                .resolveDescription("URL", urlToCSVFile));
+                    .resolveDescription("URL", urlToCSVFile).resolveDescription("EX", exception.toString()));
         }
         return result;
     }

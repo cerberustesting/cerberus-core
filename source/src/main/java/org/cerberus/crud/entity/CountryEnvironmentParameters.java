@@ -31,6 +31,10 @@ public class CountryEnvironmentParameters {
     private String domain;
     private String url;
     private String urlLogin;
+    private String var1;
+    private String var2;
+    private String var3;
+    private String var4;
 
     public String getApplication() {
         return application;
@@ -96,6 +100,38 @@ public class CountryEnvironmentParameters {
         this.system = system;
     }
 
+    public String getVar1() {
+        return var1;
+    }
+
+    public void setVar1(String var1) {
+        this.var1 = var1;
+    }
+
+    public String getVar2() {
+        return var2;
+    }
+
+    public void setVar2(String var2) {
+        this.var2 = var2;
+    }
+
+    public String getVar3() {
+        return var3;
+    }
+
+    public void setVar3(String var3) {
+        this.var3 = var3;
+    }
+
+    public String getVar4() {
+        return var4;
+    }
+
+    public void setVar4(String var4) {
+        this.var4 = var4;
+    }
+
     public boolean hasSameKey(CountryEnvironmentParameters obj) {
         if (obj == null) {
             return false;
@@ -130,6 +166,10 @@ public class CountryEnvironmentParameters {
         hash = 29 * hash + (this.url != null ? this.url.hashCode() : 0);
         hash = 29 * hash + (this.urlLogin != null ? this.urlLogin.hashCode() : 0);
         hash = 29 * hash + (this.domain != null ? this.domain.hashCode() : 0);
+        hash = 29 * hash + (this.var1 != null ? this.var1.hashCode() : 0);
+        hash = 29 * hash + (this.var2 != null ? this.var2.hashCode() : 0);
+        hash = 29 * hash + (this.var3 != null ? this.var3.hashCode() : 0);
+        hash = 29 * hash + (this.var4 != null ? this.var4.hashCode() : 0);
         return hash;
     }
 
@@ -164,6 +204,18 @@ public class CountryEnvironmentParameters {
             return false;
         }
         if ((this.domain == null) ? (other.domain != null) : !this.domain.equals(other.domain)) {
+            return false;
+        }
+        if ((this.var1 == null) ? (other.var1 != null) : !this.var1.equals(other.var1)) {
+            return false;
+        }
+        if ((this.var2 == null) ? (other.var2 != null) : !this.var2.equals(other.var2)) {
+            return false;
+        }
+        if ((this.var3 == null) ? (other.var3 != null) : !this.var3.equals(other.var3)) {
+            return false;
+        }
+        if ((this.var4 == null) ? (other.var4 != null) : !this.var4.equals(other.var4)) {
             return false;
         }
         return true;

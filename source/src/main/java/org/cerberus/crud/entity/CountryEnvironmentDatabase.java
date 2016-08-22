@@ -29,6 +29,15 @@ public class CountryEnvironmentDatabase {
     private String database;
     private String connectionPoolName;
     private String soapUrl;
+    private String csvUrl;
+
+    public String getCsvUrl() {
+        return csvUrl;
+    }
+
+    public void setCsvUrl(String csvUrl) {
+        this.csvUrl = csvUrl;
+    }
 
     public String getConnectionPoolName() {
         return connectionPoolName;
@@ -110,6 +119,7 @@ public class CountryEnvironmentDatabase {
         hash = 29 * hash + (this.database != null ? this.database.hashCode() : 0);
         hash = 29 * hash + (this.connectionPoolName != null ? this.connectionPoolName.hashCode() : 0);
         hash = 29 * hash + (this.soapUrl != null ? this.soapUrl.hashCode() : 0);
+        hash = 29 * hash + (this.csvUrl != null ? this.soapUrl.hashCode() : 0);
         return hash;
     }
 
@@ -138,6 +148,9 @@ public class CountryEnvironmentDatabase {
             return false;
         }
         if ((this.soapUrl == null) ? (other.soapUrl != null) : !this.soapUrl.equals(other.soapUrl)) {
+            return false;
+        }
+        if ((this.csvUrl == null) ? (other.csvUrl != null) : !this.csvUrl.equals(other.csvUrl)) {
             return false;
         }
         return true;

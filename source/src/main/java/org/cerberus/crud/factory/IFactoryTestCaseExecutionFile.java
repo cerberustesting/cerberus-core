@@ -19,14 +19,31 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 
 /**
- *
- * @author bcivel
+ * @author vertigo
  */
-public interface IFactoryCountryEnvironmentParameters {
+public interface IFactoryTestCaseExecutionFile {
 
-    CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip,
-            String Domain, String url, String urlLogin, String var1, String var2, String var3, String var4);
+    /**
+     *
+     * @param id
+     * @param exeId
+     * @param level
+     * @param fileDesc
+     * @param fileName
+     * @param fileType
+     * @param usrCreated
+     * @param dateCreated
+     * @param usrModif
+     * @param dateModif
+     * @return
+     */
+    TestCaseExecutionFile create(long id, long exeId, String level
+            , String fileDesc, String fileName, String fileType
+            , String usrCreated, Timestamp dateCreated, String usrModif
+            , Timestamp dateModif);
+
 }
