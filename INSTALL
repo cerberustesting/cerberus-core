@@ -70,5 +70,5 @@ Update
 - run deploy script --> 02DeployApp.sh[.bat]
 
 4) You can connect to cerberus. 
-- The first connection will invite you to update the database.
-- You can start to using Cerberus.
+- The first connection will ask you to update the database.
+- You can start using Cerberus right after this update.

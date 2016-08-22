@@ -1,13 +1,13 @@
 This is a small documentation on how to activate the screenshot feature in Cerberus :
 
 1/
-  - Modify cerberus_picture_path parameter in order to store the snapshots inside the correct local folder. This is where Cerberus will try to store the screenshot.
-  - Modify cerberus_picture_url parameter in order to put the correct host (where the cerberus server runs) for the URL to access the pictures. if you leave localhost, the pictures will be accessible only locally from the cerberus server.
+  - Modify cerberus_mediastorage_path parameter in order to store the various media files (ex : snapshots) inside the correct local folder. This is where Cerberus will try to store the files.
+  - Modify cerberus_mediastorage_url parameter in order to put the correct host (where the cerberus server runs) for the URL to access the pictures. if you leave localhost, the pictures will be accessible only locally from the cerberus server.
   
-2/ Add to your apache config file of the cerberus server the following lines for the management of the virtual folder "CerberusPictures".
+2/ Add to your apache config file of the cerberus server the following lines for the management of the virtual folder "CerberusMedia".
 
-Alias /CerberusPictures /home/myuser/CerberusPictures
-<Directory /home/myuser/CerberusPictures>
+Alias /CerberusMedia /home/myuser/CerberusMedia
+<Directory /home/myuser/CerberusMedia>
 	Options Indexes FollowSymLinks
 	AllowOverride None
 	Require all granted
