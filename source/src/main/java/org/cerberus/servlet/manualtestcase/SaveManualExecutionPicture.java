@@ -153,7 +153,6 @@ public class SaveManualExecutionPicture extends HttpServlet {
 ////                    testCaseStepActionExecution.setEnd(now.getTime());
 ////                    testCaseStepActionExecution.setStartLong(now.getTime());
 ////                    testCaseStepActionExecution.setEndLong(now.getTime());
-////                    testCaseStepActionExecution.setScreenshotFilename(name);
 ////                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 ////
 ////                    seq++;

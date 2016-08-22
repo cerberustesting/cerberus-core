@@ -256,8 +256,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, sort, ACTION, object, property, forceExeStatus, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, screenshotfilename, pagesourcefilename, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, sort, ACTION, object, property, forceExeStatus, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -288,9 +288,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(14, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
                 preStat.setString(15, testCaseStepActionExecution.getTest());
                 preStat.setString(16, testCaseStepActionExecution.getTestCase());
-                preStat.setString(17, testCaseStepActionExecution.getScreenshotFilename());
-                preStat.setString(18, testCaseStepActionExecution.getPageSourceFilename());
-                preStat.setString(19, testCaseStepActionExecution.getDescription());
+                preStat.setString(17, testCaseStepActionExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -315,7 +313,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, object = ?, property = ?, forceExeStatus = ?, start = ?, END = ?"
-                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, screenshotfilename = ?, pageSourceFilename = ?, description = ?, sort = ?"
+                + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, description = ?, sort = ?"
                 + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ;";
 
         Connection connection = this.databaseSpring.connect();
@@ -341,15 +339,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(8, df.format(testCaseStepActionExecution.getEnd()));
                 preStat.setString(9, testCaseStepActionExecution.getReturnCode());
                 preStat.setString(10, StringUtil.getLeftString(testCaseStepActionExecution.getReturnMessage(), 500));
-                preStat.setString(11, testCaseStepActionExecution.getScreenshotFilename());
-                preStat.setString(12, testCaseStepActionExecution.getPageSourceFilename());
-                preStat.setString(13, testCaseStepActionExecution.getDescription());
-                preStat.setInt(14, testCaseStepActionExecution.getSort());
-                preStat.setLong(15, testCaseStepActionExecution.getId());
-                preStat.setString(16, testCaseStepActionExecution.getTest());
-                preStat.setString(17, testCaseStepActionExecution.getTestCase());
-                preStat.setInt(18, testCaseStepActionExecution.getStep());
-                preStat.setInt(19, testCaseStepActionExecution.getSequence());
+                preStat.setString(11, testCaseStepActionExecution.getDescription());
+                preStat.setInt(12, testCaseStepActionExecution.getSort());
+                preStat.setLong(13, testCaseStepActionExecution.getId());
+                preStat.setString(14, testCaseStepActionExecution.getTest());
+                preStat.setString(15, testCaseStepActionExecution.getTestCase());
+                preStat.setInt(16, testCaseStepActionExecution.getStep());
+                preStat.setInt(17, testCaseStepActionExecution.getSequence());
 
                 preStat.executeUpdate();
 
@@ -389,10 +385,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         long end = resultSet.getTimestamp("exa.end") == null ? 0 : resultSet.getTimestamp("exa.end").getTime();
         long startlong = resultSet.getLong("exa.startlong");
         long endlong = resultSet.getLong("exa.endlong");
-        String screenshot = resultSet.getString("exa.ScreenshotFilename");
-        String pageSource = resultSet.getString("exa.PageSourceFilename");
         String description = resultSet.getString("exa.description");
-        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, sort, returnCode, returnMessage, action, object, property, forceExeStatus, start, end, startlong, endlong, screenshot, pageSource, null, description, null, null);
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, sort, returnCode, returnMessage, action, object, property, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
 
     }
 

@@ -155,7 +155,7 @@ public class RunManualTest extends HttpServlet {
 
                 }
 
-            //Notify it's finnished
+                //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();
 //        try {
 //            wst.handleMessage(execution.getTag());
@@ -260,7 +260,7 @@ public class RunManualTest extends HttpServlet {
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, sort, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, "", now, now, now, now,
-                        null, null, null, "", null, null));
+                        null, "", null, null));
             }
         }
         return result;
@@ -289,7 +289,7 @@ public class RunManualTest extends HttpServlet {
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, sort,
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
-                        now, now, null, null,"", null, null));
+                        now, now, "", null, null));
             }
         }
         return result;
