@@ -19,11 +19,13 @@
  */
 package org.cerberus.engine.execution;
 
-import javax.xml.soap.SOAPMessage;
+import java.util.HashMap;
+import java.util.List;
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.engine.entity.SOAPExecution;
 
 /**
  *
@@ -31,18 +33,81 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
  */
 public interface IRecorderService {
 
-    String recordScreenshotAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+    /**
+     *
+     * @param testCaseStepActionExecution
+     * @param testCaseStepActionControlExecution
+     */
+    void recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
-    String recordXMLAndGetName(Long executionId,String fileName, String content);
-    
-    String recordSoapMessageAndGetPath(Long executionId, SOAPMessage soapMessage, String fileName);
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     */
+    void recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
-    String recordPageSourceAndGetName(TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     */
+    void recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
-    String recordSeleniumLogAndGetName(TestCaseExecution testCaseExecution);
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param se
+     */
+    void recordSOAPCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, SOAPExecution se);
 
-    void recordExecutionInformation(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
-    
+    /**
+     *
+     * @param runId
+     * @param property
+     * @param propertyIndex
+     * @param se
+     */
+    void recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPExecution se);
+
+    /**
+     *
+     * @param runId
+     * @param property
+     * @param propertyIndex
+     * @param result
+     */
+    void recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result);
+
+    /**
+     *
+     * @param testCaseExecution
+     */
+    void recordSeleniumLog(TestCaseExecution testCaseExecution);
+
+    /**
+     *
+     * @param executionId
+     * @param tcsae
+     * @param uploadedFile
+     */
+    void recordUploadedFile(long executionId, TestCaseStepActionExecution tcsae, FileItem uploadedFile);
+
+    /**
+     *
+     * @param exeID
+     * @return
+     */
+    public String getStorageSubFolderURL(long exeID);
+
+    /**
+     *
+     * @param exeID
+     * @return
+     */
+    public String getStorageSubFolder(long exeID);
 }

@@ -35,31 +35,20 @@ public interface ITestDataLibDAO {
 
     /**
      *
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
-     * @param type
-     * @return
-     */
-    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country, String type);
-
-    /**
-     *
-     * @param name
-     * @param system
-     * @param environment
-     * @param country
-     * @return
-     */
-    AnswerItem readByKey(String name, String system, String environment, String country);
-
-    /**
-     *
      * @param testDataLibID
      * @return
      */
     AnswerItem readByKey(int testDataLibID);
+
+    /**
+     *
+     * @param name
+     * @param system
+     * @param environment
+     * @param country
+     * @return
+     */
+    AnswerItem readByNameBySystemByEnvironmentByCountry(String name, String system, String environment, String country);
 
     /**
      *
@@ -130,10 +119,11 @@ public interface ITestDataLibDAO {
 
     /**
      * Read distinct Value of specified column
+     *
      * @param searchTerm
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 }

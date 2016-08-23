@@ -60,12 +60,17 @@ function getSubDataLabel(type) {
 /**
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * @param {String} selectName value name of the select tag in the html
- * @param {String} idName value that filters the invariants that will be retrieved
+ * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
  * @param {String} forceReload true in order to force the reload of list from database.
- * @param {String} defaultValue [optional] to be selected
+ * @param {String} defaultValue [optional] value to be selected in combo.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, forceReload, defaultValue) {
+function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1) {
+    // Adding the specific value when defined.
+    if (addValue1 !== undefined) {
+        $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
+    }
 
 //    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
@@ -108,7 +113,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue) {
             $("[name='" + selectName + "']").val(defaultValue);
         }
     }
-
 }
 
 /**
@@ -943,7 +947,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["dom"] = domConf;
     configs["stateDuration"] = tableConfigurations.stateDuration;
     configs["serverSide"] = tableConfigurations.serverSide;
-    configs["processing"] = tableConfigurations.processig;
+    configs["processing"] = tableConfigurations.processing;
     configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
     configs["bPaginate"] = tableConfigurations.bPaginate;
     configs["autoWidth"] = tableConfigurations.autoWidth;

@@ -20,6 +20,8 @@
 package org.cerberus.servlet.crud.testdata;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -29,7 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.entity.TestDataLibData;
+import org.cerberus.crud.factory.IFactoryTestDataLibData;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
@@ -38,6 +43,7 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -65,12 +71,15 @@ public class UpdateTestDataLib extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
+
+        ITestDataLibDataService tdldService = appContext.getBean(ITestDataLibDataService.class);
 
         response.setContentType("application/json");
 
@@ -110,10 +119,18 @@ public class UpdateTestDataLib extends HttpServlet {
         }
 
         try {
+            // Getting list of application from JSON Call
+            JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
+            List<TestDataLibData> tdldList = new ArrayList();
+            tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray);
+
+            // Prepare the final answer.
+            MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+            Answer finalAnswer = new Answer(msg1);
+
             /**
              * Checking all constrains before calling the services.
              */
-
             if (StringUtil.isNullOrEmpty(name)) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "Test data library")
@@ -130,21 +147,17 @@ public class UpdateTestDataLib extends HttpServlet {
                 /**
                  * All data seems cleans so we can call the services.
                  */
+
                 //specific attributes
-                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                 ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
 
                 AnswerItem resp = libService.readByKey(testdatalibid);
-                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                     /**
                      * Object could not be found. We stop here and report the
                      * error.
                      */
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                            .replace("%OPERATION%", "Update")
-                            .replace("%REASON%", "Robot does not exist."));
-                    ans.setResultMessage(msg);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
                 } else {
                     /**
@@ -171,20 +184,27 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setLastModifier(request.getRemoteUser());
 
                     ans = libService.update(lib);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
-                         * Update operation finished with success, then the logging entry must be added.
+                         * Update operation finished with success, then the
+                         * logging entry must be added.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
                         logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
+
+                    // Update the Database with the new list.
+                    ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
                 }
 
             }
-            jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", ans.getResultMessage().getDescription());
+            jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+            jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
@@ -195,6 +215,36 @@ public class UpdateTestDataLib extends HttpServlet {
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
+    }
+
+    private List<TestDataLibData> getSubDataFromParameter(HttpServletRequest request, ApplicationContext appContext, int testDataLibId, JSONArray json) throws JSONException {
+        List<TestDataLibData> tdldList = new ArrayList();
+        IFactoryTestDataLibData tdldFactory = appContext.getBean(IFactoryTestDataLibData.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            Integer testDataLibDataId = objectJson.getInt("testDataLibDataID");
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // NONE
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            String subdata = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("subData"), "", charset);
+            String value = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("value"), "", charset);
+            String column = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("column"), "", charset);
+            String parsingAnswer = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("parsingAnswer"), "", charset);
+            String columnPosition = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("columnPosition"), "", charset);
+            String description = ParameterParserUtil.parseStringParamAndDecode(objectJson.getString("description"), "", charset);
+
+            if (!delete) {
+                TestDataLibData tdld = tdldFactory.create(testDataLibDataId, testDataLibId, subdata, value, column, parsingAnswer, columnPosition, description);
+                tdldList.add(tdld);
+            }
+        }
+        return tdldList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

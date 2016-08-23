@@ -39,7 +39,8 @@ public enum MessageEventEnum {
      * <p/>
      * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
      * are from x50 to x99 (different code for each). Pending is x99.
-     */
+     * 
+    **/
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL_RANDOM(100, "OK", "Random result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -57,7 +58,7 @@ public enum MessageEventEnum {
     PROPERTY_SUCCESS_GETFROMJSON(100, "OK", "Value '%PARAM%' from Json '%URL%' has been found and returned '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMGROOVY(100, "OK", "Groovy script property calculated with '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_TESTDATA(100, "OK", "TestData %PROPERTY% correctly returned '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    PROPERTY_SUCCESS_SOAP(100, "OK", "SOAP Request executed.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB(100, "OK", "Data Library entry %ENTRY% (%ENTRYID%) retrieved with success. First result fetch from SQL executed against database '%DB%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB_GLOBAL(100, "OK", "Data Library entry %ENTRY% (%ENTRYID%) retrieved with success. %DATAMESSAGE% and %FILTERNATUREMESSAGE%. Result : %RESULT%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_GETFROMDATALIB_SUBDATA(100, "OK", "Subdata retreived with success.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -151,7 +152,7 @@ public enum MessageEventEnum {
     PROPERTY_FAILED_GETFROMDATALIB_CSV_NOCOLUMEDMAPPED(194, "FA", "No columns could be mapped. Probably because all column position are higher than number of columns of the file. Maybe check that separator %SEPARATOR% is correct.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_FAILED_GETFROMGROOVY_NULL(904, "NA", "Property is 'null' or empty. Cannot calculate Groovy script from a 'null' or empty property.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_GETFROMGROOVY_EXCEPTION(904, "FA", "Groovy evaluation error: %REASON%", true, true, false, MessageGeneralEnum.EXECUTION_FA),
-    PROPERTY_FAILED_SOAPFROMLIB_NODATA(198, "NA", "SOAP Request executed but returned no data. <a href='%REQUEST_PATH%'>Request</a> / <a href='%RESPONSE_PATH%'>Response</a>.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
+    PROPERTY_FAILED_SOAPFROMLIB_NODATA(198, "NA", "SOAP Request executed but returned no data.", true, false, false, MessageGeneralEnum.EXECUTION_NA),
     PROPERTY_FAILED_FEATURENOTIMPLEMENTED(197, "FA", "Feature '%FEATURE%' is not yet implemented!", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     PROPERTY_PENDING(199, "PE", "Calculating property...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION ACTIONS ***********
@@ -181,12 +182,14 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_MOUSEUP(200, "OK", "Mouse Left Click Released on Element '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SWITCHTOWINDOW(200, "OK", "Focus of Selenium was changed to Window '%WINDOW%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_CLOSE_ALERT(200, "OK", "Alert popup is closed !", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_CALLSOAP(200, "OK", "Call to SOAP '%SOAPNAME%' executed successfully and stored to memory!", false, false, true, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_CALLSOAP(200, "OK", "Call to SOAP '%SOAPNAME%' executed successfully and stored to memory!", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_MOUSEDOWNMOUSEUP(200, "OK", "Mouse Left Click pressed and released on Element '%ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_REMOVEDIFFERENCE(200, "OK", "Difference '%DIFFERENCE%' removed from '%DIFFERENCES%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_HIDEKEYBOARD(200, "OK", "Keyboard hidden.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_HIDEKEYBOARD_ALREADYHIDDEN(200, "OK", "Keyboard already hidden.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SWIPE(200, "OK", "Screen swiped '%DIRECTION%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_EXECUTESQLUPDATE(200, "OK", "SQL '%SQL%' Executed against %JDBC% - %NBROWS% row(s) affected.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_EXECUTESQLSTOREDPROCEDURE(200, "OK", "SQL '%SQL%' Executed against %JDBC% - %NBROWS% row(s) affected.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_FAILED(250, "FA", "Unknown Action Error.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
     ACTION_FAILED_CLICK(251, "FA", "Failed to click on '%ELEMENT%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SELENIUM_CONNECTIVITY(252, "CA", "The test case is canceled due to lost connection to Selenium Server!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -246,8 +249,9 @@ public enum MessageEventEnum {
     ACTION_FAILED_SQL_ERROR(293, "FA", "The SQL '%SQL%' has an error : '%EX%'.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_TIMEOUT(293, "FA", "The SQL '%SQL%' timeout out after %TIMEOUT% second(s). %EX%", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_CANNOTACCESSJDBC(294, "FA", "An error occur when connecting to JDBC datasource '%JDBC%'. Please verify with your administrator that the JDBC is configured inside the application server. Error detail: %EX%", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_SQL_JDBCPOOLNOTCONFIGURED(295, "FA", "The JDBC connection pool name does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please define it inside the database.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot executeSqlUpdate using Cerberus connection pool. Please create new connection with dedicated rights.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_DATABASENOTCONFIGURED(295, "FA", "The Database does not exist for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please configure it at environment level.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_DATABASECONFIGUREDBUTJDBCPOOLEMPTY(295, "FA", "The JDBC Ressource is empty for the corresponding System : %SYSTEM% Country : %COUNTRY%, environment : %ENV% and database : %DB% . Please configure it in environment screen.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_SQL_AGAINST_CERBERUS(295, "FA", "You cannot perform executeSqlUpdate action on a JDBC ressource using Cerberus connection pool. Please create new connection with dedicated rights.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_HIDEKEYBOARD(296, "FA", "Failed to hide keyboard. Check server logs.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWIPE(297, "FA", "Failed to swipe '%DIRECTION%' screen due to '%REASON%'.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_TIMEOUT(298, "FA", "Timeout exceeded when performing the action : %TIMEOUT% seconds", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -279,6 +283,7 @@ public enum MessageEventEnum {
     CONTROL_SUCCESS_ELEMENTEQUALS(300, "OK", "Element in path '%XPATH%' is equal to '%EXPECTED_ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_ELEMENTDIFFERENT(300, "OK", "Element in path '%XPATH%' is different from '%DIFFERENT_ELEMENT%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_TAKESCREENSHOT(300, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONTROL_SUCCESS_GETPAGESOURCE(300, "OK", "Page Source taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_FAILED(350, "KO", "Control Failed", false, true, false, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_UNKNOWNCONTROL(351, "KO", "Control function '%CONTROL%' does not exist or is not supported.", true, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_FATAL(352, "KO", "Fatal Control Failed", true, true, false, MessageGeneralEnum.EXECUTION_KO),

@@ -43,7 +43,6 @@ public interface ISQLService {
      */
     TestCaseExecutionData calculateOnDatabase(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseProperties, TestCaseExecution tCExecution);
 
-
     /**
      * Performs a query in the database
      *
@@ -57,24 +56,15 @@ public interface ISQLService {
     List<String> queryDatabase(String connectionName, String sql, int limit, int defaultTimeOut) throws CerberusEventException;
 
     /**
-     * @param list List of String in which it will take a value randomly
-     * @return A Random String from a List of String
-     */
-    String getRandomStringFromList(List<String> list);
-
-
-
-    /**
      *
      * @param system
      * @param country
      * @param environment
      * @param db
      * @param sql
-     * @param defaultTimeOut
      * @return
      */
-    MessageEvent executeUpdate(String system, String country, String environment, String db, String sql, int defaultTimeOut);
+    MessageEvent executeUpdate(String system, String country, String environment, String db, String sql);
 
     /**
      *
@@ -86,7 +76,7 @@ public interface ISQLService {
      * @return
      */
     MessageEvent executeCallableStatement(String system, String country, String environment, String db, String sql);
-    
+
     /**
      *
      * @param connectionName

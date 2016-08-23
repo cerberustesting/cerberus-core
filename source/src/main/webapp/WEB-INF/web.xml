@@ -186,6 +186,10 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateParameter2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>GetInvariantList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetInvariantList</servlet-class>
     </servlet>
@@ -432,6 +436,10 @@
     <servlet>
         <servlet-name>GetParameterSystem</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>GetParameterSystem2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
@@ -785,24 +793,12 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DuplicateTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.DuplicateTestDataLib</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestDataLib</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestDataLibData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLibData</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateTestDataLib</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestDataLib</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ImportTestDataLib</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.ImportTestDataLib</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestDataLibData</servlet-name>
@@ -1019,6 +1015,10 @@
     <servlet-mapping>
         <servlet-name>UpdateParameter</servlet-name>
         <url-pattern>/UpdateParameter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateParameter2</servlet-name>
+        <url-pattern>/UpdateParameter2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Homepage</servlet-name>
@@ -1303,6 +1303,10 @@
     <servlet-mapping>
         <servlet-name>GetParameterSystem</servlet-name>
         <url-pattern>/GetParameterSystem</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>GetParameterSystem2</servlet-name>
+        <url-pattern>/GetParameterSystem2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImportTestCaseStep</servlet-name>
@@ -1637,24 +1641,12 @@
         <url-pattern>/CreateTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DuplicateTestDataLib</servlet-name>
-        <url-pattern>/DuplicateTestDataLib</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>DeleteTestDataLib</servlet-name>
         <url-pattern>/DeleteTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateTestDataLibData</servlet-name>
-        <url-pattern>/UpdateTestDataLibData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>UpdateTestDataLib</servlet-name>
         <url-pattern>/UpdateTestDataLib</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ImportTestDataLib</servlet-name>
-        <url-pattern>/ImportTestDataLib</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestDataLibData</servlet-name>
@@ -2111,6 +2103,7 @@
             <description>jsp</description>
             <url-pattern>/LogViewer.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
+            <url-pattern>/Parameter2.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/InvariantPublic.jsp</url-pattern>
             <url-pattern>/InvariantPrivate.jsp</url-pattern>
@@ -2122,7 +2115,9 @@
             <description>servlet</description>
             <url-pattern>/GetParameter</url-pattern>
             <url-pattern>/GetParameterSystem</url-pattern>
+            <url-pattern>/GetParameterSystem2</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
+            <url-pattern>/UpdateParameter2</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
             <url-pattern>/FindAllUsers</url-pattern>
             <url-pattern>/AddUser</url-pattern>

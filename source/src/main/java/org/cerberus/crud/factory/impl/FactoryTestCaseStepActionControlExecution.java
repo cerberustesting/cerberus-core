@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCaseStepActionControlExecution {
 
     @Override
-    public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence, int control, int sort, String returnCode, String returnMessage, String controlType, String controlProperty, String controlValue, String fatal, long start, long end, long startLong, long endLong, String screenshotFilename, String pageSourceFilename, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
+    public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence, int control, int sort, String returnCode, String returnMessage, String controlType, String controlProperty, String controlValue, String fatal, long start, long end, long startLong, long endLong, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
         TestCaseStepActionControlExecution testCaseStepActionControlExecution = new TestCaseStepActionControlExecution();
         testCaseStepActionControlExecution.setId(id);
         testCaseStepActionControlExecution.setTest(test);
@@ -51,10 +51,8 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setEnd(end);
         testCaseStepActionControlExecution.setStartLong(startLong);
         testCaseStepActionControlExecution.setEndLong(endLong);
-        testCaseStepActionControlExecution.setScreenshotFilename(screenshotFilename);
         testCaseStepActionControlExecution.setTestCaseStepActionExecution(testCaseStepActionExecution);
         testCaseStepActionControlExecution.setControlResultMessage(resultMessage);
-        testCaseStepActionControlExecution.setPageSourceFilename(pageSourceFilename);
         testCaseStepActionControlExecution.setDescription(description);
         return testCaseStepActionControlExecution;
     }

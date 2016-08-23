@@ -22,7 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 import java.util.Map;
 
-import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -32,94 +32,77 @@ import org.cerberus.util.answer.AnswerList;
  *
  * @author vertigo
  */
-public interface IApplicationService {
+public interface ITestCaseExecutionFileService {
 
     /**
      *
      * @param id
      * @return
      */
-    AnswerItem readByKey(String id);
-
+    public AnswerItem<TestCaseExecutionFile> readByKey(long id);
+    
     /**
      *
-     * @return
-     */
-    AnswerList readAll();
-
-    /**
-     *
-     * @param System
-     * @return
-     */
-    AnswerList readBySystem(String System);
-
-    /**
-     *
-     * @param startPosition
-     * @param length
-     * @param columnName
-     * @param sort
-     * @param searchParameter
+     * @param id
+     * @param level
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
      * @param individualSearch
      * @return
      */
-    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long id, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
-     * @param system
-     * @param startPosition
-     * @param length
-     * @param columnName
-     * @param sort
-     * @param searchParameter
-     * @param individualSearch
+     * @param id
+     * @param level
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
-
+    AnswerList<List<TestCaseExecutionFile>> readByVarious(long id, String level);
+    
     /**
      *
-     * @param system
+     * @param exeid
+     * @param level
+     * @param fileDesc
+     * @param fileName
+     * @param fileType
+     * @param usrCreated
      * @return
      */
-    AnswerItem readTestCaseCountersBySystemByStatus(String system);
-
+    Answer create(long exeid, String level, String fileDesc, String fileName, String fileType, String usrCreated);
+    
     /**
      *
-     * @param application
+     * @param id
      * @return true is application exist or false is application does not exist
      * in database.
      */
-    boolean exist(String application);
+    boolean exist(long id);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer create(Application object);
+    Answer create(TestCaseExecutionFile object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer delete(Application object);
+    Answer delete(TestCaseExecutionFile object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer update(Application object);
-
-    /**
-     *
-     * @return @since 0.9.1
-     */
-    AnswerList readDistinctSystem();
+    Answer update(TestCaseExecutionFile object);
 
     /**
      *
@@ -127,7 +110,7 @@ public interface IApplicationService {
      * @return
      * @throws CerberusException
      */
-    Application convert(AnswerItem answerItem) throws CerberusException;
+    TestCaseExecutionFile convert(AnswerItem answerItem) throws CerberusException;
 
     /**
      *
@@ -135,7 +118,7 @@ public interface IApplicationService {
      * @return
      * @throws CerberusException
      */
-    List<Application> convert(AnswerList answerList) throws CerberusException;
+    List<TestCaseExecutionFile> convert(AnswerList answerList) throws CerberusException;
 
     /**
      *
@@ -144,12 +127,4 @@ public interface IApplicationService {
      */
     void convert(Answer answer) throws CerberusException;
 
-    /**
-     * 
-     * @param searchParameter
-     * @param individualSearch
-     * @param columnName
-     * @return 
-     */
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

@@ -17,17 +17,17 @@
  */
 package org.cerberus.database;
 
+import org.apache.log4j.Level;
+import org.cerberus.crud.entity.MyVersion;
+import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.log.MyLogger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.MyVersion;
-import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.IMyVersionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  *
@@ -5221,7 +5221,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Add columns in testdatalib and testdatatlibdata to related to CSV type.
-        // Add CSV TESTDATATYPE invariant 
+        // Add CSV TESTDATATYPE invariant
         // Add documentation
         //-- ------------------------ 849-853
         SQLS = new StringBuilder();
@@ -6410,6 +6410,108 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `invariant` SET `value`='INTERNAL', `description`='Internal Cerberus test data.' WHERE `idname`='TESTDATATYPE' and`value`='STATIC';");
+        SQLInstruction.add(SQLS.toString());
+
+        // New table to host all file saved during execution.
+        //-- ------------------------ 872
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `testcaseexecutionfile` (");
+        SQLS.append(" `ID` BIGINT(20) NOT NULL AUTO_INCREMENT ,");
+        SQLS.append(" `ExeID` BIGINT(20) unsigned NOT NULL ,");
+        SQLS.append(" `Level` VARCHAR(150) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `FileDesc` VARCHAR(100) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `Filename` VARCHAR(150) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `FileType` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append(" `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append(" `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,");
+        SQLS.append(" `UsrModif` VARCHAR(45) NOT NULL DEFAULT '',");
+        SQLS.append(" `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01', ");
+        SQLS.append(" PRIMARY KEY (`ID`) ,");
+        SQLS.append(" UNIQUE INDEX `IX_testcaseexecutionfile_01` (`ExeID` ASC, `Level` ASC, `FileDesc` ASC) ,");
+        SQLS.append(" CONSTRAINT `FK_testcaseexecutionfile_01` FOREIGN KEY (`ExeID`) REFERENCES `testcaseexecution` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated cerberus_picture_path parameter.
+        //-- ------------------------ 873-874
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_mediastorage_path', `description`='Path to store the Cerberus Media files (like Selenium Screenshot or SOAP requests and responses).' WHERE `param`='cerberus_picture_path';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET `param`='cerberus_mediastorage_url', `description`='Link (URL) to the Cerberus Media Files. That link should point to cerberus_mediastorage_path location.' WHERE `system`='' and`param`='cerberus_picture_url';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Migrate old Screenshot and PageSource fields to new table.
+        //-- ------------------------ 875-878
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence) level, 'Screenshot' FileDesc, replace(ScreenshotFilename, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(ScreenshotFilename, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactionexecution where ScreenshotFilename is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence) level, 'PageSource' FileDesc, replace(PageSourceFileName, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(PageSourceFileName, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactionexecution where PageSourceFileName is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence,\"-\", Control) level, 'Screenshot' FileDesc, replace(ScreenshotFilename, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(ScreenshotFilename, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactioncontrolexecution where ScreenshotFilename is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT into testcaseexecutionfile (`exeid`, `level`, `FileDesc`, `Filename`, `FileType`, `UsrCreated`)");
+        SQLS.append("select ID ExeID, concat(test,\"-\", testcase,\"-\", Step,\"-\", Sequence,\"-\", Control) level, 'PageSource' FileDesc, replace(PageSourceFileName, '\\\\', '/') Filename");
+        SQLS.append(" ,ucase(right(PageSourceFileName, 3)) FileType, 'RecoverSQL' UsrCreated from testcasestepactioncontrolexecution where PageSourceFileName is not null and TO_DAYS(NOW()) - TO_DAYS(Start) <= 10;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New sql timeout parameters.
+        //-- ------------------------ 879
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append(" ('', 'cerberus_actionexecutesqlstoredprocedure_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlStoredProcedure will fail.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed PageSource and Screenshot columns from execution tables.
+        //-- ------------------------ 880-881
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` DROP COLUMN `PageSourceFilename`, DROP COLUMN `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` DROP COLUMN `PageSourceFileName`, DROP COLUMN `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        
+        // New sql document parameter.
+        //-- ------------------------ 882
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_parameter', 'allParameters', '', 'en', 'Parameters', '')");
+        SQLS.append(",('page_parameter', 'allParameters', '', 'fr', 'Paramètres', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'en', 'Save', '')");
+        SQLS.append(",('page_parameter', 'save_btn', '', 'fr', 'Sauvegarder', '')");
+        SQLS.append(",('page_parameter', 'close_btn', '', 'en', 'Close', '')");
+        SQLS.append(",('page_parameter', 'close_btn', '', 'fr', 'Fermer', '')");
+        SQLS.append(",('page_parameter', 'editparameter_field', '', 'en', 'Edit Parameter', '')");
+        SQLS.append(",('page_parameter', 'editparameter_field', '', 'fr', 'Modifier le paramètre', '')");
+        SQLS.append(",('page_parameter', 'description_field', '', 'en', 'Description', '')");
+        SQLS.append(",('page_parameter', 'description_field', '', 'fr', 'Description', '')");
+        SQLS.append(",('page_parameter', 'system_field', '', 'en', 'System Value', '')");
+        SQLS.append(",('page_parameter', 'system_field', '', 'fr', 'Valeur du Système', '')");
+        SQLS.append(",('page_parameter', 'cerberus_field', '', 'en', 'Cerberus Value', '')");
+        SQLS.append(",('page_parameter', 'cerberus_field', '', 'fr', 'Valeur de Cerberus', '')");
+        SQLS.append(",('page_parameter', 'parameter_field', '', 'en', 'Parameter', '')");
+        SQLS.append(",('page_parameter', 'parameter_field', '', 'fr', 'Paramètre', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'en', 'Parameter', '')");
+        SQLS.append(",('page_parameter', 'parameter_col', '', 'fr', 'Paramètre', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'en', 'Cerberus Value', '')");
+        SQLS.append(",('page_parameter', 'cerberus_col', '', 'fr', 'Valeur de Cerberus', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'en', 'System Value', '')");
+        SQLS.append(",('page_parameter', 'system_col', '', 'fr', 'Valeur du système', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'en', 'Description', '')");
+        SQLS.append(",('page_parameter', 'description_col', '', 'fr', 'Description', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'en', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_col', '', 'fr', 'Actions', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'en', 'Edit Parameter', '')");
+        SQLS.append(",('page_parameter', 'button_edit', '', 'fr', 'Editer le parmètre', '')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

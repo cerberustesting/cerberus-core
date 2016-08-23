@@ -935,9 +935,6 @@ function eventEnableModalConfirmHandler() {
     });
 }
 
-/**
- * Handler that cleans the modal for editing subdata when it is closed.
- */
 function refreshlistInstallInstructions() {
     $('#installInstructionsTableBody tr').remove();
 

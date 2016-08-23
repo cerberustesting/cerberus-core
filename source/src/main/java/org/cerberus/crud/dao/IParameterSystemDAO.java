@@ -17,10 +17,14 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -32,4 +36,6 @@ import org.cerberus.exception.CerberusException;
 public interface IParameterSystemDAO {
 
     public List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException;
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    public ParameterSystem loadFromResultSet(ResultSet rs) throws SQLException;
 }

@@ -42,9 +42,9 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -155,7 +155,7 @@ public class RunManualTest extends HttpServlet {
 
                 }
 
-            //Notify it's finnished
+                //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();
 //        try {
 //            wst.handleMessage(execution.getTag());
@@ -241,6 +241,7 @@ public class RunManualTest extends HttpServlet {
 
     private List<TestCaseStepActionExecution> getTestCaseStepActionExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort) {
         List<TestCaseStepActionExecution> result = new ArrayList();
+        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
         long now = new Date().getTime();
         IFactoryTestCaseStepActionExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionExecution.class);
         //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
@@ -256,16 +257,10 @@ public class RunManualTest extends HttpServlet {
                         ? "0" : getParameterIfExists(request, "action_sequence_" + stepSort + "_" + inc));
                 String actionReturnCode = getParameterIfExists(request, "actionStatus_" + stepSort + "_" + inc);
                 String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepSort + "_" + inc);
-                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepSort + "_" + inc);
-                String actionScreenshotFileName = null;
-                if (takeScreenshot.equals("Y")) {
-                    actionScreenshotFileName = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepSort), inc, null, null, "jpg"); //TODO:FN should we enforce the extension? 
-                    actionScreenshotFileName = executionId + File.separator + actionScreenshotFileName;
-                }
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, sort, actionReturnCode,
                         actionReturnMessage, "Manual Action", null, null, "", now, now, now, now,
-                        actionScreenshotFileName, null, null, "", null, null));
+                        null, "", null, null));
             }
         }
         return result;
@@ -273,6 +268,7 @@ public class RunManualTest extends HttpServlet {
 
     private List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecution(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, long executionId, int stepSort, int actionSort) {
         List<TestCaseStepActionControlExecution> result = new ArrayList();
+        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
         long now = new Date().getTime();
         IFactoryTestCaseStepActionControlExecution testCaseStepActionExecutionFactory = appContext.getBean(IFactoryTestCaseStepActionControlExecution.class);
         //IRecorderService recorderService = appContext.getBean(IRecorderService.class);
@@ -290,16 +286,10 @@ public class RunManualTest extends HttpServlet {
                         ? "0" : getParameterIfExists(request, "control_control_" + stepSort + "_" + actionSort + "_" + inc));
                 String controlReturnCode = getParameterIfExists(request, "controlStatus_" + stepSort + "_" + actionSort + "_" + inc);
                 String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepSort + "_" + actionSort + "_" + inc);
-                String controlScreenshot = null;
-                String takeScreenshot = getParameterIfExists(request, "takeScreenshot_" + stepSort + "_" + actionSort + "_" + inc);
-                if (takeScreenshot.equals("Y")) {
-                    controlScreenshot = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepSort), String.valueOf(actionSort), inc, null, "jpg");
-                    controlScreenshot = executionId + File.separator + controlScreenshot;
-                }
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, sort,
                         controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
-                        now, now, controlScreenshot, null,"", null, null));
+                        now, now, "", null, null));
             }
         }
         return result;

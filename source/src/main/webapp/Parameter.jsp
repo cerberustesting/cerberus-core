@@ -34,13 +34,13 @@
         <%
             String MySystem = ParameterParserUtil.parseStringParam(request.getAttribute("MySystem").toString(), "");
         %>
-        <script type="text/javascript">      
+        <script type="text/javascript">
             $(document).ready(function(){
                 $('#parametersTable').dataTable({
                     "aLengthMenu": [
                         [20, 50, 100, 200, -1],
                         [20, 50, 100, 200, "All"]
-                    ], 
+                    ],
                     "iDisplayLength" : 20,
                     "bServerSide": false,
                     "sAjaxSource": "GetParameterSystem?system=<%=MySystem%>",

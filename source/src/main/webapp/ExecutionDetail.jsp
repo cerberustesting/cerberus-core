@@ -17,6 +17,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.crud.entity.TestCaseExecutionFile"%>
+<%@page import="org.cerberus.crud.service.ITestCaseExecutionFileService"%>
 <%@page import="org.json.JSONException"%>
 <%@page import="org.json.JSONObject"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
@@ -106,10 +108,12 @@
                  */
                 IParameterService myParameterService = appContext.getBean(IParameterService.class);
                 IApplicationService myApplicationService = appContext.getBean(IApplicationService.class);
+                ITestCaseExecutionFileService myExeFileService = appContext.getBean(ITestCaseExecutionFileService.class);
                 ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
                 ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
 
-                String PictureURL = myParameterService.findParameterByKey("cerberus_picture_url", "").getValue();
+                String mediaURL = myParameterService.findParameterByKey("cerberus_mediastorage_url", "").getValue();
+                mediaURL = StringUtil.addSuffixIfNotAlready(mediaURL, "/");
 
                 String myLang = request.getAttribute("MyLang").toString();
 
@@ -284,8 +288,8 @@
                         <td style="font-weight: bold;"><%out.print(docService.findLabelHTML("testcaseexecution", "crbversion", "Engine Version", myLang));%></td>
                     </tr>
                     <tr>
-                        <td colspan=2><span id="exetag"><code><pre><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag())%>
-                                                                </pre> 
+                        <td colspan=2><span id="exetag"><code><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag())%>
+                                                                 
                                 </code><input type="button" name="editTag" value="edit" onclick="openChangeTagPopin('<%=id_filter%>')">
                             </span>
                                                                 
@@ -317,9 +321,14 @@
                             <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load&Tinf=Y">Modify the Test Case comment.</a>
                         </td>
                         <td colspan=1>
-                            <span id="seleniumLog">
-                                <a href="<%=PictureURL + max_id + "/"%>selenium_log.txt">Logs</a>
-                            </span>
+                            <span id="seleniumLog"><table><%
+                                String levelFile = "";
+                                AnswerList myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                List<TestCaseExecutionFile> myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                for (TestCaseExecutionFile myFile : myFiles) {
+                                %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                    }
+                                %></table></span>
                         </td>
                         <td colspan=4><span id="bugid"><%
                             if (StringUtil.isNullOrEmpty(bugid)) {
@@ -511,21 +520,22 @@
                                         <td title="Action Sort" style="width:5%"><%=myActionData.getSort()%></td>
                                         <td title="Action Description" style="width:20%"><%=myActionData.getDescription()%></td>
                                         <td title="Action" style="width:20%"><b><%=myActionData.getAction()%></b></td>
-                                        <td title="Action Object" style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></pre></code></td>
-                                        <td title="Action Property" style="width:20%"><code><pre><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></pre></code></td>
-                                        <td title="Action Screenshot" style="width:2%"><%if (myActionData.getScreenshotFilename() != null) {%>
-                                            <a href="<%=PictureURL%><%=myActionData.getScreenshotFilename().replaceAll("\\\\", "/")%>" id="ACTIMG-<%=myStep + "-" + myActionData.getSequence()%>" class="zoombox  zgallery1">img</a>
-                                            <%}%>
-                                        </td>
-                                        <td title="Action Source File" style="width:2%"><%if (myActionData.getPageSourceFilename() != null) {%>
-                                            <a href="<%=PictureURL%><%=myActionData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myActionData.getSequence()%>">src</a>
-                                            <%}%>
-                                        </td>
+                                        <td title="Action Object" style="width:20%"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></code></td>
+                                        <td title="Action Property" style="width:20%"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></code></td>
+                                        <td title="Action Files" style="width:4%"><table><%
+                                            levelFile = myActionData.getTest() + "-" + myActionData.getTestCase() + "-" + myActionData.getStep() + "-" + myActionData.getSequence();
+                                            myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                            myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                            for (TestCaseExecutionFile myFile : myFiles) {
+                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                                }
+                                            %>
+                                        </table></td>
                                     </tr>
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td title="Action Return Code" style="width:1%" class="<%=myActionData.getReturnCode()%>">>></td>
-                                        <td title="Action Return Message" colspan="9" class="<%=myActionData.getReturnCode()%>F">
+                                        <td title="Action Return Message" colspan="8" class="<%=myActionData.getReturnCode()%>F">
                                             <%
                                                 //TODO:FN to refactor while converting the page -- this should be in a servlet or javascript file
                                                 String returnMessage = myActionData.getReturnMessage();
@@ -537,11 +547,11 @@
                                                         if (type.equals("SOAP")) {
                                                             finalMessage.append(desc.get("description").toString());
                                                             if (!StringUtil.isNullOrEmpty(desc.get("request").toString())) {
-                                                                finalMessage.append(" <a target='_blank' href='").append(PictureURL);
+                                                                finalMessage.append(" <a target='_blank' href='").append(mediaURL);
                                                                 finalMessage.append(desc.get("request").toString()).append("'>SOAP request </a>");
                                                             }
                                                             if (!StringUtil.isNullOrEmpty(desc.get("response").toString())) {
-                                                                finalMessage.append(" <a target='_blank' href='").append(PictureURL);
+                                                                finalMessage.append(" <a target='_blank' href='").append(mediaURL);
                                                                 finalMessage.append(desc.get("response").toString()).append("'>SOAP response</a>");
                                                             }
 
@@ -554,12 +564,12 @@
                                                     }
                                                 }
                                             %>
-<code><pre><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
-</i></pre></code></td>
+<code><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
+</i></code></td>
                                     </tr>
                                     
                                     <tr>
-                                        <td colspan="11">
+                                        <td colspan="10">
                                             <%
 
                                                 ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(ITestCaseStepActionControlExecutionService.class);
@@ -582,24 +592,25 @@
                                                     <td title="Control Description"><%=myControlData.getDescription()%></td>
                                                     <td title="Control Function"><b><%=myControlData.getControlType()%></b></td>
                                                     <td title="Control Property" id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
-                                                    <td title="Control Value"><code><pre id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></pre></code></td>
+                                                    <td title="Control Value" id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></code></td>
                                                     <td title="Fatal"><%=myControlData.getFatal()%></td>
-                                                    <td title="Control Screenshot"><%if (myControlData.getScreenshotFilename() != null) {%>
-                                                        <a href="<%=PictureURL%><%=myControlData.getScreenshotFilename().replaceAll("\\\\", "/")%>" class="zoombox  zgallery1">img</a>
-                                                        <%}%>
-                                                    </td>
-                                                    <td title="Control Source File" style="width:10px"><%if (myControlData.getPageSourceFilename() != null) {%>
-                                                        <a href="<%=PictureURL%><%=myControlData.getPageSourceFilename().replaceAll("\\\\", "/")%>" id="ACTPS-<%=myStep + "-" + myControlData.getSequence()%>">src</a>
-                                                        <%}%>
-                                                    </td>
+                                                    <td title="Control Files"><table><%
+                                            levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence()+ "-" + myControlData.getControl();
+                                            myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                            myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                            for (TestCaseExecutionFile myFile : myFiles) {
+                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                                }
+                                            %>
+                                                    </table></td>
                                                 </tr>
                                                 <tr class="tableContent">
                                         <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                         <td title="Control Return Code" style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
-                                        <td title="Control Return Message" colspan="10" class="<%=myControlData.getReturnCode()%>F">
-                                            <code><pre><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
-                                                </span></i></pre></code></td>
+                                        <td title="Control Return Message" colspan="9" class="<%=myControlData.getReturnCode()%>F">
+                                            <code><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
+                                                </span></i></code></td>
                                     </tr>
                                     <tr></tr>
                                                 <%
@@ -630,24 +641,33 @@
                             <td title="Start Time"><%=DateUtil.getFormatedDate(myData.getStartLong())%></td>
                             <td title="Elapsed Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
-                            <td title="Description"><span id="DESCRIPTION-<%=myData.getProperty()%>"><%= myData.getDescription() == null || myData.getDescription().isEmpty() ? "<i>No description defined.</i>" : myData.getDescription() %></span></td>
+                            <td title="Description"><span id="DESCRIPTION-<%=myData.getProperty()%>"><%= myData.getDescription() == null || myData.getDescription().isEmpty() ? "<i>No description defined.</i>" : myData.getDescription()%></span></td>
                             <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
                             <td title="Value1 / Value2" style="font-size: x-small"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></code></td>
-                                        <%
-                                            String propMessage = myData.getrMessage();
-                                            //TODO this should handled differently, in the servlet or javascript file
-                                            if (propMessage.startsWith("{")) {
-                                                try {
-                                                    JSONObject desc = new JSONObject(propMessage);
-                                                    propMessage = desc.get("description").toString();
-                                                } catch (JSONException ex) {
-                                                    //there is no need to parse 
-                                                    //add some recovery code?
-                                                }
-                                            }
-                                        %>
+                            <%
+                                String propMessage = myData.getrMessage();
+                                //TODO this should handled differently, in the servlet or javascript file
+                                if (propMessage.startsWith("{")) {
+                                    try {
+                                        JSONObject desc = new JSONObject(propMessage);
+                                        propMessage = desc.get("description").toString();
+                                    } catch (JSONException ex) {
+                                        //there is no need to parse 
+                                        //add some recovery code?
+                                    }
+                                }
+                            %>
                             <td title="Message" ><code><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></code></td>
+                            <td title="Media Files" ><table><%
+                                            levelFile = myData.getProperty()+"-"+myData.getIndex();
+                                            myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                            myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                            for (TestCaseExecutionFile myFile : myFiles) {
+                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                                }
+                                            %>
+                            </table></td>
                         </tr>
                         <%
                             }
@@ -786,7 +806,7 @@
                         $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
                         $('#dialogTheDiff').dialog();
                     }
-                    </script>
+                                </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
                 <div id="setTagToExecution">

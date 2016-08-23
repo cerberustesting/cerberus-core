@@ -46,8 +46,6 @@ public class TestCaseStepActionExecution {
     private long end;
     private long startLong;
     private long endLong;
-    private String screenshotFilename;
-    private String pageSourceFilename;
     private String description;
 
     /**
@@ -68,14 +66,6 @@ public class TestCaseStepActionExecution {
 
     public void setForceExeStatus(String forceExeStatus) {
         this.forceExeStatus = forceExeStatus;
-    }
-
-    public String getPageSourceFilename() {
-        return pageSourceFilename;
-    }
-
-    public void setPageSourceFilename(String pageSourceFilename) {
-        this.pageSourceFilename = pageSourceFilename;
     }
 
     public String getPropertyName() {
@@ -202,14 +192,6 @@ public class TestCaseStepActionExecution {
         this.returnMessage = returnMessage;
     }
 
-    public String getScreenshotFilename() {
-        return screenshotFilename;
-    }
-
-    public void setScreenshotFilename(String screenshotFilename) {
-        this.screenshotFilename = screenshotFilename;
-    }
-
     public int getSequence() {
         return sequence;
     }
@@ -299,8 +281,6 @@ public class TestCaseStepActionExecution {
             result.put("end", this.getEndLong());
             result.put("startlong", this.getStartLong());
             result.put("endlong", this.getEnd());
-            result.put("screenshotFilename", this.getScreenshotFilename());
-            result.put("pageSourceFilename", this.getPageSourceFilename());
             result.put("description", this.getDescription());
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());

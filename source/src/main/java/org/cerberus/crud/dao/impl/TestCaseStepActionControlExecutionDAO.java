@@ -67,8 +67,8 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
         final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, control, sort, returncode, controltype, "
-                + "controlproperty, controlvalue, fatal, start, END, startlong, endlong, returnmessage, test, testcase, screenshotfilename, pageSourceFilename, description)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "controlproperty, controlvalue, fatal, start, END, startlong, endlong, returnmessage, test, testcase, description)"
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -100,9 +100,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(15, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
                 preStat.setString(16, testCaseStepActionControlExecution.getTest());
                 preStat.setString(17, testCaseStepActionControlExecution.getTestCase());
-                preStat.setString(18, testCaseStepActionControlExecution.getScreenshotFilename());
-                preStat.setString(19, testCaseStepActionControlExecution.getPageSourceFilename());
-                preStat.setString(20, testCaseStepActionControlExecution.getDescription());
+                preStat.setString(18, testCaseStepActionControlExecution.getDescription());
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
@@ -128,7 +126,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
         final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, controltype = ?, "
                 + "controlproperty = ?, controlvalue = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
-                + ", returnmessage = ?, screenshotfilename = ? , pageSourceFilename = ?, description = ?, sort = ? "
+                + ", returnmessage = ?, description = ?, sort = ? "
                 + "WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? AND control = ? ";
 
         Connection connection = this.databaseSpring.connect();
@@ -142,7 +140,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(5, testCaseStepActionControlExecution.getFatal());
                 if (testCaseStepActionControlExecution.getStart() != 0) {
                     preStat.setTimestamp(6, new Timestamp(testCaseStepActionControlExecution.getStart()));
-                } else { 
+                } else {
                     preStat.setString(6, "1970-01-01 01:01:01");
                 }
                 if (testCaseStepActionControlExecution.getEnd() != 0) {
@@ -154,16 +152,14 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(8, df.format(testCaseStepActionControlExecution.getStart()));
                 preStat.setString(9, df.format(testCaseStepActionControlExecution.getEnd()));
                 preStat.setString(10, StringUtil.getLeftString(ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnMessage(), ""), 500));
-                preStat.setString(11, testCaseStepActionControlExecution.getScreenshotFilename());
-                preStat.setString(12, testCaseStepActionControlExecution.getPageSourceFilename());
-                preStat.setString(13, testCaseStepActionControlExecution.getDescription());
-                preStat.setInt(14, testCaseStepActionControlExecution.getSort());
-                preStat.setLong(15, testCaseStepActionControlExecution.getId());
-                preStat.setString(16, testCaseStepActionControlExecution.getTest());
-                preStat.setString(17, testCaseStepActionControlExecution.getTestCase());
-                preStat.setInt(18, testCaseStepActionControlExecution.getStep());
-                preStat.setInt(19, testCaseStepActionControlExecution.getSequence());
-                preStat.setInt(20, testCaseStepActionControlExecution.getControl());
+                preStat.setString(11, testCaseStepActionControlExecution.getDescription());
+                preStat.setInt(12, testCaseStepActionControlExecution.getSort());
+                preStat.setLong(13, testCaseStepActionControlExecution.getId());
+                preStat.setString(14, testCaseStepActionControlExecution.getTest());
+                preStat.setString(15, testCaseStepActionControlExecution.getTestCase());
+                preStat.setInt(16, testCaseStepActionControlExecution.getStep());
+                preStat.setInt(17, testCaseStepActionControlExecution.getSequence());
+                preStat.setInt(18, testCaseStepActionControlExecution.getControl());
 
                 preStat.executeUpdate();
 
@@ -319,15 +315,13 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String controlProperty = resultSet.getString("ControlProperty");
         String controlValue = resultSet.getString("controlValue");
         String fatal = resultSet.getString("fatal");
-        long start = resultSet.getTimestamp("start")==null?0:resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end")==null?0:resultSet.getTimestamp("end").getTime();
+        long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
+        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
         long startlong = resultSet.getLong("startlong");
         long endlong = resultSet.getLong("endlong");
-        String screenshot = resultSet.getString("ScreenshotFilename");
-        String pageSource = resultSet.getString("PageSourceFilename");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
                 sequence, control, sort, returnCode, returnMessage, controlType, controlProperty, controlValue,
-                fatal, start, end, startlong, endlong, screenshot, pageSource,description, null, null);
+                fatal, start, end, startlong, endlong, description, null, null);
     }
 }

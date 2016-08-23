@@ -15,12 +15,10 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.exception.CerberusException;
+import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.log.MyLogger;
-import org.cerberus.util.FileUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -30,7 +28,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "SaveManualExecutionPicture", urlPatterns = {"/SaveManualExecutionPicture"})
 @MultipartConfig
 public class SaveManualExecutionPicture extends HttpServlet {
-    private final static long UPLOAD_PICTURE_MAXSIZE = 1048576;//1 MB
+
+    private final static Integer UPLOAD_PICTURE_MAXSIZE = 1048576;//1 MB
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //using commons-fileupload http://commons.apache.org/proper/commons-fileupload/using.html
@@ -42,23 +42,14 @@ public class SaveManualExecutionPicture extends HttpServlet {
 
         //if is multipart we need to handle the upload data
         IParameterService parameterService = appContext.getBean(IParameterService.class);
+        IRecorderService recorderService = appContext.getBean(IRecorderService.class);
 
         DiskFileItemFactory factory = new DiskFileItemFactory();
 
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
-        
-        
-        Parameter pSize;
-        long imgPathMaxSize = UPLOAD_PICTURE_MAXSIZE;
-        try {
-            pSize = parameterService.findParameterByKey("cerberus_screenshot_max_size", "");
-            if(pSize != null){
-               imgPathMaxSize = Long.valueOf(pSize.getValue());
-            }
-        } catch (CerberusException ex) {
-            MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.WARN, "Problem with Cerberus' configurations. Please check if the parameter \"cerberus_screenshot_max_size\" is defined." + ex.toString());
-        }
+
+        Integer imgPathMaxSize = parameterService.getParameterByKey("cerberus_screenshot_max_size", "", UPLOAD_PICTURE_MAXSIZE);
         
         // Set overall request size constraint
         upload.setFileSizeMax(imgPathMaxSize);//max size for the file
@@ -80,26 +71,19 @@ public class SaveManualExecutionPicture extends HttpServlet {
             }
 
             //this handles an action each time
-        } catch(FileSizeLimitExceededException ex){
+        } catch (FileSizeLimitExceededException ex) {
             MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "File size exceed the limit: " + ex.toString());
-        }
-        catch (FileUploadException ex) {
+        } catch (FileUploadException ex) {
             MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "Exception occurred while uploading file: " + ex.toString());
         }
         if (uploadedFile != null) {
-            
-            if(uploadedFile.getContentType().startsWith("image/")){ 
+
+            if (uploadedFile.getContentType().startsWith("image/")) {
                 //TODO:FN verify if this is the best approach or if we should
                 //check if the mime types for images can be configured in the web.xml and then obtain the valid mime types from the servletContext 
                 //getServletContext().getMimeType(fileName);
-                try {
-                    String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
-                    saveUploadedFile(tcsae.getId(), imgPath, uploadedFile, tcsae);
-                } catch (CerberusException ex) {
-                    //default location is not defined, it was not possible to save the images
-                    MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "Problem with Cerberus' configurations. Please check if the parameter \"cerberus_picture_path\" is defined." + ex.toString());
-                }
-            }else{
+                recorderService.recordUploadedFile(tcsae.getId(), tcsae, uploadedFile);
+            } else {
                 MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "Problem with the file you're trying to upload. It is not an image."
                         + "Name: " + uploadedFile.getName() + "; Content-type: " + uploadedFile.getContentType());
             }
@@ -121,7 +105,7 @@ public class SaveManualExecutionPicture extends HttpServlet {
 ////        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
 //
 //        try {
-//            String imgPath = parameterService.findParameterByKey("cerberus_picture_path", "").getValue();
+//            String imgPath = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
 //
 //            File dir = new File(imgPath + runId);
 //            dir.mkdirs();
@@ -169,7 +153,6 @@ public class SaveManualExecutionPicture extends HttpServlet {
 ////                    testCaseStepActionExecution.setEnd(now.getTime());
 ////                    testCaseStepActionExecution.setStartLong(now.getTime());
 ////                    testCaseStepActionExecution.setEndLong(now.getTime());
-////                    testCaseStepActionExecution.setScreenshotFilename(name);
 ////                    testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 ////
 ////                    seq++;
@@ -182,11 +165,13 @@ public class SaveManualExecutionPicture extends HttpServlet {
     }
 
     /**
-     * Auxiliary function used to retrieve information about the test/test case/step/action/control being executed.
+     * Auxiliary function used to retrieve information about the test/test
+     * case/step/action/control being executed.
+     *
      * @param tcsae
      * @param name
      * @param value
-     * @return 
+     * @return
      */
     private TestCaseStepActionExecution extractInfoFromRequest(TestCaseStepActionExecution tcsae, String name, String value) {
         if (name.equals("pictStep")) {
@@ -199,8 +184,8 @@ public class SaveManualExecutionPicture extends HttpServlet {
             tcsae.setId(Long.valueOf(value));
         } else if (name.equals("pictAction")) {
             tcsae.setSequence(Integer.valueOf(value));
-        } 
-        
+        }
+
         return tcsae;
 
     }
@@ -211,25 +196,5 @@ public class SaveManualExecutionPicture extends HttpServlet {
         tcsae = extractInfoFromRequest(tcsae, name, value);
         return tcsae;
     }
-    private void saveUploadedFile(long executionId, String basePath, FileItem uploadedFile, TestCaseStepActionExecution tcsae) {
-        String fileName = new File(uploadedFile.getName()).getName();
-        try {
-            String folderPath = basePath + File.separator + String.valueOf(executionId);
-            File filePathFile = new File(folderPath);
-            if (!filePathFile.exists()) {
-                filePathFile.mkdir();
-            }
-            
-            //RunManualTest.java actionScreenshotFileName = FileUtil.generateScreenshotFilename(test, testCase, String.valueOf(stepId), inc, null, null, "jpg");
-            String screenshotName = FileUtil.generateScreenshotFilename(tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStep()), 
-                    String.valueOf(tcsae.getSequence()), null, null, "jpg");//TODO:FN should we enforce the extension? in RunManualTest.java is being done like this
-            
-            String filePath = folderPath + File.separator + screenshotName;
-            File storeFile = new File(filePath);
-            // saves the file on disk
-            uploadedFile.write(storeFile);
-        } catch (Exception ex) {
-            MyLogger.log(SaveManualExecutionPicture.class.getName(), Level.ERROR, "File: " + fileName + " failed to be uploaded/saved: " + ex.toString());
-        }
-    }
+
 }

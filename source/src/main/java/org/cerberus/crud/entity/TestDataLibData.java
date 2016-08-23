@@ -97,4 +97,68 @@ public class TestDataLibData {
         this.columnPosition = columnPosition;
     }
 
+    public boolean hasSameKey(TestDataLibData obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestDataLibData other = (TestDataLibData) obj;
+        if ((this.testDataLibID == null) ? (other.testDataLibID != null) : !this.testDataLibID.equals(other.testDataLibID)) {
+            return false;
+        }
+        if ((this.subData == null) ? (other.subData != null) : !this.subData.equals(other.subData)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.testDataLibID != null ? this.testDataLibID.hashCode() : 0);
+        hash = 29 * hash + (this.subData != null ? this.subData.hashCode() : 0);
+        hash = 29 * hash + (this.value != null ? this.value.hashCode() : 0);
+        hash = 29 * hash + (this.column != null ? this.column.hashCode() : 0);
+        hash = 29 * hash + (this.columnPosition != null ? this.columnPosition.hashCode() : 0);
+        hash = 29 * hash + (this.parsingAnswer != null ? this.parsingAnswer.hashCode() : 0);
+        hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestDataLibData other = (TestDataLibData) obj;
+        if ((this.testDataLibID == null) ? (other.testDataLibID != null) : !this.testDataLibID.equals(other.testDataLibID)) {
+            return false;
+        }
+        if ((this.subData == null) ? (other.subData != null) : !this.subData.equals(other.subData)) {
+            return false;
+        }
+        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+            return false;
+        }
+        if ((this.column == null) ? (other.column != null) : !this.column.equals(other.column)) {
+            return false;
+        }
+        if ((this.columnPosition == null) ? (other.columnPosition != null) : !this.columnPosition.equals(other.columnPosition)) {
+            return false;
+        }
+        if ((this.parsingAnswer == null) ? (other.parsingAnswer != null) : !this.parsingAnswer.equals(other.parsingAnswer)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }
