@@ -38,6 +38,7 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.ISqlLibraryService;
@@ -79,6 +80,7 @@ import org.springframework.stereotype.Service;
 public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
+    private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
 
     @Autowired
     private IWebDriverService webdriverService;
@@ -112,6 +114,8 @@ public class PropertyService implements IPropertyService {
     private IParameterService parameterService;
     @Autowired
     private IDataLibService dataLibService;
+    @Autowired
+    private ILogEventService logEventService;
 
     /**
      * The property variable {@link Pattern}
@@ -588,36 +592,28 @@ public class PropertyService implements IPropertyService {
          * Calculate Property regarding the type
          */
         switch (testCaseCountryProperty.getType()) {
-            case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB:
-                testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+            case TestCaseCountryProperties.TYPE_TEXT:
+                testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
+                break;
+
+            case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
+                testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
             case TestCaseCountryProperties.TYPE_EXECUTESQL:
                 testCaseExecutionData = this.property_executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
                 break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
-                testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
-
-            case TestCaseCountryProperties.TYPE_TEXT:
-                testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
-                break;
-
             case TestCaseCountryProperties.TYPE_GETFROMHTML:
                 testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
+            case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
+                testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                break;
+
             case TestCaseCountryProperties.TYPE_GETFROMJS:
                 testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
-
-            case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
-                testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
-
-            case TestCaseCountryProperties.TYPE_GETFROMTESTDATA:
-                testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
             case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
@@ -632,20 +628,43 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                 break;
 
+            case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
+                testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                break;
+
             case TestCaseCountryProperties.TYPE_GETFROMJSON:
                 testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, forceRecalculation);
                 break;
 
-            case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB:
+            case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
+                testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                break;
+
+            case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
                 testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                res = testCaseExecutionData.getPropertyResultMessage();
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                testCaseExecutionData.setPropertyResultMessage(res);
+                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
-                testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+            case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
+                testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                res = testCaseExecutionData.getPropertyResultMessage();
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                testCaseExecutionData.setPropertyResultMessage(res);
+                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
 
-            case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
-                testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+            case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
+                testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                res = testCaseExecutionData.getPropertyResultMessage();
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                testCaseExecutionData.setPropertyResultMessage(res);
+                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
 
             default:

@@ -139,17 +139,41 @@ public class ActionService implements IActionService {
 
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         //TODO On JDK 7 implement switch with string [Edit @abourdon: prefer use of chain of responsibility pattern instead of a big switch]
-        if (testCaseStepActionExecution.getAction().equals("click")) {
+        if (testCaseStepActionExecution.getAction().equals("keypress")) {
+            res = this.doActionKeyPress(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("hideKeyboard")) {
+            res = this.doActionHideKeyboard(tCExecution);
+
+        } else if (testCaseStepActionExecution.getAction().equals("swipe")) {
+            res = this.doActionSwipe(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("click")) {
             res = this.doActionClick(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
-            res = this.doActionRightClick(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonPress")) {
+            res = this.doActionMouseLeftButtonPress(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonRelease")) {
+            res = this.doActionMouseLeftButtonRelease(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("doubleClick")) {
             res = this.doActionDoubleClick(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("keypress")) {
-            res = this.doActionKeyPress(tCExecution, object, property);
+        } else if (testCaseStepActionExecution.getAction().equals("rightClick")) {
+            res = this.doActionRightClick(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("focusToIframe")) {
+            res = this.doActionFocusToIframe(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("focusDefaultIframe")) {
+            res = this.doActionFocusDefaultIframe(tCExecution);
+
+        } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
+            res = this.doActionSwitchToWindow(tCExecution, object, property);
+
+        } else if (testCaseStepActionExecution.getAction().equals("manageDialog")) {
+            res = this.doActionManageDialog(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("mouseOver")) {
             res = this.doActionMouseOver(tCExecution, object, property);
@@ -160,21 +184,15 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("openUrlWithBase")) {
             res = this.doActionOpenURL(tCExecution, object, property, true);
 
-        } else if (testCaseStepActionExecution.getAction().equals("openUrl")) {
-            res = this.doActionOpenURL(tCExecution, object, property, false);
-
         } else if (testCaseStepActionExecution.getAction().equals("openUrlLogin")) {
             testCaseStepActionExecution.setObject(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
             res = this.doActionUrlLogin(tCExecution);
 
+        } else if (testCaseStepActionExecution.getAction().equals("openUrl")) {
+            res = this.doActionOpenURL(tCExecution, object, property, false);
+
         } else if (testCaseStepActionExecution.getAction().equals("select")) {
             res = this.doActionSelect(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("focusToIframe")) {
-            res = this.doActionFocusToIframe(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("focusDefaultIframe")) {
-            res = this.doActionFocusDefaultIframe(tCExecution);
 
         } else if (testCaseStepActionExecution.getAction().equals("type")) {
             res = this.doActionType(tCExecution, object, property, propertyName);
@@ -182,26 +200,11 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("wait")) {
             res = this.doActionWait(tCExecution, object, property);
 
-        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonPress")) {
-            res = this.doActionMouseLeftButtonPress(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("mouseLeftButtonRelease")) {
-            res = this.doActionMouseLeftButtonRelease(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("switchToWindow")) {
-            res = this.doActionSwitchToWindow(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("manageDialog")) {
-            res = this.doActionManageDialog(tCExecution, object, property);
-
-        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
-
         } else if (testCaseStepActionExecution.getAction().equals("callSoap")) {
             res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, false);
 
-        } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-            res = this.doActionCalculateProperty(object, property, propertyName);
+        } else if (testCaseStepActionExecution.getAction().equals("callSoapWithBase")) {
+            res = this.doActionMakeSoapCall(testCaseStepActionExecution, object, property, true);
 
         } else if (testCaseStepActionExecution.getAction().equals("removeDifference")) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, object, property);
@@ -212,14 +215,11 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals("executeSqlStoredProcedure")) {
             res = this.doActionExecuteSQLStoredProcedure(tCExecution, object, property);
 
+        } else if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
+            res = this.doActionCalculateProperty(object, property, propertyName);
+
         } else if (testCaseStepActionExecution.getAction().equals("doNothing")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-
-        } else if (testCaseStepActionExecution.getAction().equals("hideKeyboard")) {
-            res = this.doActionHideKeyboard(tCExecution);
-
-        } else if (testCaseStepActionExecution.getAction().equals("swipe")) {
-            res = this.doActionSwipe(tCExecution, object, property);
 
         } else if (testCaseStepActionExecution.getAction().equals("skipAction")) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SKIPACTION);

@@ -1494,6 +1494,8 @@ function displayPageLabel() {
     $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Object"));
     $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Property"));
     $("*[name='labelTestCaseStepActionForce']").html(doc.getDocOnline("testcasestepaction", "ForceExeStatus"));
+    $("*[name='labelTestCaseStepActionControlType']").html(doc.getDocOnline("testcasestepactioncontrol", "Type"));
+
 }
 /**
  * Applies the translations for the get list of test cases modal.
