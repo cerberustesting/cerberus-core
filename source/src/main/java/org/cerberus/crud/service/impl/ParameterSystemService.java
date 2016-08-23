@@ -20,11 +20,13 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.dao.IParameterSystemDAO;
 import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IParameterSystemService;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,11 @@ public class ParameterSystemService implements IParameterSystemService {
     @Override
     public List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException {
         return parameterSystemDao.findAllParameterSystem(system);
+    }
+
+    @Override
+    public AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch){
+        return parameterSystemDao.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
 }
