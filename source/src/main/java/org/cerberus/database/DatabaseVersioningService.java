@@ -6471,8 +6471,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ('', 'cerberus_actionexecutesqlstoredprocedure_timeout', '60', 'Integer that correspond to the number of seconds after which, any SQL triggered from action executeSqlStoredProcedure will fail.')");
         SQLInstruction.add(SQLS.toString());
 
+        // Removed PageSource and Screenshot columns from execution tables.
+        //-- ------------------------ 880-881
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` DROP COLUMN `PageSourceFilename`, DROP COLUMN `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` DROP COLUMN `PageSourceFileName`, DROP COLUMN `ScreenshotFilename`;");
+        SQLInstruction.add(SQLS.toString());
+        
         // New sql document parameter.
-        //-- ------------------------ 880
+        //-- ------------------------ 882
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
         SQLS.append("('page_parameter', 'allParameters', '', 'en', 'Parameters', '')");
