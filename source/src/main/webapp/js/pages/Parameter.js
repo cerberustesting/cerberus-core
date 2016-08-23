@@ -45,12 +45,14 @@ function displayPageLabel() {
     $("[name='editParameterField']").html(doc.getDocLabel("page_parameter", "editparameter_field"));
     $("[name='parameterField']").html(doc.getDocLabel("page_parameter", "parameter_field"));
     $("[name='cerberusField']").html(doc.getDocLabel("page_parameter", "cerberus_field"));
-    $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field"));
     $("[name='descriptionField']").html(doc.getDocLabel("page_parameter", "description_field"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_parameter", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_parameter", "save_btn"));
 
     displayHeaderLabel(doc);
+
+    $("[name='systemField']").html(doc.getDocLabel("page_parameter", "system_field") + " (" + getSys() + ")");
+
     displayFooter(doc);
     displayGlobalLabel(doc);
 }
@@ -68,7 +70,7 @@ function editEntryClick(param, cerberusValue, systemValue, description) {
     formEdit.find("#parameter").prop("value", param);
     formEdit.find("#cerberusValue").prop("value", decodeURI(cerberusValue));
     formEdit.find("#systemValue").prop("value", decodeURI(systemValue));
-    formEdit.find("#description").prop("value", description);
+    formEdit.find("#description").html(description);
 
     formEdit.modal('show');
 }
