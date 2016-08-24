@@ -20,9 +20,13 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * @author bcivel
@@ -72,5 +76,32 @@ public interface IParameterService {
      * @param parameterAware the {@link ParameterAware} to unregister from the given {@link Parameter}'s key related changes
      */
     void unregister(String key, ParameterAware parameterAware);
+    /**
+     *  Get the {@link Parameter} List of the given {@link System}
+     *
+     * @param system        the {@link System} To look for
+     * @param system1       the {@link System} To add the value of the same paramater
+     */
+    List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException;
+    /**
+     *  Get the {@link Parameter} List of the given {@link System} with the given Criteria
+     *
+     * @param system                the {@link System} To look for
+     * @param system1               the {@link System} To add the value of the same paramater
+     * @param startPosition         the start index to look for
+     * @param length                the number of {@link Parameter} to get
+     * @param columnName            the Column name to sort
+     * @param searchParameter       the string to search in the {@link Parameter}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    /**
+     *  Get the {@link Parameter} with the given {@link System} and the given key
+     *
+     * @param system                the {@link System} To look for
+     * @param system1               the {@link System} To add the value of the same paramater
+     * @param key                   the key of the {@link Parameter}
+     */
+    AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key);
 
 }

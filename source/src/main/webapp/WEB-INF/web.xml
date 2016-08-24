@@ -439,7 +439,7 @@
     </servlet>
     <servlet>
         <servlet-name>GetParameterSystem2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem2</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
