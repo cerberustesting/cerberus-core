@@ -114,3 +114,42 @@ GROUP BY DocTable
 -- control if system application is consistent with env table.
 SELECT distinct cep.system, cep.application, a.system from countryenvironmentparameters cep
 join application a on cep.application=a.application where cep.system<>a.system;
+
+
+-- Check Action consistency with documetation.
+-----------------------------------------
+
+select * from invariant where idname like 'ACTION' order by sort;
+
+select * from documentation doc where DocValue <>'' and DocTable='testcasestepaction' and DocField='Action';
+
+select DocValue, DocLabel, DocDesc, inv.value, inv.sort, inv.description from documentation doc 
+left outer join invariant inv on doc.Docvalue = inv.value and inv.idname='ACTION'
+where Lang='en' and DocValue <>'' and DocTable='testcasestepaction' and DocField='Action'
+order by inv.sort;
+
+
+-- Check Control consistency with documetation.
+-----------------------------------------
+
+select * from invariant where idname like 'CONTROL' order by sort;
+
+select * from documentation doc where DocValue <>'' and DocTable='testcasestepactioncontrol' and DocField='Type';
+
+select DocValue, DocLabel, DocDesc, inv.value, inv.sort, inv.description from documentation doc 
+left outer join invariant inv on doc.Docvalue = inv.value and inv.idname='CONTROL'
+where Lang='en' and DocValue <>'' and DocTable='testcasestepactioncontrol' and DocField='Type'
+order by inv.sort;
+
+
+-- Check Properties consistency with documetation.
+-----------------------------------------
+
+select * from invariant where idname like 'PROPERTYTYPE' order by sort;
+
+select * from documentation doc where DocValue<>'' and DocTable='testcasecountryproperties' and DocField='Type';
+
+select DocValue, DocLabel, DocDesc, inv.value, inv.sort, inv.description from documentation doc 
+left outer join invariant inv on doc.Docvalue = inv.value and inv.idname='PROPERTYTYPE'
+where Lang='en' and DocValue <>'' and DocTable='testcasecountryproperties' and DocField='Type'
+order by inv.sort;
