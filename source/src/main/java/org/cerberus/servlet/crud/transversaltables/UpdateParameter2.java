@@ -96,7 +96,7 @@ public class UpdateParameter2 extends HttpServlet {
         String valueSystem = request.getParameter("valueSystem");
         String mySystem = request.getParameter("system");
 
-        MyLogger.log(UpdateParameter.class.getName(), Level.DEBUG, "System : " + mySystem + " valueSystem : " + valueSystem + " valueCerberus : " + valueCerberus + " param : " + param);
+        MyLogger.log(UpdateParameter2.class.getName(), Level.DEBUG, "System : " + mySystem + " valueSystem : " + valueSystem + " valueCerberus : " + valueCerberus + " param : " + param);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService parameterService = appContext.getBean(ParameterService.class);
@@ -117,7 +117,7 @@ public class UpdateParameter2 extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateParameter", "UPDATE", "Update parameter : " + param, request);
+                logEventService.createPrivateCalls("/UpdateParameter2", "UPDATE", "Update parameter : " + param, request);
 
                 response.getWriter().print(valueCerberus);
                 /**
