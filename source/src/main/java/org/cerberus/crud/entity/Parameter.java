@@ -27,6 +27,8 @@ public class Parameter {
     private String param;
     private String value;
     private String description;
+    private String system1value1;
+    private String system1;
 
     public String getSystem() {
         return system;
@@ -34,6 +36,22 @@ public class Parameter {
 
     public void setSystem(String system) {
         this.system = system;
+    }
+
+    public String getSystem1() {
+        return system1;
+    }
+
+    public void setSystem1(String system) {
+        this.system1 = system;
+    }
+
+    public String getSystem1value1() {
+        return system1value1;
+    }
+
+    public void setSystem1value1(String system) {
+        this.system1value1 = system;
     }
 
     public String getDescription() {

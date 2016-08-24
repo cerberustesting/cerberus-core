@@ -30,6 +30,8 @@ import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -159,5 +161,20 @@ public class ParameterService implements IParameterService {
                 parameterAware.parameterChanged(parameter);
             }
         }
+    }
+
+    @Override
+    public List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException {
+        return parameterDao.findAllParameterWithSystem1(system, system1);
+    }
+
+    @Override
+    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch){
+        return parameterDao.readWithSystem1BySystemByCriteria(system, system1, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key){
+        return parameterDao.readWithSystem1BySystemByKey(system, system1, key);
     }
 }

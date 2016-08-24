@@ -26,6 +26,7 @@ import org.cerberus.crud.entity.Parameter;
  * @author bcivel
  */
 public interface IFactoryParameter {
-    
+
     Parameter create(String system, String param,String value,String description);
+    Parameter create(String system, String param,String value,String description, String system1, String system1value1);
 }

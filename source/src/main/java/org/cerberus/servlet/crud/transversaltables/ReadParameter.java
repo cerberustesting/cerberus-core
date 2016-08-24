@@ -35,8 +35,10 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.ParameterSystem;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.IParameterSystemService;
 import org.cerberus.crud.service.impl.ApplicationService;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.crud.service.impl.ParameterSystemService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -58,10 +60,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author foudro
  */
-@WebServlet(name = "GetParameterSystem2", urlPatterns = {"/GetParameterSystem2"})
-public class GetParameterSystem2 extends HttpServlet {
-
-    private IApplicationService applicationService;
+@WebServlet(name = "ReadParameter", urlPatterns = {"/ReadParameter"})
+public class ReadParameter extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -98,7 +98,7 @@ public class GetParameterSystem2 extends HttpServlet {
         // Nothing to do here as no parameter to check.
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = request.isUserInRole("Integrator");
+        boolean userHasPermissions = request.isUserInRole("Administrator");
 
         // Init Answer with potencial error from Parsing parameter.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
@@ -112,8 +112,14 @@ public class GetParameterSystem2 extends HttpServlet {
             }else{
                 system = policy.sanitize(request.getParameter("system"));
             }
-            answer = findParameterList(system, appContext, userHasPermissions, request);
-            jsonResponse = (JSONObject) answer.getItem();
+
+            if (request.getParameter("param") == null){
+                answer = findParameterList(system, appContext, userHasPermissions, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }else{
+                answer = findParameterBySystemByKey(system, request.getParameter("param"), appContext);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -122,7 +128,7 @@ public class GetParameterSystem2 extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(GetParameterSystem2.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadParameter.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
@@ -141,7 +147,7 @@ public class GetParameterSystem2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetParameterSystem2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadParameter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -159,7 +165,7 @@ public class GetParameterSystem2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(GetParameterSystem2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadParameter.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -167,7 +173,7 @@ public class GetParameterSystem2 extends HttpServlet {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        IParameterSystemService parameterSystemService = appContext.getBean(ParameterSystemService.class);
+        IParameterService parameterService = appContext.getBean(ParameterService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -188,11 +194,11 @@ public class GetParameterSystem2 extends HttpServlet {
             }
         }
 
-        AnswerList resp = parameterSystemService.readBySystemByCriteria(system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = parameterService.readWithSystem1BySystemByCriteria("", system, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (ParameterSystem param : (List<ParameterSystem>) resp.getDataList()) {
+            for (Parameter param : (List<Parameter>) resp.getDataList()) {
                 jsonArray.put(convertParameterToJSONObject(param));
             }
         }
@@ -207,7 +213,21 @@ public class GetParameterSystem2 extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertParameterToJSONObject(ParameterSystem parameter) throws JSONException {
+    private AnswerItem findParameterBySystemByKey(String System, String key,ApplicationContext appContext) throws JSONException {
+
+        IParameterService parameterService = appContext.getBean(ParameterService.class);
+
+        AnswerItem resp = parameterService.readWithSystem1BySystemByKey("", System, key);
+        Parameter p = null;
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            p = (Parameter)resp.getItem();
+        }
+        resp.setItem(convertParameterToJSONObject(p));
+
+        return resp;
+    }
+
+    private JSONObject convertParameterToJSONObject(Parameter parameter) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(parameter));
