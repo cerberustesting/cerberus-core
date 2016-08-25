@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -78,16 +79,29 @@ public class ReadInvariant extends HttpServlet {
         //type=public or private? //TODO?
         try {
             AnswerItem answer;
-            JSONObject jsonResponse;
+            JSONObject jsonResponse = new JSONObject();
             if (request.getParameter("idName") == null) {
                 //loads the list of invariants
                 answer = findInvariantList(appContext, request, response);
-            } else {
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("value") == null) {
+                //loads the list of invariants
                 String idName = policy.sanitize(request.getParameter("idName"));
                 answer = findInvariantListByIdName(appContext, idName);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                String idName = policy.sanitize(request.getParameter("idName"));
+                String value = policy.sanitize(request.getParameter("value"));
+                try {
+                    answer = findInvariantListBykey(appContext, idName, value);
+                    jsonResponse.put("invariant",convertInvariantToJSONObject((Invariant)answer.getItem()));
+                }catch(CerberusException e){
+                    answer = new AnswerItem();
+                    MessageEvent msg = new MessageEvent(MessageEventEnum.ACTION_FAILED);
+                    answer.setResultMessage(msg);
+                    jsonResponse.put("invariant",convertInvariantToJSONObject((Invariant)answer.getItem()));
+                }
             }
-
-            jsonResponse = (JSONObject) answer.getItem();
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -163,7 +177,23 @@ public class ReadInvariant extends HttpServlet {
         object.put("iTotalDisplayRecords", answerService.getTotalRows());
 
         answer.setItem(object);
-        answer.setResultMessage(answer.getResultMessage());
+        answer.setResultMessage(answerService.getResultMessage());
+
+        return answer;
+    }
+
+    private AnswerItem findInvariantListBykey(ApplicationContext appContext, String idName, String value) throws JSONException, CerberusException {
+        AnswerItem answer = new AnswerItem();
+
+        //finds the list of invariants by idname
+        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+
+        answer.setItem(invariantService.findInvariantByIdValue(idName,value));
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant").replace("%OPERATION%", "SELECT"));
+
+        answer.setResultMessage(msg);
 
         return answer;
     }

@@ -64,19 +64,24 @@ function renderOptionsForApplication(data) {
     }
 }
 
-function editEntryClick(param) {
+function editEntryClick(param, value) {
     var formEdit = $('#editInvariantModal');
 
     $.ajax({
-        url: "ReadInvariant?system="+getSys()+"&param="+param,
+        url: "ReadInvariant?idName="+param+"&value="+value,
         async: true,
         method: "GET",
         success: function (data) {
+            console.log(data);
             if(data.messageType === "OK") {
-                formEdit.find("#invariant").prop("value", data.param);
-                formEdit.find("#cerberusValue").prop("value", data.value);
-                formEdit.find("#systemValue").prop("value", data.system1value);
-                formEdit.find("#description").html(data.description);
+                formEdit.find("#idname").prop("value", data.invariant.idName);
+                formEdit.find("#value").prop("value", data.invariant.value);
+                formEdit.find("#sort").prop("value", data.invariant.sort);
+                formEdit.find("#description").prop("value", data.invariant.description);
+                formEdit.find("#veryShortDescField").prop("value", data.invariant.veryShortDescField);
+                formEdit.find("#gp1").prop("value", data.invariant.gp1);
+                formEdit.find("#gp2").prop("value", data.invariant.gp2);
+                formEdit.find("#gp3").prop("value", data.invariant.gp3);
 
                 formEdit.modal('show');
             }else{
@@ -145,7 +150,7 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editInvariant = '<button id="editInvariant" onclick="editEntryClick(\'' + obj["param"] + '\');"\n\
+                var editInvariant = '<button id="editInvariant" onclick="editEntryClick(\'' + obj["idName"] + '\',\'' + obj["value"] + '\');"\n\
                                         class="editApplication btn btn-default btn-xs margin-right5" \n\
                                         name="editInvariant" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
