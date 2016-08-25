@@ -34,7 +34,7 @@ function initPage() {
     $('#editParameterModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("parametersTable", "GetParameterSystem2?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("parametersTable", "ReadParameter?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
 }
 

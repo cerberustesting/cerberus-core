@@ -20,19 +20,19 @@
                     <!-- type and system-->
                     <div class="row">
                         <div class="form-group col-xs-2">
-                            <label id="lbl_id_edit" for="testdatalibid">ID</label>
+                            <label name="lbl_id" for="testdatalibid">ID</label>
                             <div>
                                 <input id="testdatalibid" name="testdatalibid" class="form-control" readonly="readonly"/>     
                             </div>
                         </div> 
                         <div class="form-group col-xs-6">
-                            <label id="lbl_name_edit" for="name">Name</label>
+                            <label name="lbl_name" for="name">Name</label>
                             <div>
                                 <input id="name" name="name" class="form-control" readonly="readonly" />     
                             </div>
                         </div> 
                         <div class="form-group col-xs-4">
-                            <label id="lbl_type_edit" for="type">Type</label>
+                            <label name="lbl_type" for="type">Type</label>
                             <div>
                                 <select class="form-control" id="type" name="type">
                                 </select>  
@@ -42,26 +42,26 @@
                     <!--environment + country-->
                     <div class="row">
                         <div class="form-group col-xs-4">
-                            <label id="lbl_system_edit" for="system">System</label>
+                            <label name="lbl_system" for="system">System</label>
                             <select class="form-control" id="system" name="system">
                             </select>      
                         </div>         
                         <div class="form-group col-xs-4">
-                            <label id="lbl_environment_edit"  for="environment">Environment</label>
+                            <label name="lbl_environment"  for="environment">Environment</label>
                                 <select class="form-control" id="environment" name="environment">
                                 </select>  
                         </div> 
                         <div class="form-group col-xs-4">
-                            <label id="lbl_country_edit" for="country">Country</label>
+                            <label name="lbl_country" for="country">Country</label>
                                 <select class="form-control"  id="country" name="country">
                                 </select>  
                         </div>            
                     </div>    
                     <!-- tabs definition-->
                     <ul id="edittabs" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" id="tab1Text" href="#tabsedit-1">Definition</a></li>
-                        <li><a data-toggle="tab" href="#tabsedit-2" id="tab2Text">Sub data</a></li>
-                        <li><a data-toggle="tab" href="#tabsedit-3" id="tab3Text">Tracability</a></li>
+                        <li class="active"><a data-toggle="tab" id="tab1Text" name="tab1Text" href="#tabsedit-1">Definition</a></li>
+                        <li><a data-toggle="tab" href="#tabsedit-2" id="tab2Text" name="tab2Text">Sub data</a></li>
+                        <li><a data-toggle="tab" href="#tabsedit-3" id="tab3Text" id="tab3Text">Tracability</a></li>
                     </ul>
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsedit-1">
@@ -70,27 +70,27 @@
                                 <div class="col-xs-12" id="soapConfigurationsPanelEdit">
                                     <div class="panel panel-default">
                                         <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPEdit">
-                                            <label id="soapConfigurationsLbl_edit">SOAP Configurations </label>
+                                            <label name="soapConfigurationsLbl">SOAP Configurations </label>
                                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
                                         <div id="panelSOAPEdit" class="panel-body collapse">
                                             <div class="row">
                                                 <div class="form-group  col-xs-3"> 
-                                                    <label id="lbl_databaseUrl_edit" for="databaseUrl">Database URL</label> 
+                                                    <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
                                                     <select class="form-control" id="databaseUrl" name="databaseUrl">
                                                     </select> 
                                                 </div>    
                                                 <div class="form-group col-xs-5" >
-                                                    <label id="lbl_service_path_edit" for="servicepath">Service Path</label>
+                                                    <label name="lbl_service_path" for="servicepath">Service Path</label>
                                                     <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
                                                 </div>
                                                 <div class="form-group col-xs-4">
-                                                    <label id="lbl_method_edit" for="method">Method</label>
+                                                    <label name="lbl_method" for="method">Method</label>
                                                     <input id="method" name="method" class="form-control" maxlength="45"  />
                                                 </div>
                                             </div>    
                                             <div class="row form-group col-xs-12">
-                                                <label id="lbl_envelope_edit" for="envelope">Envelope</label>                    
+                                                <label name="lbl_envelope" for="envelope">Envelope</label>                    
                                                 <textarea id="envelope" name="envelope" 
                                                           class="form-control"></textarea>     
                                             </div> 
@@ -103,18 +103,18 @@
                                 <div class="col-xs-12" id="sqlConfigurationsPanelEdit">
                                     <div class="panel panel-default">
                                         <div class="panel-heading card" data-toggle="collapse" data-target="#panelSQLEdit">
-                                            <label id="sqlConfigurationsLbl_edit">SQL Configurations </label>
+                                            <label name="sqlConfigurationsLbl">SQL Configurations </label>
                                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
                                         <div id="panelSQLEdit" class="panel-body collapse">
                                             <div class="row form-group  col-xs-6"> 
-                                                <label id="lbl_database_edit" for="database">Database</label> 
+                                                <label name="lbl_database" for="database">Database</label> 
                                                 <select class="form-control" id="database" name="database">
                                                 </select> 
                                             </div>    
                                             <div class="row">
                                                 <div class="form-group col-xs-12"> 
-                                                    <label id="lbl_script_edit" for="script">Script</label> 
+                                                    <label name="lbl_script" for="script">Script</label> 
                                                     <textarea id="script" name="script" 
                                                               class="form-control"></textarea>     
                                                 </div>                       
@@ -129,23 +129,23 @@
                                 <div class="col-xs-12" id="csvConfigurationsPanelEdit">
                                     <div class="panel panel-default">
                                         <div class="panel-heading card" data-toggle="collapse" data-target="#panelCSVEdit">
-                                            <label id="csvConfigurationsLbl_edit">CSV Configurations </label>
+                                            <label name="csvConfigurationsLbl">CSV Configurations </label>
                                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
                                         <div id="panelCSVEdit" class="panel-body collapse">
                                             <div class="row">
                                                 <div class="form-group  col-xs-3"> 
-                                                    <label id="lbl_databaseCsv_edit" for="databaseCsv">Database URL</label> 
+                                                    <label name="lbl_databaseCsv" for="databaseCsv">Database URL</label> 
                                                     <select class="form-control" id="databaseCsv" name="databaseCsv">
                                                     </select> 
                                                 </div>    
                                                 <div class="form-group col-xs-6"> 
-                                                    <label id="lbl_csvUrl_edit" for="csvUrl">CSVUrl</label> 
+                                                    <label name="lbl_csvUrl" for="csvUrl">CSVUrl</label> 
                                                     <input id="csvUrl" name="csvUrl" 
                                                            class="form-control">     
                                                 </div>
                                                 <div class="form-group col-xs-3"> 
-                                                    <label id="lbl_separator_edit" for="separator">Separator</label> 
+                                                    <label name="lbl_separator" for="separator">Separator</label> 
                                                     <input id="separator" name="separator" 
                                                            class="form-control">     
                                                 </div>
@@ -158,7 +158,7 @@
                             <!--group infomation -->
                             <div class="row">
                                 <div class="form-group col-xs-6">
-                                    <label id="lbl_enter_group_edit"  for="groupedit">or enter new group</label>
+                                    <label name="lbl_group"  for="groupedit">or enter new group</label>
                                     <input id="group" name="group" class="form-control" />     
                                 </div>                  
                             </div>
@@ -166,7 +166,7 @@
                             <!--description-->
                             <div class="row">
                                 <div class="form-group col-xs-12">
-                                    <label id="lbl_description_edit" for="libdescription">Description</label>
+                                    <label name="lbl_description" for="libdescription">Description</label>
                                     <textarea id="libdescription" name="libdescription" class="form-control"></textarea> 
                                 </div>
                             </div>
@@ -201,13 +201,13 @@
                                     <div class="col-xs-12">
                                         <div class="row">
                                             <div class="form-group col-xs-3">
-                                                <label id="lbl_name_edit" for="created">Created</label>
+                                                <label name="lbl_created" for="created">Created</label>
                                                 <div>
                                                     <input id="created" name="created" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
                                             <div class="form-group col-xs-3">
-                                                <label id="lbl_name_edit" for="creator">Creator</label>
+                                                <label name="lbl_creator" for="creator">Creator</label>
                                                 <div>
                                                     <input id="creator" name="creator" class="form-control" readonly="readonly" />     
                                                 </div>
@@ -215,13 +215,13 @@
                                         </div> 
                                         <div class="row">
                                             <div class="form-group col-xs-3">
-                                                <label id="lbl_name_edit" for="lastModified">Last Modified</label>
+                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
                                                 <div>
                                                     <input id="lastModified" name="lastModified" class="form-control" readonly="readonly" />     
                                                 </div>
                                             </div> 
                                             <div class="form-group col-xs-3">
-                                                <label id="lbl_name_edit" for="lastModifier">Last Modifier</label>
+                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
                                                 <div>
                                                     <input id="lastModifier" name="lastModifier" class="form-control" readonly="readonly" />     
                                                 </div>
