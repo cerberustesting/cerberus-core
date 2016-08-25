@@ -438,7 +438,7 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetParameterSystem2</servlet-name>
+        <servlet-name>ReadParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadParameter</servlet-class>
     </servlet>
     <servlet>
@@ -1305,8 +1305,8 @@
         <url-pattern>/GetParameterSystem</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetParameterSystem2</servlet-name>
-        <url-pattern>/GetParameterSystem2</url-pattern>
+        <servlet-name>ReadParameter</servlet-name>
+        <url-pattern>/ReadParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImportTestCaseStep</servlet-name>
@@ -2115,7 +2115,7 @@
             <description>servlet</description>
             <url-pattern>/GetParameter</url-pattern>
             <url-pattern>/GetParameterSystem</url-pattern>
-            <url-pattern>/GetParameterSystem2</url-pattern>
+            <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
             <url-pattern>/UpdateParameter2</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
