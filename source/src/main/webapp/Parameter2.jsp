@@ -48,10 +48,5 @@
         <div class="container-fluid" id="footer"></div>
     </footer>
 </div>
-<br>
-
-<footer class="footer">
-    <div class="container-fluid" id="footer"></div>
-</footer>
 </body>
 </html>
