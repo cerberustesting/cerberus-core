@@ -306,7 +306,7 @@ public class InvariantDAO implements IInvariantDAO {
         searchSQL.append(" where 1=1 ");
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM invariant ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM invariant ");
 
         if (!searchTerm.equals("") && !individualSearch.equals("")) {
             searchSQL.append(" and ");
@@ -332,6 +332,8 @@ public class InvariantDAO implements IInvariantDAO {
         query.append("` ");
         query.append(dir);
 
+        int nrTotalRows = 0;
+
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
             query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
         } else {
@@ -347,6 +349,13 @@ public class InvariantDAO implements IInvariantDAO {
 
                     while (resultSet.next()) {
                         invariantList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
                     }
 
                     if (invariantList.isEmpty()) {
@@ -391,7 +400,7 @@ public class InvariantDAO implements IInvariantDAO {
             }
         }
         answer.setResultMessage(msg);
-        answer.setTotalRows(invariantList.size());
+        answer.setTotalRows(nrTotalRows);
         answer.setDataList(invariantList);
         return answer;
     }
@@ -677,14 +686,14 @@ public class InvariantDAO implements IInvariantDAO {
     }
 
     public Invariant loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String idName = resultSet.getString("idName");
+        String idName = (resultSet.getString("idName") != null)?resultSet.getString("idName"):"";
         int sort = resultSet.getInt("sort");
-        String description = resultSet.getString("Description");
-        String veryShortDesc = resultSet.getString("VeryShortDesc");
-        String gp1 = resultSet.getString("gp1");
-        String gp2 = resultSet.getString("gp2");
-        String gp3 = resultSet.getString("gp3");
-        String value = resultSet.getString("value");
+        String description = (resultSet.getString("description") != null)?resultSet.getString("description"):"";
+        String veryShortDesc = (resultSet.getString("VeryShortDesc") != null)?resultSet.getString("VeryShortDesc"):"";
+        String gp1 = (resultSet.getString("gp1") != null)?resultSet.getString("gp1"):"";
+        String gp2 = (resultSet.getString("gp2") != null)?resultSet.getString("gp2"):"";
+        String gp3 = (resultSet.getString("gp3") != null)?resultSet.getString("gp3"):"";
+        String value = (resultSet.getString("value") != null)?resultSet.getString("value"):"";
         return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3);
     }
 

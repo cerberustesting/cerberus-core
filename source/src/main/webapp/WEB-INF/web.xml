@@ -2105,6 +2105,7 @@
             <url-pattern>/Parameter.jsp</url-pattern>
             <url-pattern>/Parameter2.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
+            <url-pattern>/Invariant.jsp</url-pattern>
             <url-pattern>/InvariantPublic.jsp</url-pattern>
             <url-pattern>/InvariantPrivate.jsp</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
