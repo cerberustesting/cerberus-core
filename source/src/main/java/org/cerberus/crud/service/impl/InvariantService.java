@@ -68,7 +68,7 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
-    public List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
@@ -76,18 +76,18 @@ public class InvariantService implements IInvariantService {
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
         AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
-        return answer.getDataList();
+        return answer;
     }
 
     @Override
-    public List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
+    public AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Private invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
         AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
-        return answer.getDataList();
+        return answer;
     }
 
     @Override

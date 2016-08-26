@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -129,7 +130,8 @@ public class FindAllInvariantPrivate extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
-            List<Invariant> invariantList = invariantService.readByPrivateByCriteria(start, amount, colName, dir, searchTerm, inds);
+            AnswerList l = invariantService.readByPrivateByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<Invariant> invariantList = l.getDataList();
 
             JSONObject jsonResponse = new JSONObject();
 

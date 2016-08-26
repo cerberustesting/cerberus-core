@@ -80,14 +80,15 @@ public class ReadInvariant extends HttpServlet {
         try {
             AnswerItem answer;
             JSONObject jsonResponse = new JSONObject();
-            if (request.getParameter("idName") == null) {
+            String access = request.getParameter("access");
+            if (request.getParameter("idName") == null && access != null) {
                 //loads the list of invariants
-                answer = findInvariantList(appContext, request, response);
+                answer = findInvariantList(appContext, access, request, response);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("value") == null) {
+            } else if (request.getParameter("value") == null && access != null) {
                 //loads the list of invariants
                 String idName = policy.sanitize(request.getParameter("idName"));
-                answer = findInvariantListByIdName(appContext, idName);
+                answer = findInvariantListByIdName(appContext, access, idName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 String idName = policy.sanitize(request.getParameter("idName"));
@@ -155,7 +156,7 @@ public class ReadInvariant extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String idName) throws JSONException {
+    private AnswerItem findInvariantListByIdName(ApplicationContext appContext, String access, String idName) throws JSONException {
         AnswerList answerService;
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -198,7 +199,7 @@ public class ReadInvariant extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findInvariantList(ApplicationContext appContext, HttpServletRequest request, HttpServletResponse response) throws JSONException {
+    private AnswerItem findInvariantList(ApplicationContext appContext, String access, HttpServletRequest request, HttpServletResponse response) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
 
@@ -215,7 +216,14 @@ public class ReadInvariant extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList answerService = invariantService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        AnswerList answerService;
+        if("PUBLIC".equals(access)){
+            answerService = invariantService.readByPublicByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        }else if("PRIVATE".equals(access)){
+            answerService = invariantService.readByPrivateByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        }else{
+            answerService = invariantService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        }
 
         JSONArray jsonArray = new JSONArray();
         //boolean userHasPermissions = request.isUserInRole("Integrator"); //TODO:need to chec

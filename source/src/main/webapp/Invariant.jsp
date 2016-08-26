@@ -32,16 +32,39 @@
     <%@ include file="include/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
     <%@ include file="include/invariant/editInvariant.html"%>
+    <%@ include file="include/invariant/addInvariant.html"%>
 
     <h1 class="page-title-line" id="title">Invariants</h1>
-    <div class="panel panel-default">
-        <div class="panel-heading" id="invariantListLabel">
-            <span class="glyphicon glyphicon-list"></span>
-            Invariants
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#public">Public</a></li>
+        <li><a data-toggle="tab" href="#private">Private</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="public" class="tab-pane fade in active">
+            <div class="panel panel-default">
+                <div class="panel-heading" id="invariantListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Public Invariants
+                </div>
+                <div class="panel-body" id="invariantList">
+                    <table id="invariantsTable" class="table table-bordered table-hover display" name="invariantsTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
+            </div>
         </div>
-        <div class="panel-body" id="invariantList">
-            <table id="invariantsTable" class="table table-bordered table-hover display" name="invariantsTable"></table>
-            <div class="marginBottom20"></div>
+        <div id="private" class="tab-pane fade">
+            <div class="panel panel-default">
+                <div class="panel-heading" id="invariantPrivateListLabel">
+                    <span class="glyphicon glyphicon-list"></span>
+                    Private Invariants
+                </div>
+                <div class="panel-body" id="invariantPrivateList">
+                    <table id="invariantsPrivateTable" class="table table-bordered table-hover display" name="invariantsPrivateTable"></table>
+                    <div class="marginBottom20"></div>
+                </div>
+            </div>
         </div>
     </div>
     <footer class="footer">

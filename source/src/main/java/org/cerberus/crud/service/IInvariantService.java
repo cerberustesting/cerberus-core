@@ -40,9 +40,9 @@ public interface IInvariantService {
 
     AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
-    List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
-    List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
     AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 

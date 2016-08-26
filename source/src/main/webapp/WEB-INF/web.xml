@@ -514,8 +514,16 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteInvariant</servlet-name>
@@ -1381,8 +1389,16 @@
         <url-pattern>/CreateInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateInvariant2</servlet-name>
+        <url-pattern>/CreateInvariant2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateInvariant</servlet-name>
         <url-pattern>/UpdateInvariant</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateInvariant2</servlet-name>
+        <url-pattern>/UpdateInvariant2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteInvariant</servlet-name>
@@ -2128,7 +2144,9 @@
             <url-pattern>/FindAllInvariantPublic</url-pattern>
             <url-pattern>/FindAllInvariantPrivate</url-pattern>
             <url-pattern>/CreateInvariant</url-pattern>
+            <url-pattern>/CreateInvariant2</url-pattern>
             <url-pattern>/UpdateInvariant</url-pattern>
+            <url-pattern>/UpdateInvariant2</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>

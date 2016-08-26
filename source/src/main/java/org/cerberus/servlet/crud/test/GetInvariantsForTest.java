@@ -74,8 +74,8 @@ public class GetInvariantsForTest extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
 
             HashMap<String,List<String>> invariants = new HashMap<String,List<String>>();
-            
-            for (Invariant myInvariant : invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
+            List<Invariant> l = invariantService.readByPrivateByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values)).getDataList();
+            for (Invariant myInvariant : l) {
                 if(invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
@@ -85,7 +85,8 @@ public class GetInvariantsForTest extends HttpServlet {
                 }
             }
 
-            for (Invariant myInvariant : invariantService.readByPublicByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values))) {
+            l = invariantService.readByPublicByCriteria(0, 0, "sort", "ASC", "%", "idname "+SqlUtil.getInSQLClause(values)).getDataList();
+            for (Invariant myInvariant : l) {
                 if(invariants.containsKey(myInvariant.getIdName())) {
                     invariants.get(myInvariant.getIdName()).add(myInvariant.getValue());
                 } else {
