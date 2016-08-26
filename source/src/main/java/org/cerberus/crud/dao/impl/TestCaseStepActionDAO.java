@@ -51,9 +51,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
 
-    /**
-     * Description of the variable here.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -300,8 +297,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
     public void createTestCaseStepAction(TestCaseStepAction testCaseStepAction) throws CerberusException {
         boolean throwExcep = false;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `action`, `object`, `property`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `conditionOper`, `conditionVal1`, `action`, `value1`, `value2`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -312,12 +309,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setInt(3, testCaseStepAction.getStep());
                 preStat.setInt(4, testCaseStepAction.getSequence());
                 preStat.setInt(5, testCaseStepAction.getSort());
-                preStat.setString(6, testCaseStepAction.getAction());
-                preStat.setString(7, testCaseStepAction.getObject());
-                preStat.setString(8, testCaseStepAction.getProperty());
-                preStat.setString(9, testCaseStepAction.getForceExeStatus());
-                preStat.setString(10, testCaseStepAction.getDescription());
-                preStat.setString(11, testCaseStepAction.getScreenshotFilename());
+                preStat.setString(6, testCaseStepAction.getConditionOper());
+                preStat.setString(7, testCaseStepAction.getConditionVal1());
+                preStat.setString(8, testCaseStepAction.getAction());
+                preStat.setString(9, testCaseStepAction.getValue1());
+                preStat.setString(10, testCaseStepAction.getValue2());
+                preStat.setString(11, testCaseStepAction.getForceExeStatus());
+                preStat.setString(12, testCaseStepAction.getDescription());
+                preStat.setString(13, testCaseStepAction.getScreenshotFilename());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -355,14 +354,20 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 .append("`Step` = ?, ")
                 .append("`Sequence` = ?, ")
                 .append("`Sort` = ?, ")
+                .append("`ConditionOper` = ?, ")
+                .append("`ConditionVal1` = ?, ")
                 .append("`Action` = ?, ")
-                .append("`Object` = ?, ")
-                .append("`Property` = ?, ")
+                .append("`Value1` = ?, ")
+                .append("`Value2` = ?, ")
                 .append("`ForceExeStatus` = ?, ")
                 .append("`Description` = ?, ")
                 .append("`ScreenshotFilename` = ? ")
                 .append("WHERE `Test` = ? AND `TestCase` = ? AND `Step` = ? AND `Sequence` = ? ")
                 .toString();
+        
+        LOG.debug("SQL " + query);
+        LOG.debug("SQL.param.conditionOper " + testCaseStepAction.getConditionOper());
+        LOG.debug("SQL.param.conditionVal1 " + testCaseStepAction.getConditionVal1());
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -373,17 +378,19 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
                 preStat.setInt(3, testCaseStepAction.getStep());
                 preStat.setInt(4, testCaseStepAction.getSequence());
                 preStat.setInt(5, testCaseStepAction.getSort());
-                preStat.setString(6, testCaseStepAction.getAction());
-                preStat.setString(7, testCaseStepAction.getObject());
-                preStat.setString(8, testCaseStepAction.getProperty());
-                preStat.setString(9, testCaseStepAction.getForceExeStatus());
-                preStat.setString(10, testCaseStepAction.getDescription());
-                preStat.setString(11, testCaseStepAction.getScreenshotFilename());
+                preStat.setString(6, testCaseStepAction.getConditionOper());
+                preStat.setString(7, testCaseStepAction.getConditionVal1());
+                preStat.setString(8, testCaseStepAction.getAction());
+                preStat.setString(9, testCaseStepAction.getValue1());
+                preStat.setString(10, testCaseStepAction.getValue2());
+                preStat.setString(11, testCaseStepAction.getForceExeStatus());
+                preStat.setString(12, testCaseStepAction.getDescription());
+                preStat.setString(13, testCaseStepAction.getScreenshotFilename());
 
-                preStat.setString(12, testCaseStepAction.getTest());
-                preStat.setString(13, testCaseStepAction.getTestCase());
-                preStat.setInt(14, testCaseStepAction.getStep());
-                preStat.setInt(15, testCaseStepAction.getSequence());
+                preStat.setString(14, testCaseStepAction.getTest());
+                preStat.setString(15, testCaseStepAction.getTestCase());
+                preStat.setInt(16, testCaseStepAction.getStep());
+                preStat.setInt(17, testCaseStepAction.getSequence());
 
                 preStat.executeUpdate();
                 throwExcep = false;
@@ -492,8 +499,8 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         Answer ans = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `action`, `object`, `property`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcasestepaction (`test`, `testCase`, `step`, `sequence`, `sort`, `conditionOper`, `conditionVal1`, `action`, `Value1`, `Value2`, `ForceExeStatus`, `description`, `screenshotfilename`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         try (Connection connection = databaseSpring.connect();
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
@@ -503,12 +510,14 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
             preStat.setInt(3, testCaseStepAction.getStep());
             preStat.setInt(4, testCaseStepAction.getSequence());
             preStat.setInt(5, testCaseStepAction.getSort());
-            preStat.setString(6, testCaseStepAction.getAction());
-            preStat.setString(7, testCaseStepAction.getObject());
-            preStat.setString(8, testCaseStepAction.getProperty());
-            preStat.setString(9, testCaseStepAction.getForceExeStatus());
-            preStat.setString(10, testCaseStepAction.getDescription());
-            preStat.setString(11, testCaseStepAction.getScreenshotFilename());
+            preStat.setString(6, testCaseStepAction.getConditionOper());
+            preStat.setString(7, testCaseStepAction.getConditionVal1());
+            preStat.setString(8, testCaseStepAction.getAction());
+            preStat.setString(9, testCaseStepAction.getValue1());
+            preStat.setString(10, testCaseStepAction.getValue2());
+            preStat.setString(11, testCaseStepAction.getForceExeStatus());
+            preStat.setString(12, testCaseStepAction.getDescription());
+            preStat.setString(13, testCaseStepAction.getScreenshotFilename());
             preStat.executeUpdate();
 
             // Set the final message
@@ -531,14 +540,16 @@ public class TestCaseStepActionDAO implements ITestCaseStepActionDAO {
         Integer step = resultSet.getInt("tca.Step");
         Integer sequence = resultSet.getInt("tca.Sequence");
         Integer sort = resultSet.getInt("tca.Sort");
+        String conditionOper = resultSet.getString("tca.ConditionOper");
+        String conditionVal1 = resultSet.getString("tca.ConditionVal1");
         String action = resultSet.getString("tca.Action");
-        String object = resultSet.getString("tca.Object");
-        String property = resultSet.getString("tca.Property");
+        String value1 = resultSet.getString("tca.Value1");
+        String value2 = resultSet.getString("tca.Value2");
         String description = resultSet.getString("tca.description");
         String screenshotFilename = resultSet.getString("tca.screenshotFilename");
         String forceExeStatus = resultSet.getString("tca.forceExeStatus");
 
-        return factoryTestCaseStepAction.create(test, testCase, step, sequence, sort, action, object, property, forceExeStatus, description, screenshotFilename);
+        return factoryTestCaseStepAction.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, action, value1, value2, forceExeStatus, description, screenshotFilename);
     }
 
 }

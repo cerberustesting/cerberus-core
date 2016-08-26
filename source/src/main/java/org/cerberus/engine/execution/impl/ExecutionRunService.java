@@ -465,7 +465,8 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(),
-                    null, null, testCaseStepAction.getAction(), testCaseStepAction.getObject(), testCaseStepAction.getProperty(), testCaseStepAction.getForceExeStatus(),
+                    null, null, testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
+                    testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getForceExeStatus(),
                     startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -481,138 +482,228 @@ public class ExecutionRunService implements IExecutionRunService {
             testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
 
             /**
-             * We calculate the property.
+             * CONDITION Management on Action is treated here. Checking is the
+             * action can be execued here depending on the condition operator
+             * and value.
              */
-            String propertyToCalculate = testCaseStepActionExecution.getProperty();
-            if ((!propertyToCalculate.equals("null")) && !StringUtil.isNullOrEmpty(propertyToCalculate)) {
-                /**
-                 * Only calculate property if it is feed.
-                 */
-                LOG.debug(logPrefix + "Calculating property : " + propertyToCalculate);
-                String propertyToCalculate_value = "";
-                try {
-                    /**
-                     * Calculating the data (Property).
-                     */
-                    boolean isCalledFromCalculateProperty = false;
-                    if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-                        isCalledFromCalculateProperty = true;
-                        //TODO  check if this is ever executed
-                        /*if (StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject()) && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty())) {
-                            throw new CerberusEventException(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL));
-                        }*/
-                    }
-                    propertyToCalculate_value = propertyService.decodeValueWithExistingProperties("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
-                } catch (CerberusEventException ex) {
-                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                }
-                TestCaseExecutionData testCaseExecutionData = null;
-                // We get back here the TestCaseExecutionData from a previous calculation based on the Property name. In case Property nema is PROP(SUBDATA), we consider only PROP.
-                String masterPropertyName = propertyToCalculate.split("\\(")[0];
-                for (TestCaseExecutionData tced : testCaseStepExecution.gettCExecution().getTestCaseExecutionDataList()) {
-                    if (tced.getProperty().equals(masterPropertyName)) {
-                        testCaseExecutionData = tced;
-                        break;
-                    }
-                }
-                /**
-                 * Adding the calculated data to the current step Execution and
-                 * ActionExecution.
-                 */
-                myStepDataList.add(testCaseExecutionData);
-                testCaseStepExecution.setTestCaseExecutionDataList(myStepDataList);
-                myActionDataList.add(testCaseExecutionData);
-                testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
+            boolean execute_Action = true;
+            LOG.debug(logPrefix + "Starting checking the action execution condition : " + testCaseStepAction.getConditionOper());
+            MessageEvent mes;
+            switch (testCaseStepAction.getConditionOper()) {
+                case TestCaseStepAction.CONDITIONOPER_ALWAYS:
+                    execute_Action = true;
+                    break;
 
-                if ((testCaseExecutionData != null) && (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS)))) {
-                    /**
-                     * If property could be calculated, we execute the action.
-                     */
-                    testCaseStepActionExecution.setProperty(propertyToCalculate_value);
-                    testCaseStepActionExecution.setPropertyName(propertyToCalculate);
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
-                    testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
-                } else {
-                    if (testCaseExecutionData == null) {
-                        MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
-                        mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepActionExecution.getProperty()));
-                        mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
+                case TestCaseStepAction.CONDITIONOPER_IFPROPERTYEXIST:
+                    if (StringUtil.isNullOrEmpty(testCaseStepAction.getConditionVal1())) {
+                        mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER);
+                        mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
                         testCaseStepActionExecution.setActionResultMessage(mes);
+                        execute_Action = false;
 
                     } else {
-
-                        /**
-                         * Any other cases (Property does not exist or failed to
-                         * be calculated), we just don't execute the action and
-                         * move Property Execution message to the action.
-                         */
-                        testCaseStepActionExecution.setStopExecution(testCaseExecutionData.isStopExecution());
-                        testCaseStepActionExecution.setExecutionResultMessage(testCaseExecutionData.getExecutionResultMessage());
-
-                        /**
-                         * Register the empty Action in database.
-                         */
-                        if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
-                            mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepActionExecution.getProperty()));
-                            mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
+                        String myCountry = testCaseStepExecution.gettCExecution().getCountry();
+                        String myProperty = testCaseStepAction.getConditionVal1();
+                        execute_Action = false;
+                        for (TestCaseCountryProperties prop : testCaseStepExecution.gettCExecution().getTestCaseCountryPropertyList()) {
+                            LOG.debug(prop.getCountry() + " - " + myCountry + " - " + prop.getProperty() + " - " + myProperty);
+                            if ((prop.getCountry().equals(myCountry)) && (prop.getProperty().equals(myProperty))) {
+                                execute_Action = true;
+                            }
+                        }
+                        if (execute_Action == false) {
+                            mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_IFPROPERTYEXIST_NOTEXIST);
+                            mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
+                            mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepAction.getConditionVal1()));
+                            mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepExecution.gettCExecution().getCountry()));
                             testCaseStepActionExecution.setActionResultMessage(mes);
-                        } else {
-                            testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_FAILED_PROPERTYFAILED,
-                                    testCaseExecutionData.getPropertyResultMessage().isGetPageSource(),
-                                    testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())
-                            );
+
                         }
                     }
+                    break;
 
-                    /**
-                     * Record Screenshot, PageSource
-                     */
-                    recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
-
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
-                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
-
-                }
-            } else /**
-             * If no property defined, we just execute the action.
-             */
-            {
-                if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject())) {
-                    //TODO check which actions can be executed without property and object
-                    //if there is no object and also we are using the calculateProperty, then the step execution should be stopped 
-                    MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);
-
-                    testCaseStepActionExecution.setStopExecution(mes.isStopTest());
+                case TestCaseStepAction.CONDITIONOPER_NEVER:
+                    mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_NEVER);
+                    mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
                     testCaseStepActionExecution.setActionResultMessage(mes);
-                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(mes.getMessage()));
-                    Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, mes.getDescription());
+                    execute_Action = false;
+                    break;
 
-                    recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+                default:
+                    mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_UNKNOWN);
+                    mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
+                    testCaseStepActionExecution.setActionResultMessage(mes);
+                    execute_Action = false;
+            }
+            LOG.debug(logPrefix + "Finished to evaluate the execution condition : " + execute_Action);
 
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
-                    this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+            // Execute or not the action here.
+            if (execute_Action) {
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
+                testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
 
-                } else {
-                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
-                    testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+                /**
+                 * If Action or property reported to stop the testcase, we stop
+                 * it and update the step with the message.
+                 */
+                testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
+                if ((!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
+                        && (!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
+                    testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
+                    testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
                 }
+                if (testCaseStepActionExecution.isStopExecution()) {
+                    break;
+                }
+
+            } else { // We don't execute the action and record a generic execution.
+
+                /**
+                 * Record Screenshot, PageSource
+                 */
+                recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+
             }
 
             /**
-             * If Action or property reported to stop the testcase, we stop it
-             * and update the step with the message.
+             * We calculate the property.
              */
-            testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
-            if ((!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
-                    && (!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
-                testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
-                testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
-            }
-            if (testCaseStepActionExecution.isStopExecution()) {
-                break;
+            if (false) {
+                String propertyToCalculate = testCaseStepActionExecution.getValue2();
+                if ((!propertyToCalculate.equals("null")) && !StringUtil.isNullOrEmpty(propertyToCalculate)) {
+                    /**
+                     * Only calculate property if it is feed.
+                     */
+                    LOG.debug(logPrefix + "Calculating property : " + propertyToCalculate);
+                    String propertyToCalculate_value = "";
+                    try {
+                        /**
+                         * Calculating the data (Property).
+                         */
+                        boolean isCalledFromCalculateProperty = false;
+                        if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
+                            isCalledFromCalculateProperty = true;
+                            //TODO  check if this is ever executed
+                            /*if (StringUtil.isNullOrEmpty(testCaseStepActionExecution.getObject()) && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getProperty())) {
+                            throw new CerberusEventException(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL));
+                        }*/
+                        }
+                        propertyToCalculate_value = propertyService.decodeValueWithExistingProperties("%" + propertyToCalculate + "%", testCaseStepActionExecution, isCalledFromCalculateProperty);
+                    } catch (CerberusEventException ex) {
+                        Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                    }
+                    TestCaseExecutionData testCaseExecutionData = null;
+                    // We get back here the TestCaseExecutionData from a previous calculation based on the Property name. In case Property nema is PROP(SUBDATA), we consider only PROP.
+                    String masterPropertyName = propertyToCalculate.split("\\(")[0];
+                    for (TestCaseExecutionData tced : testCaseStepExecution.gettCExecution().getTestCaseExecutionDataList()) {
+                        if (tced.getProperty().equals(masterPropertyName)) {
+                            testCaseExecutionData = tced;
+                            break;
+                        }
+                    }
+                    /**
+                     * Adding the calculated data to the current step Execution
+                     * and ActionExecution.
+                     */
+                    myStepDataList.add(testCaseExecutionData);
+                    testCaseStepExecution.setTestCaseExecutionDataList(myStepDataList);
+                    myActionDataList.add(testCaseExecutionData);
+                    testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
+
+                    if ((testCaseExecutionData != null) && (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS)))) {
+                        /**
+                         * If property could be calculated, we execute the
+                         * action.
+                         */
+                        testCaseStepActionExecution.setValue2(propertyToCalculate_value);
+                        testCaseStepActionExecution.setPropertyName(propertyToCalculate);
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
+                        testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+                    } else {
+                        if (testCaseExecutionData == null) {
+                            mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
+                            mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepActionExecution.getValue2()));
+                            mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
+                            testCaseStepActionExecution.setActionResultMessage(mes);
+
+                        } else {
+
+                            /**
+                             * Any other cases (Property does not exist or
+                             * failed to be calculated), we just don't execute
+                             * the action and move Property Execution message to
+                             * the action.
+                             */
+                            testCaseStepActionExecution.setStopExecution(testCaseExecutionData.isStopExecution());
+                            testCaseStepActionExecution.setExecutionResultMessage(testCaseExecutionData.getExecutionResultMessage());
+
+                            /**
+                             * Register the empty Action in database.
+                             */
+                            if (testCaseExecutionData.getPropertyResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
+                                mes = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
+                                mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepActionExecution.getValue2()));
+                                mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountry()));
+                                testCaseStepActionExecution.setActionResultMessage(mes);
+                            } else {
+                                testCaseStepActionExecution.setActionResultMessage(new MessageEvent(MessageEventEnum.ACTION_FAILED_PROPERTYFAILED,
+                                        testCaseExecutionData.getPropertyResultMessage().isGetPageSource(),
+                                        testCaseExecutionData.getPropertyResultMessage().isDoScreenshot())
+                                );
+                            }
+                        }
+
+                        /**
+                         * Record Screenshot, PageSource
+                         */
+                        recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+
+                    }
+                } else /**
+                 * If no property defined, we just execute the action.
+                 */
+                 if (testCaseStepActionExecution.getAction().equals("calculateProperty") && StringUtil.isNullOrEmpty(testCaseStepActionExecution.getValue1())) {
+                        //TODO check which actions can be executed without property and object
+                        //if there is no object and also we are using the calculateProperty, then the step execution should be stopped 
+                        mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_CALCULATE_OBJECTPROPERTYNULL);
+
+                        testCaseStepActionExecution.setStopExecution(mes.isStopTest());
+                        testCaseStepActionExecution.setActionResultMessage(mes);
+                        testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(mes.getMessage()));
+                        Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, mes.getDescription());
+
+                        recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                        this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
+
+                    } else {
+                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " without property.");
+                        testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+                    }
+
+                /**
+                 * If Action or property reported to stop the testcase, we stop
+                 * it and update the step with the message.
+                 */
+                testCaseStepExecution.setStopExecution(testCaseStepActionExecution.isStopExecution());
+                if ((!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))
+                        && (!(testCaseStepActionExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTEXECUTING))))) {
+                    testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
+                    testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
+                }
+                if (testCaseStepActionExecution.isStopExecution()) {
+                    break;
+                }
             }
 
         }

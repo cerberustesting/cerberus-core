@@ -1010,7 +1010,7 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary) {
         htmlToAppend += '</div>';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">';
-        htmlToAppend += '<div style="width: 30%; float:left; background-color: transparent" class="technical_part">';
+        htmlToAppend += '<div style="width: 20%; float:left; background-color: transparent" class="technical_part">';
         htmlToAppend += '<div style="float:left;width:80px; "><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionAction">Action \n\
         <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Action&amp;Lang=en&quot;)" class="docOnline">\n\
         <span class="glyphicon glyphicon-question-sign"></span></a></p>';
@@ -1027,15 +1027,13 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary) {
                     action.sequence + '"  readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"/>';
         }
         htmlToAppend += '</div>';
-        htmlToAppend += '<div style="width: 40%; float:left; background-color: transparent" class="technical_part">';
-        htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionObject">Object \n\
-        <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Object&amp;Lang=en&quot;)" class="docOnline">\n\
-        <span class="glyphicon glyphicon-question-sign"></span></a></p>';
+        htmlToAppend += '<div style="width: 25%; float:left; background-color: transparent" class="technical_part">';
+        htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionObject1">Val1</p>';
         htmlToAppend += '</div>';
         htmlToAppend += '<input ' + readonly + ' name="action_object_' + stepNumber + '_' + action.sequence + '" id="action_object_' + stepNumber + '_' + action.sequence + '" \n\
         value="' + action.object + '" style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999">';
         htmlToAppend += '</div>';
-        htmlToAppend += '<div style="width: 30%; float:left; background-color:transparent" class="technical_part">';
+        htmlToAppend += '<div style="width: 20%; float:left; background-color:transparent" class="technical_part">';
         htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionProperty">\n\
         Property <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Property&amp;Lang=en&quot;)" \n\
         class="docOnline"><span class="glyphicon glyphicon-question-sign"></span></a></p>';
@@ -1491,8 +1489,8 @@ function displayPageLabel() {
     $("*[name='labelTestCase']").html(doc.getDocOnline("testcase", "TestCase"));
     $("*[name='labelTestCaseStepActionDescription']").html(doc.getDocOnline("testcasestepaction", "description"));
     $("*[name='labelTestCaseStepActionAction']").html(doc.getDocOnline("testcasestepaction", "Action"));
-    $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Object"));
-    $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Property"));
+    $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Value1"));
+    $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Value2"));
     $("*[name='labelTestCaseStepActionForce']").html(doc.getDocOnline("testcasestepaction", "ForceExeStatus"));
     $("*[name='labelTestCaseStepActionControlType']").html(doc.getDocOnline("testcasestepactioncontrol", "Type"));
 

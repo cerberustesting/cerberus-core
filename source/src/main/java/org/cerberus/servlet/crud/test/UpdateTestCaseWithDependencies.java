@@ -140,7 +140,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (duplicate) {
             tc.setCreator(user.getLogin());
             AnswerList answer = invariantService.readByIdname("TCSTATUS"); //TODO: handle if the response does not turn ok
-            tc.setStatus(((List<Invariant>)answer.getDataList()).get(0).getValue());
+            tc.setStatus(((List<Invariant>) answer.getDataList()).get(0).getValue());
         }
 
         /**
@@ -159,13 +159,11 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          */
         if (!duplicate) {
             tcService.updateTestCase(tc);
+        } else if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null) {
+            response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
+            return;
         } else {
-            if (tcService.findTestCaseByKey(tc.getTest(), tc.getTestCase()) != null) {
-                response.sendError(403, MessageGeneralEnum.GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS.getDescription());
-                return;
-            } else {
-                tcService.createTestCase(tc);
-            }
+            tcService.createTestCase(tc);
         }
 
         /**
@@ -260,7 +258,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
             }
             tccpService.deleteListTestCaseCountryProperties(tccpToDelete);
         }
-        
+
         /*
          * Get steps, actions and controls from page by:
          * - generating a new step, action or control number,
@@ -269,13 +267,13 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
         List<TestCaseStepAction> tcsaFromPage = new ArrayList();
         List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
- 
+
         int nextStepNumber = getMaxStepNumber(tcsFromPage);
         for (TestCaseStep tcs : tcsFromPage) {
             if (tcs.getStep() == -1) {
                 tcs.setStep(++nextStepNumber);
             }
-            
+
             if (tcs.getTestCaseStepAction() != null) {
                 int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
                 for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
@@ -283,9 +281,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         tcsa.setSequence(++nextSequenceNumber);
                     }
                     tcsa.setStep(tcs.getStep());
-                    
+
                     if (tcsa.getTestCaseStepActionControl() != null) {
-                            int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
+                        int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
                         for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
                             if (tscac.getControl() == -1) {
                                 tscac.setControl(++nextControlNumber);
@@ -323,10 +321,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Load=Load&Test=" + encodedTest + "&TestCase=" + encodedTestCase));
 
     }
-    
+
     /**
      * Get the highest step number from the given steps
-     * 
+     *
      * @param steps a collection of steps from which get the highest step number
      * @return the highest step number from the given steps
      */
@@ -341,11 +339,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         }
         return nextStepNumber;
     }
-    
+
     /**
      * Get the highest action sequence from the given actions
-     * 
-     * @param steps a collection of actions from which get the highest action sequence
+     *
+     * @param steps a collection of actions from which get the highest action
+     * sequence
      * @return the highest action sequence from the given actions
      */
     private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
@@ -359,11 +358,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         }
         return nextSequenceNumber;
     }
-    
+
     /**
      * Get the highest control number from the given controls
-     * 
-     * @param controls a collection of controls from which get the highest control number
+     *
+     * @param controls a collection of controls from which get the highest
+     * control number
      * @return the highest control number from the given controls
      */
     private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
@@ -510,23 +510,23 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     /* Take action and control only if not use step*/
                     if (useStep == null || useStep.equals("N")) {
                         String isToCopySteps = getParameterIfExists(request, "isToCopySteps_" + inc);
-                        if(isToCopySteps != null && isToCopySteps.equals("Y")){
+                        if (isToCopySteps != null && isToCopySteps.equals("Y")) {
                             // TODO:FN the information about the useStep should be cleared?
                             //tcStep.setTestCaseStepAction(tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep));
                             ITestCaseStepActionService tcsaService = appContext.getBean(TestCaseStepActionService.class);
                             ITestCaseStepActionControlService tcsacService = appContext.getBean(TestCaseStepActionControlService.class);
                             int stepNumber = Integer.parseInt(stepValue);
                             List<TestCaseStepAction> actions = tcsaService.getListOfAction(useStepTest, useStepTestCase, stepNumber);
-                            for(TestCaseStepAction act : actions){
-                                List<TestCaseStepActionControl> controlsPerAction = tcsacService.findControlByTestTestCaseStepSequence(useStepTest, 
+                            for (TestCaseStepAction act : actions) {
+                                List<TestCaseStepActionControl> controlsPerAction = tcsacService.findControlByTestTestCaseStepSequence(useStepTest,
                                         useStepTestCase, stepNumber, act.getSequence());
-                                
+
                                 //these actions now belong to the current test case, therefore we need to change it
                                 act.setTest(test);
                                 act.setTestCase(testCase);
                                 act.setStep(step);
                                 List<TestCaseStepActionControl> updatedControlsPerAction = new ArrayList<TestCaseStepActionControl>();
-                                for(TestCaseStepActionControl ctrl : controlsPerAction){
+                                for (TestCaseStepActionControl ctrl : controlsPerAction) {
                                     ctrl.setTest(test);
                                     ctrl.setTestCase(testCase);
                                     ctrl.setStep(step);
@@ -536,8 +536,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             }
 
                             tcStep.setTestCaseStepAction(actions);
-                        }else{
-                            
+                        } else {
+
                             tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
                         }
 
@@ -546,12 +546,12 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         tcStep.setUseStepTest("");
                         tcStep.setUseStepTestCase("");
                         tcStep.setUseStepStep(-1);
-                        
+
                         //updates the test step action list with the new step
                         List<TestCaseStepAction> actionsForStep = tcStep.getTestCaseStepAction();
-                        for(TestCaseStepAction ac : actionsForStep){
+                        for (TestCaseStepAction ac : actionsForStep) {
                             List<TestCaseStepActionControl> actionControlList = ac.getTestCaseStepActionControl();
-                            for(TestCaseStepActionControl acControl : actionControlList){
+                            for (TestCaseStepActionControl acControl : actionControlList) {
                                 acControl.setStep(step);
                             }
                             ac.setStep(step);
@@ -561,46 +561,46 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                         TestCaseStep tcs = null;
                         if (useStepStep != -1 && !useStepTest.equals("") && !useStepTestCase.equals("")) {
                             /* If use step, verify if used step alread use another one */
-                            if((useStepChanged != null && useStepChanged.equals("Y")) || duplicate){ //if it is to duplicate then we need to get the new step information                                                      
+                            if ((useStepChanged != null && useStepChanged.equals("Y")) || duplicate) { //if it is to duplicate then we need to get the new step information                                                      
                                 //save the information about the test + testcase + step that was used to duplicate the test
-                                tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);                                                          
-                                if(tcs != null){
+                                tcs = tcsService.findTestCaseStep(useStepTest, useStepTestCase, useStepStep);
+                                if (tcs != null) {
                                     tcStep.setUseStepTest(tcs.getTest());
                                     tcStep.setUseStepTestCase(tcs.getTestCase());
                                     tcStep.setUseStepStep(tcs.getStep());
                                 }
-                            }else{
+                            } else {
                                 //if there was no changes then it uses the same information
-                                tcs = tcsService.findTestCaseStep(test, testCase, step);   
-                                if(tcs != null){
+                                tcs = tcsService.findTestCaseStep(test, testCase, step);
+                                if (tcs != null) {
                                     tcStep.setUseStepTest(tcs.getUseStepTest());
                                     tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                     tcStep.setUseStepStep(tcs.getUseStepStep());
                                 }
-                            }    
-                           
-                        }else{
+                            }
+
+                        } else {
                             //does not defines a valid step, then keep as it was before
-                            tcs = tcsService.findTestCaseStep(test, testCase, step);   
-                            if(tcs != null){
+                            tcs = tcsService.findTestCaseStep(test, testCase, step);
+                            if (tcs != null) {
                                 tcStep.setUseStep("N");
                                 tcStep.setUseStepTest(tcs.getUseStepTest());
                                 tcStep.setUseStepTestCase(tcs.getUseStepTestCase());
                                 tcStep.setUseStepStep(tcs.getUseStepStep());
                                 tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, inc));
-                                
+
                                 List<TestCaseStepAction> actionsForStep = tcStep.getTestCaseStepAction();
-                                for(TestCaseStepAction ac : actionsForStep){
+                                for (TestCaseStepAction ac : actionsForStep) {
                                     List<TestCaseStepActionControl> actionControlList = ac.getTestCaseStepActionControl();
-                                    for(TestCaseStepActionControl acControl : actionControlList){
+                                    for (TestCaseStepActionControl acControl : actionControlList) {
                                         acControl.setStep(step);
                                     }
                                     ac.setStep(step);
                                 }
                             }
                         }
-                        
-                        if(tcs != null){
+
+                        if (tcs != null) {
                             /**
                              * If description is empty, take the one from the
                              * use step
@@ -608,7 +608,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                             if (desc.equals("")) {
                                 tcStep.setDescription(tcs.getDescription());
                             }
-                        }else{
+                        } else {
                             //if the step that should be defined is not imported then we should save the data
                             //and the test case should have the useStep = 'N'
                             tcStep.setUseStep("N");
@@ -620,8 +620,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     } else {
                         tcStep.setIsStepInUseByOtherTestCase(false);
                     }
-                    
-                    
+
                     testCaseStep.add(tcStep);
                 }
             }
@@ -638,6 +637,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String delete = getParameterIfExists(request, "action_delete_" + stepInc + "_" + inc);
                 int sequence = Integer.valueOf(getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_technical_sequence_" + stepInc + "_" + inc));
                 int sort = Integer.valueOf(getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "action_sequence_" + stepInc + "_" + inc));
+                String conditionOper = getParameterIfExists(request, "action_conditionoper_" + stepInc + "_" + inc);
+                String conditionVal = getParameterIfExists(request, "action_conditionval_" + stepInc + "_" + inc);
                 String action = getParameterIfExists(request, "action_action_" + stepInc + "_" + inc);
                 String object = getParameterIfExists(request, "action_object_" + stepInc + "_" + inc).replaceAll("\"", "\\\"");
                 String property = getParameterIfExists(request, "action_property_" + stepInc + "_" + inc);
@@ -645,7 +646,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String description = getParameterIfExists(request, "action_description_" + stepInc + "_" + inc);
                 String screenshot = getParameterIfExists(request, "action_screenshot_" + stepInc + "_" + inc);
                 if (delete == null) {
-                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, -1, sequence, sort, action, object, property, forceExeStatus, description, screenshot);
+                    TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, -1, sequence, sort, conditionOper, conditionVal, action, object, property, forceExeStatus, description, screenshot);
                     tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, stepInc, inc));
                     testCaseStepAction.add(tcsa);
                 }

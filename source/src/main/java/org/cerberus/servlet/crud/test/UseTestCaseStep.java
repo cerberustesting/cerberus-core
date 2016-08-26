@@ -114,8 +114,8 @@ public class UseTestCaseStep extends HttpServlet {
             List<String> propertyNamesOfStep = new ArrayList<String>();
             List<TestCaseStepAction> testCaseStepActions = testCaseStepActionService.getListOfAction(fromTest, fromTestCase, fromStep);
             for (TestCaseStepAction action : testCaseStepActions) {
-                if (!propertyNamesOfStep.contains(action.getProperty())) {
-                    propertyNamesOfStep.add(action.getProperty());
+                if (!propertyNamesOfStep.contains(action.getValue2())) {
+                    propertyNamesOfStep.add(action.getValue2());
                 }
             }
 

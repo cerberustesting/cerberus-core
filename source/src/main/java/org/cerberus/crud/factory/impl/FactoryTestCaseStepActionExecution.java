@@ -33,14 +33,18 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepActionExecution {
 
     @Override
-    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String action, String object, String property, String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String action, String value1Init, String value2Init, String value1, String value2, String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);
         testCaseStepActionExecution.setEndLong(endLong);
         testCaseStepActionExecution.setId(id);
-        testCaseStepActionExecution.setObject(object);
-        testCaseStepActionExecution.setProperty(property);
+        testCaseStepActionExecution.setConditionOper(conditionOper);
+        testCaseStepActionExecution.setConditionVal1(conditionVal1);
+        testCaseStepActionExecution.setValue1(value1);
+        testCaseStepActionExecution.setValue2(value2);
+        testCaseStepActionExecution.setValue1Init(value1Init);
+        testCaseStepActionExecution.setValue2Init(value2Init);
         testCaseStepActionExecution.setForceExeStatus(forceExeStatus);
         testCaseStepActionExecution.setReturnCode(returnCode);
         testCaseStepActionExecution.setReturnMessage(returnMessage);

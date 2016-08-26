@@ -1313,7 +1313,7 @@
                                                                 <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                     <div style="float:left; width:80%">
-                                                                        <div style="float:left;width:80px; "><p name="labelTestCaseStepActionDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
+                                                                        <div style="float:left;width:120px; "><p name="labelTestCaseStepActionDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                         </div>
                                                                         <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                                value="<%=tcsa.getDescription()%>" placeholder="Description"
@@ -1325,6 +1325,27 @@
                                                                     </div>
                                                                 </div>
                                                                 <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionConditionOper" style="float:right;font-weight:bold;" link="white" >C. Ope</p>
+                                                                         </div>
+                                                                        <%if (!useStep) {%>
+                                                                            <%=ComboInvariant(appContext, "action_conditionoper_" + incrementStep + "_" + incrementAction, "width:55%;border: 1px solid white; color:#888888", "action_conditionoper_" + incrementStep + "_" + incrementAction, "wob", "ACTIONCONDITIONOPER", 
+                                                                                    tcsa.getConditionOper(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                        <%}else{
+                                                                            String action_action_id = "action_conditionoper_" + incrementStep + "_" + incrementAction;
+                                                                            %>
+                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getConditionOper()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
+                                                                        <%}%>
+                                                                    </div>
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionConditionVal" style="float:right;font-weight:bold;" link="white" >C. Val</p>
+                                                                         </div>
+                                                                        <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:55%; color:#999999"
+                                                                               value="<%=tcsa.getConditionVal1()%>"
+                                                                               onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
+                                                                               id="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" 
+                                                                               name="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                    </div>
                                                                     <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
@@ -1337,34 +1358,34 @@
                                                                             <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 35%; float:left; background-color: transparent">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
+                                                                    <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Val1</p>
                                                                          </div>
                                                                         <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
-                                                                               value="<%=tcsa.getObject().replace("\"","&quot;")%>"
+                                                                               value="<%=tcsa.getValue1().replace("\"","&quot;")%>"
                                                                                onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
                                                                                id="action_object_<%=incrementStep%>_<%=incrementAction%>" 
                                                                                name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
-                                                                        <% if (tcsa.getObject().startsWith("picture=")){%>
+                                                                        <% if (tcsa.getValue1().startsWith("picture=")){%>
                                                                         <div>
                                                                             <%if(!useStep){%>
-                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getValue1().split("picture=")[1]%>" 
                                                                                  onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', <%=incrementStep%>, <%=incrementAction%>, null)"/>                                                                                
                                                                             <%}else{%>
-                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" />
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getValue1().split("picture=")[1]%>" />
                                                                                 
                                                                             <%}%>
                                                                             </div>
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 25%; float:left; background-color:transparent">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
+                                                                    <div class="technical_part" style="width: 20%; float:left; background-color:transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
                                                                         </div>
                                                                         <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
-                                                                                value="<%=tcsa.getProperty()%>"
+                                                                                value="<%=tcsa.getValue2()%>"
                                                                                 <%if (useStep) {
                                                                                     //if is the step was imported, then adds the propertu to the list
-                                                                                    listOfImportedProperties.add(tcsa.getProperty());
+                                                                                    listOfImportedProperties.add(tcsa.getValue2());
                                                                                     //defines each attribute related to the test case step that was imported
                                                                                 %>
                                                                                 data-usestep-test="<%=testForQuery%>"
@@ -1373,7 +1394,7 @@
                                                                                 <%}
                                                                                 else{
                                                                                     //verify if the property is currently in the list of imported properties
-                                                                                    if(listOfImportedProperties.contains(tcsa.getProperty())){
+                                                                                    if(listOfImportedProperties.contains(tcsa.getValue2())){
                                                                                     //defines one attribute that will distinguish if the imported property
                                                                                     //from the undefined property
                                                                                     %>              
@@ -1386,7 +1407,7 @@
                                                                                 id="action_property_<%=incrementStep%>_<%=incrementAction%>"
                                                                                 name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:60px; "><p name="labelTestCaseStepActionForce" style="float:right;font-weight:bold;" link="white" >Force RC</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
@@ -2010,19 +2031,30 @@
                         </div>
                     </div>
                     <div style="display:inline-block;clear:both; height:15px;width:99%;background-color:transparent">
-                        <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
+                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Oper</p>
+                            </div>
+                            <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_conditionoper_template", "wob", "ACTIONCONDITIONOPER", "", "", null)%>
+                        </div>
+                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Val1</p>
+                            </div>
+                            <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:55%; background-color: transparent;"
+                                   data-id="action_conditionval_template">
+                        </div>
+                        <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_action_template", "wob", "ACTION", "", "", null)%>
                         </div>
-                        <div class="technical_part" style="width: 35%; float:left; background-color: transparent">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object", myLang));%></p>
+                        <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value1", "Val1", myLang));%></p>
                             </div>
                             <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
                                    data-id="action_object_template">
                         </div>
-                        <div class="technical_part" style="width: 25%; float:left; background-color:transparent">
-                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property", myLang));%></p>
+                        <div class="technical_part" style="width: 15%; float:left; background-color:transparent">
+                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value2", "Val2", myLang));%></p>
                             </div>
                             <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
                                     data-id="action_property_template">
@@ -2030,7 +2062,7 @@
                         <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
                             <div style="float:left;width:60px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "ForceExeStatus", "Force Execution Status", myLang));%></p>
                             </div>
-                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "action_forceexestatus_template", "wob", "ACTIONFORCEEXESTATUS", "", "", null)%>
+                            <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_forceexestatus_template", "wob", "ACTIONFORCEEXESTATUS", "", "", null)%>
                         </div>
                     </div>
                 </div>

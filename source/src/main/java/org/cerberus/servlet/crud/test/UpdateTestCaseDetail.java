@@ -532,9 +532,13 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         request);
                 String step_action[] = this.getStringTable("actions_action",
                         request);
-                String step_object[] = this.getStringTable("actions_object",
+                String step_conditionOper[] = this.getStringTable("actions_conditionOper",
                         request);
-                String step_property[] = this.getStringTable("actions_property",
+                String step_conditionVal[] = this.getStringTable("actions_conditionVal",
+                        request);
+                String step_value1[] = this.getStringTable("actions_value1",
+                        request);
+                String step_value2[] = this.getStringTable("actions_value2",
                         request);
                 String step_description[] = this.getStringTable("actions_description",
                         request, true);
@@ -574,9 +578,11 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 List<String[]> testcase_actions_info = new ArrayList<String[]>();
                 testcase_actions_info.add(step_number_hide);
                 testcase_actions_info.add(step_sequence);
+                testcase_actions_info.add(step_conditionOper);
+                testcase_actions_info.add(step_conditionVal);
                 testcase_actions_info.add(step_action);
-                testcase_actions_info.add(step_object);
-                testcase_actions_info.add(step_property);
+                testcase_actions_info.add(step_value1);
+                testcase_actions_info.add(step_value2);
                 testcase_actions_info.add(step_description);
 
                 /*
@@ -734,7 +740,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             IFactoryTestCaseStepAction actionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
                             ITestCaseStepActionService actionService = appContext.getBean(ITestCaseStepActionService.class);
                             TestCaseStepAction tcsa = actionFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(step_number_hide[i]), Integer.parseInt(step_sequence[i]),
-                                    step_action[i], step_object[i], step_property[i], step_description[i]);
+                                    Integer.parseInt(step_sequence[i]), step_conditionOper[i], step_conditionVal[i], step_action[i], step_value1[i], step_value2[i], "", step_description[i], "");
 
                             if (rs_stepaction.next()) { /*
                                  * Update
