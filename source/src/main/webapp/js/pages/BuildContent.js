@@ -29,7 +29,7 @@ function initPage() {
 
     var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
     var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    var urlApplication = GetURLParameter('application');
+    var urlApplication = GetURLParameter('application', 'ALL');
 
     // Filter combo
     displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y", true);
@@ -55,7 +55,6 @@ function initPage() {
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayApplicationList("application", getUser().defaultSystem, urlApplication);
-    select.val('ALL');
     
     displayProjectList("project");
     displayUserList("releaseowner");

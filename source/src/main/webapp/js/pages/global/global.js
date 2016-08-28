@@ -1672,10 +1672,11 @@ function displayFooter(doc) {
 
 /**
  * Get the parameter passed in the url Example : url?param=value
- * @param {type} sParam parameter you want to get value from
- * @returns {GetURLParameter.sParameterName} the value or null if not found
+ * @param {String} sParam parameter you want to get value from
+ * @param {String} defaultValue Default value in case the parameter is not defined in the URL.
+ * @returns {GetURLParameter.sParameterName} the value or defaultValue does not exist in URL or null if not found in URL and no default value specified.
  */
-function GetURLParameter(sParam) {
+function GetURLParameter(sParam, defaultValue) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
 
@@ -1687,7 +1688,11 @@ function GetURLParameter(sParam) {
             return decodeURIComponent(sParameterName[1]);
         }
     }
-    return null;
+    if (defaultValue === undefined) {
+        return null;
+    } else {
+        return defaultValue;
+    }
 }
 
 /**

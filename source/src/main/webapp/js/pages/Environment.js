@@ -27,12 +27,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
-    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
-    var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
-    var urlEnvGp = GetURLParameter('envgp'); // Feed Environment Group combo with Environment list.
-    var urlActive = GetURLParameter('active'); // Feed Active combo with Active list.
+    var urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
+    var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
+    var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
+    var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
+    var urlEnvGp = GetURLParameter('envgp', 'ALL'); // Feed Environment Group combo with Environment list.
+    var urlActive = GetURLParameter('active', 'ALL'); // Feed Active combo with Active list.
 
     appendBuildList("build", "1", urlBuild);
     appendBuildList("revision", "2", urlRevision);
@@ -40,22 +40,18 @@ function initPage() {
     var select = $('#selectCountry');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("country", "COUNTRY", false, urlCountry);
-    select.val("ALL");
 
     var select = $('#selectEnvironment');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
-    select.val("ALL");
 
     var select = $('#selectEnvGp');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
-    select.val("ALL");
 
     var select = $('#selectActive');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("active", "ENVACTIVE", false, urlActive);
-    select.val("ALL");
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "ENVTYPE", false);
@@ -237,22 +233,22 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     //configure and create the dataTable
     var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
-    if (selectEnvironment !== 'ALL') {
+    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
         contentUrl = contentUrl + "&environment=" + selectEnvironment;
     }
-    if (selectCountry !== 'ALL') {
+    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
         contentUrl = contentUrl + "&country=" + selectCountry;
     }
-    if (selectBuild !== 'ALL') {
+    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
         contentUrl = contentUrl + "&build=" + selectBuild;
     }
-    if (selectRevision !== 'ALL') {
+    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
         contentUrl = contentUrl + "&revision=" + selectRevision;
     }
-    if (selectEnvGp !== 'ALL') {
+    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
         contentUrl = contentUrl + "&envgp=" + selectEnvGp;
     }
-    if (selectActive !== 'ALL') {
+    if ((selectActive!==null) && (selectActive !== 'ALL')) {
         contentUrl = contentUrl + "&active=" + selectActive;
     }
 
@@ -293,7 +289,7 @@ function appendBuildList(selectName, level, defaultValue) {
             }
             if (defaultValue !== undefined && defaultValue !== null) {
                 select.val(defaultValue);
-            }else{
+            } else {
                 select.val("ALL");
             }
 
@@ -357,7 +353,7 @@ function addEntryModalSaveHandler() {
 
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
-    
+
     showLoaderInModal('#addEnvModal');
     var jqxhr = $.post("CreateCountryEnvParam", dataForm);
     $.when(jqxhr).then(function (data) {
@@ -855,7 +851,7 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find('#newRevision').val(revision);
     // Select next Revision.
     $('#newRevision option:selected').next().attr('selected', 'selected');
-    
+
     $("#eventEnableButton").prop("disabled", "disabled");
 
     // Clean Old field values.
@@ -996,7 +992,7 @@ function appendNewInstallRow(build, revision, application, appdeploytype, releas
         <td><div class="nomarginbottom form-group form-group-sm">\n\
             ' + revision + '<span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + application + '<span></span> ['+ appdeploytype +']</div></td>\n\\n\
+            ' + application + '<span></span> [' + appdeploytype + ']</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
             ' + release + '<span></span></div></td>\n\\n\
         <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
