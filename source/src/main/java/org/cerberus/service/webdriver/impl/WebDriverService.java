@@ -405,11 +405,12 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotClickable(Session session, Identifier identifier) {
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-
-                return webElement == null;
+                if (webElement != null) {
+                    return !webElement.isEnabled();
+                }
             }
         } catch (NoSuchElementException exception) {
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
