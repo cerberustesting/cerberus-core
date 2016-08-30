@@ -949,7 +949,7 @@ function refreshlistInstallInstructions() {
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeploy, obj.release, "", obj.mavenVersion, obj.install);
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeployType, obj.release, "", obj.mavenVersion, obj.install);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
