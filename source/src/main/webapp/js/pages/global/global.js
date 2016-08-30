@@ -264,7 +264,7 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
                 }
                 if (defaultValue !== undefined) {
                     select.val(defaultValue);
-                }
+                } 
             },
             error: showUnexpectedError
         });
@@ -283,7 +283,7 @@ function displayBuildList(selectName, system, level, defaultValue, withAll, with
         }
         if (defaultValue !== undefined) {
             select.val(defaultValue);
-        }
+        } 
     }
 
 }
