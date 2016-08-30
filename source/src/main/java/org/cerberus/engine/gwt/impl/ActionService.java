@@ -541,11 +541,11 @@ public class ActionService implements IActionService {
                 if (identifier.getIdentifier().equals("picture")) {
                     return sikuliService.doSikuliAction(tCExecution.getSession(), "doubleClick", identifier.getLocator(), "");
                 } else {
-                    return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, true);
+                    return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, true);
                 }
             } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
                     || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-                return webdriverService.doSeleniumActionClick(tCExecution.getSession(), identifier, true, false);
+                return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);

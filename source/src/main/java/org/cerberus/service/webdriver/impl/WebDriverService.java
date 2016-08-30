@@ -405,12 +405,11 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotClickable(Session session, Identifier identifier) {
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, false);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
-                if (webElement != null) {
-                    return !webElement.isEnabled();
-                }
+
+                return webElement == null;
             }
         } catch (NoSuchElementException exception) {
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
@@ -632,10 +631,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {
