@@ -530,6 +530,10 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ReadProject</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ReadProject</servlet-class>
     </servlet>
@@ -1405,6 +1409,10 @@
         <url-pattern>/DeleteInvariant</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DeleteInvariant2</servlet-name>
+        <url-pattern>/DeleteInvariant2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadProject</servlet-name>
         <url-pattern>/ReadProject</url-pattern>
     </servlet-mapping>
@@ -2148,6 +2156,7 @@
             <url-pattern>/UpdateInvariant</url-pattern>
             <url-pattern>/UpdateInvariant2</url-pattern>
             <url-pattern>/DeleteInvariant</url-pattern>
+            <url-pattern>/DeleteInvariant2</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
         </web-resource-collection>

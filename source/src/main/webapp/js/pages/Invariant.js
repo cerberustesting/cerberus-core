@@ -144,6 +144,38 @@ function editEntryClick(param, value) {
     });
 }
 
+function removeEntryClick(param, value) {
+    var doc = new Doc();
+    showModalConfirmation(function(ev){
+        var param = $('#confirmationModal #hiddenField1').prop("value");
+        var value = $('#confirmationModal #hiddenField2').prop("value");
+        $.ajax({
+            url: "DeleteInvariant2?idName="+param+"&value="+value,
+            async: true,
+            method: "GET",
+            success: function (data) {
+                console.log(data.messageType);
+                if(data.messageType === "OK") {
+                    formEdit.find("#idname").prop("value", data.invariant.idName);
+                    formEdit.find("#value").prop("value", data.invariant.value);
+                    formEdit.find("#sort").prop("value", data.invariant.sort);
+                    formEdit.find("#description").prop("value", data.invariant.description);
+                    formEdit.find("#veryShortDesc").prop("value", data.invariant.veryShortDesc);
+                    formEdit.find("#gp1").prop("value", data.invariant.gp1);
+                    formEdit.find("#gp2").prop("value", data.invariant.gp2);
+                    formEdit.find("#gp3").prop("value", data.invariant.gp3);
+
+                    formEdit.modal('show');
+                }else{
+                    showUnexpectedError();
+                }
+            },
+            error: showUnexpectedError
+        });
+
+        $('#confirmationModal').modal('hide');
+    }, doc.getDocLabel("page_invariant", "title_remove") , doc.getDocLabel("page_invariant", "message_remove"), param, value, undefined, undefined);
+}
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editInvariantModal'));
     var formEdit = $('#editInvariantModal #editInvariantModalForm');
@@ -260,8 +292,12 @@ function aoColumnsFunc(tableId) {
                                         class="editApplication btn btn-default btn-xs margin-right5" \n\
                                         name="editInvariant" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
+                var removeInvariant = '<button id="removeInvariant" onclick="removeEntryClick(\'' + obj["idName"] + '\',\'' + obj["value"] + '\');"\n\
+                                        class="removeInvariant btn btn-default btn-xs margin-right5" \n\
+                                        name="removeInvariant" title="' + doc.getDocLabel("page_invariant", "button_remove") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-remove"></span></button>';
 
-                return '<div class="center btn-group width150">' + editInvariant + '</div>';
+                return '<div class="center btn-group width150">' + editInvariant + removeInvariant + '</div>';
 
             },
             "width": "50px"
