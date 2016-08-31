@@ -52,4 +52,7 @@ public interface IParameterDAO {
     AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key);
 
     Parameter loadFromResultSet(ResultSet rs) throws SQLException;
+
+    AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 }

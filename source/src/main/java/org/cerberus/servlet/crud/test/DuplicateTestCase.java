@@ -23,9 +23,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -35,9 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TCase;
-import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -53,13 +50,9 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.ITestService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.TestCaseCountryService;
-import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
@@ -71,7 +64,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -218,22 +210,49 @@ public class DuplicateTestCase extends HttpServlet {
                 ans = testCaseService.create(originalTC);
 
                 List<TestCaseCountry> countryList = getCountryList(test, testCase, request);
-                boolean success = testCaseCountryService.insertListTestCaseCountry(countryList);
+                boolean success = false;
+                if (countryList.isEmpty()) {
+                    success = true;
+                } else {
+                    success = testCaseCountryService.insertListTestCaseCountry(countryList);
+                }
+
+                List<TestCaseCountryProperties> tccpList = new ArrayList();
+                if (!countryList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
+                    tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase);
+                    if (!tccpList.isEmpty()) {
+                        ans = testCaseCountryPropertiesService.duplicateList(tccpList, test, testCase);
+                    }
+                }
+
+                List<TestCaseStep> tcsList = new ArrayList();
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
+                    tcsList = testCaseStepService.getListOfSteps(originalTest, originalTestCase);
+                    if (!tcsList.isEmpty()) {
+                        ans = testCaseStepService.duplicateList(tcsList, test, testCase);
+                    }
+                }
+
+                List<TestCaseStepAction> tcsaList = new ArrayList();
+                if (!tcsList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
+                    tcsaList = testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase);
+                    if (!tcsaList.isEmpty()) {
+                        ans = testCaseStepActionService.duplicateList(tcsaList, test, testCase);
+                    }
+                }
+
+                if (!tcsList.isEmpty() && !tcsaList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
+                    List<TestCaseStepActionControl> tcsacList = testCaseStepActionControlService.findControlByTestTestCase(originalTest, originalTestCase);
+                    if (!tcsacList.isEmpty()) {
+                        ans = testCaseStepActionControlService.duplicateList(tcsacList, test, testCase);
+                    }
+                }
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    ans = testCaseCountryPropertiesService.duplicateList(testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase), test, testCase);
-                }
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    ans = testCaseStepService.duplicateList(testCaseStepService.getListOfSteps(originalTest, originalTestCase), test, testCase);
-                }
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    ans = testCaseStepActionService.duplicateList(testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase), test, testCase);
-                }
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    ans = testCaseStepActionControlService.duplicateList(testCaseStepActionControlService.findControlByTestTestCase(originalTest, originalTestCase), test, testCase);
-                }
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
-                    ans = testCaseLabelService.duplicateList(testCaseLabelService.readByTestTestCase(originalTest, originalTestCase).getDataList(), test, testCase);
+                    List<TestCaseLabel> tclList = testCaseLabelService.readByTestTestCase(originalTest, originalTestCase).getDataList();
+                    if (!tclList.isEmpty()) {
+                        ans = testCaseLabelService.duplicateList(tclList, test, testCase);
+                    }
                 }
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())
                         && success) {

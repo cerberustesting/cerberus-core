@@ -162,8 +162,8 @@ public class ExportTestCase extends HttpServlet {
                         JSONObject actionObject = new JSONObject();
                         actionObject.put("sequence", i);
                         actionObject.put("action", action.getAction());
-                        actionObject.put("object", action.getObject());
-                        actionObject.put("property", action.getProperty());
+                        actionObject.put("object", action.getValue1());
+                        actionObject.put("property", action.getValue2());
                         actionObject.put("fatal", "");
                         actionList.put(actionObject);
                         sequenceList.put(actionObject);

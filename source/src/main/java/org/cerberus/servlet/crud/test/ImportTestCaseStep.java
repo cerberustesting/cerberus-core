@@ -124,8 +124,8 @@ public class ImportTestCaseStep extends HttpServlet {
             tcsa.setTestCase(testCase);
             tcsa.setStep(step);
             tcsaToImport.add(tcsa);
-            if (!propertyNamesOfStep.contains(tcsa.getProperty())) {
-                propertyNamesOfStep.add(tcsa.getProperty());
+            if (!propertyNamesOfStep.contains(tcsa.getValue2())) {
+                propertyNamesOfStep.add(tcsa.getValue2());
             }
         }
 

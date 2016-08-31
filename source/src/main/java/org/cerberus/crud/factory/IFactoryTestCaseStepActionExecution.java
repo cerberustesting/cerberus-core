@@ -28,10 +28,10 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  * @author bcivel
  */
 public interface IFactoryTestCaseStepActionExecution {
-    
+
     TestCaseStepActionExecution create(long id, String test, String testCase, int step,
-                                       int sequence, int sort, String returnCode, String returnMessage, String action, String object,
-                                       String property, String forceExeStatus, long start, long end, long startLong, long endLong,
-                                       MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution);
-    
+            int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String action, String value1Init, String value2Init,
+            String value1, String value2, String forceExeStatus, long start, long end, long startLong, long endLong,
+            MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution);
+
 }

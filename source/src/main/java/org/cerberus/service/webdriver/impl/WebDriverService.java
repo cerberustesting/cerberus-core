@@ -631,10 +631,10 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier) {
+    public MessageEvent doSeleniumActionDoubleClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
+            AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
                 WebElement webElement = (WebElement) answer.getItem();
                 if (webElement != null) {

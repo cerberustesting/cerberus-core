@@ -45,23 +45,29 @@ public class TestCaseCountryProperties {
     private List<TestCaseCountry> tccList;
 
     /**
-     * Invariant String.
+     * Invariant PROPERTY TYPE String.
      */
     public static final String TYPE_TEXT = "text";
-    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
+    public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
     public static final String TYPE_EXECUTESQL = "executeSql";
-    public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
-    public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
     public static final String TYPE_GETFROMHTML = "getFromHtml";
     public static final String TYPE_GETFROMHTMLVISIBLE = "getFromHtmlVisible";
     public static final String TYPE_GETFROMJS = "getFromJS";
     public static final String TYPE_GETATTRIBUTEFROMHTML = "getAttributeFromHtml";
+    public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMXML = "getFromXml";
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
-    public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMJSON = "getFromJson";
-    public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
+    @Deprecated
+    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
+    @Deprecated
+    public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
+    @Deprecated
+    public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
+    /**
+     * Invariant PROPERTY NATURE String.
+     */
     public static final String NATURE_STATIC = "STATIC";
     public static final String NATURE_RANDOM = "RANDOM";
     public static final String NATURE_RANDOMNEW = "RANDOMNEW";

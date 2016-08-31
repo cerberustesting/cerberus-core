@@ -93,7 +93,9 @@ public class UpdateParameter2 extends HttpServlet {
         }
         String param = request.getParameter("id");
         String valueCerberus = request.getParameter("valueCerberus");
+
         String valueSystem = request.getParameter("valueSystem");
+
         String mySystem = request.getParameter("system");
 
         MyLogger.log(UpdateParameter2.class.getName(), Level.DEBUG, "System : " + mySystem + " valueSystem : " + valueSystem + " valueCerberus : " + valueCerberus + " param : " + param);

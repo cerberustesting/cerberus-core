@@ -36,7 +36,7 @@ public class TestCaseStepActionControl {
     private String screenshotFilename;
 
     /**
-     * Invariant String.
+     * Invariant CONTROL TYPE String.
      */
     public static final String CONTROL_UNKNOWN = "Unknown";
     public static final String CONTROL_VERIFYSTRINGEQUAL = "verifyStringEqual";
@@ -44,17 +44,17 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYSTRINGGREATER = "verifyStringGreater";
     public static final String CONTROL_VERIFYSTRINGMINOR = "verifyStringMinor";
     public static final String CONTROL_VERIFYSTRINGCONTAINS = "verifyStringContains";
-    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
-    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
     public static final String CONTROL_VERIFYINTEGEREQUALS = "verifyIntegerEquals";
     public static final String CONTROL_VERIFYINTEGERDIFFERENT = "verifyIntegerDifferent";
+    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
+    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
     public static final String CONTROL_VERIFYELEMENTPRESENT = "verifyElementPresent";
     public static final String CONTROL_VERIFYELEMENTNOTPRESENT = "verifyElementNotPresent";
     public static final String CONTROL_VERIFYELEMENTVISIBLE = "verifyElementVisible";
     public static final String CONTROL_VERIFYELEMENTNOTVISIBLE = "verifyElementNotVisible";
     public static final String CONTROL_VERIFYELEMENTEQUALS = "verifyElementEquals";
-    public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";
     public static final String CONTROL_VERIFYELEMENTDIFFERENT = "verifyElementDifferent";
+    public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";
     public static final String CONTROL_VERIFYELEMENTCLICKABLE = "verifyElementClickable";
     public static final String CONTROL_VERIFYELEMENTNOTCLICKABLE = "verifyElementNotClickable";
     public static final String CONTROL_VERIFYTEXTINELEMENT = "verifyTextInElement";
@@ -67,6 +67,11 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYTEXTINDIALOG = "verifyTextInDialog";
     public static final String CONTROL_VERIFYXMLTREESTRUCTURE = "verifyXmlTreeStructure";
     public static final String CONTROL_TAKESCREENSHOT = "takeScreenshot";
+    public static final String CONTROL_GETPAGESOURCE = "getPageSource";
+    public static final String CONTROL_SKIPCONTROL = "skipControl";
+    /**
+     * Invariant CONTROL TYPE String.
+     */
     public static final String FATAL_YES = "Y";
     public static final String FATAL_NO = "N";
 

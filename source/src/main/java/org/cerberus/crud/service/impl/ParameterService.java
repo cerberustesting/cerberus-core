@@ -177,4 +177,9 @@ public class ParameterService implements IParameterService {
     public AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key){
         return parameterDao.readWithSystem1BySystemByKey(system, system1, key);
     }
+
+    @Override
+    public AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return parameterDao.readDistinctValuesWithSystem1ByCriteria(system, system1, searchParameter, individualSearch, columnName);
+    }
 }

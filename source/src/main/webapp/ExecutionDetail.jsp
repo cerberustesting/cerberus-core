@@ -520,8 +520,8 @@
                                         <td title="Action Sort" style="width:5%"><%=myActionData.getSort()%></td>
                                         <td title="Action Description" style="width:20%"><%=myActionData.getDescription()%></td>
                                         <td title="Action" style="width:20%"><b><%=myActionData.getAction()%></b></td>
-                                        <td title="Action Object" style="width:20%"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getObject())%></code></td>
-                                        <td title="Action Property" style="width:20%"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getProperty())%></code></td>
+                                        <td title="Action Value1" style="width:20%"><table><tr><td title="Action Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1Init())%></code></td></tr><tr><td title="Action Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1())%></code></td></tr></table></td>
+                                        <td title="Action Value2" style="width:20%"><table><tr><td title="Action Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2Init())%></code></td></tr><tr><td title="Action Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2())%></code></td></tr></table></td>
                                         <td title="Action Files" style="width:4%"><table><%
                                             levelFile = myActionData.getTest() + "-" + myActionData.getTestCase() + "-" + myActionData.getStep() + "-" + myActionData.getSequence();
                                             myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);

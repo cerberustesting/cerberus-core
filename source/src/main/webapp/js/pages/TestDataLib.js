@@ -148,118 +148,58 @@ function displayPageLabel() {
 
     //title 
     $("#editTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_updatelib", "title"));
-    //content
-    $("#lbl_id_edit").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
-    $("#lbl_name_edit").html(doc.getDocOnline("testdatalib", "name")); //name
-    $("#lbl_type_edit").html(doc.getDocOnline("testdatalib", "type"));
-    $("#lbl_system_edit").html(doc.getDocOnline("testdatalib", "system"));
-    $("#lbl_environment_edit").html(doc.getDocOnline("testdatalib", "environment"));
-    $("#lbl_country_edit").html(doc.getDocOnline("testdatalib", "country"));
-    //panels
+    $("#duplicateTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_duplicatelib", "title"));
+    $("#addTestDataLibModalLabel").text(doc.getDocLabel("page_testdatalib_m_createlib", "title"));
+    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
+    // TestDataLib content
+    $("[name='lbl_name']").html(doc.getDocOnline("testdatalib", "name"));
+    $("[name='lbl_type']").html(doc.getDocOnline("testdatalib", "type"));
+    $("[name='lbl_system']").html(doc.getDocOnline("testdatalib", "system"));
+    $("[name='lbl_environment']").html(doc.getDocOnline("testdatalib", "environment"));
+    $("[name='lbl_country']").html(doc.getDocOnline("testdatalib", "country"));
+    $("[name='lbl_description']").html(doc.getDocOnline("testdatalib", "description"));
+    $("[name='lbl_database']").html(doc.getDocOnline("testdatalib", "database"));
+    $("[name='lbl_script']").html(doc.getDocOnline("testdatalib", "script"));
+    $("[name='lbl_databaseUrl']").html(doc.getDocOnline("testdatalib", "databaseUrl"));
+    $("[name='lbl_service_path']").html(doc.getDocOnline("testdatalib", "servicepath"));
+    $("[name='lbl_method']").html(doc.getDocOnline("testdatalib", "method"));
+    $("[name='lbl_envelope']").html(doc.getDocOnline("testdatalib", "envelope"));
+    $("[name='lbl_databaseCsv']").html(doc.getDocOnline("testdatalib", "databaseCsv"));
+    $("[name='lbl_csvUrl']").html(doc.getDocOnline("testdatalib", "csvUrl"));
+    $("[name='lbl_separator']").html(doc.getDocOnline("testdatalib", "separator"));
+    $("[name='lbl_group']").html(doc.getDocOnline("testdatalib", "group"));
+    // Sub Data content
+    $("[name='subdataHeader']").html(doc.getDocOnline("testdatalibdata", "subData"));
+    $("[name='valueHeader']").html(doc.getDocOnline("testdatalibdata", "value"));
+    $("[name='columnHeader']").html(doc.getDocOnline("testdatalibdata", "column"));
+    $("[name='parsingAnswerHeader']").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
+    $("[name='columnPositionHeader']").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
+    $("[name='descriptionHeader']").html(doc.getDocOnline("testdatalibdata", "description"));
+    // Tracability
+    $("[name='lbl_created']").html(doc.getDocOnline("transversal", "DateCreated"));
+    $("[name='lbl_creator']").html(doc.getDocOnline("transversal", "UsrCreated"));
+    $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
+    $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
+
     //soap and sql specific configurations
-    $("#sqlConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
-    $("#soapConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
-    $("#csvConfigurationsLbl_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
-    $("#lbl_description_edit").html(doc.getDocOnline("testdatalib", "description"));
-    $("#lbl_database_edit").html(doc.getDocOnline("testdatalib", "database"));
-    $("#lbl_script_edit").html(doc.getDocOnline("testdatalib", "script"));
-    $("#lbl_databaseUrl_edit").html(doc.getDocOnline("testdatalib", "databaseUrl"));
-    $("#lbl_service_path_edit").html(doc.getDocOnline("testdatalib", "servicepath"));
-    $("#lbl_method_edit").html(doc.getDocOnline("testdatalib", "method"));
-    $("#lbl_envelope_edit").html(doc.getDocOnline("testdatalib", "envelope"));
-    $("#lbl_databaseCsv_edit").html(doc.getDocOnline("testdatalib", "databaseCsv"));
-    $("#lbl_csvUrl_edit").html(doc.getDocOnline("testdatalib", "csvUrl"));
-    //buttons    
+    $("[name='sqlConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_sql_configurations"));
+    $("[name='soapConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_soap_configurations"));
+    $("[name='csvConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_csv_configurations"));
+
+    //buttons
     $("#cancelTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
     $("#saveTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
-    //auxiliar for group edition
-    $("#lbl_choose_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
-    $("#lbl_enter_group_edit").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-
-
-    //title 
-    $("#duplicateTestDataLibTitle").text(doc.getDocLabel("page_testdatalib_m_duplicatelib", "title"));
-    //content    
-    $("#lbl_id_duplicate").html(doc.getDocOnline("testdatalib", "testdatalibid")); //id
-    $("#lbl_name_duplicate").html(doc.getDocOnline("testdatalib", "name")); //name
-    $("#lbl_type_duplicate").html(doc.getDocOnline("testdatalib", "type"));
-    $("#lbl_system_duplicate").html(doc.getDocOnline("testdatalib", "system"));
-    $("#lbl_environment_duplicate").html(doc.getDocOnline("testdatalib", "environment"));
-    $("#lbl_country_duplicate").html(doc.getDocOnline("testdatalib", "country"));
-    //panels
-    //soap and sql specific configurations
-    $("#sqlConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
-    $("#soapConfigurationsLbl_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
-    $("#lbl_description_duplicate").html(doc.getDocOnline("testdatalib", "description"));
-    $("#lbl_database_duplicate").html(doc.getDocOnline("testdatalib", "database"));
-    $("#lbl_script_duplicate").html(doc.getDocOnline("testdatalib", "script"));
-    $("#lbl_databaseUrl_duplicate").html(doc.getDocOnline("testdatalib", "databaseUrl"));
-    $("#lbl_service_path_duplicate").html(doc.getDocOnline("testdatalib", "servicepath"));
-    $("#lbl_method_duplicate").html(doc.getDocOnline("testdatalib", "method"));
-    $("#lbl_envelope_duplicate").html(doc.getDocOnline("testdatalib", "envelope"));
-    $("#lbl_databaseCsv_duplicate").html(doc.getDocOnline("testdatalib", "databaseCsv"));
-    $("#lbl_csvUrl_duplicate").html(doc.getDocOnline("testdatalib", "csvUrl"));
-    //auxiliar for group edition
-    $("#lbl_choose_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
-    $("#lbl_enter_group_duplicate").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
     //buttons    
     $("#cancelDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_cancel"));
-    $("#saveDuplicateTestDataLib").text(doc.getDocLabel("page_global", "buttonAdd"));
-
-    //title
-    $("#addTestDataLibModalLabel").text(doc.getDocLabel("page_testdatalib_m_createlib", "title"));//docCreate.title.docLabel
+    $("#saveDuplicateTestDataLib").text(doc.getDocLabel("page_global", "btn_duplicate"));
     //cancel + add buttons
     $("#addTestDataLibButton").text(doc.getDocLabel("page_global", "btn_add"));
     $("#cancelTestDataLibButton").text(doc.getDocLabel("page_global", "btn_cancel"));
-    //tabs, tab2 is updated when the entries are managed
-    $("#tab1Text").text(doc.getDocLabel("page_testdatalib_m_createlib", "m_tab1_text"));
-    //soap and sql specific configurations
-    $("#sqlConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_sql_configurations"));
-    $("#soapConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_soap_configurations"));
-    $("#csvConfigurationsLbl").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "title_csv_configurations"));
-    //group information 
-    $("#lbl_choose_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_choose_group"));
-    $("#lbl_enter_group").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "lbl_enter_group"));
-    //common information
-    $("#lbl_name").html(doc.getDocOnline("testdatalib", "name"));
-    $("#lbl_type").html(doc.getDocOnline("testdatalib", "type"));
-    $("#lbl_system").html(doc.getDocOnline("testdatalib", "system"));
-    $("#lbl_environment").html(doc.getDocOnline("testdatalib", "environment"));
-    $("#lbl_country").html(doc.getDocOnline("testdatalib", "country"));
-    $("#lbl_description").html(doc.getDocOnline("testdatalib", "description"));
-    $("#lbl_database").html(doc.getDocOnline("testdatalib", "database"));
-    $("#lbl_script").html(doc.getDocOnline("testdatalib", "script"));
-    $("#lbl_databaseUrl").html(doc.getDocOnline("testdatalib", "databaseUrl"));
-    $("#lbl_service_path").html(doc.getDocOnline("testdatalib", "servicepath"));
-    $("#lbl_method").html(doc.getDocOnline("testdatalib", "method"));
-    $("#lbl_envelope").html(doc.getDocOnline("testdatalib", "envelope"));
-    $("#lbl_databaseCsv").html(doc.getDocOnline("testdatalib", "databaseCsv"));
-    $("#lbl_csvUrl").html(doc.getDocOnline("testdatalib", "csvUrl"));
-    $("#lbl_separator").html(doc.getDocOnline("testdatalib", "separator"));
-    //documentation for sub-data entries
-    //total number of entries
-    $("#subdataHeader").html(doc.getDocOnline("testdatalibdata", "subData"));
-    $("#valueHeader").html(doc.getDocOnline("testdatalibdata", "value"));
-    $("#columnHeader").html(doc.getDocOnline("testdatalibdata", "column"));
-    $("#parsingAnswerHeader").html(doc.getDocOnline("testdatalibdata", "parsingAnswer"));
-    $("#columnPositionHeader").html(doc.getDocOnline("testdatalibdata", "columnPosition"));
-    $("#descriptionHeader").html(doc.getDocOnline("testdatalibdata", "description"));
-    $("#unmutableRowNotEditable").prop("title", doc.getDocOnline("page_testdatalib_m_createlib", "tooltip_defaultsubdata")); //tooltip for row that is not editable or removable
-    //links for managing the subdata information
-    $("#link_add_new").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_add_new"));
-    $("#link_delete_all").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_delete_all"));
-    $("#link_add_new_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_add_new_title"));
-    $("#link_delete_all_title").html(doc.getDocOnline("page_testdatalib_m_createupdatelib", "link_delete_all_title"));
-    //tab2 - links to edit table
-    $("#newSubData_addRow").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new"));
-    $("#newSubData_addRow").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_add_new_title"));
-    $("#newSubData_deleteAll").text(doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all"));
-    $("#newSubData_deleteAll").prop("title", doc.getDocLabel("page_testdatalib_m_createlib", "link_delete_all_title"));
-
-    //title
-    $("#testCaseListModalLabel").text(doc.getDocLabel("page_testdatalib_m_gettestcases", "title"));
-    //button
     $("#closeButton").text(doc.getDocLabel("page_global", "buttonClose"));
+    //tabs, tab2 is updated when the entries are managed
+    $("[name='tab1Text']").text(doc.getDocLabel("page_testdatalib", "m_tab1_text"));
+    $("[name='tab2Text']").text(doc.getDocLabel("page_testdatalib", "m_tab2_text"));
+    $("[name='tab3Text']").text(doc.getDocLabel("page_testdatalib", "m_tab3_text"));
 
     displayFooter(doc);
 }
@@ -277,19 +217,9 @@ function renderOptionsForTestDataLib(data) {
             $("#listOfTestDataLib_wrapper #listOfTestDataLib_length").before(contentToAdd);
             $('#createLibButton').click(addTestDataLibClick);
 
-            $('#importDataButton').click(function () {
-                var translations = {};
-                //I defined specific translations for this upload modal
-                translations["modalUploadLabel"] = doc.getDocLabel("page_testdatalib_m_upload", "title");
-                translations["choseFileLabel"] = doc.getDocLabel("page_testdatalib_m_upload", "btn_choose");
-                translations["cancelButton"] = doc.getDocLabel("page_testdatalib_m_upload", "btn_cancel").docLabel;
-                translations["uploadOk"] = doc.getDocLabel("page_testdatalib_m_upload", "btn_upload");
-
-                showModalUpload(uploadTestDataLibFromXMLFile, "XML", translations);
-            });
         }
     } else {
-        $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("testdatalib", "actions_nopermissions"));
+        $("#testdatalibFirstColumnHeader").html(doc.getDocLabel("page_global", "columnAction"));
     }
 }
 
@@ -387,14 +317,14 @@ function addTestDataLibModalSaveHandler() {
     //END client-side validation
 
     showLoaderInModal('#addTestDataLibModal');
-    
+
     // Getting Data from Database TAB
     var table1 = $("#subdataTableBody tr");
     var table_subdata = [];
     for (var i = 0; i < table1.length; i++) {
         table_subdata.push($(table1[i]).data("subdata"));
     }
-    
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
 
@@ -492,14 +422,14 @@ function duplicateTestDataLibModalSaveHandler() {
     //END client-side validation
 
     showLoaderInModal('#duplicateTestDataLibModal');
-    
+
     // Getting Data from Database TAB
     var table1 = $("#subdataTableBody_dup tr");
     var table_subdata = [];
     for (var i = 0; i < table1.length; i++) {
         table_subdata.push($(table1[i]).data("subdata"));
     }
-    
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
 
@@ -557,7 +487,7 @@ function duplicateTestDataLibClick(testDataLibID) {
         $('#duplicateTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#duplicateTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#duplicateTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-        
+
         //loads the information for entries
         $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
         $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
@@ -572,7 +502,7 @@ function duplicateTestDataLibClick(testDataLibID) {
         //load TYPE
         $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
         $('#duplicateTestDataLibModal #group').prop("value", obj.group);
-        
+
         if (obj.type === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
             $("#panelSOAPDuplicate").collapse("hide");
@@ -689,7 +619,7 @@ function editTestDataLibClick(testDataLibID) {
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
-        
+
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
@@ -703,7 +633,7 @@ function editTestDataLibClick(testDataLibID) {
 
         $('#editTestDataLibModal #libdescription').prop("value", obj.description);
         $('#editTestDataLibModal #group').prop("value", obj.group);
-        
+
         $('#editTestDataLibModal #created').prop("value", obj.created);
         $('#editTestDataLibModal #creator').prop("value", obj.creator);
         $('#editTestDataLibModal #lastModified').prop("value", obj.lastModified);
@@ -747,7 +677,7 @@ function editTestDataLibClick(testDataLibID) {
             $('#saveTestDataLib').attr('class', '');
             $('#saveTestDataLib').attr('hidden', 'hidden');
         }
-        
+
         // Loading the list of subdata.
         loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_edit");
 

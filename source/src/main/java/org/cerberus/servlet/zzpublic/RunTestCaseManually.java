@@ -136,8 +136,8 @@ public class RunTestCaseManually extends HttpServlet {
 
         action.append("Description", testCaseStepAction.getDescription());
         action.append("Action", testCaseStepAction.getAction());
-        action.append("Object", testCaseStepAction.getObject());
-        action.append("Property", testCaseStepAction.getProperty());
+        action.append("Object", testCaseStepAction.getValue1());
+        action.append("Property", testCaseStepAction.getValue2());
         action.append("Sequence", testCaseStepAction.getSequence());
 
         JSONArray controls = new JSONArray();
