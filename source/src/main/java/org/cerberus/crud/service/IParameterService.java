@@ -104,4 +104,13 @@ public interface IParameterService {
      */
     AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key);
 
+    /**
+     *
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 }

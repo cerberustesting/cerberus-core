@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
@@ -55,6 +56,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ReadParameter", urlPatterns = {"/ReadParameter"})
 public class ReadParameter extends HttpServlet {
+    private IParameterService parameterService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,8 +71,10 @@ public class ReadParameter extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
 
+        //Get Parameters
         String echo = request.getParameter("sEcho");
         String mySystem = request.getParameter("system");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
@@ -106,8 +110,11 @@ public class ReadParameter extends HttpServlet {
                 system = policy.sanitize(request.getParameter("system"));
             }
 
-            if (request.getParameter("param") == null){
+            if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)){
                 answer = findParameterList(system, appContext, userHasPermissions, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             }else{
                 answer = findParameterBySystemByKey(system, request.getParameter("param"), appContext);
@@ -166,7 +173,7 @@ public class ReadParameter extends HttpServlet {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        IParameterService parameterService = appContext.getBean(ParameterService.class);
+        parameterService = appContext.getBean(ParameterService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -208,7 +215,7 @@ public class ReadParameter extends HttpServlet {
 
     private AnswerItem findParameterBySystemByKey(String System, String key,ApplicationContext appContext) throws JSONException {
 
-        IParameterService parameterService = appContext.getBean(ParameterService.class);
+        parameterService = appContext.getBean(ParameterService.class);
 
         AnswerItem resp = parameterService.readWithSystem1BySystemByKey("", System, key);
         Parameter p = null;
@@ -225,5 +232,32 @@ public class ReadParameter extends HttpServlet {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(parameter));
         return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        parameterService = appContext.getBean(IParameterService.class);
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "Application,Description,sort,type,system,subsystem,svnurl,bugtrackerurl,bugtrackernewurl,deploytype,mavengroupid");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList applicationList = parameterService.readDistinctValuesWithSystem1ByCriteria("", system, searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", applicationList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(applicationList.getResultMessage());
+        return answer;
     }
 }
