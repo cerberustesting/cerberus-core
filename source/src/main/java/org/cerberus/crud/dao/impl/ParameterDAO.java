@@ -327,7 +327,12 @@ public class ParameterDAO implements IParameterDAO {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                String key = "IFNULL(" + entry.getKey() + ",'')";
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                if(q == null || q == ""){
+                    q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() +" = '')";
+                }
+                searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
@@ -519,6 +524,7 @@ public class ParameterDAO implements IParameterDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
+        query.append(" group by ifnull(").append(columnName).append(",'')");
         query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
