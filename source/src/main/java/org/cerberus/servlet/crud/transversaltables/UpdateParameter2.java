@@ -22,7 +22,6 @@ package org.cerberus.servlet.crud.transversaltables;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -94,13 +93,9 @@ public class UpdateParameter2 extends HttpServlet {
         }
         String param = request.getParameter("id");
         String valueCerberus = request.getParameter("valueCerberus");
-        if("".equals(valueCerberus)){
-            valueCerberus = null;
-        }
+
         String valueSystem = request.getParameter("valueSystem");
-        if("".equals(valueSystem)){
-            valueSystem = null;
-        }
+
         String mySystem = request.getParameter("system");
 
         MyLogger.log(UpdateParameter2.class.getName(), Level.DEBUG, "System : " + mySystem + " valueSystem : " + valueSystem + " valueCerberus : " + valueCerberus + " param : " + param);
