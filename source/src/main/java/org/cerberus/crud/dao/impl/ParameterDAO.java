@@ -502,9 +502,6 @@ public class ParameterDAO implements IParameterDAO {
 
         query.append(" LEFT OUTER JOIN ( SELECT * from parameter par2 WHERE par2.system = ? ) as par2 ON par2.`param` = par.`param` ");
         query.append(" WHERE par.system = ?");
-        query.append(" AND NOT isnull(");
-        query.append(columnName);
-        query.append(")");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
