@@ -75,7 +75,7 @@ function editEntryClick(param) {
             if(data.messageType === "OK") {
                 formEdit.find("#parameter").prop("value", data.param);
                 formEdit.find("#cerberusValue").prop("value", data.value);
-                formEdit.find("#systemValue").prop("value", data.system1value);
+                formEdit.find("#systemValue").prop("value", data.system1value1);
                 formEdit.find("#description").html(data.description);
 
                 formEdit.modal('show');
