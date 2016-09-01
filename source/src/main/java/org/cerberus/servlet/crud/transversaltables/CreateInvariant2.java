@@ -71,6 +71,11 @@ public class CreateInvariant2 extends HttpServlet {
             String gp2 = request.getParameter("gp2");
             String gp3 = request.getParameter("gp3");
 
+            boolean userHasPermissions = request.isUserInRole("Administrator");
+            if(!userHasPermissions){
+                return;
+            }
+
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);

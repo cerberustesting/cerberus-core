@@ -20,9 +20,11 @@
 package org.cerberus.servlet.crud.transversaltables;
 
 import org.cerberus.crud.entity.Invariant;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -62,6 +64,11 @@ public class UpdateInvariant2 extends HttpServlet {
         String gp1 = request.getParameter("gp1");
         String gp2 = request.getParameter("gp2");
         String gp3 = request.getParameter("gp3");
+
+        boolean userHasPermissions = request.isUserInRole("Administrator");
+        if(!userHasPermissions){
+            return;
+        }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);

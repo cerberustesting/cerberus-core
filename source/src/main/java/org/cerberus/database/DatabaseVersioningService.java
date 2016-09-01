@@ -6672,11 +6672,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 911
+        //-- ------------------------ 922
 
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('page_invariant','allInvariants','','en','Invariants','')");
         SQLS.append(",('page_invariant','allInvariants','','fr','Invariants','')");
+        SQLS.append(",('page_invariant','editinvariant_field','','en','Edit Invariant','')");
+        SQLS.append(",('page_invariant','editinvariant_field','','fr','Editer un Invariant','')");
+        SQLS.append(",('page_invariant','addinvariant_field','','en','Add Invariant','')");
+        SQLS.append(",('page_invariant','addinvariant_field','','fr','Ajouter un Invariant','')");
+        SQLS.append(",('page_invariant','public_invariant','','en','Public InvariantS','')");
+        SQLS.append(",('page_invariant','public_invariant','','fr','Invariants publiques','')");
+        SQLS.append(",('page_invariant','private_invariant','','en','Private InvariantS','')");
+        SQLS.append(",('page_invariant','private_invariant','','fr','Invariants privés','')");
+        SQLS.append(",('page_invariant','private','','en','Private','')");
+        SQLS.append(",('page_invariant','private','','fr','Privés','')");
+        SQLS.append(",('page_invariant','public','','en','Public','')");
+        SQLS.append(",('page_invariant','public','','fr','Publiques','')");
         SQLS.append(",('page_invariant','button_col','','en','Actions','')");
         SQLS.append(",('page_invariant','button_col','','fr','Actions','')");
         SQLS.append(",('page_invariant','button_edit','','en','Edit Invariant','')");
@@ -6699,6 +6711,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','gp2','','fr','Groupe 2','')");
         SQLS.append(",('page_invariant','gp3','','en','Group 3','')");
         SQLS.append(",('page_invariant','gp3','','fr','Groupe 3','')");
+        SQLS.append(",('page_invariant','title_remove','','en','Delete an Invariant','')");
+        SQLS.append(",('page_invariant','title_remove','','fr','Supprimer un Invariant','')");
+        SQLS.append(",('page_invariant','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

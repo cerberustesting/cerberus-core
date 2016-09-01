@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.dao.IInvariantDAO;
@@ -68,11 +69,46 @@ public class InvariantService implements IInvariantService {
     }
 
     @Override
+    public AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        // We first get the list of all Public invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
+        // Then, we build the list of invariant entry based on the filter.
+
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+
+        return answer;
+    }
+
+    @Override
     public AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
         // We first get the list of all Public invariant from the invariant table.
         String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
         // Then, we build the list of invariant entry based on the filter.
 
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+
+        return answer;
+    }
+
+    @Override
+    public AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        // We first get the list of all Public invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPUBLIC");
+        // Then, we build the list of invariant entry based on the filter.
+
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
+
+        return answer;
+    }
+
+    @Override
+    public AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        // We first get the list of all Private invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
+        // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
         AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
 
@@ -86,6 +122,18 @@ public class InvariantService implements IInvariantService {
         // Then, we build the list of invariant entry based on the filter.
         //TODO this method should return a AnswerList, after complete refactoring this method should be changed
         AnswerList answer = invariantDao.readByCriteria(start, amount, column, dir, searchTerm, individualSearch, searchSQL);
+
+        return answer;
+    }
+
+    @Override
+    public AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+        // We first get the list of all Public invariant from the invariant table.
+        String searchSQL = this.getPublicPrivateFilter("INVARIANTPRIVATE");
+        // Then, we build the list of invariant entry based on the filter.
+
+        //TODO this method should return a AnswerList, after complete refactoring this method should be changed
+        AnswerList answer = invariantDao.readDistinctValuesByCriteria(column, dir, searchTerm, individualSearch, searchSQL, columnName);
 
         return answer;
     }

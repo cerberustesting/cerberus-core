@@ -35,7 +35,6 @@ function initPage() {
     $('#editInvariantModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addInvariantModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        console.log(e); // activated tab
         if(e.target.innerText == "Private"){
             displayPrivateTable();
         }else{
@@ -51,7 +50,7 @@ function displayPrivateTable(){
     }
     else {
         //configure and create the dataTable
-        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [0, 'asc']);
+        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [1, 'asc']);
         createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList");
     }
 }
@@ -72,11 +71,21 @@ function displayPageLabel() {
 
     $("#title").html(doc.getDocLabel("page_invariant", "allInvariants"));
     $("[name='editInvariantField']").html(doc.getDocLabel("page_invariant", "editinvariant_field"));
-    $("[name='invariantField']").html(doc.getDocLabel("page_invariant", "invariant_field"));
-    $("[name='cerberusField']").html(doc.getDocLabel("page_invariant", "cerberus_field"));
-    $("[name='descriptionField']").html(doc.getDocLabel("page_invariant", "description_field"));
+    $("[name='addInvariantField']").html(doc.getDocLabel("page_invariant", "addinvariant_field"));
+    $("[name='descriptionField']").html(doc.getDocLabel("page_invariant", "description"));
+    $("[name='idnameField']").html(doc.getDocLabel("page_invariant", "idname"));
+    $("[name='ValueField']").html(doc.getDocLabel("page_invariant", "value"));
+    $("[name='sortField']").html(doc.getDocLabel("page_invariant", "sort"));
+    $("[name='veryShortDescField']").html(doc.getDocLabel("page_invariant", "veryShortDesc"));
+    $("[name='gp1Field']").html(doc.getDocLabel("page_invariant", "gp1"));
+    $("[name='gp2Field']").html(doc.getDocLabel("page_invariant", "gp2"));
+    $("[name='gp3Field']").html(doc.getDocLabel("page_invariant", "gp3"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_invariant", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_invariant", "save_btn"));
+    $("#invariantListLabel").html("<span class='glyphicon glyphicon-list'></span> "+doc.getDocLabel("page_invariant", "public_invariant"))
+    $("#invariantPrivateListLabel").html("<span class='glyphicon glyphicon-list'></span> "+doc.getDocLabel("page_invariant", "private_invariant"))
+    $("a[href='#public']").html(doc.getDocLabel("page_invariant", "public"));
+    $("a[href='#private']").html(doc.getDocLabel("page_invariant", "private"));
 
     displayHeaderLabel(doc);
 
@@ -124,7 +133,6 @@ function editEntryClick(param, value) {
         async: true,
         method: "GET",
         success: function (data) {
-            console.log(data);
             if(data.messageType === "OK") {
                 formEdit.find("#idname").prop("value", data.invariant.idName);
                 formEdit.find("#value").prop("value", data.invariant.value);
@@ -154,21 +162,11 @@ function removeEntryClick(param, value) {
             async: true,
             method: "GET",
             success: function (data) {
-                console.log(data.messageType);
-                if(data.messageType === "OK") {
-                    formEdit.find("#idname").prop("value", data.invariant.idName);
-                    formEdit.find("#value").prop("value", data.invariant.value);
-                    formEdit.find("#sort").prop("value", data.invariant.sort);
-                    formEdit.find("#description").prop("value", data.invariant.description);
-                    formEdit.find("#veryShortDesc").prop("value", data.invariant.veryShortDesc);
-                    formEdit.find("#gp1").prop("value", data.invariant.gp1);
-                    formEdit.find("#gp2").prop("value", data.invariant.gp2);
-                    formEdit.find("#gp3").prop("value", data.invariant.gp3);
-
-                    formEdit.modal('show');
-                }else{
-                    showUnexpectedError();
-                }
+                hideLoaderInModal('#removeInvariantModal');
+                var oTable = $("#invariantsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#removeInvariantModal').modal('hide');
+                showMessage(data);
             },
             error: showUnexpectedError
         });
@@ -187,7 +185,6 @@ function editEntryModalSaveHandler() {
     }
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-    console.log(data);
     showLoaderInModal('#editInvariantModal');
     $.ajax({
         url: "UpdateInvariant2",
@@ -225,7 +222,6 @@ function addEntryModalSaveHandler() {
     }
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-    console.log(data);
     showLoaderInModal('#addInvariantModal');
     $.ajax({
         url: "CreateInvariant2",
@@ -305,8 +301,8 @@ function aoColumnsFunc(tableId) {
         {"data": "idName", "sName": "idname", "title": doc.getDocLabel("page_invariant", "idname")},
         {"data": "value", "sName": "value", "title": doc.getDocLabel("page_invariant", "value")},
         {"data": "sort", "sName": "sort", "title": doc.getDocLabel("page_invariant", "sort")},
-        {"data": "description", "description": "value", "title": doc.getDocLabel("page_invariant", "description")},
-        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "VeryShortDesc")},
+        {"data": "description", "sName": "description", "title": doc.getDocLabel("page_invariant", "description")},
+        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
         {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
         {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")}
@@ -320,8 +316,8 @@ function aoColumnsFunc2(tableId) {
         {"data": "idName", "sName": "idname", "title": doc.getDocLabel("page_invariant", "idname")},
         {"data": "value", "sName": "value", "title": doc.getDocLabel("page_invariant", "value")},
         {"data": "sort", "sName": "sort", "title": doc.getDocLabel("page_invariant", "sort")},
-        {"data": "description", "description": "value", "title": doc.getDocLabel("page_invariant", "description")},
-        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "VeryShortDesc")},
+        {"data": "description", "sName": "description", "title": doc.getDocLabel("page_invariant", "description")},
+        {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
         {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
         {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")}

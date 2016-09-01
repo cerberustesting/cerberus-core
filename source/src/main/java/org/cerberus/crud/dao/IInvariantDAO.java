@@ -21,6 +21,9 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * {Insert class description here}
  *
@@ -75,6 +78,30 @@ public interface IInvariantDAO {
      * @return
      */
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+
+    /**
+     *
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param PublicPrivateFilter
+     * @return
+     */
+
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter);
+
+    /**
+     *
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param PublicPrivateFilter
+     * @return
+     */
+
+    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName);
 
     /**
      * Getting the list of country invariant for which exist at least 1 change

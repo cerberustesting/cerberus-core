@@ -1058,20 +1058,20 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var restoreFilterButtonTooltip = doc.getDocDescription("page_global", "tooltip_restoreuserpreferences");
     if (tableConfigurations.showColvis) {
         //Display button show/hide columns and Save table configuration
-        $("#saveTableConfigurationButton").remove();
-        $("#restoreFilterButton").remove();
+        $("#" + tableConfigurations.divId + " #saveTableConfigurationButton").remove();
+        $("#" + tableConfigurations.divId + " #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
                 .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
-        $("#showHideColumnsButton").parent().before(
+        $("#" + tableConfigurations.divId + " #showHideColumnsButton").parent().before(
                 $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
             updateUserPreferences();
         })
                 );
-        $("#saveTableConfigurationButton").before(
+        $("#" + tableConfigurations.divId + " #saveTableConfigurationButton").before(
                 $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
             location.reload();
@@ -1291,17 +1291,17 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
 
     // Delete and Build a new tr in the header to display the editable mark        
     //So first delete in case on page reload
-    $("#filterHeader").remove();
-    $('.dataTables_scrollBody').find("#filterHeader").remove();
+    $("div[id*='" + tableId + "'] #filterHeader").remove();
+    $('div[id*="' + tableId + '"] .dataTables_scrollBody').find("#filterHeader").remove();
 
     //Set the table with relative position position for the editable box.
     $("#" + tableId + "_wrapper").attr("style", "position: relative");
     //Remove the relative position of the header
     $('[class="dataTables_scrollHead ui-state-default"]').attr("style", "overflow: hidden; border: 0px; width: 100%;");
     //Then create a th tag for each columns
-    $('.dataTables_scrollHeadInner table thead').append('<tr id="filterHeader"></tr>');
-    $('.dataTables_scrollHeadInner table thead tr th').each(function () {
-        $("#filterHeader").append("<th name='filterColumnHeader'></th>");
+    $('div[id*="' + tableId + '"] .dataTables_scrollHeadInner table thead').append('<tr id="filterHeader"></tr>');
+    $('div[id*="' + tableId + '"] .dataTables_scrollHeadInner table thead tr th').each(function () {
+        $("div[id*='" + tableId + "'] #filterHeader").append("<th name='filterColumnHeader'></th>");
     });
 
 //Iterate on all columns
@@ -1349,7 +1349,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
 
 
             //Get the header cell to display the filter
-            var tableCell = $($('[name="filterColumnHeader"]')[columnVisibleIndex])[0];
+            var tableCell = $($('div[id*="' + tableId + '"] [name="filterColumnHeader"]')[columnVisibleIndex])[0];
             $(tableCell).removeClass().addClass("filterHeader");
             if (table.ajax.params()["bSearchable_" + colIndex]) {
                 //Then init the editable object
@@ -1393,7 +1393,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                             send: 'always',
                             validate: function (value) {
                                 if (value === null || value === '' || value.length === 0) {
-                                    $("#" + tableId).dataTable().fnFilter('', $("[name='filterColumnHeader']").index($(this).parent()));
+                                    $("#" + tableId).dataTable().fnFilter('', $("div[id*='" + tableId + "'] [name='filterColumnHeader']").index($(this).parent()));
                                 }
                             },
                             display: function (value, sourceData) {
@@ -1404,7 +1404,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                                 $(this).html(val);
                             },
                             success: function (response, newValue) {
-                                $("#" + tableId).dataTable().fnFilter(newValue, $("[name='filterColumnHeader']").index($(this).parent()));
+                                $("#" + tableId).dataTable().fnFilter(newValue, $("div[id*='" + tableId + "'] [name='filterColumnHeader']").index($(this).parent()));
                             }
                         });
             }
@@ -1415,19 +1415,19 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
     //Display the filtered alert message only if search is activated in at least 1 column
     if (filteredInformation.length > 1) {
         var filteredStringToDisplay = filteredInformation.toString();
-        $("#activatedFilters").html(filteredStringToDisplay.substr(0, filteredStringToDisplay.length - 4));
-        $("#clearFilterButton").click(function () {
+        $("div[id*='" + tableId + "'] #activatedFilters").html(filteredStringToDisplay.substr(0, filteredStringToDisplay.length - 4));
+        $("div[id*='" + tableId + "'] #clearFilterButton").click(function () {
             resetFilters($("#" + tableId).dataTable());
         });
-        $("#restoreFilterButton").click(function () {
+        $("div[id*='" + tableId + "'] #restoreFilterButton").click(function () {
             location.reload();
         });
-        $("#filterAlertDiv").show();
+        $("div[id*='" + tableId + "'] #filterAlertDiv").show();
     }
 
     //call the displayColumnSearch when table configuration is changed
     $("#showHideColumnsButton").click(function () {
-        $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
+        $('div[id*="' + tableId + '"] ul[class="dt-button-collection dropdown-menu"] li').click(function () {
             displayColumnSearch(tableId, contentUrl, oSettings);
         });
     });
@@ -1435,18 +1435,18 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
 
 //To put into a function
 //When clicking on the edit filter links
-    $(".editable").click(function () {
+    $("div[id*='" + tableId + "'] .editable").click(function () {
 
         //Clear custom fields to avoid duplication
-        $("[data-type='custom']").remove();
+        $("div[id*='" + tableId + "'] [data-type='custom']").remove();
 
         //Check the value already selected
         //Check all if no specific value selected
         if ($(this).find("span").size() < 2) {
-            $('.editable-checklist').find("input").prop('checked', true);
+            $('div[id*="' + tableId + '"] .editable-checklist').find("input").prop('checked', true);
         } else {
             $(this).find("span").each(function () {
-                $('.editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
+                $('div[id*="' + tableId + '"] .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
             });
         }
 
@@ -1459,17 +1459,17 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         $(this.parentNode).find("h3").after($('<input>').attr('placeholder', 'Search...')
                 .attr('class', 'form-control input-sm').attr('name', 'searchField')
                 .attr('data-type', 'custom').on('keyup', function () {
-            $('.editable-checklist > div').hide();
-            $('.editable-checklist > div:containsIN(' + $(this).val() + ')').show();
+            $('div[id*="' + tableId + '"] .editable-checklist > div').hide();
+            $('div[id*="' + tableId + '"] .editable-checklist > div:containsIN(' + $(this).val() + ')').show();
         }));
         //Add selectAll/unSelectAll button
-        $("[name='searchField']").after(
+        $("div[id*='" + tableId + "'] [name='searchField']").after(
                 $('<button>').attr('class', 'glyphicon glyphicon-check')
                 .attr('title', 'select all').attr('name', 'selectAll')
                 .attr('data-type', 'custom').on('click', function () {
             $(this).parent().find("[type='checkbox']:visible").prop('checked', true);
         }));
-        $("[name='searchField']").after(
+        $("div[id*='" + tableId + "'] [name='searchField']").after(
                 $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
                 .attr('title', 'unselect all').attr('name', 'unSelectAll')
                 .attr('data-type', 'custom').on('click', function () {

@@ -19,9 +19,10 @@
  */
 package org.cerberus.servlet.crud.transversaltables;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -51,6 +53,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * @author FNogueira
  */
 public class ReadInvariant extends HttpServlet {
+
+    private IInvariantService invariantService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,9 +86,13 @@ public class ReadInvariant extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             String access = request.getParameter("access");
             if (request.getParameter("idName") == null && access != null) {
-                //loads the list of invariants
-                answer = findInvariantList(appContext, access, request, response);
-                jsonResponse = (JSONObject) answer.getItem();
+                if(!Strings.isNullOrEmpty(request.getParameter("columnName"))){
+                    answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"), access);
+                    jsonResponse = (JSONObject) answer.getItem();
+                }else {
+                    answer = findInvariantList(appContext, access, request, response);
+                    jsonResponse = (JSONObject) answer.getItem();
+                }
             } else if (request.getParameter("value") == null && access != null) {
                 //loads the list of invariants
                 String idName = policy.sanitize(request.getParameter("idName"));
@@ -162,7 +170,7 @@ public class ReadInvariant extends HttpServlet {
         JSONObject object = new JSONObject();
 
         //finds the list of invariants by idname     
-        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+        invariantService = appContext.getBean(InvariantService.class);
         answerService = invariantService.readByIdname(idName);
         JSONArray jsonArray = new JSONArray();
 
@@ -187,7 +195,7 @@ public class ReadInvariant extends HttpServlet {
         AnswerItem answer = new AnswerItem();
 
         //finds the list of invariants by idname
-        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+        invariantService = appContext.getBean(InvariantService.class);
 
         answer.setItem(invariantService.findInvariantByIdValue(idName,value));
 
@@ -203,7 +211,7 @@ public class ReadInvariant extends HttpServlet {
         AnswerItem item = new AnswerItem();
         JSONObject jsonResponse = new JSONObject();
 
-        IInvariantService invariantService = appContext.getBean(IInvariantService.class);
+        invariantService = appContext.getBean(IInvariantService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -217,10 +225,19 @@ public class ReadInvariant extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         AnswerList answerService;
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
         if("PUBLIC".equals(access)){
-            answerService = invariantService.readByPublicByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+            answerService = invariantService.readByPublicByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
         }else if("PRIVATE".equals(access)){
-            answerService = invariantService.readByPrivateByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+            answerService = invariantService.readByPrivateByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
         }else{
             answerService = invariantService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
         }
@@ -242,6 +259,40 @@ public class ReadInvariant extends HttpServlet {
         item.setResultMessage(answerService.getResultMessage());
         return item;
 
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName, String access) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        invariantService = appContext.getBean(IInvariantService.class);
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "idname,value,sort,description,VeryShortDesc, gp1,gp2,gp3");
+        String columnToSort[] = sColumns.split(",");
+        String column = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList applicationList;
+        if("PUBLIC".equals(access)){
+            applicationList = invariantService.readDistinctValuesByPublicByCriteria(columnName, sort, searchParameter, individualSearch, column);
+        }else{
+            applicationList = invariantService.readDistinctValuesByPrivateByCriteria(columnName, sort, searchParameter, individualSearch, column);
+        }
+
+        object.put("distinctValues", applicationList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(applicationList.getResultMessage());
+        return answer;
     }
 
     private JSONObject convertInvariantToJSONObject(Invariant invariant) throws JSONException {

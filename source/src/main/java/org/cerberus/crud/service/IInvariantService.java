@@ -20,6 +20,8 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
@@ -40,9 +42,17 @@ public interface IInvariantService {
 
     AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
+    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
     AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
+    AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+
+    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
     AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
