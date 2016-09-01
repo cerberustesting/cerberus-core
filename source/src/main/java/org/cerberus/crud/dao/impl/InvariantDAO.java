@@ -422,7 +422,7 @@ public class InvariantDAO implements IInvariantDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM invariant ");
 
         if (!Strings.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and ?");
+            searchSQL.append(" and (idname like ? or value like ? or sort like ? or description like ? or VeryShortDesc like ? or gp1 like ? or gp2 like ? or gp3 like ?)");
         }
         if (!Strings.isNullOrEmpty(PublicPrivateFilter)) {
             searchSQL.append(" and ");
@@ -459,7 +459,14 @@ public class InvariantDAO implements IInvariantDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, getSearchString(searchTerm));
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
             }
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
@@ -543,7 +550,7 @@ public class InvariantDAO implements IInvariantDAO {
         query.append(" as distinctValues FROM invariant");
 
         if (!Strings.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and ?");
+            searchSQL.append(" and (idname like ? or value like ? or sort like ? or description like ? or VeryShortDesc like ? or gp1 like ? or gp2 like ? or gp3 like ?)");
         }
         if (!Strings.isNullOrEmpty(PublicPrivateFilter)) {
             searchSQL.append(" and ");
@@ -573,8 +580,16 @@ public class InvariantDAO implements IInvariantDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             int i = 1;
+
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, getSearchString(searchTerm));
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
             }
             for (String individualColumnSearchValue : individalColumnSearchValues) {
                 preStat.setString(i++, individualColumnSearchValue);
