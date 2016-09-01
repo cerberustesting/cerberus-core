@@ -50,7 +50,7 @@ function displayPrivateTable(){
     }
     else {
         //configure and create the dataTable
-        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [1, 'asc']);
+        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [0, 'asc']);
         createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList");
     }
 }
