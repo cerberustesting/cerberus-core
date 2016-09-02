@@ -29,9 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.crud.factory.impl.FactoryParameter;
-import org.cerberus.crud.factory.impl.FactoryParameterSystem;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -43,7 +41,6 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,17 +89,17 @@ public class ParameterDAO implements IParameterDAO {
                         throwExep = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -145,17 +142,17 @@ public class ParameterDAO implements IParameterDAO {
                         throwExep = false;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -189,12 +186,12 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -223,12 +220,12 @@ public class ParameterDAO implements IParameterDAO {
                 preStat.executeUpdate();
 
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -271,17 +268,17 @@ public class ParameterDAO implements IParameterDAO {
                         throwExep = false;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(ParameterDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -300,7 +297,7 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch){
+    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -312,15 +309,14 @@ public class ParameterDAO implements IParameterDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS par.param para, par.`value` valC, ? sys, par2.`value` valS, par.description descr FROM parameter par ");
-
-        query.append(" LEFT OUTER JOIN ( SELECT * from parameter par2 WHERE par2.system = ? ) as par2 ON par2.`param` = par.`param` ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS par.param, par.`value`, par.description, ? system1, par1.`value` system1Value FROM parameter par ");
+        query.append(" LEFT OUTER JOIN ( SELECT * from parameter WHERE system = ? ) as par1 ON par1.`param` = par.`param` ");
         query.append(" WHERE par.system = ?");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
             searchSQL.append(" or par.`value` like ?");
-            searchSQL.append(" or par2.`value` like ?");
+            searchSQL.append(" or par1.`value` like ?");
             searchSQL.append(" or par.description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -329,8 +325,8 @@ public class ParameterDAO implements IParameterDAO {
                 searchSQL.append(" and ");
                 String key = "IFNULL(" + entry.getKey() + ",'')";
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
-                if(q == null || q == ""){
-                    q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() +" = '')";
+                if (q == null || "".equals(q)) {
+                    q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
@@ -446,20 +442,31 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public AnswerItem readWithSystem1BySystemByKey(String System, String System1, String key){
+    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
         AnswerItem a = new AnswerItem();
         StringBuilder query = new StringBuilder();
         Parameter p = new Parameter();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        query.append("SELECT par.param para, par.`value` valC, ? sys, par2.`value` valS, par.description descr  FROM Parameter par LEFT OUTER JOIN (SELECT * FROM parameter WHERE system = ?) as par2 ON par.param = par2.param WHERE par.system = ? AND par.param = ?");
+        query.append("SELECT par.param, par.`value`, par.description, ? system1, par1.`value` system1value FROM parameter par "
+                + "LEFT OUTER JOIN (SELECT * FROM parameter WHERE system = ? and param = ?) as par1 ON par.param = par1.param WHERE par.system = ? AND par.param = ?");
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.system1 : " + system1);
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.key : " + key);
+        }
+        
         Connection connection = this.databaseSpring.connect();
-        try{
+        try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, System1);
-            preStat.setString(2, System1);
-            preStat.setString(3, System);
-            preStat.setString(4, key);
+            preStat.setString(1, system1);
+            preStat.setString(2, system1);
+            preStat.setString(3, key);
+            preStat.setString(4, system);
+            preStat.setString(5, key);
             ResultSet resultSet = preStat.executeQuery();
             //gets the data
             while (resultSet.next()) {
@@ -467,7 +474,7 @@ public class ParameterDAO implements IParameterDAO {
             }
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
@@ -479,15 +486,15 @@ public class ParameterDAO implements IParameterDAO {
 
     @Override
     public Parameter loadFromResultSet(ResultSet rs) throws SQLException {
-        String system = ParameterParserUtil.parseStringParam(rs.getString("sys"), "");
-        String param = ParameterParserUtil.parseStringParam(rs.getString("para"), "");
-        String valc = ParameterParserUtil.parseStringParam(rs.getString("valC"), "");
-        String vals = ParameterParserUtil.parseStringParam(rs.getString("valS"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("descr"), "");
+        String param = ParameterParserUtil.parseStringParam(rs.getString("par.param"), "");
+        String value = ParameterParserUtil.parseStringParam(rs.getString("par.value"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("par.description"), "");
+        String system1 = ParameterParserUtil.parseStringParam(rs.getString("system1"), "");
+        String system1Value = ParameterParserUtil.parseStringParam(rs.getString("system1Value"), "");
 
         //TODO remove when working in test with mockito and autowired
         factoryParameter = new FactoryParameter();
-        return factoryParameter.create("",param,valc,description,system, vals);
+        return factoryParameter.create("", param, value, description, system1, system1Value);
     }
 
     @Override
@@ -532,7 +539,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {

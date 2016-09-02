@@ -86,7 +86,7 @@ public class ParameterService implements IParameterService {
         }
         return outPutResult;
     }
-    
+
     @Override
     public List<Parameter> findAllParameter() throws CerberusException {
         return parameterDao.findAllParameter();
@@ -169,13 +169,13 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch){
+    public AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return parameterDao.readWithSystem1BySystemByCriteria(system, system1, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override
-    public AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key){
-        return parameterDao.readWithSystem1BySystemByKey(system, system1, key);
+    public AnswerItem readWithSystem1ByKey(String system, String key, String system1) {
+        return parameterDao.readWithSystem1ByKey(system, key, system1);
     }
 
     @Override

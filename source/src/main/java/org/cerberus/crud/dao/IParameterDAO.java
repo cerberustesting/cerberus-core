@@ -40,7 +40,7 @@ public interface IParameterDAO {
     Parameter findParameterByKey(String system, String key) throws CerberusException;
 
     List<Parameter> findAllParameter() throws CerberusException;
-    
+
     void updateParameter(Parameter parameter) throws CerberusException;
 
     void insertParameter(Parameter parameter) throws CerberusException;
@@ -49,7 +49,7 @@ public interface IParameterDAO {
 
     AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
-    AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key);
+    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
 
     Parameter loadFromResultSet(ResultSet rs) throws SQLException;
 

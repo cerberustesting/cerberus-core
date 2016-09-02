@@ -34,7 +34,7 @@ function initPage() {
     $('#editParameterModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("parametersTable", "ReadParameter?system=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("parametersTable", "ReadParameter?system1=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
 }
 
@@ -65,25 +65,28 @@ function renderOptionsForApplication(data) {
 }
 
 function editEntryClick(param) {
-    var formEdit = $('#editParameterModal');
+    clearResponseMessageMainPage();
 
-    $.ajax({
-        url: "ReadParameter?system="+getSys()+"&param="+param,
-        async: true,
-        method: "GET",
-        success: function (data) {
-            if(data.messageType === "OK") {
-                formEdit.find("#parameter").prop("value", data.param);
-                formEdit.find("#cerberusValue").prop("value", data.value);
-                formEdit.find("#systemValue").prop("value", data.system1value1);
-                formEdit.find("#description").html(data.description);
+    var jqxhr = $.getJSON("ReadParameter", "system1=" + getSys() + "&param=" + param);
+    $.when(jqxhr).then(function (data) {
+        var obj = data["contentTable"];
 
-                formEdit.modal('show');
-            }else{
-                showUnexpectedError();
-            }
-        },
-        error: showUnexpectedError
+        var formEdit = $('#editParameterModal');
+
+        formEdit.find("#parameter").prop("value", obj["param"]);
+        formEdit.find("#cerberusValue").prop("value", obj["value"]);
+        formEdit.find("#systemValue").prop("value", obj["system1value"]);
+        formEdit.find("#description").html(obj["description"]);
+
+        if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+            formEdit.find("#description").prop("readonly", "readonly");
+            formEdit.find("#sort").prop("readonly", "readonly");
+
+            $('#editParameterButton').attr('class', '');
+            $('#editParameterButton').attr('hidden', 'hidden');
+        }
+
+        formEdit.modal('show');
     });
 }
 
@@ -93,7 +96,7 @@ function editEntryModalSaveHandler() {
 
     var sa = formEdit.serializeArray();
     var data = {}
-    for(var i in sa){
+    for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
     // Get the header data from the form.
@@ -101,7 +104,7 @@ function editEntryModalSaveHandler() {
     console.log(data);
     showLoaderInModal('#editParameterModal');
     $.ajax({
-        url: "UpdateParameter2?system="+getSys(),
+        url: "UpdateParameter2?system=" + getSys(),
         async: true,
         method: "POST",
         data: {id: data.parameter,
@@ -157,7 +160,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "param", "sName": "par.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
         {"data": "value", "sName": "par.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
-        {"data": "system1value1", "sName": "par2.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
+        {"data": "system1value", "sName": "system1value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
         {"data": "description", "sName": "par.description", "title": doc.getDocLabel("page_parameter", "description_col")}
     ];
     return aoColumns;
