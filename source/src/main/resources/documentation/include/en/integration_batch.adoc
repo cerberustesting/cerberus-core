@@ -1,0 +1,25 @@
+In this section, you will find information on batch
+
+image:batchpage.png[BatchPage]
+
+=== Batch invariant attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Batch | The name of the *[red]#batch#*.
+
+| System | The *[red]#system#* for which the *[red]#batch#* will be available.
+
+| Description | A description of the batch.
+
+|=== 
+
+=== Create deploy type 
+
+. Go to *[red]#Integration -> Batch#*. image:batchcreate.png[CreateBatch,200,200,float="right",align="center"]
+. Click on *[red]#Create New Batch#*.
+.. Feed the *[red]#Deploy Type#* field with a name.
+.. Select the *[red]#system#* for which the *[red]#batch#* will be available.
+.. Feed the *[red]#Description#* field with a short description of this batch.
+.. Click on *[red]#Save#*.
