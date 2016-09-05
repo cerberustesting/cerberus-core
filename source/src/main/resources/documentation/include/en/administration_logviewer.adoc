@@ -1,0 +1,6 @@
+Most of the change triggered in Cerberus are recorded in a table.
+
+image:logviewer.png[logviewer]
+
+WARNING: To guaranty performance of Cerbeurs over the time, please refer to <<Clean Database>> section
+ to get information on database maintenance operation.

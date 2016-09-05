@@ -6716,8 +6716,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','message_remove','','en','Are you sure?','')");
         SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','')");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add menuDocumentation and menuHelp in documentation table.
+        //-- ------------------------ 923
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
+        SQLS.append("('page_header', 'menuHelp', '', 'en', 'Help'), ");
+        SQLS.append("('page_header', 'menuHelp', '', 'fr', 'Aide'), ");
+        SQLS.append("('page_header', 'menuDocumentation', '', 'en', 'Documentation'), ");
+        SQLS.append(" ('page_header', 'menuDocumentation', '', 'fr', 'Documentation')");
+        SQLInstruction.add(SQLS.toString());
 
-        return SQLInstruction;
+return SQLInstruction;
     }
 
 

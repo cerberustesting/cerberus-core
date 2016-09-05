@@ -1,0 +1,336 @@
+:imagesdir: ./images/
+:toc: left
+:toc-title: Table des matières
+:sectnums:
+:lang: fr
+
+= image:logo.png[Logo] Cerberus : Manuel Utilisateur    link:./documentation_fr.html[image:fr.png[FR,20,20]] link:./documentation_en.html[image:en.png[EN,20,20]]
+
+
+[NOTE]
+.Ce document est en cours de développement!
+=================================================
+Si vous trouvez des erreurs, ou si des informations vous semblent manquantes, n'hésitez pas à nous soumettre une "issue", ou un "pull request". 
+Nous vous encourageons à nous soumettre des "issues" et de prendre part aux discussions sur les différents aspects du project sur link:https://github.com/vertigo17/Cerberus[github].
+
+Nous avons grand plaisir à accueillir chaque nouveaux contributeurs!
+=================================================
+
+= Introduction
+include::include/{lang}/introduction_introduction.adoc[]
+
+== Qu'est-ce-que c'est?
+include::include/{lang}/introduction_whatiscerberus.adoc[]
+
+---
+= Démarrage rapide
+include::include/{lang}/gettingstarted_introduction.adoc[]
+
+== Configuration d'une application
+include::include/{lang}/gettingstarted_applicationconfiguration.adoc[]
+
+
+= Description
+---
+== Project (Projet)
+
+Un projet pour regrouper les cas de tests.
+
+Pour créer un projet, il est impératif de lui assigner un code.
+
+include::include/{lang}/action.adoc[]
+
+== Deploy Type (Type de déploiement)
+
+Un type de déploiement. TODO
+
+== Environment (Environnement de test)
+
+Les environnements de Test.
+
+On en compte 5::
+* DEV: Environnement de *développement*.
+* QA: Environnement de *qualité*.
+* UAT: Environnement de *recette*.
+* PREPROD: Environnement de *pré-production*.
+* PROD: Environnement de *production*.
+
+Lorsque l'on crée un environnement, on crée un environnements affecté à un ou plusieurs pays::
+* AT (Autriche)
+* BE (Belgique)
+* CH (Suisse)
+* DE (Allemagne)
+* ES (Espagne)
+* FR (France)
+* GR (Grèce)
+* IT (Italie)
+* PT (Portugal)
+* RU (Russie)
+* RX (Applications Transversales)
+* UA (Ukraine)
+* UK (Royaume-Uni)
+
+Une fois l'environnement créé, il est possible de lui assigner de nombreux paramètres tels que les Applications ou les bases de données.
+
+== Application
+
+L'application définit un *domaine d'application* pour les tests.
+
+Les différents type d'applciations sont les suivantes::
+* APK (Application *Android*)
+* BAT (Application *BATCH*)
+* GUI (Application *Web*)
+* IPA (Application *IOS*)
+* SRV (*Service*)
+* WS (*Web Service*)
+* NONE (*Autre*)
+
+Pour créer une application, il faut aussi lui assigner un *deploy type*.
+
+Une fois l'application créée, on peut lui assigner un *environnement*.
+
+== Test
+
+Dans Cerberus, un test correspond à un ensemble de *cas de tests*.
+
+----
+Exemple:
+
+Test: Se connecter sur Facebook.
+
+Cas de test:
+1. Se connecter avec identifiant et mot de passe.
+2. Essayer de se connecter sans mot de passe.
+3. Essayer de se connecter sans identifiant.
+----
+
+== Test Case (Cas de test)
+
+Un cas de test est la *liste des actions et controles* à affectuer pour faire un scénario de test.
+
+La création d'un cas de test nécessite l'association du cas de test à un projet, une application, des pays et un identifiant dans la colonne "TestCase".
+
+=== Step (Etape)
+
+Une étape correspond à *un ensemble d'actions et de controles* pour un cas de test.
+
+----
+Bonne pratique:
+
+Ne pas hésiter à diviser un test en plusieures étapes afin de mieux comprendre le cas de test et pouvoir réutiliser ces étapes dans d'autres cas de tests.
+----
+
+=== Action
+
+Une action consiste en un acction à effectuer pendant le cas de test.
+
+Une action contient 4 champs::
+
+* Description
+* Type
+* Object: l'objet de l'action
+* Property: la propriété associée à l'action
+
+Les différents objets acceptés
+
+* *id*: l'attribut id de l'élément en question.
+----
+Exemple: id=champsPrenom
+----
+* *name*: l'attribut name de l'élément en question.
+----
+Exemple: name=prenom
+----
+* *class*: le premier élement avec l'attribut class correspondant.
+----
+Exemple: class=textInput
+----
+* *css*: le selecteur css correspondant à l'élément.
+----
+Exemple: css=#champsPrenom
+----
+* *xpath*: le selecteur jQuery correspondant à l'élément.
+----
+Exemple: xpath=//*[@id="champsPrenom"]
+----
+* *picture*: TODO
+----
+Exemple: TODO
+----
+* *data-cerberus*: TODO
+----
+Exemple: TODO
+----
+
+Voici une liste des différents types d'actions qui peuvent être éffectués::
+* calculateProperty (*Evaluer une propriété*)
+* callSoap (*Faire un appel SOAP*)
+* callSoapWithBase (*Faire un appel SOAP avec base*)
+* [green]#callSoapWithBase_BETA# (BETA: *Faire un appel SOAP avec base*)
+* [green]#callSoap_Beta# (BETA: *Faire un appel SOAP*)
+* click (*Cliquer*)
+* [red]#clickAndWait# (DEPRECIE: *Cliquer et attendre*)
+* doNothing (*Ne rien faire*)
+* doubleClick (*Double-cliquer*)
+* [red]#enter# (DEPRECIE: *Appuyer sur Entrer*)
+* executeSqlStoredProcedure (*Exécuter la procédure SQL*)
+* executeSqlUpdate (*Exécuter une update de la base SQL*)
+* focusDefaultIframe (*Faire un focus sur l'élément par défaut*)
+* focusToIframe (*Faire un focus*)
+* getPageSource (*Récupérer le code source de la page*)
+* hideKeyboard (*Cacher le clavier*)
+* keypress (*Appuyer sur une touche*)
+* manageDialog (*Interagir avec un dialogue*)
+* mouseLeftButtonPress (*Appuyer sur le clic gauche*)
+* mouseLeftButtonRelease (*Relâcher le clic gauche*)
+* mouseOver (*Passer la souris sur un élément*)
+* mouseOverAndWait (*Passer la souris sur un élément et attendre*)
+* openUrl (*Aller à l'URL spécifiée*)
+* openUrlLogin (*Aller à l'URL de l'application*)
+* openUrlWithBase (*Aller à l'URL ayant la base*)
+* removeDifference (*Retire les différences comparé au pattern*)
+* select (*sélectionner un élement*)
+* [red]#selectAndWait# (DEPRECIE: *sélectionner un élément et attendre*)
+* swipe (MOBILE: *changer d'écran*)
+* switchToWindow (*Changer de fenêtre*)
+* type (*Ecrire*)
+* Unknown (*Inconnu*)
+* wait (*Attendre*)
+
+=== Control
+
+Un contrôle est une vérification effectuée lors de l'exécution d'un cas de test.
+
+Le champ Property correspond au champ Object pour l'action.
+
+Le champ Value correspond au champ property pour l'action.
+
+Le champ Fatal définit si le test s'arrête si le controle échoue.
+
+----
+Exemple:
+
+Fatal N: Si le texte dans l'élément n'est pas celui attendu, les test continuent quand même.
+
+Fatal Y: Si le texte dans l'élément n'est pas celui attendu, les tests s'arrêtent.
+----
+
+Voici une liste des différents types de contrôles qui peuvent être éffectués::
+* takeScreenshot (*Impression d'écran*)
+* Unknown (*Inconnu*)
+* verifyElementClickable (*Vérifier élément cliquable*)
+* verifyElementDifferent (*Vérifier élément différent*)
+* verifyElementEquals (*Vérifier élément identique*)
+* verifyElementElement (*TODO*)
+* verifyElementNotClickable (*Vérifier élément non cliquable*)
+* verifyElementNotPresent (*Vérifier élément non présent*)
+* verifyElementNotVisible (*Vérifier élément n'apparaît pas*)
+* verifyElementPresent (*Vérifier élément présent*)
+* verifyElementVisible (*Vérifier élément visible*)
+* verifyIntegerDifferent (*Vérifier entier différent*)
+* verifyIntegerEquals (*Vérifier entier égal*)
+* verifyIntegerGreater (*Vérifier entier supérieur*)
+* verifyIntegerMinor (*Vérifier entier inférieur*)
+* verifyRegexInElement (*Vérifier Regex dans l'élément*)
+* verifyStringContains (*Vérifier contenu du String*)
+* verifyStringDifferent (*Vérifier String différent*)
+* verifyStringEquals (*Vérifier String identique*)
+* verifyStringGreater (*Vérifier String supérieur*)
+* verifyStringMinor (*Vérifier String inférieur*)
+* verifyTextInDialog (*Vérifier texte dans le dialogue*)
+* verifyTextInElement (*Vérifier texte dans l'élément*)
+* verifyTextInPage (*Vérifier text dans la page*)
+* verifyTextNotInElement (*Vérifier texte pas dans l'élément*)
+* verifyTextNotInPage (*Vérifier texte pas dans la page*)
+* verifyTitle (*Vérifier titre*)
+* verifyUrl (*Vérifier URL*)
+* verifyXmlTreeStructure (*Vérifier structure xml*)
+
+=== Property (Propriété)
+
+Une propriété est une valeur ou action complétant une action ou un contrôle.
+
+La propriété se caractérise par son type et sa nature.
+
+Voici les différentes natures que peut avoir une propriété::
+* NOTINUSE (*Ne pas utiliser*)
+* RANDOM (*Au hasard*)
+* RANDOM NEW (*Nouvelle valeur au hasard à chaque appel*)
+* STATIC (*Valeur définie*)
+
+Voici la liste des types de propriété dans Cerberus::
+* executeSoapFromLib (*Depuis requète SOAP*)
+* executeSql (*Depuis requète SQL*)
+* executeSqlFromLib (*Depuis requète SQL*)
+* getAttributeFromHtml (*Attribut depuis HTML*)
+* getDifferencesFromXml (*Différences avec XML*)
+* getFromCookie (*Depuis cookie*)
+* [green]#getFromDataLib_BETA# (*BETA: Depuis jeu de données*)
+* getFromHtml (*Depuis HTLM*)
+* getFromHtmlVisible (*Depuis HTML à l'écran*)
+* getFromJS (*Depuis JavaScript*)
+* getFromJSON (*Depuis JSON*)
+* getFromTestData (*Depuis données de test*)
+* getFromXml (*Depuis XML*)
+* text (*Depuis texte*)
+
+= Exemple
+
+---
+
+== Créer un projet
+
+. Aller dans *[red]#Integration -> Project#*
+. Cliquer sur *[red]#Create New Project#*
+.. Renseigner le nom du projet dans *[red]#Project#*
+.. Renseigner le code du projet dans *[red]#Code#*
+.. [Facultatif]: Renseigner une description du projet dans [red]#Description#
+.. Cliquer sur *[red]#Save#*
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBcmtnZWJRZ0hvX2s[Vidéo explicative]
+
+== Créer un type de déploiement
+
+. Aller dans *[red]#Integration -> Deploiement Type#*
+. Cliquer sur *[red]#Create new Deployment Type#*
+.. Renseigner le nom du type de déploiement dans *[red]#Deployment Type#*
+.. [Facultatif]: Renseigner une description du type de déploiement dans [red]#Description#
+.. Cliquer sur *[red]#Save#*
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBRU5xSU9pYlNGTmc[Vidéo explicative]
+
+== Créer un environnement
+
+. Aller dans *[red]#Integration -> Environment#*
+. Cliquer sur *[red]#Create a new Environment#*
+.. Renseigner le système *[red]#(System)#*
+.. Renseigner le pays *[red]#(Country)#*
+.. Renseigner l'environnement *[red]#(Environment)#*
+.. [Facultatif]: Renseigner une description de l'environnement dans [red]#Description#
+.. Cliquer sur *[red]#Save#*
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBcmtnZWJRZ0hvX2s[Vidéo explicative]
+
+== Créer une application
+
+. Aller dans *[red]#Integration -> Application#*
+. Cliquer sur *[red]#Create New Application#*
+.. Renseigner le nom de l'application dans *[red]#Application#*
+.. [Facultatif]: Renseigner une description de l'environnement dans [red]#Description#
+.. Renseigner le type d'application dans *[red]#Type#*
+.. Renseigner le type de déploiement dans *[red]#Deploy Type#*
+.. Cliquer sur *[red]#Save#*
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBMEltSnM0QnVrdDg[Vidéo explicative]
+
+== Ajouter une application à un environnement
+
+. Aller dans *[red]#Integration -> Environment#*
+. Cliquer sur *[red]#le stylo#* à coté de l'environnement concerné
+.. Aller dans l'onglet *[red]#Applications#*
+.. Cliquer sur *[red]#Add Application#*
+.. Renseigner l'application dans *[red]#Application#*
+.. Renseigner l'host de l'application dans *[red]#Host#*
+.. Cliquer sur *[red]#Save#*
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBUlZWTmkxZEQzNnc[Vidéo explicative]

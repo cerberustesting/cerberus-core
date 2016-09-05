@@ -1,0 +1,45 @@
+In this section, you will find the bla bla
+
+image:applicationpage.png[Logo]
+
+=== Application attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Action | Cell in column 2, row 2
+
+| Application | Cell in column 2, row 3
+
+| Description | Cell in column 2, row 3
+
+| Sort | Cell in column 2, row 3
+
+| Type | Cell in column 2, row 3
+
+|=== 
+
+=== Application type
+
+Application type recognizable by Cerberus ::
+* APK (Application *Android*)
+* BAT (Application *BATCH*)
+* GUI (Application *Web*)
+* IPA (Application *IOS*)
+* SRV (*Service*)
+* WS (*Web Service*)
+* NONE (*Autre*)
+
+=== Create application 
+
+. Go to *[red]#Integration -> Application#* image:applicationcreate.png[CreateApplication,200,200,float="right",align="center"]
+. Click on *[red]#Create New Application#*
+.. Feed the *[red]#Application#* field with the application name.
+.. Feed the [red]#Description# field with a short description of this application.
+.. Choose the application type in *[red]#Type#*
+.. Select the application deploy type in *[red]#Deploy Type#*
+.. Click on *[red]#Save#*
+
+
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBMEltSnM0QnVrdDg[Vidéo explicative]

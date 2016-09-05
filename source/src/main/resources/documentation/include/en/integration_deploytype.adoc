@@ -1,0 +1,22 @@
+In this section, you will find information on deploy type.
+
+image:deploytypepage.png[Logo]
+
+=== Deploy Type attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Deploy Type | A name of a deploy type.
+
+| Description | A description of the deploy type.
+
+|=== 
+
+=== Create deploy type 
+
+. Go to *[red]#Integration -> DeployType#* image:deploytypecreate.png[CreateDeployType,200,200,float="right",align="center"]
+. Click on *[red]#Create New Deployment Type#*.
+.. Feed the *[red]#Deploy Type#* field with a name.
+.. Feed the *[red]#Description#* field with a short description of this deploy type.
+.. Click on *[red]#Save#*.

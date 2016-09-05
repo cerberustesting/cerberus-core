@@ -1,0 +1,51 @@
+In this section, you will find information on invariant private and public. 
+
+NOTE: Private invariants are not editable because used by the Cerberus engine or the user interface.
+
+
+image:invariantpage.png[Logo]
+
+=== Invariant attributes
+|=== 
+
+| *Field* | *Description*  
+
+| IdName | The name of the *[red]#invariant#*.
+
+| Value | The value set for the *[red]#invariant#*.
+
+| Sort | An integer used to sort *[red]#invariants#*.
+
+| Description | The description of the *[red]#invariant#*.
+
+| Very Short Desc    | A very short desc that can be displayed in the *[red]#invariant#*.
+
+| Group1 | A first level of aggregation to group *[red]#invariant#*.
+
+| Group2 | A second level of aggregation to group *[red]#invariant#*.
+
+| Group3 | A third level of aggregation to group *[red]#invariant#*.
+
+|=== 
+
+=== Create public invariant 
+
+. Go to *[red]#Administration -> Invariant#*. image:invariantcreate.png[CreateInvariant,200,200,float="right",align="center"]
+. Click on *[red]#Create Invariant#*.
+.. Select the invariant type in *[red]#IdName#* field.
+.. Feed the *[red]#Value#* field with the value of the invariant.
+.. Feed the *[red]#Sort#* field with an integer which will define the order the invariant will be sorted by Cerberus.
+.. Feed the *[red]#Description#* field with a description of this invariant.
+.. Feed the *[red]#Very Short Desc#* field with a short description of this invariant.
+.. Feed the *[red]#Group1#* (Optional) field with a name to aggregate invariant.
+.. Feed the *[red]#Group2#* (Optional) field with a name to aggregate invariant.
+.. Feed the *[red]#Group3#* (Optional) field with a name to aggregate invariant.
+.. Click on *[red]#Save#*.
+
+=== Invariant List
+
+==== Country
+
+==== Environment
+
+==== System

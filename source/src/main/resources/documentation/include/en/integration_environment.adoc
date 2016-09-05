@@ -1,0 +1,13 @@
+In this section, you will find information on how to manage environment in Cerberus.
+
+image:environmentpage.png[EnvironmentPage]
+
+=== Create environment 
+
+. Go to *[red]#Integration -> Environment#* image:environmentcreate.png[CreateEnvironment,200,200,float="right",align="center"]
+. Click on *[red]#Create New Environment#*
+.. Select the *[red]#System#* on which the environment will be created.
+.. Select the *[red]#Country#* of the environment. See <<Country>> section for more information.
+.. Select the *[red]#Environement#*. See <<Environment>> section for more information.
+.. Continue to describe...
+.. Click on *[red]#Save#*
