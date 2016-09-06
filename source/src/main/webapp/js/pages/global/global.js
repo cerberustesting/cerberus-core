@@ -361,7 +361,10 @@ function getInvariantList(idName, handleData) {
  * @param {handleData} handleData method that handles the data retrieved
  */
 function getInvariantListN(list, handleData) {
-    $.when($.post("GetInvariantList", {action: "getNInvariant", idName: JSON.stringify(list)}, "json")).then(function (data) {
+    $.when($.post("GetInvariantList", {
+        action: "getNInvariant",
+        idName: JSON.stringify(list)
+    }, "json")).then(function (data) {
         handleData(data);
     });
 }
@@ -1255,7 +1258,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
 function resetFilters(oTable) {
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
-        oSettings.aoPreSearchCols[ iCol ].sSearch = '';
+        oSettings.aoPreSearchCols[iCol].sSearch = '';
     }
     oSettings.oPreviousSearch.sSearch = '';
     oTable.fnDraw();
@@ -1679,11 +1682,9 @@ function GetURLParameter(sParam) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
 
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
+    for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] === sParam)
-        {
+        if (sParameterName[0] === sParam) {
             return decodeURIComponent(sParameterName[1]);
         }
     }
