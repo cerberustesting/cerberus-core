@@ -3,7 +3,7 @@
 :toc-title: Table of contents
 :sectnums:
 :lang: en
-:repo-url: https://github.com/vertigo17/Cerberus/edit/master/source/src/main/webapp/documentation/include/{lang}
+:repo-url: https://github.com/vertigo17/Cerberus/edit/master/source/src/main/resources/documentation/include/{lang}
 :contribution-message: Something is incorrect/missing in this section? Feel free to submit modification.
 
 // = image:logo.png[Logo] Cerberus : User Manual    link:./documentation_fr.html[image:fr.png[FR,20,20]] link:./documentation_en.html[image:en.png[EN,20,20]]
