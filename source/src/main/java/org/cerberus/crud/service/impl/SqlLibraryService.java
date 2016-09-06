@@ -20,10 +20,18 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ISqlLibraryDAO;
+import org.cerberus.crud.dao.impl.SqlLibraryDAO;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ISqlLibraryService;
+import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +81,21 @@ public class SqlLibraryService implements ISqlLibraryService {
     }
 
     @Override
+    public void updateSqlLibrary(String name, String type, String database, String description, String script) {
+
+        try {
+            SqlLibrary s = sqlLibraryDao.findSqlLibraryByKey(name);
+            s.setType(type);
+            s.setDatabase(database);
+            s.setDescription(description);
+            s.setScript(script);
+            sqlLibraryDao.updateSqlLibrary(s);
+        }catch(CerberusException e){
+            MyLogger.log(SqlLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + e.toString());
+        }
+    }
+
+    @Override
     public Integer getNumberOfSqlLibraryPerCriteria(String searchTerm, String inds) {
         return sqlLibraryDao.getNumberOfSqlLibraryPerCriteria(searchTerm, inds);
     }
@@ -80,5 +103,35 @@ public class SqlLibraryService implements ISqlLibraryService {
     @Override
     public List<String> findDistinctTypeOfSqlLibrary(){
         return this.sqlLibraryDao.findDistinctTypeOfSqlLibrary();
+    }
+
+    @Override
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return sqlLibraryDao.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerItem readByKey(String key) {
+        return sqlLibraryDao.readByKey(key);
+    }
+
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return sqlLibraryDao.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public Answer create(SqlLibrary object) {
+        return sqlLibraryDao.create(object);
+    }
+
+    @Override
+    public Answer update(SqlLibrary object) {
+        return sqlLibraryDao.update(object);
+    }
+
+    @Override
+    public Answer delete(SqlLibrary object) {
+        return sqlLibraryDao.delete(object);
     }
 }

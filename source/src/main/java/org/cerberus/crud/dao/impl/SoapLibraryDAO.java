@@ -24,14 +24,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ISoapLibraryDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactorySoapLibrary;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -51,6 +55,12 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     @Autowired
     private IFactorySoapLibrary factorySoapLib;
 
+    private static final Logger LOG = Logger.getLogger(ParameterDAO.class);
+
+    private final int MAX_ROW_SELECTED = 100000;
+    private final String SQL_DUPLICATED_CODE = "23000";
+
+    private final String OBJECT_NAME = "SqlLibrary";
     @Override
     public SoapLibrary findSoapLibraryByKey(String name) throws CerberusException {
         boolean throwEx = false;
@@ -453,6 +463,150 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         }
         return result;
 
+    }
+
+    @Override
+    public Answer create(SoapLibrary object) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO soaplibrary (`Name`, `Type`, `ServicePath`, `Method`, `Envelope`, `ParsingAnswer`, `Description`) ");
+        query.append("VALUES (?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, object.getName());
+                preStat.setString(2, object.getType());
+                preStat.setString(3, object.getServicePath());
+                preStat.setString(4, object.getMethod());
+                preStat.setString(5, object.getEnvelope());
+                preStat.setString(6, object.getParsingAnswer());
+                preStat.setString(7, object.getDescription());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update(SoapLibrary object) {
+        MessageEvent msg = null;
+        final String query = "UPDATE soaplibrary SET Type = ?, `ServicePath` = ?, `Method` = ?, Envelope = ?, ParsingAnswer = ?, Description = ? WHERE Name = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, object.getType());
+                preStat.setString(2, object.getServicePath());
+                preStat.setString(3, object.getMethod());
+                preStat.setString(4, object.getEnvelope());
+                preStat.setString(5, object.getParsingAnswer());
+                preStat.setString(6, object.getDescription());
+                preStat.setString(7, object.getName());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer delete(SoapLibrary object) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM soaplibrary WHERE name = ? ";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, object.getName());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
     }
 
     private SoapLibrary loadSoapLibraryFromResultSet(ResultSet resultSet) throws SQLException {

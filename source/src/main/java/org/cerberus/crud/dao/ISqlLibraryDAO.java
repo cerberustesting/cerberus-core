@@ -17,9 +17,16 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -96,4 +103,55 @@ public interface ISqlLibraryDAO {
      * @return
      */
     List<String> findDistinctTypeOfSqlLibrary();
+
+    /**
+     *  Get the {@link SqlLibrary} List of the given {@link System} with the given Criteria
+     *
+     * @param startPosition         the start index to look for
+     * @param length                the number of {@link SqlLibrary} to get
+     * @param columnName            the Column name to sort
+     * @param searchParameter       the string to search in the {@link SqlLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    /**
+     *  Get the {@link SqlLibrary} of the given key
+     *
+     * @param key                the key of the {@link SqlLibrary} to get
+     */
+    AnswerItem readByKey(String key);
+
+    /**
+     *  Load a {@link SqlLibrary} of a ResultSet
+     *
+     * @param rs                the {@link ResultSet}
+     */
+    SqlLibrary loadFromResultSet(ResultSet rs) throws SQLException;
+    /**
+     *  Get the distinctValue of the column
+     *
+     * @param columnName            the Column name to get
+     * @param searchParameter       the string to search in the {@link SqlLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * @param object the {@link SqlLibrary} to Create
+     * @return {@link AnswerItem}
+     */
+    Answer create(SqlLibrary object);
+
+    /**
+     * @param object the {@link SqlLibrary} to Update
+     * @return {@link AnswerItem}
+     */
+    Answer update(SqlLibrary object);
+
+    /**
+     * @param object the {@link SqlLibrary} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(SqlLibrary object);
 }

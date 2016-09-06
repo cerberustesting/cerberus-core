@@ -1,0 +1,70 @@
+<!--Edit sqlLibrary page-->
+<div data-backdrop="static" class="modal fade center" id="addSqlLibraryModal" tabindex="-1" role="dialog" aria-labelledby="addSqlLibraryModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addSqlLibraryModalLabel" name="addSqlLibraryField">Add SqlLibrary</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addSqlLibraryModalForm" name="addSqlLibraryModalForm"  title="Edit SqlLibrary" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="name" name="idnameField">Name</label>
+                                <input type="text" class="form-control" name="name" id="name" aria-describedby="basic-addon1">
+
+                                </input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="type" name="typeField">Type</label>
+                                <input type="text" class="form-control" name="type" id="type" aria-describedby="basic-addon1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="database" name="databaseField">Database</label>
+                                <select class="form-control" name="database" id="database" aria-describedby="basic-addon1">
+                                    <option>VC</option>
+                                    <option>ICS</option>
+                                    <option>IDW</option>
+                                    <option>CRB</option>
+                                    <option>IRT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="description" name="descriptionField">Description</label>
+                                <textarea class="form-control" name="description" id="description" aria-describedby="basic-addon1"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="script" name="scriptField">Script</label>
+                                <textarea class="form-control" name="script" id="script" aria-describedby="basic-addon1"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addSqlLibraryButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1058,20 +1058,20 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     var restoreFilterButtonTooltip = doc.getDocDescription("page_global", "tooltip_restoreuserpreferences");
     if (tableConfigurations.showColvis) {
         //Display button show/hide columns and Save table configuration
-        $("#" + tableConfigurations.divId + " #saveTableConfigurationButton").remove();
-        $("#" + tableConfigurations.divId + " #restoreFilterButton").remove();
+        $("div[id*='"+tableConfigurations.divId+"'] #saveTableConfigurationButton").remove();
+        $("div[id*='"+tableConfigurations.divId+"'] #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
                 .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
-        $("#" + tableConfigurations.divId + " #showHideColumnsButton").parent().before(
+        $("div[id*='"+tableConfigurations.divId+"'] #showHideColumnsButton").parent().before(
                 $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
             updateUserPreferences();
         })
                 );
-        $("#" + tableConfigurations.divId + " #saveTableConfigurationButton").before(
+        $("div[id*='"+tableConfigurations.divId+"'] #saveTableConfigurationButton").before(
                 $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
             location.reload();

@@ -20,6 +20,8 @@ package org.cerberus.crud.service;
 import java.util.List;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
@@ -85,5 +87,23 @@ public interface ISoapLibraryService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfSoapLibraryPerCrtiteria(String searchTerm, String inds);
+
+    /**
+     * @param object the {@link SoapLibrary} to Create
+     * @return {@link AnswerItem}
+     */
+    Answer create(SoapLibrary object);
+
+    /**
+     * @param object the {@link SoapLibrary} to Update
+     * @return {@link AnswerItem}
+     */
+    Answer update(SoapLibrary object);
+
+    /**
+     * @param object the {@link SoapLibrary} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(SoapLibrary object);
     
 }

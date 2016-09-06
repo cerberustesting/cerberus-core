@@ -20,8 +20,13 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -70,15 +75,25 @@ public interface ISqlLibraryService {
      * @return
      */
     List<SqlLibrary> findSqlLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
-    
+
     /**
-     * 
+     *
      * @param name Key of the table
      * @param columnName Name of the column
      * @param value New value of the columnName
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     void updateSqlLibrary(String name, String columnName, String value) throws CerberusException;
+
+    /**
+     *
+     * @param name
+     * @param type
+     * @param database
+     * @param description
+     * @param script
+     */
+    void updateSqlLibrary(String name,String type,String database,String description,String script);
     
     /**
      * 
@@ -93,4 +108,49 @@ public interface ISqlLibraryService {
      * @return
      */
     List<String> findDistinctTypeOfSqlLibrary();
+
+    /**
+     *  Get the {@link SqlLibrary} List of the given {@link System} with the given Criteria
+     *
+     * @param startPosition         the start index to look for
+     * @param length                the number of {@link SqlLibrary} to get
+     * @param columnName            the Column name to sort
+     * @param searchParameter       the string to search in the {@link SqlLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    /**
+     *  Get the {@link SqlLibrary} of the given key
+     *
+     * @param key                the key of the {@link SqlLibrary} to get
+     */
+    AnswerItem readByKey(String key);
+
+    /**
+     *  Get the distinctValue of the column
+     *
+     * @param columnName            the Column name to get
+     * @param searchParameter       the string to search in the {@link SqlLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * @param object the {@link SqlLibrary} to Create
+     * @return {@link AnswerItem}
+     */
+    Answer create(SqlLibrary object);
+
+    /**
+     * @param object the {@link SqlLibrary} to Update
+     * @return {@link AnswerItem}
+     */
+    Answer update(SqlLibrary object);
+
+    /**
+     * @param object the {@link SqlLibrary} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(SqlLibrary object);
 }

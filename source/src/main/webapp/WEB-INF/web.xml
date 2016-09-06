@@ -474,16 +474,32 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSqlLibrary2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSqlLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSqlLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.ReadSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllInvariantPublic</servlet-name>
@@ -1353,16 +1369,32 @@
         <url-pattern>/CreateSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateSqlLibrary2</servlet-name>
+        <url-pattern>/CreateSqlLibrary2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteSqlLibrary</servlet-name>
         <url-pattern>/DeleteSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSqlLibrary2</servlet-name>
+        <url-pattern>/DeleteSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllSqlLibrary</servlet-name>
         <url-pattern>/FindAllSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadSqlLibrary</servlet-name>
+        <url-pattern>/ReadSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <url-pattern>/UpdateSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateSqlLibrary2</servlet-name>
+        <url-pattern>/UpdateSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllInvariantPublic</servlet-name>
@@ -1886,6 +1918,7 @@
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
+            <url-pattern>/SqlLibrary2.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
@@ -1910,6 +1943,7 @@
             <url-pattern>/ReadTestDataLib</url-pattern>
             <url-pattern>/ReadTestDataLibData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
+            <url-pattern>/ReadSqlLibrary</url-pattern>
             <url-pattern>/FindAllSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
@@ -1948,8 +1982,11 @@
             <url-pattern>/DeleteTestCase</url-pattern>
             <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
             <url-pattern>/CreateSqlLibrary</url-pattern>
+            <url-pattern>/CreateSqlLibrary2</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
+            <url-pattern>/DeleteSqlLibrary2</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
+            <url-pattern>/UpdateSqlLibrary2</url-pattern>
             <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DeleteTestCase2</url-pattern>
             <url-pattern>/CreateTest1</url-pattern>

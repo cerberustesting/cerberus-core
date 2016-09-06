@@ -22,6 +22,7 @@ import org.cerberus.crud.dao.impl.SoapLibraryDAO;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ISoapLibraryService;
+import org.cerberus.util.answer.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -73,5 +74,20 @@ public class SoapLibraryService implements ISoapLibraryService {
     @Override
     public Integer getNumberOfSoapLibraryPerCrtiteria(String searchTerm, String inds) {
         return soapLibraryDao.getNumberOfSoapLibraryPerCrtiteria(searchTerm, inds);
+    }
+
+    @Override
+    public Answer create(SoapLibrary object) {
+        return soapLibraryDao.create(object);
+    }
+
+    @Override
+    public Answer update(SoapLibrary object) {
+        return soapLibraryDao.update(object);
+    }
+
+    @Override
+    public Answer delete(SoapLibrary object) {
+        return soapLibraryDao.delete(object);
     }
 }

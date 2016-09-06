@@ -6683,7 +6683,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','addinvariant_field','','fr','Ajouter un Invariant','')");
         SQLS.append(",('page_invariant','public_invariant','','en','Public InvariantS','')");
         SQLS.append(",('page_invariant','public_invariant','','fr','Invariants publiques','')");
-        SQLS.append(",('page_invariant','private_invariant','','en','Private InvariantS','')");
+        SQLS.append(",('page_invariant','private_invariant','','en','Private Invariants','')");
         SQLS.append(",('page_invariant','private_invariant','','fr','Invariants privés','')");
         SQLS.append(",('page_invariant','private','','en','Private','')");
         SQLS.append(",('page_invariant','private','','fr','Privés','')");
@@ -6715,6 +6715,58 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','title_remove','','fr','Supprimer un Invariant','')");
         SQLS.append(",('page_invariant','message_remove','','en','Are you sure?','')");
         SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 922
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_sqlLibrary','allSqlLibrarys','','en','SQL Libraries','')");
+        SQLS.append(",('page_sqlLibrary','allSqlLibrarys','','fr','Librairies SQL','')");
+        SQLS.append(",('page_sqlLibrary','addSqlLibrary_field','','en','Add Library','')");
+        SQLS.append(",('page_sqlLibrary','addSqlLibrary_field','','fr','Ajouter une librairie','')");
+        SQLS.append(",('page_sqlLibrary','editSqlLibrary_field','','en','Edit Library','')");
+        SQLS.append(",('page_sqlLibrary','editSqlLibrary_field','','fr','Editer la librairie','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary_field','','en','SQL Librairy','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary_field','','fr','Librairie SQL','')");
+        SQLS.append(",('page_sqlLibrary','idname_field','','en','Name','')");
+        SQLS.append(",('page_sqlLibrary','idname_field','','fr','Nom','')");
+        SQLS.append(",('page_sqlLibrary','type_field','','en','Type','')");
+        SQLS.append(",('page_sqlLibrary','type_field','','fr','Type','')");
+        SQLS.append(",('page_sqlLibrary','database_field','','en','Database','')");
+        SQLS.append(",('page_sqlLibrary','database_field','','fr','Base de donnée','')");
+        SQLS.append(",('page_sqlLibrary','script_field','','en','Script','')");
+        SQLS.append(",('page_sqlLibrary','script_field','','fr','Script','')");
+        SQLS.append(",('page_sqlLibrary','description_field','','en','Description','')");
+        SQLS.append(",('page_sqlLibrary','description_field','','fr','Description','')");
+        SQLS.append(",('page_sqlLibrary','close_btn','','en','Close','')");
+        SQLS.append(",('page_sqlLibrary','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_sqlLibrary','save_btn','','en','Save Library','')");
+        SQLS.append(",('page_sqlLibrary','save_btn','','fr','Sauvegarder la librairie','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary','','en','SQL Library','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary','','fr','Librairie SQL','')");
+        SQLS.append(",('page_sqlLibrary','button_create','','en','Add Library','')");
+        SQLS.append(",('page_sqlLibrary','button_create','','fr','Ajouter une librairie','')");
+        SQLS.append(",('page_sqlLibrary','title_remove','','en','Remove Library','')");
+        SQLS.append(",('page_sqlLibrary','title_remove','','fr','Supprimer la librairie','')");
+        SQLS.append(",('page_sqlLibrary','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_sqlLibrary','message_remove','','fr','Êtes-vous sûrs?','')");
+        SQLS.append(",('page_sqlLibrary','button_edit','','en','Edit Library','')");
+        SQLS.append(",('page_sqlLibrary','button_edit','','fr','Editer la librairie','')");
+        SQLS.append(",('page_sqlLibrary','button_remove','','en','Remove Library','')");
+        SQLS.append(",('page_sqlLibrary','button_remove','','fr','Supprimer la librairie','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary_col','','en','Name','')");
+        SQLS.append(",('page_sqlLibrary','sqlLibrary_col','','fr','Nom','')");
+        SQLS.append(",('page_sqlLibrary','type_col','','en','Type','')");
+        SQLS.append(",('page_sqlLibrary','type_col','','fr','Type','')");
+        SQLS.append(",('page_sqlLibrary','button_col','','en','Type','')");
+        SQLS.append(",('page_sqlLibrary','button_col','','fr','Type','')");
+        SQLS.append(",('page_sqlLibrary','database_col','','en','Database','')");
+        SQLS.append(",('page_sqlLibrary','database_col','','fr','Base de donnée','')");
+        SQLS.append(",('page_sqlLibrary','script_col','','en','Script','')");
+        SQLS.append(",('page_sqlLibrary','script_col','','fr','Script','')");
+        SQLS.append(",('page_sqlLibrary','description_col','','en','Description','')");
+        SQLS.append(",('page_sqlLibrary','description_col','','fr','Description','')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
