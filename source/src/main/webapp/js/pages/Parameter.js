@@ -59,7 +59,7 @@ function displayPageLabel() {
 
 function renderOptionsForApplication(data) {
     if ($("#blankSpace").length === 0) {
-        var contentToAdd = "<div class='marginBottom10' style='height:25px;' id='blankSpace'></div>";
+        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'></div>";
         $("#parametersTable_wrapper div#parametersTable_length").before(contentToAdd);
     }
 }
@@ -104,7 +104,7 @@ function editEntryModalSaveHandler() {
     console.log(data);
     showLoaderInModal('#editParameterModal');
     $.ajax({
-        url: "UpdateParameter2?system=" + getSys(),
+        url: "UpdateParameter?system=" + getSys(),
         async: true,
         method: "POST",
         data: {id: data.parameter,
@@ -160,7 +160,7 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "param", "sName": "par.param", "title": doc.getDocLabel("page_parameter", "parameter_col")},
         {"data": "value", "sName": "par.value", "title": doc.getDocLabel("page_parameter", "cerberus_col")},
-        {"data": "system1value", "sName": "system1value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
+        {"data": "system1value", "sName": "par1.value", "title": doc.getDocLabel("page_parameter", "system_col") + " (" + getSys() + ")"},
         {"data": "description", "sName": "par.description", "title": doc.getDocLabel("page_parameter", "description_col")}
     ];
     return aoColumns;

@@ -512,13 +512,13 @@ public class ParameterDAO implements IParameterDAO {
         query.append(columnName);
         query.append(" as distinctValues FROM parameter par");
 
-        query.append(" LEFT OUTER JOIN ( SELECT * from parameter par2 WHERE par2.system = ? ) as par2 ON par2.`param` = par.`param` ");
+        query.append(" LEFT OUTER JOIN ( SELECT * from parameter par1 WHERE par1.system = ? ) as par1 ON par1.`param` = par.`param` ");
         query.append(" WHERE par.system = ?");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             searchSQL.append(" and (par.param like ?");
             searchSQL.append(" or par.`value` like ?");
-            searchSQL.append(" or par2.`value` like ?");
+            searchSQL.append(" or par1.`value` like ?");
             searchSQL.append(" or par.description like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
