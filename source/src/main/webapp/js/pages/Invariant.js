@@ -108,7 +108,7 @@ function renderOptionsForApplication(data) {
 function renderOptionsForApplication2(data) {
     var doc = new Doc();
     if ($("#blankSpace").length === 0) {
-        var contentToAdd = "<div class='marginBottom10' style='height:25px;' id='blankSpace'></div>";
+        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'></div>";
         $("#invariantsPrivateTable_wrapper div#invariantsPrivateTable_length").before(contentToAdd);
     }
 }
