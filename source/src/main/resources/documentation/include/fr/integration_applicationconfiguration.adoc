@@ -1,0 +1,75 @@
+In this section, you will find information on application configuration in Cerberus.
+
+image:applicationpage.png[ApplicationPage]
+
+=== Application attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Application | Cell in column 2, row 3
+
+| Description | Cell in column 2, row 3
+
+| Sort | Cell in column 2, row 3
+
+| Type | The Type of the *[red]#application#* define whether the *[red]#application#* is a GUI, a service or a batch treatment. More detail in the <<Application type>> section.
+
+| New Bug URL    | This correspond to the URL that points to the page where a new bug can be created on the Bug system of the application. More detail in the <<New Bug URL>> section.
+
+|=== 
+
+==== Application type
+
+Application type recognizable by Cerberus ::
+* APK (*Android* application)
+* BAT (*BATCH* application)
+* GUI (*Web* application)
+* IPA (*IOS* application)
+* SRV (*Service*)
+* WS (*Web Service*)
+* NONE (*Not defined*)
+
+==== New Bug URL
+
+This correspond to the URL that points to the page where a new bug can be created on the Bug system of the 
+*[red]#application#*. 
+
+The following variables can be used inside the URL :
+
+|=== 
+
+| *%TEST%* | Test
+
+| *%TESTCASE%* | Test case reference
+
+| *%TESTCASEDESC%* | Description of the test case
+
+| *%EXEID%* | Execution ID
+
+| *%EXEDATE%* | Start date and time of the execution
+
+| *%ENV%* | Environment
+
+| *%COUNTRY%* | Country
+
+| *%BUILD%* | Build
+
+| *%REV%* | Revision
+
+|=== 
+
+
+=== Create application 
+
+. Go to *[red]#Integration -> Application#* image:applicationcreate.png[CreateApplication,200,200,float="right",align="center"]
+. Click on *[red]#Create New Application#*
+.. Feed the *[red]#Application#* field with the application name.
+.. Feed the [red]#Description# field with a short description of this application.
+.. Choose the application type in *[red]#Type#*
+.. Select the application deploy type in *[red]#Deploy Type#*
+.. Click on *[red]#Save#*
+
+
+
+link:https://drive.google.com/open?id=0B9zYFBEK85TBMEltSnM0QnVrdDg[Vidéo explicative]

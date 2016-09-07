@@ -1829,7 +1829,6 @@
             <url-pattern>/TestCampaign.jsp</url-pattern>
             <url-pattern>/ViewProperty.jsp</url-pattern>
             <url-pattern>/TestPerApplication.jsp</url-pattern>
-            <url-pattern>/OnlineDocumentation.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -2154,6 +2153,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
+            <url-pattern>/Documentation1.jsp</url-pattern>
             <url-pattern>/Documentation.jsp</url-pattern>
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>

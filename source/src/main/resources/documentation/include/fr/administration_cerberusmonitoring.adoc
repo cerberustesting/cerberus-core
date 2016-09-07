@@ -1,0 +1,5 @@
+In this section, you will find information on cerberus monitoring page.
+
+image:cerberusmonitoring1.png[cerberusmonitoring1]
+
+image:cerberusmonitoring2.png[cerberusmonitoring2]

@@ -27,6 +27,9 @@ function initPage(){
     var doc = new Doc();
 
     displayHeaderLabel(doc);
+    
+    var lang = $("#MyLang").val();
+    $("#documentationFrame").attr("src", "./documentation/documentation_"+lang+".html");
 }
 
 function resizeIframe(obj) {
