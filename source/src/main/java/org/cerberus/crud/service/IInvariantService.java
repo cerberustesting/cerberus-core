@@ -24,10 +24,10 @@ import java.util.Map;
 
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author bcivel
  */
 public interface IInvariantService {
@@ -67,6 +67,12 @@ public interface IInvariantService {
     void deleteInvariant(Invariant invariant) throws CerberusException;
 
     void updateInvariant(Invariant invariant) throws CerberusException;
+
+    Answer create(Invariant invariant);
+
+    Answer delete(Invariant invariant);
+
+    Answer update(Invariant invariant);
 
     String getPublicPrivateFilter(String filter);
 }

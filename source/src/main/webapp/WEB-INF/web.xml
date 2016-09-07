@@ -186,10 +186,6 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateParameter2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter2</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetInvariantList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetInvariantList</servlet-class>
     </servlet>
@@ -432,10 +428,6 @@
     <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecution</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetParameterSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadParameter</servlet-name>
@@ -1029,10 +1021,6 @@
         <url-pattern>/UpdateParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateParameter2</servlet-name>
-        <url-pattern>/UpdateParameter2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>Homepage</servlet-name>
         <url-pattern>/Homepage</url-pattern>
     </servlet-mapping>
@@ -1311,10 +1299,6 @@
     <servlet-mapping>
         <servlet-name>SaveManualExecution</servlet-name>
         <url-pattern>/SaveManualExecution</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetParameterSystem</servlet-name>
-        <url-pattern>/GetParameterSystem</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadParameter</servlet-name>
@@ -2140,10 +2124,8 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/GetParameter</url-pattern>
-            <url-pattern>/GetParameterSystem</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
-            <url-pattern>/UpdateParameter2</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
             <url-pattern>/FindAllUsers</url-pattern>
             <url-pattern>/AddUser</url-pattern>
