@@ -123,7 +123,7 @@ public class CreateInvariant2 extends HttpServlet {
             IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
             Invariant invariantData = factoryInvariant.create(id, value, sort, description, veryShortDescField, gp1, gp2, gp3);
 
-            invariantService.createInvariant(invariantData);
+            ans = invariantService.create(invariantData);
 
             /**
              * Object updated. Adding Log entry.

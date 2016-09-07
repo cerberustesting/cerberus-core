@@ -128,7 +128,7 @@ public class UpdateInvariant2 extends HttpServlet {
             invariantData.setGp2(gp2);
             invariantData.setGp3(gp3);
 
-            invariantService.updateInvariant(invariantData);
+            ans = invariantService.update(invariantData);
 
             /**
              * Object updated. Adding Log entry.

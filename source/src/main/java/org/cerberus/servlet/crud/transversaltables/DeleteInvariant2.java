@@ -97,7 +97,7 @@ public class DeleteInvariant2 extends HttpServlet {
 
             Invariant invariantData = invariantService.findInvariantByIdValue(id, value);
 
-            invariantService.deleteInvariant(invariantData);
+            ans = invariantService.delete(invariantData);
 
             /**
              * Object updated. Adding Log entry.

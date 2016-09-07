@@ -41,6 +41,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.statistics.EnvironmentStatisticsDAOImpl;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -66,6 +67,7 @@ public class InvariantDAO implements IInvariantDAO {
     private static final Logger LOG = Logger.getLogger(InvariantDAO.class);
 
     private final String OBJECT_NAME = "Invariant";
+    private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 1000;
 
     @Override
@@ -174,7 +176,8 @@ public class InvariantDAO implements IInvariantDAO {
     public AnswerList readByIdname(String idName) {
         AnswerList answer = new AnswerList();
         MessageEvent msg;
-        List<Invariant> result = new ArrayList<Invariant>();;
+        List<Invariant> result = new ArrayList<Invariant>();
+        ;
 
         final String query = "SELECT * FROM invariant i  WHERE i.idname = ? ORDER BY sort";
 
@@ -929,15 +932,163 @@ public class InvariantDAO implements IInvariantDAO {
         }
     }
 
+    @Override
+    public Answer create2(Invariant object) {
+        MessageEvent msg = null;
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO invariant (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?)");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setString(1, object.getIdName());
+                preStat.setString(2, object.getValue());
+                preStat.setInt(3, object.getSort());
+                preStat.setString(4, object.getDescription());
+                preStat.setString(5, object.getVeryShortDesc());
+                preStat.setString(6, object.getGp1());
+                preStat.setString(7, object.getGp2());
+                preStat.setString(8, object.getGp3());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT"));
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+
+                if (exception.getSQLState().equals(SQL_DUPLICATED_CODE)) { //23000 is the sql state for duplicate entries
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_DUPLICATE);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "INSERT").replace("%REASON%", exception.toString()));
+                } else {
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                }
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer delete2(Invariant object) {
+        MessageEvent msg = null;
+        final String query = "DELETE FROM invariant WHERE idname = ? and `value` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+
+                preStat.setString(1, object.getIdName());
+                preStat.setString(2, object.getValue());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "DELETE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
+    @Override
+    public Answer update2(Invariant object) {
+        MessageEvent msg = null;
+        final String query = "UPDATE invariant SET sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?  WHERE idname = ? and `value` = ?";
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setInt(1, object.getSort());
+                preStat.setString(2, object.getDescription());
+                preStat.setString(3, object.getVeryShortDesc());
+                preStat.setString(4, object.getGp1());
+                preStat.setString(5, object.getGp2());
+                preStat.setString(6, object.getGp3());
+                preStat.setString(7, object.getIdName());
+                preStat.setString(8, object.getValue());
+
+                preStat.executeUpdate();
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "UPDATE"));
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+        return new Answer(msg);
+    }
+
     public Invariant loadFromResultSet(ResultSet resultSet) throws SQLException {
-        String idName = (resultSet.getString("idName") != null)?resultSet.getString("idName"):"";
+        String idName = (resultSet.getString("idName") != null) ? resultSet.getString("idName") : "";
         int sort = resultSet.getInt("sort");
-        String description = (resultSet.getString("description") != null)?resultSet.getString("description"):"";
-        String veryShortDesc = (resultSet.getString("VeryShortDesc") != null)?resultSet.getString("VeryShortDesc"):"";
-        String gp1 = (resultSet.getString("gp1") != null)?resultSet.getString("gp1"):"";
-        String gp2 = (resultSet.getString("gp2") != null)?resultSet.getString("gp2"):"";
-        String gp3 = (resultSet.getString("gp3") != null)?resultSet.getString("gp3"):"";
-        String value = (resultSet.getString("value") != null)?resultSet.getString("value"):"";
+        String description = (resultSet.getString("description") != null) ? resultSet.getString("description") : "";
+        String veryShortDesc = (resultSet.getString("VeryShortDesc") != null) ? resultSet.getString("VeryShortDesc") : "";
+        String gp1 = (resultSet.getString("gp1") != null) ? resultSet.getString("gp1") : "";
+        String gp2 = (resultSet.getString("gp2") != null) ? resultSet.getString("gp2") : "";
+        String gp3 = (resultSet.getString("gp3") != null) ? resultSet.getString("gp3") : "";
+        String value = (resultSet.getString("value") != null) ? resultSet.getString("value") : "";
         return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3);
     }
 
