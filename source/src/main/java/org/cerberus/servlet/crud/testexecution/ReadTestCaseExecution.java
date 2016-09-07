@@ -337,7 +337,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("status", testCaseWithExecution.getStatus());
                         ttcObject.put("application", testCaseWithExecution.getApplication());
                         ttcObject.put("priority", testCaseWithExecution.getPriority());
-                        ttcObject.put("bugId", testCaseWithExecution.getBugID());
+                        ttcObject.put("bugId", new JSONObject("{\"bugId\":\"" + testCaseWithExecution.getBugID() + "\",\"bugTrackerUrl\":\"" + testCaseWithExecution.getApplicationObject().getBugTrackerUrl().replace("%BUGID%", testCaseWithExecution.getBugID()) + "\"}"));
                         ttcObject.put("comment", testCaseWithExecution.getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
