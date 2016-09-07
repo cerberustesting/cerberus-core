@@ -27,8 +27,12 @@ public class Parameter {
     private String param;
     private String value;
     private String description;
-    private String system1value1;
+    
+    /**
+     * From here are data outside database model.
+     */
     private String system1;
+    private String system1value;
 
     public String getSystem() {
         return system;
@@ -46,12 +50,12 @@ public class Parameter {
         this.system1 = system;
     }
 
-    public String getSystem1value1() {
-        return system1value1;
+    public String getSystem1value() {
+        return system1value;
     }
 
-    public void setSystem1value1(String system) {
-        this.system1value1 = system;
+    public void setSystem1value(String system) {
+        this.system1value = system;
     }
 
     public String getDescription() {

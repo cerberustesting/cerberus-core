@@ -1,0 +1,9 @@
+In this section, you will find information on test campaign management in Cerberus.
+
+=== Test battery
+
+A battery is a list of testcase.
+
+=== Test campaign
+
+A campaign is a list of test battery for one(several) country(ies) on one(several) environment(s).

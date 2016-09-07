@@ -24,17 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.SqlUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author bcivel
  */
 @Service
@@ -189,6 +190,21 @@ public class InvariantService implements IInvariantService {
     @Override
     public void updateInvariant(Invariant invariant) throws CerberusException {
         invariantDao.update(invariant);
+    }
+
+    @Override
+    public Answer create(Invariant invariant) {
+        return invariantDao.create2(invariant);
+    }
+
+    @Override
+    public Answer delete(Invariant invariant) {
+        return invariantDao.delete2(invariant);
+    }
+
+    @Override
+    public Answer update(Invariant invariant) {
+        return invariantDao.update2(invariant);
     }
 
     @Override

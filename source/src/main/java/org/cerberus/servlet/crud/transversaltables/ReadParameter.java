@@ -56,6 +56,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ReadParameter", urlPatterns = {"/ReadParameter"})
 public class ReadParameter extends HttpServlet {
+
     private IParameterService parameterService;
 
     /**
@@ -70,12 +71,7 @@ public class ReadParameter extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
-
-        //Get Parameters
         String echo = request.getParameter("sEcho");
-        String mySystem = request.getParameter("system");
-        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
-
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         response.setContentType("application/json");
@@ -92,6 +88,8 @@ public class ReadParameter extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
+        String mySystem = request.getParameter("system");
+        String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         // Nothing to do here as no parameter to check.
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
@@ -103,21 +101,21 @@ public class ReadParameter extends HttpServlet {
         try {
             JSONObject jsonResponse;
 
-            String system ;
-            if (request.getParameter("system") == null){
-                system = "DEFAULT";
-            }else{
-                system = policy.sanitize(request.getParameter("system"));
+            String system1;
+            if (request.getParameter("system1") == null) {
+                system1 = "DEFAULT";
+            } else {
+                system1 = policy.sanitize(request.getParameter("system1"));
             }
 
-            if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)){
-                answer = findParameterList(system, appContext, userHasPermissions, request);
+            if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)) {
+                answer = findParameterList(system1, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if (!Strings.isNullOrEmpty(columnName)) {
-                answer = findDistinctValuesOfColumn(system, appContext, request, columnName);
+            } else if (!Strings.isNullOrEmpty(columnName)) {
+                answer = findDistinctValuesOfColumn(system1, appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
-            }else{
-                answer = findParameterBySystemByKey(system, request.getParameter("param"), appContext);
+            } else {
+                answer = findParameterBySystemByKey(system1, request.getParameter("param"), userHasPermissions, appContext);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -133,6 +131,7 @@ public class ReadParameter extends HttpServlet {
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -169,7 +168,7 @@ public class ReadParameter extends HttpServlet {
         }
     }
 
-    private AnswerItem findParameterList(String system, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findParameterList(String system1, ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -194,7 +193,7 @@ public class ReadParameter extends HttpServlet {
             }
         }
 
-        AnswerList resp = parameterService.readWithSystem1BySystemByCriteria("", system, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = parameterService.readWithSystem1BySystemByCriteria("", system1, startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -213,18 +212,24 @@ public class ReadParameter extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findParameterBySystemByKey(String System, String key,ApplicationContext appContext) throws JSONException {
+    private AnswerItem findParameterBySystemByKey(String system1, String key, Boolean userHasPermissions, ApplicationContext appContext) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
 
         parameterService = appContext.getBean(ParameterService.class);
 
-        AnswerItem resp = parameterService.readWithSystem1BySystemByKey("", System, key);
+        AnswerItem answer = parameterService.readWithSystem1ByKey("", key, system1);
         Parameter p = null;
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (Parameter)resp.getItem();
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            p = (Parameter) answer.getItem();
+            JSONObject response = convertParameterToJSONObject(p);
+            object.put("contentTable", response);
         }
-        resp.setItem(convertParameterToJSONObject(p));
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
 
-        return resp;
+        return item;
     }
 
     private JSONObject convertParameterToJSONObject(Parameter parameter) throws JSONException {
@@ -246,7 +251,7 @@ public class ReadParameter extends HttpServlet {
 
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }

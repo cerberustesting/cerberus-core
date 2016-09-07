@@ -1,0 +1,30 @@
+In this section, you will find the bla bla
+
+image:labelpage.png[Logo]
+
+=== Label attributes
+|=== 
+
+| *Field* | *Description*  
+
+| System | System on which the label will be available.
+
+| Label | Name of the label.
+
+| Color | Color in #hex format.
+
+| Parent Label ID | _Not implemented yet!_ Allow to link the *[red]#label#* to another one in order to group them.
+
+| Description    | This is a short description of the label.
+
+|=== 
+
+=== Create label 
+
+. Go to *[red]#TestCase -> Label#*. image:labelcreate.png[CreateLabel,200,200,float="right",align="center"]
+. Click on *[red]#Create Label#* button.
+.. Select the *[red]#System#* on which the label will be available.
+.. Feed the *[red]#Label#* field with the name of the label.
+.. Choose the *[red]#Color#* to apply to this label.
+.. Feed the *[red]#Description#* field with a short description of the label.
+.. Click on *[red]#Save#*.

@@ -17,21 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.service;
+$.when($.getScript("js/pages/global/global.js")).then(function () {
+    $(document).ready(function () {
+        initPage();
+    });
+});
 
-import java.util.List;
-import java.util.Map;
+function initPage(){
+    var doc = new Doc();
 
-import org.cerberus.crud.entity.ParameterSystem;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.AnswerList;
-
-/**
- *
- * @author bcivel
- */
-public interface IParameterSystemService {
-
-    List<ParameterSystem> findAllParameterSystem(String system) throws CerberusException;
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    displayHeaderLabel(doc);
 }
+
+function resizeIframe(obj) {
+    obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+  }

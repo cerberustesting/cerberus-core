@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -41,7 +40,8 @@ public interface IParameterService {
     interface ParameterAware {
 
         /**
-         * If this {@link ParameterAware} is registered, then this method will trigger it to alert of a {@link Parameter} change
+         * If this {@link ParameterAware} is registered, then this method will
+         * trigger it to alert of a {@link Parameter} change
          *
          * @param parameter the changing {@link Parameter}
          * @see IParameterService#register(String, ParameterAware)
@@ -50,7 +50,7 @@ public interface IParameterService {
     }
 
     Parameter findParameterByKey(String key, String system) throws CerberusException;
-    
+
     Integer getParameterByKey(String key, String system, Integer defaultValue);
 
     List<Parameter> findAllParameter() throws CerberusException;
@@ -62,50 +62,67 @@ public interface IParameterService {
     void saveParameter(Parameter parameter) throws CerberusException;
 
     /**
-     * Register the given {@link ParameterAware} to given {@link Parameter}'s key related changes
+     * Register the given {@link ParameterAware} to given {@link Parameter}'s
+     * key related changes
      *
-     * @param key            the {@link Parameter}'s key from which the given {@link ParameterAware} will be registered
-     * @param parameterAware the {@link ParameterAware} to register to the given {@link Parameter}'s key related changes
+     * @param key the {@link Parameter}'s key from which the given
+     * {@link ParameterAware} will be registered
+     * @param parameterAware the {@link ParameterAware} to register to the given
+     * {@link Parameter}'s key related changes
      */
     void register(String key, ParameterAware parameterAware);
 
     /**
-     * Unregister the given {@link ParameterAware} from given {@link Parameter}'s key related changes
+     * Unregister the given {@link ParameterAware} from given
+     * {@link Parameter}'s key related changes
      *
-     * @param key            the {@link Parameter}'s key from which the given {@link ParameterAware} will be unregistered
-     * @param parameterAware the {@link ParameterAware} to unregister from the given {@link Parameter}'s key related changes
+     * @param key the {@link Parameter}'s key from which the given
+     * {@link ParameterAware} will be unregistered
+     * @param parameterAware the {@link ParameterAware} to unregister from the
+     * given {@link Parameter}'s key related changes
      */
     void unregister(String key, ParameterAware parameterAware);
+
     /**
-     *  Get the {@link Parameter} List of the given {@link System}
+     * Get the {@link Parameter} List of the given {@link System}
      *
-     * @param system        the {@link System} To look for
-     * @param system1       the {@link System} To add the value of the same paramater
+     * @param system the {@link System} To look for
+     * @param system1 the {@link System} To add the value of the same paramater
+     * @return 
+     * @throws org.cerberus.exception.CerberusException
      */
     List<Parameter> findAllParameterWithSystem1(String system, String system1) throws CerberusException;
+
     /**
-     *  Get the {@link Parameter} List of the given {@link System} with the given Criteria
+     * Get the {@link Parameter} List of the given {@link System} with the given
+     * Criteria
      *
-     * @param system                the {@link System} To look for
-     * @param system1               the {@link System} To add the value of the same paramater
-     * @param startPosition         the start index to look for
-     * @param length                the number of {@link Parameter} to get
-     * @param columnName            the Column name to sort
-     * @param searchParameter       the string to search in the {@link Parameter}
-     * @param individualSearch      the string to search for each column
+     * @param system the {@link System} To look for
+     * @param system1 the {@link System} To add the value of the same paramater
+     * @param startPosition the start index to look for
+     * @param length the number of {@link Parameter} to get
+     * @param columnName the Column name to sort
+     * @param sort
+     * @param searchParameter the string to search in the {@link Parameter}
+     * @param individualSearch the string to search for each column
+     * @return 
      */
     AnswerList readWithSystem1BySystemByCriteria(String system, String system1, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
     /**
-     *  Get the {@link Parameter} with the given {@link System} and the given key
+     * Get the {@link Parameter} with the given {@link System} and the given key
      *
-     * @param system                the {@link System} To look for
-     * @param system1               the {@link System} To add the value of the same paramater
-     * @param key                   the key of the {@link Parameter}
+     * @param system the {@link System} To look for
+     * @param system1 the {@link System} To add the value of the same paramater
+     * @param key the key of the {@link Parameter}
+     * @return 
      */
-    AnswerItem readWithSystem1BySystemByKey(String system, String system1, String key);
+    AnswerItem readWithSystem1ByKey(String system, String key, String system1);
 
     /**
      *
+     * @param system
+     * @param system1
      * @param searchParameter
      * @param individualSearch
      * @param columnName

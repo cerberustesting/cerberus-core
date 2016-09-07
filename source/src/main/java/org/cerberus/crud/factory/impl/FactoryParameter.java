@@ -43,7 +43,7 @@ public class FactoryParameter implements IFactoryParameter {
     public Parameter create(String system, String param, String value, String description, String system1, String system1value1) {
         Parameter parameter = this.create(system,param,value, description);
         parameter.setSystem1(system1);
-        parameter.setSystem1value1(system1value1);
+        parameter.setSystem1value(system1value1);
         return parameter;
     }
 

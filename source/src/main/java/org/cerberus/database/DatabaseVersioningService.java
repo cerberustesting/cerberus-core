@@ -6673,7 +6673,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New updated Documentation.
         //-- ------------------------ 922
-
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('page_invariant','allInvariants','','en','Invariants','')");
         SQLS.append(",('page_invariant','allInvariants','','fr','Invariants','')");
@@ -6715,6 +6714,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','title_remove','','fr','Supprimer un Invariant','')");
         SQLS.append(",('page_invariant','message_remove','','en','Are you sure?','')");
         SQLS.append(",('page_invariant','message_remove','','fr','Etes vous sûrs?','')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Corrected ConditionVal1 in order to remove (.
+        //-- ------------------------ 923
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction SET ConditionVal1 = left(ConditionVal1,locate('(',ConditionVal1)-1) WHERE conditionval1 like '%(%';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add menuDocumentation and menuHelp in documentation table.
+        //-- ------------------------ 924
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
+        SQLS.append("('page_header', 'menuHelp', '', 'en', 'Help'), ");
+        SQLS.append("('page_header', 'menuHelp', '', 'fr', 'Aide'), ");
+        SQLS.append("('page_header', 'menuDocumentation', '', 'en', 'Documentation'), ");
+        SQLS.append(" ('page_header', 'menuDocumentation', '', 'fr', 'Documentation')");
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
@@ -6769,9 +6784,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_sqlLibrary','description_col','','fr','Description','')");
         SQLInstruction.add(SQLS.toString());
 
-        return SQLInstruction;
+return SQLInstruction;
     }
-
-
 
 }

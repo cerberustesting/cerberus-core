@@ -77,69 +77,67 @@ public class CreateTestDataLib extends HttpServlet {
         response.setContentType("application/json");
         try {
 
-        /**
-         * Parsing and securing all required parameters.
-         */
-        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-        String type = policy.sanitize(request.getParameter("type"));
-        String system = policy.sanitize(request.getParameter("system"));
-        String environment = policy.sanitize(request.getParameter("environment"));
-        String country = policy.sanitize(request.getParameter("country"));
-        String database = policy.sanitize(request.getParameter("database"));
-        String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
-        String databaseCsv = policy.sanitize(request.getParameter("databaseCsv"));
-        // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParam(request.getParameter("name"), null);
-        String group = ParameterParserUtil.parseStringParam(request.getParameter("group"), "");
-        String description = ParameterParserUtil.parseStringParam(request.getParameter("libdescription"), "");
-        // Parameter that we cannot secure as we need the html --> We DECODE them
-        String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), "");
-        String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("servicepath"), "");
-        String method = ParameterParserUtil.parseStringParam(request.getParameter("method"), "");
-        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("envelope"), "");
-        String csvUrl = ParameterParserUtil.parseStringParam(request.getParameter("csvUrl"), "");
-        String separator = ParameterParserUtil.parseStringParam(request.getParameter("separator"), "");
-        /**
-         * Checking all constrains before calling the services.
-         */
-
-        if (StringUtil.isNullOrEmpty(name)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Test data library name is missing! "));
-            ans.setResultMessage(msg);
-        } else {
             /**
-             * All data seems cleans so we can call the services.
+             * Parsing and securing all required parameters.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
-            IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
-
-            TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
-                    type, database, script, databaseUrl, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
-                    request.getRemoteUser(), null, "", null, null, null, null, null);
-            
-            
-            // Getting list of application from JSON Call
-            JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
-            List<TestDataLibData> tdldList = new ArrayList();
-            tdldList = getSubDataFromParameter(request, appContext, -1, objSubDataArray);
-            
-            
-            lib.setSubDataLib(tdldList);
-            //Creates the entries and the subdata list
-            ans = libService.create(lib);
-
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            String type = policy.sanitize(request.getParameter("type"));
+            String system = policy.sanitize(request.getParameter("system"));
+            String environment = policy.sanitize(request.getParameter("environment"));
+            String country = policy.sanitize(request.getParameter("country"));
+            String database = policy.sanitize(request.getParameter("database"));
+            String databaseUrl = policy.sanitize(request.getParameter("databaseUrl"));
+            String databaseCsv = policy.sanitize(request.getParameter("databaseCsv"));
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+            String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
+            String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+            String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
+            String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
+            String method = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("method"), "", charset);
+            String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("envelope"), "", charset);
+            String csvUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("csvUrl"), "", charset);
+            String separator = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("separator"), "", charset);
             /**
-             * Object created. Adding Log entry.
+             * Checking all constrains before calling the services.
              */
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
+
+            if (StringUtil.isNullOrEmpty(name)) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Data Library")
+                        .replace("%OPERATION%", "Create")
+                        .replace("%REASON%", "Test data library name is missing! "));
+                ans.setResultMessage(msg);
+            } else {
+                /**
+                 * All data seems cleans so we can call the services.
+                 */
+                ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+                ITestDataLibService libService = appContext.getBean(ITestDataLibService.class);
+                IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
+
+                TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
+                        type, database, script, databaseUrl, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
+                        request.getRemoteUser(), null, "", null, null, null, null, null);
+
+                // Getting list of application from JSON Call
+                JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
+                List<TestDataLibData> tdldList = new ArrayList();
+                tdldList = getSubDataFromParameter(request, appContext, -1, objSubDataArray);
+
+                lib.setSubDataLib(tdldList);
+                //Creates the entries and the subdata list
+                ans = libService.create(lib);
+
+                /**
+                 * Object created. Adding Log entry.
+                 */
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/CreateTestDataLib", "CREATE", "Create TestDataLib  : " + request.getParameter("name"), request);
+                }
             }
-        }
 
             /**
              * Formating and returning the json result.

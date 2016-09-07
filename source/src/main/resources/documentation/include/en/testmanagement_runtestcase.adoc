@@ -1,0 +1,8 @@
+In this section, you will find information on test execution in Cerberus.
+
+image:runtestselection.png[RunTestSelection]
+
+image:runrobotsettings.png[RunRobotSettings]
+
+image:runexecutionsettings.png[RunExecutionSettings]
+
