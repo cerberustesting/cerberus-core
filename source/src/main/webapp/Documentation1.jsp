@@ -24,14 +24,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="js/pages/Documentation.js"></script>
-        <title id="pageTitle">OnlineDocumentation</title>
+        <title id="pageTitle">Documentation</title>
     </head>
     <body>
         <%@ include file="include/header.html" %>
         <div class="container-fluid center" id="page-layout">
 
             <h1 class="page-title-line" id="title">Documentation</h1>
-            <iframe src="./documentation/documentation_en.html" style="width:100%" frameborder="0" scrolling="no" onload="resizeIframe(this)" /></iframe>
+            <iframe id="documentationFrame" style="width:100%" frameborder="0" scrolling="no" onload="resizeIframe(this)" /></iframe>
              
             <footer class="footer">
                 <div class="container-fluid" id="footer"></div>

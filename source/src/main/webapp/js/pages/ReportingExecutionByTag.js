@@ -185,7 +185,7 @@ function loadTagFilters(urlTag) {
                 var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
-            
+
             $('#selectTag').select2();
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
@@ -788,25 +788,29 @@ function aoColumnsFunc(Columns) {
         };
         aoColumns.push(col);
     }
-    var col = 
-        {
-            "data": "priority",
-            "sName": "priority",
-            "sClass": "priority",
-            "sWidth": testCaseInfoWidth + "%",
-            "title": doc.getDocOnline("invariant", "PRIORITY")
-        };
-        aoColumns.push(col);
     var col =
-        {
-            "data": "bugId",
-            "sName": "bugId",
-            "sClass": "bugid",
-            "sWidth": testCaseInfoWidth + "%",
-            "title": doc.getDocOnline("testcase", "BugID")
-        };
-        aoColumns.push(col);
-        
+            {
+                "data": "priority",
+                "sName": "priority",
+                "sClass": "priority",
+                "sWidth": testCaseInfoWidth + "%",
+                "title": doc.getDocOnline("invariant", "PRIORITY")
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "bugId", 
+                        "mRender": function (data) {
+                            var link = '<a href="'+data.bugTrackerUrl+'">'+data.bugId+"</a>";
+                            return link;
+                        },
+                "sName": "bugId",
+                "sClass": "bugid",
+                "sWidth": testCaseInfoWidth + "%",
+                "title": doc.getDocOnline("testcase", "BugID")
+            };
+    aoColumns.push(col);
+
     return aoColumns;
 }
 

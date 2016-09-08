@@ -1,0 +1,58 @@
+In this section, you will find information on TestCase in Cerberus.
+
+=== TestCase List
+
+image:testcaselistpage.png[TestCaseListPage]
+
+=== Shortcut
+
+==== Edit TestCase
+
+image:testcaseshortcutedit.png[TestCaseEdit,200,200]
+
+==== Delete TestCase
+
+image:testcaseshortcutdelete.png[TestCaseDelete,200,200]
+
+==== Run TestCase
+
+image:testcaseshortcutrun.png[TestCaseRun,200,200]
+
+==== Duplicate TestCase
+
+image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
+
+
+=== TestCase attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Test | Test name on which testcase is linked.
+
+| Testcase | An ID.
+
+| Description | Define if the test is active.
+
+| Application | The application for which the testcase is defined.
+
+|=== 
+
+=== Create TestCase 
+
+. Go to *[red]#TestCase -> TestCase List#*. image:testcasecreate.png[CreateTestCase,200,200,float="right",align="center"]
+. Click on *[red]#Create TestCase#*.
+.. Feed the *[red]#Test#* field with the test name.
+.. Feed the *[red]#Description#* field with a short description of this test.
+.. Continue to describe.
+.. Click on *[red]#Save#*.
+
+=== Implement TestCase
+
+==== Action
+
+==== Control
+
+==== Property
+
+

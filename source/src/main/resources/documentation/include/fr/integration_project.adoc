@@ -1,0 +1,27 @@
+In this section, you will find information on project in Cerberus
+
+image:projectpage.png[ProjectPage]
+
+=== Project attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Project | The name of the *[red]#project#*.
+
+| Code | A *[red]#code#* number for the project.
+
+| Description | A *[red]#description#* of the project.
+
+| Active | Define if the project is active or not.
+
+|=== 
+
+=== Create deploy type 
+
+. Go to *[red]#Integration -> Project#*. image:projectcreate.png[CreateBatch,200,200,float="right",align="center"]
+. Click on *[red]#Create new Project#*.
+.. Feed the *[red]#Project#* field with a name.
+.. Feed the *[red]#Code#* field of the project.
+.. Feed the *[red]#Description#* field with a short description of this project.
+.. Click on *[red]#Save#*.
