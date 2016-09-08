@@ -47,7 +47,6 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- *
  * @author cte
  */
 public class UpdateSoapLibrary2 extends HttpServlet {
@@ -56,10 +55,10 @@ public class UpdateSoapLibrary2 extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -87,9 +86,14 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-        IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-        SoapLibrary soapLib = factorySoapLibrary.create(name, type, envelopeBDD, description, servicePath, parsingAnswer, method);
+        SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(name);
+        soapLib.setType(type);
+        soapLib.setDescription(description);
+        soapLib.setEnvelope(envelopeBDD);
+        soapLib.setMethod(method);
+        soapLib.setParsingAnswer(parsingAnswer);
+        soapLib.setServicePath(servicePath);
         Answer finalAnswer = soapLibraryService.update(soapLib);
 
         /**
@@ -113,10 +117,10 @@ public class UpdateSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -133,10 +137,10 @@ public class UpdateSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

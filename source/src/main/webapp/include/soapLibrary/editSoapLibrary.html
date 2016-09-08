@@ -1,0 +1,86 @@
+<!--Edit soapLibrary page-->
+<div data-backdrop="static" class="modal fade center" id="editSoapLibraryModal" tabindex="-1" role="dialog"
+     aria-labelledby="editSoapLibraryModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit SoapLibrary</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editSoapLibraryModalForm" name="editSoapLibraryModalForm" title="Edit SoapLibrary"
+                      role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="name" name="idnameField">Name</label>
+                                <input type="text" class="form-control" name="name" id="name"
+                                       aria-describedby="basic-editon1" readonly>
+
+                                </input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="type" name="typeField">Type</label>
+                                <input type="text" class="form-control" name="type" id="type"
+                                       aria-describedby="basic-editon1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="servicepath" name="servicePathField">ServicePath</label>
+                                <input type="text" class="form-control" name="servicepath" id="servicepath"
+                                       aria-describedby="basic-editon1">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="method" name="methodField">Method</label>
+                                <input type="text" class="form-control" name="method" id="method"
+                                       aria-describedby="basic-editon1"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="envelope" name="envelopeField">Envelope</label>
+                                <textarea class="form-control" name="envelope" id="envelope"
+                                          aria-describedby="basic-editon1"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="parsinganswer" name="parsingAnswerField">Parsing Answer</label>
+                                <input type="text" class="form-control" name="parsinganswer" id="parsinganswer"
+                                       aria-describedby="basic-editon1"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="description" name="descriptionField">Description</label>
+                                <textarea class="form-control" name="description" id="description"
+                                          aria-describedby="basic-editon1"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editSoapLibraryButton" class="btn btn-primary" name="buttonEdit">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

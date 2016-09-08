@@ -30,7 +30,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
- *
  * @author vertigo
  */
 @Service
@@ -6774,8 +6773,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_sqlLibrary','sqlLibrary_col','','fr','Nom','')");
         SQLS.append(",('page_sqlLibrary','type_col','','en','Type','')");
         SQLS.append(",('page_sqlLibrary','type_col','','fr','Type','')");
-        SQLS.append(",('page_sqlLibrary','button_col','','en','Type','')");
-        SQLS.append(",('page_sqlLibrary','button_col','','fr','Type','')");
+        SQLS.append(",('page_sqlLibrary','button_col','','en','Actions','')");
+        SQLS.append(",('page_sqlLibrary','button_col','','fr','Actions','')");
         SQLS.append(",('page_sqlLibrary','database_col','','en','Database','')");
         SQLS.append(",('page_sqlLibrary','database_col','','fr','Base de donnée','')");
         SQLS.append(",('page_sqlLibrary','script_col','','en','Script','')");
@@ -6784,7 +6783,67 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_sqlLibrary','description_col','','fr','Description','')");
         SQLInstruction.add(SQLS.toString());
 
-return SQLInstruction;
+        // New updated Documentation.
+        //-- ------------------------ 923
+
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_soapLibrary','allSoapLibrarys','','en','SOAP Libraries','')");
+        SQLS.append(",('page_soapLibrary','allSoapLibrarys','','fr','Librairies SOAP','')");
+        SQLS.append(",('page_soapLibrary','addSoapLibrary_field','','en','Add Library','')");
+        SQLS.append(",('page_soapLibrary','addSoapLibrary_field','','fr','Ajouter une librairie','')");
+        SQLS.append(",('page_soapLibrary','editSoapLibrary_field','','en','Edit Library','')");
+        SQLS.append(",('page_soapLibrary','editSoapLibrary_field','','fr','Editer la librairie','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary_field','','en','SOAP Librairy','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary_field','','fr','Librairie SOAP','')");
+        SQLS.append(",('page_soapLibrary','idname_field','','en','Name','')");
+        SQLS.append(",('page_soapLibrary','idname_field','','fr','Nom','')");
+        SQLS.append(",('page_soapLibrary','type_field','','en','Type','')");
+        SQLS.append(",('page_soapLibrary','type_field','','fr','Type','')");
+        SQLS.append(",('page_soapLibrary','description_field','','en','Description','')");
+        SQLS.append(",('page_soapLibrary','description_field','','fr','Description','')");
+        SQLS.append(",('page_soapLibrary','envelope_field','','en','Envelope','')");
+        SQLS.append(",('page_soapLibrary','envelope_field','','fr','Enveloppe','')");
+        SQLS.append(",('page_soapLibrary','servicePath_field','','en','Service Path','')");
+        SQLS.append(",('page_soapLibrary','servicePath_field','','fr','Chemin du service','')");
+        SQLS.append(",('page_soapLibrary','method_field','','en','Method','')");
+        SQLS.append(",('page_soapLibrary','method_field','','fr','Méthode','')");
+        SQLS.append(",('page_soapLibrary','parsingAnswer_field','','en','Parsing Answer','')");
+        SQLS.append(",('page_soapLibrary','parsingAnswer_field','','fr','Réponse analysée','')");
+        SQLS.append(",('page_soapLibrary','close_btn','','en','Close','')");
+        SQLS.append(",('page_soapLibrary','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_soapLibrary','save_btn','','en','Save Library','')");
+        SQLS.append(",('page_soapLibrary','save_btn','','fr','Sauvegarder la librairie','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary','','en','SOAP Library','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary','','fr','Librairie SOAP','')");
+        SQLS.append(",('page_soapLibrary','button_create','','en','Add Library','')");
+        SQLS.append(",('page_soapLibrary','button_create','','fr','Ajouter une librairie','')");
+        SQLS.append(",('page_soapLibrary','title_remove','','en','Remove Library','')");
+        SQLS.append(",('page_soapLibrary','title_remove','','fr','Supprimer la librairie','')");
+        SQLS.append(",('page_soapLibrary','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_soapLibrary','message_remove','','fr','Êtes-vous sûrs?','')");
+        SQLS.append(",('page_soapLibrary','button_edit','','en','Edit Library','')");
+        SQLS.append(",('page_soapLibrary','button_edit','','fr','Editer la librairie','')");
+        SQLS.append(",('page_soapLibrary','button_remove','','en','Remove Library','')");
+        SQLS.append(",('page_soapLibrary','button_remove','','fr','Supprimer la librairie','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary_col','','en','Name','')");
+        SQLS.append(",('page_soapLibrary','soapLibrary_col','','fr','Nom','')");
+        SQLS.append(",('page_soapLibrary','type_col','','en','Type','')");
+        SQLS.append(",('page_soapLibrary','type_col','','fr','Type','')");
+        SQLS.append(",('page_soapLibrary','button_col','','en','Actions','')");
+        SQLS.append(",('page_soapLibrary','button_col','','fr','Actions','')");
+        SQLS.append(",('page_soapLibrary','description_col','','en','Description','')");
+        SQLS.append(",('page_soapLibrary','description_col','','fr','Description','')");
+        SQLS.append(",('page_soapLibrary','envelope_col','','en','Envelope','')");
+        SQLS.append(",('page_soapLibrary','envelope_col','','fr','Enveloppe','')");
+        SQLS.append(",('page_soapLibrary','servicepath_col','','en','Service Path','')");
+        SQLS.append(",('page_soapLibrary','servicepath_col','','fr','Chemin du service','')");
+        SQLS.append(",('page_soapLibrary','method_col','','en','Method','')");
+        SQLS.append(",('page_soapLibrary','method_col','','fr','Méthode','')");
+        SQLS.append(",('page_soapLibrary','parsinganswer_col','','en','Parsing Answer','')");
+        SQLS.append(",('page_soapLibrary','parsinganswer_col','','fr','Réponse Analysée','')");
+        SQLInstruction.add(SQLS.toString());
+
+        return SQLInstruction;
     }
 
 }

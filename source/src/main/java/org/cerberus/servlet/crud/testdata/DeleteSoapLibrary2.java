@@ -46,7 +46,6 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- *
  * @author cte
  */
 public class DeleteSoapLibrary2 extends HttpServlet {
@@ -55,10 +54,10 @@ public class DeleteSoapLibrary2 extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -78,10 +77,9 @@ public class DeleteSoapLibrary2 extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-        IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-        SoapLibrary soapLib = factorySoapLibrary.create(name, null, null, null, null, null, null);
-        Answer finalAnswer = soapLibraryService.create(soapLib);
+        SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(name);
+        Answer finalAnswer = soapLibraryService.delete(soapLib);
 
         /**
          * Adding Log entry.
@@ -101,13 +99,14 @@ public class DeleteSoapLibrary2 extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -124,10 +123,10 @@ public class DeleteSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage.jsp</welcome-file>
     </welcome-file-list>
@@ -173,7 +174,9 @@
         <servlet-class>org.cerberus.servlet.zzpublic.NewRelease</servlet-class>
     </servlet>
     <servlet>
-        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
+        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance
+            monitoring.
+        </description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetNumberOfExecutions</servlet-class>
     </servlet>
@@ -506,16 +509,32 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSoapLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSoapLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.ReadSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateInvariant</servlet-name>
@@ -1393,16 +1412,32 @@
         <url-pattern>/CreateSoapLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateSoapLibrary2</servlet-name>
+        <url-pattern>/CreateSoapLibrary2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteSoapLibrary</servlet-name>
         <url-pattern>/DeleteSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSoapLibrary2</servlet-name>
+        <url-pattern>/DeleteSoapLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllSoapLibrary</servlet-name>
         <url-pattern>/FindAllSoapLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadSoapLibrary</servlet-name>
+        <url-pattern>/ReadSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <url-pattern>/UpdateSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateSoapLibrary2</servlet-name>
+        <url-pattern>/UpdateSoapLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateInvariant</servlet-name>
@@ -1826,12 +1861,14 @@
     </security-role>
     <security-role>
         <description>Can deploy a new Chain in an environment.
-            ie : Can modify the build and revision for an environment.</description>
+            ie : Can modify the build and revision for an environment.
+        </description>
         <role-name>IntegratorDeploy</role-name>
     </security-role>
     <security-role>
         <description>Access to administration tools
-            ie User management, parameter management, log viewer, database management.</description>
+            ie User management, parameter management, log viewer, database management.
+        </description>
         <role-name>Administrator</role-name>
     </security-role>
     <security-constraint>
@@ -1905,6 +1942,7 @@
             <url-pattern>/SqlLibrary.jsp</url-pattern>
             <url-pattern>/SqlLibrary2.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
+            <url-pattern>/SoapLibrary2.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
@@ -1930,6 +1968,7 @@
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/ReadSqlLibrary</url-pattern>
             <url-pattern>/FindAllSoapLibrary</url-pattern>
+            <url-pattern>/ReadSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
@@ -2027,6 +2066,9 @@
             <url-pattern>/CreateSoapLibrary</url-pattern>
             <url-pattern>/DeleteSoapLibrary</url-pattern>
             <url-pattern>/UpdateSoapLibrary</url-pattern>
+            <url-pattern>/CreateSoapLibrary2</url-pattern>
+            <url-pattern>/DeleteSoapLibrary2</url-pattern>
+            <url-pattern>/UpdateSoapLibrary2</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>

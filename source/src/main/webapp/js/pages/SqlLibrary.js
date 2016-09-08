@@ -36,7 +36,7 @@ function initPage() {
     $('#addSqlLibraryModal').on('hidden.bs.modal', addEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc(), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc("sqlLibrarysTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#sqlLibraryList");
 }
 
@@ -54,7 +54,7 @@ function displayPageLabel() {
     $("[name='descriptionField']").html(doc.getDocLabel("page_sqlLibrary", "description_field"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_sqlLibrary", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_sqlLibrary", "save_btn"));
-    $("#sqlLibraryListLabel").html("<span class='glyphicon glyphicon-list'></span> "+doc.getDocLabel("page_sqlLibrary", "sqlLibrary"));
+    $("#sqlLibraryListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_sqlLibrary", "sqlLibrary"));
 
     displayHeaderLabel(doc);
 
@@ -64,11 +64,18 @@ function displayPageLabel() {
 
 function renderOptionsForApplication(data) {
     var doc = new Doc();
-    if ($("#createSqlLibraryButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><button id='createSqlLibraryButton' type='button' class='btn btn-default'>\n\
+    if (data["hasPermissions"]) {
+        if ($("#createSqlLibraryButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createSqlLibraryButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_sqlLibrary", "button_create") + "</button></div>";
-        $("#sqlLibrarysTable_wrapper div#sqlLibrarysTable_length").before(contentToAdd);
-        $('#sqlLibraryList #createSqlLibraryButton').click(addEntryClick);
+            $("#sqlLibrarysTable_wrapper div#sqlLibrarysTable_length").before(contentToAdd);
+            $('#sqlLibraryList #createSqlLibraryButton').click(addEntryClick);
+        }
+    } else {
+        if ($("#blankSpace").length === 0) {
+            var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpace'></div>";
+            $("#sqlLibrarysTable_wrapper div#sqlLibrarysTable_length").before(contentToAdd);
+        }
     }
 }
 
@@ -76,18 +83,28 @@ function editEntryClick(name) {
     var formEdit = $('#editSqlLibraryModal');
 
     $.ajax({
-        url: "ReadSqlLibrary?name="+name,
+        url: "ReadSqlLibrary?name=" + name,
         async: true,
         method: "GET",
         success: function (data) {
-            if(data.messageType === "OK") {
+            if (data.messageType === "OK") {
                 formEdit.find("#name").prop("value", data.name);
                 formEdit.find("#type").prop("value", data.type);
                 formEdit.find("#script").prop("value", data.script);
-                formEdit.find("#description").prop("value",data.description);
-                formEdit.find("#database").find("option[value='"+data.database+"']").attr("selected","selected");
+                formEdit.find("#description").prop("value", data.description);
+                formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
+                if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
+                    formEdit.find("#name").prop("readonly", "readonly");
+                    formEdit.find("#type").prop("readonly", "readonly");
+                    formEdit.find("#script").prop("readonly", "readonly");
+                    formEdit.find("#description").prop("readonly", "readonly");
+                    formEdit.find("#database").prop("disabled", "disabled");
+
+                    $('#editSqlLibraryButton').attr('class', '');
+                    $('#editSqlLibraryButton').attr('hidden', 'hidden');
+                }
                 formEdit.modal('show');
-            }else{
+            } else {
                 showUnexpectedError();
             }
         },
@@ -104,10 +121,10 @@ function addEntryClick() {
 
 function removeEntryClick(name) {
     var doc = new Doc();
-    showModalConfirmation(function(ev){
+    showModalConfirmation(function (ev) {
         var name = $('#confirmationModal #hiddenField1').prop("value");
         $.ajax({
-            url: "DeleteSqlLibrary2?name="+name,
+            url: "DeleteSqlLibrary2?name=" + name,
             async: true,
             method: "GET",
             success: function (data) {
@@ -121,7 +138,7 @@ function removeEntryClick(name) {
         });
 
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_sqlLibrary", "title_remove") , doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
+    }, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
 }
 
 function editEntryModalSaveHandler() {
@@ -130,7 +147,7 @@ function editEntryModalSaveHandler() {
 
     var sa = formEdit.serializeArray();
     var data = {}
-    for(var i in sa){
+    for (var i in sa) {
         data[sa[i].name] = sa[i].value;
     }
     // Get the header data from the form.
@@ -140,11 +157,13 @@ function editEntryModalSaveHandler() {
         url: "UpdateSqlLibrary2",
         async: true,
         method: "POST",
-        data: {name: data.name,
+        data: {
+            name: data.name,
             type: data.type,
             database: data.database,
             script: data.script,
-            description: data.description},
+            description: data.description
+        },
         success: function (data) {
             hideLoaderInModal('#editSqlLibraryModal');
             var oTable = $("#sqlLibrarysTable").dataTable();
@@ -218,7 +237,8 @@ function getSys() {
 function aoColumnsFunc(tableId) {
     var doc = new Doc();
     var aoColumns = [
-        {"data": null,
+        {
+            "data": null,
             "bSortable": false,
             "bSearchable": false,
             "title": doc.getDocLabel("page_sqlLibrary", "button_col"),
@@ -234,8 +254,14 @@ function aoColumnsFunc(tableId) {
                                         class="removeSqlLibrary btn btn-default btn-xs margin-right5" \n\
                                         name="removeSqlLibrary" title="' + doc.getDocLabel("page_sqlLibrary", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-remove"></span></button>';
-
-                return '<div class="center btn-group width150">' + editSqlLibrary + removeSqlLibrary + '</div>';
+                var viewSqlLibrary = '<button id="editSqlLibrary" onclick="editEntryClick(\'' + obj["name"] + '\');"\n\
+                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    name="viewSqlLibrary" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
+                if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
+                    return '<div class="center btn-group width150">' + editSqlLibrary + removeSqlLibrary + '</div>';
+                }
+                return '<div class="center btn-group width150">' + viewSqlLibrary + '</div>';
 
             },
             "width": "50px"

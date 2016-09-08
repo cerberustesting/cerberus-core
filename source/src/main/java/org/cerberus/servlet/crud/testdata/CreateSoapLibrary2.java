@@ -47,7 +47,6 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- *
  * @author cte
  */
 public class CreateSoapLibrary2 extends HttpServlet {
@@ -56,10 +55,10 @@ public class CreateSoapLibrary2 extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -77,19 +76,18 @@ public class CreateSoapLibrary2 extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        // CTE - on utilise la méthode utilitaire pour encoder le xml
-        String envelope = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Envelope"), null, charset);
-        String envelopeBDD = HtmlUtils.htmlEscape(envelope);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
         String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
+        String envelopeBDD = HtmlUtils.htmlEscape(envelope);
 
         ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
         IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-        SoapLibrary soapLib = factorySoapLibrary.create(name, type, envelopeBDD, description, servicePath, parsingAnswer, method);
+        SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelopeBDD, description, servicePath, parsingAnswer, method);
         Answer finalAnswer = soapLibraryService.create(soapLib);
 
         /**
@@ -113,10 +111,10 @@ public class CreateSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -133,10 +131,10 @@ public class CreateSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
