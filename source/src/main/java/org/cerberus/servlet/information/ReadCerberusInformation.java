@@ -26,6 +26,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.version.Infos;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "ReadCerberusInformation", urlPatterns = {"/ReadCerberusInformation"})
 public class ReadCerberusInformation extends HttpServlet {
 
+    private IDatabaseVersioningService databaseVersionService;
+    private IMyVersionService myVersionService;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -61,6 +66,16 @@ public class ReadCerberusInformation extends HttpServlet {
             data.put("projectName", infos.getProjectName());
             data.put("projectVersion", infos.getProjectVersion());
             data.put("environment", System.getProperty("org.cerberus.environment"));
+            databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
+            data.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+
+            myVersionService = appContext.getBean(IMyVersionService.class);
+            if (myVersionService.findMyVersionByKey("database") != null) {
+                data.put("databaseCerberusCurrentVersion", myVersionService.findMyVersionByKey("database").getValue());
+            } else {
+                data.put("databaseCerberusCurrentVersion", "0");
+            }
+
         } catch (JSONException ex) {
             Logger.getLogger(ReadCerberusInformation.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }

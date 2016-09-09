@@ -48,10 +48,14 @@ function feedContent() {
         var row = $("<tr></tr>");
         var cel1 = $("<td></td>").append(data.projectName);
         var cel2 = $("<td></td>").append(data.projectVersion);
-        var cel3 = $("<td></td>").append(data.environment);
+        var cel3 = $("<td></td>").append(data.databaseCerberusTargetVersion);
+        var cel4 = $("<td></td>").append(data.databaseCerberusCurrentVersion);
+        var cel5 = $("<td></td>").append(data.environment);
         row.append(cel1);
         row.append(cel2);
         row.append(cel3);
+        row.append(cel4);
+        row.append(cel5);
         table.append(row);
 
         var table = $("#jvmTableBody");
