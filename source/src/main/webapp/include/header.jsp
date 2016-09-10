@@ -79,7 +79,6 @@
             <li id="active"><a id="menuData" name="menu" href="#" style="width:100px">Data
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:190px">SQL Library</a></li>
                     <li id="subactive"><a id="menuTestData" href="TestData.jsp" style="width:190px">Test Data<input type="button" class="btn btn-danger btn-small active" value="Deprecated" style="padding: 0px; margin-left: 5px; color: red"></a></li>
                     <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp" style="width:190px">Test Data Lib</a></li>
                 </ul>
@@ -118,6 +117,7 @@
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:200px">Integration Status</a></li>
                     <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:200px">Applications</a></li>
                     <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
+                    <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:190px">SQL Library</a></li>
                     <li id="subactive"><a name="menu" id="menuEnvironments" href="Environment.jsp" style="width:200px">Environments</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:200px">Build/Rev Definition</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
