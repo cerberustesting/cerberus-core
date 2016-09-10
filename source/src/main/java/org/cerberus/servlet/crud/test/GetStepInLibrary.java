@@ -85,7 +85,7 @@ public class GetStepInLibrary extends HttpServlet {
                 tcs.put("sort", list.getSort());
                 tcs.put("description", list.getDescription());
                 if (list.getTestCaseObj()!=null){
-                tcs.put("tcdesc", list.getTestCaseObj().getDescription());
+                tcs.put("tcdesc", list.getTestCaseObj().getBehaviorOrValueExpected());
                 }
                 array.put(tcs);
             }

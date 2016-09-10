@@ -40,7 +40,7 @@
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.crud.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.entity.Test"%>
 <%@page import="org.cerberus.crud.service.ITestService"%>
@@ -467,9 +467,9 @@
                             <option style="width: 750px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
-                                List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                for (TCase tc : tcList) {%>
-                            <option style="width: 750px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
+                                List<TestCase> tcList = testCaseService.findTestCaseByTest(test);
+                                for (TestCase tc : tcList) {%>
+                            <option style="width: 750px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getDescription()%>
                             </option>
                             <%  }
                                 } %>
@@ -483,7 +483,7 @@
             <br>
             <br>
             <%if (!test.equals("") && !testcase.equals("")) {
-                    TCase tcase = null;
+                    TestCase tcase = null;
                     boolean isTestCaseExist = false;
                     tcase = testCaseService.findTestCaseByKey(test, testcase);
                     isTestCaseExist = (tcase == null) ? false : true;
@@ -546,7 +546,7 @@
 
                 group = tcase.getGroup();
                 status = tcase.getStatus();
-                String dateCrea = tcase.getTcDateCrea() != null ? tcase.getTcDateCrea() : "-- unknown --";
+                String dateCrea = tcase.getDateCreated()!= null ? tcase.getDateCreated(): "-- unknown --";
                 // Define the list of country available for this test
                 String countries = "";
                 for (String c : countryListTestcase) {
@@ -642,9 +642,9 @@
                                                     <option style="width: 250px" value="All">-- Choose Test First --
                                                     </option>
                                                     <%  } else {
-                                                        List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                                        for (TCase tc : tcList) {%>
-                                                    <option style="width: 250px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
+                                                        List<TestCase> tcList = testCaseService.findTestCaseByTest(test);
+                                                        for (TestCase tc : tcList) {%>
+                                                    <option style="width: 250px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
                                                     </option>
                                                     <%  }
                                                         }%>
@@ -693,12 +693,12 @@
                                                     <td class="wob" style="width: 400px"><%out.print(docService.findLabelHTML("testcase", "Function", "Function", myLang));%></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="wob"><input id="editOrigin" style="width: 90px;" name="editOrigin" value="<%=tcase.getOrigin()%>"></td>
-                                                    <td class="wob"><input id="editRefOrigin" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigin" value="<%=tcase.getRefOrigin()%>"></td>
+                                                    <td class="wob"><input id="editOrigin" style="width: 90px;" name="editOrigin" value="<%=tcase.getOrigine()%>"></td>
+                                                    <td class="wob"><input id="editRefOrigin" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigin" value="<%=tcase.getRefOrigine()%>"></td>
                                                     <td class="wob"><%=dateCrea%></td>
-                                                    <td class="wob"><input readonly="readonly" id="editCreator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=tcase.getCreator()%>"></td>
+                                                    <td class="wob"><input readonly="readonly" id="editCreator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=tcase.getUsrCreated()%>"></td>
                                                     <td class="wob"><input id="editImplementer" style="width: 90px;" name="editImplementer" value="<%=tcase.getImplementer() == null ? "" : tcase.getImplementer()%>"></td>
-                                                    <td class="wob"><input readonly="readonly" id="editLastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getLastModifier()%>"></td>
+                                                    <td class="wob"><input readonly="readonly" id="editLastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getUsrModif()%>"></td>
                                                     <td class="wob">
                                                         <% out.print(ComboProject(appContext, "editProject", "width: 90px", "editProject", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
                                                     </td>
@@ -737,9 +737,9 @@
                                                             %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                             <% }%>
                                                         </select></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getRunQA(), "", null)%></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getRunUAT(), "", null)%></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getRunPROD(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getActiveQA(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getActiveUAT(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getActivePROD(), "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", String.valueOf(tcase.getPriority()), "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
@@ -774,7 +774,7 @@
                                                     <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description", myLang));%></td>
                                                 </tr><tr>
                                                     <td class="wob"><input id="editDescription" style="width: 1200px;" name="editDescription"
-                                                                           value="<%=tcase.getShortDescription()%>"></td>
+                                                                           value="<%=tcase.getDescription()%>"></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -846,15 +846,15 @@
                                         <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetRev", "", myLang));%></td>
                                     </tr>
                                     <tr>
-                                        <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getActive(), "", null)%></td>
+                                        <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getTcActive(), "", null)%></td>
                                         <td class="wob">
                                             <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
-                                                <%  String fromBuild = ParameterParserUtil.parseStringParam(tcase.getFromSprint(), "");
-                                                    String fromRev = ParameterParserUtil.parseStringParam(tcase.getFromRevision(), "");
-                                                    String toBuild = ParameterParserUtil.parseStringParam(tcase.getToSprint(), "");
-                                                    String toRev = ParameterParserUtil.parseStringParam(tcase.getToRevision(), "");
-                                                    String targetBuild = ParameterParserUtil.parseStringParam(tcase.getTargetSprint(), "");
-                                                    String targetRev = ParameterParserUtil.parseStringParam(tcase.getTargetRevision(), "");
+                                                <%  String fromBuild = ParameterParserUtil.parseStringParam(tcase.getFromBuild(), "");
+                                                    String fromRev = ParameterParserUtil.parseStringParam(tcase.getFromRev(), "");
+                                                    String toBuild = ParameterParserUtil.parseStringParam(tcase.getToBuild(), "");
+                                                    String toRev = ParameterParserUtil.parseStringParam(tcase.getToRev(), "");
+                                                    String targetBuild = ParameterParserUtil.parseStringParam(tcase.getTargetBuild(), "");
+                                                    String targetRev = ParameterParserUtil.parseStringParam(tcase.getTargetRev(), "");
                                                 %>
                                                 <option style="width: 100px" value="" <%=fromBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <% for (BuildRevisionInvariant myBR : listBuildRev) {%>
@@ -948,7 +948,7 @@
                             <td id="wob" style="width: 150px">APP: [<%=tcase.getApplication()%>]  </td>
                             <td id="wob" style="width: 160px">GROUP: [<%=tcase.getGroup()%>]  </td>
                             <td id="wob" style="width: 200px">STATUS: [<%=tcase.getStatus()%>]  </td>
-                            <td id="wob" style="width: 60px">ACT: [<%=tcase.getActive()%>]  </td>
+                            <td id="wob" style="width: 60px">ACT: [<%=tcase.getTcActive()%>]  </td>
                             <td id="wob" style="width: 170px">Last Exe: [<%=LastExeMessage%>]  </td>
                             <td id="wob" style="width: 300px">Countries: [<%=countries%>]</td>
                             <td id="wob" align="right"><input id="button1" style="height:18px; width:10px" type="button" value="+" onclick="javascript:setVisible();"></td>
@@ -1197,9 +1197,9 @@
                                                     <option style="width: 400px" value="">---</option>
                                                     <%  } else {
                                                         AnswerList anstcaseList = testCaseService.readTestCaseByStepsInLibrary(testCombo);
-                                                        List<TCase>tcaseList =  anstcaseList.getDataList();
-                                                        for (TCase tc : tcaseList) {%>
-                                                    <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
+                                                        List<TestCase>tcaseList =  anstcaseList.getDataList();
+                                                        for (TestCase tc : tcaseList) {%>
+                                                    <option style="width: 400px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getDescription()%>
                                                     </option>
                                                     <% }
                                                         }%>

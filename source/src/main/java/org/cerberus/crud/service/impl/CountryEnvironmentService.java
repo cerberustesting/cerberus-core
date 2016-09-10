@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryEnvironment;
 import org.cerberus.crud.service.ICountryEnvironmentService;
@@ -60,7 +60,7 @@ public class CountryEnvironmentService implements ICountryEnvironmentService {
         try {
             List<String[]> list = null;
 
-            TCase tc = this.testCaseService.findTestCaseByKey(test, testCase);
+            TestCase tc = this.testCaseService.findTestCaseByKey(test, testCase);
 
             if (tc != null) {
                 list = this.countryEnvironmentParametersDAO.getEnvironmentAvailable(country, tc.getApplication());

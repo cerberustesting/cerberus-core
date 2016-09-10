@@ -20,7 +20,6 @@ package org.cerberus.crud.dao;
 
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -36,17 +35,17 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseDAO {
 
-    List<TCase> findTestCaseByTest(String test);
+    List<TestCase> findTestCaseByTest(String test);
 
-    TCase findTestCaseByKey(String test, String testCase) throws CerberusException;
+    TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
     boolean updateTestCaseInformation(TestCase testCase);
 
     boolean updateTestCaseInformationCountries(TestCase tc);
 
-    boolean createTestCase(TCase testCase);
+    boolean createTestCase(TestCase testCase);
 
-    List<TCase> findTestCaseByCriteria(String test, String application, String country, String active);
+    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
     /**
      * @param testCase
@@ -55,7 +54,7 @@ public interface ITestCaseDAO {
      * @return
      * @since 0.9.1
      */
-    List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);
+    List<TestCase> findTestCaseByCriteria(TestCase testCase, String text, String system);
 
     List<String> findUniqueDataOfColumn(String column);
 
@@ -64,7 +63,7 @@ public interface ITestCaseDAO {
      * @param testCase
      * @return true if delete is OK
      */
-    boolean deleteTestCase(TCase testCase);
+    boolean deleteTestCase(TestCase testCase);
 
     /**
      *
@@ -72,7 +71,7 @@ public interface ITestCaseDAO {
      * @param columnName Name of the column to update
      * @param value New value of the field columnName for the key name
      */
-    void updateTestCaseField(TCase tc, String columnName, String value);
+    void updateTestCaseField(TestCase tc, String columnName, String value);
 
     /**
      *
@@ -81,7 +80,7 @@ public interface ITestCaseDAO {
      * @return
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
+    List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system);
 
     /**
      *
@@ -89,7 +88,7 @@ public interface ITestCaseDAO {
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByCampaignName(String campaign);
+    List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
      *
@@ -98,17 +97,17 @@ public interface ITestCaseDAO {
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
+    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
-    public void updateTestCase(TCase tc) throws CerberusException;
+    public void updateTestCase(TestCase tc) throws CerberusException;
 
-    List<TCase> findTestCaseByTestSystems(String test, List<String> systems);
+    List<TestCase> findTestCaseByTestSystems(String test, List<String> systems);
 
     String getMaxNumberTestCase(String test);
 
-    public List<TCase> findTestCaseByTestSystem(String test, String system);
+    public List<TestCase> findTestCaseByTestSystem(String test, String system);
 
-    List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
+    List<TestCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
@@ -123,9 +122,9 @@ public interface ITestCaseDAO {
     
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
     
-    public Answer update(TCase testCase);
+    public Answer update(TestCase testCase);
 
-    public Answer create(TCase testCase);
+    public Answer create(TestCase testCase);
 
-    public Answer delete(TCase testCase);
+    public Answer delete(TestCase testCase);
 }

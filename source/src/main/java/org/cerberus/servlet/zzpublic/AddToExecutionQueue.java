@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
@@ -244,9 +244,9 @@ public class AddToExecutionQueue extends HttpServlet {
             countries = campaignService.findCountries(campaign);
             String[] countryList = new String[countries.size()];
             countryList = countries.toArray(countryList);
-            List<TCase> testCaseList = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countryList);
+            List<TestCase> testCaseList = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countryList);
             List<String> selTc = new ArrayList();
-            for (TCase tc : testCaseList) {
+            for (TestCase tc : testCaseList) {
                 selTc.add("Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase());
             }
             String[] tcList = new String[selTc.size()];

@@ -32,7 +32,7 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -216,7 +216,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             LOG.debug(logPrefix + "Loading Pre-testcases.");
-            List<TCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
+            List<TestCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
             tCExecution.setPreTCase(preTests);
             if (!(preTests == null)) {
                 LOG.debug(logPrefix + "Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
@@ -237,8 +237,8 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             LOG.debug(logPrefix + "Loading all Steps information (Actions & Controls) of all Pre-testcase.");
             List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
-            List<TCase> preTestCase = new ArrayList<TCase>();
-            for (TCase myTCase : tCExecution.getPreTCase()) {
+            List<TestCase> preTestCase = new ArrayList<TestCase>();
+            for (TestCase myTCase : tCExecution.getPreTCase()) {
                 myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
                 preTestCaseStepList.addAll(myTCase.getTestCaseStep());
                 preTestCase.add(myTCase);
@@ -374,7 +374,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
+                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getDescription().replace(".", ""));
 
         }
         //TODO:FN debug messages to be removed
@@ -384,7 +384,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getShortDescription().replace(".", ""));
+                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getDescription().replace(".", ""));
         }
         //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();

@@ -21,7 +21,6 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -29,18 +28,14 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
+
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
@@ -53,10 +48,12 @@ import org.springframework.web.util.HtmlUtils;
 @WebServlet(name = "UpdateTestCase", urlPatterns = {"/UpdateTestCase"})
 public class UpdateTestCase extends HttpServlet {
 
+    private IFactoryTestCaseCountry factoryTestCaseCountry;
+
     /**
      * Process the post request from UpdateTestCase form in TestCase page.
      * <p/>
-     * Use {@link #updateTestCase(TestCase tc, int type)} to update the TestCase
+     * Use {@link #updateTestCase(TCase tc, int type)} to update the TestCase
      * information.
      *
      * @param request information from the request page
@@ -64,10 +61,10 @@ public class UpdateTestCase extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        TestCase tc = getInfo(request);
-
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseService tcs = appContext.getBean(ITestCaseService.class);
+
+        TestCase tc = getInfo(request, appContext);
 
         if (tcs.updateTestCaseInformation(tc) && tcs.updateTestCaseInformationCountries(tc)) {
 
@@ -102,43 +99,49 @@ public class UpdateTestCase extends HttpServlet {
     }
 
     /**
-     * Create new TestCase object from the information of request form
+     * Create new TCase object from the information of request form
      *
      * @param request information from the request page
-     * @return TestCase object
+     * @return TCase object
      * @see org.cerberus.crud.entity.TestCase
      */
-    private TestCase getInfo(HttpServletRequest request) {
+    private TestCase getInfo(HttpServletRequest request, ApplicationContext appContext) {
+        factoryTestCaseCountry = appContext.getBean(IFactoryTestCaseCountry.class);
+
         TestCase tc = new TestCase();
-        tc.setTest(request.getParameter("Test"));
-        tc.setTestCase(request.getParameter("TestCase"));
+        String test = request.getParameter("Test");
+        String testCase = request.getParameter("TestCase");
+        tc.setTest(test);
+        tc.setTestCase(testCase);
         tc.setImplementer(request.getParameter("editImplementer"));
-        tc.setLastModifier(request.getUserPrincipal().getName());
+        tc.setUsrModif(request.getUserPrincipal().getName());
         tc.setProject(request.getParameter("editProject"));
         tc.setTicket(request.getParameter("editTicket"));
         tc.setApplication(request.getParameter("editApplication"));
-        tc.setRunQA(request.getParameter("editRunQA"));
-        tc.setRunUAT(request.getParameter("editRunUAT"));
-        tc.setRunPROD(request.getParameter("editRunPROD"));
+        tc.setActiveQA(request.getParameter("editRunQA"));
+        tc.setActiveUAT(request.getParameter("editRunUAT"));
+        tc.setActivePROD(request.getParameter("editRunPROD"));
         tc.setPriority(Integer.parseInt(request.getParameter("editPriority")));
         tc.setGroup(request.getParameter("editGroup"));
         tc.setStatus(request.getParameter("editStatus"));
-        List<String> countries = new ArrayList<String>();
+        List<TestCaseCountry> countries = new ArrayList<TestCaseCountry>();
         if (request.getParameterValues("testcase_country_general") != null) {
-            Collections.addAll(countries, request.getParameterValues("testcase_country_general"));
+            for (String toto : request.getParameterValues("testcase_country_general")) {
+                countries.add(factoryTestCaseCountry.create(test, testCase, toto));
+            }
         }
-        tc.setCountryList(countries);
-        tc.setShortDescription(HtmlUtils.htmlEscape(request.getParameter("editDescription")));
-        tc.setDescription(request.getParameter("valueDetail"));
+        tc.setTestCaseCountry(countries);
+        tc.setDescription(HtmlUtils.htmlEscape(request.getParameter("editDescription")));
+        tc.setBehaviorOrValueExpected(request.getParameter("valueDetail"));
         tc.setHowTo(request.getParameter("howtoDetail"));
-        tc.setActive(request.getParameter("editTcActive"));
-        tc.setFromSprint(request.getParameter("editFromBuild"));
-        tc.setFromRevision(request.getParameter("editFromRev"));
-        tc.setToSprint(request.getParameter("editToBuild"));
-        tc.setToRevision(request.getParameter("editToRev"));
+        tc.setTcActive(request.getParameter("editTcActive"));
+        tc.setFromBuild(request.getParameter("editFromBuild"));
+        tc.setFromRev(request.getParameter("editFromRev"));
+        tc.setToBuild(request.getParameter("editToBuild"));
+        tc.setToRev(request.getParameter("editToRev"));
         tc.setBugID(request.getParameter("editBugID"));
-        tc.setTargetSprint(request.getParameter("editTargetBuild"));
-        tc.setTargetRevision(request.getParameter("editTargetRev"));
+        tc.setTargetBuild(request.getParameter("editTargetBuild"));
+        tc.setTargetRev(request.getParameter("editTargetRev"));
         tc.setComment(HtmlUtils.htmlEscape(request.getParameter("editComment")));
         tc.setFunction(request.getParameter("function"));
         return tc;

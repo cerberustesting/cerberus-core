@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseService;
 import org.owasp.html.PolicyFactory;
@@ -63,7 +63,7 @@ public class UpdateTestCaseField extends HttpServlet {
 
         response.setContentType("text/html");
         try {
-            TCase tc = tcService.findTestCaseByKey(test, testcase);
+            TestCase tc = tcService.findTestCaseByKey(test, testcase);
             if (tc != null) {
                 tcService.updateTestCaseField(tc, name, value);
             } else {

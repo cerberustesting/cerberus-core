@@ -30,7 +30,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseService;
@@ -68,7 +68,7 @@ public class DeleteTestCaseFromTestPage extends HttpServlet {
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);
         try {
             for (String ttd : tcToDelete) {
-                TCase testCase = tcService.findTestCaseByKey(testToDelete, ttd);
+                TestCase testCase = tcService.findTestCaseByKey(testToDelete, ttd);
                 if (testCase != null) {
                     List<TestCaseStep> tcsList = tcsService.getTestCaseStepUsingTestCaseInParamter(testCase.getTest(), testCase.getTestCase());
                     if (tcsList != null && !tcsList.isEmpty()){

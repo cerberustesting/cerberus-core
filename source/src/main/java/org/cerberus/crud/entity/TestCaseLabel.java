@@ -32,6 +32,10 @@ public class TestCaseLabel {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
+
+    /**
+     * Not included in table.
+     */
     private Label label;
 
     public Label getLabel() {
@@ -105,7 +109,7 @@ public class TestCaseLabel {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public boolean hasSameKey(TestCaseLabel obj) {
         if (obj == null) {
             return false;

@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,7 +68,7 @@ public class TestCaseManualExecutionDTOTest {
      */
     @Test
     public void testFindTestCaseManualExecutionWhenReturnNoLine() throws SQLException {
-        TCase tCase = new TCase();
+        TestCase tCase = new TestCase();
 
         when(databaseSpring.connect()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(statement);
@@ -85,7 +85,7 @@ public class TestCaseManualExecutionDTOTest {
      */
     @Test
     public void testFindTestCaseManualExecutionWhenReturnOneLine() throws SQLException {
-        TCase tCase = new TCase();
+        TestCase tCase = new TestCase();
         String test = "Test";
         String testCase = "TestCase";
         String value = "Value";
@@ -136,7 +136,7 @@ public class TestCaseManualExecutionDTOTest {
      */
     @Test
     public void testFindTestCaseManualExecutionWhenReturnMoreLines() throws SQLException {
-        TCase tCase = new TCase();
+        TestCase tCase = new TestCase();
         String test = "Test";
         String testCase = "TestCase";
         String value = "Value";
@@ -189,7 +189,7 @@ public class TestCaseManualExecutionDTOTest {
      */
     @Test
     public void testFindTestCaseManualExecutionWhenValuesNull() throws SQLException {
-        TCase tCase = new TCase();
+        TestCase tCase = new TestCase();
 
         when(databaseSpring.connect()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(statement);

@@ -31,7 +31,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionSysVer;
 import org.cerberus.exception.CerberusException;
@@ -82,7 +82,7 @@ public class SaveManualExecution extends HttpServlet {
 
         try {
             Application application = null;
-            TCase tCase = testService.findTestCaseByKey(test, testCase);
+            TestCase tCase = testService.findTestCaseByKey(test, testCase);
             if (tCase != null) {
                 application = applicationService.convert(applicationService.readByKey(tCase.getApplication()));
             } else {

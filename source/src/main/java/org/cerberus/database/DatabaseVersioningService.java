@@ -6732,8 +6732,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 922
-
+        //-- ------------------------ 925
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('page_sqlLibrary','allSqlLibrarys','','en','SQL Libraries','')");
         SQLS.append(",('page_sqlLibrary','allSqlLibrarys','','fr','Librairies SQL','')");
@@ -6784,8 +6783,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 923
-
+        //-- ------------------------ 926
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('page_soapLibrary','allSoapLibrarys','','en','SOAP Libraries','')");
         SQLS.append(",('page_soapLibrary','allSoapLibrarys','','fr','Librairies SOAP','')");
@@ -6841,6 +6839,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_soapLibrary','method_col','','fr','Méthode','')");
         SQLS.append(",('page_soapLibrary','parsinganswer_col','','en','Parsing Answer','')");
         SQLS.append(",('page_soapLibrary','parsinganswer_col','','fr','Réponse Analysée','')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed all field and added userAgent on testCase table.
+        //-- ------------------------ 927
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("DROP COLUMN `ChainNumberNeeded`,");
+        SQLS.append("DROP COLUMN `ReadOnly`,");
+        SQLS.append("ADD COLUMN `useragent` VARCHAR(250) NULL DEFAULT '' AFTER `function`,");
+        SQLS.append("CHANGE COLUMN `Creator` `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `useragent`,");
+        SQLS.append("CHANGE COLUMN `TCDateCrea` `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("CHANGE COLUMN `LastModifier` `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("CHANGE COLUMN `last_modified` `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

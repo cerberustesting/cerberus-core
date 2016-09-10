@@ -29,13 +29,13 @@ public class TestCaseCountry {
     private String testCase;
     private String country;
     private List<TestCaseCountryProperties> testCaseCountryProperty;
-    private TCase tCase;
+    private TestCase tCase;
 
-    public TCase gettCase() {
+    public TestCase gettCase() {
         return tCase;
     }
 
-    public void settCase(TCase tCase) {
+    public void settCase(TestCase tCase) {
         this.tCase = tCase;
     }
 

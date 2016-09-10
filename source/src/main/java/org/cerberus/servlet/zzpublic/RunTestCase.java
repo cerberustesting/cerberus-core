@@ -38,10 +38,9 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
@@ -60,6 +59,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * {Insert class description here}
@@ -307,10 +307,10 @@ public class RunTestCase extends HttpServlet {
                 LOG.debug("STARTED: Test " + test + "-" + testCase);
 
                 IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
-                IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
+                IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
                 IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
-                TCase tCase = factoryTCase.create(test, testCase);
+                TestCase tCase = factoryTCase.create(test, testCase);
 
                 TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities,
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,

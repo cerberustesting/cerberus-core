@@ -12,10 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.factory.IFactoryTCase;
-import org.cerberus.crud.factory.impl.FactoryTCase;
+import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -30,6 +29,7 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * Build data for detail table and calculate data dor statistics tables
@@ -63,7 +63,7 @@ public class GetReport extends HttpServlet {
         resp.setCharacterEncoding("utf8");
 
         //Get all input parameters from user form
-        TCase tCase = this.getTestCaseFromRequest(req);
+        TestCase tCase = this.getTestCaseFromRequest(req);
         String environment = this.getValues(req, "Environment");
         String build = this.getValues(req, "Build");
         String revision = this.getValues(req, "Revision");
@@ -76,7 +76,7 @@ public class GetReport extends HttpServlet {
         String[] browsers = req.getParameterValues("Browser");
 
         //Get all test cases that match the user input
-        List<TCase> list = testCaseService.findTestCaseByGroupInCriteria(tCase, system);
+        List<TestCase> list = testCaseService.findTestCaseByGroupInCriteria(tCase, system);
 
         //Create object to be filled and then added to JSON response
         JSONArray data = new JSONArray();
@@ -122,7 +122,7 @@ public class GetReport extends HttpServlet {
      * @param req http request with all form input
      * @return TCase object with information of form
      */
-    private TCase getTestCaseFromRequest(HttpServletRequest req) {
+    private TestCase getTestCaseFromRequest(HttpServletRequest req) {
         String test = this.getValues(req, "Test");
         String project = this.getValues(req, "Project");
         String application = this.getValues(req, "Application");
@@ -141,9 +141,9 @@ public class GetReport extends HttpServlet {
         String implementer = this.getValues(req, "Implementer");
         String comment = this.getValue(req, "Comment");
 
-        IFactoryTCase factoryTCase = new FactoryTCase();
+        IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, null, null, null, creator, implementer, null, project, null, null, application, null, null, null, priority, group,
-                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null);
+                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, "", null, null, null, null);
     }
 
     /**
@@ -195,8 +195,7 @@ public class GetReport extends HttpServlet {
      * JSONObject will be decoded by Datatables plugin and converted to dynamic
      * table.
      *
-     * @param map map object Map<Test, Map<Column, Value>>
-     * @p
+     * @param map map object Map<Test, Map<Column, Value>> @p
      * aram invList list of Invariant corresponding to the columns of the table
      * @return JSONObject with the array to populate the table
      * @throws JSONException
@@ -226,8 +225,7 @@ public class GetReport extends HttpServlet {
     /**
      * Convert map object to JSONObject
      *
-     * @param map object Map<Test, Map<Country, Map<Column, Value>>>
-     * @retu
+     * @param map object Map<Test, Map<Country, Map<Column, Value>>> @retu
      * rn JSONObject with the array to populate the table
      * @throws JSONException
      */
@@ -290,7 +288,7 @@ public class GetReport extends HttpServlet {
      * @param tag tag for test case execution filter
      * @throws JSONException
      */
-    private void calculateStatistics(List<TCase> tCaseList, String[] countries, String[] browsers, List<Invariant> tceStatus,
+    private void calculateStatistics(List<TestCase> tCaseList, String[] countries, String[] browsers, List<Invariant> tceStatus,
             Map<String, Map<String, Map<String, Integer>>> mapTests, Map<String, Map<String, Integer>> mapGroups,
             Map<String, Map<String, Integer>> mapStatus, JSONArray data, String environment, String build,
             String revision, String browserVersion, String ip, String port, String tag) throws JSONException {
@@ -305,7 +303,7 @@ public class GetReport extends HttpServlet {
         Map<String, Integer> statTotal = new LinkedHashMap<String, Integer>();
 
         //loop for all test cases
-        for (TCase tc : tCaseList) {
+        for (TestCase tc : tCaseList) {
             if (!tc.getTest().equals(oldTest)) {
                 map = new LinkedHashMap<String, Map<String, Integer>>();
                 group = new LinkedHashMap<String, Integer>();
@@ -316,7 +314,7 @@ public class GetReport extends HttpServlet {
             array.put(tc.getTest());
             array.put(tc.getTestCase());
             array.put(tc.getApplication());
-            array.put(tc.getShortDescription());
+            array.put(tc.getDescription());
             array.put(tc.getPriority());
             array.put(tc.getStatus());
 
@@ -404,8 +402,8 @@ public class GetReport extends HttpServlet {
                     obj.put("bugURL", "");
                 }
             }
-            obj.put("targetSprint", tc.getTargetSprint());
-            obj.put("targetRevision", tc.getTargetRevision());
+            obj.put("targetSprint", tc.getTargetBuild());
+            obj.put("targetRevision", tc.getTargetRev());
             array.put(obj);
             array.put(tc.getGroup());
             //add line to detail table

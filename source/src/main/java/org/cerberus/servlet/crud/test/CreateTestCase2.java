@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
@@ -108,7 +108,7 @@ public class CreateTestCase2 extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
-            TCase testCaseData = getInfo(request);
+            TestCase testCaseData = getInfo(request);
             ans = testCaseService.create(testCaseData);
 
             getCountryList(testCaseData, request);
@@ -183,53 +183,53 @@ public class CreateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TCase getInfo(HttpServletRequest request) throws CerberusException, JSONException {
-        TCase tc = new TCase();
+    private TestCase getInfo(HttpServletRequest request) throws CerberusException, JSONException {
+        TestCase tc = new TestCase();
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 
         // Parameter that needs to be secured --> We SECURE+DECODE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("implementer"), "", charset));
-        tc.setCreator(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
-        tc.setLastModifier(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
+        tc.setUsrCreated(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
+        tc.setUsrModif(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getUserPrincipal().getName(), "", charset));
         if (request.getParameter("project").isEmpty()) {
             tc.setProject(null);
         } else {
             tc.setProject(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset));
         }
         tc.setApplication(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset));
-        tc.setRunQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), "", charset));
-        tc.setRunUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), "", charset));
-        tc.setRunPROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), "", charset));
-        tc.setFromSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromSprint"), "", charset));
-        tc.setFromRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromRev"), "", charset));
-        tc.setToSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toSprint"), "", charset));
-        tc.setToRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toRev"), "", charset));
-        tc.setActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "", charset));
-        tc.setTargetSprint(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetSprint"), "", charset));
-        tc.setTargetRevision(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetRev"), "", charset));
+        tc.setActiveQA(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeQA"), "", charset));
+        tc.setActiveUAT(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeUAT"), "", charset));
+        tc.setActivePROD(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("activeProd"), "", charset));
+        tc.setFromBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromSprint"), "", charset));
+        tc.setFromRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("fromRev"), "", charset));
+        tc.setToBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toSprint"), "", charset));
+        tc.setToRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("toRev"), "", charset));
+        tc.setTcActive(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("active"), "", charset));
+        tc.setTargetBuild(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetSprint"), "", charset));
+        tc.setTargetRev(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("targetRev"), "", charset));
         tc.setPriority(ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("priority"), 0, charset));
         tc.setTest(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset));
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), "", charset));
-        tc.setOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), "", charset));
-        tc.setRefOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("refOrigin"), "", charset));
+        tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), "", charset));
+        tc.setRefOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("refOrigin"), "", charset));
         tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset));
         tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), "", charset));
-        tc.setShortDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), "", charset));
+        tc.setDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), "", charset));
         tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), "", charset));
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), "", charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), "", charset));
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), "", charset));
-        tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), "", charset));
+        tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), "", charset));
 
         return tc;
     }
 
-    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
+    private void getCountryList(TestCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
         Map<String, String> countryList = new HashMap<String, String>();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);

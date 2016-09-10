@@ -33,7 +33,6 @@
 <%@page import="org.cerberus.crud.entity.TestCaseStepActionControl"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStepAction"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStep"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
 <%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecutionSysVer"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStepActionControlExecution"%>
@@ -166,7 +165,7 @@
                     test = testCaseExecution.getTest();
                     testCase = testCaseExecution.getTestCase();
 
-                    TCase tCase = testCaseService.findTestCaseByKey(test, testCase);
+                    TestCase tCase = testCaseService.findTestCaseByKey(test, testCase);
 
                     String max_id = String.valueOf(testCaseExecution.getId());
 
@@ -179,7 +178,7 @@
                     String executor = testCaseExecution.getExecutor();
                     String controlStatus = testCaseExecution.getControlStatus();
 
-                    testCaseDesc = tCase.getShortDescription();
+                    testCaseDesc = tCase.getDescription();
                     country = testCaseExecution.getCountry();
 
                     build = testCaseExecution.getBuild();

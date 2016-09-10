@@ -31,9 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
-import org.cerberus.crud.factory.IFactoryTCase;
-import org.cerberus.crud.factory.impl.FactoryTCase;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IManualTestCaseService;
 import org.cerberus.util.StringUtil;
@@ -43,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * {Insert class description here}
@@ -62,15 +62,15 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String env = this.getValue(req, "ScEnv");
         String campaign = this.getValue(req, "ScCampaign");
         String testBattery = this.getValue(req, "ScTestBattery");
-        TCase tCase = this.getTestCaseFromRequest(req);
+        TestCase tCase = this.getTestCaseFromRequest(req);
 
-        tCase.setActive("Y");
+        tCase.setTcActive("Y");
         if (env.equalsIgnoreCase("QA")) {
-            tCase.setRunQA("Y");
+            tCase.setActiveQA("Y");
         } else if (env.equalsIgnoreCase("UAT")) {
-            tCase.setRunUAT("Y");
+            tCase.setActiveUAT("Y");
         } else if (env.equalsIgnoreCase("PROD")) {
-            tCase.setRunPROD("Y");
+            tCase.setActivePROD("Y");
         }
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -98,7 +98,7 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         }
     }
 
-    private TCase getTestCaseFromRequest(HttpServletRequest req) {
+    private TestCase getTestCaseFromRequest(HttpServletRequest req) {
         String group = this.getValue(req, "ScGroup");
         String test = this.getValue(req, "ScTest");
         String testCase = "%" + this.getValue(req, "ScTestCase") + "%";
@@ -121,9 +121,9 @@ public class SearchManualTestCaseInformation extends HttpServlet {
         String targetRev = this.getValue(req, "ScTargetRev");
         String function = this.getValue(req, "function");
 
-        IFactoryTCase factoryTCase = new FactoryTCase();
+        IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, testCase, origin, null, creator, null, null, project, ticket, function, application, "", "", "", priority,
-                group, status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, null, null, null, null);
+                group, status, null, null, null, "", fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {

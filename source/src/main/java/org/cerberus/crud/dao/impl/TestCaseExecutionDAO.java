@@ -1285,29 +1285,29 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseWithExecution.setApplication(resultSet.getString("Application"));
         testCaseWithExecution.setProject(resultSet.getString("Project"));
         testCaseWithExecution.setTicket(resultSet.getString("Ticket"));
-        testCaseWithExecution.setShortDescription(resultSet.getString("Description"));
-        testCaseWithExecution.setDescription(resultSet.getString("BehaviorOrValueExpected"));
+        testCaseWithExecution.setDescription(resultSet.getString("Description"));
+        testCaseWithExecution.setBehaviorOrValueExpected(resultSet.getString("BehaviorOrValueExpected"));
         testCaseWithExecution.setPriority(resultSet.getInt("Priority"));
         testCaseWithExecution.setStatus(resultSet.getString("Status"));
-        testCaseWithExecution.setActive(resultSet.getString("TcActive"));
+        testCaseWithExecution.setTcActive(resultSet.getString("TcActive"));
         testCaseWithExecution.setGroup(resultSet.getString("Group"));
-        testCaseWithExecution.setOrigin(resultSet.getString("Origine"));
-        testCaseWithExecution.setRefOrigin(resultSet.getString("RefOrigine"));
+        testCaseWithExecution.setOrigine(resultSet.getString("Origine"));
+        testCaseWithExecution.setRefOrigine(resultSet.getString("RefOrigine"));
         testCaseWithExecution.setHowTo(resultSet.getString("HowTo"));
         testCaseWithExecution.setComment(resultSet.getString("Comment"));
-        testCaseWithExecution.setFromSprint(resultSet.getString("FromBuild"));
-        testCaseWithExecution.setFromRevision(resultSet.getString("FromRev"));
-        testCaseWithExecution.setToSprint(resultSet.getString("ToBuild"));
-        testCaseWithExecution.setToRevision(resultSet.getString("ToRev"));
+        testCaseWithExecution.setFromBuild(resultSet.getString("FromBuild"));
+        testCaseWithExecution.setFromRev(resultSet.getString("FromRev"));
+        testCaseWithExecution.setToBuild(resultSet.getString("ToBuild"));
+        testCaseWithExecution.setToRev(resultSet.getString("ToRev"));
         testCaseWithExecution.setBugID(resultSet.getString("BugID"));
-        testCaseWithExecution.setTargetSprint(resultSet.getString("TargetBuild"));
-        testCaseWithExecution.setTargetRevision(resultSet.getString("TargetRev"));
-        testCaseWithExecution.setCreator(resultSet.getString("Creator"));
+        testCaseWithExecution.setTargetBuild(resultSet.getString("TargetBuild"));
+        testCaseWithExecution.setTargetRev(resultSet.getString("TargetRev"));
+        testCaseWithExecution.setUsrCreated(resultSet.getString("UsrCreated"));
         testCaseWithExecution.setImplementer(resultSet.getString("Implementer"));
-        testCaseWithExecution.setLastModifier(resultSet.getString("LastModifier"));
-        testCaseWithExecution.setRunQA(resultSet.getString("activeQA"));
-        testCaseWithExecution.setRunUAT(resultSet.getString("activeUAT"));
-        testCaseWithExecution.setRunPROD(resultSet.getString("activePROD"));
+        testCaseWithExecution.setUsrModif(resultSet.getString("UsrModif"));
+        testCaseWithExecution.setActiveQA(resultSet.getString("activeQA"));
+        testCaseWithExecution.setActiveUAT(resultSet.getString("activeUAT"));
+        testCaseWithExecution.setActivePROD(resultSet.getString("activePROD"));
         testCaseWithExecution.setFunction(resultSet.getString("function"));
         String start = resultSet.getString("Start");
         if (start.endsWith(".0")) {
@@ -1350,7 +1350,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append(" select tce.*, tc.Project, tc.Ticket, tc.Description, tc.BehaviorOrValueExpected, ");
         query.append(" tc.Priority, tc.`Group`, tc.Origine, tc.RefOrigine, tc.HowTo, tc.`Comment`, ");
         query.append(" tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, tc.BugID, tc.TargetBuild, ");
-        query.append(" tc.TargetRev, tc.Creator, tc.Implementer, tc.LastModifier, tc.activeQA, ");
+        query.append(" tc.TargetRev, tc.UsrCreated, tc.Implementer, tc.UsrModif, tc.activeQA, ");
         query.append(" tc.activeUAT, tc.activePROD, tc.`function`, tc.TcActive, ");
         query.append(" a.sort, a.`type`, a.`system`, a.SubSystem, a.svnurl, a.deploytype, ");
         query.append(" a.mavengroupid, a.BugTrackerUrl, a.BugTrackerNewUrl ");
@@ -1408,7 +1408,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         }
 
         //creator
-        String creatorClause = SqlUtil.generateInClause("tc.Creator", creatorList);
+        String creatorClause = SqlUtil.generateInClause("tc.UsrCreated", creatorList);
         if (!StringUtil.isNullOrEmpty(creatorClause)) {
             whereClauses.add(creatorClause);
         }

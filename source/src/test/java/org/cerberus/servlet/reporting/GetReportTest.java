@@ -17,11 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.cerberus.servlet.reporting;
 
-import org.cerberus.crud.entity.TCase;
-import org.cerberus.crud.factory.impl.FactoryTCase;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.junit.Test;
@@ -56,6 +55,7 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @ContextConfiguration(locations = {"/applicationContextTest.xml"})
 public class GetReportTest {
+
     @Mock
     private TestCaseService testCaseService;
     @Mock
@@ -65,7 +65,7 @@ public class GetReportTest {
     @Mock
     private HttpServletResponse response;
     @InjectMocks
-    private FactoryTCase factoryTCase;
+    private FactoryTestCase factoryTCase;
     @Autowired
     private GetReport servlet;
 
@@ -73,7 +73,6 @@ public class GetReportTest {
 //    public void setUp() throws ServletException {
 ////        servlet = new GetReport();
 //    }
-
     @Test
     @Ignore
     public void testGetTestCaseFromRequest() throws ServletException, IOException {
@@ -90,10 +89,9 @@ public class GetReportTest {
         String targetRev = null;
         String comment = null;
 
-        TCase tCase = factoryTCase.create(test, null, null, null, creator, implementer, null, project, null, null, application, null, null, null, -1, group,
-                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null);
-        List<TCase> list = new ArrayList<TCase>();
-
+        TestCase tCase = factoryTCase.create(test, null, null, null, creator, implementer, null, project, null, null, application, null, null, null, -1, group,
+                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null, null);
+        List<TestCase> list = new ArrayList<TestCase>();
 
         when(request.getParameter("Test[]")).thenReturn(test);
         when(request.getParameter("Project[]")).thenReturn(test);
@@ -117,7 +115,7 @@ public class GetReportTest {
         when(request.getParameter("Country[]")).thenReturn(test);
         when(request.getParameter("Browser[]")).thenReturn(test);
 
-        when(testCaseService.findTestCaseByAllCriteria(Matchers.<TCase>anyObject(), anyString(), anyString())).thenReturn(list);
+        when(testCaseService.findTestCaseByAllCriteria(Matchers.<TestCase>anyObject(), anyString(), anyString())).thenReturn(list);
 //        when(testCaseService.findTestCaseByAllCriteria(tCase, "", "VC")).thenReturn(list);
 
         servlet.doGet(request, response);

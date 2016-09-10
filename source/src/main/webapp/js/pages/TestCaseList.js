@@ -67,7 +67,7 @@ function initPage() {
     $("#duplicateEntryButton").click(duplicateEntryModalSaveHandler);
     //PREPARE MASS ACTION
     //$("#massActionBrpButton").click(massActionModalSaveHandler);
-    
+
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
     $('#duplicateEntryModal').on('hidden.bs.modal', {extra: "#duplicateEntryModal"}, modalFormCleaner);
@@ -126,6 +126,13 @@ function displayPageLabel(doc) {
     $("[name='testCaseInfoField']").html(doc.getDocLabel("page_testcaselist", "testCaseInfo"));
     $("[name='testCaseParameterField']").html(doc.getDocLabel("page_testcaselist", "testCaseParameter"));
     $("[name='activationCriteriaField']").html(doc.getDocLabel("page_testcaselist", "activationCriteria"));
+    // Tracability
+    $("[name='lbl_datecreated']").html(doc.getDocOnline("transversal", "DateCreated"));
+    $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
+    $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
+    $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
+    
+    
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -190,10 +197,10 @@ function renderOptionsForTestCaseList(data) {
     }
 }
 /********************************************************
-//DELETE TESTCASE 
-/********************************************************
-
-/* Function called on click on delete button 
+ //DELETE TESTCASE 
+ /********************************************************
+ 
+ /* Function called on click on delete button 
  * This function display a confirmation modal
  * @param {type} test
  * @param {type} testCase
@@ -236,9 +243,9 @@ function deleteEntryHandlerClick() {
 }
 
 /********************************************************
-//CREATE TESTCASE 
-/********************************************************/
- 
+ //CREATE TESTCASE 
+ /********************************************************/
+
 /*
  * Function called on click on create button
  * The creation Modal is displayed with test selected, and some default values from user preferences
@@ -256,7 +263,7 @@ function addEntryClick() {
     }
     // TestCase is taken from the last value in database +1. This is an auto sequence. 
     feedTestCase(null, "addEntryModalForm");
-    
+
     // In Add TestCase form, if we change the test, we get the latest testcase from that test.
     $('#addEntryModalForm select[name="test"]').change(function () {
         feedTestCase(null, "addEntryModalForm");
@@ -291,8 +298,8 @@ function addEntryClick() {
 
     $('#addEntryModal').modal('show');
 }
- 
- 
+
+
 /* 
  * By clicking on save button, 
  * @returns {undefined}
@@ -332,12 +339,12 @@ function addEntryModalSaveHandler() {
 }
 
 /********************************************************
-//GENERATE TESTCASE NUMBER (CREATE AND DUPLICATE)
-/********************************************************/
+ //GENERATE TESTCASE NUMBER (CREATE AND DUPLICATE)
+ /********************************************************/
 function feedTestCase(test, modalForm) {
 // Predefine the testcase value.
     if ((test === null) || (test === undefined))
-        test = $('#'+modalForm+' select[name="test"]').val();
+        test = $('#' + modalForm + ' select[name="test"]').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
@@ -359,7 +366,7 @@ function feedTestCase(test, modalForm) {
                 tcnumber = "0001A";
             }
 
-            $('#'+modalForm+' [name="testCase"]').val(tcnumber);
+            $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
         },
         error: showUnexpectedError
     });
@@ -367,8 +374,8 @@ function feedTestCase(test, modalForm) {
 }
 
 /********************************************************
-//DUPLICATE TESTCASE 
-/********************************************************/
+ //DUPLICATE TESTCASE 
+ /********************************************************/
 
 /**
  * Feed Duplicate Entry Formulary
@@ -376,10 +383,10 @@ function feedTestCase(test, modalForm) {
  * @param {type} testCase
  * @returns {undefined}
  */
-function duplicateEntryClick(test, testCase){
+function duplicateEntryClick(test, testCase) {
     feedTestCaseModal(test, testCase, "duplicateEntryModal");
     feedTestCase(test, "duplicateEntryModalForm");
-    
+
     // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
     $('#duplicateEntryModalForm select[name="test"]').change(function () {
         feedTestCase(null, "duplicateEntryModalForm");
@@ -393,15 +400,15 @@ function duplicateEntryModalSaveHandler() {
     clearResponseMessage($('#duplicateEntryModal'));
 
     var formEdit = $('#duplicateEntryModalForm');
-    
+
     showLoaderInModal('#duplicateEntryModal');
     duplicateEntry("DuplicateTestCase", formEdit, "#testCaseTable");
 }
 
 
 /********************************************************
-//EDIT TESTCASE 
-/********************************************************/
+ //EDIT TESTCASE 
+ /********************************************************/
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editEntryModal'));
 
@@ -417,14 +424,14 @@ function editEntryClick(test, testCase) {
 }
 
 /********************************************************
-//EDIT AND DUPLICATE >> FEED TESTCASE MODAL
-/********************************************************/
+ //EDIT AND DUPLICATE >> FEED TESTCASE MODAL
+ /********************************************************/
 function feedTestCaseModal(test, testCase, modalId) {
     clearResponseMessageMainPage();
     var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
     $.when(jqxhr).then(function (data) {
 
-        var formEdit = $('#'+modalId);
+        var formEdit = $('#' + modalId);
         var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
         var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
 
@@ -445,12 +452,24 @@ function feedTestCaseModal(test, testCase, modalId) {
             }
             formEdit.find("#application").prop("value", data.application);
 
+            var newbugTrackerUrl = "";
             if (data.bugID !== "" && bugTrackerUrl) {
-                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
+                newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
             }
-
-            formEdit.find("#link").prop("href", bugTrackerUrl).text(data.bugID);
+            formEdit.find("#link").prop("href", newbugTrackerUrl).text(data.bugID);
             formEdit.find("#link").prop("target", "_blank");
+
+            formEdit.find("#bugId").change(function () {
+                var newbugid = formEdit.find("#bugId").val();
+                var newbugTrackerUrl = "";
+                if (newbugid !== "" && bugTrackerUrl) {
+                    newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", newbugid);
+                }
+                formEdit.find("#link").prop("href", newbugTrackerUrl).text(newbugid);
+                formEdit.find("#link").prop("target", "_blank");
+            });
+
+
 
         });
 
@@ -462,12 +481,12 @@ function feedTestCaseModal(test, testCase, modalId) {
         formEdit.find("#testCase").prop("value", data.testCase);
 
         //test case info
-        formEdit.find("#creator").prop("value", data.creator);
-        formEdit.find("#lastModifier").prop("value", data.lastModifier);
+        formEdit.find("#creator").prop("value", data.usrCreated);
+        formEdit.find("#lastModifier").prop("value", data.usrModif);
         formEdit.find("#implementer").prop("value", data.implementer);
-        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
-        formEdit.find("#origin").prop("value", data.origin);
-        formEdit.find("#refOrigin").prop("value", data.refOrigin);
+        formEdit.find("#tcDateCrea").prop("value", data.dateCreated);
+        formEdit.find("#origin").prop("value", data.origine);
+        formEdit.find("#refOrigin").prop("value", data.refOrigine);
         formEdit.find("#project").prop("value", data.project);
         formEdit.find("#ticket").prop("value", data.ticket);
         formEdit.find("#function").prop("value", data.function);
@@ -477,20 +496,27 @@ function feedTestCaseModal(test, testCase, modalId) {
         formEdit.find("#status").prop("value", data.status);
         formEdit.find("#group").prop("value", data.group);
         formEdit.find("#priority").prop("value", data.priority);
-        formEdit.find("#actQA").prop("value", data.runQA);
-        formEdit.find("#actUAT").prop("value", data.runUAT);
-        formEdit.find("#actProd").prop("value", data.runPROD);
+        formEdit.find("#actQA").prop("value", data.activeQA);
+        formEdit.find("#actUAT").prop("value", data.activeUAT);
+        formEdit.find("#actProd").prop("value", data.activePROD);
+        formEdit.find("#userAgent").prop("value", data.userAgent);
         for (var country in data.countryList) {
             $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
         }
-        formEdit.find("#shortDesc").prop("value", data.shortDescription);
-        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
-        tinyMCE.get('howTo1').setContent(data.howTo);
+        formEdit.find("#shortDesc").prop("value", data.description);
+        tinyMCE.get('behaviorOrValueExpected').setContent(data.behaviorOrValueExpected);
+        tinyMCE.get('howTo').setContent(data.howTo);
 
         //activation criteria
-        formEdit.find("#active").prop("value", data.active);
+        formEdit.find("#active").prop("value", data.tcActive);
         formEdit.find("#bugId").prop("value", data.bugID);
         formEdit.find("#comment").prop("value", data.comment);
+        
+        formEdit.find("#usrcreated").prop("value", data.usrCreated);
+        formEdit.find("#datecreated").prop("value", data.dateCreated);
+        formEdit.find("#usrmodif").prop("value", data.usrModif);
+        formEdit.find("#datemodif").prop("value", data.dateModif);
+        
 
         //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
         if (!(data["hasPermissionsUpdate"]) && modalId === "editEntryModal") { // If readonly, we only readonly all fields
@@ -508,11 +534,12 @@ function feedTestCaseModal(test, testCase, modalId) {
             formEdit.find("#actQA").prop("disabled", "disabled");
             formEdit.find("#actUAT").prop("disabled", "disabled");
             formEdit.find("#actProd").prop("disabled", "disabled");
+            formEdit.find("#userAgent").prop("disabled", "disabled");
             var myCountryList = $('#countryList');
             myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
             formEdit.find("#shortDesc").prop("readonly", "readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
             //activation criteria
             formEdit.find("#active").prop("disabled", "disabled");
             formEdit.find("#fromSprint").prop("disabled", "disabled");
@@ -544,11 +571,12 @@ function feedTestCaseModal(test, testCase, modalId) {
             formEdit.find("#actQA").removeProp("disabled");
             formEdit.find("#actUAT").removeProp("disabled");
             formEdit.find("#actProd").removeProp("disabled");
+            formEdit.find("#userAgent").removeProp("disabled");
             var myCountryList = $('#countryList');
             myCountryList.find("[class='countrycb']").removeProp("disabled");
             formEdit.find("#shortDesc").removeProp("readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
             //activation criteria
             formEdit.find("#active").removeProp("disabled");
             formEdit.find("#fromSprint").removeProp("disabled");
@@ -563,9 +591,9 @@ function feedTestCaseModal(test, testCase, modalId) {
             $('#editEntryButton').attr('class', 'btn btn-primary');
             $('#editEntryButton').removeProp('hidden');
             //Duplicate button is displayed if hasPermissionsCreate
-            if (data["hasPermissionsCreate"]){
-            $('#duplicateEntryButton').attr('class', 'btn btn-primary');
-            $('#duplicateEntryButton').removeProp('hidden');   
+            if (data["hasPermissionsCreate"]) {
+                $('#duplicateEntryButton').attr('class', 'btn btn-primary');
+                $('#duplicateEntryButton').removeProp('hidden');
             }
         }
 
@@ -576,8 +604,8 @@ function feedTestCaseModal(test, testCase, modalId) {
 }
 
 /********************************************************
-//TRANSVERSAL >> FEED COMBO FIELDS
-/********************************************************/
+ //TRANSVERSAL >> FEED COMBO FIELDS
+ /********************************************************/
 function appendBuildRevList(system, editData) {
 
     var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
@@ -603,9 +631,9 @@ function appendBuildRevList(system, editData) {
         if (editData !== undefined) {
             var formEdit = $('#editEntryModal');
 
-            formEdit.find("#fromSprint").prop("value", editData.fromSprint);
-            formEdit.find("#toSprint").prop("value", editData.toSprint);
-            formEdit.find("#targetSprint").prop("value", editData.targetSprint);
+            formEdit.find("#fromSprint").prop("value", editData.fromBuild);
+            formEdit.find("#toSprint").prop("value", editData.toBuild);
+            formEdit.find("#targetSprint").prop("value", editData.targetBuild);
         }
 
     });
@@ -633,9 +661,9 @@ function appendBuildRevList(system, editData) {
         if (editData !== undefined) {
             var formEdit = $('#editEntryModal');
 
-            formEdit.find("#fromRevision").prop("value", editData.fromRevision);
-            formEdit.find("#toRevision").prop("value", editData.toRevision);
-            formEdit.find("#targetRevision").prop("value", editData.targetRevision);
+            formEdit.find("[name=fromRev]").prop("value", editData.fromRev);
+            formEdit.find("[name=toRev]").prop("value", editData.toRev);
+            formEdit.find("[name=targetRev]").prop("value", editData.targetRev);
         }
     });
 }
@@ -990,21 +1018,21 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "creator",
-            "sName": "tec.creator",
+            "data": "usrCreated",
+            "sName": "tec.usrCreated",
             "title": doc.getDocOnline("testcase", "Creator"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
-            "data": "lastModifier",
-            "sName": "tec.lastmodifier",
+            "data": "usrModif",
+            "sName": "tec.usrModif",
             "title": doc.getDocOnline("testcase", "LastModifier"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
-            "data": "active",
+            "data": "tcActive",
             "sName": "tec.tcactive",
             "title": doc.getDocOnline("testcase", "TcActive"),
             "sDefaultContent": "",
@@ -1043,14 +1071,14 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "origin",
+            "data": "origine",
             "sName": "tec.origine",
             "title": doc.getDocOnline("testcase", "Origine"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
-            "data": "refOrigin",
+            "data": "refOrigine",
             "sName": "tec.refOrigine",
             "title": doc.getDocOnline("testcase", "RefOrigine"),
             "sWidth": "80px",
@@ -1064,15 +1092,15 @@ function aoColumnsFunc(countries, tableId) {
             "sDefaultContent": ""
         },
         {
-            "data": "shortDescription",
+            "data": "description",
             "sName": "tec.description",
             "title": doc.getDocOnline("testcase", "Description"),
             "sWidth": "300px",
             "sDefaultContent": ""
         },
         {
-            "data": "tcDateCrea",
-            "sName": "tec.tcDateCrea",
+            "data": "dateCreated",
+            "sName": "tec.dateCreated",
             "title": doc.getDocOnline("testcase", "TCDateCrea"),
             "sWidth": "150px",
             "sDefaultContent": ""

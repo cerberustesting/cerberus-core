@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.dto.ITestCaseManualExecutionDTO;
 import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IManualTestCaseService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -48,12 +48,12 @@ public class ManualTestCaseService implements IManualTestCaseService {
     private ITestCaseService testCaseService;
 
     @Override
-    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery) {
+    public List<TestCaseManualExecution> findTestCaseManualExecution(TestCase testCase, String text, String system, String country, String env, String campaign, String battery) {
         List<TestCaseManualExecution> result = new ArrayList();
         List<TestCaseManualExecution> tcmeList = testCaseManualExecutionDTO.findTestCaseManualExecution(testCase, text, system, country, env, campaign, battery);
         try {
             for (TestCaseManualExecution tcme : tcmeList) {
-                TCase tcComplete = testCaseService.findTestCaseByKeyWithDependency(tcme.getTest(), tcme.getTestCase());
+                TestCase tcComplete = testCaseService.findTestCaseByKeyWithDependency(tcme.getTest(), tcme.getTestCase());
                 tcme.settCase(tcComplete);
                 result.add(tcme);
             }

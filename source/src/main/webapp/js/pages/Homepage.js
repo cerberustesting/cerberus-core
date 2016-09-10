@@ -41,7 +41,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                                     </div>');
             }
             $("#selectTag").val("");
-
             $(".removeTag").on('click', function () {
                 $(this).parent().remove();
             });
@@ -192,6 +191,7 @@ function loadTagFilter() {
                 var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
+            $('#selectTag').select2();
         } else {
             showMessageMainPage(messageType, data.message);
         }

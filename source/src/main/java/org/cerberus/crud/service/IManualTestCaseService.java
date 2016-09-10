@@ -23,7 +23,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 
 import org.cerberus.dto.TestCaseManualExecution;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 
 /**
  * {Insert class description here}
@@ -34,5 +34,5 @@ import org.cerberus.crud.entity.TCase;
  */
 public interface IManualTestCaseService {
 
-    List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery);
+    List<TestCaseManualExecution> findTestCaseManualExecution(TestCase testCase, String text, String system, String country, String env, String campaign, String battery);
 }

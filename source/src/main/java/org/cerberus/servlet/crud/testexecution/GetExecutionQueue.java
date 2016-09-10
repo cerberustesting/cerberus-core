@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
@@ -142,13 +142,13 @@ public class GetExecutionQueue extends HttpServlet {
             /**
              * Creating all the list from the JSON to call the services
              */
-            List<TCase> TCList = new ArrayList<TCase>();
+            List<TestCase> TCList = new ArrayList<TestCase>();
             List<String> envList = new ArrayList<String>();
             List<String> countries = new ArrayList<String>();
 
             for (int index = 0; index < testCaseList.length(); index++) {
                 JSONObject testCaseJson = testCaseList.getJSONObject(index);
-                TCase tc = new TCase();
+                TestCase tc = new TestCase();
 
                 tc.setTest(testCaseJson.getString("test"));
                 tc.setTestCase(testCaseJson.getString("testcase"));

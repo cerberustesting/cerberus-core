@@ -29,16 +29,16 @@ import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * {Insert class description here}
@@ -58,7 +58,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     @Autowired
     private IFactoryTestCaseStep factoryTestCaseStep;
     @Autowired
-    private IFactoryTCase factoryTestCase;
+    private IFactoryTestCase factoryTestCase;
 
     private static final Logger LOG = Logger.getLogger(TestCaseStepDAO.class);
 
@@ -585,7 +585,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
                         int sort = resultSet.getInt("sort");
                         String description = resultSet.getString("description");
                         String tcdesc = resultSet.getString("tcdesc");
-                        TCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
+                        TestCase tcToAdd = factoryTestCase.create(t, tc, tcdesc);
                         TestCaseStep tcsToAdd = factoryTestCaseStep.create(t, tc, s, sort, description, null, null, null, 0, null);
                         tcsToAdd.setTestCaseObj(tcToAdd);
                         list.add(tcsToAdd);
