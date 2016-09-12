@@ -1,0 +1,24 @@
+=== Login
+
+Opening Cerberus, you will be invited to login with the information you should have received from your Cerberus administrator.
+
+image:loginpage.png[LoginPage,300,300]
+
+NOTE: If you did not receive any credential, please contact your Cerberus administrator.
+
+NOTE: If you forgot your password, you can retrieve it following the forgot password wizard.
+
+Once you're logged in, you will access to the homepage.
+
+=== Homepage
+
+The homepage is showing information on ::
+* testcases set by application grouped by status (See the <<workflow>> section for more information);
+* testcase executions by tag  (the last ones by default, or customizable as described in the <<Customization>> section);
+* the application versions deployed on environment;
+
+image:homepage.png[Homepage]
+
+==== Customization
+
+image:homepagecustomtag.png[HomepageCustomTag, 300, 300]
