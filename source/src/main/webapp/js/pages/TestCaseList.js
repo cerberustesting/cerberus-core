@@ -71,9 +71,12 @@ function initPage() {
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
     $('#duplicateEntryModal').on('hidden.bs.modal', {extra: "#duplicateEntryModal"}, modalFormCleaner);
+    $('#manageLabelModal').on('hidden.bs.modal', {extra: "#manageLabelModal"}, modalFormCleaner);
     //PREPARE MASS ACTION
     //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
     $('[data-toggle="tooltip"]').tooltip();
+
+    $("#saveManageLabelButton").click(saveTestCaseLabel);
 }
 
 function displayPageLabel(doc) {
@@ -131,8 +134,8 @@ function displayPageLabel(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
-    
-    
+
+
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -511,12 +514,12 @@ function feedTestCaseModal(test, testCase, modalId) {
         formEdit.find("#active").prop("value", data.tcActive);
         formEdit.find("#bugId").prop("value", data.bugID);
         formEdit.find("#comment").prop("value", data.comment);
-        
+
         formEdit.find("#usrcreated").prop("value", data.usrCreated);
         formEdit.find("#datecreated").prop("value", data.dateCreated);
         formEdit.find("#usrmodif").prop("value", data.usrModif);
         formEdit.find("#datemodif").prop("value", data.dateModif);
-        
+
 
         //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
         if (!(data["hasPermissionsUpdate"]) && modalId === "editEntryModal") { // If readonly, we only readonly all fields
@@ -1147,6 +1150,9 @@ function aoColumnsFunc(countries, tableId) {
  * Load label list
  */
 function loadLabelFilter(test, testcase) {
+
+    $("#manageLabelModalForm #test").val(test);
+    $("#manageLabelModalForm #testCase").val(testcase);
     var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
 
     $.when(jqxhr).then(function (data) {
@@ -1194,30 +1200,6 @@ function loadTestCaseLabel(test, testcase) {
             showMessageMainPage(messageType, data.message);
         }
     }).fail(handleErrorAjaxAfterTimeout);
-
-
-//On save, save the label list
-    $("#saveManageLabelButton").on('click', function () {
-        var labelListForm = $("#labelListForm input:checked");
-        var labelList = '';
-        $.each(labelListForm, function (i, e) {
-            labelList += "&labelid=" + $(e).attr("data-labelid");
-        });
-
-        var jqxhr = $.get("SaveTestCaseLabel?test=" + test + "&testcase=" + testcase + labelList, "", "json");
-
-        $.when(jqxhr).then(function (data) {
-            var messageType = getAlertType(data.messageType);
-
-            if (messageType === "success") {
-                $("#manageLabelModal").modal('hide');
-                showMessageMainPage(messageType, data.message);
-            } else {
-                showMessageMainPage(messageType, data.message);
-            }
-        }).fail(handleErrorAjaxAfterTimeout);
-
-    });
 }
 
 function filterOnLabel(element) {
@@ -1227,13 +1209,35 @@ function filterOnLabel(element) {
 }
 
 function editLabelClick(test, testcase) {
+    clearResponseMessageMainPage();
     loadLabelFilter(test, testcase);
     $("#manageLabelModal").modal('show');
-    $("#saveManageLabelButton").on('click', function () {
-        var oTable = $("#testCaseTable").dataTable();
-        oTable.fnDraw(true);
+}
+
+function saveTestCaseLabel() {
+    var test = $("#manageLabelModalForm #test").val();
+    var testcase = $("#manageLabelModalForm #testCase").val();
+    var labelListForm = $("#manageLabelModalForm input:checked");
+    var labelList = '';
+
+    $.each(labelListForm, function (i, e) {
+        labelList += "&labelid=" + $(e).attr("data-labelid");
     });
 
+    var jqxhr = $.get("SaveTestCaseLabel?test=" + test + "&testcase=" + testcase + labelList, "", "json");
+
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+
+        if (messageType === "success") {
+            $("#manageLabelModal").modal('hide');
+            var oTable = $("#testCaseTable").DataTable();
+            oTable.draw();
+            showMessageMainPage(messageType, data.message);
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 
 
