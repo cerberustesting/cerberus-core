@@ -648,8 +648,8 @@ function editEntry(event) {
             $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
         }
         formEdit.find("#shortDesc").prop("value", data.shortDescription);
-        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
-        tinyMCE.get('howTo1').setContent(data.howTo);
+        tinyMCE.get('behaviorOrValueExpected').setContent(data.description);
+        tinyMCE.get('howTo').setContent(data.howTo);
 
         //activation criteria
         formEdit.find("#active").prop("value", data.active);
@@ -676,8 +676,8 @@ function editEntry(event) {
             var myCountryList = $('#countryList');
             myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
             formEdit.find("#shortDesc").prop("readonly", "readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
             //activation criteria
             formEdit.find("#active").prop("disabled", "disabled");
             formEdit.find("#fromSprint").prop("disabled", "disabled");
@@ -712,8 +712,8 @@ function editEntry(event) {
             var myCountryList = $('#countryList');
             myCountryList.find("[class='countrycb']").removeProp("disabled");
             formEdit.find("#shortDesc").removeProp("readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
+            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
             //activation criteria
             formEdit.find("#active").removeProp("disabled");
             formEdit.find("#fromSprint").removeProp("disabled");

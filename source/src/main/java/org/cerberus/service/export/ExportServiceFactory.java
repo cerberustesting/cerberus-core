@@ -426,7 +426,7 @@ public class ExportServiceFactory {
                 application = "N/D";
                 description = "N/D";
             } else {
-                application = executionList.get(0).getDescription();
+                application = executionList.get(0).getBehaviorOrValueExpected();
                 description = executionList.get(0).getApplication();
             }
             //Sets the application and description

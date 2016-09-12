@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
@@ -75,7 +75,7 @@ public class RunTestCaseManually extends HttpServlet {
 
             ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
 
-            TCase testCase = new TCase();
+            TestCase testCase = new TestCase();
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 

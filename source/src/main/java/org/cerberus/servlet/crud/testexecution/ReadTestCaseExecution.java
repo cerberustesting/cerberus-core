@@ -333,7 +333,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("test", testCaseWithExecution.getTest());
                         ttcObject.put("testCase", testCaseWithExecution.getTestCase());
                         ttcObject.put("function", testCaseWithExecution.getFunction());
-                        ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+                        ttcObject.put("shortDesc", testCaseWithExecution.getDescription());
                         ttcObject.put("status", testCaseWithExecution.getStatus());
                         ttcObject.put("application", testCaseWithExecution.getApplication());
                         ttcObject.put("priority", testCaseWithExecution.getPriority());
@@ -460,7 +460,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         result.put("Priority", JavaScriptUtils.javaScriptEscape(String.valueOf(testCaseWithExecution.getPriority())));
         result.put("Function", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getFunction()));
         result.put("Application", JavaScriptUtils.javaScriptEscape(testCaseWithExecution.getApplication()));
-        result.put("ShortDescription", testCaseWithExecution.getShortDescription());
+        result.put("ShortDescription", testCaseWithExecution.getDescription());
 
         return result;
     }
@@ -588,7 +588,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                     ttcObject.put("test", testCaseWithExecution.getTest());
                     ttcObject.put("testCase", testCaseWithExecution.getTestCase());
                     ttcObject.put("function", testCaseWithExecution.getFunction());
-                    ttcObject.put("shortDesc", testCaseWithExecution.getShortDescription());
+                    ttcObject.put("shortDesc", testCaseWithExecution.getDescription());
                     ttcObject.put("status", testCaseWithExecution.getStatus());
                     ttcObject.put("application", testCaseWithExecution.getApplication());
                     ttcObject.put("bugId", testCaseWithExecution.getBugID());

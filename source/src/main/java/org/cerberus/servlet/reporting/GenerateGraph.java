@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.service.ITestCaseExecutionwwwDetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -43,6 +45,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GenerateGraph", urlPatterns = {"/GenerateGraph"})
 public class GenerateGraph extends HttpServlet {
 
+    private IFactoryTestCaseCountry factoryTestCaseCountry;
+    private ITestCaseExecutionwwwDetService tCEwwwDetService;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      *
@@ -82,16 +87,18 @@ public class GenerateGraph extends HttpServlet {
 
 
     private RenderedImage getChart(HttpServletRequest request, String test, String testcase, String country, String parameter) {
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        tCEwwwDetService = appContext.getBean(ITestCaseExecutionwwwDetService.class);
+        factoryTestCaseCountry = appContext.getBean(IFactoryTestCaseCountry.class);
+        
         TestCase tc = new TestCase();
-        List<String> countries = new ArrayList<String>();
-        countries.add(country);
-        tc.setCountryList(countries);
+        List<TestCaseCountry> countriesList = new ArrayList<TestCaseCountry>();
+        countriesList.add(factoryTestCaseCountry.create(test, testcase, country));
+        tc.setTestCaseCountry(countriesList);
         tc.setTestCase(testcase);
         tc.setTest(test);
 
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionwwwDetService tCEwwwDetService = appContext.getBean(ITestCaseExecutionwwwDetService.class);
 
         BufferedImage bi = tCEwwwDetService.getHistoricOfParameter(tc, parameter);
 

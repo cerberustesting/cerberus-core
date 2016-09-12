@@ -19,18 +19,127 @@
  */
 package org.cerberus.crud.factory;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepBatch;
 
 /**
- *
  * @author bcivel
  */
 public interface IFactoryTestCase {
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param origine
+     * @param refOrigine
+     * @param usrCreated
+     * @param implementer
+     * @param usrModif
+     * @param project
+     * @param ticket
+     * @param function
+     * @param application
+     * @param activeQA
+     * @param activeUAT
+     * @param activePROD
+     * @param priority
+     * @param group
+     * @param status
+     * @param description
+     * @param behavior
+     * @param howTo
+     * @param tcActive
+     * @param fromBuild
+     * @param fromRev
+     * @param toBuild
+     * @param toRev
+     * @param lastExecutionStatus
+     * @param bugID
+     * @param targetBuild
+     * @param targetRev
+     * @param comment
+     * @param userAgent
+     * @param testCaseCountry
+     * @param testCaseCountryProperties
+     * @param testCaseStep
+     * @param testCaseStepBatch
+     * @return
+     */
+    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
+                 String implementer, String usrModif, String project, String ticket, String function, String application,
+                 String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+                 String description, String behavior, String howTo, String tcActive, String fromBuild,
+                 String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+                 String targetBuild, String targetRev, String comment, String userAgent, List<TestCaseCountry> testCaseCountry,
+                 List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
+                 List<TestCaseStepBatch> testCaseStepBatch);
     
-    TestCase create( String test,String testCase,String origin,String refOrigin,String creator,
-            String implementer,String lastModifier,String project,String ticket,String application,
-            String runQA,String runUAT,String runPROD,int priority,String group,String status,
-            String shortDescription,String description,String howTo,String active,String fromSprint,
-            String fromRevision,String toSprint,String toRevision,String lastExecutionStatus,String bugID,
-            String targetSprint,String targetRevision,String comment);
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param origine
+     * @param refOrigine
+     * @param usrCreated
+     * @param implementer
+     * @param usrModif
+     * @param project
+     * @param ticket
+     * @param function
+     * @param application
+     * @param activeQA
+     * @param activeUAT
+     * @param activePROD
+     * @param priority
+     * @param group
+     * @param status
+     * @param description
+     * @param behavior
+     * @param howTo
+     * @param tcActive
+     * @param fromBuild
+     * @param fromRev
+     * @param toBuild
+     * @param toRev
+     * @param lastExecutionStatus
+     * @param bugID
+     * @param targetBuild
+     * @param targetRev
+     * @param comment
+     * @param dateCreated
+     * @param userAgent
+     * @param dateModif
+     * @return
+     */
+    TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
+                 String implementer, String usrModif, String project, String ticket, String function, String application,
+                 String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
+                 String description, String behavior, String howTo, String tcActive, String fromBuild,
+                 String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
+                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, Timestamp dateModif);
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @return
+     */
+    TestCase create(String test, String testCase);
+    
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param description
+     * @return
+     */
+    TestCase create(String test, String testCase, String description);
+
 }

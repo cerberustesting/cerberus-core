@@ -35,7 +35,7 @@
 <%@page import="org.cerberus.crud.entity.TestCaseStepAction"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStep"%>
 <%@page import="org.cerberus.crud.entity.Application"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.entity.Test"%>
 <%@page import="org.cerberus.crud.service.IUserSystemService"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
@@ -181,7 +181,7 @@
                 Boolean tinf = getBooleanParameterFalseIfEmpty(request, "Tinf");
 
                 Application myApp = null;
-                TCase tCase = testCaseService.findTestCaseByKey(test, testcase);
+                TestCase tCase = testCaseService.findTestCaseByKey(test, testcase);
                 if (tCase != null) {
                     myApp = myApplicationService.convert(myApplicationService.readByKey(tCase.getApplication()));
                 } else {
@@ -232,7 +232,7 @@
                 testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(testCaseExecutionSysVer);
     %>
     <%if (!test.equals("") && !testcase.equals("")) {
-            TCase tcase = testCaseService.findTestCaseByKey(test, testcase);
+            TestCase tcase = testCaseService.findTestCaseByKey(test, testcase);
 
             group = tcase.getGroup();
             status = tcase.getStatus();
@@ -247,7 +247,7 @@
                 SitdmossBugtrackingURL = "";
             }
             
-            String shortDesc = tcase.getShortDescription();
+            String shortDesc = tcase.getDescription();
 
 
     %>
@@ -439,7 +439,7 @@
                                                         </div>
                                                         <div class="technical_part" style="width: 30%; float:left; background-color:transparent">
                                                             <input  class="wob property_value" style="width:80%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent; color:<%=actionFontColor%>"
-                                                                    value="<%=tcsa.getProperty()%>"
+                                                                    value="<%=tcsa.getValue2()%>"
                                                                     <%if (useStep) {%>
                                                                     data-usestep-test="<%=testForQuery%>"
                                                                     data-usestep-testcase="<%=testcaseForQuery%>"
@@ -447,9 +447,9 @@
                                                                     <%}%>
                                                                     onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                         </div>
-                                                        <%if (!tcsa.getProperty().equals("")) {%>
+                                                        <%if (!tcsa.getValue2().equals("")) {%>
                                                         <div style="width:10%; float:left">
-                                                            <input type="button" value="c" onclick="calcProp('<%=tcsa.getProperty()%>')">
+                                                            <input type="button" value="c" onclick="calcProp('<%=tcsa.getValue2()%>')">
                                                         </div>
                                                         <%}%>
                                                     </div>

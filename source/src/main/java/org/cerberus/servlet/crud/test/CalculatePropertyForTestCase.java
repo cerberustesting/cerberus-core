@@ -34,7 +34,7 @@ import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.entity.SqlLibrary;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestData;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
@@ -97,7 +97,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
-                    TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
+                    TestCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     if (testCase != null) {
                         application = applicationService.convert(applicationService.readByKey(testCase.getApplication())).getApplication();
                     } else {
@@ -133,7 +133,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);
 
-                    TCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
+                    TestCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     if (testCase != null) {
                         system = applicationService.convert(applicationService.readByKey(testCase.getApplication())).getSystem();
                     } else {

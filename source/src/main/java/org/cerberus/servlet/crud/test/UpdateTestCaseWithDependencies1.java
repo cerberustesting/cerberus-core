@@ -31,13 +31,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
@@ -64,6 +63,7 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  *
@@ -124,7 +124,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
-            TCase tc = (TCase) resp.getItem();
+            TestCase tc = (TestCase) resp.getItem();
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -301,9 +301,9 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
      * @return TestCase object
      * @see org.cerberus.crud.entity.TestCase
      */
-    private TCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+    private TestCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
 
-        IFactoryTCase testCaseFactory = appContext.getBean(IFactoryTCase.class);
+        IFactoryTestCase testCaseFactory = appContext.getBean(IFactoryTestCase.class);
         String origin = request.getParameter("editOrigin");
         String refOrigin = request.getParameter("editRefOrigin");
         String creator = request.getParameter("editCreator");
@@ -331,9 +331,10 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         String targetRevision = request.getParameter("editTargetRev");
         String comment = HtmlUtils.htmlEscape(request.getParameter("editComment"));
         String function = request.getParameter("editFunction");
+        String userAgent = request.getParameter("editUserAgent");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
                 runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
-                toRevision, null, bugID, targetSprint, targetRevision, comment, null, null, null, null);
+                toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
     }
 
     private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {

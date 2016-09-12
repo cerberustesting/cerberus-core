@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group form-group-sm col-xs-3">
+                            <div class="form-group form-group-sm col-xs-4">
                                 <label class="control-label" for="test" name="testField">Test</label>
                                 <input type="text" class="form-control input-sm" name="test" id="test" aria-describedby="basic-addon1" readonly>
                             </div>
@@ -29,14 +29,22 @@
                                 <label class="control-label" for="testCase" name="testCaseField">Test Case</label>
                                 <input type="text" class="form-control input-sm" name="testCase" id="testCase" readonly>
                             </div>
+                            <div class="form-group form-group-sm col-xs-3">
+                                <label for="status" name="statusField">Status</label>
+                                <select type="text" class="form-control input-sm" name="status" id="status"></select>
+                            </div>
+                            <div class="form-group form-group-sm col-xs-2">
+                                <label for="active" name="activeField">Active</label>
+                                <select type="text" class="form-control input-sm" name="active" id="active"></select>
+                            </div>
                         </div>
                         <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
                             <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="editTab1Text" name="tabDescritpion">Description</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabInformation">Information</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="editTab3Text" name="tabParameters">Parameters</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="editTab3Text" name="tabDefinition">Definition</a></li>
                             <li><a data-toggle="tab" href="#tabsEdit-4" id="editTab4Text" name="tabActivation">Activation Criteria</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-5" id="editTab5Text" name="tabCountry">Countries</a></li>
                             <!--<li><a data-toggle="tab" href="#tabsEdit-6" id="editTab6Text" name="tabLabel">Label</a></li>-->
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="editTab2Text" name="tabInformation">Origin</a></li>
+                            <li><a data-toggle="tab" href="#tabsedit-7" id="editTab7Text" name="tabTraca">Tracability</a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
@@ -47,135 +55,28 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="form-group form-group-sm col-xs-6">
-                                        <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
-                                        <textarea id="behaviorOrValueExpected1" name="behaviorOrValueExpected" class="form-control wysiwyg" style="height: 200px"></textarea> 
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-6">
-                                        <label for="howTo" name="howToField">How to</label>
-                                        <textarea id="howTo1" name="howTo" class="form-control wysiwyg" style="height: 200px"></textarea> 
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-xs-6">
-                                        <label class="control-label" for="testDesc" name="descriptionField">Test description</label>
-                                        <input class="form-control input-sm"  id="testDesc" name="testDesc" readonly>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="creator" name="creatorField">Creator</label>
-                                        <input type="text" class="form-control input-sm" name="creator" id="creator" readonly>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="lastModifier" name="lastModifierField">Last Modifier</label>
-                                        <input class="form-control input-sm"  id="lastModifier" name="lastModifier" readonly>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="implementer" name="implementerField">Implementer</label>
-                                        <input class="form-control input-sm"  id="implementer" name="implementer">
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="tcDateCrea" name="tcDateCreaField">Creation date</label>
-                                        <input class="form-control input-sm"  id="tcDateCrea" name="tcDateCrea" readonly>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-xs-2">
-                                        <label for="origin" name="originField">Origin</label>
-                                        <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-2">
-                                        <label for="refOrigin" name="refOriginField">Ref Origin</label>
-                                        <input type="text" class="form-control input-sm" name="refOrigin" id="refOrigin" readonly/>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="project" name="projectField">Project</label>
-                                        <select type="text" class="form-control input-sm" name="project" id="project"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-2">
-                                        <label for="ticket" name="ticketField">Ticket</label>
-                                        <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
+                                    <div class="form-group form-group-sm col-xs-4">
+                                        <label for="application" name="applicationField">Application</label>
+                                        <select type="text" class="form-control input-sm" name="application" id="application"></select>
                                     </div>
                                     <div class="form-group form-group-sm col-xs-3">
                                         <label for="function" name="functionField">Function</label>
                                         <input type="text" class="form-control input-sm" name="function" id="function"/>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
-                                <div class="row">
-                                    <div class="form-group form-group-sm col-xs-4">
-                                        <label for="application" name="applicationField">Application</label>
-                                        <select type="text" class="form-control input-sm" name="application" id="application"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-2">
-                                        <label for="status" name="statusField">Status</label>
-                                        <select type="text" class="form-control input-sm" name="status" id="status"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-2">
+                                    <div class="form-group form-group-sm col-xs-3">
                                         <label for="group" name="groupField">Group</label>
                                         <select type="text" class="form-control input-sm" name="group" id="group">
                                         </select>
                                     </div>
-                                    <div class="form-group form-group-sm col-xs-1">
+                                    <div class="form-group form-group-sm col-xs-2">
                                         <label for="priority" name="priorityField">Priority</label>
                                         <select type="text" class="form-control input-sm" name="priority" id="priority"></select>
                                     </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="actQA" name="actQAField">Active QA</label>
-                                        <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
-                                        </select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="actUAT" name="actUATField">Active UAT</label>
-                                        <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="actProd" name="actProdField">Active Prod</label>
-                                        <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
-                                    </div>
                                 </div>
-                            </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
                                 <div class="row">
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="active" name="activeField">Active</label>
-                                        <select type="text" class="form-control input-sm" name="active" id="active"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="fromSprint" name="fromSprintField">From Sprint</label>
-                                        <select type="text" class="form-control input-sm" name="fromSprint" id="fromSprint"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="fromRev" name="fromRevField">From Rev</label>
-                                        <select type="text" class="form-control input-sm" name="fromRev" id="fromRev"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="toSprint" name="toSprintField">To Sprint</label>
-                                        <select type="text" class="form-control input-sm" name="toSprint" id="toSprint"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="toRev" name="toRevField">To Rev</label>
-                                        <select type="text" class="form-control input-sm" name="toRev" id="toRev"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-2">
-                                        <label for="bugId" name="bugIdField">Bug ID</label>
-                                        <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-3">
-                                        <label for="link" name="linkField">Link to The Bug</label>
-                                        <br><a name="link" id="link" style="display: inline-block;"></a>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="targetSprint" name="targetSprintField">Target Sprint</label>
-                                        <select type="text" class="form-control input-sm" name="targetSprint" id="targetSprint"></select>
-                                    </div>
-                                    <div class="form-group form-group-sm col-xs-1">
-                                        <label for="targetRev" name="targetRevField">Target Rev</label>
-                                        <select type="text" class="form-control input-sm" name="targetRev" id="targetRev"></select>
+                                    <div class="form-group form-group-sm col-xs-12">
+                                        <label for="behaviorOrValueExpected" name="behaviorOrValueExpectedField">Behavior or value expected</label>
+                                        <textarea id="behaviorOrValueExpected" name="behaviorOrValueExpected" class="form-control wysiwyg" style="height: 200px"></textarea> 
                                     </div>
                                 </div>
                                 <div class="row">
@@ -185,15 +86,144 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-5">
+                            <div class="center marginTop25 tab-pane fade" id="tabsEdit-3">
                                 <div class="row">
-                                    <div class="col-xs-12">
-                                        <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
-                                        <div id="countryList" name="countryList" style="margin-top: 5px;"></div>
+                                    <div class="form-group form-group-sm col-xs-12">
+                                        <label for="useragent" name="userAgentField">User Agent</label>
+                                        <input type="text" class="form-control input-sm" name="userAgent" id="userAgent"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-12">
+                                        <label for="howTo" name="howToField">How to</label>
+                                        <textarea id="howTo" name="howTo" class="form-control wysiwyg" style="height: 200px"></textarea> 
                                     </div>
                                 </div>
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-6">
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-4">
+                                        <label for="origin" name="originField">Origin</label>
+                                        <select type="text" class="form-control input-sm" name="origin" id="origin"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-8">
+                                        <label for="refOrigin" name="refOriginField">Ref Origin</label>
+                                        <input type="text" class="form-control input-sm" name="refOrigin" id="refOrigin" readonly/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-6">
+                                        <label for="project" name="projectField">Project</label>
+                                        <select type="text" class="form-control input-sm" name="project" id="project"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-6">
+                                        <label for="ticket" name="ticketField">Ticket</label>
+                                        <input type="text" class="form-control input-sm" name="ticket" id="ticket"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
+                                        <div id="countryList" name="countryList" style="margin-top: 5px;margin-bottom: 25px;"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-4">
+                                        <label for="actQA" name="actQAField">Active QA</label>
+                                        <select type="text" class="form-control input-sm" name="activeQA" id="actQA">
+                                        </select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-4">
+                                        <label for="actUAT" name="actUATField">Active UAT</label>
+                                        <select type="text" class="form-control input-sm" name="activeUAT" id="actUAT"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-4">
+                                        <label for="actProd" name="actProdField">Active Prod</label>
+                                        <select type="text" class="form-control input-sm" name="activeProd" id="actProd"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="fromSprint" name="fromSprintField">From Sprint</label>
+                                        <select type="text" class="form-control input-sm" name="fromSprint" id="fromSprint"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="fromRev" name="fromRevField">From Rev</label>
+                                        <select type="text" class="form-control input-sm" name="fromRev" id="fromRev"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="toSprint" name="toSprintField">To Sprint</label>
+                                        <select type="text" class="form-control input-sm" name="toSprint" id="toSprint"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="toRev" name="toRevField">To Rev</label>
+                                        <select type="text" class="form-control input-sm" name="toRev" id="toRev"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="bugId" name="bugIdField">Bug ID</label>
+                                        <input type="text" class="form-control input-sm" name="bugId" id="bugId"/>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="link" name="linkField">Link to The Bug</label>
+                                        <br><a name="link" id="link" style="display: inline-block;"></a>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="targetSprint" name="targetSprintField">Target Sprint</label>
+                                        <select type="text" class="form-control input-sm" name="targetSprint" id="targetSprint"></select>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-3">
+                                        <label for="targetRev" name="targetRevField">Target Rev</label>
+                                        <select type="text" class="form-control input-sm" name="targetRev" id="targetRev"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsEdit-5">
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsedit-7">
+                                <div id="listPanelTraca">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="row">
+                                                <div class="form-group form-group-sm col-xs-12">
+                                                    <label for="implementer" name="implementerField">Implementer</label>
+                                                    <input class="form-control input-sm"  id="implementer" name="implementer">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="form-group col-xs-6">
+                                                    <label name="lbl_datecreated" for="datecreated">datecreated</label>
+                                                    <div>
+                                                        <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                    </div>
+                                                </div> 
+                                                <div class="form-group col-xs-6">
+                                                    <label name="lbl_usrcreated" for="usrcreated">usrcreated</label>
+                                                    <div>
+                                                        <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                    </div>
+                                                </div> 
+                                            </div> 
+                                            <div class="row">
+                                                <div class="form-group col-xs-6">
+                                                    <label name="lbl_datemodif" for="datemodif">datemodif</label>
+                                                    <div>
+                                                        <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                    </div>
+                                                </div> 
+                                                <div class="form-group col-xs-6">
+                                                    <label name="lbl_usrmodif" for="usrmodif">usrmodif</label>
+                                                    <div>
+                                                        <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </div>   
                             </div>
                         </div>
                     </div>

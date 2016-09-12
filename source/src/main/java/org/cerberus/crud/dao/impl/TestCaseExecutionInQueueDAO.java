@@ -1079,7 +1079,10 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
+    public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList
+            , List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList
+            , List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList
+            , List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCaseWithExecution> tceList = new ArrayList<TestCaseWithExecution>();
@@ -1093,7 +1096,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         query.append(" select tce.*, tc.Project, tc.Ticket, tc.Description, tc.BehaviorOrValueExpected, ");
         query.append(" tc.Priority, tc.`Group`, tc.Origine, tc.RefOrigine, tc.HowTo, tc.`Comment`, ");
         query.append(" tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, tc.BugID, tc.TargetBuild, ");
-        query.append(" tc.TargetRev, tc.Creator, tc.Implementer, tc.LastModifier, tc.activeQA, ");
+        query.append(" tc.TargetRev, tc.UsrCreated, tc.Implementer, tc.LastModifier, tc.activeQA, ");
         query.append(" tc.activeUAT, tc.activePROD, tc.`function`, tc.TcActive, ");
         query.append(" a.sort, a.`type`, a.`system`, a.SubSystem, a.svnurl, a.deploytype, ");
         query.append(" a.mavengroupid, a.BugTrackerUrl, a.BugTrackerNewUrl ");
@@ -1152,7 +1155,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         }
         
         //creator
-        String creatorClause = SqlUtil.generateInClause("tc.Creator", creatorList);
+        String creatorClause = SqlUtil.generateInClause("tc.UsrCreated", creatorList);
         if(!StringUtil.isNullOrEmpty(creatorClause)){
             whereClauses.add(creatorClause);
         }

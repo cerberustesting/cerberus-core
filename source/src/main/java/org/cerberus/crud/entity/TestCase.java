@@ -17,54 +17,64 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
 import java.util.List;
 
-import org.cerberus.util.StringUtil;
-
 /**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 18/Dez/2012
- * @since 2.0.0
+ * @author bcivel
  */
 public class TestCase {
-    //Test Information
+
     private String test;
     private String testCase;
-    //TestCaseInformation
-    private String origin;
-    private String refOrigin;
-    private String creator;
-    private String implementer;
-    private String lastModifier;
+    private String application;
     private String project;
     private String ticket;
-    private String function;
-    //TestCase Parameters
-    private String application;
-    private boolean runQA;
-    private boolean runUAT;
-    private boolean runPROD;
-    private int priority;
-    private String group;
-    private String status;
-    private List<Country> countriesList;
-    private String shortDescription;
     private String description;
+    private String behaviorOrValueExpected;
+    private int priority;
+    private String status;
+    private String tcActive;
+    private String group;
+    private String origine;
+    private String refOrigine;
     private String howTo;
-    //Activation Criterias
-    private boolean active;
-    private String fromSprint;
-    private String fromRevision;
-    private String toSprint;
-    private String toRevision;
-    private String lastExecutionStatus;
-    private String bugID;
-    private String targetSprint;
-    private String targetRevision;
     private String comment;
-    private List<String> countryList;
+    private String fromBuild;
+    private String fromRev;
+    private String toBuild;
+    private String toRev;
+    private String bugID;
+    private String targetBuild;
+    private String targetRev;
+    private String implementer;
+    private String activeQA;
+    private String activeUAT;
+    private String activePROD;
+    private String function;
+    private String userAgent;
+    private String usrCreated;
+    private String dateCreated;
+    private String usrModif;
+    private Timestamp dateModif;
+
+    /**
+     * Not included in table.
+     */
+    private String lastExecutionStatus;
+    private List<TestCaseCountry> testCaseCountry;
+    private List<TestCaseCountryProperties> testCaseCountryProperties;
+    private List<TestCaseStep> testCaseStep;
+    private List<TestCaseStepBatch> testCaseStepBatch;
+    private List<TestCaseLabel> testCaseLabel;
+
+    public String getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(String dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 
     public String getFunction() {
         return function;
@@ -74,270 +84,292 @@ public class TestCase {
         this.function = function;
     }
 
-    public List<String> getCountryList() {
-        return this.countryList;
+    public List<TestCaseCountryProperties> getTestCaseCountryProperties() {
+        return testCaseCountryProperties;
     }
 
-    public void setCountryList(List<String> countryList) {
-        this.countryList = countryList;
+    public void setTestCaseCountryProperties(List<TestCaseCountryProperties> testCaseCountryProperties) {
+        this.testCaseCountryProperties = testCaseCountryProperties;
     }
 
-    public TestCase() {
+    public List<TestCaseStepBatch> getTestCaseStepBatch() {
+        return testCaseStepBatch;
     }
 
-    public String getTest() {
-        return this.test;
+    public void setTestCaseStepBatch(List<TestCaseStepBatch> testCaseStepBatch) {
+        this.testCaseStepBatch = testCaseStepBatch;
     }
 
-    public void setTest(String tempTest) {
-        this.test = tempTest;
+    public String getTcActive() {
+        return tcActive;
     }
 
-    public String getTestCase() {
-        return this.testCase;
-    }
-
-    public void setTestCase(String tempTestCase) {
-        this.testCase = tempTestCase;
-    }
-
-    public String getOrigin() {
-        return this.origin;
-    }
-
-    public void setOrigin(String tempOrigin) {
-        this.origin = tempOrigin;
-    }
-
-    public String getRefOrigin() {
-        return this.refOrigin;
-    }
-
-    public void setRefOrigin(String tempRefOrigin) {
-        this.refOrigin = tempRefOrigin;
-    }
-
-    public String getCreator() {
-        return this.creator;
-    }
-
-    public void setCreator(String tempCreator) {
-        this.creator = tempCreator;
-    }
-
-    public String getImplementer() {
-        return this.implementer;
-    }
-
-    public void setImplementer(String tempImplementer) {
-        this.implementer = tempImplementer;
-    }
-
-    public String getLastModifier() {
-        return this.lastModifier;
-    }
-
-    public void setLastModifier(String tempLastModifier) {
-        this.lastModifier = tempLastModifier;
-    }
-
-    public String getProject() {
-        return this.project;
-    }
-
-    public void setProject(String tempProject) {
-        this.project = tempProject;
-    }
-
-    public String getTicket() {
-        return this.ticket;
-    }
-
-    public void setTicket(String tempTicket) {
-        this.ticket = tempTicket;
+    public void setTcActive(String active) {
+        this.tcActive = active;
     }
 
     public String getApplication() {
-        return this.application;
+        return application;
     }
 
-    public void setApplication(String tempApplication) {
-        this.application = tempApplication;
-    }
-
-    public boolean isRunQA() {
-        return this.runQA;
-    }
-
-    public void setRunQA(boolean tempRunQA) {
-        this.runQA = tempRunQA;
-    }
-
-    public void setRunQA(String tempRunQA) {
-        this.runQA = StringUtil.parseBoolean(tempRunQA);
-    }
-
-    public boolean isRunUAT() {
-        return this.runUAT;
-    }
-
-    public void setRunUAT(boolean tempRunUAT) {
-        this.runUAT = tempRunUAT;
-    }
-
-    public void setRunUAT(String tempRunUAT) {
-        this.runUAT = StringUtil.parseBoolean(tempRunUAT);
-    }
-
-    public boolean isRunPROD() {
-        return this.runPROD;
-    }
-
-    public void setRunPROD(boolean tempRunPROD) {
-        this.runPROD = tempRunPROD;
-    }
-
-    public void setRunPROD(String tempRunPROD) {
-        this.runPROD = StringUtil.parseBoolean(tempRunPROD);
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public void setPriority(int tempPriority) {
-        this.priority = tempPriority;
-    }
-
-    public String getGroup() {
-        return this.group;
-    }
-
-    public void setGroup(String tempGroup) {
-        this.group = tempGroup;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(String tempStatus) {
-        this.status = tempStatus;
-    }
-
-    public List<Country> getCountriesList() {
-        return this.countriesList;
-    }
-
-    public void setCountriesList(List<Country> tempCountriesList) {
-        this.countriesList = tempCountriesList;
-    }
-
-    public String getShortDescription() {
-        return this.shortDescription;
-    }
-
-    public void setShortDescription(String tempShortDescription) {
-        this.shortDescription = tempShortDescription;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String tempDescription) {
-        this.description = tempDescription;
-    }
-
-    public String getHowTo() {
-        return this.howTo;
-    }
-
-    public void setHowTo(String tempHowTo) {
-        this.howTo = tempHowTo;
-    }
-
-    public boolean isActive() {
-        return this.active;
-    }
-
-    public void setActive(boolean tempActive) {
-        this.active = tempActive;
-    }
-
-    public void setActive(String tempActive) {
-        this.active = StringUtil.parseBoolean(tempActive);
-    }
-
-    public String getFromSprint() {
-        return this.fromSprint;
-    }
-
-    public void setFromSprint(String tempFromSprint) {
-        this.fromSprint = tempFromSprint;
-    }
-
-    public String getFromRevision() {
-        return this.fromRevision;
-    }
-
-    public void setFromRevision(String tempFromRevision) {
-        this.fromRevision = tempFromRevision;
-    }
-
-    public String getToSprint() {
-        return this.toSprint;
-    }
-
-    public void setToSprint(String tempToSprint) {
-        this.toSprint = tempToSprint;
-    }
-
-    public String getToRevision() {
-        return this.toRevision;
-    }
-
-    public void setToRevision(String tempToRevision) {
-        this.toRevision = tempToRevision;
-    }
-
-    public String getLastExecutionStatus() {
-        return this.lastExecutionStatus;
-    }
-
-    public void setLastExecutionStatus(String tempLastExecutionStatus) {
-        this.lastExecutionStatus = tempLastExecutionStatus;
+    public void setApplication(String application) {
+        this.application = application;
     }
 
     public String getBugID() {
-        return this.bugID;
+        return bugID;
     }
 
-    public void setBugID(String tempBugID) {
-        this.bugID = tempBugID;
-    }
-
-    public String getTargetSprint() {
-        return this.targetSprint;
-    }
-
-    public void setTargetSprint(String tempTargetSprint) {
-        this.targetSprint = tempTargetSprint;
-    }
-
-    public String getTargetRevision() {
-        return this.targetRevision;
-    }
-
-    public void setTargetRevision(String tempTargetRevision) {
-        this.targetRevision = tempTargetRevision;
+    public void setBugID(String bugID) {
+        this.bugID = bugID;
     }
 
     public String getComment() {
-        return this.comment;
+        return comment;
     }
 
-    public void setComment(String tempComment) {
-        this.comment = tempComment;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
+
+    public String getUsrCreated() {
+        return usrCreated;
+    }
+
+    public void setUsrCreated(String creator) {
+        this.usrCreated = creator;
+    }
+
+    public String getBehaviorOrValueExpected() {
+        return behaviorOrValueExpected;
+    }
+
+    public void setBehaviorOrValueExpected(String behaviorOrValuexpected) {
+        this.behaviorOrValueExpected = behaviorOrValuexpected;
+    }
+
+    public String getFromRev() {
+        return fromRev;
+    }
+
+    public void setFromRev(String fromRevision) {
+        this.fromRev = fromRevision;
+    }
+
+    public String getFromBuild() {
+        return fromBuild;
+    }
+
+    public void setFromBuild(String fromSprint) {
+        this.fromBuild = fromSprint;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getHowTo() {
+        return howTo;
+    }
+
+    public void setHowTo(String howTo) {
+        this.howTo = howTo;
+    }
+
+    public String getImplementer() {
+        return implementer;
+    }
+
+    public void setImplementer(String implementer) {
+        this.implementer = implementer;
+    }
+
+    public String getLastExecutionStatus() {
+        return lastExecutionStatus;
+    }
+
+    public void setLastExecutionStatus(String lastExecutionStatus) {
+        this.lastExecutionStatus = lastExecutionStatus;
+    }
+
+    public String getUsrModif() {
+        return usrModif;
+    }
+
+    public void setUsrModif(String lastModifier) {
+        this.usrModif = lastModifier;
+    }
+
+    public String getOrigine() {
+        return origine;
+    }
+
+    public void setOrigine(String origin) {
+        this.origine = origin;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    public String getRefOrigine() {
+        return refOrigine;
+    }
+
+    public void setRefOrigine(String refOrigin) {
+        this.refOrigine = refOrigin;
+    }
+
+    public String getActivePROD() {
+        return activePROD;
+    }
+
+    public void setActivePROD(String runPROD) {
+        this.activePROD = runPROD;
+    }
+
+    public String getActiveQA() {
+        return activeQA;
+    }
+
+    public void setActiveQA(String runQA) {
+        this.activeQA = runQA;
+    }
+
+    public String getActiveUAT() {
+        return activeUAT;
+    }
+
+    public void setActiveUAT(String runUAT) {
+        this.activeUAT = runUAT;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTargetRev() {
+        return targetRev;
+    }
+
+    public void setTargetRev(String targetRevision) {
+        this.targetRev = targetRevision;
+    }
+
+    public String getTargetBuild() {
+        return targetBuild;
+    }
+
+    public void setTargetBuild(String targetSprint) {
+        this.targetBuild = targetSprint;
+    }
+
+    public String getTest() {
+        return test;
+    }
+
+    public void setTest(String test) {
+        this.test = test;
+    }
+
+    public String getTestCase() {
+        return testCase;
+    }
+
+    public void setTestCase(String testCase) {
+        this.testCase = testCase;
+    }
+
+    public List<TestCaseCountry> getTestCaseCountry() {
+        return testCaseCountry;
+    }
+
+    public void setTestCaseCountry(List<TestCaseCountry> testCaseCountry) {
+        this.testCaseCountry = testCaseCountry;
+    }
+
+    public List<TestCaseStep> getTestCaseStep() {
+        return testCaseStep;
+    }
+
+    public void setTestCaseStep(List<TestCaseStep> testCaseStep) {
+        this.testCaseStep = testCaseStep;
+    }
+
+    public String getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
+
+    public String getToRev() {
+        return toRev;
+    }
+
+    public void setToRev(String toRevision) {
+        this.toRev = toRevision;
+    }
+
+    public String getToBuild() {
+        return toBuild;
+    }
+
+    public void setToBuild(String toSprint) {
+        this.toBuild = toSprint;
+    }
+
+    public List<TestCaseLabel> getTestCaseLabel() {
+        return testCaseLabel;
+    }
+
+    public void setTestCaseLabel(List<TestCaseLabel> testCaseLabel) {
+        this.testCaseLabel = testCaseLabel;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public Timestamp getDateModif() {
+        return dateModif;
+    }
+
+    public void setDateModif(Timestamp dateModif) {
+        this.dateModif = dateModif;
+    }
+
 }

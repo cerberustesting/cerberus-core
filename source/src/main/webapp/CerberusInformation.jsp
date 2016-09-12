@@ -149,6 +149,8 @@
                                                     <tr>
                                                         <th class="text-center" id="systemHeader" name="systemHeader">Project</th>
                                                         <th class="text-center" id="countryHeader" name="countryHeader">Version</th>
+                                                        <th class="text-center" id="countryHeader" name="countryHeader">Database Target Version</th>
+                                                        <th class="text-center" id="countryHeader" name="countryHeader">Database Current Version</th>
                                                         <th class="text-center" id="environmentHeader" name="environmentHeader">Environment</th>
                                                     </tr>
                                                 </thead>

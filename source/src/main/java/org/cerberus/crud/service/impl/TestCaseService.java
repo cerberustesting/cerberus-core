@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.cerberus.crud.dao.ITestCaseDAO;
-import org.cerberus.crud.entity.TCase;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -35,7 +34,6 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -48,6 +46,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * @author bcivel
@@ -69,16 +68,16 @@ public class TestCaseService implements ITestCaseService {
     @Autowired
     private ITestCaseStepActionControlService testCaseStepActionControlService;
     @Autowired
-    private IFactoryTCase factoryTCase;
+    private IFactoryTestCase factoryTCase;
 
     @Override
-    public TCase findTestCaseByKey(String test, String testCase) throws CerberusException {
+    public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
         return testCaseDao.findTestCaseByKey(test, testCase);
     }
 
     @Override
-    public TCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException {
-        TCase newTcase;
+    public TestCase findTestCaseByKeyWithDependency(String test, String testCase) throws CerberusException {
+        TestCase newTcase;
         newTcase = findTestCaseByKey(test, testCase);
         if (newTcase == null) {
             //TODO:FN temporary debug messages
@@ -131,12 +130,12 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TCase> findTestCaseByTest(String test) {
+    public List<TestCase> findTestCaseByTest(String test) {
         return testCaseDao.findTestCaseByTest(test);
     }
 
     @Override
-    public List<TCase> findTestCaseByTestSystem(String test, String system) {
+    public List<TestCase> findTestCaseByTestSystem(String test, String system) {
         return testCaseDao.findTestCaseByTestSystem(test, system);
     }
 
@@ -151,12 +150,12 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean createTestCase(TCase testCase) throws CerberusException {
+    public boolean createTestCase(TestCase testCase) throws CerberusException {
         return testCaseDao.createTestCase(testCase);
     }
 
     @Override
-    public List<TCase> findTestCaseActiveByCriteria(String test, String application, String country) {
+    public List<TestCase> findTestCaseActiveByCriteria(String test, String application, String country) {
         return testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
     }
 
@@ -164,13 +163,13 @@ public class TestCaseService implements ITestCaseService {
      * @since 0.9.1
      */
     @Override
-    public List<TCase> findTestCaseByAllCriteria(TCase tCase, String text, String system) {
+    public List<TestCase> findTestCaseByAllCriteria(TestCase tCase, String text, String system) {
         return this.testCaseDao.findTestCaseByCriteria(tCase, text, system);
     }
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
+            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
         return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
     }
 
@@ -186,13 +185,13 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
-        TCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null, null,
+        TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y",
-                null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<String> result = new ArrayList();
-        List<TCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
-        for (TCase testCase : testCases) {
+        List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
+        for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
                 result.add(testCase.getTest());
             }
@@ -205,14 +204,14 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
-        TCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null, null,
+    public List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
+        TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y",
-                null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
-        List<TCase> result = new ArrayList();
-        List<TCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
-        for (TCase testCase : testCases) {
+        List<TestCase> result = new ArrayList();
+        List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
+        for (TestCase testCase : testCases) {
             if (!testCase.getGroup().equals("PRIVATE")) {
                 result.add(testCase);
             }
@@ -221,12 +220,12 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public boolean deleteTestCase(TCase testCase) {
+    public boolean deleteTestCase(TestCase testCase) {
         return testCaseDao.deleteTestCase(testCase);
     }
 
     @Override
-    public void updateTestCaseField(TCase tc, String columnName, String value) {
+    public void updateTestCaseField(TestCase tc, String columnName, String value) {
         testCaseDao.updateTestCaseField(tc, columnName, value);
     }
 
@@ -234,17 +233,17 @@ public class TestCaseService implements ITestCaseService {
      * @since 1.0.2
      */
     @Override
-    public List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system) {
+    public List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system) {
         return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, system);
     }
 
     @Override
-    public void updateTestCase(TCase tc) throws CerberusException {
+    public void updateTestCase(TestCase tc) throws CerberusException {
         testCaseDao.updateTestCase(tc);
     }
 
     @Override
-    public List<TCase> findTestCaseByCampaignName(String campaign) {
+    public List<TestCase> findTestCaseByCampaignName(String campaign) {
         return testCaseDao.findTestCaseByCampaignName(campaign);
     }
 
@@ -254,13 +253,13 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
+    public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         return this.testCaseDao.findTestCaseByCampaignNameAndCountries(campaign, countries);
     }
 
     @Override
-    public List<TCase> findUseTestCaseList(String test, String testCase) throws CerberusException {
-        List<TCase> result = new ArrayList();
+    public List<TestCase> findUseTestCaseList(String test, String testCase) throws CerberusException {
+        List<TestCase> result = new ArrayList();
         List<TestCaseStep> tcsList = testCaseStepService.getListOfSteps(test, testCase);
         for (TestCaseStep tcs : tcsList) {
             if (("Y").equals(tcs.getUseStep())) {
@@ -271,7 +270,7 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public List<TCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
+    public List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
         String testClause = SqlUtil.createWhereInClause(" AND tc.Test", test == null ? null : Arrays.asList(test), true);
         String projectClause = SqlUtil.createWhereInClause(" AND tc.Project", project == null ? null : Arrays.asList(project), true);
         String appClause = SqlUtil.createWhereInClause(" AND tc.Application", app == null ? null : Arrays.asList(app), true);
@@ -313,25 +312,24 @@ public class TestCaseService implements ITestCaseService {
     public AnswerItem readByKey(String test, String testCase) {
         return testCaseDao.readByKey(test, testCase);
     }
-    
-    
+
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
     }
 
     @Override
-    public Answer update(TCase testCase) {
+    public Answer update(TestCase testCase) {
         return testCaseDao.update(testCase);
     }
 
     @Override
-    public Answer create(TCase testCase) {
+    public Answer create(TestCase testCase) {
         return testCaseDao.create(testCase);
     }
 
     @Override
-    public Answer delete(TCase testCase) {
+    public Answer delete(TestCase testCase) {
         return testCaseDao.delete(testCase);
     }
 }

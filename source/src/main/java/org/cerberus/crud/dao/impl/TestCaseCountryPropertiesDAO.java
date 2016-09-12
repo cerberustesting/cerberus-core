@@ -562,24 +562,11 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         MessageEvent rs;
         List<TestListDTO> listOfTests = new ArrayList<TestListDTO>();
         StringBuilder query = new StringBuilder();
-//        query.append("select count(*) as total, tccp.*, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, tc.TcActive as Active, tc.`Group`, ");
-//        query.append("tc.Creator, tc.`Status` ");
-//        query.append("from testcasecountryproperties tccp, test t, testcase tc, testdatalib tdl ");
-//        query.append("where t.test = tccp.test and ");
-//        query.append("tccp.TestCase = tc.TestCase and ");
-//        query.append("tc.Test = t.Test and ");
-//        query.append("(tccp.Country = tdl.Country or tdl.country='') and ");
-//        query.append("tccp.Value1 = tdl.`Name` and  ");
-//        query.append("tdl.TestDataLibID = ? and ");
-//        query.append("tdl.`Name` LIKE ? and ");
-//        query.append("(tdl.Country = ? or tdl.country='') and ");
-//        query.append("tccp.`Type` LIKE ? ");
-//        query.append("group by tccp.test, tccp.testcase, tccp.property ");
         query.append("select count(*) as total, tccp.property, t.Test, tc.TestCase, t.Description as testDescription, tc.Description as testCaseDescription, tc.Application, ");
-        query.append("tc.TcActive as Active, tc.`Group`, tc.Creator, tc.`Status` ");
+        query.append("tc.TcActive as Active, tc.`Group`, tc.UsrCreated, tc.`Status` ");
         query.append("from testcasecountryproperties tccp    ");
-        query.append("inner join  test t on t.test = tccp.test ");
-        query.append("inner join  testcase tc  on t.test = tccp.test  and t.test = tc.test ");
+        query.append("inner join test t on t.test = tccp.test ");
+        query.append("inner join testcase tc  on t.test = tccp.test  and t.test = tc.test ");
         query.append("inner join testdatalib tdl on tdl.`name` = tccp.value1  and ");
         query.append("(tccp.Country = tdl.Country or tdl.country='') and tccp.test = t.test and tccp.testcase = tc.testcase ");
         query.append("where tccp.`Type` LIKE ? and tdl.TestDataLibID = ? ");
@@ -629,7 +616,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
                             testCaseDTO.setTestCaseDescription(resultSet.getString("testCaseDescription"));
                             testCaseDTO.setTestCaseNumber(testCase);
                             testCaseDTO.setApplication(resultSet.getString("Application"));
-                            testCaseDTO.setCreator(resultSet.getString("Creator"));
+                            testCaseDTO.setCreator(resultSet.getString("tc.UsrCreated"));
                             testCaseDTO.setStatus(resultSet.getString("Status"));
 
                             testCaseDTO.setGroup(resultSet.getString("Group"));

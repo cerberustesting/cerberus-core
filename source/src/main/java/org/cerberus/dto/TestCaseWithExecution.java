@@ -22,13 +22,13 @@ package org.cerberus.dto;
 import java.util.HashMap;
 import java.util.List;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 
 /**
  *
  * @author memiks
  */
-public class TestCaseWithExecution extends TCase {
+public class TestCaseWithExecution extends TestCase {
 
     private long statusExecutionID;
     private String environment;
@@ -44,41 +44,41 @@ public class TestCaseWithExecution extends TCase {
         super();
     }
 
-    public TestCaseWithExecution(TCase testCase) {
+    public TestCaseWithExecution(TestCase testCase) {
 
         super();
 
         this.setTest(testCase.getTest());
         this.setTestCase(testCase.getTestCase());
-        this.setOrigin(testCase.getOrigin());
-        this.setRefOrigin(testCase.getRefOrigin());
-        this.setCreator(testCase.getCreator());
+        this.setOrigine(testCase.getOrigine());
+        this.setRefOrigine(testCase.getRefOrigine());
+        this.setUsrCreated(testCase.getUsrCreated());
         this.setImplementer(testCase.getImplementer());
-        this.setLastModifier(testCase.getLastModifier());
+        this.setUsrModif(testCase.getUsrModif());
         this.setProject(testCase.getProject());
         this.setTicket(testCase.getTicket());
         this.setFunction(testCase.getFunction());
         this.setApplication(testCase.getApplication());
-        this.setRunQA(testCase.getRunQA());
-        this.setRunUAT(testCase.getRunUAT());
-        this.setRunPROD(testCase.getRunPROD());
+        this.setActiveQA(testCase.getActiveQA());
+        this.setActiveUAT(testCase.getActiveUAT());
+        this.setActivePROD(testCase.getActivePROD());
         this.setPriority(testCase.getPriority());
         this.setGroup(testCase.getGroup());
         this.setStatus(testCase.getStatus());
-        this.setShortDescription(testCase.getShortDescription());
         this.setDescription(testCase.getDescription());
+        this.setBehaviorOrValueExpected(testCase.getBehaviorOrValueExpected());
         this.setHowTo(testCase.getHowTo());
-        this.setActive(testCase.getActive());
-        this.setFromSprint(testCase.getFromSprint());
-        this.setFromRevision(testCase.getFromRevision());
-        this.setToSprint(testCase.getToSprint());
-        this.setToRevision(testCase.getToRevision());
+        this.setTcActive(testCase.getTcActive());
+        this.setFromBuild(testCase.getFromBuild());
+        this.setFromRev(testCase.getFromRev());
+        this.setToBuild(testCase.getToBuild());
+        this.setToRev(testCase.getToRev());
         this.setLastExecutionStatus(testCase.getLastExecutionStatus());
         this.setBugID(testCase.getBugID());
-        this.setTargetSprint(testCase.getTargetSprint());
-        this.setTargetRevision(testCase.getTargetRevision());
+        this.setTargetBuild(testCase.getTargetBuild());
+        this.setTargetRev(testCase.getTargetRev());
         this.setComment(testCase.getComment());
-        this.setTcDateCrea(testCase.getTcDateCrea());
+        this.setDateCreated(testCase.getDateCreated());
 
         this.statusExecutionID = 0L;
         this.start = "";
@@ -159,14 +159,14 @@ public class TestCaseWithExecution extends TCase {
         this.applicationObject = applicationObject;
     }
 
-    public static final HashMap<String, TestCaseWithExecution> generateEmptyResultOfExecutions(List<TCase> listOfTestCases, String[] environments, String[] countries, String[] browsers) {
+    public static final HashMap<String, TestCaseWithExecution> generateEmptyResultOfExecutions(List<TestCase> listOfTestCases, String[] environments, String[] countries, String[] browsers) {
         HashMap<String, TestCaseWithExecution> result = new HashMap<String, TestCaseWithExecution>();
         String key;
         TestCaseWithExecution testCaseWithExecution;
         for (String browser : browsers) {
             for (String country : countries) {
                 for (String environment : environments) {
-                    for (TCase testCase : listOfTestCases) {
+                    for (TestCase testCase : listOfTestCases) {
                         key = browser + "_" + country + "_" + environment + "_"
                                 + testCase.getTest() + "_" + testCase.getTestCase();
                         if (!result.containsKey(key)) {

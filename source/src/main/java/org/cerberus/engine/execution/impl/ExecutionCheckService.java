@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
@@ -109,11 +109,11 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkTestCaseActive(TCase testCase) {
+    private boolean checkTestCaseActive(TestCase testCase) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is active");
         }
-        if (testCase.getActive().equals("Y")) {
+        if (testCase.getTcActive().equals("Y")) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOTACTIVE);
@@ -165,12 +165,12 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if test can be executed in this build and revision");
         }
-        TCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromSprint(), "");
-        String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToSprint(), "");
-        String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRevision(), "");
-        String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRevision(), "");
+        String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromBuild(), "");
+        String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToBuild(), "");
+        String tcFromRevision = ParameterParserUtil.parseStringParam(tc.getFromRev(), "");
+        String tcToRevision = ParameterParserUtil.parseStringParam(tc.getToRev(), "");
         String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
         String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
 
@@ -221,10 +221,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking target build");
         }
-        TCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.gettCase();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
-        String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetSprint(), "");
-        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRevision(), "");
+        String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetBuild(), "");
+        String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRev(), "");
         String sprint = ParameterParserUtil.parseStringParam(env.getBuild(), "");
         String revision = ParameterParserUtil.parseStringParam(env.getRevision(), "");
 
@@ -254,7 +254,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
         }
-        TCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.gettCase();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkRunQA(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("UAT")) {
@@ -270,8 +270,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkRunQA(TCase tc, String env) {
-        if (tc.getRunQA().equals("Y")) {
+    private boolean checkRunQA(TestCase tc, String env) {
+        if (tc.getActiveQA().equals("Y")) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNQA_NOTDEFINED);
@@ -279,8 +279,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkRunUAT(TCase tc, String env) {
-        if (tc.getRunUAT().equals("Y")) {
+    private boolean checkRunUAT(TestCase tc, String env) {
+        if (tc.getActiveUAT().equals("Y")) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNUAT_NOTDEFINED);
@@ -288,8 +288,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return false;
     }
 
-    private boolean checkRunPROD(TCase tc, String env) {
-        if (tc.getRunPROD().equals("Y")) {
+    private boolean checkRunPROD(TestCase tc, String env) {
+        if (tc.getActivePROD().equals("Y")) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_RUNPROD_NOTDEFINED);

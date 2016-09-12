@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseCountryPropertiesDAO;
 import org.cerberus.crud.dao.impl.TestCaseCountryPropertiesDAO;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
@@ -75,22 +75,22 @@ public class GetTestCase extends HttpServlet {
             String test = policy.sanitize(httpServletRequest.getParameter("test"));
             String testcase = policy.sanitize(httpServletRequest.getParameter("testcase"));
 
-            TCase tcInfo = testService.findTestCaseByKeyWithDependency(test, testcase);
+            TestCase tcInfo = testService.findTestCaseByKeyWithDependency(test, testcase);
 
             JSONObject jsonObject = new JSONObject();
             try {
 
-                jsonObject.put("origin", tcInfo.getOrigin());
-                jsonObject.put("refOrigin", tcInfo.getRefOrigin());
-                jsonObject.put("creator", tcInfo.getCreator());
+                jsonObject.put("origin", tcInfo.getOrigine());
+                jsonObject.put("refOrigin", tcInfo.getRefOrigine());
+                jsonObject.put("creator", tcInfo.getUsrCreated());
                 jsonObject.put("implementer", tcInfo.getImplementer());
-                jsonObject.put("lastModifier", tcInfo.getLastModifier());
+                jsonObject.put("lastModifier", tcInfo.getUsrModif());
                 jsonObject.put("project", tcInfo.getProject());
                 jsonObject.put("ticket", tcInfo.getTicket());
                 jsonObject.put("application", tcInfo.getApplication());
-                jsonObject.put("runQA", tcInfo.getRunQA());
-                jsonObject.put("runUAT", tcInfo.getRunUAT());
-                jsonObject.put("runPROD", tcInfo.getRunPROD());
+                jsonObject.put("runQA", tcInfo.getActiveQA());
+                jsonObject.put("runUAT", tcInfo.getActiveUAT());
+                jsonObject.put("runPROD", tcInfo.getActivePROD());
                 jsonObject.put("priority", tcInfo.getPriority());
                 jsonObject.put("group", tcInfo.getGroup());
                 jsonObject.put("status", tcInfo.getStatus());
@@ -99,18 +99,18 @@ public class GetTestCase extends HttpServlet {
                     countryList.put(tcc.getCountry());
                 }
                 jsonObject.put("countriesList", countryList);
-                jsonObject.put("shortDescription", tcInfo.getShortDescription());
-                jsonObject.put("description", tcInfo.getDescription());
+                jsonObject.put("shortDescription", tcInfo.getDescription());
+                jsonObject.put("description", tcInfo.getBehaviorOrValueExpected());
                 jsonObject.put("howTo", tcInfo.getHowTo());
-                jsonObject.put("active", tcInfo.getActive());
-                jsonObject.put("fromSprint", tcInfo.getFromSprint());
-                jsonObject.put("fromRevision", tcInfo.getFromRevision());
-                jsonObject.put("toSprint", tcInfo.getToSprint());
-                jsonObject.put("toRevision", tcInfo.getToRevision());
+                jsonObject.put("active", tcInfo.getTcActive());
+                jsonObject.put("fromSprint", tcInfo.getFromBuild());
+                jsonObject.put("fromRevision", tcInfo.getFromRev());
+                jsonObject.put("toSprint", tcInfo.getToBuild());
+                jsonObject.put("toRevision", tcInfo.getToRev());
                 jsonObject.put("lastExecutionStatus", tcInfo.getLastExecutionStatus());
                 jsonObject.put("bugID", tcInfo.getBugID());
-                jsonObject.put("targetSprint", tcInfo.getTargetSprint());
-                jsonObject.put("targetRevision", tcInfo.getTargetRevision());
+                jsonObject.put("targetSprint", tcInfo.getTargetBuild());
+                jsonObject.put("targetRevision", tcInfo.getTargetRev());
                 jsonObject.put("comment", tcInfo.getComment());
                 jsonObject.put("test", tcInfo.getTest());
                 jsonObject.put("testcase", tcInfo.getTestCase());

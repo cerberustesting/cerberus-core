@@ -1,6 +1,6 @@
 package org.cerberus.dto;
 
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 
 /**
  * {Insert class description here}
@@ -25,13 +25,13 @@ public class TestCaseManualExecution {
     private long lastStatusID;
     private String lastStatusBuild;
     private String lastStatusRevision;
-    private TCase tCase;
+    private TestCase tCase;
 
-    public TCase gettCase() {
+    public TestCase gettCase() {
         return tCase;
     }
 
-    public void settCase(TCase tCase) {
+    public void settCase(TestCase tCase) {
         this.tCase = tCase;
     }
     

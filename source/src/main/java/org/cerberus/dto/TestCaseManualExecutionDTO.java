@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
@@ -37,7 +37,7 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
     private DatabaseSpring databaseSpring;
 
     @Override
-    public List<TestCaseManualExecution> findTestCaseManualExecution(TCase testCase, String text, String system, String country, String env, String campaign, String battery) {
+    public List<TestCaseManualExecution> findTestCaseManualExecution(TestCase testCase, String text, String system, String country, String env, String campaign, String battery) {
         List<TestCaseManualExecution> list = null;
         final String query = "SELECT tc.test, tc.testcase, tc.behaviororvalueexpected, tc.howto, tcc.country, a.application, a.system, a.type, CONCAT( CONCAT( cep.ip , cep.url ), cep.urllogin ) AS url, cenvp.build, cenvp.revision, tce.controlstatus, tce.end, tce.id, tce.build as lastbuild, tce.revision as lastrevision " +
                 ", tce.start FROM testcase tc " +
@@ -73,8 +73,8 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                 preStat.setString(4, ParameterParserUtil.wildcardIfEmpty(testCase.getProject()));
                 preStat.setString(5, ParameterParserUtil.wildcardIfEmpty(testCase.getTicket()));
                 preStat.setString(6, ParameterParserUtil.wildcardIfEmpty(testCase.getBugID()));
-                preStat.setString(7, ParameterParserUtil.wildcardIfEmpty(testCase.getOrigin()));
-                preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(testCase.getCreator()));
+                preStat.setString(7, ParameterParserUtil.wildcardIfEmpty(testCase.getOrigine()));
+                preStat.setString(8, ParameterParserUtil.wildcardIfEmpty(testCase.getUsrCreated()));
                 preStat.setString(9, ParameterParserUtil.wildcardIfEmpty(system));
                 preStat.setString(10, ParameterParserUtil.wildcardIfEmpty(testCase.getApplication()));
                 if (testCase.getPriority() != -1) {
@@ -83,9 +83,9 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                     preStat.setString(11, "%");
                 }
                 preStat.setString(12, ParameterParserUtil.wildcardIfEmpty(testCase.getStatus()));
-                preStat.setString(13, ParameterParserUtil.wildcardIfEmpty(testCase.getRunPROD()));
-                preStat.setString(14, ParameterParserUtil.wildcardIfEmpty(testCase.getRunUAT()));
-                preStat.setString(15, ParameterParserUtil.wildcardIfEmpty(testCase.getRunQA()));
+                preStat.setString(13, ParameterParserUtil.wildcardIfEmpty(testCase.getActivePROD()));
+                preStat.setString(14, ParameterParserUtil.wildcardIfEmpty(testCase.getActiveUAT()));
+                preStat.setString(15, ParameterParserUtil.wildcardIfEmpty(testCase.getActiveQA()));
                 if (text != null && !text.equalsIgnoreCase("")) {
                     preStat.setString(16, text);
                     preStat.setString(17, text);
@@ -97,12 +97,12 @@ public class TestCaseManualExecutionDTO implements ITestCaseManualExecutionDTO {
                     preStat.setString(18, "%");
                     preStat.setString(19, "%");
                 }
-                preStat.setString(20, ParameterParserUtil.wildcardIfEmpty(testCase.getFromSprint()));
-                preStat.setString(21, ParameterParserUtil.wildcardIfEmpty(testCase.getFromRevision()));
-                preStat.setString(22, ParameterParserUtil.wildcardIfEmpty(testCase.getToSprint()));
-                preStat.setString(23, ParameterParserUtil.wildcardIfEmpty(testCase.getToRevision()));
-                preStat.setString(24, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetSprint()));
-                preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRevision()));
+                preStat.setString(20, ParameterParserUtil.wildcardIfEmpty(testCase.getFromBuild()));
+                preStat.setString(21, ParameterParserUtil.wildcardIfEmpty(testCase.getFromRev()));
+                preStat.setString(22, ParameterParserUtil.wildcardIfEmpty(testCase.getToBuild()));
+                preStat.setString(23, ParameterParserUtil.wildcardIfEmpty(testCase.getToRev()));
+                preStat.setString(24, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetBuild()));
+                preStat.setString(25, ParameterParserUtil.wildcardIfEmpty(testCase.getTargetRev()));
                 preStat.setString(26, ParameterParserUtil.wildcardIfEmpty(testCase.getTestCase()));
                 preStat.setString(27, ParameterParserUtil.wildcardIfEmpty(testCase.getGroup()));
                 preStat.setString(28, ParameterParserUtil.wildcardIfEmpty(campaign));

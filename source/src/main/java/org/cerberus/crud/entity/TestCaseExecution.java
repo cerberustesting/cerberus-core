@@ -66,8 +66,8 @@ public class TestCaseExecution {
     private int screenshot;
     private String outputFormat;
     private Test testObj;
-    private TCase tCase;
-    private List<TCase> PreTCase;
+    private TestCase tCase;
+    private List<TestCase> PreTCase;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private boolean manualURL;
@@ -345,11 +345,11 @@ public class TestCaseExecution {
         this.testObj = testObj;
     }
 
-    public TCase gettCase() {
+    public TestCase gettCase() {
         return tCase;
     }
 
-    public void settCase(TCase tCase) {
+    public void settCase(TestCase tCase) {
         this.tCase = tCase;
     }
 
@@ -529,11 +529,11 @@ public class TestCaseExecution {
         this.verbose = verbose;
     }
 
-    public List<TCase> getPreTCase() {
+    public List<TestCase> getPreTCase() {
         return PreTCase;
     }
 
-    public void setPreTCase(List<TCase> PreTCase) {
+    public void setPreTCase(List<TestCase> PreTCase) {
         this.PreTCase = PreTCase;
     }
 

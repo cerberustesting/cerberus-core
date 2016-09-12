@@ -34,6 +34,8 @@ import org.cerberus.engine.entity.ExecutionThreadPool;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IMyVersionService;
+import org.cerberus.database.IDatabaseVersioningService;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -50,6 +52,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class ReadCerberusDetailInformation extends HttpServlet {
 
     private ICerberusInformationDAO cerberusDatabaseInformation;
+    private IDatabaseVersioningService databaseVersionService;
+    private IMyVersionService myVersionService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -95,7 +99,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("number_of_thread", etp.getInExecution());
 
             cerberusDatabaseInformation = appContext.getBean(ICerberusInformationDAO.class);
-            
+
             AnswerItem ans = cerberusDatabaseInformation.getDatabaseInformation();
             HashMap<String, String> cerberusInformation = (HashMap<String, String>) ans.getItem();
 
@@ -104,23 +108,32 @@ public class ReadCerberusDetailInformation extends HttpServlet {
             jsonResponse.put("DatabaseProductVersion", cerberusInformation.get("DatabaseProductVersion"));
             jsonResponse.put("DatabaseMajorVersion", cerberusInformation.get("DatabaseMajorVersion"));
             jsonResponse.put("DatabaseMinorVersion", cerberusInformation.get("DatabaseMinorVersion"));
-            
+
             jsonResponse.put("DriverName", cerberusInformation.get("DriverName"));
             jsonResponse.put("DriverVersion", cerberusInformation.get("DriverVersion"));
             jsonResponse.put("DriverMajorVersion", cerberusInformation.get("DriverMajorVersion"));
             jsonResponse.put("DriverMinorVersion", cerberusInformation.get("DriverMinorVersion"));
-            
+
             jsonResponse.put("JDBCMajorVersion", cerberusInformation.get("JDBCMajorVersion"));
             jsonResponse.put("JDBCMinorVersion", cerberusInformation.get("JDBCMinorVersion"));
-            
+
             // Cerberus Informations.
             jsonResponse.put("projectName", infos.getProjectName());
             jsonResponse.put("projectVersion", infos.getProjectVersion());
             jsonResponse.put("environment", System.getProperty("org.cerberus.environment"));
-            
+
+            databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
+            jsonResponse.put("databaseCerberusTargetVersion", databaseVersionService.getSQLScript().size());
+
+            myVersionService = appContext.getBean(IMyVersionService.class);
+            if (myVersionService.findMyVersionByKey("database") != null) {
+                jsonResponse.put("databaseCerberusCurrentVersion", myVersionService.findMyVersionByKey("database").getValue());
+            } else {
+                jsonResponse.put("databaseCerberusCurrentVersion", "0");
+            }
+
             // JAVA Informations.
             jsonResponse.put("javaVersion", System.getProperty("java.version"));
-            
 
         } catch (JSONException ex) {
             Logger.getLogger(ReadCerberusDetailInformation.class.getName()).log(Level.SEVERE, null, ex);

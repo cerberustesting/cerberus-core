@@ -35,9 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseLabel;
@@ -45,7 +44,6 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.service.ICampaignContentService;
-import org.cerberus.crud.service.ILabelService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseLabelService;
@@ -60,7 +58,6 @@ import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.crud.service.impl.TestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -296,7 +293,7 @@ public class ReadTestCase extends HttpServlet {
         boolean isTest = request.isUserInRole("Test");
         boolean isTestAdmin = request.isUserInRole("TestAdmin");
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TCase testCase : (List<TCase>) testCaseList.getDataList()) {
+            for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
                 JSONObject value = convertTestCaseToJSONObject(testCase);
                 value.put("hasPermissionsDelete", isTestAdmin);
@@ -341,7 +338,7 @@ public class ReadTestCase extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TCase tc = (TCase) answer.getItem();
+            TestCase tc = (TestCase) answer.getItem();
             object = convertTestCaseToJSONObject(tc);
             if (tc.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
                 hasPermissionsUpdate = isTestAdmin;
@@ -383,7 +380,7 @@ public class ReadTestCase extends HttpServlet {
         AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            for (TCase tc : (List<TCase>) answer.getDataList()) {
+            for (TestCase tc : (List<TestCase>) answer.getDataList()) {
                 dataArray.put(convertTestCaseToJSONObject(tc));
             }
         }
@@ -413,7 +410,7 @@ public class ReadTestCase extends HttpServlet {
         AnswerList resp = testCaseService.readByVariousCriteria(null, null, null, null, null, null, testBattery, null, null, null, null);
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            for (TCase tc : (List<TCase>) resp.getDataList()) {
+            for (TestCase tc : (List<TestCase>) resp.getDataList()) {
                 dataArray.put(convertTestCaseToJSONObject(tc));
             }
         }
@@ -447,7 +444,7 @@ public class ReadTestCase extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TCase tc = (TCase) answer.getItem();
+            TestCase tc = (TestCase) answer.getItem();
             object = convertTestCaseToJSONObject(tc);
             object.put("countryList", new JSONObject());
         }
@@ -565,7 +562,7 @@ public class ReadTestCase extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertTestCaseToJSONObject(TCase testCase) throws JSONException {
+    private JSONObject convertTestCaseToJSONObject(TestCase testCase) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(testCase));
         return result;

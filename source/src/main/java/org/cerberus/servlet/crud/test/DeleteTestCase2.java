@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -118,7 +118,7 @@ public class DeleteTestCase2 extends HttpServlet {
                  * The service was able to perform the query and confirm the
                  * object exist, then we can delete it.
                  */
-                TCase testCaseData = (TCase) resp.getItem();
+                TestCase testCaseData = (TestCase) resp.getItem();
                 List<TestCaseStep> tcsList = testCaseStepService.getTestCaseStepUsingTestCaseInParamter(testCaseData.getTest(), testCaseData.getTestCase());
                 if (tcsList != null && !tcsList.isEmpty()) {
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

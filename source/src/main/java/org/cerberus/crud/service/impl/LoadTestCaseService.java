@@ -22,14 +22,13 @@ package org.cerberus.crud.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.log.MyLogger;
@@ -41,6 +40,7 @@ import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * @author bcivel
@@ -59,14 +59,14 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     @Autowired
     private IFactoryTestCaseCountry factoryTestCaseCountry;
     @Autowired
-    private IFactoryTCase factoryTCase;
+    private IFactoryTestCase factoryTCase;
     @Autowired
     private IFactoryTestCaseStep factoryTCS;
 
     @Override
     public void loadTestCase(TestCaseExecution tCExecution) {
 
-        TCase testCase = tCExecution.gettCase();
+        TestCase testCase = tCExecution.gettCase();
 
         String test = testCase.getTest();
         String testcase = testCase.getTestCase();
@@ -92,7 +92,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                 preTestCaseCountry.setTestCaseCountryProperty(this.loadProperties(preTestCaseCountry));
                 testCaseCountry.add(preTestCaseCountry);
 
-                TCase preTestCase = factoryTCase.create("Pre Tests", tsCase);
+                TestCase preTestCase = factoryTCase.create("Pre Tests", tsCase);
                 MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "add all pretest");
                 PretestCaseStep.addAll(loadTestCaseStep(preTestCase));
 
@@ -102,7 +102,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         /**
          * Load Information of TestCase
          */
-        TCase testCaseToAdd = factoryTCase.create(test, testcase);
+        TestCase testCaseToAdd = factoryTCase.create(test, testcase);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "add all step");
         testCaseStep.addAll(loadTestCaseStep(testCaseToAdd));
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "search all countryprop");
@@ -132,7 +132,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     }
 
     @Override
-    public List<TestCaseStep> loadTestCaseStep(TCase testCase) {
+    public List<TestCaseStep> loadTestCaseStep(TestCase testCase) {
         List<TestCaseStep> result = new ArrayList<TestCaseStep>();
         for (TestCaseStep testCaseStep : this.testCaseStepService.getListOfSteps(testCase.getTest(), testCase.getTestCase())) {
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set list of step :" + testCaseStep.getStep());

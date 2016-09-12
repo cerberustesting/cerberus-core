@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseService;
 import org.json.JSONArray;
@@ -62,17 +62,17 @@ public class GetTestCaseForTest extends HttpServlet {
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {
-            List<TCase> tcaseList;
+            List<TestCase> tcaseList;
             if (system == null){
                 tcaseList = testService.findTestCaseByTest(testName);
             } else{
                 tcaseList = testService.findTestCaseActiveAutomatedBySystem(testName, system);
             }
             
-            for (TCase list : tcaseList) {
+            for (TestCase list : tcaseList) {
                 JSONObject testCase = new JSONObject();
                 testCase.put("testCase", list.getTestCase());
-                testCase.put("description", list.getTestCase().concat(" [").concat(list.getApplication()).concat("] : ").concat(list.getShortDescription()));
+                testCase.put("description", list.getTestCase().concat(" [").concat(list.getApplication()).concat("] : ").concat(list.getDescription()));
                 testCase.put("application", list.getApplication());
                 array.put(testCase);
             }

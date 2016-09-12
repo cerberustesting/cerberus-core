@@ -34,7 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
@@ -114,7 +114,7 @@ public class UpdateTestCase2 extends HttpServlet {
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
-            TCase tc = (TCase) resp.getItem();
+            TestCase tc = (TestCase) resp.getItem();
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -144,7 +144,7 @@ public class UpdateTestCase2 extends HttpServlet {
                 ans.setResultMessage(msg);
 
             } else {
-                getInfo(request, tc);
+                tc = getInfo(request, tc);
 
                 ans = testCaseService.update(tc);
                 getCountryList(tc, request);
@@ -225,13 +225,13 @@ public class UpdateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TCase getInfo(HttpServletRequest request, TCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
+    private TestCase getInfo(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
         
         String charset = request.getCharacterEncoding();
         
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-        tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
-        tc.setLastModifier(request.getUserPrincipal().getName());
+        tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("implementer"), tc.getImplementer()));
+        tc.setUsrModif(request.getUserPrincipal().getName());
         if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
             tc.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));
         } else if (request.getParameter("project") != null && request.getParameter("project").isEmpty()) {
@@ -241,38 +241,39 @@ public class UpdateTestCase2 extends HttpServlet {
         }
         tc.setTest(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), tc.getTest()));
         tc.setApplication(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("application"), tc.getApplication()));
-        tc.setRunQA(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeQA"), tc.getRunQA()));
-        tc.setRunUAT(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getRunUAT()));
-        tc.setRunPROD(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeProd"), tc.getRunPROD()));
-        tc.setActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), tc.getActive()));
-        tc.setFromSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromSprint()));
-        tc.setFromRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRevision()));
-        tc.setToSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToSprint()));
-        tc.setToRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRevision()));
-        tc.setTargetSprint(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetSprint()));
-        tc.setTargetRevision(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRevision()));
+        tc.setActiveQA(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeQA"), tc.getActiveQA()));
+        tc.setActiveUAT(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeUAT"), tc.getActiveUAT()));
+        tc.setActivePROD(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("activeProd"), tc.getActivePROD()));
+        tc.setTcActive(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), tc.getTcActive()));
+        tc.setFromBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromSprint"), tc.getFromBuild()));
+        tc.setFromRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("fromRev"), tc.getFromRev()));
+        tc.setToBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toSprint"), tc.getToBuild()));
+        tc.setToRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRev()));
+        tc.setTargetBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild()));
+        tc.setTargetRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRev()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
         
         // Parameter that needs to be secured --> We SECURE+DECODE them
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
-        tc.setOrigin(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigin(), charset));
+        tc.setOrigine(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("origin"), tc.getOrigine(), charset));
         tc.setGroup(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), tc.getGroup(), charset));
         tc.setStatus(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("status"), tc.getStatus(), charset));
-        tc.setShortDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), tc.getShortDescription(), charset));
+        tc.setDescription(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("shortDesc"), tc.getDescription(), charset));
         tc.setBugID(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugId"), tc.getBugID(), charset));
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
+        tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
         
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        tc.setDescription(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getDescription(), charset));
+        tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
         tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
         
         
         return tc;
     }
 
-    private void getCountryList(TCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
+    private void getCountryList(TestCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
         Map<String, String> countryList = new HashMap<String, String>();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
