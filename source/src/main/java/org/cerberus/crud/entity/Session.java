@@ -92,7 +92,14 @@ public class Session {
     public void setStarted(boolean started) {
         this.started = started;
     }
-    
-    
+
+    public void quit() {
+        if (driver != null) {
+            driver.quit();
+        }
+        if (appiumDriver != null) {
+            appiumDriver.closeApp();
+        }
+    }
     
 }
