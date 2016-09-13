@@ -366,8 +366,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (InterruptedException ex) {
                 LOG.error(ex.toString());
             }
-            LOG.info("Stop Selenium Server");
-            session.getDriver().quit();
+            LOG.info("Stop execution session");
+            session.quit();
             return true;
         }
         return false;
