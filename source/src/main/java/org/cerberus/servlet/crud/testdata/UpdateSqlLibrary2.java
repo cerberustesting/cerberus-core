@@ -17,6 +17,7 @@
  */
 package org.cerberus.servlet.crud.testdata;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.SqlLibrary;
@@ -35,6 +36,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -78,9 +80,12 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
         String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
-        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
+        //String scriptBDD = StringEscapeUtils.escapeHtml4(script);
+
+//        String scriptBDD = HtmlUtils.htmlEscape(script);
 
         ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
         IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);

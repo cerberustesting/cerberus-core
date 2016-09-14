@@ -77,7 +77,7 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
         // CTE - on utilise la méthode utilitaire pour encoder le xml
-        String envelope = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Envelope"), null, charset);
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
         String envelopeBDD = HtmlUtils.htmlEscape(envelope);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
         String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
