@@ -284,12 +284,14 @@ public class RecorderService implements IRecorderService {
             // Index file created to database.
             testCaseExecutionFileService.create(runId, level, "SOAP Request", relativeFilenameURL, "XML", "");
 
-            // RESPONSE.
-            this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
-            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+            // RESPONSE is exists.
+            if (null != se.getSOAPResponse()) {
+                this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
+                recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
 
-            // Index file created to database.
-            testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+                // Index file created to database.
+                testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+            }
 
             xmlFullFilename = relativeFilenameURL;
 
@@ -502,10 +504,11 @@ public class RecorderService implements IRecorderService {
         fileName = fileName.replace(" ", "");
 
         /**
-         * Level. 5 levels possible. Keys are defined seperated by -. 1/ Execution
-         * level --> emptyString. 2/ Step level --> test+testcase+Step 3/ Action level
-         * --> test+testcase+Step+action 4/ Control level -->
-         * test+testcase+Step+action+control 5/ Property level --> property+index
+         * Level. 5 levels possible. Keys are defined seperated by -. 1/
+         * Execution level --> emptyString. 2/ Step level --> test+testcase+Step
+         * 3/ Action level --> test+testcase+Step+action 4/ Control level -->
+         * test+testcase+Step+action+control 5/ Property level -->
+         * property+index
          */
         level = "";
         if (!(StringUtil.isNullOrEmpty(controlString))) {

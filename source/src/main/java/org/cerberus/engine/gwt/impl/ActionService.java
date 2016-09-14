@@ -876,6 +876,10 @@ public class ActionService implements IActionService {
     private MessageEvent doActionMakeSoapCall(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property, boolean withBase) {
         MessageEvent message;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        String decodedEnveloppe;
+        String decodedServicePath = null;
+        String decodedMethod;
+        AnswerItem lastSoapCalled;
         //if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
         try {
             SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
@@ -892,9 +896,9 @@ public class ActionService implements IActionService {
              * Decode Envelope, ServicePath and Method replacing properties
              * encapsulated with %
              */
-            String decodedEnveloppe = soapLibrary.getEnvelope();
-            String decodedServicePath = servicePath;
-            String decodedMethod = soapLibrary.getMethod();
+            decodedEnveloppe = soapLibrary.getEnvelope();
+            decodedServicePath = servicePath;
+            decodedMethod = soapLibrary.getMethod();
 
             try {
                 if (soapLibrary.getEnvelope().contains("%")) {
@@ -914,6 +918,7 @@ public class ActionService implements IActionService {
             } catch (CerberusEventException cee) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
                 message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+                message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
                 return message;
             }
@@ -929,20 +934,28 @@ public class ActionService implements IActionService {
              } else {
              attachement = soapLibrary.getAttachmentUrl();
              }*/
-            AnswerItem lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
+            lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
             tCExecution.setLastSOAPCalled(lastSoapCalled);
 
-            //Record the Request and Response in filesystem.
-            SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
-            recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
-
-            return lastSoapCalled.getResultMessage();
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
             return message;
+        } catch (Exception ex) {
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+            message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
+            return message;
         }
+
+        //Record the Request and Response in filesystem.
+        SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
+        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
+
+        return lastSoapCalled.getResultMessage();
         //}
     }
 

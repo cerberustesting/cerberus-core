@@ -1122,7 +1122,7 @@
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
                                                 <div><div><input maxlength="150" style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
-                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription().replace("\"", "&quot;")%>">
                                                     </div></div></div>
                                             <div id="StepUseStepDiv" style="float:left">UseStep
                                                 <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 

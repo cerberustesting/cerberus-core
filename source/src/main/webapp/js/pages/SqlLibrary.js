@@ -89,9 +89,9 @@ function editEntryClick(name) {
         success: function (data) {
             if (data.messageType === "OK") {
                 formEdit.find("#name").prop("value", data.name);
-                formEdit.find("#type").prop("value", data.type);
-                formEdit.find("#script").prop("value", data.script);
-                formEdit.find("#description").prop("value", data.description);
+                formEdit.find("#type").prop("value", $('<div/>').html(data.type).text());
+                formEdit.find("#script").prop("value", $('<div/>').html(data.script).text());
+                formEdit.find("#description").prop("value", $('<div/>').html(data.description).text());
                 formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
                     formEdit.find("#name").prop("readonly", "readonly");
@@ -144,14 +144,14 @@ function removeEntryClick(name) {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSqlLibraryModal'));
     var formEdit = $('#editSqlLibraryModal #editSqlLibraryModalForm');
-
+/*
     var sa = formEdit.serializeArray();
     var data = {}
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
-    }
+    }*/
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
         url: "UpdateSqlLibrary2",
@@ -180,13 +180,13 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
     var formEdit = $('#addSqlLibraryModal #addSqlLibraryModalForm');
 
-    var sa = formEdit.serializeArray();
+    /*var sa = formEdit.serializeArray();
     var data = {}
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
-    }
+    }*/
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
         url: "CreateSqlLibrary2",

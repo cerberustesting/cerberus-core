@@ -826,7 +826,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
         if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
                 //TODO:FN debug messages to be removed

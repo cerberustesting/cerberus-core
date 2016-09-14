@@ -487,27 +487,27 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM soaplibrary ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM soaplibrary sol ");
 
         query.append(" WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (soaplibrary.Name like ?");
-            searchSQL.append(" or soaplibrary.Type like ?");
-            searchSQL.append(" or soaplibrary.ServicePath like ?");
-            searchSQL.append(" or soaplibrary.Method like ?");
-            searchSQL.append(" or soaplibrary.ParsingAnswer like ?");
-            searchSQL.append(" or soaplibrary.Description like ?");
-            searchSQL.append(" or soaplibrary.Envelope like ?)");
+            searchSQL.append(" and (sol.Name like ?");
+            searchSQL.append(" or sol.Type like ?");
+            searchSQL.append(" or sol.ServicePath like ?");
+            searchSQL.append(" or sol.Method like ?");
+            searchSQL.append(" or sol.ParsingAnswer like ?");
+            searchSQL.append(" or sol.Description like ?");
+            searchSQL.append(" or sol.Envelope like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(soaplibrary." + entry.getKey() + ",'')";
+                String key = "IFNULL(sol." + entry.getKey() + ",'')";
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
                 if (q == null || q == "") {
-                    q = "(soaplibrary." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
+                    q = "(sol." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
@@ -518,7 +518,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by soaplibrary.").append(column).append(" ").append(dir);
+            query.append(" order by sol.").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -628,7 +628,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         SoapLibrary p = new SoapLibrary();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        query.append("SELECT * FROM soaplibrary WHERE Name = ?");
+        query.append("SELECT * FROM soaplibrary sol WHERE Name = ?");
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -678,30 +678,30 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
         query.append("SELECT distinct soaplibrary.");
         query.append(columnName);
-        query.append(" as distinctValues FROM soaplibrary");
+        query.append(" as distinctValues FROM soaplibrary sol");
         query.append(" where 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (soaplibrary.Name like ?");
-            searchSQL.append(" or soaplibrary.Type like ?");
-            searchSQL.append(" or soaplibrary.ServicePath like ?");
-            searchSQL.append(" or soaplibrary.Method like ?");
-            searchSQL.append(" or soaplibrary.ParsingAnswer like ?");
-            searchSQL.append(" or soaplibrary.Description like ?");
-            searchSQL.append(" or soaplibrary.Envelope like ?)");
+            searchSQL.append(" and (sol.Name like ?");
+            searchSQL.append(" or sol.Type like ?");
+            searchSQL.append(" or sol.ServicePath like ?");
+            searchSQL.append(" or sol.Method like ?");
+            searchSQL.append(" or sol.ParsingAnswer like ?");
+            searchSQL.append(" or sol.Description like ?");
+            searchSQL.append(" or sol.Envelope like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and soaplibrary.");
+                searchSQL.append(" and sol.");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(soaplibrary.").append(columnName).append(",'')");
-        query.append(" order by soaplibrary.").append(columnName).append(" asc");
+        query.append(" group by ifnull(sol.").append(columnName).append(",'')");
+        query.append(" order by sol.").append(columnName).append(" asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -825,7 +825,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     @Override
     public Answer update(SoapLibrary object) {
         MessageEvent msg = null;
-        final String query = "UPDATE soaplibrary SET Type = ?, `ServicePath` = ?, `Method` = ?, Envelope = ?, ParsingAnswer = ?, Description = ? WHERE Name = ?";
+        final String query = "UPDATE soaplibrary sol SET Type = ?, `ServicePath` = ?, `Method` = ?, Envelope = ?, ParsingAnswer = ?, Description = ? WHERE Name = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

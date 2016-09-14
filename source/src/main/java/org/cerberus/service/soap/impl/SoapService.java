@@ -161,6 +161,7 @@ public class SoapService implements ISoapService {
             input.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
             executionSOAP.setSOAPRequest(input);
+            result.setItem(executionSOAP);
 
             // Call the WS
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
@@ -185,6 +186,8 @@ public class SoapService implements ISoapService {
                     .replace("%SERVICEPATH%", servicePath)
                     .replace("%SOAPNAME%", method)
                     .replace("%DESCRIPTION%", e.getMessage()));
+            result.setResultMessage(message);
+            return result;
         } finally {
             try {
                 if (soapConnection != null) {
