@@ -1013,7 +1013,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["buttons"] = [
             'colvis'
         ];
-        configs["colReorder"] = tableConfigurations.colreorder;
+        configs["colReorder"] = tableConfigurations.colreorder?{fnReorderCallback : function(){$("#" + tableConfigurations.divId).DataTable().ajax.reload();}}:false;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1396,7 +1396,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                             send: 'always',
                             validate: function (value) {
                                 if (value === null || value === '' || value.length === 0) {
-                                    $("#" + tableId).dataTable().fnFilter('', colIndex);
+                                    $("#" + tableId).dataTable().fnFilter('', Math.max($("[name='filterColumnHeader']").index($(this).parent()), colIndex));
                                 }
                             },
                             display: function (value, sourceData) {
@@ -1407,7 +1407,8 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                                 $(this).html(val);
                             },
                             success: function (response, newValue) {
-                                $("#" + tableId).dataTable().fnFilter(newValue, colIndex);
+                                console.log("index on the table : " + $("[name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
+                                $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("[name='filterColumnHeader']").index($(this).parent()), colIndex));
                             }
                         });
             }
