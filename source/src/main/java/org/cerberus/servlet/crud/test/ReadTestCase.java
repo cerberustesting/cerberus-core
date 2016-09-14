@@ -52,6 +52,7 @@ import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.TestCaseCountryService;
+import org.cerberus.crud.service.impl.TestCaseLabelService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
 import org.cerberus.crud.service.impl.TestCaseStepActionService;
@@ -224,7 +225,7 @@ public class ReadTestCase extends HttpServlet {
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,tec.application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         //Get Sorting information
@@ -232,28 +233,25 @@ public class ReadTestCase extends HttpServlet {
         int columnToSortParameter = 0;
         String sort = "asc";
         StringBuilder sortInformation = new StringBuilder();
-        for (int c = 0; c < numberOfColumnToSort; c++){
-            columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_"+c), "0"));
-            sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_"+c), "asc");
+        for (int c = 0; c < numberOfColumnToSort; c++) {
+            columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_" + c), "0"));
+            sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_" + c), "asc");
             String columnName = columnToSort[columnToSortParameter];
             sortInformation.append(columnName).append(" ").append(sort);
-            
-            if (c!=numberOfColumnToSort-1){
-            sortInformation.append(" , ");
+
+            if (c != numberOfColumnToSort - 1) {
+                sortInformation.append(" , ");
             }
         }
-        
-        
+
         Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
 
-        
-        
         AnswerList testCaseList = testCaseService.readByTestByCriteria(system, test, startPosition, length, sortInformation.toString(), searchParameter, individualSearch);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(system, test, null);
@@ -261,7 +259,7 @@ public class ReadTestCase extends HttpServlet {
          * Find the list of labels
          */
         AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(test, null);
-        
+
         LinkedHashMap<String, JSONObject> testCaseWithCountry = new LinkedHashMap();
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
             String key = country.getTest() + "_" + country.getTestCase();
@@ -272,9 +270,10 @@ public class ReadTestCase extends HttpServlet {
                 testCaseWithCountry.put(key, new JSONObject().put(country.getCountry(), country.getCountry()));
             }
         }
-        
+
         /**
-         * Iterate on the label retrieved and generate HashMap based on the key Test_TestCase
+         * Iterate on the label retrieved and generate HashMap based on the key
+         * Test_TestCase
          */
         LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
         for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
@@ -295,7 +294,7 @@ public class ReadTestCase extends HttpServlet {
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
-                JSONObject value = convertTestCaseToJSONObject(testCase);
+                JSONObject value = convertToJSONObject(testCase);
                 value.put("hasPermissionsDelete", isTestAdmin);
                 if (testCase.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
                     value.put("hasPermissionsUpdate", isTestAdmin);
@@ -304,7 +303,7 @@ public class ReadTestCase extends HttpServlet {
                 }
                 value.put("countryList", testCaseWithCountry.get(key));
                 value.put("labels", testCaseWithLabel.get(key));
-               
+
                 jsonArray.put(value);
             }
         }
@@ -330,31 +329,46 @@ public class ReadTestCase extends HttpServlet {
 
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
 
         //finds the project     
-        AnswerItem answer = testCaseService.readByKey(test, testCase);
+        AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
 
-        AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
-
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
-            TestCase tc = (TestCase) answer.getItem();
-            object = convertTestCaseToJSONObject(tc);
+            TestCase tc = (TestCase) answerTestCase.getItem();
+            JSONObject response = convertToJSONObject(tc);
+
+            // Country List feed.
+            JSONArray countryArray = new JSONArray();
+            AnswerList answerTestCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);
+            for (TestCaseCountry country : (List<TestCaseCountry>) answerTestCaseCountryList.getDataList()) {
+                countryArray.put(convertToJSONObject(country));
+            }
+            response.put("countryList", countryArray);
+
+            // Label List feed.
+            JSONArray labelArray = new JSONArray();
+            AnswerList answerTestCaseLabelList = testCaseLabelService.readByTestTestCase(test, testCase);
+            for (TestCaseLabel label : (List<TestCaseLabel>) answerTestCaseLabelList.getDataList()) {
+                labelArray.put(convertToJSONObject(label));
+            }
+            response.put("labelList", labelArray);
+
+            object.put("contentTable", response);
+            
+            // Access right calculation.
             if (tc.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
                 hasPermissionsUpdate = isTestAdmin;
             } else {
                 hasPermissionsUpdate = isTest;
             }
-            object.put("countryList", new JSONObject());
+            object.put("hasPermissionsUpdate", hasPermissionsUpdate);
+            
         }
 
-        for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
-            object.getJSONObject("countryList").put(country.getCountry(), country.getCountry());
-        }
-
-        object.put("hasPermissionsUpdate", hasPermissionsUpdate);
         item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
+        item.setResultMessage(answerTestCase.getResultMessage());
 
         return item;
     }
@@ -381,7 +395,7 @@ public class ReadTestCase extends HttpServlet {
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
-                dataArray.put(convertTestCaseToJSONObject(tc));
+                dataArray.put(convertToJSONObject(tc));
             }
         }
 
@@ -411,7 +425,7 @@ public class ReadTestCase extends HttpServlet {
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) resp.getDataList()) {
-                dataArray.put(convertTestCaseToJSONObject(tc));
+                dataArray.put(convertToJSONObject(tc));
             }
         }
 
@@ -445,7 +459,7 @@ public class ReadTestCase extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answer.getItem();
-            object = convertTestCaseToJSONObject(tc);
+            object = convertToJSONObject(tc);
             object.put("countryList", new JSONObject());
         }
 
@@ -562,13 +576,25 @@ public class ReadTestCase extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertTestCaseToJSONObject(TestCase testCase) throws JSONException {
+    private JSONObject convertToJSONObject(TestCase object) throws JSONException {
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(testCase));
+        JSONObject result = new JSONObject(gson.toJson(object));
         return result;
     }
 
-    private AnswerItem findDistinctValuesOfColumn(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException{
+    private JSONObject convertToJSONObject(TestCaseCountry object) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(object));
+        return result;
+    }
+
+    private JSONObject convertToJSONObject(TestCaseLabel object) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(object));
+        return result;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
@@ -576,12 +602,12 @@ public class ReadTestCase extends HttpServlet {
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }

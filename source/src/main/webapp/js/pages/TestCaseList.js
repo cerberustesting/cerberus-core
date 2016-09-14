@@ -42,7 +42,6 @@ function initPage() {
     displayInvariantList("activeQA", "TCACTIVE", false);
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
-    appendCountryList();
     appendApplicationList();
     appendProjectList();
     appendBuildRevList(getUser().defaultSystem);
@@ -62,7 +61,6 @@ function initPage() {
     }
 
     // handle the click for specific action buttons
-    $("#editEntryButton").click(editEntryModalSaveHandler);
     $("#addEntryButton").click(addEntryModalSaveHandler);
     $("#duplicateEntryButton").click(duplicateEntryModalSaveHandler);
     //PREPARE MASS ACTION
@@ -405,204 +403,6 @@ function duplicateEntryModalSaveHandler() {
     duplicateEntry("DuplicateTestCase", formEdit, "#testCaseTable");
 }
 
-
-/********************************************************
- //EDIT TESTCASE 
- /********************************************************/
-function editEntryModalSaveHandler() {
-    clearResponseMessage($('#editEntryModal'));
-
-    var formEdit = $('#editEntryModalForm');
-    tinyMCE.triggerSave();
-
-    showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
-}
-
-function editEntryClick(test, testCase) {
-    feedTestCaseModal(test, testCase, "editEntryModal");
-}
-
-/********************************************************
- //EDIT AND DUPLICATE >> FEED TESTCASE MODAL
- /********************************************************/
-function feedTestCaseModal(test, testCase, modalId) {
-    clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
-    $.when(jqxhr).then(function (data) {
-
-        var formEdit = $('#' + modalId);
-        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
-        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
-
-        $.when(testInfo).then(function (data) {
-            formEdit.find("#testDesc").prop("value", data.contentTable.description);
-        });
-
-        $.when(appInfo).then(function (appData) {
-            var currentSys = getUser().defaultSystem;
-            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
-
-            appendBuildRevList(appData.contentTable.system, data);
-
-            if (appData.contentTable.system !== currentSys) {
-                $("[name=application]").empty();
-                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
-                appendApplicationList(currentSys);
-            }
-            formEdit.find("#application").prop("value", data.application);
-
-            var newbugTrackerUrl = "";
-            if (data.bugID !== "" && bugTrackerUrl) {
-                newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
-            }
-            formEdit.find("#link").prop("href", newbugTrackerUrl).text(data.bugID);
-            formEdit.find("#link").prop("target", "_blank");
-
-            formEdit.find("#bugId").change(function () {
-                var newbugid = formEdit.find("#bugId").val();
-                var newbugTrackerUrl = "";
-                if (newbugid !== "" && bugTrackerUrl) {
-                    newbugTrackerUrl = bugTrackerUrl.replace("%BUGID%", newbugid);
-                }
-                formEdit.find("#link").prop("href", newbugTrackerUrl).text(newbugid);
-                formEdit.find("#link").prop("target", "_blank");
-            });
-
-
-
-        });
-
-        //test info
-        formEdit.find("#originalTest").prop("value", data.test);
-        formEdit.find("#originalTestCase").prop("value", data.testCase);
-        formEdit.find("#newTest").prop("value", data.test);
-        formEdit.find("#test").prop("value", data.test);
-        formEdit.find("#testCase").prop("value", data.testCase);
-
-        //test case info
-        formEdit.find("#creator").prop("value", data.usrCreated);
-        formEdit.find("#lastModifier").prop("value", data.usrModif);
-        formEdit.find("#implementer").prop("value", data.implementer);
-        formEdit.find("#tcDateCrea").prop("value", data.dateCreated);
-        formEdit.find("#origin").prop("value", data.origine);
-        formEdit.find("#refOrigin").prop("value", data.refOrigine);
-        formEdit.find("#project").prop("value", data.project);
-        formEdit.find("#ticket").prop("value", data.ticket);
-        formEdit.find("#function").prop("value", data.function);
-
-        // test case parameters
-        formEdit.find("#application").prop("value", data.application);
-        formEdit.find("#status").prop("value", data.status);
-        formEdit.find("#group").prop("value", data.group);
-        formEdit.find("#priority").prop("value", data.priority);
-        formEdit.find("#actQA").prop("value", data.activeQA);
-        formEdit.find("#actUAT").prop("value", data.activeUAT);
-        formEdit.find("#actProd").prop("value", data.activePROD);
-        formEdit.find("#userAgent").prop("value", data.userAgent);
-        for (var country in data.countryList) {
-            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
-        }
-        formEdit.find("#shortDesc").prop("value", data.description);
-        tinyMCE.get('behaviorOrValueExpected').setContent(data.behaviorOrValueExpected);
-        tinyMCE.get('howTo').setContent(data.howTo);
-
-        //activation criteria
-        formEdit.find("#active").prop("value", data.tcActive);
-        formEdit.find("#bugId").prop("value", data.bugID);
-        formEdit.find("#comment").prop("value", data.comment);
-        
-        formEdit.find("#usrcreated").prop("value", data.usrCreated);
-        formEdit.find("#datecreated").prop("value", data.dateCreated);
-        formEdit.find("#usrmodif").prop("value", data.usrModif);
-        formEdit.find("#datemodif").prop("value", data.dateModif);
-        
-
-        //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-        if (!(data["hasPermissionsUpdate"]) && modalId === "editEntryModal") { // If readonly, we only readonly all fields
-            //test case info
-            formEdit.find("#implementer").prop("readonly", "readonly");
-            formEdit.find("#origin").prop("disabled", "disabled");
-            formEdit.find("#project").prop("disabled", "disabled");
-            formEdit.find("#ticket").prop("readonly", "readonly");
-            formEdit.find("#function").prop("readonly", "readonly");
-            // test case parameters
-            formEdit.find("#application").prop("disabled", "disabled");
-            formEdit.find("#status").prop("disabled", "disabled");
-            formEdit.find("#group").prop("disabled", "disabled");
-            formEdit.find("#priority").prop("disabled", "disabled");
-            formEdit.find("#actQA").prop("disabled", "disabled");
-            formEdit.find("#actUAT").prop("disabled", "disabled");
-            formEdit.find("#actProd").prop("disabled", "disabled");
-            formEdit.find("#userAgent").prop("disabled", "disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
-            formEdit.find("#shortDesc").prop("readonly", "readonly");
-            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
-            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
-            //activation criteria
-            formEdit.find("#active").prop("disabled", "disabled");
-            formEdit.find("#fromSprint").prop("disabled", "disabled");
-            formEdit.find("#fromRev").prop("disabled", "disabled");
-            formEdit.find("#toSprint").prop("disabled", "disabled");
-            formEdit.find("#toRev").prop("disabled", "disabled");
-            formEdit.find("#targetSprint").prop("disabled", "disabled");
-            formEdit.find("#targetRev").prop("disabled", "disabled");
-            formEdit.find("#bugId").prop("readonly", "readonly");
-            formEdit.find("#comment").prop("readonly", "readonly");
-            // Save button is hidden.
-            $('#editEntryButton').attr('class', '');
-            $('#editEntryButton').attr('hidden', 'hidden');
-        } else {
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-
-            //test case info
-            formEdit.find("#implementer").removeProp("readonly");
-            formEdit.find("#origin").removeProp("disabled");
-            formEdit.find("#project").removeProp("disabled");
-            formEdit.find("#ticket").removeProp("readonly");
-            formEdit.find("#function").removeProp("readonly");
-            // test case parameters
-            formEdit.find("#application").removeProp("disabled");
-            formEdit.find("#status").removeProp("disabled");
-            formEdit.find("#group").removeProp("disabled");
-            formEdit.find("#priority").removeProp("disabled");
-            formEdit.find("#actQA").removeProp("disabled");
-            formEdit.find("#actUAT").removeProp("disabled");
-            formEdit.find("#actProd").removeProp("disabled");
-            formEdit.find("#userAgent").removeProp("disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").removeProp("disabled");
-            formEdit.find("#shortDesc").removeProp("readonly");
-            tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
-            tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);
-            //activation criteria
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#fromSprint").removeProp("disabled");
-            formEdit.find("#fromRev").removeProp("disabled");
-            formEdit.find("#toSprint").removeProp("disabled");
-            formEdit.find("#toRev").removeProp("disabled");
-            formEdit.find("#targetSprint").removeProp("disabled");
-            formEdit.find("#targetRev").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-            formEdit.find("#comment").removeProp("readonly");
-            // Save button is displayed.
-            $('#editEntryButton').attr('class', 'btn btn-primary');
-            $('#editEntryButton').removeProp('hidden');
-            //Duplicate button is displayed if hasPermissionsCreate
-            if (data["hasPermissionsCreate"]) {
-                $('#duplicateEntryButton').attr('class', 'btn btn-primary');
-                $('#duplicateEntryButton').removeProp('hidden');
-            }
-        }
-
-
-
-        formEdit.modal('show');
-    });
-}
-
 /********************************************************
  //TRANSVERSAL >> FEED COMBO FIELDS
  /********************************************************/
@@ -664,20 +464,6 @@ function appendBuildRevList(system, editData) {
             formEdit.find("[name=fromRev]").prop("value", editData.fromRev);
             formEdit.find("[name=toRev]").prop("value", editData.toRev);
             formEdit.find("[name=targetRev]").prop("value", editData.targetRev);
-        }
-    });
-}
-
-function appendCountryList() {
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
-        var countryList = $("[name=countryList]");
-
-        for (var index = 0; index < data.length; index++) {
-            var country = data[index].value;
-
-            countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
-                                <input id="countryCheckB" class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
         }
     });
 }
@@ -927,11 +713,11 @@ function aoColumnsFunc(countries, tableId) {
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick=window.location="./TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
-                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var editEntry = '<button id="editEntry" onclick="editTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_edit") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewEntry = '<button id="editEntry" onclick="editEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var viewEntry = '<button id="editEntry" onclick="editTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                 class="editEntry btn btn-default btn-xs margin-right5" \n\
                                 name="editEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_view") + '" type="button">\n\
                                 <span class="glyphicon glyphicon-eye-open"></span></button>';

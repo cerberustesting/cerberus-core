@@ -12,6 +12,7 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseList.js"></script>
+        <script type="text/javascript" src="js/pages/transversalobject/TestCase.js"></script>
         <title id="pageTitle">Test Case List</title>
     </head>
     <body>
@@ -19,7 +20,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/testcaselist/editTestCase.html"%>
+            <%@ include file="include/transversalobject/editTestCase.html"%>
             <%@ include file="include/testcaselist/addTestCase.html"%>
             <%@ include file="include/testcaselist/duplicateTestCase.html"%>
             <%@ include file="include/testcaselist/massActionTestCase.html"%>

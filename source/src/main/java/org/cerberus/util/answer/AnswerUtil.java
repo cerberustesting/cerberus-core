@@ -35,11 +35,10 @@ public class AnswerUtil {
     public static String createGenericErrorAnswer() {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         StringBuilder errorMessage = new StringBuilder();
-        errorMessage.append("{'messageType':'").append(msg.getCode()).append("', ");
-        errorMessage.append(" 'message': '");
-        errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature "
-                + "<a href=\"https://github.com/vertigo17/Cerberus/issues/\" target=\"_blank\">here</a>"));
-        errorMessage.append("'}");
+        errorMessage.append("{\"messageType\":\"").append(msg.getCode()).append("\", ");
+        errorMessage.append("\"message\": \"");
+        errorMessage.append(msg.getDescription().replace("%DESCRIPTION%", "Unable to check the status of your request! Try later or - Open a bug or ask for any new feature"));
+        errorMessage.append("\"}");
         return errorMessage.toString();
     }
 

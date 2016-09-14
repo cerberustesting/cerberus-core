@@ -28,6 +28,7 @@
         <title id="pageTitle">Test Case</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
+        <script type="text/javascript" src="js/pages/transversalobject/TestCase.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body>
@@ -35,7 +36,7 @@
         <div id="page-layout" class="container-fluid center">
             <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
             <%@ include file="include/messagesArea.html"%>
-            <%@ include file="include/testcaselist/editTestCase.html"%>
+            <%@ include file="include/transversalobject/editTestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
             <%@ include file="include/testcasescript/addStep.html"%>
 
