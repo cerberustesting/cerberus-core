@@ -2342,7 +2342,7 @@ function addPropertyNew(widthValue) {
     }
     DIV.setAttribute('class', 'generalPropertyDiv');
     DIV.setAttribute('id', 'propertyRow' + nextIncrementValue);
-    DIV.setAttribute('style', 'height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
+    DIV.setAttribute('style', 'height:57px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
     var referenceNode = document.getElementById('propertyRow' + numberOfProperty);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
 

@@ -1,15 +1,15 @@
 <!--Edit test page-->
-<div data-backdrop="static" class="modal fade center" id="editEntryModal" tabindex="-1" role="dialog" aria-labelledby="editEntryModalLabel" aria-hidden="true">
+<div data-backdrop="static" class="modal fade center" id="editTestCaseModal" tabindex="-1" role="dialog" aria-labelledby="editTestCaseModalLabel" aria-hidden="true">
     <div class="modal-admin nomargintop nomarginbottom center">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editEntryModalLabel" name="editEntryField">Edit Test Case</h4>
+                <h4 class="modal-title" id="editTestCaseModalLabel" name="editTestCaseField">Edit Test Case</h4>
             </div>
             <div class="modal-body">
 
                 <!--edit form-->
-                <form id="editEntryModalForm" name="editEntryModalForm"  title="EditTestCase" role="form">
+                <form id="editTestCaseModalForm" name="editTestCaseModalForm"  title="EditTestCase" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -125,8 +125,16 @@
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-4">
                                 <div class="row">
                                     <div class="col-xs-12">
-                                        <label for="countryList" id="countryListLabel" name="countryListLabel"></label>
+                                        <label for="countryList" id="countryListLabel" name="countryListLabel">Country List</label>
                                         <div id="countryList" name="countryList" style="margin-top: 5px;margin-bottom: 25px;"></div>
+                                        <table class="table table-bordered table-hover nomarginbottom" id="CountryTable" style="margin-top: 5px;margin-bottom: 25px;">
+                                            <thead>
+                                            </thead>
+                                            <tbody id="testCaseCountryTableBody">
+                                                <tr>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <div class="row">

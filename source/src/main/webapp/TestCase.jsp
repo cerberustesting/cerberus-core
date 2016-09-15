@@ -1771,7 +1771,7 @@
                                                         <tr style="width:100%">
                                                             <td class="wob" style="width:100%">
                                                                 <div style="width:100%">
-                                                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;padding-top:0px;padding-bottom:0px"
                                                                               name="properties_description_<%=incrementProperty%>" id="properties_description_<%=incrementProperty%>" placeholder="Feed Property description"><%=tccp.getDescription()%></textarea>
                                                                 </div>
                                                             </td>
@@ -2234,7 +2234,7 @@
                         <tr style="width:100%">
                             <td class="wob" style="width:100%">
                                 <div style="width:100%">
-                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;padding-top:0px;padding-bottom:0px"
                                               data-id="properties_description_template"></textarea>
                                 </div>
                             </td>
@@ -2272,7 +2272,7 @@
                 </div>
                 <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
                     <div class="pull-left showInlineElement" style="width:100%;">
-                        <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
+                        <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"
                                   ></textarea>
                     </div>
                     <div data-id="selectEntry_Data_template"  class="hideElement">
