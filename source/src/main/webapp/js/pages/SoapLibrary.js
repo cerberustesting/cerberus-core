@@ -95,7 +95,7 @@ function editEntryClick(name) {
                 formEdit.find("#type").prop("value", data.type);
                 formEdit.find("#servicepath").prop("value", data.servicePath);
                 formEdit.find("#method").prop("value", data.method);
-                formEdit.find("#envelope").prop("value", $('<div/>').html(data.envelope).text());
+                formEdit.find("#envelope").prop("value", data.envelope);
                 formEdit.find("#parsinganswer").prop("value", data.parsingAnswer);
                 formEdit.find("#description").prop("value", data.description);
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -279,7 +279,11 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_soapLibrary", "soapLibrary_col")},
         {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_soapLibrary", "type_col")},
-        {"data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col")},
+        {"data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),
+            "mRender": function(data, type, obj){
+                return $("<div></div>").text(obj['envelope']).html();
+            }
+        },
         {
             "data": "description",
             "sName": "Description",

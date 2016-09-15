@@ -81,13 +81,12 @@ public class CreateSoapLibrary2 extends HttpServlet {
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
-        String envelopeBDD = HtmlUtils.htmlEscape(envelope);
+        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("Envelope"), null);
 
         ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
         IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
 
-        SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelopeBDD, description, servicePath, parsingAnswer, method);
+        SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
         Answer finalAnswer = soapLibraryService.create(soapLib);
 
         /**

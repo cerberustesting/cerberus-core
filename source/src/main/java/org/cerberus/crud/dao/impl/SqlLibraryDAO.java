@@ -550,25 +550,25 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM sqllibrary ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM sqllibrary `sql` ");
 
         query.append(" WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (sqllibrary.Name like ?");
-            searchSQL.append(" or sqllibrary.Type like ?");
-            searchSQL.append(" or sqllibrary.Database like ?");
-            searchSQL.append(" or sqllibrary.description like ?");
-            searchSQL.append(" or sqllibrary.script like ?)");
+            searchSQL.append(" and (`sql`.Name like ?");
+            searchSQL.append(" or `sql`.Type like ?");
+            searchSQL.append(" or `sql`.Database like ?");
+            searchSQL.append(" or `sql`.description like ?");
+            searchSQL.append(" or `sql`.script like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(sqllibrary." + entry.getKey() + ",'')";
+                String key = "IFNULL(`sql`." + entry.getKey() + ",'')";
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
                 if(q == null || q == ""){
-                    q = "(sqllibrary." + entry.getKey() + " IS NULL OR " + entry.getKey() +" = '')";
+                    q = "(`sql`." + entry.getKey() + " IS NULL OR " + entry.getKey() +" = '')";
                 }
                 searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
@@ -579,7 +579,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by sqllibrary.").append(column).append(" ").append(dir);
+            query.append(" order by `sql`.").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -687,7 +687,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         SqlLibrary p = new SqlLibrary();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        query.append("SELECT * FROM sqllibrary WHERE Name = ?");
+        query.append("SELECT * FROM sqllibrary `sql` WHERE Name = ?");
         Connection connection = this.databaseSpring.connect();
         try{
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -733,30 +733,30 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct sqllibrary.");
+        query.append("SELECT distinct `sql`.");
         query.append(columnName);
-        query.append(" as distinctValues FROM sqllibrary");
+        query.append(" as distinctValues FROM sqllibrary `sql`");
         query.append(" where 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (sqllibrary.Name like ?");
-            searchSQL.append(" or sqllibrary.Type like ?");
-            searchSQL.append(" or sqllibrary.Database like ?");
-            searchSQL.append(" or sqllibrary.description like ?");
-            searchSQL.append(" or sqllibrary.script like ?)");
+            searchSQL.append(" and (`sql`.Name like ?");
+            searchSQL.append(" or `sql`.Type like ?");
+            searchSQL.append(" or `sql`.Database like ?");
+            searchSQL.append(" or `sql`.description like ?");
+            searchSQL.append(" or `sql`.script like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and sqllibrary.");
+                searchSQL.append(" and `sql`.");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(sqllibrary.").append(columnName).append(",'')");
-        query.append(" order by sqllibrary.").append(columnName).append(" asc");
+        query.append(" group by ifnull(`sql`.").append(columnName).append(",'')");
+        query.append(" order by `sql`.").append(columnName).append(" asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

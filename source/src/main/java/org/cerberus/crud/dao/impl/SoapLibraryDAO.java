@@ -676,7 +676,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct soaplibrary.");
+        query.append("SELECT distinct sol.");
         query.append(columnName);
         query.append(" as distinctValues FROM soaplibrary sol");
         query.append(" where 1=1");
