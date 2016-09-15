@@ -496,6 +496,7 @@
         <servlet-name>UpdateSqlLibrary2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary2</servlet-class>
     </servlet>
+    <!-- // TODO REMOVE
     <servlet>
         <servlet-name>FindAllInvariantPublic</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPublic</servlet-class>
@@ -503,7 +504,7 @@
     <servlet>
         <servlet-name>FindAllInvariantPrivate</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPrivate</servlet-class>
-    </servlet>
+    </servlet>-->
     <servlet>
         <servlet-name>CreateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
@@ -536,26 +537,29 @@
         <servlet-name>UpdateSoapLibrary2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary2</servlet-class>
     </servlet>
+    <!-- //TODO REMOVE
     <servlet>
         <servlet-name>CreateInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant</servlet-class>
-    </servlet>
+    </servlet> -->
     <servlet>
         <servlet-name>CreateInvariant2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant2</servlet-class>
     </servlet>
+    <!-- //TODO REMOVE
     <servlet>
         <servlet-name>UpdateInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant</servlet-class>
-    </servlet>
+    </servlet> -->
     <servlet>
         <servlet-name>UpdateInvariant2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant2</servlet-class>
     </servlet>
+    <!-- //TODO REMOVE
     <servlet>
         <servlet-name>DeleteInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
-    </servlet>
+    </servlet> -->
     <servlet>
         <servlet-name>DeleteInvariant2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant2</servlet-class>
@@ -1399,6 +1403,7 @@
         <servlet-name>UpdateSqlLibrary2</servlet-name>
         <url-pattern>/UpdateSqlLibrary2</url-pattern>
     </servlet-mapping>
+    <!-- //TODO REMOVE
     <servlet-mapping>
         <servlet-name>FindAllInvariantPublic</servlet-name>
         <url-pattern>/FindAllInvariantPublic</url-pattern>
@@ -1406,7 +1411,7 @@
     <servlet-mapping>
         <servlet-name>FindAllInvariantPrivate</servlet-name>
         <url-pattern>/FindAllInvariantPrivate</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
     <servlet-mapping>
         <servlet-name>CreateSoapLibrary</servlet-name>
         <url-pattern>/CreateSoapLibrary</url-pattern>
@@ -1439,26 +1444,29 @@
         <servlet-name>UpdateSoapLibrary2</servlet-name>
         <url-pattern>/UpdateSoapLibrary2</url-pattern>
     </servlet-mapping>
+    <!-- //TODO REMOVE
     <servlet-mapping>
         <servlet-name>CreateInvariant</servlet-name>
         <url-pattern>/CreateInvariant</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
     <servlet-mapping>
         <servlet-name>CreateInvariant2</servlet-name>
         <url-pattern>/CreateInvariant2</url-pattern>
     </servlet-mapping>
+    <!-- //TODO REMOVE
     <servlet-mapping>
         <servlet-name>UpdateInvariant</servlet-name>
         <url-pattern>/UpdateInvariant</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
     <servlet-mapping>
         <servlet-name>UpdateInvariant2</servlet-name>
         <url-pattern>/UpdateInvariant2</url-pattern>
     </servlet-mapping>
+    <!-- //TODO REMOVE
     <servlet-mapping>
         <servlet-name>DeleteInvariant</servlet-name>
         <url-pattern>/DeleteInvariant</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping> -->
     <servlet-mapping>
         <servlet-name>DeleteInvariant2</servlet-name>
         <url-pattern>/DeleteInvariant2</url-pattern>
@@ -2193,8 +2201,9 @@
             <url-pattern>/Parameter2.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/Invariant.jsp</url-pattern>
+            <!-- //TODO REMOVE
             <url-pattern>/InvariantPublic.jsp</url-pattern>
-            <url-pattern>/InvariantPrivate.jsp</url-pattern>
+            <url-pattern>/InvariantPrivate.jsp</url-pattern> -->
             <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
@@ -2210,13 +2219,16 @@
             <url-pattern>/UpdateUser</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/ReadLogEvent</url-pattern>
+            <!-- //TODO REMOVE
             <url-pattern>/FindAllInvariantPublic</url-pattern>
             <url-pattern>/FindAllInvariantPrivate</url-pattern>
-            <url-pattern>/CreateInvariant</url-pattern>
+            <url-pattern>/CreateInvariant</url-pattern> -->
             <url-pattern>/CreateInvariant2</url-pattern>
-            <url-pattern>/UpdateInvariant</url-pattern>
+            <!-- //TODO REMOVE
+            <url-pattern>/UpdateInvariant</url-pattern> -->
             <url-pattern>/UpdateInvariant2</url-pattern>
-            <url-pattern>/DeleteInvariant</url-pattern>
+            <!-- //TODO REMOVE
+            <url-pattern>/DeleteInvariant</url-pattern> -->
             <url-pattern>/DeleteInvariant2</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>

@@ -50,7 +50,7 @@ function displayPrivateTable(){
     }
     else {
         //configure and create the dataTable
-        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [0, 'asc']);
+        var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [1, 'asc']);
         createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList");
     }
 }
@@ -142,6 +142,45 @@ function editEntryClick(param, value) {
                 formEdit.find("#gp1").prop("value", data.invariant.gp1);
                 formEdit.find("#gp2").prop("value", data.invariant.gp2);
                 formEdit.find("#gp3").prop("value", data.invariant.gp3);
+
+                formEdit.modal('show');
+            }else{
+                showUnexpectedError();
+            }
+        },
+        error: showUnexpectedError
+    });
+}
+
+function viewEntryClick(param, value) {
+    var formEdit = $('#editInvariantModal');
+
+    $.ajax({
+        url: "ReadInvariant?idName="+param+"&value="+value,
+        async: true,
+        method: "GET",
+        success: function (data) {
+            if(data.messageType === "OK") {
+                formEdit.find("#idname").prop("value", data.invariant.idName);
+                formEdit.find("#value").prop("value", data.invariant.value);
+                formEdit.find("#sort").prop("value", data.invariant.sort);
+                formEdit.find("#description").prop("value", data.invariant.description);
+                formEdit.find("#veryShortDesc").prop("value", data.invariant.veryShortDesc);
+                formEdit.find("#gp1").prop("value", data.invariant.gp1);
+                formEdit.find("#gp2").prop("value", data.invariant.gp2);
+                formEdit.find("#gp3").prop("value", data.invariant.gp3);
+
+                formEdit.find("#idname").prop("readonly", "readonly");
+                formEdit.find("#value").prop("readonly", "readonly");
+                formEdit.find("#sort").prop("readonly", "readonly");
+                formEdit.find("#description").prop("readonly", "readonly");
+                formEdit.find("#veryShortDesc").prop("readonly", "readonly");
+                formEdit.find("#gp1").prop("readonly", "readonly");
+                formEdit.find("#gp2").prop("readonly", "readonly");
+                formEdit.find("#gp3").prop("readonly", "readonly");
+
+                $('#editInvariantButton').attr('class', '');
+                $('#editInvariantButton').attr('hidden', 'hidden');
 
                 formEdit.modal('show');
             }else{
@@ -313,6 +352,21 @@ function aoColumnsFunc(tableId) {
 function aoColumnsFunc2(tableId) {
     var doc = new Doc();
     var aoColumns = [
+        {"data": null,
+            "bSortable": false,
+            "bSearchable": false,
+            "title": doc.getDocLabel("page_invariant", "button_col"),
+            "mRender": function (data, type, obj) {
+                var viewInvariant = '<button id="editInvariant" onclick="viewEntryClick(\'' + obj["idName"] + '\',\'' + obj["value"] + '\');"\n\
+                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    name="viewInvariant" title="' + doc.getDocLabel("page_invariant", "button_edit") + '" type="button">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span></button>';
+
+                return '<div class="center btn-group width150">' + viewInvariant + '</div>';
+
+            },
+            "width": "50px"
+        },
         {"data": "idName", "sName": "idname", "title": doc.getDocLabel("page_invariant", "idname")},
         {"data": "value", "sName": "value", "title": doc.getDocLabel("page_invariant", "value")},
         {"data": "sort", "sName": "sort", "title": doc.getDocLabel("page_invariant", "sort")},

@@ -120,7 +120,8 @@ public class InvariantDAO implements IInvariantDAO {
         }
         return result;
     }
-
+    //TODO REMOVE
+    /*
     @Override
     public Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException {
         boolean throwException = true;
@@ -170,7 +171,7 @@ public class InvariantDAO implements IInvariantDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
-    }
+    }*/
 
     @Override
     public AnswerList readByIdname(String idName) {
@@ -814,6 +815,8 @@ public class InvariantDAO implements IInvariantDAO {
         return result;
     }
 
+    //TODO REMOVE
+    /*
     @Override
     public void create(Invariant invariant) throws CerberusException {
         boolean throwExcep = false;
@@ -931,6 +934,7 @@ public class InvariantDAO implements IInvariantDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         }
     }
+    */
 
     @Override
     public Answer create2(Invariant object) {

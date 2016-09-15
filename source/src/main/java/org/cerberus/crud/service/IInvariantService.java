@@ -34,7 +34,7 @@ public interface IInvariantService {
 
     Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
 
-    Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
+    //TODO REMOVE Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
 
     AnswerList readByIdname(String idName);
 
@@ -62,11 +62,11 @@ public interface IInvariantService {
 
     boolean isInvariantExist(String idName, String value);
 
-    void createInvariant(Invariant invariant) throws CerberusException;
+    //TODO REMOVE void createInvariant(Invariant invariant) throws CerberusException;
 
-    void deleteInvariant(Invariant invariant) throws CerberusException;
+    //TODO REMOVE void deleteInvariant(Invariant invariant) throws CerberusException;
 
-    void updateInvariant(Invariant invariant) throws CerberusException;
+    //TODO REMOVE void updateInvariant(Invariant invariant) throws CerberusException;
 
     Answer create(Invariant invariant);
 

@@ -6679,7 +6679,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','editinvariant_field','','fr','Editer un Invariant','')");
         SQLS.append(",('page_invariant','addinvariant_field','','en','Add Invariant','')");
         SQLS.append(",('page_invariant','addinvariant_field','','fr','Ajouter un Invariant','')");
-        SQLS.append(",('page_invariant','public_invariant','','en','Public InvariantS','')");
+        SQLS.append(",('page_invariant','public_invariant','','en','Public Invariants','')");
         SQLS.append(",('page_invariant','public_invariant','','fr','Invariants publiques','')");
         SQLS.append(",('page_invariant','private_invariant','','en','Private Invariants','')");
         SQLS.append(",('page_invariant','private_invariant','','fr','Invariants privés','')");
@@ -6852,6 +6852,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `TCDateCrea` `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
         SQLS.append("CHANGE COLUMN `LastModifier` `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
         SQLS.append("CHANGE COLUMN `last_modified` `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 928
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_header','menuInvariants','','en','Invariants','')");
+        SQLS.append(",('page_header','menuInvariants','','fr','Invariants','')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
