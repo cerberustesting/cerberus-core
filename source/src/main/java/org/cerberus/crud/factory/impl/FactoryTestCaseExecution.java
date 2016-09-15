@@ -69,7 +69,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setUrl(url);
         newTce.setVerbose(verbose);
         newTce.setScreenshot(screenshot);
-        newTce.settCase(tCase);
+        newTce.setTestCaseObj(tCase);
         newTce.setCountryEnvParam(countryEnvParam);
         newTce.setCountryEnvironmentParameters(countryEnvironmentParameters);
         newTce.setManualURL(manualURL);

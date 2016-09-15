@@ -185,7 +185,7 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.settCase(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
+                    execution.setTestCaseObj(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
@@ -196,10 +196,10 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.setApplication(applicationService.convert(applicationService.readByKey(execution.gettCase().getApplication())));
+                    execution.setApplication(applicationService.convert(applicationService.readByKey(execution.getTestCaseObj().getApplication())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.gettCase().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;

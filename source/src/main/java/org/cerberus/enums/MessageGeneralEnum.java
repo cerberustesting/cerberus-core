@@ -68,6 +68,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_URL_MALFORMED(86, "", "URL to access Selenium server '%URL%' is not correct and cannot be handled by Cerberus. Please check your Selenium server and port parameter."),
     VALIDATION_FAILED_TEST_NOT_FOUND(87, "", "Test '%TEST%' does not exist."),
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "", "The test '%TEST%' isn't active."),
+    VALIDATION_FAILED_USERAGENTDIFFERENT(90, "", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
     VALIDATION_SUCCEEDED(89, "", "The validation succeeded"),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
