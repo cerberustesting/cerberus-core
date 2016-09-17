@@ -85,7 +85,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
         //message used for log purposes 
         String logPrefix = "[" + tCExecution.getTest() + " - " + tCExecution.getTestCase() + "] ";
-        
+
         try {
 
             LOG.info(logPrefix + "Start Selenium Server");
@@ -317,7 +317,9 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         //if userAgent
-        if (!("").equals(tCExecution.getUserAgent())) {
+        if (!StringUtil.isNullOrEmpty(tCExecution.getTestCaseObj().getUserAgent())) {
+            profile.setPreference("general.useragent.override", tCExecution.getTestCaseObj().getUserAgent());
+        } else if (!("").equals(tCExecution.getUserAgent())) {
             profile.setPreference("general.useragent.override", tCExecution.getUserAgent());
         }
 

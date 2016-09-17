@@ -37,6 +37,7 @@ import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.engine.execution.IExecutionCheckService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
     private IBuildRevisionInvariantService buildRevisionInvariantService;
+
     private MessageGeneral message;
 
     @Override
@@ -69,29 +71,31 @@ public class ExecutionCheckService implements IExecutionCheckService {
             /**
              * Manual application connectivity parameter
              */
-            if (this.checkTestCaseActive(tCExecution.gettCase())
+            if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)) {
+                    && this.checkMaintenanceTime(tCExecution)
+                    && this.checkUserAgentConsistent(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
-        } else {
-            /**
-             * Automatic application connectivity parameter (from database)
-             */
+        } else /**
+         * Automatic application connectivity parameter (from database)
+         */
+        {
             if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
                     && this.checkActiveEnvironmentGroup(tCExecution)
-                    && this.checkTestCaseActive(tCExecution.gettCase())
+                    && this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
-                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)) {
+                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)
+                    && this.checkUserAgentConsistent(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         }
@@ -136,8 +140,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if testcase is not MANUAL");
         }
-        
-        if ("N".equals(tCExecution.getManualExecution()) && tCExecution.gettCase().getGroup().equals("MANUAL")) {
+
+        if ("N".equals(tCExecution.getManualExecution()) && tCExecution.getTestCaseObj().getGroup().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;
         }
@@ -149,8 +153,8 @@ public class ExecutionCheckService implements IExecutionCheckService {
             LOG.debug("Checking if application environment type is compatible with environment type");
         }
         try {
-            if (applicationService.convert(applicationService.readByKey(tCExecution.gettCase().getApplication())).getType().equalsIgnoreCase("COMPARISON")) {
-                if (tCExecution.gettCase().getGroup().equalsIgnoreCase("COMPARATIVE")) {
+            if (applicationService.convert(applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())).getType().equalsIgnoreCase("COMPARISON")) {
+                if (tCExecution.getTestCaseObj().getGroup().equalsIgnoreCase("COMPARATIVE")) {
                     message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TYPE_DIFFERENT);
                     return false;
                 }
@@ -165,7 +169,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if test can be executed in this build and revision");
         }
-        TestCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.getTestCaseObj();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcFromSprint = ParameterParserUtil.parseStringParam(tc.getFromBuild(), "");
         String tcToSprint = ParameterParserUtil.parseStringParam(tc.getToBuild(), "");
@@ -221,7 +225,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking target build");
         }
-        TestCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.getTestCaseObj();
         CountryEnvParam env = tCExecution.getCountryEnvParam();
         String tcSprint = ParameterParserUtil.parseStringParam(tc.getTargetBuild(), "");
         String tcRevision = ParameterParserUtil.parseStringParam(tc.getTargetRev(), "");
@@ -254,7 +258,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking environment " + tCExecution.getCountryEnvParam().getEnvironment());
         }
-        TestCase tc = tCExecution.gettCase();
+        TestCase tc = tCExecution.getTestCaseObj();
         if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("QA")) {
             return this.checkRunQA(tc, tCExecution.getEnvironmentData());
         } else if (tCExecution.getEnvironmentDataObj().getGp1().equalsIgnoreCase("UAT")) {
@@ -359,6 +363,19 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (!tCExecution.getBrowser().equalsIgnoreCase("firefox")) {
             if (tCExecution.getVerbose() > 0) {
                 message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean checkUserAgentConsistent(TestCaseExecution tCExecution) {
+        // We check here that User Agent has not been forced at TestCase Level and Robot Level on different value.
+        if (!(StringUtil.isNullOrEmpty(tCExecution.getTestCaseObj().getUserAgent())) && !(StringUtil.isNullOrEmpty(tCExecution.getUserAgent()))) {
+            if (!(tCExecution.getTestCaseObj().getUserAgent().equals(tCExecution.getUserAgent()))) {
+                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_USERAGENTDIFFERENT)
+                        .resolveDescription("UATESTCASE", tCExecution.getTestCaseObj().getUserAgent())
+                        .resolveDescription("UAROBOT", tCExecution.getUserAgent());
                 return false;
             }
         }

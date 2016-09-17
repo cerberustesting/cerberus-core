@@ -41,6 +41,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+//TODO REMOVE
+
 @WebServlet(name = "UpdateInvariant", urlPatterns = {"/UpdateInvariant"})
 public class UpdateInvariant extends HttpServlet {
 
@@ -66,7 +68,7 @@ public class UpdateInvariant extends HttpServlet {
         String idName = invKey[0];
         String invVal = invKey[1];
 
-        Invariant invariantData = invariantService.findInvariantByIdValue(idName, invVal);
+        /*Invariant invariantData = invariantService.findInvariantByIdValue(idName, invVal);
 
         switch (columnPosition) {
             case 0:
@@ -91,9 +93,9 @@ public class UpdateInvariant extends HttpServlet {
             case 7:
                 invariantData.setGp3(value);
                 break;
-        }
+        }*/
 
-        invariantService.updateInvariant(invariantData);
+        //invariantService.updateInvariant(invariantData);
 
         /**
          * Adding Log entry.

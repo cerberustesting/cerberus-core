@@ -41,6 +41,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+//TODO REMOVE
 public class CreateInvariant extends HttpServlet {
 
     /**
@@ -70,8 +71,8 @@ public class CreateInvariant extends HttpServlet {
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
 
-            Invariant invariantData = factoryInvariant.create(idname, value, sort, description, veryShortDesc, gp1, gp2, gp3);
-            invariantService.createInvariant(invariantData);
+            //Invariant invariantData = factoryInvariant.create(idname, value, sort, description, veryShortDesc, gp1, gp2, gp3);
+            //invariantService.createInvariant(invariantData);
 
             /**
              * Adding Log entry.

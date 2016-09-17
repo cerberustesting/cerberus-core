@@ -66,7 +66,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
     @Override
     public void loadTestCase(TestCaseExecution tCExecution) {
 
-        TestCase testCase = tCExecution.gettCase();
+        TestCase testCase = tCExecution.getTestCaseObj();
 
         String test = testCase.getTest();
         String testcase = testCase.getTestCase();
@@ -79,8 +79,8 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         /**
          * Get List of PreTest for selected TestCase
          */
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading pretests for " + tCExecution.getCountry() + tCExecution.gettCase().getApplication());
-        List<String> login = this.testCaseStepService.getLoginStepFromTestCase(tCExecution.getCountry(), tCExecution.gettCase().getApplication());
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Loading pretests for " + tCExecution.getCountry() + tCExecution.getTestCaseObj().getApplication());
+        List<String> login = this.testCaseStepService.getLoginStepFromTestCase(tCExecution.getCountry(), tCExecution.getTestCaseObj().getApplication());
 
         /**
          * Load Steps of PreTest
@@ -120,7 +120,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "setTestCaseCountryProperties");
         testCase.setTestCaseCountryProperties(testCaseCountryProperty);
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "settCase");
-        tCExecution.settCase(testCase);
+        tCExecution.setTestCaseObj(testCase);
     }
 
     //@Override

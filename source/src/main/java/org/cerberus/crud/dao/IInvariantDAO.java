@@ -42,13 +42,14 @@ public interface IInvariantDAO {
      */
     Invariant readByKey(String idName, String value) throws CerberusException;
 
+    //TODO REMOVE
     /**
      * @param idName
      * @param sort
      * @return
      * @throws CerberusException
      */
-    Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
+    //Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
 
     /**
      * @param idName
@@ -109,11 +110,14 @@ public interface IInvariantDAO {
 
     public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
 
+    //TODO REMOVE
+    /*
     public void create(Invariant invariant) throws CerberusException;
 
     public void delete(Invariant invariant) throws CerberusException;
 
     public void update(Invariant invariant) throws CerberusException;
+    */
 
     /**
      * Create an {@link Invariant} in database

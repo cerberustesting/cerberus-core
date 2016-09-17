@@ -41,6 +41,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+//TODO REMOVE
 public class FindAllInvariantPrivate extends HttpServlet {
 
     /**
@@ -130,10 +131,10 @@ public class FindAllInvariantPrivate extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
-            AnswerList l = invariantService.readByPrivateByCriteria(start, amount, colName, dir, searchTerm, inds);
-            List<Invariant> invariantList = l.getDataList();
-
             JSONObject jsonResponse = new JSONObject();
+
+            /*AnswerList l = invariantService.readByPrivateByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<Invariant> invariantList = l.getDataList();
 
             for (Invariant InvariantData : invariantList) {
                 JSONArray row = new JSONArray();
@@ -147,7 +148,7 @@ public class FindAllInvariantPrivate extends HttpServlet {
                         .put(InvariantData.getGp3());
 
                 data.put(row);
-            }
+            }*/
             Integer iTotalRecords = invariantService.getNumberOfPrivateInvariant("");
             Integer iTotalDisplayRecords = invariantService.getNumberOfPrivateInvariant(searchTerm);
 

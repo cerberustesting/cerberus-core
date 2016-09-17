@@ -44,6 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+//TODO REMOVE
 @WebServlet(name = "FindAllInvariantPublic", urlPatterns = {"/FindAllInvariantPublic"})
 public class FindAllInvariantPublic extends HttpServlet {
 
@@ -134,10 +135,10 @@ public class FindAllInvariantPublic extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
-            AnswerList l = invariantService.readByPublicByCriteria(start, amount, colName, dir, searchTerm, inds);
-            List<Invariant> invariantList = l.getDataList();
-
             JSONObject jsonResponse = new JSONObject();
+
+            /*AnswerList l = invariantService.readByPublicByCriteria(start, amount, colName, dir, searchTerm, inds);
+            List<Invariant> invariantList = l.getDataList();
 
             for (Invariant InvariantData : invariantList) {
                 JSONArray row = new JSONArray();
@@ -152,7 +153,7 @@ public class FindAllInvariantPublic extends HttpServlet {
                         .put(InvariantData.getGp3());
 
                 data.put(row);
-            }
+            }*/
             Integer iTotalRecords = invariantService.getNumberOfPublicInvariant("");
             Integer iTotalDisplayRecords = invariantService.getNumberOfPublicInvariant(searchTerm);
 

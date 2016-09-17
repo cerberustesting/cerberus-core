@@ -165,13 +165,13 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
             searchSQL.append(" or tec.`project` like ?");
-            searchSQL.append(" or tec.`creator` like ?");
-            searchSQL.append(" or tec.`lastmodifier` like ?");
+            searchSQL.append(" or tec.`usrCreated` like ?");
+            searchSQL.append(" or tec.`usrModif` like ?");
             searchSQL.append(" or tec.`tcactive` like ?");
             searchSQL.append(" or tec.`status` like ?");
             searchSQL.append(" or tec.`group` like ?");
             searchSQL.append(" or tec.`priority` like ?");
-            searchSQL.append(" or tec.`tcdatecrea` like ?");
+            searchSQL.append(" or tec.`dateCreated` like ?");
             searchSQL.append(" or tec.`description` like ?");
             searchSQL.append(" or lab.`label` like ?)");
         }
@@ -834,7 +834,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(test, "tec.test"));
         query.append(createInClauseFromList(idProject, "tec.project"));
         query.append(createInClauseFromList(app, "tec.application"));
-        query.append(createInClauseFromList(creator, "tec.creator"));
+        query.append(createInClauseFromList(creator, "tec.usrCreated"));
         query.append(createInClauseFromList(implementer, "tec.implementer"));
         query.append(createInClauseFromList(system, "app.system"));
         query.append(createInClauseFromList(testBattery, "tb.testbattery"));
@@ -1811,13 +1811,13 @@ public class TestCaseDAO implements ITestCaseDAO {
             searchSQL.append(" or tec.`test` like ?");
             searchSQL.append(" or tec.`application` like ?");
             searchSQL.append(" or tec.`project` like ?");
-            searchSQL.append(" or tec.`creator` like ?");
-            searchSQL.append(" or tec.`lastmodifier` like ?");
+            searchSQL.append(" or tec.`usrCreated` like ?");
+            searchSQL.append(" or tec.`usrModif` like ?");
             searchSQL.append(" or tec.`tcactive` like ?");
             searchSQL.append(" or tec.`status` like ?");
             searchSQL.append(" or tec.`group` like ?");
             searchSQL.append(" or tec.`priority` like ?");
-            searchSQL.append(" or tec.`tcdatecrea` like ?");
+            searchSQL.append(" or tec.`dateCreated` like ?");
             searchSQL.append(" or lab.`label` like ?");
             searchSQL.append(" or tec.`description` like ?)");
         }

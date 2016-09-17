@@ -40,6 +40,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+//TODO REMOVE
 public class DeleteInvariant extends HttpServlet {
 
     /**
@@ -64,8 +65,8 @@ public class DeleteInvariant extends HttpServlet {
             String[] invKey = key.split("\\$#");
             String idName = invKey[0];
             String invVal = invKey[1];
-            Invariant invariantData = invariantService.findInvariantByIdValue(idName, invVal);
-            invariantService.deleteInvariant(invariantData);
+            //Invariant invariantData = invariantService.findInvariantByIdValue(idName, invVal);
+            //invariantService.deleteInvariant(invariantData);
 
             /**
              * Adding Log entry.

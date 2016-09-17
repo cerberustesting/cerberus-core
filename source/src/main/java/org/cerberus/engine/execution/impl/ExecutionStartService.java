@@ -130,7 +130,7 @@ public class ExecutionStartService implements IExecutionStartService {
         try {
             TestCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
             if (tCase != null) {
-                tCExecution.settCase(tCase);
+                tCExecution.setTestCaseObj(tCase);
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
@@ -170,10 +170,10 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         LOG.debug("Loading Application Information");
         try {
-            tCExecution.setApplication(this.applicationService.convert(this.applicationService.readByKey(tCExecution.gettCase().getApplication())));
+            tCExecution.setApplication(this.applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-            mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
+            mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
@@ -247,7 +247,7 @@ public class ExecutionStartService implements IExecutionStartService {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
                     mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
-                    mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
                     LOG.error(mes.getDescription());
                     throw new CerberusException(mes);
                 }
@@ -259,7 +259,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
                 mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironment()));
-                mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.gettCase().getApplication()));
+                mes.setDescription(mes.getDescription().replace("%APPLI%", tCExecution.getTestCaseObj().getApplication()));
                 LOG.error(mes.getDescription());
                 throw new CerberusException(mes);
             }

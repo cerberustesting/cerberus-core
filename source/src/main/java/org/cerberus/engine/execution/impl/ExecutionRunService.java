@@ -216,10 +216,10 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_LOADINGDETAILEDDATA));
             LOG.debug(logPrefix + "Loading Pre-testcases.");
-            List<TestCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.gettCase().getApplication(), tCExecution.getCountry());
-            tCExecution.setPreTCase(preTests);
+            List<TestCase> preTests = testCaseService.findTestCaseActiveByCriteria("Pre Testing", tCExecution.getTestCaseObj().getApplication(), tCExecution.getCountry());
+            tCExecution.setPreTestCaseList(preTests);
             if (!(preTests == null)) {
-                LOG.debug(logPrefix + "Loaded PreTest List. " + tCExecution.getPreTCase().size() + " found.");
+                LOG.debug(logPrefix + "Loaded PreTest List. " + tCExecution.getPreTestCaseList().size() + " found.");
             }
             LOG.debug(logPrefix + "Pre-testcases Loaded.");
 
@@ -228,9 +228,9 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             LOG.debug(logPrefix + "Loading all Steps information of Main testcase.");
             List<TestCaseStep> testCaseStepList;
-            testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.gettCase());
-            tCExecution.gettCase().setTestCaseStep(testCaseStepList);
-            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.gettCase().getTestCaseStep().size() + " Step(s) found.");
+            testCaseStepList = this.loadTestCaseService.loadTestCaseStep(tCExecution.getTestCaseObj());
+            tCExecution.getTestCaseObj().setTestCaseStep(testCaseStepList);
+            LOG.debug(logPrefix + "Steps information of Main testcase Loaded : " + tCExecution.getTestCaseObj().getTestCaseStep().size() + " Step(s) found.");
 
             /**
              * Load Pre TestCase with Step dependencies (Actions/Control)
@@ -238,13 +238,13 @@ public class ExecutionRunService implements IExecutionRunService {
             LOG.debug(logPrefix + "Loading all Steps information (Actions & Controls) of all Pre-testcase.");
             List<TestCaseStep> preTestCaseStepList = new ArrayList<TestCaseStep>();
             List<TestCase> preTestCase = new ArrayList<TestCase>();
-            for (TestCase myTCase : tCExecution.getPreTCase()) {
+            for (TestCase myTCase : tCExecution.getPreTestCaseList()) {
                 myTCase.setTestCaseStep(this.loadTestCaseService.loadTestCaseStep(myTCase));
                 preTestCaseStepList.addAll(myTCase.getTestCaseStep());
                 preTestCase.add(myTCase);
                 LOG.debug(logPrefix + "Pre testcase : " + myTCase.getTest() + "-" + myTCase.getTestCase() + " Loaded With " + myTCase.getTestCaseStep().size() + " Step(s) found.");
             }
-            tCExecution.setPreTCase(preTestCase);
+            tCExecution.setPreTestCaseList(preTestCase);
             LOG.debug(logPrefix + "All Steps information (Actions & Controls) of all Pre-testcase Loaded.");
 
             /**
@@ -374,7 +374,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getDescription().replace(".", ""));
+                    + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
 
         }
         //TODO:FN debug messages to be removed
@@ -384,7 +384,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                    + tCExecution.getTestCase() + "_" + tCExecution.gettCase().getDescription().replace(".", ""));
+                    + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
         }
         //Notify it's finnished
 //        WebsocketTest wst = new WebsocketTest();

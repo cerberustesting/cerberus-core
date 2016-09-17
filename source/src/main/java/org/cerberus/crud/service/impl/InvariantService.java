@@ -49,10 +49,12 @@ public class InvariantService implements IInvariantService {
         return invariantDao.readByKey(idName, value);
     }
 
+    //TODO REMOVE
+    /*
     @Override
     public Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException {
         return invariantDao.readByIdnameBySort(idName, sort);
-    }
+    }*/
 
     @Override
     public AnswerList readByIdname(String idName) {
@@ -177,6 +179,8 @@ public class InvariantService implements IInvariantService {
         }
     }
 
+    //TODO REMOVE
+    /*
     @Override
     public void createInvariant(Invariant invariant) throws CerberusException {
         invariantDao.create(invariant);
@@ -190,7 +194,7 @@ public class InvariantService implements IInvariantService {
     @Override
     public void updateInvariant(Invariant invariant) throws CerberusException {
         invariantDao.update(invariant);
-    }
+    }*/
 
     @Override
     public Answer create(Invariant invariant) {
