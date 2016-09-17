@@ -22,6 +22,9 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +39,12 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -51,6 +57,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -64,6 +71,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "UpdateTestCase2", urlPatterns = {"/UpdateTestCase2"})
 public class UpdateTestCase2 extends HttpServlet {
+
+    private ITestCaseLabelService testCaseLabelService;
+    private IFactoryTestCaseLabel testCaseLabelFactory;
+    private ITestCaseCountryService testCaseCountryService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -112,10 +123,12 @@ public class UpdateTestCase2 extends HttpServlet {
         } else {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
+            testCaseLabelFactory = appContext.getBean(IFactoryTestCaseLabel.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             TestCase tc = (TestCase) resp.getItem();
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -146,8 +159,25 @@ public class UpdateTestCase2 extends HttpServlet {
             } else {
                 tc = getInfo(request, tc);
 
+                //Update testcase
                 ans = testCaseService.update(tc);
+                //Update country
                 getCountryList(tc, request);
+                //Update labels
+                String[] labels = request.getParameterValues("labelid");
+                //JSONArray objLabelArray = new JSONArray(request.getParameter("labelid"));
+                List<TestCaseLabel> toSave = new ArrayList();
+                Timestamp creationDate = new Timestamp(new Date().getTime());
+                //if (null != labelIdList && labelIdList.length != 0) {
+                //for (int i = 0; i < objLabelArray.length(); i++) {
+                for (String label : labels){
+                    //JSONObject tclJson = objLabelArray.getJSONObject(i);
+                    //Integer id = tclJson.getInt("id");
+                    Integer id = Integer.valueOf(label);
+                    toSave.add(testCaseLabelFactory.create(0, tc.getTest(), tc.getTestCase(), id, tc.getUsrModif(), creationDate, tc.getUsrModif(), creationDate, null));
+                }
+                List<TestCaseLabel> existingList = testCaseLabelService.readByTestTestCase(tc.getTest(), tc.getTestCase()).getDataList();
+                testCaseLabelService.compareListAndInsertDeleteElements(toSave, existingList, false);
 
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
@@ -226,9 +256,9 @@ public class UpdateTestCase2 extends HttpServlet {
     }// </editor-fold>
 
     private TestCase getInfo(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-        
+
         String charset = request.getCharacterEncoding();
-        
+
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("implementer"), tc.getImplementer()));
         tc.setUsrModif(request.getUserPrincipal().getName());
@@ -252,7 +282,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setTargetBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild()));
         tc.setTargetRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRev()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-        
+
         // Parameter that needs to be secured --> We SECURE+DECODE them
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
@@ -264,11 +294,11 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
         tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
-        
+
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
         tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
-        
+
         return tc;
     }
 
@@ -277,7 +307,7 @@ public class UpdateTestCase2 extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
-        ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         AnswerList answer = testCaseCountryService.readByTestTestCase(null, tc.getTest(), tc.getTestCase());
         List<TestCaseCountry> tcCountry = answer.getDataList();
 

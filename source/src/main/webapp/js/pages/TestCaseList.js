@@ -62,6 +62,7 @@ function initPage() {
 
     // handle the click for specific action buttons
     $("#addEntryButton").click(addEntryModalSaveHandler);
+    $("#editEntryButton").click(editTestCaseModalSaveHandler);
     $("#duplicateEntryButton").click(duplicateEntryModalSaveHandler);
     //PREPARE MASS ACTION
     //$("#massActionBrpButton").click(massActionModalSaveHandler);
@@ -74,7 +75,6 @@ function initPage() {
     //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
     $('[data-toggle="tooltip"]').tooltip();
 
-    $("#saveManageLabelButton").click(saveTestCaseLabel);
 }
 
 function displayPageLabel(doc) {
@@ -736,10 +736,6 @@ function aoColumnsFunc(countries, tableId) {
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" onclick=window.location="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
-                var editLabel = '<button id="editLabel" onclick="editLabelClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
-                                class="editLabel btn btn-default btn-xs margin-right5" \n\
-                                name="editLabel" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_editLabel") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-tag"></span></button>';
                 var runTest = '<button id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '" class="btn btn-default btn-xs margin-right5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
@@ -754,7 +750,7 @@ function aoColumnsFunc(countries, tableId) {
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
-                buttons += editLabel;
+//                buttons += editLabel;
                 buttons += runTest;
                 buttons += testCaseLink;
                 buttons += testCaseBetaLink;
@@ -931,99 +927,8 @@ function aoColumnsFunc(countries, tableId) {
     return aoColumns;
 }
 
-/******************************************************************************
- * LABEL MANAGEMENT
- * Load label list
- */
-function loadLabelFilter(test, testcase) {
-
-    $("#manageLabelModalForm #test").val(test);
-    $("#manageLabelModalForm #testCase").val(testcase);
-    var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
-
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-
-        if (messageType === "success") {
-            $('#selectLabel').empty();
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var labelTag = '<div style="float:left"><input id="labelId' + data.contentTable[index].id + '" data-labelid="' + data.contentTable[index].id + '" type="checkbox">\n\
-                <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
-                        .attr("value", data.contentTable[index].label).html(labelTag);
-                $('#selectLabel').append(option);
-            }
-        } else {
-            showMessageMainPage(messageType, data.message);
-        }
-        loadTestCaseLabel(test, testcase);
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-/**
- * 
- * 
- */
-function loadTestCaseLabel(test, testcase) {
-    var jqxhr = $.get("ReadTestCaseLabel?test=" + test + "&testcase=" + testcase, "", "json");
-//Get the label of the selected testcase
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-
-        if (messageType === "success") {
-            var index;
-            var labelTag = '';
-            for (index = 0; index < data.contentTable.length; index++) {
-                //For each testcaselabel, put at the top of the list and check them
-                var element = $("#itemLabelId" + data.contentTable[index].label.id);
-                element.remove();
-                $("#selectLabel").prepend(element);
-                $("#labelId" + data.contentTable[index].label.id).prop("checked", true);
-            }
-        } else {
-            showMessageMainPage(messageType, data.message);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
 function filterOnLabel(element) {
     var newLabel = $(element).get(0).textContent;
     var colIndex = $(element).parent().parent().get(0).cellIndex;
     $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
 }
-
-function editLabelClick(test, testcase) {
-    clearResponseMessageMainPage();
-    loadLabelFilter(test, testcase);
-    $("#manageLabelModal").modal('show');
-}
-
-function saveTestCaseLabel() {
-    var test = $("#manageLabelModalForm #test").val();
-    var testcase = $("#manageLabelModalForm #testCase").val();
-    var labelListForm = $("#manageLabelModalForm input:checked");
-    var labelList = '';
-
-    $.each(labelListForm, function (i, e) {
-        labelList += "&labelid=" + $(e).attr("data-labelid");
-    });
-
-    var jqxhr = $.get("SaveTestCaseLabel?test=" + test + "&testcase=" + testcase + labelList, "", "json");
-
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-
-        if (messageType === "success") {
-            $("#manageLabelModal").modal('hide');
-            var oTable = $("#testCaseTable").DataTable();
-            oTable.draw();
-            showMessageMainPage(messageType, data.message);
-        } else {
-            showMessageMainPage(messageType, data.message);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-
