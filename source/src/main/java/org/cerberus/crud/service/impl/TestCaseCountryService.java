@@ -162,8 +162,7 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         } catch (CerberusException ex) {
             LOG.error(ex);
         }
-        LOG.debug("Size before : " + newList.size());
-        LOG.debug("Before : " + newList);
+
         /**
          * Update and Create all objects database Objects from newList
          */
@@ -181,9 +180,6 @@ public class TestCaseCountryService implements ITestCaseCountryService {
             }
         }
         if (!listToUpdateOrInsert.isEmpty()) {
-                    LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
-        LOG.debug("Create Before : " + listToUpdateOrInsert);
-
             ans = this.createList(listToUpdateOrInsert);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }

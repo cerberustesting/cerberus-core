@@ -2016,7 +2016,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
-                .append("`Implementer`, `UsrModif`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("`Implementer`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
@@ -2053,7 +2053,6 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTargetRev(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrCreated(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getImplementer(), ""));
-                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUsrModif(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getFunction(), ""));
                 preStat.setString(i++, testCase.getActiveQA() != null && !testCase.getActiveQA().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, testCase.getActiveUAT() != null && !testCase.getActiveUAT().equals("Y") ? "N" : "Y");

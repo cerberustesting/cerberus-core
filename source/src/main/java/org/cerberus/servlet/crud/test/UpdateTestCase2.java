@@ -164,11 +164,10 @@ public class UpdateTestCase2 extends HttpServlet {
 
                 } else {
                     tc = getTestCaseFromRequest(request, tc);
+                    
+                    // Update testcase
                     ans = testCaseService.update(tc);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-
-                    //Update testcase
-                    ans = testCaseService.update(tc);
 
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
@@ -178,7 +177,7 @@ public class UpdateTestCase2 extends HttpServlet {
                         logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                     }
 
-                    //Update labels
+                    // Update labels
                     if (request.getParameter("labelList[]") != null) {
 //                        JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
                         List<TestCaseLabel> labelList = new ArrayList();
@@ -199,10 +198,10 @@ public class UpdateTestCase2 extends HttpServlet {
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
                     }
 
-                    // TO BE REMOVED
+                    // TO BE REMOVED - Old Update Countries
                     getCountryList(tc, request);
 
-                    // Getting list of Countries from JSON Call
+                    // Update Countries
                     if (request.getParameter("countryList") != null) {
                         JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
                         List<TestCaseCountry> tccList = new ArrayList();
@@ -390,17 +389,6 @@ public class UpdateTestCase2 extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
 
-//                        String[] labels = request.getParameterValues("labelList");
-//                        //JSONArray objLabelArray = new JSONArray(request.getParameter("labelid"));
-//                        Timestamp creationDate = new Timestamp(new Date().getTime());
-//                        //if (null != labelIdList && labelIdList.length != 0) {
-//                        //for (int i = 0; i < objLabelArray.length(); i++) {
-//                        for (String label : labels) {
-//                            //JSONObject tclJson = objLabelArray.getJSONObject(i);
-//                            //Integer id = tclJson.getInt("id");
-//                            Integer id = Integer.valueOf(label);
-//                            labelList.add(testCaseLabelFactory.create(0, tc.getTest(), tc.getTestCase(), id, tc.getUsrModif(), creationDate, tc.getUsrModif(), creationDate, null));
-//                        }
         for (int i = 0; i < json.length(); i++) {
 //            JSONObject objectJson = json.getJSONObject(i);
 
