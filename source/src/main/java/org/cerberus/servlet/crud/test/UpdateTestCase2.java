@@ -22,7 +22,9 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +39,13 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -68,6 +73,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "UpdateTestCase2", urlPatterns = {"/UpdateTestCase2"})
 public class UpdateTestCase2 extends HttpServlet {
+
+    private ITestCaseLabelService testCaseLabelService;
+    private IFactoryTestCaseLabel testCaseLabelFactory;
+    private ITestCaseCountryService testCaseCountryService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -120,7 +129,8 @@ public class UpdateTestCase2 extends HttpServlet {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
-            ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+            testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
+            testCaseLabelFactory = appContext.getBean(IFactoryTestCaseLabel.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             TestCase tc = (TestCase) resp.getItem();
@@ -138,8 +148,7 @@ public class UpdateTestCase2 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-            {
-                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -158,6 +167,9 @@ public class UpdateTestCase2 extends HttpServlet {
                     ans = testCaseService.update(tc);
                     finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
+                    //Update testcase
+                    ans = testCaseService.update(tc);
+
                     if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         /**
                          * Update was succesfull. Adding Log entry.
@@ -166,10 +178,31 @@ public class UpdateTestCase2 extends HttpServlet {
                         logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                     }
 
+                    //Update labels
+                    if (request.getParameter("labelList[]") != null) {
+//                        JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                        List<TestCaseLabel> labelList = new ArrayList();
+//                        labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
+
+                        String[] labels = request.getParameterValues("labelList[]");
+//                        //JSONArray objLabelArray = new JSONArray(request.getParameter("labelid"));
+                        Timestamp creationDate = new Timestamp(new Date().getTime());
+                        for (String label : labels) {
+//                            //JSONObject tclJson = objLabelArray.getJSONObject(i);
+//                            //Integer id = tclJson.getInt("id");
+                            Integer id = Integer.valueOf(label);
+                            labelList.add(testCaseLabelFactory.create(0, tc.getTest(), tc.getTestCase(), id, tc.getUsrModif(), creationDate, tc.getUsrModif(), creationDate, null));
+                        }
+
+                        // Update the Database with the new list.
+                        ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+
                     // TO BE REMOVED
                     getCountryList(tc, request);
 
-                    // Getting list of SubData from JSON Call
+                    // Getting list of Countries from JSON Call
                     if (request.getParameter("countryList") != null) {
                         JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
                         List<TestCaseCountry> tccList = new ArrayList();
@@ -181,7 +214,6 @@ public class UpdateTestCase2 extends HttpServlet {
                     }
 
                 }
-            }
         }
 
         /**
@@ -300,7 +332,7 @@ public class UpdateTestCase2 extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IInvariantService invariantService = appContext.getBean(InvariantService.class);
 
-        ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         AnswerList answer = testCaseCountryService.readByTestTestCase(null, tc.getTest(), tc.getTestCase());
         List<TestCaseCountry> tcCountry = answer.getDataList();
 
@@ -351,4 +383,45 @@ public class UpdateTestCase2 extends HttpServlet {
         }
         return tdldList;
     }
+
+    private List<TestCaseLabel> getLabelListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<TestCaseLabel> labelList = new ArrayList();
+        IFactoryTestCaseCountry tccFactory = appContext.getBean(IFactoryTestCaseCountry.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+//                        String[] labels = request.getParameterValues("labelList");
+//                        //JSONArray objLabelArray = new JSONArray(request.getParameter("labelid"));
+//                        Timestamp creationDate = new Timestamp(new Date().getTime());
+//                        //if (null != labelIdList && labelIdList.length != 0) {
+//                        //for (int i = 0; i < objLabelArray.length(); i++) {
+//                        for (String label : labels) {
+//                            //JSONObject tclJson = objLabelArray.getJSONObject(i);
+//                            //Integer id = tclJson.getInt("id");
+//                            Integer id = Integer.valueOf(label);
+//                            labelList.add(testCaseLabelFactory.create(0, tc.getTest(), tc.getTestCase(), id, tc.getUsrModif(), creationDate, tc.getUsrModif(), creationDate, null));
+//                        }
+        for (int i = 0; i < json.length(); i++) {
+//            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+//            boolean delete = objectJson.getBoolean("toDelete");
+            Logger.getLogger(UpdateTestCase2.class.getName()).log(Level.INFO, null, json.getString(i));
+            Integer id = Integer.valueOf(json.getInt(i));
+
+            Timestamp creationDate = new Timestamp(new Date().getTime());
+            labelList.add(testCaseLabelFactory.create(0, test, testCase, id, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate, null));
+//            String country = objectJson.getString("country");
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // NONE
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+
+//            if (!delete) {
+//                TestCaseCountry tcc = tccFactory.create(test, testCase, country);
+//                tdldList.add(tcc);
+//            }
+        }
+        return labelList;
+    }
+
 }

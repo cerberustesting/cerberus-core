@@ -83,7 +83,6 @@ function editTestCaseClick(test, testCase) {
     $("#editEntryButton").off("click");
     $("#editEntryButton").click(editTestCaseModalSaveHandler);
     feedTestCaseModal(test, testCase, "editTestCaseModal");
-
 }
 
 /***
@@ -104,6 +103,13 @@ function editTestCaseModalSaveHandler() {
     for (var i = 0; i < table1.length; i++) {
         table_country.push($(table1[i]).data("country"));
     }
+
+    // Getting Data from Label List
+//    var table2 = $("#testCaseLabelTableBody tr");
+//    var table_label = [];
+//    for (var i = 0; i < table2.length; i++) {
+//        table_label.push($(table2[i]).data("label"));
+//    }
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
@@ -141,6 +147,7 @@ function editTestCaseModalSaveHandler() {
             toRev: data.toRev,
             toSprint: data.toSprint,
             userAgent: data.userAgent,
+            labelList: data.labelid,
             countryList: JSON.stringify(table_country)},
         success: function (data) {
             hideLoaderInModal('#editTestCaseModal');
@@ -250,6 +257,9 @@ function feedTestCaseModal(test, testCase, modalId) {
         }
         $("#testCaseCountryTableBody tr").empty();
         appendTestCaseCountryList(testCase);
+
+        //Label
+        loadLabel(testCase.labelList);
 
         //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
         if (!(data["hasPermissionsUpdate"]) && modalId === "editTestCaseModal") { // If readonly, we only readonly all fields
@@ -407,9 +417,6 @@ function appendTestCaseCountryList(testCase) {
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
 
-//            countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
-//                                <input id="countryCheckB" class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
-
             var newCountry1 = {
                 country: country,
                 toDelete: true
@@ -453,8 +460,39 @@ function appendTestCaseCountryCell(testCaseCountry) {
     tableRow.append(checkBoxCell);
 }
 
+/******************************************************************************
+ * LABEL MANAGEMENT
+ * Load label list
+ */
+function loadLabel(labelList) {
 
+    var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
 
-
-
-
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        //DRAW LABEL LIST
+        if (messageType === "success") {
+            $('#selectLabel').empty();
+            var index;
+            for (index = 0; index < data.contentTable.length; index++) {
+                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
+                var labelTag = '<div style="float:left"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
+                <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
+                var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
+                        .attr("value", data.contentTable[index].label).html(labelTag);
+                $('#selectLabel').append(option);
+            }
+        } else {
+            showMessageMainPage(messageType, data.message);
+        }
+        //PUT THE TESTCASELABEL AT THE TOP
+        var index;
+        for (index = 0; index < labelList.length; index++) {
+            //For each testcaselabel, put at the top of the list and check them
+            var element = $("#itemLabelId" + labelList[index].label.id);
+            element.remove();
+            $("#selectLabel").prepend(element);
+            $("#labelId" + labelList[index].label.id).prop("checked", true);
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}

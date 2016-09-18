@@ -59,6 +59,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         // Edit TestCase open the TestCase Modal
+        $("#editEntryButton").click(editTestCaseModalSaveHandler);
         $("#editTcInfo").click(function () {
             editTestCaseClick(test, testcase);
         });

@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
+import org.cerberus.crud.entity.MessageEvent;
 
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.enums.MessageEventEnum;
@@ -34,6 +36,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -139,43 +142,63 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     }
     
     @Override
-    public void compareListAndInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException {
+    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseLabel> newList) {
+        Answer ans = new Answer(null);
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<TestCaseLabel> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByTestTestCase(test, testCase));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        LOG.debug("Size before : " + newList.size());
+        LOG.debug("Before : " + newList);
         /**
-         * Iterate on (TestCaseLabel From Page - TestCaseLabel From
-         * Database) If TestCaseLabel in Database has same key : 
-         * remove from the list. If TestCaseLabel in database does ot exist
-         * : Insert it.
+         * Update and Create all objects database Objects from newList
          */
-        List<TestCaseLabel> listToInsert = new ArrayList(newList);
-        listToInsert.removeAll(oldList);
-        for (TestCaseLabel newListElement : newList) {
-            for (TestCaseLabel oldListElement : oldList) {
-                if (newListElement.hasSameKey(oldListElement)) {
-                    listToInsert.remove(newListElement);
+        List<TestCaseLabel> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseLabel> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (TestCaseLabel objectDifference : listToUpdateOrInsertToIterate) {
+            for (TestCaseLabel objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
                 }
             }
         }
-        this.createList(listToInsert);
+        if (!listToUpdateOrInsert.isEmpty()) {
+                    LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
+        LOG.debug("Create Before : " + listToUpdateOrInsert);
+
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
 
         /**
-         * Iterate on (TestCaseLabel From Database - TestCaseLabel
-         * From Page). If TestCaseLabel in Page has same key : remove from
-         * the list. Then delete the list of TestCaseLabel
+         * Delete all objects database Objects that do not exist from newList
          */
-        if (!duplicate) {
-            List<TestCaseLabel> listToDelete = new ArrayList(oldList);
-            listToDelete.removeAll(newList);
-            List<TestCaseLabel> listToDeleteToIterate = new ArrayList(listToDelete);
+        List<TestCaseLabel> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<TestCaseLabel> listToDeleteToIterate = new ArrayList(listToDelete);
 
-            for (TestCaseLabel objDifference : listToDeleteToIterate) {
-                for (TestCaseLabel objInPage : newList) {
-                    if (objDifference.hasSameKey(objInPage)) {
-                        listToDelete.remove(objDifference);
-                    }
+        for (TestCaseLabel tcsDifference : listToDeleteToIterate) {
+            for (TestCaseLabel tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
                 }
             }
-            this.deleteList(listToDelete);
         }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
     }
 
     @Override

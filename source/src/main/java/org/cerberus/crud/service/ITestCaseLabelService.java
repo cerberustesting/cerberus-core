@@ -60,17 +60,17 @@ public interface ITestCaseLabelService {
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
-     * 
+     *
      * @param test
      * @param testCase
-     * @return 
+     * @return
      */
     AnswerList readByTestTestCase(String test, String testCase);
+
     /**
      *
      * @param id
-     * @return true is label exist or false is label does not exist
-     * in database.
+     * @return true is label exist or false is label does not exist in database.
      */
     boolean exist(Integer id);
 
@@ -80,11 +80,11 @@ public interface ITestCaseLabelService {
      * @return
      */
     Answer create(TestCaseLabel object);
-    
+
     /**
-     * 
+     *
      * @param objectList
-     * @return 
+     * @return
      */
     Answer createList(List<TestCaseLabel> objectList);
 
@@ -94,7 +94,7 @@ public interface ITestCaseLabelService {
      * @return
      */
     Answer delete(TestCaseLabel object);
-    
+
     /**
      *
      * @param objectList
@@ -108,7 +108,7 @@ public interface ITestCaseLabelService {
      * @return
      */
     Answer update(TestCaseLabel object);
-    
+
     /**
      *
      * @param answerItem
@@ -131,15 +131,15 @@ public interface ITestCaseLabelService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
-    
+
     /**
-     * 
+     *
+     * @param test
+     * @param testCase
      * @param newList
-     * @param oldList
-     * @param duplicate
-     * @throws CerberusException 
+     * @return 
      */
-    void compareListAndInsertDeleteElements(List<TestCaseLabel> newList, List<TestCaseLabel> oldList, boolean duplicate) throws CerberusException;
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseLabel> newList);
 
     Answer duplicateList(List<TestCaseLabel> dataList, String test, String testCase);
 }
