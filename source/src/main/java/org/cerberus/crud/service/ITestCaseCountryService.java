@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -50,11 +51,10 @@ public interface ITestCaseCountryService {
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
 
     //void updateTestCaseCountry(TestCaseCountry tccLeft) throws CerberusException;
-    
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
     void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
-    
+
     /**
      *
      * @param system
@@ -63,7 +63,7 @@ public interface ITestCaseCountryService {
      * @return
      */
     public AnswerList readByTestTestCase(String system, String test, String testCase);
-    
+
     /**
      *
      * @param test
@@ -73,4 +73,21 @@ public interface ITestCaseCountryService {
      */
     public AnswerItem readByKey(String test, String testCase, String country);
 
+    public Answer create(TestCaseCountry testDataLibData);
+
+    public Answer update(TestCaseCountry testDataLibData);
+
+    public Answer delete(TestCaseCountry testDataLibData);
+
+    public Answer createList(List<TestCaseCountry> objectList);
+
+    public Answer deleteList(List<TestCaseCountry> objectList);
+
+    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountry> newList);
+
+    public TestCaseCountry convert(AnswerItem answerItem) throws CerberusException;
+
+    public List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
+
+    public void convert(Answer answer) throws CerberusException;
 }

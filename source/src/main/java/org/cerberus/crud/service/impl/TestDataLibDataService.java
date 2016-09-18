@@ -42,8 +42,6 @@ public class TestDataLibDataService implements ITestDataLibDataService {
 
     @Autowired
     ITestDataLibDataDAO testDataLibDataDAO;
-    @Autowired
-    private DatabaseSpring dbmanager;
 
     private final String OBJECT_NAME = "TestDataLibData";
 

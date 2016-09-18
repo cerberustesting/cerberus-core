@@ -80,6 +80,7 @@ function displayTestCaseLabel(doc) {
  * @returns {null}
  */
 function editTestCaseClick(test, testCase) {
+    $("#editEntryButton").off("click");
     $("#editEntryButton").click(editTestCaseModalSaveHandler);
     feedTestCaseModal(test, testCase, "editTestCaseModal");
 
@@ -97,21 +98,65 @@ function editTestCaseModalSaveHandler() {
 
     showLoaderInModal('#editTestCaseModal');
 
-    // Get the header data from the form.
-    var dataForm = convertSerialToJSONObject(formEdit.serialize());
+    // Getting Data from Country List
+    var table1 = $("#testCaseCountryTableBody tr td");
+    var table_country = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_country.push($(table1[i]).data("country"));
+    }
 
-    var jqxhr = $.post("UpdateTestCase2", dataForm);
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal("#editTestCaseModal");
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#testCaseTable").dataTable();
-            oTable.fnDraw(false);
-            showMessage(data);
-            $("#editTestCaseModal").modal('hide');
-        } else {
-            showMessage(data, $("#editTestCaseModal"));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+    // Get the header data from the form.
+    var data = convertSerialToJSONObject(formEdit.serialize());
+
+    showLoaderInModal('#editTestCaseModal');
+    $.ajax({
+        url: "UpdateTestCase2",
+        async: true,
+        method: "POST",
+        data: {test: data.test,
+            testCase: data.testCase,
+            active: data.active,
+            activeProd: data.activeProd,
+            activeQA: data.activeQA,
+            activeUAT: data.activeUAT,
+            application: data.application,
+            behaviorOrValueExpected: data.behaviorOrValueExpected,
+            bugId: data.bugID,
+            comment: data.comment,
+            fromRev: data.fromRev,
+            fromSprint: data.fromSprint,
+            function: data.function,
+            group: data.group,
+            howTo: data.howTo,
+            implementer: data.implementer,
+            origin: data.origin,
+            priority: data.priority,
+            project: data.project,
+            refOrigin: data.refOrigin,
+            shortDesc: data.shortDesc,
+            status: data.status,
+            targetRev: data.targetRev,
+            targetSprint: data.targetSprint,
+            ticket: data.ticket,
+            toRev: data.toRev,
+            toSprint: data.toSprint,
+            userAgent: data.userAgent,
+            countryList: JSON.stringify(table_country)},
+        success: function (data) {
+            hideLoaderInModal('#editTestCaseModal');
+            if (getAlertType(data.messageType) === "success") {
+                var oTable = $("#testCaseTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editTestCaseModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editTestCaseModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+
+
 }
 
 /***
@@ -382,7 +427,7 @@ function appendTestCaseCountryList(testCase) {
 
 function appendTestCaseCountryCell(testCaseCountry) {
     var doc = new Doc();
-    var checkBox = $("<button type=\"button\" disabled></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+    var checkBox = $("<button type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
     var tableRow = $("#testCaseCountryTableBody tr");
 
     var row = $("<tr></tr>");

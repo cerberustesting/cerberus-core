@@ -23,13 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.MessageGeneral;
 
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestDataLibData;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +48,10 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 
     @Autowired
     ITestCaseCountryDAO tccDao;
+
+    private final String OBJECT_NAME = "TestCaseCountry";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseCountryService.class);
 
     @Override
     public List<TestCaseCountry> findTestCaseCountryByTestTestCase(String test, String testCase) {
@@ -60,15 +71,15 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     public TestCaseCountry findTestCaseCountryByKey(String test, String testCase, String country) throws CerberusException {
         return this.tccDao.findTestCaseCountryByKey(test, testCase, country);
     }
-    
+
     @Override
     public void insertTestCaseCountry(TestCaseCountry testCaseCountry) throws CerberusException {
         tccDao.insertTestCaseCountry(testCaseCountry);
     }
-    
+
     @Override
     public boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList) {
-        for (TestCaseCountry tcc : testCaseCountryList){
+        for (TestCaseCountry tcc : testCaseCountryList) {
             try {
                 insertTestCaseCountry(tcc);
             } catch (CerberusException ex) {
@@ -83,10 +94,9 @@ public class TestCaseCountryService implements ITestCaseCountryService {
 //    public void updateTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
 //        tccDao.updateTestCaseCountry(tcc);
 //    }
-
     @Override
     public void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException {
-        for (TestCaseCountry tcc : tccToDelete){
+        for (TestCaseCountry tcc : tccToDelete) {
             deleteTestCaseCountry(tcc);
         }
     }
@@ -95,14 +105,135 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     public void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException {
         tccDao.deleteTestCaseCountry(tcc);
     }
-    
+
     @Override
     public AnswerList readByTestTestCase(String system, String test, String testCase) {
         return tccDao.readByTestTestCase(system, test, testCase);
     }
-    
+
     @Override
     public AnswerItem readByKey(String test, String testCase, String country) {
         return tccDao.readByKey(test, testCase, country);
     }
+
+    @Override
+    public Answer create(TestCaseCountry testDataLibData) {
+        return tccDao.create(testDataLibData);
+    }
+
+    @Override
+    public Answer update(TestCaseCountry testDataLibData) {
+        return tccDao.update(testDataLibData);
+    }
+
+    @Override
+    public Answer delete(TestCaseCountry testDataLibData) {
+        return tccDao.delete(testDataLibData);
+    }
+
+    @Override
+    public Answer createList(List<TestCaseCountry> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseCountry objectToCreate : objectList) {
+            ans = tccDao.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer deleteList(List<TestCaseCountry> objectList) {
+        Answer ans = new Answer(null);
+        for (TestCaseCountry objectToCreate : objectList) {
+            ans = tccDao.delete(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountry> newList) {
+        Answer ans = new Answer(null);
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<TestCaseCountry> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByTestTestCase(null, test, testCase));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        LOG.debug("Size before : " + newList.size());
+        LOG.debug("Before : " + newList);
+        /**
+         * Update and Create all objects database Objects from newList
+         */
+        List<TestCaseCountry> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<TestCaseCountry> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (TestCaseCountry objectDifference : listToUpdateOrInsertToIterate) {
+            for (TestCaseCountry objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        if (!listToUpdateOrInsert.isEmpty()) {
+                    LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
+        LOG.debug("Create Before : " + listToUpdateOrInsert);
+
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        /**
+         * Delete all objects database Objects that do not exist from newList
+         */
+        List<TestCaseCountry> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<TestCaseCountry> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (TestCaseCountry tcsDifference : listToDeleteToIterate) {
+            for (TestCaseCountry tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
+    }
+
+    @Override
+    public TestCaseCountry convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (TestCaseCountry) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<TestCaseCountry>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

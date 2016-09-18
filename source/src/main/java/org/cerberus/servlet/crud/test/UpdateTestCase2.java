@@ -22,6 +22,7 @@ package org.cerberus.servlet.crud.test;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -50,7 +52,9 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -100,6 +104,9 @@ public class UpdateTestCase2 extends HttpServlet {
         String country = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("country"), "");
         String state = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("state"), "");
 
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
         /**
          * Checking all constrains before calling the services.
          */
@@ -110,12 +117,14 @@ public class UpdateTestCase2 extends HttpServlet {
                     .replace("%REASON%", "mendatory fields are missing."));
             ans.setResultMessage(msg);
         } else {
+
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            ITestCaseCountryService testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
             TestCase tc = (TestCase) resp.getItem();
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
@@ -129,42 +138,57 @@ public class UpdateTestCase2 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-            if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
-                ans.setResultMessage(msg);
+            {
+                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
+                    ans.setResultMessage(msg);
 
-            } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                        .replace("%OPERATION%", "Update")
-                        .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
-                ans.setResultMessage(msg);
+                } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                            .replace("%OPERATION%", "Update")
+                            .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
+                    ans.setResultMessage(msg);
 
-            } else {
-                tc = getInfo(request, tc);
+                } else {
+                    tc = getTestCaseFromRequest(request, tc);
+                    ans = testCaseService.update(tc);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
-                ans = testCaseService.update(tc);
-                getCountryList(tc, request);
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Update was succesfull. Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                    }
 
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Update was succesfull. Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                    // TO BE REMOVED
+                    getCountryList(tc, request);
+
+                    // Getting list of SubData from JSON Call
+                    if (request.getParameter("countryList") != null) {
+                        JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                        List<TestCaseCountry> tccList = new ArrayList();
+                        tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
+
+                        // Update the Database with the new list.
+                        ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+
                 }
-
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
@@ -225,10 +249,9 @@ public class UpdateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TestCase getInfo(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
-        
+    private TestCase getTestCaseFromRequest(HttpServletRequest request, TestCase tc) throws CerberusException, JSONException, UnsupportedEncodingException {
         String charset = request.getCharacterEncoding();
-        
+
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("implementer"), tc.getImplementer()));
         tc.setUsrModif(request.getUserPrincipal().getName());
@@ -252,7 +275,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setTargetBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild()));
         tc.setTargetRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRev()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
-        
+
         // Parameter that needs to be secured --> We SECURE+DECODE them
         tc.setTestCase(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), tc.getTestCase(), charset));
         tc.setTicket(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticket"), tc.getTicket(), charset));
@@ -264,11 +287,11 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
         tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
-        
+
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));
         tc.setHowTo(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("howTo"), tc.getHowTo(), charset));
-        
+
         return tc;
     }
 
@@ -303,5 +326,29 @@ public class UpdateTestCase2 extends HttpServlet {
                 testCaseCountryService.insertTestCaseCountry(addCountry);
             }
         }
+    }
+
+    private List<TestCaseCountry> getCountryListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<TestCaseCountry> tdldList = new ArrayList();
+        IFactoryTestCaseCountry tccFactory = appContext.getBean(IFactoryTestCaseCountry.class);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            String country = objectJson.getString("country");
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // NONE
+            // Parameter that we cannot secure as we need the html --> We DECODE them
+
+            if (!delete) {
+                TestCaseCountry tcc = tccFactory.create(test, testCase, country);
+                tdldList.add(tcc);
+            }
+        }
+        return tdldList;
     }
 }

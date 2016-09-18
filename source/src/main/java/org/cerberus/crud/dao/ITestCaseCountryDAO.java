@@ -18,9 +18,11 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+import org.cerberus.crud.entity.Application;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -41,6 +43,9 @@ public interface ITestCaseCountryDAO {
     
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
     
+    
+    
+    
     /**
      *
      * @param system
@@ -48,7 +53,7 @@ public interface ITestCaseCountryDAO {
      * @param testCase
      * @return
      */
-    public AnswerList readByTestTestCase(String system, String test, String testCase);
+    public AnswerList<TestCaseCountry> readByTestTestCase(String system, String test, String testCase);
         
     /**
      *
@@ -58,4 +63,31 @@ public interface ITestCaseCountryDAO {
      * @return
      */
     public AnswerItem readByKey(String test, String testCase, String country);
+    
+    
+    
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer create(TestCaseCountry object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer delete(TestCaseCountry object);
+
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer update(TestCaseCountry object);
+
+    
+    
+    
 }
