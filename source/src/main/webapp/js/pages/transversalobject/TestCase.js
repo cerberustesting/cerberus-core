@@ -109,9 +109,9 @@ function editTestCaseModalSaveHandler() {
     var table_label = [];
     for (var i = 0; i < table2.length; i++) {
         var newLabel1 = {
-                labelId: $(table2[i]).val(),
-                toDelete: false
-            };
+            labelId: $(table2[i]).val(),
+            toDelete: false
+        };
         table_label.push(newLabel1);
     }
 
@@ -482,7 +482,7 @@ function loadLabel(labelList) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var labelTag = '<div style="float:left"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<li id="itemLabelId' + data.contentTable[index].id + '" class="list-group-item list-label"></li>')
+                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-2 list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
                 $('#selectLabel').append(option);
             }
@@ -498,5 +498,10 @@ function loadLabel(labelList) {
             $("#selectLabel").prepend(element);
             $("#labelId" + labelList[index].label.id).prop("checked", true);
         }
+        //ADD CLICK EVENT ON LABEL
+        $('#selectLabel').find('span').click(function () {
+            var status = $(this).parent().find("input").prop('checked');
+            $(this).parent().find("input").prop('checked', !status);
+        });
     }).fail(handleErrorAjaxAfterTimeout);
 }
