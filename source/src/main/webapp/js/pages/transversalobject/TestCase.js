@@ -105,11 +105,15 @@ function editTestCaseModalSaveHandler() {
     }
 
     // Getting Data from Label List
-//    var table2 = $("#testCaseLabelTableBody tr");
-//    var table_label = [];
-//    for (var i = 0; i < table2.length; i++) {
-//        table_label.push($(table2[i]).data("label"));
-//    }
+    var table2 = $("input[name=labelid]:checked");
+    var table_label = [];
+    for (var i = 0; i < table2.length; i++) {
+        var newLabel1 = {
+                labelId: $(table2[i]).val(),
+                toDelete: false
+            };
+        table_label.push(newLabel1);
+    }
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
@@ -147,7 +151,7 @@ function editTestCaseModalSaveHandler() {
             toRev: data.toRev,
             toSprint: data.toSprint,
             userAgent: data.userAgent,
-            labelList: data.labelid,
+            labelList: JSON.stringify(table_label),
             countryList: JSON.stringify(table_country)},
         success: function (data) {
             hideLoaderInModal('#editTestCaseModal');

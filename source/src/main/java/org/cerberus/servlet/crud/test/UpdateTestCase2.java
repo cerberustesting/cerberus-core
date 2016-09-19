@@ -148,71 +148,61 @@ public class UpdateTestCase2 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                            .replace("%OPERATION%", "Update")
-                            .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
-                    ans.setResultMessage(msg);
+            if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
+                ans.setResultMessage(msg);
 
-                } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
-                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
-                            .replace("%OPERATION%", "Update")
-                            .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
-                    ans.setResultMessage(msg);
+            } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
+                        .replace("%OPERATION%", "Update")
+                        .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
+                ans.setResultMessage(msg);
 
-                } else {
-                    tc = getTestCaseFromRequest(request, tc);
-                    
-                    // Update testcase
-                    ans = testCaseService.update(tc);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            } else {
+                tc = getTestCaseFromRequest(request, tc);
 
-                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Update was succesfull. Adding Log entry.
-                         */
-                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
-                    }
+                // Update testcase
+                ans = testCaseService.update(tc);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
-                    // Update labels
-                    if (request.getParameter("labelList[]") != null) {
-//                        JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
-                        List<TestCaseLabel> labelList = new ArrayList();
-//                        labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
-
-                        String[] labels = request.getParameterValues("labelList[]");
-//                        //JSONArray objLabelArray = new JSONArray(request.getParameter("labelid"));
-                        Timestamp creationDate = new Timestamp(new Date().getTime());
-                        for (String label : labels) {
-//                            //JSONObject tclJson = objLabelArray.getJSONObject(i);
-//                            //Integer id = tclJson.getInt("id");
-                            Integer id = Integer.valueOf(label);
-                            labelList.add(testCaseLabelFactory.create(0, tc.getTest(), tc.getTestCase(), id, tc.getUsrModif(), creationDate, tc.getUsrModif(), creationDate, null));
-                        }
-
-                        // Update the Database with the new list.
-                        ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                    }
-
-                    // TO BE REMOVED - Old Update Countries
-                    getCountryList(tc, request);
-
-                    // Update Countries
-                    if (request.getParameter("countryList") != null) {
-                        JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
-                        List<TestCaseCountry> tccList = new ArrayList();
-                        tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
-
-                        // Update the Database with the new list.
-                        ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
-                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                    }
-
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                 }
+
+                // Update labels
+                if (request.getParameter("labelList") != null) {
+                    JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                    List<TestCaseLabel> labelList = new ArrayList();
+                    labelList = getLabelListFromRequest(request, appContext, test, testCase, objLabelArray);
+
+                    // Update the Database with the new list.
+                    ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), labelList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                }
+
+                // TO BE REMOVED - Old Update Countries
+                getCountryList(tc, request);
+
+                // Update Countries
+                if (request.getParameter("countryList") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                    List<TestCaseCountry> tccList = new ArrayList();
+                    tccList = getCountryListFromRequest(request, appContext, test, testCase, objCountryArray);
+
+                    // Update the Database with the new list.
+                    ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(tc.getTest(), tc.getTestCase(), tccList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                }
+
+            }
         }
 
         /**
@@ -385,29 +375,19 @@ public class UpdateTestCase2 extends HttpServlet {
 
     private List<TestCaseLabel> getLabelListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
         List<TestCaseLabel> labelList = new ArrayList();
-        IFactoryTestCaseCountry tccFactory = appContext.getBean(IFactoryTestCaseCountry.class);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String charset = request.getCharacterEncoding();
-
+        
         for (int i = 0; i < json.length(); i++) {
-//            JSONObject objectJson = json.getJSONObject(i);
+            JSONObject objectJson = json.getJSONObject(i);
 
             // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
-//            boolean delete = objectJson.getBoolean("toDelete");
-            Logger.getLogger(UpdateTestCase2.class.getName()).log(Level.INFO, null, json.getString(i));
-            Integer id = Integer.valueOf(json.getInt(i));
+            boolean delete = objectJson.getBoolean("toDelete");
+            Integer labelId = objectJson.getInt("labelId");
 
             Timestamp creationDate = new Timestamp(new Date().getTime());
-            labelList.add(testCaseLabelFactory.create(0, test, testCase, id, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate, null));
-//            String country = objectJson.getString("country");
-            // Parameter that needs to be secured --> We SECURE+DECODE them
-            // NONE
-            // Parameter that we cannot secure as we need the html --> We DECODE them
-
-//            if (!delete) {
-//                TestCaseCountry tcc = tccFactory.create(test, testCase, country);
-//                tdldList.add(tcc);
-//            }
+            
+            if (!delete) {
+                labelList.add(testCaseLabelFactory.create(0, test, testCase, labelId, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate, null));
+            }
         }
         return labelList;
     }

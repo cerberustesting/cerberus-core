@@ -1733,7 +1733,7 @@ function convertSerialToJSONObject(serial) {
             if (typeof tmp === "object") {
                 obj[key].push(value);
             } else {
-                obj[key] = [tmp, value];
+                obj[key] = [tmp, value];                
             }
         } else {
             obj[key] = value;
