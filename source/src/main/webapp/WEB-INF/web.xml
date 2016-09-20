@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage.jsp</welcome-file>
     </welcome-file-list>
@@ -370,11 +369,11 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ReadApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
@@ -582,11 +581,11 @@
     </servlet>
     <servlet>
         <servlet-name>CreateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.CreateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -914,6 +913,14 @@
     <servlet>
         <servlet-name>ReadTestCaseLabel</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.ReadTestCaseLabel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateTestCaseCountry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCaseCountry</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteTestCaseCountry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseCountry</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>SaveTestCaseLabel</servlet-name>
@@ -1812,6 +1819,14 @@
         <url-pattern>/ReadTestCaseLabel</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateTestCaseCountry</servlet-name>
+        <url-pattern>/CreateTestCaseCountry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestCaseCountry</servlet-name>
+        <url-pattern>/DeleteTestCaseCountry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>SaveTestCaseLabel</servlet-name>
         <url-pattern>/SaveTestCaseLabel</url-pattern>
     </servlet-mapping>
@@ -1958,6 +1973,8 @@
             <description>servlet</description>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/CreateTestCaseCountry</url-pattern>
+            <url-pattern>/DeleteTestCaseCountry</url-pattern>
             <url-pattern>/CalculatePropertyForTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
@@ -2198,7 +2215,6 @@
             <description>jsp</description>
             <url-pattern>/LogViewer.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
-            <url-pattern>/Parameter2.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
             <url-pattern>/Invariant.jsp</url-pattern>
             <!-- //TODO REMOVE

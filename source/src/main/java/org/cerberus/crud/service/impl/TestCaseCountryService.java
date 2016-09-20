@@ -107,13 +107,19 @@ public class TestCaseCountryService implements ITestCaseCountryService {
     }
 
     @Override
-    public AnswerList readByTestTestCase(String system, String test, String testCase) {
-        return tccDao.readByTestTestCase(system, test, testCase);
+    public AnswerItem readByKey(String test, String testCase, String country) {
+        return tccDao.readByKey(test, testCase, country);
     }
 
     @Override
-    public AnswerItem readByKey(String test, String testCase, String country) {
-        return tccDao.readByKey(test, testCase, country);
+    public AnswerList readByTestTestCase(String system, String test, String testCase) {
+        return tccDao.readByVarious1(system, test, testCase);
+    }
+
+    @Override
+    public boolean exist(String test, String testcase, String country) {
+        AnswerItem objectAnswer = readByKey(test, testcase, country);
+        return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 
     @Override
