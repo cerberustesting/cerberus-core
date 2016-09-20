@@ -24,6 +24,8 @@ See the `DATABASE_*` environment variables on the Dockerfile for more informatio
 
 ## How to run this image
 
+### Run the image
+
 This image can simply be run by using the following command:
 
     docker run -d -P cerberus/cerberus-as-glassfish:latest
@@ -33,6 +35,22 @@ Note the use of the `-d` and `-P` arguments to let image be run as deamon and op
 To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for database type, name, username, and password):
 
     docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberus/cerberus-as-glassfish:latest
+
+### Configure the running Cerberus instance
+
+**Important**: Additional runtime configuration has to be made:
+
+#### Set the Cerberus base URL
+
+The Cerberus base URL has to be known by Cerberus. To do so, Cerberus has to be configured as the following:
+
+1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
+2. Go to _Administration_ -> _Parameters_
+3. Search the `cerberus_url` parameter
+4. Set to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
+5. Save changes 
+
+Note that specific configuration could be made if using [Volumes](#volumes) mapping.
 
 ## Environment variables
 
@@ -72,14 +90,23 @@ With this example, you could access to the Glassfish administration console by r
 
 ## Volumes
 
-From the [1.1.3.1](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.3.1/Dockerfile) version, the new `/opt/cerberus-screenshots` directory is created to store Cerberus execution screenshots.
+From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
-    docker run [...] -v /your/cerberus/screenshots/directory:/opt/cerberus-screenshots cerberus/cerberus-as-glassfish:latest
+    docker run [...] -v /your/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
 
 Where `/your/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
-Note: The setup process put the `.cerberus` file to the `${GLASSFISH_HOME}` root directory. This marker file is used to know if setup has already be done and then to not setup Glassfish twice. In case of using an existing Cerberus configured Glassfish instance, beware to put this file to your Glassfish home directory in order to by-pass the setup process.
+To apply this runtime configuration to Cerberus instance, then:
+
+1. Open your favorite web browser to the Cerberus base URL (`<docker_host>:18080/Cerberus` by default)
+2. Go to _Administration_ -> _Parameters_
+3. Search the `cerberus_picture_path` parameter
+4. Set to the `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures/` value (note the important trailing `/`)
+5. Save changes
+3. Search the `cerberus_picture_url` parameter
+4. Set to the Cerberus base URL value (`<docker_host>:18080/Cerberus/` by default, note the important trailing `/`)
+5. Save changes
 
 ## License
 

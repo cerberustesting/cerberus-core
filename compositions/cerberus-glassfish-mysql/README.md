@@ -24,12 +24,14 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
 
  5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
 
- 6. If this is your first time with Cerberus, the gui will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
+ 6. If this is your first time with Cerberus, the GUI will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
 
  7. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
 
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
+   
+ 8. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish/README.md).
 
 *Note: It is not yet possible to change a user's password, except by modifying its value directly in the database.*
 

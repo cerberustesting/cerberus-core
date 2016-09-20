@@ -31,6 +31,7 @@ ENV DATABASE_PASSWORD toto
 # Should not be overridden by user
 ENV CERBERUS_NAME Cerberus
 ENV CERBERUS_VERSION 1.1.5
+ENV CERBERUS_PICTURES_PATH ${GLASSFISH_HOME}/glassfish/domains/domain1/docroot/CerberusPictures
 ENV CERBERUS_PACKAGE_NAME ${CERBERUS_NAME}-${CERBERUS_VERSION}
 ENV GLASSFISH_ADMIN_USER admin
 ENV GLASSFISH_DOMAIN domain1
@@ -41,8 +42,8 @@ RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://sourceforge.net/project
     unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Create the screenshot directory
-RUN mkdir /opt/cerberus-screenshots && \
-    chmod u+wx /opt/cerberus-screenshots
+RUN mkdir ${CERBERUS_PICTURES_PATH} && \
+    chmod u+wx ${CERBERUS_PICTURES_PATH}
 
 # Glassfish credentials files
 COPY glassfish_admin_set_password.txt /tmp/glassfish_admin_set_password.txt
