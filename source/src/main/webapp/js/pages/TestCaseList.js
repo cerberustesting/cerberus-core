@@ -576,9 +576,9 @@ function setActive(checkbox) {
         dataType: "json",
         success: function (data) {
             if (active === "Y") {
-//                $("#runTest" + test + testCase).removeAttr("disabled");
+                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').removeAttr("disabled");
             } else {
-//                $('#runTest' + test + testCase).attr("disabled", "disabled");
+                $('[id="runTest' + encodeURIComponent(test) + encodeURIComponent(testCase) + '"]').attr("disabled", "disabled");
             }
             clearResponseMessageMainPage();
             var messageType = getAlertType(data.messageType);
@@ -838,14 +838,14 @@ function aoColumnsFunc(countries, tableId) {
                     if (data === "Y") {
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                     } else if (data === "N") {
-//                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
+                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '"]').attr("disabled", "disabled");
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                     }
                 } else {
                     if (data === "Y") {
                         return '<input type="checkbox" checked disabled />';
                     } else {
-//                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
+                        $('[id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '"]').attr("disabled", "disabled");
                         return '<input type="checkbox" disabled />';
                     }
                 }
