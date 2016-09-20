@@ -696,7 +696,7 @@ public class TestCaseCountryPropertiesDAO implements ITestCaseCountryPropertiesD
         Answer answer = new Answer();
         MessageEvent rs = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` , `Description`, Type`");
+        query.append("INSERT INTO testcasecountryproperties (`Test`,`TestCase`,`Country`,`Property` , `Description`, `Type`");
         query.append(",`Database`,`Value1`,`Value2`,`Length`,`RowLimit`,`Nature`) ");
         query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
 

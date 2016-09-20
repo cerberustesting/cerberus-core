@@ -1285,7 +1285,8 @@ function drawControlList(stepNumber, controlList, temporary, stepType) {
  */
 function overrideProperty(element) {
     var property = $(element).next("input.property_value");//gets the input tag next to the img tag
-    var propertyName = $(property).attr("value"); //gets the name of the property
+    var propertyName = cleanPropertyName($(property).attr("value")); //gets the name of the property
+    if (propertyName)
     var testID = $("#hiddenInformationTest").attr("value");
     var testCaseID = $("#hiddenInformationTestCase").attr("value");
 
@@ -1322,6 +1323,14 @@ function checkUndefinedProperties() {
     return true;
 }
 
+/**
+ * Clean the property name by removing any % character
+ *
+ * @param propertyName the property name to clean
+ */
+function cleanPropertyName(propertyName) {
+    return propertyName === undefined || propertyName === '' ? propertyName : propertyName.replace(/%/g, '');
+}
 
 /**
  * Auxiliary function that draws the icon near to the property name based on whether it is defined, imported or overridden.
@@ -1331,7 +1340,7 @@ function drawPropertySymbolHandler() {
     var doc = new Doc();
 
     var element = this;
-    var propertyValue = element.value;
+    var propertyValue = cleanPropertyName(element.value);
 
 
     //type:
@@ -1346,15 +1355,15 @@ function drawPropertySymbolHandler() {
         var toolTipMessage = "";
         var testDesc = $(element).attr('data-usestep-test');
 
-        if (!Boolean(testDesc) && $("input.property_name[value='" + element.value + "']").length === 0) {
+        if (!Boolean(testDesc) && $("input.property_name[value='" + propertyValue + "']").length === 0) {
             //check if is an access to a subdata entry
             var isToCreate = true;
-            var isSubDataAccess = element.value.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
+            var isSubDataAccess = propertyValue.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
             //is a format of the subdataaccess
             if (isSubDataAccess !== null) {
                 //check if the property from getdatalibrary exists
                 //get the name for the property
-                var name = element.value.split(new RegExp("\\s+|\\(\\s*|\\)"));
+                var name = propertyValue.split(new RegExp("\\s+|\\(\\s*|\\)"));
                 if (($("input.property_name[value='" + name[0] + "'] ").length !== 0)) {
                     //only adds the button to create if the type is not getFromDataLib
                     //gets the type of the property
