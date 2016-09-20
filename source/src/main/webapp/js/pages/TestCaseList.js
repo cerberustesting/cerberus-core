@@ -594,27 +594,38 @@ function setCountry(checkbox) {
     var test = checkbox.dataset.test;
     var testCase = checkbox.dataset.testcase;
     var country = checkbox.name;
-    var state;
 
     if (checkbox.checked === true) {
-        state = "on";
+        $.ajax({
+            url: "CreateTestCaseCountry",
+            method: "POST",
+            data: "test=" + test + "&testCase=" + testCase + "&country=" + country,
+            dataType: "json",
+            success: function (data) {
+                clearResponseMessageMainPage();
+                var messageType = getAlertType(data.messageType);
+                //show message in the main page
+                showMessageMainPage(messageType, data.message);
+            },
+            error: showUnexpectedError
+        });
+
     } else {
-        state = "off";
+        $.ajax({
+            url: "DeleteTestCaseCountry",
+            method: "POST",
+            data: "test=" + test + "&testCase=" + testCase + "&country=" + country,
+            dataType: "json",
+            success: function (data) {
+                clearResponseMessageMainPage();
+                var messageType = getAlertType(data.messageType);
+                //show message in the main page
+                showMessageMainPage(messageType, data.message);
+            },
+            error: showUnexpectedError
+        });
     }
 
-    $.ajax({
-        url: "UpdateTestCase2",
-        method: "POST",
-        data: "test=" + test + "&testCase=" + testCase + "&" + country + "=" + state,
-        dataType: "json",
-        success: function (data) {
-            clearResponseMessageMainPage();
-            var messageType = getAlertType(data.messageType);
-            //show message in the main page
-            showMessageMainPage(messageType, data.message);
-        },
-        error: showUnexpectedError
-    });
 }
 /** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
  

@@ -80,8 +80,8 @@ function displayTestCaseLabel(doc) {
  * @returns {null}
  */
 function editTestCaseClick(test, testCase) {
-    $("#editEntryButton").off("click");
-    $("#editEntryButton").click(editTestCaseModalSaveHandler);
+    $("#editTestCaseButton").off("click");
+    $("#editTestCaseButton").click(editTestCaseModalSaveHandler);
     feedTestCaseModal(test, testCase, "editTestCaseModal");
 }
 
@@ -260,7 +260,6 @@ function feedTestCaseModal(test, testCase, modalId) {
             $('#countryList input[name="' + testCase.countryList[country].country + '"]').prop("checked", true);
         }
         $("#testCaseCountryTableBody tr").empty();
-        appendTestCaseCountryList(testCase);
 
         //Label
         loadLabel(testCase.labelList);
@@ -293,8 +292,8 @@ function feedTestCaseModal(test, testCase, modalId) {
             formEdit.find("#targetRev").prop("disabled", "disabled");
             formEdit.find("#bugId").prop("readonly", "readonly");
             formEdit.find("#comment").prop("readonly", "readonly");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
+            // feed the country list.
+            appendTestCaseCountryList(testCase, true);
             // Save button is hidden.
             $('#editTestCaseButton').attr('class', '');
             $('#editTestCaseButton').attr('hidden', 'hidden');
@@ -327,8 +326,8 @@ function feedTestCaseModal(test, testCase, modalId) {
             formEdit.find("#targetRev").removeProp("disabled");
             formEdit.find("#bugId").removeProp("readonly");
             formEdit.find("#comment").removeProp("readonly");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").removeProp("disabled");
+            // feed the country list.
+            appendTestCaseCountryList(testCase, false);
             // Save button is displayed.
             $('#editTestCaseButton').attr('class', 'btn btn-primary');
             $('#editTestCaseButton').removeProp('hidden');
@@ -411,7 +410,7 @@ function appendBuildRevListOnTestCase(system, editData) {
     });
 }
 
-function appendTestCaseCountryList(testCase) {
+function appendTestCaseCountryList(testCase, isReadOnly) {
     var countryList = $("[name=countryList]");
     countryList.empty();
 
@@ -425,9 +424,11 @@ function appendTestCaseCountryList(testCase) {
                 country: country,
                 toDelete: true
             };
-            appendTestCaseCountryCell(newCountry1);
+            appendTestCaseCountryCell(newCountry1, isReadOnly);
 
         }
+
+        // Init the values from the object value.
         for (var myCountry in testCase.countryList) {
             $("#testCaseCountryTableBody [value='" + testCase.countryList[myCountry].country + "']").trigger("click");
         }
@@ -435,14 +436,16 @@ function appendTestCaseCountryList(testCase) {
     });
 }
 
-
-function appendTestCaseCountryCell(testCaseCountry) {
+function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
     var doc = new Doc();
-    var checkBox = $("<button type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+    if (isReadOnly) {
+        var checkBox = $("<button type=\"button\" disabled=\"disabled\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+    } else {
+        var checkBox = $("<button type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+    }
     var tableRow = $("#testCaseCountryTableBody tr");
 
-    var row = $("<tr></tr>");
-    var checkBoxCell = $("<td style=\"align : center;\"></td>").append(checkBox);
+    var checkBoxCell = $("<td align=\"center\"></td>").append(checkBox);
     if (testCaseCountry.toDelete) {
         checkBoxCell.addClass("danger");
     } else {
@@ -457,9 +460,7 @@ function appendTestCaseCountryCell(testCaseCountry) {
             checkBoxCell.removeClass("danger");
         }
     });
-    row.append(checkBoxCell);
-//    country.environment = selectEnvironment.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
-//    country.country = selectCountry.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
+    
     checkBoxCell.data("country", testCaseCountry);
     tableRow.append(checkBoxCell);
 }

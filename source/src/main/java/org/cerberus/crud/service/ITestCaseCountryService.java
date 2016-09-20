@@ -57,39 +57,104 @@ public interface ITestCaseCountryService {
 
     /**
      *
-     * @param system
-     * @param test
-     * @param testCase
-     * @return
-     */
-    public AnswerList readByTestTestCase(String system, String test, String testCase);
-
-    /**
-     *
      * @param test
      * @param testCase
      * @param country
      * @return
      */
-    public AnswerItem readByKey(String test, String testCase, String country);
+    AnswerItem readByKey(String test, String testCase, String country);
 
-    public Answer create(TestCaseCountry testDataLibData);
+    /**
+     *
+     * @param system
+     * @param test
+     * @param testCase
+     * @return
+     */
+    AnswerList readByTestTestCase(String system, String test, String testCase);
 
-    public Answer update(TestCaseCountry testDataLibData);
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
+    boolean exist(String test, String testcase, String country);
 
-    public Answer delete(TestCaseCountry testDataLibData);
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer create(TestCaseCountry testDataLibData);
 
-    public Answer createList(List<TestCaseCountry> objectList);
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer update(TestCaseCountry testDataLibData);
 
-    public Answer deleteList(List<TestCaseCountry> objectList);
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer delete(TestCaseCountry testDataLibData);
 
-    public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountry> newList);
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    Answer createList(List<TestCaseCountry> objectList);
 
-    public TestCaseCountry convert(AnswerItem answerItem) throws CerberusException;
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    Answer deleteList(List<TestCaseCountry> objectList);
 
-    public List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param newList
+     * @return
+     */
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountry> newList);
 
-    public void convert(Answer answer) throws CerberusException;
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseCountry convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
     
-    public Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
+    /**
+     * 
+     * @param objectList
+     * @param targetTest
+     * @param targetTestCase
+     * @return 
+     */
+    Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
 }

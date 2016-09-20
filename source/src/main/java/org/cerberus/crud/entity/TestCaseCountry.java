@@ -33,14 +33,14 @@ public class TestCaseCountry {
      * From here are data outside database model.
      */
     private List<TestCaseCountryProperties> testCaseCountryProperty;
-    private TestCase tCase;
+    private TestCase testCaseObj;
 
-    public TestCase gettCase() {
-        return tCase;
+    public TestCase getTestCaseObj() {
+        return testCaseObj;
     }
 
-    public void settCase(TestCase tCase) {
-        this.tCase = tCase;
+    public void setTestCaseObj(TestCase testCase) {
+        this.testCaseObj = testCase;
     }
 
     public List<TestCaseCountryProperties> getTestCaseCountryProperty() {
