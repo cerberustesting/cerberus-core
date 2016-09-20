@@ -968,7 +968,12 @@ public class PropertyService implements IPropertyService {
                 SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                 xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
             }
-            String valueFromXml = xmlUnitService.getFromXml(xmlResponse, testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
+            // If value1 has no value defined, we force the new url to null.
+            String newUrl = null;
+            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1()))){
+                newUrl = testCaseExecutionData.getValue1();
+            }
+            String valueFromXml = xmlUnitService.getFromXml(xmlResponse, newUrl, testCaseExecutionData.getValue2());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
