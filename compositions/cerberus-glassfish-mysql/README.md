@@ -57,7 +57,6 @@ Hereafter list of mapped volumes:
 Service                 | Data volume (Source)        | Host volume (Destination, default values)   | Description
 ------------------------|-----------------------------|---------------------------------------------| ---------------------
 `cerberus-db-mysql`     | `/var/lib/mysql`            | `./localdata/mysql-db`                      | The MySQL local database directory
-`cerberus-as-glassfish` | `/opt/glassfish`            | `./localdata/glassfish`                     | The Glassfish home directory
 `cerberus-as-glassfish` | `/opt/cerberus-screenshots` | `./localdata/screenshots`                   | The Cerberus execution screenshots directory
 
 Don't forget to change host volume default values to fit to your need.

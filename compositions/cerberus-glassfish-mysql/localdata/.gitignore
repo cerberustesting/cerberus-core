@@ -1,8 +1,0 @@
-/glassfish/**
-!/glassfish/README.md
-
-/mysql-db/**
-!/mysql-db/README.md
-
-/screenshots/**
-!/screenshots/README.md

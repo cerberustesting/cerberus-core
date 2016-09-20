@@ -34,7 +34,6 @@ ENV CERBERUS_VERSION 1.1.5
 ENV CERBERUS_PACKAGE_NAME ${CERBERUS_NAME}-${CERBERUS_VERSION}
 ENV GLASSFISH_ADMIN_USER admin
 ENV GLASSFISH_DOMAIN domain1
-ENV GLASSFISH_HOME /opt/glassfish
 
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
@@ -42,8 +41,8 @@ RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://sourceforge.net/project
     unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
 
 # Create the screenshot directory
-RUN mkdir /opt/cerberus-screenshots
-RUN chmod u+wx /opt/cerberus-screenshots
+RUN mkdir /opt/cerberus-screenshots && \
+    chmod u+wx /opt/cerberus-screenshots
 
 # Glassfish credentials files
 COPY glassfish_admin_set_password.txt /tmp/glassfish_admin_set_password.txt
@@ -55,5 +54,4 @@ RUN chmod u+x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Start Glassfish instance with the verbose option to remain in the foreground so that docker can track it
-ENV ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_password.txt"
-CMD ${ASADMIN} start-domain --verbose ${GLASSFISH_DOMAIN}
+CMD asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_admin_password.txt start-domain --verbose ${GLASSFISH_DOMAIN}

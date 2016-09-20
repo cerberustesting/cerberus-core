@@ -79,12 +79,6 @@ Don't forget to map it to an existing folder out of your Docker host in order to
 
 Where `/your/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
-From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/opt/glassfish` directory is created to store the Glassfish home directory and let you map it to an existing folder out of your Docker host. Example:
-
-    docker run [...] -v /your/glassfish/home/directory:/opt/glassfish cerberus/cerberus-as-glassfish:latest
-
-Where `/your/glassfish/home/directory` is the directory to store the Glassfish home directory out of your Docker host.
-
 Note: The setup process put the `.cerberus` file to the `${GLASSFISH_HOME}` root directory. This marker file is used to know if setup has already be done and then to not setup Glassfish twice. In case of using an existing Cerberus configured Glassfish instance, beware to put this file to your Glassfish home directory in order to by-pass the setup process.
 
 ## License

@@ -28,11 +28,6 @@ ASADMIN="asadmin --user ${GLASSFISH_ADMIN_USER} --passwordfile /tmp/glassfish_ad
 # Initialization marker file
 INIT_MARKER_FILE=${GLASSFISH_HOME}/.cerberus
 
-# Keep trace of the original Glassfish home directory
-# and update $PATH to take into account the current one
-ORIGINAL_GLASSFISH_HOME=/usr/local/glassfish4
-export PATH=${GLASSFISH_HOME}/bin:$PATH
-
 # Deploy the installed Cerberus instance
 function deploy() {
     echo "* Starting Cerberus Glassfish deployment..."
@@ -46,17 +41,6 @@ function deploy() {
 function setup() {
     echo "* Starting Cerberus Glassfish setup..."
 
-    # Create the Glassfish home directory if necessary
-    if [ ! -d ${GLASSFISH_HOME} ]; then
-        mkdir -p ${GLASSFISH_HOME}
-        chmod u+rwx ${GLASSFISH_HOME}
-    fi
-
-    # Copy content from the original to the current Glassfish home directory
-    for content in `ls -A ${ORIGINAL_GLASSFISH_HOME}`; do
-      mv ${ORIGINAL_GLASSFISH_HOME}/${content} ${GLASSFISH_HOME}
-    done
-
     # Set the admin password
     local ASADMIN_DEFAULT=asadmin
     ${ASADMIN_DEFAULT} start-domain ${GLASSFISH_DOMAIN}
@@ -67,14 +51,18 @@ function setup() {
     ${ASADMIN} enable-secure-admin
     ${ASADMIN} create-jvm-options --target server "-Dorg.cerberus.environment=prd"
     local DATABASE_TYPE_CLASS
-    if [[ ${DATABASE_TYPE} == "mysql" ]]; then
+    case ${DATABASE_TYPE} in
+    "mysql")
         DATABASE_TYPE_CLASS=com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource
-    elif [[ ${DATABASE_TYPE} == "mariadb" ]]; then
+        ;;
+   "mariadb")
         DATABASE_TYPE_CLASS=org.mariadb.jdbc.MariaDbDataSource
-    else
+        ;;
+    **)
         echo "* Not compatible database type: ${DATABASE_TYPE}. Exiting..."
         ( exit 1 )
-    fi
+        ;;
+    esac
     ${ASADMIN} create-jdbc-connection-pool --datasourceclassname ${DATABASE_TYPE_CLASS} --restype javax.sql.ConnectionPoolDataSource --steadypoolsize 2 --property user=${DATABASE_USER}:password=${DATABASE_PASSWORD}:ServerName=${DATABASE_HOST}:DatabaseName=${DATABASE_NAME}:portNumber=${DATABASE_PORT} cerberus
     ${ASADMIN} create-jdbc-resource --connectionpoolid cerberus jdbc/cerberusprd
     ${ASADMIN} create-auth-realm  --target server --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/cerberusprd:user-table=user:user-name-column=Login:password-column=Password:group-table=usergroup:group-name-column=GroupName:digest-algorithm=SHA-1 securityCerberus
