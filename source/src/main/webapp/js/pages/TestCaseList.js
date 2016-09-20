@@ -576,9 +576,9 @@ function setActive(checkbox) {
         dataType: "json",
         success: function (data) {
             if (active === "Y") {
-                $("#runTest" + test + testCase).removeAttr("disabled");
+//                $("#runTest" + test + testCase).removeAttr("disabled");
             } else {
-                $('#runTest' + test + testCase).attr("disabled", "disabled");
+//                $('#runTest' + test + testCase).attr("disabled", "disabled");
             }
             clearResponseMessageMainPage();
             var messageType = getAlertType(data.messageType);
@@ -746,7 +746,7 @@ function aoColumnsFunc(countries, tableId) {
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" onclick=window.location="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
-                var runTest = '<button id="runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"]) + '" class="btn btn-default btn-xs margin-right5"\n\
+                var runTest = '<button id="runTest" class="btn btn-default btn-xs margin-right5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </button>';
@@ -838,14 +838,14 @@ function aoColumnsFunc(countries, tableId) {
                     if (data === "Y") {
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" checked/>';
                     } else if (data === "N") {
-                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
+//                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
                         return '<input type="checkbox" name="' + obj["testCase"] + '" data-test="' + obj.test + '" onchange="setActive(this);" />';
                     }
                 } else {
                     if (data === "Y") {
                         return '<input type="checkbox" checked disabled />';
                     } else {
-                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
+//                        $('#runTest' + encodeURIComponent(obj["test"]) + encodeURIComponent(obj["testCase"])).attr("disabled", "disabled");
                         return '<input type="checkbox" disabled />';
                     }
                 }
