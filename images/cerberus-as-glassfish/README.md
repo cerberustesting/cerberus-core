@@ -56,14 +56,15 @@ Note that specific configuration could be made if using [Volumes](#volumes) mapp
 
 Hereafter list of environment variables that could be overridden when starting the image.
 
-Environment variable        | Definition                    | Default value
-----------------------------|-------------------------------|--------------------------
-`DATABASE_TYPE`             | Cerberus database type        | `mysql` or `mariadb` only
-`DATABASE_HOST`             | Cerberus database host        | `localhost`
-`DATABASE_PORT`             | Cerberus database port        | `3306`
-`DATABASE_NAME`             | Cerberus database name        | `cerberus`
-`DATABASE_USER`             | Cerberus database user        | `cerberus`
-`DATABASE_PASSWORD`         | Cerberus database password    | `toto`
+Environment variable                    | Definition                                | Default value
+----------------------------------------|-------------------------------------------|--------------------------
+`DATABASE_TYPE`                         | Cerberus database type                    | `mysql` or `mariadb` only
+`DATABASE_HOST`                         | Cerberus database host                    | `localhost`
+`DATABASE_PORT`                         | Cerberus database port                    | `3306`
+`DATABASE_NAME`                         | Cerberus database name                    | `cerberus`
+`DATABASE_USER`                         | Cerberus database user                    | `cerberus`
+`DATABASE_PASSWORD`                     | Cerberus database password                | `toto`
+`GLASSFISH_HTTP_THREADPOOL_MAX_SIZE`    | Glassfish HTTP thread pool maximum size   | `500`
 
 ## Exposed ports
 

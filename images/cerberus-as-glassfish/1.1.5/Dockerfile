@@ -26,6 +26,7 @@ ENV DATABASE_PORT 3306
 ENV DATABASE_NAME cerberus
 ENV DATABASE_USER cerberus
 ENV DATABASE_PASSWORD toto
+ENV GLASSFISH_HTTP_THREADPOOL_MAX_SIZE 500
 
 # Internal environment variables
 # Should not be overridden by user

@@ -67,6 +67,7 @@ function setup() {
     ${ASADMIN} create-jdbc-resource --connectionpoolid cerberus jdbc/cerberusprd
     ${ASADMIN} create-auth-realm  --target server --classname com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm --property jaas-context=jdbcRealm:datasource-jndi=jdbc/cerberusprd:user-table=user:user-name-column=Login:password-column=Password:group-table=usergroup:group-name-column=GroupName:digest-algorithm=SHA-1 securityCerberus
     ${ASADMIN} set server-config.security-service.default-realm=securityCerberus
+    ${ASADMIN} set server.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=${GLASSFISH_HTTP_THREADPOOL_MAX_SIZE}
     ${ASADMIN} stop-domain ${GLASSFISH_DOMAIN}
 
     # Persist setup execution to avoid it to be re-run
