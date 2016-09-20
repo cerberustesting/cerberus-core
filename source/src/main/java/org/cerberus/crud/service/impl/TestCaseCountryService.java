@@ -237,5 +237,18 @@ public class TestCaseCountryService implements ITestCaseCountryService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
+    
+    @Override
+    public Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase) {
+        Answer ans = new Answer(null);
+        List<TestCaseCountry> listToCreate = new ArrayList();
+        for (TestCaseCountry objectToDuplicate : objectList) {
+            objectToDuplicate.setTest(targetTest);
+            objectToDuplicate.setTestCase(targetTestCase);
+            listToCreate.add(objectToDuplicate);
+        }
+        ans = createList(listToCreate);
+        return ans;
+    }
 
 }

@@ -148,4 +148,13 @@ public interface ITestCaseCountryService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+    
+    /**
+     * 
+     * @param objectList
+     * @param targetTest
+     * @param targetTestCase
+     * @return 
+     */
+    Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
 }

@@ -2016,9 +2016,9 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
-                .append("`Implementer`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("`Implementer`, `function`, `activeQA`, `activeUAT`, `activePROD`, `useragent`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -2057,6 +2057,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, testCase.getActiveQA() != null && !testCase.getActiveQA().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, testCase.getActiveUAT() != null && !testCase.getActiveUAT().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, testCase.getActivePROD() != null && !testCase.getActivePROD().equals("N") ? "Y" : "N");
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
