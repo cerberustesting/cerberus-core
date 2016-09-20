@@ -1285,7 +1285,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
     var filteredInformation = new Array();
     filteredInformation.push("Showing information filtering : ");
     if (table.search() !== "") {
-        filteredInformation.push("<strong>all columns</strong> containing " + table.search() + " AND ");
+        filteredInformation.push("<strong>all columns</strong> containing [" + table.search() + "] AND ");
     }
 
     //Get the column name in the right order
@@ -1323,7 +1323,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
         var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
         var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
-        var display = '<span class="glyphicon glyphicon-filter" style="cursor:pointer;" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
+        var display = '<span class="glyphicon glyphicon-filter pull-right" style="cursor:pointer;opacity:0.2;font-size:125%" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
         var valueFiltered = [];
         if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
             //Build the Alert Message for filtered column information
@@ -1333,12 +1333,14 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             $(columnSearchValues).each(function (i) {
                 valueFiltered[i] = $('<p>' + columnSearchValues[i] + '</p>').text();
                 filteredTooltip += "<br><span>" + $('<p>' + columnSearchValues[i] + '</p>').text() + "</span> ";
-                filteredInformation.push(columnSearchValues[i] + " | ");
-
+                filteredInformation.push(columnSearchValues[i]);
+                filteredInformation.push(" | ");
             });
+            filteredInformation.pop();
             filteredTooltip += '</div>';
-            filteredInformation.push(" ] AND ");
-            display = "<span class='glyphicon glyphicon-filter columnFiltered' style='cursor:pointer;' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
+            filteredInformation.push(" ] ");
+            filteredInformation.push("AND ");
+            display = "<span class='glyphicon glyphicon-filter pull-right' style='cursor:pointer;opacity:0.5;font-size:125%' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
         }
 
         //init column filter only if column visible
@@ -1402,9 +1404,9 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                                 }
                             },
                             display: function (value, sourceData) {
-                                var val = [];
+                                var val;
                                 $(value).each(function (i) {
-                                    val[i] = "<span class='label columnFiltered'>" + $('<p>' + value[i] + '</p>').text() + "</span>";
+                                    val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
                                 });
                                 $(this).html(val);
                             },
@@ -1419,9 +1421,14 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
     }); // end of loop on columns
 
     //Display the filtered alert message only if search is activated in at least 1 column
+    filteredInformation.pop();
     if (filteredInformation.length > 1) {
-        var filteredStringToDisplay = filteredInformation.toString();
-        $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay.substr(0, filteredStringToDisplay.length - 4));
+        var filteredStringToDisplay = "";
+        for (var l=0;l<filteredInformation.length;l++){
+            filteredStringToDisplay+=filteredInformation[l];
+        }
+        
+        $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
         $("#" + tableId + "_wrapper #clearFilterButton").click(function () {
             resetFilters($("#" + tableId).dataTable());
         });
@@ -1733,7 +1740,7 @@ function convertSerialToJSONObject(serial) {
             if (typeof tmp === "object") {
                 obj[key].push(value);
             } else {
-                obj[key] = [tmp, value];
+                obj[key] = [tmp, value];                
             }
         } else {
             obj[key] = value;
