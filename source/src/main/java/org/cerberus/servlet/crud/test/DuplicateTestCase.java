@@ -209,13 +209,20 @@ public class DuplicateTestCase extends HttpServlet {
                 originalTC.setTestCase(testCase);
                 ans = testCaseService.create(originalTC);
 
-                List<TestCaseCountry> countryList = getCountryList(test, testCase, request);
-                boolean success = false;
-                if (countryList.isEmpty()) {
-                    success = true;
-                } else {
-                    success = testCaseCountryService.insertListTestCaseCountry(countryList);
-                }
+                List<TestCaseCountry> countryList = new ArrayList();
+                countryList = testCaseCountryService.findTestCaseCountryByTestTestCase(originalTest, originalTestCase);
+                boolean success = true;
+                if (!countryList.isEmpty()) {
+                        ans = testCaseCountryService.duplicateList(countryList, test, testCase);
+                    }
+                
+//                List<TestCaseCountry> countryList = getCountryList(test, testCase, request);
+//                boolean success = false;
+//                if (countryList.isEmpty()) {
+//                    success = true;
+//                } else {
+//                    success = testCaseCountryService.insertListTestCaseCountry(countryList);
+//                }
 
                 List<TestCaseCountryProperties> tccpList = new ArrayList();
                 if (!countryList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && success) {
@@ -286,6 +293,7 @@ public class DuplicateTestCase extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         tc.setImplementer(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("imlementer"), tc.getImplementer()));
+        tc.setUsrCreated(request.getUserPrincipal().getName());
         tc.setUsrModif(request.getUserPrincipal().getName());
         if (!Strings.isNullOrEmpty(request.getParameter("project"))) {
             tc.setProject(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("project"), tc.getProject()));

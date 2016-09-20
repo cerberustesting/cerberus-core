@@ -90,4 +90,6 @@ public interface ITestCaseCountryService {
     public List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
 
     public void convert(Answer answer) throws CerberusException;
+    
+    public Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
 }
