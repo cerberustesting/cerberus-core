@@ -42,14 +42,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Loads the list of property types used to create the dropdown tha twill create the property
          * @param {type} data
          */
-        getInvariantList("PROPERTYTYPE", function(data) {
+        /*getInvariantList("PROPERTYTYPE", function(data) {
             listOfPropertyTypes = data;
             /**
              * For each property adds the icon corresponding to its state
              */
+        /*
             $("input.property_value").each(drawPropertySymbolHandler);
 
-        });
+        });*/
 
         /**
          * Removes all rows when the modal window is hidden and clears the message
