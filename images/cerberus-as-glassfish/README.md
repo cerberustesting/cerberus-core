@@ -91,12 +91,22 @@ With this example, you could access to the Glassfish administration console by r
 
 ## Volumes
 
+### Cerberus server logs
+
+Cerberus server logs can be persisted by using the following command:
+
+    docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
+    
+Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+
+### Cerberus screenshots
+
 From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
-    docker run [...] -v /your/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
+    docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
 
-Where `/your/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
+Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
 To apply this runtime configuration to Cerberus instance, then:
 
