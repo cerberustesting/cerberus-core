@@ -15,27 +15,24 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.testdata;
+package org.cerberus.servlet.crud.countryenvironment;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.SoapLibrary;
-import org.cerberus.crud.factory.IFactorySoapLibrary;
+import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISoapLibraryService;
+import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,9 +43,9 @@ import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- * @author cte
+ * @author bcivel
  */
-public class DeleteSoapLibrary2 extends HttpServlet {
+public class UpdateSqlLibrary2 extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -59,8 +56,9 @@ public class DeleteSoapLibrary2 extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
-    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
+
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
@@ -69,24 +67,70 @@ public class DeleteSoapLibrary2 extends HttpServlet {
         ans.setResultMessage(msg);
 
         response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
         String charset = request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
+        String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
+        //String scriptBDD = StringEscapeUtils.escapeHtml4(script);
 
-        ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
+//        String scriptBDD = HtmlUtils.htmlEscape(script);
 
-        SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(name);
-        Answer finalAnswer = soapLibraryService.delete(soapLib);
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
 
         /**
-         * Adding Log entry.
+         * Checking all constrains before calling the services.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SOAPLibrary : " + name, request);
+        if (StringUtil.isNullOrEmpty(name)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "SqlLibrary ID (name) is missing."));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
 
+            AnswerItem resp = sqlLibraryService.readByKey(name);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                SqlLibrary sqlLib = (SqlLibrary) resp.getItem();
+                sqlLib.setType(type);
+                sqlLib.setDescription(description);
+                sqlLib.setDatabase(database);
+                sqlLib.setScript(script);
+                ans = sqlLibraryService.update(sqlLib);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
+                }
+
+            }
+        }
 
         /**
          * Formating and returning the json result.
@@ -112,11 +156,11 @@ public class DeleteSoapLibrary2 extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            this.processRequest(request, response);
+            processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -132,11 +176,12 @@ public class DeleteSoapLibrary2 extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            this.processRequest(request, response);
+            String t = request.getParameter("value");
+            processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 

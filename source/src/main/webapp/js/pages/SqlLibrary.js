@@ -37,7 +37,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc("sqlLibrarysTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#sqlLibraryList");
+    createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList");
 }
 
 function displayPageLabel() {
@@ -62,7 +62,7 @@ function displayPageLabel() {
     displayGlobalLabel(doc);
 }
 
-function renderOptionsForApplication(data) {
+function renderOptionsForSqlLibrary(data) {
     var doc = new Doc();
     if (data["hasPermissions"]) {
         if ($("#createSqlLibraryButton").length === 0) {
@@ -112,44 +112,15 @@ function editEntryClick(name) {
     });
 }
 
-function addEntryClick() {
-    clearResponseMessageMainPage();
-    $("#addSqlLibraryModal #idname").empty();
-
-    $('#addSqlLibraryModal').modal('show');
-}
-
-function removeEntryClick(name) {
-    var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var name = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteSqlLibrary2?name=" + name,
-            async: true,
-            method: "GET",
-            success: function (data) {
-                hideLoaderInModal('#removeSqlLibraryModal');
-                var oTable = $("#sqlLibrarysTable").dataTable();
-                oTable.fnDraw(true);
-                $('#removeSqlLibraryModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
-
-        $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
-}
-
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSqlLibraryModal'));
     var formEdit = $('#editSqlLibraryModal #editSqlLibraryModalForm');
-/*
-    var sa = formEdit.serializeArray();
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }*/
+    /*
+     var sa = formEdit.serializeArray();
+     var data = {}
+     for (var i in sa) {
+     data[sa[i].name] = sa[i].value;
+     }*/
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#editSqlLibraryModal');
@@ -176,15 +147,31 @@ function editEntryModalSaveHandler() {
 
 }
 
+function editEntryModalCloseHandler() {
+    // reset form values
+    $('#editSqlLibraryModal #editSqlLibraryModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#editSqlLibraryModal'));
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $("#addSqlLibraryModal #idname").empty();
+
+    $('#addSqlLibraryModal').modal('show');
+}
+
 function addEntryModalSaveHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
     var formEdit = $('#addSqlLibraryModal #addSqlLibraryModalForm');
 
     /*var sa = formEdit.serializeArray();
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }*/
+     var data = {}
+     for (var i in sa) {
+     data[sa[i].name] = sa[i].value;
+     }*/
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#addSqlLibraryModal');
@@ -211,14 +198,6 @@ function addEntryModalSaveHandler() {
 
 }
 
-function editEntryModalCloseHandler() {
-    // reset form values
-    $('#editSqlLibraryModal #editSqlLibraryModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editSqlLibraryModal'));
-}
 function addEntryModalCloseHandler() {
     // reset form values
     $('#addSqlLibraryModal #addSqlLibraryModalForm')[0].reset();
@@ -228,10 +207,26 @@ function addEntryModalCloseHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
 }
 
-function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
+function removeEntryClick(name) {
+    var doc = new Doc();
+    showModalConfirmation(function (ev) {
+        var name = $('#confirmationModal #hiddenField1').prop("value");
+        $.ajax({
+            url: "DeleteSqlLibrary2?name=" + name,
+            async: true,
+            method: "GET",
+            success: function (data) {
+                hideLoaderInModal('#removeSqlLibraryModal');
+                var oTable = $("#sqlLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#removeSqlLibraryModal').modal('hide');
+                showMessage(data);
+            },
+            error: showUnexpectedError
+        });
+
+        $('#confirmationModal').modal('hide');
+    }, doc.getDocLabel("page_sqlLibrary", "title_remove"), doc.getDocLabel("page_sqlLibrary", "message_remove"), name, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {
@@ -246,16 +241,16 @@ function aoColumnsFunc(tableId) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var editSqlLibrary = '<button id="editSqlLibrary" onclick="editEntryClick(\'' + obj["name"] + '\');"\n\
-                                        class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                        class="editSqlLibrary btn btn-default btn-xs margin-right5" \n\
                                         name="editSqlLibrary" title="' + doc.getDocLabel("page_sqlLibrary", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
 
                 var removeSqlLibrary = '<button id="removeSqlLibrary" onclick="removeEntryClick(\'' + obj["name"] + '\');"\n\
                                         class="removeSqlLibrary btn btn-default btn-xs margin-right5" \n\
                                         name="removeSqlLibrary" title="' + doc.getDocLabel("page_sqlLibrary", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-remove"></span></button>';
+                                        <span class="glyphicon glyphicon-trash"></span></button>';
                 var viewSqlLibrary = '<button id="editSqlLibrary" onclick="editEntryClick(\'' + obj["name"] + '\');"\n\
-                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    class="editSqlLibrary btn btn-default btn-xs margin-right5" \n\
                                     name="viewSqlLibrary" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
