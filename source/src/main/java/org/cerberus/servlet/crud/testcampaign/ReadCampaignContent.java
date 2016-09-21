@@ -21,16 +21,10 @@ package org.cerberus.servlet.crud.testcampaign;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -43,14 +37,22 @@ import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+
 /**
  *
  * @author cerberus
  */
-@WebServlet(name = "ReadCampaign", urlPatterns = {"/ReadCampaign"})
-public class ReadCampaign extends HttpServlet {
+@WebServlet(name = "ReadCampaignContent", urlPatterns = {"/ReadCampaignContent"})
+public class ReadCampaignContent extends HttpServlet {
 
-    private ICampaignService campaignService;
+    private ICampaignContentService campaignContentService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -73,14 +75,11 @@ public class ReadCampaign extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)) {
-                answer = findCampaignList(appContext, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(columnName)) {
+            if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                answer = findCampaignByKey(request.getParameter("param"), true, appContext);
+                answer = findCampaignList(request.getParameter("key"), appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -134,7 +133,7 @@ public class ReadCampaign extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCampaignList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCampaignList(String param, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         AnswerList answer = new AnswerList();
         JSONObject resp = new JSONObject();
@@ -149,7 +148,7 @@ public class ReadCampaign extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        campaignService = appContext.getBean(ICampaignService.class);
+        campaignContentService = appContext.getBean(ICampaignContentService.class);
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
@@ -159,13 +158,12 @@ public class ReadCampaign extends HttpServlet {
             }
         }
 
-        answer = campaignService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        answer = campaignContentService.readByCampaignByCriteria(param, startPosition, length, columnName, sort, searchParameter, "");
 
-//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
         JSONArray jsonArray = new JSONArray();
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (Campaign campaign : (List<Campaign>) answer.getDataList()) {
-                jsonArray.put(convertCampaigntoJSONObject(campaign));
+            for (CampaignContent campaignContent : (List<CampaignContent>) answer.getDataList()) {
+                jsonArray.put(convertCampaignContenttoJSONObject(campaignContent));
             }
         }
 
@@ -180,37 +178,19 @@ public class ReadCampaign extends HttpServlet {
         return item;
     }
 
-    private JSONObject convertCampaigntoJSONObject(Campaign campaign) throws JSONException {
+    private JSONObject convertCampaignContenttoJSONObject(CampaignContent campaignContent) throws JSONException {
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(campaign));
+        JSONObject result = new JSONObject(gson.toJson(campaignContent));
         return result;
     }
 
-    private AnswerItem findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
 
-        campaignService = appContext.getBean(ICampaignService.class);
-
-        AnswerItem answer = campaignService.readByKey(key);
-        Campaign p = null;
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (Campaign) answer.getItem();
-            JSONObject response = convertCampaigntoJSONObject(p);
-            object.put("contentTable", response);
-        }
-        object.put("hasPermissions", userHasPermissions);
-        item.setItem(object);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
         AnswerItem answer = new AnswerItem();
-        JSONObject object = new JSONObject();
+        /*JSONObject object = new JSONObject();
 
-        campaignService = appContext.getBean(ICampaignService.class);
+        campaignContentService = appContext.getBean(ICampaignContentService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
@@ -224,12 +204,12 @@ public class ReadCampaign extends HttpServlet {
             }
         }
 
-        AnswerList applicationList = campaignService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList applicationList = campaignContentService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", applicationList.getDataList());
 
         answer.setItem(object);
-        answer.setResultMessage(applicationList.getResultMessage());
+        answer.setResultMessage(applicationList.getResultMessage());*/
         return answer;
     }
 }

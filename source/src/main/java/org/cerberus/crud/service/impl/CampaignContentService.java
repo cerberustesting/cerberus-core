@@ -20,7 +20,10 @@
 package org.cerberus.crud.service.impl;
 
 import org.cerberus.crud.dao.ICampaignContentDAO;
+import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +42,25 @@ public class CampaignContentService implements ICampaignContentService {
     public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return campaignContentDAO.readByCampaignByCriteria(campaign, startPosition, length, columnName, sort, searchParameter, string);
     }
-    
+
+    @Override
+    public AnswerItem<CampaignContent> findCampaignContentByKey(int key) {
+        return campaignContentDAO.readByKey(key);
+    }
+
+    @Override
+    public Answer deleteByCampaign(String key) {
+        return campaignContentDAO.deleteByCampaign(key);
+    }
+
+    @Override
+    public Answer delete(CampaignContent object) {
+        return campaignContentDAO.delete(object);
+    }
+
+    @Override
+    public Answer create(CampaignContent object) {
+        return campaignContentDAO.create(object);
+    }
+
 }

@@ -833,7 +833,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];
         this.lengthChange = true;
-        this.bPaginate = false;
+        this.bPaginate = true;
         this.displayLength = 10;
         this.sPaginationType = "full_numbers";
     } else {
@@ -971,6 +971,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
     configs["columnReorder"] = tableConfigurations.colreorder;
     configs["searchDelay"] = tableConfigurations.searchDelay;
+    configs["buttons"] = [
+        'colvis'
+    ];
     if (tableConfigurations.aaSorting !== undefined) {
 //        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
@@ -1010,13 +1013,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 }
             }
         };
-        configs["buttons"] = [
-            'colvis'
-        ];
         configs["colReorder"] = tableConfigurations.colreorder ? {fnReorderCallback: function () {
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }} : false;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+            console.log(sSource);
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",

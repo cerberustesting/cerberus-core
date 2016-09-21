@@ -19,6 +19,9 @@
  */
 package org.cerberus.crud.service;
 
+import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -28,5 +31,12 @@ import org.cerberus.util.answer.AnswerList;
 public interface ICampaignContentService {
     
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+
+    AnswerItem<CampaignContent> findCampaignContentByKey(int key);
+
+    Answer deleteByCampaign (String key);
+
+    Answer delete (CampaignContent object);
+
+    Answer create (CampaignContent object);
 }
