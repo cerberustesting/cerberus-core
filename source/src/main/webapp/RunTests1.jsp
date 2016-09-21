@@ -204,7 +204,7 @@
                                     <div class="form-group">
                                         <label for="robotConfig" class="col-sm-3 control-label bold">Select Robot Config</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="robotConfig" name="robotConfig"></select>
+                                            <select class="form-control input-sm" id="robotConfig" name="robot"></select>
                                         </div>
                                     </div>
                                     <div class="form-group">

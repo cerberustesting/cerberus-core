@@ -525,7 +525,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`Group`, `Origine`, `RefOrigine`, `HowTo`, `Comment`, ")
                 .append("`FromBuild`, `FromRev`, `ToBuild`, `ToRev`, ")
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
-                .append("`Implementer`, `UsrModif`, `function`, `activeQA`, `activeUAT`, `activePROD`) ")
+                .append("`Implementer`, `UsrModif`, `function`, `activeQA`, `activeUAT`, `activePROD`, `useragent`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
                 .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
@@ -567,6 +567,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 preStat.setString(i++, testCase.getActiveQA() != null && !testCase.getActiveQA().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, testCase.getActiveUAT() != null && !testCase.getActiveUAT().equals("Y") ? "N" : "Y");
                 preStat.setString(i++, testCase.getActivePROD() != null && !testCase.getActivePROD().equals("N") ? "Y" : "N");
+                preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getUserAgent(), ""));
 
                 res = preStat.executeUpdate() > 0;
             } catch (SQLException exception) {

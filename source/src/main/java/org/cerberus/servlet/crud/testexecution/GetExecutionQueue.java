@@ -68,7 +68,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetExecutionQueue", urlPatterns = {"/GetExecutionQueue"})
 public class GetExecutionQueue extends HttpServlet {
 
-    private static final String PARAMETER_ROBOT = "Robot";
+    private static final String PARAMETER_ROBOT = "robot";
     private static final String PARAMETER_ROBOT_IP = "ss_ip";
     private static final String PARAMETER_ROBOT_PORT = "ss_p";
     private static final String PARAMETER_BROWSER = "Browser";
