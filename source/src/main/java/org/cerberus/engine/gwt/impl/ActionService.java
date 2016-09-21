@@ -106,7 +106,7 @@ public class ActionService implements IActionService {
          */
         if (false) {
             if (testCaseStepActionExecution.getValue1().contains("%")) {
-                boolean isCalledFromCalculateProperty = false;
+            boolean isCalledFromCalculateProperty = false;
                 if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
                     isCalledFromCalculateProperty = true;
                 }
@@ -1024,7 +1024,7 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY));
         } else {
             try {
-                propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, false);
+                propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
                 message.setDescription(message.getDescription().replace("%PROP%", value1));
             } catch (CerberusEventException cex) {
