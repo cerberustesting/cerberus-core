@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Level;
@@ -1528,7 +1529,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     }
 
     @Override
-    public List<TestCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause) {
+    public List<TestCase> findTestCaseByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
         List<TestCase> list = null;
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM testcase tec join application app on tec.application=app.application ")
@@ -1538,20 +1539,20 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("left join campaigncontent cc ")
                 .append("on cc.testbattery = tbc.testbattery ");
         sb.append(" WHERE 1=1 ");
-        sb.append(testClause);
-        sb.append(projectClause);
-        sb.append(appClause);
-        sb.append(activeClause);
-        sb.append(priorityClause);
-        sb.append(statusClause);
-        sb.append(groupClause);
-        sb.append(targetBuildClause);
-        sb.append(targetRevClause);
-        sb.append(creatorClause);
-        sb.append(implementerClause);
-        sb.append(functionClause);
-        sb.append(campaignClause);
-        sb.append(batteryClause);
+        sb.append(SqlUtil.createWhereInClause(" AND tec.Test", test == null ? null : Arrays.asList(test), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.Project", project == null ? null : Arrays.asList(project), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.Application", app == null ? null : Arrays.asList(app), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.tcactive", active == null ? null : Arrays.asList(active), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.priority", priority == null ? null : Arrays.asList(priority), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.status", status == null ? null : Arrays.asList(status), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.group", group == null ? null : Arrays.asList(group), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.targetBuild", targetBuild == null ? null : Arrays.asList(targetBuild), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.targetRev", targetRev == null ? null : Arrays.asList(targetRev), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.creator", creator == null ? null : Arrays.asList(creator), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.implementer", implementer == null ? null : Arrays.asList(implementer), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tec.funtion", function == null ? null : Arrays.asList(function), true));
+        sb.append(SqlUtil.createWhereInClause(" AND cc.campaign", campaign == null ? null : Arrays.asList(campaign), true));
+        sb.append(SqlUtil.createWhereInClause(" AND tbc.testbattery", battery == null ? null : Arrays.asList(battery), true));
         sb.append(" GROUP BY tec.test, tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

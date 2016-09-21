@@ -271,21 +271,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public List<TestCase> findByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery) {
-        String testClause = SqlUtil.createWhereInClause(" AND tc.Test", test == null ? null : Arrays.asList(test), true);
-        String projectClause = SqlUtil.createWhereInClause(" AND tc.Project", project == null ? null : Arrays.asList(project), true);
-        String appClause = SqlUtil.createWhereInClause(" AND tc.Application", app == null ? null : Arrays.asList(app), true);
-        String activeClause = SqlUtil.createWhereInClause(" AND tc.tcactive", active == null ? null : Arrays.asList(active), true);
-        String priorityClause = SqlUtil.createWhereInClause(" AND tc.priority", priority == null ? null : Arrays.asList(priority), true);
-        String statusClause = SqlUtil.createWhereInClause(" AND tc.status", status == null ? null : Arrays.asList(status), true);
-        String groupClause = SqlUtil.createWhereInClause(" AND tc.group", group == null ? null : Arrays.asList(group), true);
-        String targetBuildClause = SqlUtil.createWhereInClause(" AND tc.targetBuild", targetBuild == null ? null : Arrays.asList(targetBuild), true);
-        String targetRevClause = SqlUtil.createWhereInClause(" AND tc.targetRev", targetRev == null ? null : Arrays.asList(targetRev), true);
-        String creatorClause = SqlUtil.createWhereInClause(" AND tc.creator", creator == null ? null : Arrays.asList(creator), true);
-        String implementerClause = SqlUtil.createWhereInClause(" AND tc.implementer", implementer == null ? null : Arrays.asList(implementer), true);
-        String functionClause = SqlUtil.createWhereInClause(" AND tc.funtion", function == null ? null : Arrays.asList(function), true);
-        String campaignClause = SqlUtil.createWhereInClause(" AND cc.campaign", campaign == null ? null : Arrays.asList(campaign), true);
-        String batteryClause = SqlUtil.createWhereInClause(" AND tbc.testbattery", battery == null ? null : Arrays.asList(battery), true);
-        return testCaseDao.findTestCaseByCriteria(testClause, projectClause, appClause, activeClause, priorityClause, statusClause, groupClause, targetBuildClause, targetRevClause, creatorClause, implementerClause, functionClause, campaignClause, batteryClause);
+        return testCaseDao.findTestCaseByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign, battery);
     }
 
     @Override
