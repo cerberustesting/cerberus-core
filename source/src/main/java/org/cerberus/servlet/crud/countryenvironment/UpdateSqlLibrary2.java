@@ -94,7 +94,7 @@ public class UpdateSqlLibrary2 extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SqlLibrary")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "SqlLibrary ID (name) is missing."));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.

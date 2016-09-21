@@ -101,16 +101,15 @@ function editEntryModalSaveHandler() {
     }
     // Get the header data from the form.
     //var data = convertSerialToJSONObject(formEdit.serialize());
-    console.log(data);
     showLoaderInModal('#editParameterModal');
     $.ajax({
-        url: "UpdateParameter?system=" + getSys(),
+        url: "UpdateParameter",
         async: true,
         method: "POST",
         data: {id: data.parameter,
-            valueCerberus: data.cerberusValue,
-            valueSystem: data.systemValue,
-            system: getSys()},
+            value: data.cerberusValue,
+            system1Value: data.systemValue,
+            system1: getSys()},
         success: function (data) {
             hideLoaderInModal('#editParameterModal');
             var oTable = $("#parametersTable").dataTable();

@@ -28,10 +28,13 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -181,5 +184,42 @@ public class ParameterService implements IParameterService {
     @Override
     public AnswerList<String> readDistinctValuesWithSystem1ByCriteria(String system, String system1, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return parameterDao.readDistinctValuesWithSystem1ByCriteria(system, system1, searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public AnswerItem readByKey(String system, String param) {
+        return parameterDao.readByKey(system, param);
+    }
+
+    @Override
+    public Answer create(Parameter object) {
+        return parameterDao.create(object);
+    }
+
+    @Override
+    public Answer update(Parameter object) {
+        return parameterDao.update(object);
+    }
+
+    @Override
+    public Answer delete(Parameter object) {
+        return parameterDao.delete(object);
+    }
+
+    @Override
+    public Answer save(Parameter object) {
+        Answer finalAnswer = new Answer();
+        AnswerItem resp = readByKey(object.getSystem(), object.getParam());
+        if (!resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            /**
+             * Object could not be found. We stop here and report the error.
+             */
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+        } else if (resp.getItem() == null) {
+            finalAnswer = create(object);
+        } else {
+            finalAnswer = update(object);
+        }
+        return finalAnswer;
     }
 }
