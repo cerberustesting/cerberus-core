@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -99,12 +98,13 @@ public class DeleteInvariant2 extends HttpServlet {
 
             ans = invariantService.delete(invariantData);
 
-            /**
-             * Object updated. Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/DeleteInvariant2", "DELETE", "Delete Invariant : ['" + id + "']", request);
-
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object updated. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/DeleteInvariant2", "DELETE", "Delete Invariant : ['" + id + "']", request);
+            }
         }
 
         /**

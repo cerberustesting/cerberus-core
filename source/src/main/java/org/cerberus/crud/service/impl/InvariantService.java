@@ -28,10 +28,13 @@ import java.util.logging.Logger;
 import org.cerberus.crud.dao.IInvariantDAO;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -177,6 +180,36 @@ public class InvariantService implements IInvariantService {
         } catch (CerberusException e) {
             return false;
         }
+    }
+
+    @Override
+    public AnswerItem isInvariantPublic(Invariant object) {
+        AnswerItem finalAnswer = new AnswerItem();
+        AnswerList resp = readByIdname("INVARIANTPUBLIC");
+
+        if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getDataList() != null)) {
+            /**
+             * Object could not be found. We stop here and report the error.
+             */
+            finalAnswer.setResultMessage(resp.getResultMessage());
+
+        } else {
+            boolean result = false;
+            for (Invariant myInvariant : (List<Invariant>) resp.getDataList()) {
+                if (object.getIdName().equals(myInvariant.getValue())) {
+                    result = true;
+                }
+            }
+            finalAnswer.setItem(result);
+            finalAnswer.setResultMessage(resp.getResultMessage());
+        }
+
+        return finalAnswer;
+    }
+
+    @Override
+    public AnswerItem readByKey(String id, String value) {
+        return invariantDao.readByKey2(id, value);
     }
 
     //TODO REMOVE

@@ -18,7 +18,6 @@
 package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -28,16 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.factory.impl.FactoryInvariant;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryInvariant;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -125,12 +120,13 @@ public class CreateInvariant2 extends HttpServlet {
 
             ans = invariantService.create(invariantData);
 
-            /**
-             * Object updated. Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/CreateInvariant2", "UPDATE", "Create Invariant : ['" + id + "']", request);
-
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Object updated. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
+            }
         }
 
         /**

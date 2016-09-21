@@ -20,6 +20,7 @@ package org.cerberus.crud.dao;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 import java.util.List;
@@ -118,6 +119,15 @@ public interface IInvariantDAO {
 
     public void update(Invariant invariant) throws CerberusException;
     */
+
+    /**
+     * Get a {@link Invariant} in database
+     *
+     * @param id
+     * @param value
+     * @return
+     */
+    AnswerItem readByKey2(String id, String value);
 
     /**
      * Create an {@link Invariant} in database
