@@ -279,7 +279,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.contains("cerberus")) {
+                    if (connectionName.equals("cerberus"+ System.getProperty("org.cerberus.environment"))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
 
