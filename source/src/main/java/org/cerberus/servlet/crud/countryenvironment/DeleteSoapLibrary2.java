@@ -15,22 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.transversaltables;
+package org.cerberus.servlet.crud.countryenvironment;
 
-import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -39,13 +38,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author bcivel
+ * @author cte
  */
-public class DeleteInvariant2 extends HttpServlet {
+public class DeleteSoapLibrary2 extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -56,54 +54,64 @@ public class DeleteInvariant2 extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException      if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+
+        response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
 
-        String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("idName"), "", charset);
-        String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
+        // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+        // Parameter that needs to be secured --> We SECURE+DECODE them
+        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        // Parameter that we cannot secure as we need the html --> We DECODE them
 
-        boolean userHasPermissions = request.isUserInRole("Administrator");
+        ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(id)) {
+        if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
                     .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "Invariant name is missing!"));
-            ans.setResultMessage(msg);
-        } else if (!userHasPermissions) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "You don't have the right to do that"));
+                    .replace("%REASON%", "SOAPLibrary ID (name) is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IInvariantService invariantService = appContext.getBean(IInvariantService.class);
-
-            Invariant invariantData = invariantService.findInvariantByIdValue(id, value);
-
-            ans = invariantService.delete(invariantData);
-
-            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            AnswerItem resp = soapLibraryService.readByKey(name);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
-                 * Object updated. Adding Log entry.
+                 * Object could not be found. We stop here and report the error.
                  */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/DeleteInvariant2", "DELETE", "Delete Invariant : ['" + id + "']", request);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "SoapLibrary does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                SoapLibrary soapl = (SoapLibrary)resp.getItem();
+                ans = soapLibraryService.delete(soapl);
+
+                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DeleteSoapLibrary", "DELETE", "Delete SOAPLibrary : " + name, request);
+                }
             }
         }
 
@@ -115,7 +123,6 @@ public class DeleteInvariant2 extends HttpServlet {
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
-
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -132,11 +139,11 @@ public class DeleteInvariant2 extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -152,11 +159,11 @@ public class DeleteInvariant2 extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteInvariant2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 

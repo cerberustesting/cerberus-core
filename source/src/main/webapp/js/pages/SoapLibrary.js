@@ -37,7 +37,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("soapLibrarysTable", "ReadSoapLibrary", "contentTable", aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#soapLibraryList");
+    createDataTableWithPermissions(configurations, renderOptionsForSoapLibrary, "#soapLibraryList");
 }
 
 function displayPageLabel() {
@@ -64,7 +64,7 @@ function displayPageLabel() {
     displayGlobalLabel(doc);
 }
 
-function renderOptionsForApplication(data) {
+function renderOptionsForSoapLibrary(data) {
     var doc = new Doc();
     if (data["hasPermissions"]) {
         if ($("#createSoapLibraryButton").length === 0) {
@@ -119,35 +119,6 @@ function editEntryClick(name) {
     });
 }
 
-function addEntryClick() {
-    clearResponseMessageMainPage();
-    $("#addSoapLibraryModal #idname").empty();
-
-    $('#addSoapLibraryModal').modal('show');
-}
-
-function removeEntryClick(name) {
-    var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var name = $('#confirmationModal #hiddenField1').prop("value");
-        $.ajax({
-            url: "DeleteSoapLibrary2?name=" + name,
-            async: true,
-            method: "GET",
-            success: function (data) {
-                hideLoaderInModal('#removeSoapLibraryModal');
-                var oTable = $("#soapLibrarysTable").dataTable();
-                oTable.fnDraw(true);
-                $('#removeSoapLibraryModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
-
-        $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_soapLibrary", "title_remove"), doc.getDocLabel("page_soapLibrary", "message_remove"), name, undefined, undefined, undefined);
-}
-
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSoapLibraryModal'));
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
@@ -183,6 +154,22 @@ function editEntryModalSaveHandler() {
         error: showUnexpectedError
     });
 
+}
+
+function editEntryModalCloseHandler() {
+    // reset form values
+    $('#editSoapLibraryModal #editSoapLibraryModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#editSoapLibraryModal'));
+}
+
+function addEntryClick() {
+    clearResponseMessageMainPage();
+    $("#addSoapLibraryModal #idname").empty();
+
+    $('#addSoapLibraryModal').modal('show');
 }
 
 function addEntryModalSaveHandler() {
@@ -222,14 +209,6 @@ function addEntryModalSaveHandler() {
 
 }
 
-function editEntryModalCloseHandler() {
-    // reset form values
-    $('#editSoapLibraryModal #editSoapLibraryModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#editSoapLibraryModal'));
-}
 function addEntryModalCloseHandler() {
     // reset form values
     $('#addSoapLibraryModal #addSoapLibraryModalForm')[0].reset();
@@ -239,10 +218,26 @@ function addEntryModalCloseHandler() {
     clearResponseMessage($('#addSoapLibraryModal'));
 }
 
-function getSys() {
-    var sel = document.getElementById("MySystem");
-    var selectedIndex = sel.selectedIndex;
-    return sel.options[selectedIndex].value;
+function removeEntryClick(name) {
+    var doc = new Doc();
+    showModalConfirmation(function (ev) {
+        var name = $('#confirmationModal #hiddenField1').prop("value");
+        $.ajax({
+            url: "DeleteSoapLibrary2?name=" + name,
+            async: true,
+            method: "GET",
+            success: function (data) {
+                hideLoaderInModal('#removeSoapLibraryModal');
+                var oTable = $("#soapLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#removeSoapLibraryModal').modal('hide');
+                showMessage(data);
+            },
+            error: showUnexpectedError
+        });
+
+        $('#confirmationModal').modal('hide');
+    }, doc.getDocLabel("page_soapLibrary", "title_remove"), doc.getDocLabel("page_soapLibrary", "message_remove"), name, undefined, undefined, undefined);
 }
 
 function aoColumnsFunc(tableId) {
@@ -257,16 +252,16 @@ function aoColumnsFunc(tableId) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
                 var editSoapLibrary = '<button id="editSoapLibrary" onclick="editEntryClick(\'' + obj["name"] + '\');"\n\
-                                        class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                        class="editSoapLibrary btn btn-default btn-xs margin-right5" \n\
                                         name="editSoapLibrary" title="' + doc.getDocLabel("page_soapLibrary", "button_edit") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-pencil"></span></button>';
 
                 var removeSoapLibrary = '<button id="removeSoapLibrary" onclick="removeEntryClick(\'' + obj["name"] + '\');"\n\
                                         class="removeSoapLibrary btn btn-default btn-xs margin-right5" \n\
                                         name="removeSoapLibrary" title="' + doc.getDocLabel("page_soapLibrary", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-remove"></span></button>';
+                                        <span class="glyphicon glyphicon-trash"></span></button>';
                 var viewSoapLibrary = '<button id="editSoapLibrary" onclick="editEntryClick(\'' + obj["name"] + '\');"\n\
-                                    class="editApplication btn btn-default btn-xs margin-right5" \n\
+                                    class="editSoapLibrary btn btn-default btn-xs margin-right5" \n\
                                     name="viewSoapLibrary" title="' + doc.getDocLabel("page_application", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
                 if (hasPermissions === "true") { //only draws the options if the user has the correct privileges
@@ -279,8 +274,9 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_soapLibrary", "soapLibrary_col")},
         {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_soapLibrary", "type_col")},
-        {"data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),
-            "mRender": function(data, type, obj){
+        {
+            "data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),
+            "mRender": function (data, type, obj) {
                 return $("<div></div>").text(obj['envelope']).html();
             }
         },

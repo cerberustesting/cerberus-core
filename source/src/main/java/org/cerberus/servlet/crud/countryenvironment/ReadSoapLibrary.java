@@ -15,20 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.testdata;
+package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.SqlLibrary;
-import org.cerberus.crud.service.ISqlLibraryService;
-import org.cerberus.crud.service.impl.SqlLibraryService;
+import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.service.ISoapLibraryService;
+import org.cerberus.crud.service.impl.SoapLibraryService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.log.MyLogger;
-import org.cerberus.servlet.crud.transversaltables.ReadParameter;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
@@ -46,15 +43,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
  * @author bcivel
  */
-public class ReadSqlLibrary extends HttpServlet {
+public class ReadSoapLibrary extends HttpServlet {
 
-    private ISqlLibraryService sqlLibraryService;
+    private ISoapLibraryService soapLibraryService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -67,7 +63,7 @@ public class ReadSqlLibrary extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //Get SqlLibrarys
+        //Get SoapLibrarys
         String echo = request.getParameter("sEcho");
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
 
@@ -85,14 +81,14 @@ public class ReadSqlLibrary extends HttpServlet {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
         /**
-         * Parsing and securing all required sqlLibrarys.
+         * Parsing and securing all required soapLibrarys.
          */
-        // Nothing to do here as no sqlLibrary to check.
+        // Nothing to do here as no soapLibrary to check.
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = true; //TODO check permissions
+        boolean userHasPermissions = request.isUserInRole("Integrator");
 
-        // Init Answer with potencial error from Parsing sqlLibrary.
+        // Init Answer with potencial error from Parsing soapLibrary.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
         try {
@@ -101,13 +97,13 @@ public class ReadSqlLibrary extends HttpServlet {
             String system;
 
             if (request.getParameter("name") == null && Strings.isNullOrEmpty(columnName)) {
-                answer = findSqlLibraryList(appContext, userHasPermissions, request);
+                answer = findSoapLibraryList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                answer = findSqlLibraryBySystemByKey(request.getParameter("name"), appContext, userHasPermissions);
+                answer = findSoapLibraryBySystemByKey(request.getParameter("name"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -118,17 +114,17 @@ public class ReadSqlLibrary extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadSqlLibrary.class.getName()).log(org.apache.log4j.Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadSoapLibrary.class.getName()).log(Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 
-    private AnswerItem findSqlLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findSoapLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        sqlLibraryService = appContext.getBean(SqlLibraryService.class);
+        soapLibraryService = appContext.getBean(SoapLibraryService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -149,12 +145,12 @@ public class ReadSqlLibrary extends HttpServlet {
             }
         }
 
-        AnswerList resp = sqlLibraryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = soapLibraryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (SqlLibrary param : (List<SqlLibrary>) resp.getDataList()) {
-                jsonArray.put(convertSqlLibraryToJSONObject(param));
+            for (SoapLibrary param : (List<SoapLibrary>) resp.getDataList()) {
+                jsonArray.put(convertSoapLibraryToJSONObject(param));
             }
         }
 
@@ -168,16 +164,16 @@ public class ReadSqlLibrary extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSqlLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem findSoapLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        sqlLibraryService = appContext.getBean(SqlLibraryService.class);
+        soapLibraryService = appContext.getBean(SoapLibraryService.class);
 
-        AnswerItem resp = sqlLibraryService.readByKey(key);
-        SqlLibrary p = null;
+        AnswerItem resp = soapLibraryService.readByKey(key);
+        SoapLibrary p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (SqlLibrary) resp.getItem();
+            p = (SoapLibrary) resp.getItem();
         }
-        JSONObject item = convertSqlLibraryToJSONObject(p);
+        JSONObject item = convertSoapLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);
         resp.setItem(item);
 
@@ -188,7 +184,7 @@ public class ReadSqlLibrary extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
+        soapLibraryService = appContext.getBean(ISoapLibraryService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
@@ -202,7 +198,7 @@ public class ReadSqlLibrary extends HttpServlet {
             }
         }
 
-        AnswerList applicationList = sqlLibraryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList applicationList = soapLibraryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", applicationList.getDataList());
 
@@ -211,7 +207,7 @@ public class ReadSqlLibrary extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertSqlLibraryToJSONObject(SqlLibrary parameter) throws JSONException {
+    private JSONObject convertSoapLibraryToJSONObject(SoapLibrary parameter) throws JSONException {
 
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(parameter));

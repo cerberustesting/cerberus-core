@@ -25,6 +25,7 @@ import java.util.Map;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -62,11 +63,15 @@ public interface IInvariantService {
 
     boolean isInvariantExist(String idName, String value);
 
+    AnswerItem isInvariantPublic(Invariant object);
+
     //TODO REMOVE void createInvariant(Invariant invariant) throws CerberusException;
 
     //TODO REMOVE void deleteInvariant(Invariant invariant) throws CerberusException;
 
     //TODO REMOVE void updateInvariant(Invariant invariant) throws CerberusException;
+
+    AnswerItem readByKey(String id, String value);
 
     Answer create(Invariant invariant);
 

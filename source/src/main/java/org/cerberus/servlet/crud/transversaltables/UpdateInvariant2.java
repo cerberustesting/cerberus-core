@@ -29,6 +29,8 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -91,6 +93,10 @@ public class UpdateInvariant2 extends HttpServlet {
 
         boolean userHasPermissions = request.isUserInRole("Administrator");
 
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
         /**
          * Checking all constrains before calling the services.
          */
@@ -120,29 +126,58 @@ public class UpdateInvariant2 extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
 
-            Invariant invariantData = invariantService.findInvariantByIdValue(id, value);
-            invariantData.setSort(sort);
-            invariantData.setDescription(description);
-            invariantData.setVeryShortDesc(veryShortDescField);
-            invariantData.setGp1(gp1);
-            invariantData.setGp2(gp2);
-            invariantData.setGp3(gp3);
+            AnswerItem resp = invariantService.readByKey(id, value);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
-            ans = invariantService.update(invariantData);
+            } else {
+                Invariant invariantData = (Invariant) resp.getItem();
+                resp = invariantService.isInvariantPublic(invariantData);
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                    /**
+                     * Object could not be found. We stop here and report the error.
+                     */
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
 
-            /**
-             * Object updated. Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/UpdateInvariant2", "UPDATE", "Update Invariant : ['" + id + "']", request);
+                } else {
+                    if ((boolean) resp.getItem()) {
+                        invariantData.setSort(sort);
+                        invariantData.setDescription(description);
+                        invariantData.setVeryShortDesc(veryShortDescField);
+                        invariantData.setGp1(gp1);
+                        invariantData.setGp2(gp2);
+                        invariantData.setGp3(gp3);
 
+                        ans = invariantService.update(invariantData);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Object updated. Adding Log entry.
+                             */
+                            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                            logEventService.createPrivateCalls("/UpdateInvariant2", "UPDATE", "Update Invariant : ['" + id + "']", request);
+                        }
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
+                                .replace("%OPERATION%", "Update")
+                                .replace("%REASON%", "The Invariant is not Public!"));
+                        ans.setResultMessage(msg);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                }
+            }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();

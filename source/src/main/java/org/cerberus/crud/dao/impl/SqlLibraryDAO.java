@@ -29,7 +29,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ISqlLibraryDAO;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.impl.FactorySqlLibrary;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -538,7 +537,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     }
 
     @Override
-    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch){
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -567,8 +566,8 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
                 searchSQL.append(" and ");
                 String key = "IFNULL(`sql`." + entry.getKey() + ",'')";
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
-                if(q == null || q == ""){
-                    q = "(`sql`." + entry.getKey() + " IS NULL OR " + entry.getKey() +" = '')";
+                if (q == null || q == "") {
+                    q = "(`sql`." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
@@ -681,7 +680,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
     }
 
     @Override
-    public AnswerItem readByKey(String key){
+    public AnswerItem readByKey(String key) {
         AnswerItem a = new AnswerItem();
         StringBuilder query = new StringBuilder();
         SqlLibrary p = new SqlLibrary();
@@ -689,7 +688,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         query.append("SELECT * FROM sqllibrary `sql` WHERE Name = ?");
         Connection connection = this.databaseSpring.connect();
-        try{
+        try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             preStat.setString(1, key);
             ResultSet resultSet = preStat.executeQuery();
@@ -699,7 +698,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
             }
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
@@ -719,7 +718,7 @@ public class SqlLibraryDAO implements ISqlLibraryDAO {
 
         //TODO remove when working in test with mockito and autowired
         factorySqlLib = new FactorySqlLibrary();
-        return factorySqlLib.create(name,type,db,script,description);
+        return factorySqlLib.create(name, type, db, script, description);
     }
 
     @Override

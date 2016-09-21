@@ -15,26 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.crud.testdata;
+package org.cerberus.servlet.crud.countryenvironment;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.SqlLibrary;
-import org.cerberus.crud.factory.IFactorySqlLibrary;
+import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISqlLibraryService;
+import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.servlet.crud.countryenvironment.UpdateApplication;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -43,27 +39,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 /**
- *
- * @author bcivel
+ * @author cte
  */
-public class CreateSqlLibrary2 extends HttpServlet {
+public class UpdateSoapLibrary2 extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
@@ -78,23 +71,66 @@ public class CreateSqlLibrary2 extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
-        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
+        // CTE - on utilise la méthode utilitaire pour encoder le xml
+        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("Envelope"), null);
+        //String envelopeBDD = HtmlUtils.htmlEscape(envelope);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
+        String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
-        ISqlLibraryService sqlLibraryService = appContext.getBean(ISqlLibraryService.class);
-        IFactorySqlLibrary factorySqlLibrary = appContext.getBean(IFactorySqlLibrary.class);
-
-        SqlLibrary sqlLib = factorySqlLibrary.create(name, type, database, script, description);
-        Answer finalAnswer = sqlLibraryService.create(sqlLib);
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
 
         /**
-         * Adding Log entry.
+         * Checking all constrains before calling the services.
          */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SQLLibrary : " + name, request);
+        if (StringUtil.isNullOrEmpty(name)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "SoapLibrary ID (name) is missing."));
+            ans.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+            ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
 
+            AnswerItem resp = soapLibraryService.readByKey(name);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can update it.
+                 */
+                SoapLibrary soapLib = (SoapLibrary) resp.getItem();
+                soapLib.setType(type);
+                soapLib.setDescription(description);
+                soapLib.setEnvelope(envelope);
+                soapLib.setMethod(method);
+                soapLib.setParsingAnswer(parsingAnswer);
+                soapLib.setServicePath(servicePath);
+                ans = soapLibraryService.update(soapLib);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Update was succesfull. Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : ['" + name + "']", request);
+                }
+
+            }
+        }
 
         /**
          * Formating and returning the json result.
@@ -105,45 +141,45 @@ public class CreateSqlLibrary2 extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);
+            this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSqlLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -156,5 +192,4 @@ public class CreateSqlLibrary2 extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

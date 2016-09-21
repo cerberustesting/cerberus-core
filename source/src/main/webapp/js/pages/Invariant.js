@@ -330,7 +330,7 @@ function aoColumnsFunc(tableId) {
                 var removeInvariant = '<button id="removeInvariant" onclick="removeEntryClick(\'' + obj["idName"] + '\',\'' + obj["value"] + '\');"\n\
                                         class="removeInvariant btn btn-default btn-xs margin-right5" \n\
                                         name="removeInvariant" title="' + doc.getDocLabel("page_invariant", "button_remove") + '" type="button">\n\
-                                        <span class="glyphicon glyphicon-remove"></span></button>';
+                                        <span class="glyphicon glyphicon-trash"></span></button>';
 
                 return '<div class="center btn-group width150">' + editInvariant + removeInvariant + '</div>';
 
