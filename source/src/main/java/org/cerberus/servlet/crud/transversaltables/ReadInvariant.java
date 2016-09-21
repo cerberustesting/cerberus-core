@@ -93,7 +93,7 @@ public class ReadInvariant extends HttpServlet {
                     answer = findInvariantList(appContext, access, request, response);
                     jsonResponse = (JSONObject) answer.getItem();
                 }
-            } else if (request.getParameter("value") == null && access != null) {
+            } else if (request.getParameter("value") == null) {
                 //loads the list of invariants
                 String idName = policy.sanitize(request.getParameter("idName"));
                 answer = findInvariantListByIdName(appContext, access, idName);
