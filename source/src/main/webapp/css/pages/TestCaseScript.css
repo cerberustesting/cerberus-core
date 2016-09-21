@@ -99,7 +99,7 @@
     border-radius: 1px 1px 0 0;
 }
 
-.form-control{
+.no-border{
     border: 0px;
     box-shadow: 0 0px 0px;
 }

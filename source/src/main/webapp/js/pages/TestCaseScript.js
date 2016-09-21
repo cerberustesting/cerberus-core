@@ -993,11 +993,11 @@ Action.prototype.generateContent = function () {
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("rowAction form-inline");
 
-    var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").addClass("form-control input-sm");
-    var propertyField = $("<input>").addClass("form-control input-sm");
-    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
+    var actionList = $("<select></select>").addClass("form-control input-sm no-border");
+    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
+    var objectField = $("<input>").addClass("form-control input-sm no-border");
+    var propertyField = $("<input>").addClass("form-control input-sm no-border");
+    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
     descField.on("change", function () {
@@ -1165,11 +1165,11 @@ Control.prototype.generateContent = function () {
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("rowControl form-inline");
 
-    var controlList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
-    var controlValueField = $("<input>").addClass("form-control input-sm");
-    var controlPropertyField = $("<input>").addClass("form-control input-sm");
-    var fatalList = $("<select></select>").addClass("form-control input-sm");
+    var controlList = $("<select></select>").addClass("form-control input-sm no-border");
+    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Description");
+    var controlValueField = $("<input>").addClass("form-control input-sm no-border");
+    var controlPropertyField = $("<input>").addClass("form-control input-sm no-border");
+    var fatalList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
     descField.on("change", function () {
