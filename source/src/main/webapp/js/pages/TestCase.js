@@ -1806,7 +1806,7 @@ function findStepBySystemTest(testElement, system, testCaseElement, refreshEleme
                 $(testCaseElement).append($("<option></option>")
                         .attr('value', data.testCaseStepList[i].testCase)
                         .attr('style', 'width:400px;')
-                        .text(data.testCaseStepList[i].testCase + " : " + data.testCaseStepList[i].tcdesc));
+                        .text(data.testCaseStepList[i].testCase + " [" + data.testCaseStepList[i].tcapp + "] : " + data.testCaseStepList[i].tcdesc));
                 testFromLib = data.testCaseStepList[i].testCase;
             }
         }
