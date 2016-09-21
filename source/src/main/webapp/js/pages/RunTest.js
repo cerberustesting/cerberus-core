@@ -185,7 +185,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             testCaseList.empty();
 
             for (var index = 0; index < data.contentTable.length; index++) {
-                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
 
                 testCaseList.append($("<option></option>")
                         .text(text)
