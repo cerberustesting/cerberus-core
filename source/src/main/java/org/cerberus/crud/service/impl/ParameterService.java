@@ -26,7 +26,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.xmlbeans.impl.tool.Extension;
 import org.cerberus.crud.dao.IParameterDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -218,7 +220,14 @@ public class ParameterService implements IParameterService {
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
         } else {
-            finalAnswer = update(object);
+            if(!((object.getValue()).equals(((Parameter)resp.getItem()).getValue()))) {
+                finalAnswer = update(object);
+            }else{
+                /**
+                 * Nothing is done but everything went OK
+                 */
+                finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
+            }
         }
         return finalAnswer;
     }
