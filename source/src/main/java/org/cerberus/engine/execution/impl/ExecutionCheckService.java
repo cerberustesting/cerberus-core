@@ -75,7 +75,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
             if (this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTestCaseNotManual(tCExecution)
-                    && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
                     && this.checkUserAgentConsistent(tCExecution)) {
@@ -92,7 +91,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkActiveEnvironmentGroup(tCExecution)
                     && this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
-                    && this.checkTypeEnvironment(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
                     && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)
@@ -145,23 +143,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if ("N".equals(tCExecution.getManualExecution()) && tCExecution.getTestCaseObj().getGroup().equals("MANUAL")) {
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_ISMANUAL);
             return false;
-        }
-        return true;
-    }
-
-    private boolean checkTypeEnvironment(TestCaseExecution tCExecution) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Checking if application environment type is compatible with environment type");
-        }
-        try {
-            if (applicationService.convert(applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())).getType().equalsIgnoreCase("COMPARISON")) {
-                if (tCExecution.getTestCaseObj().getGroup().equalsIgnoreCase("COMPARATIVE")) {
-                    message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TYPE_DIFFERENT);
-                    return false;
-                }
-            }
-        } catch (CerberusException ex) {
-            LOG.fatal("Unable to find Application", ex);
         }
         return true;
     }
