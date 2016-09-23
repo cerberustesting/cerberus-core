@@ -834,11 +834,12 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
         String url = "";
         try {
-            url = identifier.getLocator();
-            if (!StringUtil.isNull(url)) {
+            if (!StringUtil.isNull(identifier.getLocator())) {
                 if (withBase) {
                     host = StringUtil.cleanHostURL(host);
                     url = host + url;
+                } else {
+                    url = StringUtil.cleanHostURL(identifier.getLocator());
                 }
                 session.getDriver().get(url);
                 message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_OPENURL);
