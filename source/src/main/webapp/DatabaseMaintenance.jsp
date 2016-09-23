@@ -59,7 +59,8 @@
                 //Integer SQLLimit = 509; // 1.0.0 Version LEVEL.
                 //Integer SQLLimit = 651; // 1.1.2 Version LEVEL.
                 //Integer SQLLimit = 740; // 1.1.3 Version LEVEL.
-                Integer SQLLimit = 784; // 1.1.4 Version LEVEL.
+                //Integer SQLLimit = 784; // 1.1.4 Version LEVEL.
+                Integer SQLLimit = 928; // 1.1.6 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
