@@ -74,7 +74,7 @@ public class UpdateInvariant2 extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("idName"), "", charset);
-        String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
+        String value = ParameterParserUtil.parseStringParam(request.getParameter("value"), "");
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         String veryShortDescField = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("veryShortDesc"), "", charset);
         String gp1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp1"), "", charset);
@@ -105,19 +105,19 @@ public class UpdateInvariant2 extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Invariant name is missing!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Could not manage to convert sort to an integer value!"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else if (!userHasPermissions) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Invariant")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "You don't have the right to do that"));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.

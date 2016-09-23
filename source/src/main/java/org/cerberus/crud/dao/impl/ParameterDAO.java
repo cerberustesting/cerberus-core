@@ -41,6 +41,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,34 @@ public class ParameterDAO implements IParameterDAO {
 
     private final int MAX_ROW_SELECTED = 100000;
     private final String OBJECT_NAME = "Parameter";
+
+    /**
+     * Declare SQL queries used by this {@link RobotCapabilityDAO}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Get {@link Parameter} with the given key
+         */
+        String READ_BY_KEY = "SELECT * FROM `parameter` WHERE `system` = ? AND `param` = ? ";
+
+        /**
+         * Create a new {@link Parameter}
+         */
+        String CREATE = "INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES (?, ?, ?, ?)";
+
+        /**
+         * Update an existing {@link Parameter}
+         */
+        String UPDATE = "UPDATE `parameter` SET `value` = ? WHERE `system` = ? AND `param` = ?";
+
+        /**
+         * Remove an existing {@link Parameter}
+         */
+        String DELETE = "DELETE FROM `parameter` WHERE `system` = ? AND `param` = ?";
+    }
 
     @Override
     public Parameter findParameterByKey(String system, String key) throws CerberusException {
@@ -374,7 +403,7 @@ public class ParameterDAO implements IParameterDAO {
                 try {
                     //gets the data
                     while (resultSet.next()) {
-                        objectList.add(this.loadFromResultSet(resultSet));
+                        objectList.add(this.loadFromResultSetWithSystem1(resultSet));
                     }
 
                     //get the total number of rows
@@ -450,7 +479,7 @@ public class ParameterDAO implements IParameterDAO {
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         query.append("SELECT par.param, par.`value`, par.description, ? system1, par1.`value` system1value FROM parameter par "
                 + "LEFT OUTER JOIN (SELECT * FROM parameter WHERE system = ? and param = ?) as par1 ON par.param = par1.param WHERE par.system = ? AND par.param = ?");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
@@ -458,7 +487,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL.param.system : " + system);
             LOG.debug("SQL.param.key : " + key);
         }
-        
+
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -470,7 +499,7 @@ public class ParameterDAO implements IParameterDAO {
             ResultSet resultSet = preStat.executeQuery();
             //gets the data
             while (resultSet.next()) {
-                p = this.loadFromResultSet(resultSet);
+                p = this.loadFromResultSetWithSystem1(resultSet);
             }
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
             msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
@@ -485,7 +514,7 @@ public class ParameterDAO implements IParameterDAO {
     }
 
     @Override
-    public Parameter loadFromResultSet(ResultSet rs) throws SQLException {
+    public Parameter loadFromResultSetWithSystem1(ResultSet rs) throws SQLException {
         String param = ParameterParserUtil.parseStringParam(rs.getString("par.param"), "");
         String value = ParameterParserUtil.parseStringParam(rs.getString("par.value"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("par.description"), "");
@@ -495,6 +524,18 @@ public class ParameterDAO implements IParameterDAO {
         //TODO remove when working in test with mockito and autowired
         factoryParameter = new FactoryParameter();
         return factoryParameter.create("", param, value, description, system1, system1Value);
+    }
+
+    @Override
+    public Parameter loadFromResultSet(ResultSet rs) throws SQLException {
+        String system = ParameterParserUtil.parseStringParam(rs.getString("system"), "");
+        String param = ParameterParserUtil.parseStringParam(rs.getString("param"), "");
+        String value = ParameterParserUtil.parseStringParam(rs.getString("value"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
+
+        //TODO remove when working in test with mockito and autowired
+        factoryParameter = new FactoryParameter();
+        return factoryParameter.create(system, param, value, description);
     }
 
     @Override
@@ -539,7 +580,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {
@@ -596,5 +637,115 @@ public class ParameterDAO implements IParameterDAO {
         answer.setResultMessage(msg);
         answer.setDataList(distinctValues);
         return answer;
+    }
+
+    @Override
+    public AnswerItem readByKey(String system, String param) {
+        AnswerItem<Parameter> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+            // Prepare and execute query
+            preStat.setString(1, system);
+            preStat.setString(2, param);
+            ResultSet resultSet = preStat.executeQuery();
+
+            while (resultSet.next()) {
+                ans.setItem(loadFromResultSet(resultSet));
+            }
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "SELECT");
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer create(Parameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getSystem());
+            preStat.setString(2, object.getParam());
+            preStat.setString(3, object.getValue());
+            preStat.setString(4, object.getDescription());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create robot capability: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer update(Parameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getValue());
+            preStat.setString(2, object.getSystem());
+            preStat.setString(3, object.getParam());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to update parameter: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer delete(Parameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getSystem());
+            preStat.setString(2, object.getParam());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete parameter: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 }

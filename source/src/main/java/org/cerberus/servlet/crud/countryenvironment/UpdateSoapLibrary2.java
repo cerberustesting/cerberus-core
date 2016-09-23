@@ -92,7 +92,7 @@ public class UpdateSoapLibrary2 extends HttpServlet {
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "SoapLibrary ID (name) is missing."));
-            ans.setResultMessage(msg);
+            finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
