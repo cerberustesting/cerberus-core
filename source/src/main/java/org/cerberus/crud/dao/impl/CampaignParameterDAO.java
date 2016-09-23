@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
+import org.cerberus.crud.entity.Campaign;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.MessageEvent;
@@ -39,6 +40,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -60,6 +62,40 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     private final String OBJECT_NAME = "CampaignParameter";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
+
+    /**
+     * Declare SQL queries used by this {@link CampaignParameter}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Get list of {@link CampaignParameter} associated with the given
+         * {@link Campaign}'s name
+         */
+        String READ_BY_KEY = "SELECT * FROM `campaignparameter` WHERE `campaigncontentID` = ?";
+
+        /**
+         * Create a new {@link CampaignParameter}
+         */
+        String CREATE = "INSERT INTO `campaignparameter` (`campaign`,`Parameter`,`Value`) VALUES (?, ?, ?)";
+
+        /**
+         * Update an existing {@link CampaignParameter}
+         */
+        String UPDATE = "UPDATE `campaignparameter` SET `value` = ? WHERE `campaign` = ? AND `parameter` = ?";
+
+        /**
+         * Remove an existing {@link CampaignParameter}
+         */
+        String DELETE = "DELETE FROM `campaignparameter` WHERE `campaign` = ? AND `parameter` = ? AND `value` = ?";
+
+        /**
+         * Remove all {@link CampaignParameter} of a {@link Campaign}
+         */
+        String DELETE_BY_CAMPAIGN = "DELETE FROM `campaignparameter` WHERE `campaign` = ?";
+    }
 
     @Override
     public List<CampaignParameter> findAll() throws CerberusException {
@@ -497,7 +533,73 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         response.setDataList(campaignParameterList);
         return response;
     }
-    
+
+    @Override
+    public AnswerList readByCampaign(String campaign) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg;
+        List<CampaignParameter> result = new ArrayList<CampaignParameter>();
+        ;
+
+        final String query = "SELECT * FROM campaignparameter  WHERE campaign = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                    if (result.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    result.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        answer.setTotalRows(result.size());
+        answer.setDataList(result);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
     private CampaignParameter loadFromResultSet(ResultSet rs) throws SQLException {
         Integer campaignparameterID = ParameterParserUtil.parseIntegerParam(rs.getString("campaignparameterID"), -1);
         String campaign = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
@@ -505,5 +607,112 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
         String value = ParameterParserUtil.parseStringParam(rs.getString("Value"), "");
 
         return factoryCampaignParameter.create(campaignparameterID, campaign, parameter, value);
+    }
+
+    @Override
+    public Answer deleteByCampaign(String key) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE_BY_CAMPAIGN)) {
+            // Prepare and execute query
+            preStat.setString(1, key);
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE_BY_CAMPAIGN");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete campaign parameter by campaign: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+
+    @Override
+    public Answer delete(CampaignParameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getCampaign());
+            preStat.setString(2, object.getParameter());
+            preStat.setString(3, object.getValue());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete campaign parameter: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer update(CampaignParameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getValue());
+            preStat.setString(2, object.getCampaign());
+            preStat.setString(3, object.getParameter());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create campaign parameter: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer create(CampaignParameter object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getCampaign());
+            preStat.setString(2, object.getParameter());
+            preStat.setString(3, object.getValue());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create campaign content: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 }

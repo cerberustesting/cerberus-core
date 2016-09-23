@@ -19,13 +19,18 @@ package org.cerberus.servlet.crud.testcampaign;
 
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -57,6 +62,7 @@ public class DeleteCampaign2 extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
+        Answer finalAnswer = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -66,20 +72,49 @@ public class DeleteCampaign2 extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        int id = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("key"), 0, charset);
+        String key = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("key"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
-        ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+        if (StringUtil.isNullOrEmpty(key)) {
+            /**
+             * Missing key
+             */
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "Campaign name is missing!"));
+            finalAnswer.setResultMessage(msg);
+        } else {
+            ICampaignService campaignService = appContext.getBean(ICampaignService.class);
 
-        Campaign camp = campaignService.findCampaignByKey(id);
-        Answer finalAnswer = campaignService.delete(camp);
+            AnswerItem resp = campaignService.readByKey(key);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && resp.getItem() != null) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "Campaign can not be found"));
+                finalAnswer.setResultMessage(msg);
+            } else {
+                Campaign camp = (Campaign)resp.getItem();
+                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
+                finalAnswer = campaignContentService.deleteByCampaign(camp.getCampaign());
+                if(finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    finalAnswer = campaignService.delete(camp);
 
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + id, request);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/DeleteCampaign", "DELETE", "Delete Campaign : " + key, request);
 
+                    }
+                }
+            }
+        }
 
         /**
          * Formating and returning the json result.

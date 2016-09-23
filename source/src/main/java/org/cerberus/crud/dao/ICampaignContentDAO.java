@@ -51,11 +51,15 @@ public interface ICampaignContentDAO {
     
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    AnswerList readByCampaign(String campaign);
+
     AnswerItem<CampaignContent> readByKey(int key);
 
     Answer deleteByCampaign(String key);
 
     Answer delete(CampaignContent object);
+
+    Answer update(CampaignContent object);
 
     Answer create(CampaignContent object);
 }

@@ -17,9 +17,15 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
+import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.factory.IFactoryCampaign;
+import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.crud.factory.IFactoryCampaignParameter;
+import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.impl.LogEventService;
@@ -27,6 +33,9 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -58,6 +67,7 @@ public class CreateCampaign extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         Answer ans = new Answer();
+        Answer finalAnswer = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
@@ -70,18 +80,61 @@ public class CreateCampaign extends HttpServlet {
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Campaign"), null, charset);
         String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
+        String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
 
         ICampaignService campaignService = appContext.getBean(ICampaignService.class);
         IFactoryCampaign factoryCampaign = appContext.getBean(IFactoryCampaign.class);
 
         Campaign camp = factoryCampaign.create(0, name, desc);
-        Answer finalAnswer = campaignService.create(camp);
+        finalAnswer = campaignService.create(camp);
+        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            /**
+             * Adding Log entry.
+             */
+            ILogEventService logEventService = appContext.getBean(LogEventService.class);
+            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
 
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/CreateSqlLibrary", "CREATE", "Create SOAPLibrary : " + name, request);
+            if (battery != null) {
+                JSONArray batteries = new JSONArray(battery);
+                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
+                IFactoryCampaignContent factoryCampaignContent = appContext.getBean(IFactoryCampaignContent.class);
+                finalAnswer = campaignContentService.deleteByCampaign(name);
+                int i = 0;
+                while (i < batteries.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    JSONArray bat = batteries.getJSONArray(i);
+                    CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
+                    finalAnswer = campaignContentService.create(co);
+                    i++;
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
+                    }
+                }
+            }
+
+            if (parameter != null) {
+                JSONArray parameters = new JSONArray(parameter);
+                ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
+                IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
+                finalAnswer = campaignParameterService.deleteByCampaign(name);
+                int i = 0;
+                while (i < parameters.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    JSONArray bat = parameters.getJSONArray(i);
+                    CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
+                    finalAnswer = campaignParameterService.create(co);
+                    i++;
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
+                    }
+                }
+            }
+        }
 
 
         /**

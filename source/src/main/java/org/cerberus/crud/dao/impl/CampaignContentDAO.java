@@ -85,7 +85,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         /**
          * Update an existing {@link CampaignContent}
          */
-        String UPDATE = "UPDATE `campaigncontent` SET `campaign` = ? AND `testbattery` = ? WHERE `campaigncontentID` = ?";
+        String UPDATE = "UPDATE `campaigncontent` SET  WHERE `campaign` = ? AND `testbattery` = ?";
 
         /**
          * Remove an existing {@link CampaignContent}
@@ -579,6 +579,72 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     }
 
     @Override
+    public AnswerList readByCampaign(String campaign) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg;
+        List<CampaignContent> result = new ArrayList<CampaignContent>();
+        ;
+
+        final String query = "SELECT * FROM campaigncontent WHERE campaign = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                    if (result.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    result.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        answer.setTotalRows(result.size());
+        answer.setDataList(result);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
     public AnswerItem<CampaignContent> readByKey(int key) {
         AnswerItem<CampaignContent> ans = new AnswerItem<>();
         MessageEvent msg = null;
@@ -649,6 +715,32 @@ public class CampaignContentDAO implements ICampaignContentDAO {
                     .resolveDescription("OPERATION", "DELETE");
         } catch (Exception e) {
             LOG.warn("Unable to delete campaign content: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer update(CampaignContent object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getCampaign());
+            preStat.setString(2, object.getTestbattery());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create campaign content: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {

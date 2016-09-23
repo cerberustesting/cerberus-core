@@ -20,9 +20,12 @@
 package org.cerberus.crud.service;
 
 import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
 
 /**
  *
@@ -32,11 +35,26 @@ public interface ICampaignContentService {
     
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
+    AnswerList readByCampaign(String campaign);
+
     AnswerItem<CampaignContent> findCampaignContentByKey(int key);
 
     Answer deleteByCampaign (String key);
 
     Answer delete (CampaignContent object);
 
+    Answer update (CampaignContent object);
+
     Answer create (CampaignContent object);
+
+    Answer createList(List<CampaignContent> objectList);
+
+    Answer deleteList(List<CampaignContent> objectList);
+
+    Answer compareListAndUpdateInsertDeleteElements(String campaign, List<CampaignContent> newList);
+
+    CampaignContent convert(AnswerItem answerItem) throws CerberusException;
+
+    List<CampaignContent> convert(AnswerList answerList) throws CerberusException;
+
 }

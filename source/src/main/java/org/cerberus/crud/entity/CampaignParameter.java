@@ -113,4 +113,24 @@ public class CampaignParameter implements Serializable {
         return "org.cerberus.crud.entity.CampaignParameter[ campaignparameterID=" + campaignparameterID + " ]";
     }
 
+    public boolean hasSameKey(CampaignParameter obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CampaignParameter other = (CampaignParameter) obj;
+        if ((this.parameter == null) ? (other.parameter != null) : !this.parameter.equals(other.parameter)) {
+            return false;
+        }
+        if ((this.campaign == null) ? (other.campaign != null) : !this.campaign.equals(other.campaign)) {
+            return false;
+        }
+        if ((this.value == null) ? (other.value != null) : !this.value.equals(other.value)) {
+            return false;
+        }
+        return true;
+    }
+
 }
