@@ -39,6 +39,8 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TYPE_DIFFERENT(52, "", "The type of environment is defined as Comparison but not the test case."),
     VALIDATION_FAILED_RANGE_DIFFERENT(53, "", "The Build/Revision of test case isn't in the range of build."),
     VALIDATION_FAILED_RANGE_WRONGFORMAT(54, "", "The Build/Revision of test case isn't formatted as expected."),
+    VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED(54, "", "The Build/Revision of environment isn't defined. To check that the testcase can be executed in a specific Build/Revision range, Build/Revision of the environment must be set from BuildRevisionParameter page."),
+    VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_BADLYDEFINED(54, "", "The Build/Revision of environment isn't properly defined. To check that the testcase can be executed in a specific Build/Revision range, Build/Revision of the environment must be set from BuildRevisionParameter page."),
     VALIDATION_FAILED_TARGET_DIFFERENT(55, "", "The target Build/Revision of test case isn't in the range of build."),
     VALIDATION_FAILED_TARGET_WRONGFORMAT(56, "", "The target Build/Revision of test case isn't formatted as expected."),
     VALIDATION_FAILED_RUNQA_NOTDEFINED(57, "", "The test case isn't defined to run in QA environment. You try to run it on '%ENV%' that belong to the QA environment group."),
