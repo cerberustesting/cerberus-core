@@ -615,7 +615,8 @@ function editTestDataLibClick(testDataLibID) {
         $('#editTestDataLibModal #testdatalibid').prop("value", testDataLibID);
         $('#editTestDataLibModal #name').prop("value", obj.name);
 
-        $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
+//        $('#editTestDataLibModal #type option[value="' + obj.type + '"]').attr("selected", "selected");
+        $('#editTestDataLibModal #type').prop("value", obj.type);
         $('#editTestDataLibModal #system').find('option[value="' + obj.system + '"]').prop("selected", true);
         $('#editTestDataLibModal #environment').find('option[value="' + obj.environment + '"]').prop("selected", true);
         $('#editTestDataLibModal #country').find('option[value="' + obj.country + '"]').prop("selected", true);
