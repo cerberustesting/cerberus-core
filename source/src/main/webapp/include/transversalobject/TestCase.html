@@ -23,11 +23,15 @@
                         <div class="row">
                             <div class="form-group form-group-sm col-xs-4">
                                 <label class="control-label" for="test" name="testField">Test</label>
-                                <input type="text" class="form-control input-sm" name="test" id="test" aria-describedby="basic-addon1" readonly>
+                                <select type="text" class="form-control input-sm" name="test" id="test"></select>
+                                        <input type="text" class="form-control input-sm" name="originalTest" id="originalTest" style="display:none;"/>
+                                        <input type="text" class="form-control input-sm" name="originalTestCase" id="originalTestCase" style="display:none;"/>
+<!--                            <input id="originalTest" style="display:none;">
+                            <input id="originalTestCase" style="display:none;">-->
                             </div>
                             <div class="form-group form-group-sm col-xs-3">
                                 <label class="control-label" for="testCase" name="testCaseField">Test Case</label>
-                                <input type="text" class="form-control input-sm" name="testCase" id="testCase" readonly>
+                                <input type="text" class="form-control input-sm" name="testCase" id="testCase">
                             </div>
                             <div class="form-group form-group-sm col-xs-3">
                                 <label for="status" name="statusField">Status</label>
@@ -126,7 +130,6 @@
                                 <div class="row">
                                     <div class="col-xs-12">
                                         <label for="countryList" id="countryListLabel" name="countryListLabel">Country List</label>
-                                        <div id="countryList" name="countryList" style="margin-top: 5px;margin-bottom: 25px;"></div>
                                         <table class="table table-bordered table-hover nomarginbottom" id="CountryTable" style="margin-top: 5px;margin-bottom: 25px;">
                                             <thead>
                                             </thead>
@@ -193,13 +196,11 @@
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsEdit-6">
                                 <div style="max-height:500px; overflow: auto">
-                                <input id="test" style="display:none;">
-                                <input id="testCase" style="display:none;">
-                                <div class="form-group" id="labelList">
-                                    <div id="selectLabel" class="list-group">
+                                    <div class="form-group" id="labelList">
+                                        <div id="selectLabel" class="list-group">
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             </div>
                             <div class="center tab-pane fade marginTop25" id="tabsedit-7">
                                 <div id="listPanelTraca">
@@ -250,6 +251,8 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
                 <button type="button" id="editTestCaseButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="duplicateTestCaseButton" class="btn btn-primary">Duplicate</button>
+                <button type="button" id="addTestCaseButton" class="btn btn-primary">Create</button>
             </div>
         </div>
     </div>

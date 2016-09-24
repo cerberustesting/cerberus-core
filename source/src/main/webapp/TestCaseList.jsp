@@ -20,9 +20,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/transversalobject/editTestCase.html"%>
-            <%@ include file="include/testcaselist/addTestCase.html"%>
-            <%@ include file="include/testcaselist/duplicateTestCase.html"%>
+            <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/testcaselist/massActionTestCase.html"%>
             <%@ include file="include/testcasescript/manageLabel.html"%>
 

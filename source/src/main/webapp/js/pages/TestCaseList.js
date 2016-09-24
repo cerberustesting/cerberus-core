@@ -42,13 +42,10 @@ function initPage() {
     displayInvariantList("activeQA", "TCACTIVE", false);
     displayInvariantList("activeUAT", "TCACTIVE", false);
     displayInvariantList("activeProd", "TCACTIVE", false);
-    appendApplicationList();
     appendProjectList();
-    appendBuildRevList(getUser().defaultSystem);
 
     var selectTest = GetURLParameter('test');
     loadTestFilters(selectTest);
-    loadTestComboAddTestCase(selectTest);
 
     tinymce.init({
         selector: "textarea"
@@ -190,12 +187,13 @@ function renderOptionsForTestCaseList(data) {
             //PREPARE MASS ACTION
             //$("#showHideColumnsButton").parent().after(contentToAddAfter);
 
-            $('#testCaseList #createTestCaseButton').click(data, addEntryClick);
+            $('#testCaseList #createTestCaseButton').click(data, addTestCaseClick);
             //PREPARE MASS ACTION
             //$('#testCaseList #createBrpMassButton').click(massActionClick);
         }
     }
 }
+
 /********************************************************
  //DELETE TESTCASE 
  /********************************************************
@@ -242,261 +240,62 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-/********************************************************
- //CREATE TESTCASE 
- /********************************************************/
-
-/*
- * Function called on click on create button
- * The creation Modal is displayed with test selected, and some default values from user preferences
- * @returns {undefined}
+/** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
+ 
+ function selectAll() {
+ if ($(this).prop("checked"))
+ $("[data-line='select']").prop("checked", true);
+ else
+ $("[data-line='select']").removeProp("checked");
+ }
+ 
+ function massActionModalSaveHandler() {
+ clearResponseMessage($('#massActionBrpModal'));
+ 
+ var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
+ var formList = $('#massActionForm');
+ var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+ 
+ showLoaderInModal('#massActionBrpModal');
+ 
+ var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
+ $.when(jqxhr).then(function (data) {
+ // unblock when remote call returns 
+ hideLoaderInModal('#massActionBrpModal');
+ if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+ var oTable = $("#buildrevisionparametersTable").dataTable();
+ oTable.fnDraw(true);
+ $('#massActionBrpModal').modal('hide');
+ showMessage(data);
+ } else {
+ showMessage(data, $('#massActionBrpModal'));
+ }
+ }).fail(handleErrorAjaxAfterTimeout);
+ }
+ 
+ function massActionModalCloseHandler() {
+ // reset form values
+ $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
+ // remove all errors on the form fields
+ $(this).find('div.has-error').removeClass("has-error");
+ // clear the response messages of the modal
+ clearResponseMessage($('#massActionBrpModal'));
+ }
+ 
+ function massActionClick() {
+ var doc = new Doc();
+ console.debug("Mass Action");
+ clearResponseMessageMainPage();
+ // When creating a new item, Define here the default value.
+ var formList = $('#massActionForm');
+ if (formList.serialize().indexOf("id-") === -1) {
+ var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+ showMessage(localMessage, null);
+ } else {
+ $('#massActionBrpModal').modal('show');
+ }
+ }
  */
-function addEntryClick() {
-    clearResponseMessageMainPage();
-    var pref = JSON.parse(localStorage.getItem("createTC"));
-    var form = $("#addEntryModalForm");
-
-    // Test by default comes from the URL (and the combo filter).
-    var test = GetURLParameter('test');
-    if (test !== "") {
-        $('#testAdd option[value="' + test + '"]').attr("selected", "selected");
-    }
-    // TestCase is taken from the last value in database +1. This is an auto sequence. 
-    feedTestCase(null, "addEntryModalForm");
-
-    // In Add TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#addEntryModalForm select[name="test"]').change(function () {
-        feedTestCase(null, "addEntryModalForm");
-    });
-
-    // By default we desactivate the execution of the testcase in production environment.
-    $('#addEntryModalForm #actProd option[value="N"]').attr("selected", "selected");
-
-    // The rest of the field come from the LocalStorage.
-    if (pref !== null) {
-        form.find("#origin").val(pref.origin);
-        form.find("#refOrigin").val(pref.refOrigin);
-        form.find(".countrycb").each(function () {
-            if (pref[$(this).prop("name")] !== "off") {
-                $(this).prop("checked", true);
-            } else {
-                $(this).prop("checked", false);
-            }
-        });
-        form.find("#project").val(pref.project);
-        form.find("#ticket").val(pref.ticket);
-        form.find("#function").val(pref.function);
-        form.find("#application").val(pref.application);
-        form.find("#status").val(pref.status);
-        form.find("#group").val(pref.group);
-        form.find("#priority").val(pref.priority);
-        form.find("#bugId").val(pref.bugId);
-        form.find("#activeQA").val(pref.activeQA);
-        form.find("#activeUAT").val(pref.activeUAT);
-        form.find("#activeProd").val(pref.activeProd);
-    }
-
-    $('#addEntryModal').modal('show');
-}
-
-
-/* 
- * By clicking on save button, 
- * @returns {undefined}
- */
-function addEntryModalSaveHandler() {
-    clearResponseMessage($('#addEntryModal'));
-    var formAdd = $("#addEntryModal #addEntryModalForm");
-
-    var nameElement = formAdd.find("#test");
-    var nameElementEmpty = nameElement.prop("value") === '';
-    if (nameElementEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the test!");
-        nameElement.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else {
-        nameElement.parents("div.form-group").removeClass("has-error");
-    }
-
-    var testCase = formAdd.find("#testCase");
-    var testCaseEmpty = testCase.prop("value") === '';
-    if (testCaseEmpty) {
-        var localMessage = new Message("danger", "Please specify the name of the testCase!");
-        testCase.parents("div.form-group").addClass("has-error");
-        showMessage(localMessage, $('#addEntryModal'));
-    } else {
-        testCase.parents("div.form-group").removeClass("has-error");
-    }
-
-    // verif if all mendatory fields are not empty
-    if (nameElementEmpty || testCaseEmpty)
-        return;
-
-    tinyMCE.triggerSave();
-    localStorage.setItem("createTC", JSON.stringify(convertSerialToJSONObject(formAdd.serialize())));
-    showLoaderInModal('#addEntryModal');
-    createEntry("CreateTestCase2", formAdd, "#testCaseTable");
-}
-
-/********************************************************
- //GENERATE TESTCASE NUMBER (CREATE AND DUPLICATE)
- /********************************************************/
-function feedTestCase(test, modalForm) {
-// Predefine the testcase value.
-    if ((test === null) || (test === undefined))
-        test = $('#' + modalForm + ' select[name="test"]').val();
-    $.ajax({
-        url: "ReadTestCase",
-        method: "GET",
-        data: {test: encodeURIComponent(test), getMaxTC: true},
-        dataType: "json",
-        success: function (data) {
-            var testCaseNumber = data.maxTestCase + 1;
-            var tcnumber;
-
-            if (testCaseNumber < 10) {
-                tcnumber = "000" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 10 && testCaseNumber < 99) {
-                tcnumber = "00" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 100 && testCaseNumber < 999) {
-                tcnumber = "0" + testCaseNumber.toString() + "A";
-            } else if (testCaseNumber >= 1000) {
-                tcnumber = testCaseNumber.toString() + "A";
-            } else {
-                tcnumber = "0001A";
-            }
-
-            $('#' + modalForm + ' [name="testCase"]').val(tcnumber);
-        },
-        error: showUnexpectedError
-    });
-
-}
-
-/********************************************************
- //DUPLICATE TESTCASE 
- /********************************************************/
-
-/**
- * Feed Duplicate Entry Formulary
- * @param {type} test
- * @param {type} testCase
- * @returns {undefined}
- */
-function duplicateEntryClick(test, testCase) {
-    feedTestCaseModal(test, testCase, "duplicateEntryModal");
-    feedTestCase(test, "duplicateEntryModalForm");
-
-    // In Duplicate TestCase form, if we change the test, we get the latest testcase from that test.
-    $('#duplicateEntryModalForm select[name="test"]').change(function () {
-        feedTestCase(null, "duplicateEntryModalForm");
-    });
-}
-/**
- * On click on duplicate button event, submit formulary
- * @returns {undefined}
- */
-function duplicateEntryModalSaveHandler() {
-    clearResponseMessage($('#duplicateEntryModal'));
-
-    var formEdit = $('#duplicateEntryModalForm');
-
-    showLoaderInModal('#duplicateEntryModal');
-    duplicateEntry("DuplicateTestCase", formEdit, "#testCaseTable");
-}
-
-/********************************************************
- //TRANSVERSAL >> FEED COMBO FIELDS
- /********************************************************/
-function appendBuildRevList(system, editData) {
-
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
-    $.when(jqxhr).then(function (data) {
-        var fromBuild = $("[name=fromSprint]");
-        var toBuild = $("[name=toSprint]");
-        var targetBuild = $("[name=targetSprint]");
-
-        fromBuild.empty();
-        toBuild.empty();
-        targetBuild.empty();
-
-        fromBuild.append($('<option></option>').text("-----").val(""));
-        toBuild.append($('<option></option>').text("-----").val(""));
-        targetBuild.append($('<option></option>').text("-----").val(""));
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            fromBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-        }
-
-        if (editData !== undefined) {
-            var formEdit = $('#editEntryModal');
-
-            formEdit.find("#fromSprint").prop("value", editData.fromBuild);
-            formEdit.find("#toSprint").prop("value", editData.toBuild);
-            formEdit.find("#targetSprint").prop("value", editData.targetBuild);
-        }
-
-    });
-
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
-    $.when(jqxhr).then(function (data) {
-        var fromRev = $("[name=fromRev]");
-        var toRev = $("[name=toRev]");
-        var targetRev = $("[name=targetRev]");
-
-        fromRev.empty();
-        toRev.empty();
-        targetRev.empty();
-
-        fromRev.append($('<option></option>').text("-----").val(""));
-        toRev.append($('<option></option>').text("-----").val(""));
-        targetRev.append($('<option></option>').text("-----").val(""));
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            fromRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-        }
-
-        if (editData !== undefined) {
-            var formEdit = $('#editEntryModal');
-
-            formEdit.find("[name=fromRev]").prop("value", editData.fromRev);
-            formEdit.find("[name=toRev]").prop("value", editData.toRev);
-            formEdit.find("[name=targetRev]").prop("value", editData.targetRev);
-        }
-    });
-}
-
-function appendApplicationList() {
-    var user = getUser();
-
-    var jqxhr = $.getJSON("ReadApplication", "system=" + encodeURIComponent(user.defaultSystem));
-    $.when(jqxhr).then(function (data) {
-        var applicationList = $("[name=application]");
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            applicationList.append($('<option></option>').text(data.contentTable[index].application).val(data.contentTable[index].application));
-        }
-    });
-}
-
-function appendProjectList() {
-    var jqxhr = $.getJSON("ReadProject");
-    $.when(jqxhr).then(function (data) {
-        var projectList = $("[name=project]");
-
-        projectList.append($('<option></option>').text("No project defined").val(""));
-        for (var index = 0; index < data.contentTable.length; index++) {
-            var idProject = data.contentTable[index].idProject;
-            var desc = data.contentTable[index].description;
-
-            projectList.append($('<option></option>').text(idProject + " " + desc).val(idProject));
-        }
-    });
-}
 
 function loadTestFilters(selectTest) {
     var jqxhr = $.get("ReadTest", "system=" + getUser().defaultSystem);
@@ -529,29 +328,6 @@ function loadTestFilters(selectTest) {
                     $('#selectTest').val(selectTest).trigger("change");
                 }
             }
-        } else {
-            showMessageMainPage(messageType, data.message);
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function loadTestComboAddTestCase(selectTest) {
-    var jqxhr = $.get("ReadTest");
-    $.when(jqxhr).then(function (data) {
-        var messageType = getAlertType(data.messageType);
-        if (messageType === "success") {
-            var index;
-            for (index = 0; index < data.contentTable.length; index++) {
-                //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
-                var encodedString = data.contentTable[index].test.replace(/\"/g, "%22");
-                var text = data.contentTable[index].test + ' - ' + data.contentTable[index].description;
-                var option = $('<option></option>').attr("value", encodedString).text(text);
-                $('select[name="test"]').append($('<option></option>').text(text).val(encodedString));
-            }
-            if (selectTest !== undefined) {
-                $('select[name="test"]').val(selectTest);
-            }
-
         } else {
             showMessageMainPage(messageType, data.message);
         }
@@ -627,64 +403,12 @@ function setCountry(checkbox) {
     }
 
 }
-/** IMPLEMENT MASS ACTION ON TESTCASELIST PAGE
- 
- function selectAll() {
- if ($(this).prop("checked"))
- $("[data-line='select']").prop("checked", true);
- else
- $("[data-line='select']").removeProp("checked");
- }
- 
- function massActionModalSaveHandler() {
- clearResponseMessage($('#massActionBrpModal'));
- 
- var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
- var formList = $('#massActionForm');
- var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
- 
- showLoaderInModal('#massActionBrpModal');
- 
- var jqxhr = $.post("UpdateBuildRevisionParameters", paramSerialized, "json");
- $.when(jqxhr).then(function (data) {
- // unblock when remote call returns 
- hideLoaderInModal('#massActionBrpModal');
- if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
- var oTable = $("#buildrevisionparametersTable").dataTable();
- oTable.fnDraw(true);
- $('#massActionBrpModal').modal('hide');
- showMessage(data);
- } else {
- showMessage(data, $('#massActionBrpModal'));
- }
- }).fail(handleErrorAjaxAfterTimeout);
- }
- 
- function massActionModalCloseHandler() {
- // reset form values
- $('#massActionBrpModal #massActionBrpModalForm')[0].reset();
- // remove all errors on the form fields
- $(this).find('div.has-error').removeClass("has-error");
- // clear the response messages of the modal
- clearResponseMessage($('#massActionBrpModal'));
- }
- 
- function massActionClick() {
- var doc = new Doc();
- console.debug("Mass Action");
- clearResponseMessageMainPage();
- // When creating a new item, Define here the default value.
- var formList = $('#massActionForm');
- if (formList.serialize().indexOf("id-") === -1) {
- var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
- showMessage(localMessage, null);
- } else {
- $('#massActionBrpModal').modal('show');
- }
- }
- * 
- *
- */
+
+function filterOnLabel(element) {
+    var newLabel = $(element).get(0).textContent;
+    var colIndex = $(element).parent().parent().get(0).cellIndex;
+    $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
+}
 
 function aoColumnsFunc(countries, tableId) {
     var doc = new Doc();
@@ -738,7 +462,7 @@ function aoColumnsFunc(countries, tableId) {
                                         class="deleteEntry btn btn-default btn-xs margin-right5" \n\
                                         name="deleteEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_delete") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
-                var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateEntryClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
+                var duplicateEntry = '<button id="duplicateEntry" onclick="duplicateTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
@@ -937,8 +661,3 @@ function aoColumnsFunc(countries, tableId) {
     return aoColumns;
 }
 
-function filterOnLabel(element) {
-    var newLabel = $(element).get(0).textContent;
-    var colIndex = $(element).parent().parent().get(0).cellIndex;
-    $("#testCaseTable").dataTable().fnFilter(newLabel, colIndex);
-}

@@ -67,6 +67,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateTestCase2", urlPatterns = {"/UpdateTestCase2"})
 public class UpdateTestCase2 extends HttpServlet {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase2.class);
+    
     private ITestCaseLabelService testCaseLabelService;
     private IFactoryTestCaseLabel testCaseLabelFactory;
     private ITestCaseCountryService testCaseCountryService;
@@ -103,10 +105,6 @@ public class UpdateTestCase2 extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
-        String active = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("active"), "");
-        String tcDateCrea = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("tcDateCrea"), "");
-        String country = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("country"), "");
-        String state = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("state"), "");
 
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -114,12 +112,12 @@ public class UpdateTestCase2 extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(test) || StringUtil.isNullOrEmpty(testCase)) {
+        if ((StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(testCase))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "mendatory fields are missing."));
-            ans.setResultMessage(msg);
+                    .replace("%REASON%", "mandatory fields (test or testcase) are missing."));
+            finalAnswer.setResultMessage(msg);
         } else {
 
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -139,7 +137,7 @@ public class UpdateTestCase2 extends HttpServlet {
                 msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                         .replace("%OPERATION%", "Update")
                         .replace("%REASON%", "TestCase does not exist."));
-                ans.setResultMessage(msg);
+                finalAnswer.setResultMessage(msg);
 
             } else /**
              * The service was able to perform the query and confirm the object
@@ -151,14 +149,14 @@ public class UpdateTestCase2 extends HttpServlet {
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
                             .replace("%REASON%", "Not enought privilege to update the testcase. You mut belong to Test Privilege."));
-                    ans.setResultMessage(msg);
+                    finalAnswer.setResultMessage(msg);
 
                 } else if ((tc.getStatus().equalsIgnoreCase("WORKING")) && !(request.isUserInRole("TestAdmin"))) { // If Test Case is WORKING we need TestAdmin priviliges.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
                             .replace("%REASON%", "Not enought privilege to update the testcase. The test case is in WORKING status and needs TestAdmin privilige to be updated"));
-                    ans.setResultMessage(msg);
+                    finalAnswer.setResultMessage(msg);
 
                 } else {
                     tc = getTestCaseFromRequest(request, tc);
