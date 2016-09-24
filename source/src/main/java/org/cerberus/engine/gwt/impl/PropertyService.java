@@ -389,6 +389,7 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
+        stringToDecode = stringToDecode.replace("%SYS_TESTCASE%", tCExecution.getTestCase());
         stringToDecode = stringToDecode.replace("%SYS_SSIP%", tCExecution.getSeleniumIP());
         stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
