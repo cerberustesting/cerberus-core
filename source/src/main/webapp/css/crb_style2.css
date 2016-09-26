@@ -795,8 +795,10 @@ table.dataTable thead th {
     clear: both;
 }
 
-.popover{
+.editable-checklist{
     max-height: 350px;
+    width: 120%;
+    max-width: 500px;
     overflow: auto;
 }
 

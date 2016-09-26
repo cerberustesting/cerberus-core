@@ -46,19 +46,11 @@ function initPage() {
     appendProjectList();
     appendBuildRevList(getUser().defaultSystem);
 
-    var selectTest = GetURLParameter('test');
-    loadTestFilters(selectTest);
-    loadTestComboAddTestCase(selectTest);
-
     tinymce.init({
         selector: "textarea"
     });
 
-    if (isEmptyorALL(selectTest)) {
-        loadTable(selectTest, 1);
-    } else {
-        loadTable(selectTest, 2);
-    }
+    loadTable();
 
     // handle the click for specific action buttons
     $("#addEntryButton").click(addEntryModalSaveHandler);
@@ -137,38 +129,32 @@ function displayPageLabel(doc) {
 
 function loadTable(selectTest, sortColumn) {
 
-    if (isEmpty(selectTest)) {
-        selectTest = $("#selectTest").val();
-    }
-
-    // We add the Browser history.
-    var CallParam = '?';
-    if (!isEmptyorALL(selectTest))
-        CallParam += 'test=' + encodeURIComponent(selectTest);
-    InsertURLInHistory('TestCaseList.jsp' + CallParam);
-
     //clear the old report content before reloading it
     $("#testCaseList").empty();
     $("#testCaseList").html('<table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable">\n\
                                             </table><div class="marginBottom20"></div>');
 
-    var contentUrl = "ReadTestCase?system=" + getUser().defaultSystem;
-    if (!isEmptyorALL(selectTest)) {
-        contentUrl += "&test=" + encodeURIComponent(selectTest);
-    }
+    var contentUrl = "ReadTestCase";
 
     //configure and create the dataTable
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
 
     $.when(jqxhr).then(function (data) {
+           sortColumn = 2;
 
-        if (sortColumn === undefined)
-            sortColumn = 2;
-
-        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [sortColumn, 'asc']);
+        var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc']);
 
         var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
 
+        var app = GetURLParameter('application');
+        if (app !== "" && app !== null) {
+            filterOnColumn("testCaseTable", "application", app);
+        }
+
+        var test = GetURLParameter('test');
+        if (test !== "" && test !== null) {
+            filterOnColumn("testCaseTable", "test", test);
+        }
         //PREPARE MASS ACTION
         //$("#selectAll").click(selectAll);
 
@@ -723,7 +709,7 @@ function aoColumnsFunc(countries, tableId) {
                 var buttons = "";
 
                 var testCaseLink = '<button id="testCaseLink" class="btn btn-primary btn-inverse btn-xs margin-right5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick=window.location="./TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + "&TestCase=" + encodeURIComponent(obj["testCase"]) + '&Load=Load">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick="window.open(\'./TestCase.jsp?Test=' + encodeURIComponent(obj["test"]) + '&TestCase=' + encodeURIComponent(obj["testCase"]) + '&Load=Load\', \'_blank\')">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
                 var editEntry = '<button id="editEntry" onclick="editTestCaseClick(\'' + escapeHtml(obj["test"]) + '\',\'' + escapeHtml(obj["testCase"]) + '\');"\n\
@@ -743,7 +729,7 @@ function aoColumnsFunc(countries, tableId) {
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
                 var testCaseBetaLink = '<button id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + " (beta page)" + '" onclick=window.location="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + ' (beta page)" onclick="window.open(\'./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '\', \'_blank\')">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
                 var runTest = '<button id="runTest" class="btn btn-default btn-xs margin-right5"\n\
@@ -760,7 +746,6 @@ function aoColumnsFunc(countries, tableId) {
                 if (data.hasPermissionsDelete) {
                     buttons += deleteEntry;
                 }
-//                buttons += editLabel;
                 buttons += runTest;
                 buttons += testCaseLink;
                 buttons += testCaseBetaLink;

@@ -279,7 +279,7 @@ function aoColumnsFunc() {
     var aoColumns = [
         {"data": "Application", "bSortable": true, "sName": "Application", "title": displayDocLink(doc.application.Application),
             "mRender": function (data, type, oObj) {
-                var href = "TestPerApplication.jsp?Application=" + data;
+                var href = "TestCaseList.jsp?application=" + data;
 
                 return "<a href='" + href + "'>" + data + "</a>";
             }

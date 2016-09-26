@@ -28,24 +28,6 @@
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 
-            <div class="row">
-                <div class="col-lg-6" id="FiltersPanel">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <span class="glyphicon glyphicon-filter"></span>
-                            <label id="filters">Filters</label>
-                        </div>
-                        <div class="panel-body">
-                            <label for="selectTest" name="testField">Test :</label>
-                            <div class="form-inline">
-                                <select class="form-control" id="selectTest" style="width: 90%"></select>
-                                <button type="button" class="btn btn-default" name="btnLoad" id="btnLoad" onclick="loadTable()">Load</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <span class="glyphicon glyphicon-list"></span>

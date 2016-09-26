@@ -1920,7 +1920,6 @@
             <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCampaign.jsp</url-pattern>
             <url-pattern>/ViewProperty.jsp</url-pattern>
-            <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
