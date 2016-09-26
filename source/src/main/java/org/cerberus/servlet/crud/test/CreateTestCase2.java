@@ -21,9 +21,10 @@ package org.cerberus.servlet.crud.test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -31,24 +32,33 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.factory.IFactoryTestCaseCountry;
+import org.cerberus.crud.factory.IFactoryTestCaseLabel;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.crud.service.ITestCaseStepActionService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.cerberus.util.servlet.ServletUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
@@ -62,6 +72,18 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "CreateTestCase2", urlPatterns = {"/CreateTestCase2"})
 public class CreateTestCase2 extends HttpServlet {
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateTestCase2.class);
+
+    private ITestCaseLabelService testCaseLabelService;
+    private IFactoryTestCaseLabel testCaseLabelFactory;
+    private ITestCaseCountryService testCaseCountryService;
+    private IFactoryTestCaseCountry testCaseCountryFactory;
+    private ITestCaseService testCaseService;
+    private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
+    private ITestCaseStepService testCaseStepService;
+    private ITestCaseStepActionService testCaseStepActionService;
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -91,27 +113,40 @@ public class CreateTestCase2 extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String testcase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String originalTest = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTest"), "");
+        String originalTestCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("originalTestCase"), "");
 
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
         /**
          * Checking all constrains before calling the services.
          */
         if (StringUtil.isNullOrEmpty(test) && StringUtil.isNullOrEmpty(testcase)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Deploy Type")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Test Case")
                     .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Deploy Type name is missing!"));
-            ans.setResultMessage(msg);
+                    .replace("%REASON%", "mandatory fields (test or testcase) are missing."));
+            finalAnswer.setResultMessage(msg);
+
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+            testCaseService = appContext.getBean(ITestCaseService.class);
+            testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
+            testCaseLabelFactory = appContext.getBean(IFactoryTestCaseLabel.class);
+            testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+            testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
+            testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
+            testCaseStepService = appContext.getBean(ITestCaseStepService.class);
+            testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
+            testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
 
-            TestCase testCaseData = getInfo(request);
+            TestCase testCaseData = getTestCaseFromRequest(request);
             ans = testCaseService.create(testCaseData);
-
-            getCountryList(testCaseData, request);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**
@@ -119,14 +154,81 @@ public class CreateTestCase2 extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createPrivateCalls("/CreateTestCase", "CREATE", "Create TestCase : ['" + testcase + "']", request);
+
+                // Update labels
+                if (request.getParameter("labelList") != null) {
+                    JSONArray objLabelArray = new JSONArray(request.getParameter("labelList"));
+                    List<TestCaseLabel> labelList = new ArrayList();
+                    labelList = getLabelListFromRequest(request, appContext, test, testcase, objLabelArray);
+
+                    // Update the Database with the new list.
+                    ans = testCaseLabelService.compareListAndUpdateInsertDeleteElements(test, testcase, labelList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                }
+
+                // Update Countries
+                if (request.getParameter("countryList") != null) {
+                    JSONArray objCountryArray = new JSONArray(request.getParameter("countryList"));
+                    List<TestCaseCountry> tccList = new ArrayList();
+                    tccList = getCountryListFromRequest(request, appContext, test, testcase, objCountryArray);
+
+                    // Update the Database with the new list.
+                    ans = testCaseCountryService.compareListAndUpdateInsertDeleteElements(test, testcase, tccList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+
+                    // Duplicate other objects.
+                    List<TestCaseCountryProperties> tccpList = new ArrayList();
+                    List<TestCaseCountryProperties> newTccpList = new ArrayList();
+                    if (!tccList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        tccpList = testCaseCountryPropertiesService.findListOfPropertyPerTestTestCase(originalTest, originalTestCase);
+                        //Build a new list with the countries that exist for the testcase.
+                        for (TestCaseCountryProperties curTccp : tccpList) {
+                            if (testCaseCountryService.exist(test, testcase, curTccp.getCountry())) {
+                                newTccpList.add(curTccp);
+                            }
+                        }
+                        if (!newTccpList.isEmpty()) {
+                            ans = testCaseCountryPropertiesService.duplicateList(newTccpList, test, testcase);
+                            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                        }
+                    }
+
+                }
+
+                List<TestCaseStep> tcsList = new ArrayList();
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    tcsList = testCaseStepService.getListOfSteps(originalTest, originalTestCase);
+                    if (!tcsList.isEmpty()) {
+                        ans = testCaseStepService.duplicateList(tcsList, test, testcase);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                }
+
+                List<TestCaseStepAction> tcsaList = new ArrayList();
+                if (!tcsList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    tcsaList = testCaseStepActionService.findTestCaseStepActionbyTestTestCase(originalTest, originalTestCase);
+                    if (!tcsaList.isEmpty()) {
+                        ans = testCaseStepActionService.duplicateList(tcsaList, test, testcase);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                }
+
+                if (!tcsList.isEmpty() && !tcsaList.isEmpty() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    List<TestCaseStepActionControl> tcsacList = testCaseStepActionControlService.findControlByTestTestCase(originalTest, originalTestCase);
+                    if (!tcsacList.isEmpty()) {
+                        ans = testCaseStepActionControlService.duplicateList(tcsacList, test, testcase);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
+                }
+
             }
         }
 
         /**
          * Formating and returning the json result.
          */
-        jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
-        jsonResponse.put("message", ans.getResultMessage().getDescription());
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
 
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
@@ -183,7 +285,7 @@ public class CreateTestCase2 extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private TestCase getInfo(HttpServletRequest request) throws CerberusException, JSONException {
+    private TestCase getTestCaseFromRequest(HttpServletRequest request) throws CerberusException, JSONException {
         TestCase tc = new TestCase();
 
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -229,27 +331,44 @@ public class CreateTestCase2 extends HttpServlet {
         return tc;
     }
 
-    private void getCountryList(TestCase tc, HttpServletRequest request) throws CerberusException, JSONException, UnsupportedEncodingException {
-        Map<String, String> countryList = new HashMap<String, String>();
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IInvariantService invariantService = appContext.getBean(InvariantService.class);
+    private List<TestCaseCountry> getCountryListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<TestCaseCountry> tdldList = new ArrayList();
 
-        ITestCaseCountryService testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-        AnswerList answer = invariantService.readByIdname("COUNTRY"); //TODO: handle if the response does not turn ok
-        for (Invariant country : (List<Invariant>) answer.getDataList()) {
-            countryList.put(country.getValue(), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter(country.getValue()), "off"));
-        }
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
 
-        for (Map.Entry<String, String> country : countryList.entrySet()) {
-            if (country.getValue().equals("on")) {
-                TestCaseCountry addCountry = new TestCaseCountry();
-                addCountry.setTest(tc.getTest());
-                addCountry.setTestCase(tc.getTestCase());
-                addCountry.setCountry(country.getKey());
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            String country = objectJson.getString("country");
+            // Parameter that needs to be secured --> We SECURE+DECODE them
+            // NONE
+            // Parameter that we cannot secure as we need the html --> We DECODE them
 
-                testCaseCountryService.insertTestCaseCountry(addCountry);
+            if (!delete) {
+                TestCaseCountry tcc = testCaseCountryFactory.create(test, testCase, country);
+                tdldList.add(tcc);
             }
         }
+        return tdldList;
+    }
+
+    private List<TestCaseLabel> getLabelListFromRequest(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<TestCaseLabel> labelList = new ArrayList();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            Integer labelId = objectJson.getInt("labelId");
+
+            Timestamp creationDate = new Timestamp(new Date().getTime());
+
+            if (!delete) {
+                labelList.add(testCaseLabelFactory.create(0, test, testCase, labelId, request.getRemoteUser(), creationDate, request.getRemoteUser(), creationDate, null));
+            }
+        }
+        return labelList;
     }
 
 }
