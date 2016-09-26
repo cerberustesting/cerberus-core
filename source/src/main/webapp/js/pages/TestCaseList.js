@@ -44,8 +44,8 @@ function initPage() {
     displayInvariantList("activeProd", "TCACTIVE", false);
     appendProjectList();
 
-    var selectTest = GetURLParameter('test');
-    loadTestFilters(selectTest);
+//    var selectTest = GetURLParameter('test');
+//    loadTestFilters(selectTest);
 
     tinymce.init({
         selector: "textarea"
