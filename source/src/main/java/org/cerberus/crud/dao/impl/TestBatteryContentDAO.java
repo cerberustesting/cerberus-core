@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import com.google.common.base.Strings;
 import org.cerberus.crud.entity.TestBatteryContent;
+
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author memiks
  */
 @Repository
@@ -578,7 +578,7 @@ public class TestBatteryContentDAO implements ITestBatteryContentDAO {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(campaign)) {
-                preStat.setString(i++, campaign );
+                preStat.setString(i++, campaign);
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
                 preStat.setString(i++, "%" + searchTerm + "%");

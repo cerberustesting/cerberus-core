@@ -28,24 +28,23 @@ import org.cerberus.util.answer.AnswerList;
 import java.util.List;
 
 /**
- *
  * @author cerberus
  */
 public interface ICampaignContentService {
-    
+
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     AnswerList readByCampaign(String campaign);
 
     AnswerItem<CampaignContent> findCampaignContentByKey(int key);
 
-    Answer deleteByCampaign (String key);
+    Answer deleteByCampaign(String key);
 
-    Answer delete (CampaignContent object);
+    Answer delete(CampaignContent object);
 
-    Answer update (CampaignContent object);
+    Answer update(CampaignContent object);
 
-    Answer create (CampaignContent object);
+    Answer create(CampaignContent object);
 
     Answer createList(List<CampaignContent> objectList);
 

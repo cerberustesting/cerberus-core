@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
@@ -46,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author memiks
  */
 @Repository
@@ -56,7 +56,7 @@ public class CampaignParameterDAO implements ICampaignParameterDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCampaignParameter factoryCampaignParameter;
-    
+
     private static final Logger LOG = Logger.getLogger(CampaignParameterDAO.class);
 
     private final String OBJECT_NAME = "CampaignParameter";

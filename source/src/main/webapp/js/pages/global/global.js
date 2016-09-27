@@ -387,7 +387,7 @@ function getSelectInvariant(idName, forceReload, notAsync) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var async = true;
-    if(notAsync){
+    if (notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -435,7 +435,7 @@ function getSelectTestBattery(forceReload, notAsync) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var async = true;
-    if(notAsync){
+    if (notAsync) {
         async = false;
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -1040,9 +1040,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
+                    'DataTables_' + settings.sInstance + '_' + location.pathname,
+                    JSON.stringify(data)
+                );
             } catch (e) {
             }
         };
@@ -1064,9 +1064,11 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 }
             }
         };
-        configs["colReorder"] = tableConfigurations.colreorder ? {fnReorderCallback: function () {
+        configs["colReorder"] = tableConfigurations.colreorder ? {
+            fnReorderCallback: function () {
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
-            }} : false;
+            }
+        } : false;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
@@ -1117,22 +1119,22 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+            .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
-                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
+            $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
-            updateUserPreferences();
-        })
-                );
+                updateUserPreferences();
+            })
+        );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
-                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
+            $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
-            location.reload();
-        })
-                );
+                location.reload();
+            })
+        );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1209,9 +1211,9 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
+                    'DataTables_' + settings.sInstance + '_' + location.pathname,
+                    JSON.stringify(data)
+                );
             } catch (e) {
             }
         };
@@ -1271,22 +1273,22 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         $("#saveTableConfigurationButton").remove();
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").click(function () {
+            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+            .addClass("btn btn-default").click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
         $("#showHideColumnsButton").parent().before(
-                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
+            $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
                 .click(function () {
                     updateUserPreferences();
                 })
-                );
+        );
         $("#saveTableConfigurationButton").before(
-                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
+            $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
                 .click(function () {
                     location.reload();
                 })
-                );
+        );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1378,7 +1380,7 @@ function clearIndividualFilter(tableId, columnNumber, clearGlobalSearch) {
  */
 function displayColumnSearch(tableId, contentUrl, oSettings) {
     //Hide filtered alert message displayed when filtered column
-    $("#filterAlertDiv").hide();
+    $("#" + tableId + "_wrapper #filterAlertDiv").hide();
     //Load the table
     var table = $("#" + tableId).dataTable().api();
 
@@ -1475,60 +1477,60 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             if (table.ajax.params()["bSearchable_" + colIndex]) {
                 //Then init the editable object
                 var select = $('<span class="label"></span>')
-                        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
-                                .attr('data-order', index))
-                        .editable({
-                            type: 'checklist',
-                            title: title,
-                            source: function () {
-                                //Check if URL already contains parameters
-                                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-                                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
-                                var result;
-                                $.ajax({
-                                    type: 'GET',
-                                    async: false,
-                                    url: url,
-                                    success: function (responseObject) {
-                                        if (responseObject.distinctValues !== undefined) {
-                                            result = responseObject.distinctValues;
-                                        } else {
-                                            //TODO : To remove when all servlet have method to find distinct values
-                                            //if undefined, display the distinct value displayed in the table
-                                            result = data;
-                                        }
-                                    },
-                                    error: function () {
+                    .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
+                        .attr('data-order', index))
+                    .editable({
+                        type: 'checklist',
+                        title: title,
+                        source: function () {
+                            //Check if URL already contains parameters
+                            var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
+                            var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+                            var result;
+                            $.ajax({
+                                type: 'GET',
+                                async: false,
+                                url: url,
+                                success: function (responseObject) {
+                                    if (responseObject.distinctValues !== undefined) {
+                                        result = responseObject.distinctValues;
+                                    } else {
                                         //TODO : To remove when all servlet have method to find distinct values
-                                        //if error, display the distinct value displayed in the table
+                                        //if undefined, display the distinct value displayed in the table
                                         result = data;
                                     }
-                                });
-                                return result;
-                            }
-                            ,
-                            onblur: 'cancel',
-                            mode: 'popup',
-                            placement: 'bottom',
-                            emptytext: display,
-                            send: 'always',
-                            validate: function (value) {
-                                if (value === null || value === '' || value.length === 0) {
-                                    $("#" + tableId).dataTable().fnFilter('', Math.max($("[name='filterColumnHeader']").index($(this).parent()), colIndex));
+                                },
+                                error: function () {
+                                    //TODO : To remove when all servlet have method to find distinct values
+                                    //if error, display the distinct value displayed in the table
+                                    result = data;
                                 }
-                            },
-                            display: function (value, sourceData) {
-                                var val;
-                                $(value).each(function (i) {
-                                    val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
-                                });
-                                $(this).html(val);
-                            },
-                            success: function (response, newValue) {
-                                console.log("index on the table : " + $("[name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
-                                $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("[name='filterColumnHeader']").index($(this).parent()), colIndex));
+                            });
+                            return result;
+                        }
+                        ,
+                        onblur: 'cancel',
+                        mode: 'popup',
+                        placement: 'bottom',
+                        emptytext: display,
+                        send: 'always',
+                        validate: function (value) {
+                            if (value === null || value === '' || value.length === 0) {
+                                $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
                             }
-                        });
+                        },
+                        display: function (value, sourceData) {
+                            var val;
+                            $(value).each(function (i) {
+                                val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
+                            });
+                            $(this).html(val);
+                        },
+                        success: function (response, newValue) {
+                            console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
+                            $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
+                        }
+                    });
             }
             columnVisibleIndex++;
         }
@@ -1584,24 +1586,24 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             }
         });
         $(this.parentNode).find("h3").after($('<div></div>').append($('<input>').attr('placeholder', 'Search...')
-                .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
-                .attr('data-type', 'custom').on('keyup', function () {
-            $('.editable-checklist > div').hide();
-            $('.editable-checklist > div:containsIN(' + $(this).val() + ')').show();
-        })));
+            .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
+            .attr('data-type', 'custom').on('keyup', function () {
+                $('#' + tableId + '_wrapper .editable-checklist > div').hide();
+                $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')').show();
+            })));
         //Add selectAll/unSelectAll button
         $("#" + tableId + "_wrapper [name='searchField']").after(
-                $('<button>').attr('class', 'glyphicon glyphicon-check')
+            $('<button>').attr('class', 'glyphicon glyphicon-check')
                 .attr('title', 'select all').attr('name', 'selectAll')
                 .attr('data-type', 'custom').on('click', function () {
-            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
-        }));
+                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
+            }));
         $("#" + tableId + "_wrapper [name='searchField']").after(
-                $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+            $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
                 .attr('title', 'unselect all').attr('name', 'unSelectAll')
                 .attr('data-type', 'custom').on('click', function () {
-            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
-        }));
+                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
+            }));
 
 
     });
@@ -1716,10 +1718,10 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
-                $this = this,
-                oTimerId = null,
-                sPreviousSearch = null,
-                anControl = $('input', _that.fnSettings().aanFeatures.f);
+            $this = this,
+            oTimerId = null,
+            sPreviousSearch = null,
+            anControl = $('input', _that.fnSettings().aanFeatures.f);
 
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
@@ -1811,11 +1813,9 @@ function GetURLParameter(sParam, defaultValue) {
     var sPageURL = window.location.search.substring(1);
     var sURLVariables = sPageURL.split('&');
 
-    for (var i = 0; i < sURLVariables.length; i++)
-    {
+    for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] === sParam)
-        {
+        if (sParameterName[0] === sParam) {
             return decodeURIComponent(sParameterName[1]);
         }
     }
@@ -1923,9 +1923,9 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 
 function escapeHtml(unsafe) {
     return unsafe
-            .replace(/"/g, "&quot;")
-            .replace(/\\/g, '\\\\')
-            .replace(/'/g, "\\'");
+        .replace(/"/g, "&quot;")
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'");
 }
 
 function generateExecutionLink(status, id) {

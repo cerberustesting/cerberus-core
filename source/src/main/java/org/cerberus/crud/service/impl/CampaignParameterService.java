@@ -38,12 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author cerberus
  */
 @Service
 public class CampaignParameterService implements ICampaignParameterService {
-    
+
     @Autowired
     ICampaignParameterDAO campaignParameterDAO;
 
@@ -160,9 +159,9 @@ public class CampaignParameterService implements ICampaignParameterService {
     @Override
     public CampaignParameter convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-        //if the service returns an OK message then we can get the item
-        return (CampaignParameter) answerItem.getItem();
-    }
+            //if the service returns an OK message then we can get the item
+            return (CampaignParameter) answerItem.getItem();
+        }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
@@ -174,5 +173,5 @@ public class CampaignParameterService implements ICampaignParameterService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
 }

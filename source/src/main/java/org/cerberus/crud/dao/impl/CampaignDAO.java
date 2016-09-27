@@ -20,6 +20,7 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -53,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author memiks
  */
 @Repository
@@ -609,7 +609,7 @@ public class CampaignDAO implements ICampaignDAO {
 
     @Override
     public Campaign loadFromResultSet(ResultSet rs) throws SQLException {
-        int campID = ParameterParserUtil.parseIntegerParam(rs.getString("campaignID"),0);
+        int campID = ParameterParserUtil.parseIntegerParam(rs.getString("campaignID"), 0);
         String camp = ParameterParserUtil.parseStringParam(rs.getString("campaign"), "");
         String desc = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
 

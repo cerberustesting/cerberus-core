@@ -98,10 +98,10 @@ public class DeleteCampaign2 extends HttpServlet {
                         .replace("%REASON%", "Campaign can not be found"));
                 finalAnswer.setResultMessage(msg);
             } else {
-                Campaign camp = (Campaign)resp.getItem();
+                Campaign camp = (Campaign) resp.getItem();
                 ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
                 finalAnswer = campaignContentService.deleteByCampaign(camp.getCampaign());
-                if(finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     finalAnswer = campaignService.delete(camp);
 
                     if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

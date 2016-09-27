@@ -71,8 +71,8 @@ public class AddCampaignContent2 extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(URLDecoder.decode(request.getParameter("Campaign"),"UTF-8"), null, charset);
-        String battery = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(URLDecoder.decode(request.getParameter("BatteryTest"),"UTF-8"), null, charset);
+        String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(URLDecoder.decode(request.getParameter("Campaign"), "UTF-8"), null, charset);
+        String battery = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(URLDecoder.decode(request.getParameter("BatteryTest"), "UTF-8"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);

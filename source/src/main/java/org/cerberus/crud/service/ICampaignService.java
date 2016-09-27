@@ -34,7 +34,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ICampaignService {
@@ -78,13 +77,12 @@ public interface ICampaignService {
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 
     /**
-     *
      * @param tag
      * @return
      * @throws CerberusException
      */
     List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException;
-    
+
     List<String> findCountries(String campaignName) throws CerberusException;
 
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);
@@ -93,12 +91,12 @@ public interface ICampaignService {
      * Get the {@link Campaign} List of the given {@link System} with the given
      * Criteria
      *
-     * @param system the {@link System} To look for
-     * @param startPosition the start index to look for
-     * @param length the number of {@link Campaign} to get
-     * @param columnName the Column name to sort
+     * @param system           the {@link System} To look for
+     * @param startPosition    the start index to look for
+     * @param length           the number of {@link Campaign} to get
+     * @param columnName       the Column name to sort
      * @param sort
-     * @param searchParameter the string to search in the {@link Campaign}
+     * @param searchParameter  the string to search in the {@link Campaign}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -113,7 +111,6 @@ public interface ICampaignService {
     AnswerItem readByKey(String key);
 
     /**
-     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName

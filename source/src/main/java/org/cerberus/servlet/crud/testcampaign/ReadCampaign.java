@@ -21,6 +21,7 @@ package org.cerberus.servlet.crud.testcampaign;
 
 import com.google.common.base.*;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -45,7 +46,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
  * @author cerberus
  */
 @WebServlet(name = "ReadCampaign", urlPatterns = {"/ReadCampaign"})
@@ -57,10 +57,10 @@ public class ReadCampaign extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -97,13 +97,14 @@ public class ReadCampaign extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -114,10 +115,10 @@ public class ReadCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -211,29 +212,29 @@ public class ReadCampaign extends HttpServlet {
             p = (Campaign) answer.getItem();
             JSONObject response = convertCampaigntoJSONObject(p);
 
-            if(request.getParameter("battery") != null) {
+            if (request.getParameter("battery") != null) {
                 ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
                 AnswerList resp = campaignContentService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for(Object c : resp.getDataList() ){
-                        CampaignContent cc = (CampaignContent)c;
+                    for (Object c : resp.getDataList()) {
+                        CampaignContent cc = (CampaignContent) c;
                         JSONObject ccJSON = convertCampaignContenttoJSONObject(cc);
                         a.put(ccJSON);
                     }
-                    response.put("battery",a);
+                    response.put("battery", a);
                 }
             }
-            if(request.getParameter("parameter") != null) {
+            if (request.getParameter("parameter") != null) {
                 ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
                 AnswerList resp = campaignParameterService.readByCampaign(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
-                    for(Object c : resp.getDataList() ){
-                        CampaignParameter cc = (CampaignParameter)c;
+                    for (Object c : resp.getDataList()) {
+                        CampaignParameter cc = (CampaignParameter) c;
                         a.put(convertCampaignParametertoJSONObject(cc));
                     }
-                    response.put("parameter",a);
+                    response.put("parameter", a);
                 }
             }
             object.put("contentTable", response);

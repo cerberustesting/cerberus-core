@@ -6906,8 +6906,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcampaign','close_btn','','fr','Fermer','')");
         SQLS.append(",('page_testcampaign','save_btn','','en','Save','')");
         SQLS.append(",('page_testcampaign','save_btn','','fr','Sauvegarder','')");
-        SQLS.append(",('page_testcampaign','button_create','','en','Create','')");
-        SQLS.append(",('page_testcampaign','button_create','','fr','Créer','')");
+        SQLS.append(",('page_testcampaign','button_create','','en','Create Campaign','')");
+        SQLS.append(",('page_testcampaign','button_create','','fr','Créer une Campagne','')");
         SQLS.append(",('page_testcampaign','add_btn','','en','Add','')");
         SQLS.append(",('page_testcampaign','add_btn','','fr','Ajouter','')");
         SQLS.append(",('page_testcampaign','title_remove','','en','Remove Campaign','')");

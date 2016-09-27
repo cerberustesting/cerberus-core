@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 /**
- *
  * @author memiks
  */
 @WebServlet(name = "DeleteCampaignContent2", urlPatterns = {"/DeleteCampaignContent2"})
@@ -83,7 +82,7 @@ public class DeleteCampaignContent2 extends HttpServlet {
         ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
 
         AnswerItem<CampaignContent> camp = campaignContentService.findCampaignContentByKey(id);
-        if(camp.isCodeEquals(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).getCode())) {
+        if (camp.isCodeEquals(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).getCode())) {
             ans = campaignContentService.delete(camp.getItem());
         }
 

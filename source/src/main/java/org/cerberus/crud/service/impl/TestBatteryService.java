@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+
 import org.cerberus.crud.dao.ITestBatteryContentDAO;
 import org.cerberus.crud.dao.ITestBatteryDAO;
 import org.cerberus.crud.entity.TestBattery;
@@ -32,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author memiks
  */
 @Service

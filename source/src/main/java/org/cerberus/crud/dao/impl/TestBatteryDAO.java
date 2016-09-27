@@ -20,12 +20,14 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestBatteryDAO;
@@ -45,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author memiks
  */
 @Repository

@@ -20,13 +20,13 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ICampaignParameterDAO {

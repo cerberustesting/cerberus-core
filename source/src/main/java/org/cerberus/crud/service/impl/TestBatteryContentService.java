@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * @author cerberus
  */
 @Service
@@ -37,7 +36,7 @@ public class TestBatteryContentService implements ITestBatteryContentService {
 
     @Autowired
     ITestBatteryContentDAO testBatteryContentDAO;
-    
+
     @Override
     public AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return testBatteryContentDAO.readByTestBatteryByCriteria(testBattery, startPosition, length, columnName, sort, searchParameter, string);
@@ -45,12 +44,12 @@ public class TestBatteryContentService implements ITestBatteryContentService {
 
     @Override
     public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch) {
-        return testBatteryContentDAO.readByCampaignByCriteria(campaign,start,amount,columnName,sortInformation,searchTerm,individualSearch);
+        return testBatteryContentDAO.readByCampaignByCriteria(campaign, start, amount, columnName, sortInformation, searchTerm, individualSearch);
     }
 
     @Override
     public AnswerList<String> readDistinctValuesByCampaignByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
-        return testBatteryContentDAO.readDistinctValuesByCampaignByCriteria(campaign,searchParameter,individualSearch,columnName);
+        return testBatteryContentDAO.readDistinctValuesByCampaignByCriteria(campaign, searchParameter, individualSearch, columnName);
     }
 
 }

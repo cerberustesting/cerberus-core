@@ -20,6 +20,7 @@
 package org.cerberus.crud.dao;
 
 import org.cerberus.crud.entity.TestBatteryContent;
+
 import java.util.List;
 import java.util.Map;
 
@@ -28,15 +29,14 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
-@Entity
-@Table(catalog = "cerberus", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"testbattery", "Test", "TestCase"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "TestBatteryContent.findAll", query = "SELECT t FROM testbatterycontent t"),
-    @NamedQuery(name = "TestBatteryContent.findByTestbatterycontentID", query = "SELECT t FROM testbatterycontent t WHERE t.testbatterycontentID = :testbatterycontentID")})
+ * @Entity
+ * @Table(catalog = "cerberus", schema = "", uniqueConstraints = {
+ * @UniqueConstraint(columnNames = {"testbattery", "Test", "TestCase"})})
+ * @XmlRootElement
+ * @NamedQueries({
+ * @NamedQuery(name = "TestBatteryContent.findAll", query = "SELECT t FROM testbatterycontent t"),
+ * @NamedQuery(name = "TestBatteryContent.findByTestbatterycontentID", query = "SELECT t FROM testbatterycontent t WHERE t.testbatterycontentID = :testbatterycontentID")})
  */
 public interface ITestBatteryContentDAO {
 
@@ -51,7 +51,6 @@ public interface ITestBatteryContentDAO {
     public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
-     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
@@ -68,5 +67,5 @@ public interface ITestBatteryContentDAO {
     List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 
     AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+
 }

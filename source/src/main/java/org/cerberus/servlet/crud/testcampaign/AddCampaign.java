@@ -27,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.service.ICampaignService;
@@ -36,7 +37,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
  * @author memiks
  */
 @WebServlet(name = "AddCampaign", urlPatterns = {"/AddCampaign"})

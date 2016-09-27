@@ -32,7 +32,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ICampaignDAO {
@@ -61,12 +60,11 @@ public interface ICampaignDAO {
      * Get the {@link Campaign} List of the given {@link System} with the given
      * Criteria
      *
-     * @param system the {@link System} To look for
-     * @param startPosition the start index to look for
-     * @param length the number of {@link Campaign} to get
-     * @param columnName the Column name to sort
+     * @param startPosition    the start index to look for
+     * @param length           the number of {@link Campaign} to get
+     * @param columnName       the Column name to sort
      * @param sort
-     * @param searchParameter the string to search in the {@link Campaign}
+     * @param searchParameter  the string to search in the {@link Campaign}
      * @param individualSearch the string to search for each column
      * @return
      */
@@ -81,7 +79,6 @@ public interface ICampaignDAO {
     AnswerItem readByKey(String key);
 
     /**
-     *
      * @param searchParameter
      * @param individualSearch
      * @param columnName
