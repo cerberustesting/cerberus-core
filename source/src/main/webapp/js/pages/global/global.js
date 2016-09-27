@@ -1068,7 +1068,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }} : false;
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-            console.log(sSource);
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",

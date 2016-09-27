@@ -21,6 +21,9 @@ package org.cerberus.crud.service;
 
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author cerberus
@@ -28,5 +31,9 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestBatteryContentService {
     
     AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+
+    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    public AnswerList<String> readDistinctValuesByCampaignByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 }

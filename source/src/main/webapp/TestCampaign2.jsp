@@ -32,6 +32,7 @@
     <%@ include file="include/messagesArea.html"%>
     <%@ include file="include/utils/modal-confirmation.html"%>
     <%@ include file="include/testcampaign/editTestcampaign.html"%>
+    <%@ include file="include/testcampaign/viewTestcampaign.html"%>
     <%@ include file="include/testcampaign/addTestcampaign.html"%>
 
     <h1 class="page-title-line" id="title">Test Campaigns</h1>

@@ -304,6 +304,10 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTestBatteryContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadTestBatteryContent</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateTestBattery</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateTestBattery</servlet-class>
     </servlet>
@@ -1241,6 +1245,10 @@
     <servlet-mapping>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
         <url-pattern>/DeleteTestBatteryContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestBatteryContent</servlet-name>
+        <url-pattern>/ReadTestBatteryContent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestBattery</servlet-name>
@@ -2367,6 +2375,7 @@
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/VirtualProxy</url-pattern>
+            <url-pattern>/ReadTestBatteryContent</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>

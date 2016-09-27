@@ -34,6 +34,7 @@ function initPage() {
     //clear the modals fields when closed
     $('#editTestcampaignModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addTestcampaignModal').on('hidden.bs.modal', addEntryModalCloseHandler);
+    $('#viewTestcampaignModal').on('hidden.bs.modal', viewEntryModalCloseHandler);
 
     $('#editTestcampaignModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         var target = $(e.target).attr("href"); // activated tab
@@ -57,6 +58,10 @@ function initPage() {
         }
     });
 
+    $("#viewTestcampaignModal").on('shown.bs.modal',function(e){
+            $("#viewTestcampaignsTable").DataTable().columns.adjust();
+    })
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForCampaign, "#testcampaignList");
@@ -67,6 +72,7 @@ function displayPageLabel() {
 
     $("#title").html(doc.getDocLabel("page_testcampaign", "allTestcampaigns"));
     $("[name='editTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "edittestcampaign_field"));
+    $("[name='addTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "addtestcampaign_field"));
     $("[name='campaignField']").html(doc.getDocLabel("page_testcampaign", "campaign_field"));
     $("[name='descriptionField']").html(doc.getDocLabel("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
@@ -152,6 +158,44 @@ function renderOptionsForCampaign3(id) {
 
 }
 
+function renderOptionsForCampaign4(data) {
+    if ($("#blankSpaceBattery").length === 0) {
+        var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpaceBattery'></div>";
+        $("#viewTestcampaignsTable_wrapper div#viewTestcampaignsTable_length").before(contentToAdd);
+    }
+}
+
+function viewEntryClick(param) {
+    clearResponseMessageMainPage();
+
+    var doc = new Doc();
+
+    $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
+
+    //Store the campaign name, we need it if we want to add him a battery test
+    $("#campaignKey").val(param);
+
+    if ($("#viewTestcampaignModal #viewTestcampaignsTable_wrapper").length > 0) {
+        $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().destroy();
+        $("#viewTestcampaignModal #viewTestcampaignsTable").empty();
+    }
+    //configure and create the dataTable
+    var configurations = new TableConfigurationsServerSide("viewTestcampaignsTable", "ReadTestBatteryContent?campaign="+param, "contentTable", aoColumnsFunc4(), [0, 'asc']);
+    createDataTableWithPermissions(configurations, renderOptionsForCampaign4, "#viewTestcampaignList");
+
+    var formEdit = $('#viewTestcampaignModal');
+
+    formEdit.modal('show');
+}
+
+function viewEntryModalCloseHandler() {
+    // reset form values
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#viewTestcampaignModal'));
+}
+
 function editEntryClick(param) {
     clearResponseMessageMainPage();
 
@@ -160,7 +204,7 @@ function editEntryClick(param) {
 
     var formEdit = $('#editTestcampaignModal');
 
-    var jqxhr = $.getJSON("ReadCampaign?battery=true&parameter=true&", "param=" + param);
+    var jqxhr = $.getJSON("ReadCampaign?battery=true&parameter=true", "param=" + param);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
@@ -430,7 +474,7 @@ function getSys() {
 
 function updateSelectParameter(id) {
     var val = $("#" + id + '_wrapper #parameterTestSelect').find(":selected").val();
-    var data = getSelectInvariant(val);
+    var data = getSelectInvariant(val, false, true);
     console.log(data);
     $("#" + id + "_wrapper #parameterTestSelect2").empty();
     var optionList = "";
@@ -479,8 +523,12 @@ function aoColumnsFunc(tableId) {
                                         class="removeTestcampaign btn btn-default btn-xs margin-right5" \n\
                                         name="removeTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
+                var viewTestcampaign = '<button id="viewTestcampaign" onclick="viewEntryClick(\'' + obj["campaign"] + '\');"\n\
+                                        class="viewTestcampaign btn btn-default btn-xs margin-right5" \n\
+                                        name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
+                                        <span class="glyphicon glyphicon-eye-open"></span></button>';
 
-                return '<div class="center btn-group width150">' + editTestcampaign + removeTestcampaign + '</div>';
+                return '<div class="center btn-group width150">' + editTestcampaign + removeTestcampaign + viewTestcampaign + '</div>';
 
             },
             "width": "100px"
@@ -543,6 +591,24 @@ function aoColumnsFunc3(tableId) {
         },
         {"data": "1", "sName": "parameter", "title": doc.getDocLabel("page_testcampaign", "parameter_col")},
         {"data": "3", "sName": "value", "title": doc.getDocLabel("page_testcampaign", "value_col")}
+    ];
+    return aoColumns;
+}
+
+function aoColumnsFunc4() {
+    var doc = new Doc();
+    var aoColumns = [
+        {
+            "data": "testbattery",
+            "sName": "tbc.testbattery",
+            "title": doc.getDocLabel("page_testcampaign", "testbattery_col")
+        },
+        {"data": "test", "sName": "tbc.Test", "title": doc.getDocLabel("page_testcampaign", "test_col")},
+        {"data": "testCase", "sName": "tbc.Testcase", "title": doc.getDocLabel("page_testcampaign", "testcase_col"),
+            "mRender" : function(data, type, obj){
+                return "<a target=\"_blank\" href='TestCase.jsp?Test=" + obj["test"] + "&TestCase=" + obj["testCase"] + "'>" + obj["testCase"] + "</a>";
+            }
+        }
     ];
     return aoColumns;
 }

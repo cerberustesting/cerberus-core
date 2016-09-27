@@ -21,6 +21,8 @@ package org.cerberus.crud.dao;
 
 import org.cerberus.crud.entity.TestBatteryContent;
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
@@ -45,6 +47,17 @@ public interface ITestBatteryContentDAO {
     List<TestBatteryContent> findTestBatteryContentsByTestBatteryName(String testBattery) throws CerberusException;
 
     List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException;
+
+    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    /**
+     *
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<String> readDistinctValuesByCampaignByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
     boolean updateTestBatteryContent(TestBatteryContent testBatteryContent);
 

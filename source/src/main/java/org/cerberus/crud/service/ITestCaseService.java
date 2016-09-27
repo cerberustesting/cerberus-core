@@ -167,6 +167,7 @@ public interface ITestCaseService {
      */
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
+
     /**
      *
      * @param test

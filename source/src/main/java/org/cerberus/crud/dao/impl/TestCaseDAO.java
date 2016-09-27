@@ -31,12 +31,9 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
+import org.cerberus.crud.entity.*;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.enums.MessageEventEnum;
@@ -188,11 +185,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(searchSQL);
 
         query.append(" group by tec.test, tec.testcase ");
-        
+
         if (!StringUtil.isNullOrEmpty(sortInformation)) {
             query.append(" order by ").append(sortInformation);
         }
-        
+
         if (amount != 0) {
             query.append(" limit ").append(start).append(" , ").append(amount);
         } else {
