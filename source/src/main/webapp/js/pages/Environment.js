@@ -175,6 +175,10 @@ function displayPageLabel() {
     $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
     $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
     $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
+    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
     // Databases List
     $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
     $("[name='connectionPoolNameHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "ConnectionPoolName"));
@@ -670,6 +674,11 @@ function appendApplicationRow(app) {
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
     var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
     var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
+    var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.variable1);
+    var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(app.variable2);
+    var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.variable3);
+    var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.variable4);
+    
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
@@ -677,6 +686,9 @@ function appendApplicationRow(app) {
     var application = $("<td></td>").append(selectApplication.val(app.application));
     var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
     var urlName = $("<td></td>").append(urlInput).append(domainInput);
+    var vars1 = $("<td></td>").append(variable1).append(variable3);
+    var vars2 = $("<td></td>").append(variable2).append(variable4);
+    
     deleteBtn.click(function () {
         app.toDelete = (app.toDelete) ? false : true;
         if (app.toDelete) {
@@ -700,10 +712,24 @@ function appendApplicationRow(app) {
     urlLoginInput.change(function () {
         app.urlLogin = $(this).val();
     });
+    variable1.change(function () {
+        app.var1 = $(this).val();
+    });
+    variable2.change(function () {
+        app.var2 = $(this).val();
+    });
+    variable3.change(function () {
+        app.var3 = $(this).val();
+    });
+    variable4.change(function () {
+        app.var4 = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(application);
     row.append(ipName);
     row.append(urlName);
+    row.append(vars1);
+    row.append(vars2);
     app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("application", app);
     table.append(row);
@@ -716,6 +742,10 @@ function addNewApplicationRow() {
         domain: "",
         url: "",
         urlLogin: "",
+        var1: "",
+        var2: "",
+        var3: "",
+        var4: "",
         toDelete: false
     };
     appendApplicationRow(newApplication);
