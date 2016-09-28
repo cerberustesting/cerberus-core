@@ -113,6 +113,12 @@
                                             <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-2">
+                                            <label id="lbl_size" for="lengthFilter">Result size</label>
+                                            <select class="form-control" id="lengthFilter"></select>
+                                        </div>
+                                    </div>
                                 </form>
                                 <button type="button" class="btn btn-primary" id="loadFiltersBtn">Search</button>
                                 <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
@@ -202,7 +208,7 @@
                             <div class="panel-body" id="robotSettings">
                                 <form class="form-horizontal" id="robotSettingsForm">
                                     <div class="form-group">
-                                        <label for="robotConfig" class="col-sm-3 control-label bold">Select Robot Config</label>
+                                        <label for="robot" class="col-sm-3 control-label bold">Select Robot Config</label>
                                         <div class="col-sm-9">
                                             <select class="form-control input-sm" id="robot" name="robot"></select>
                                         </div>

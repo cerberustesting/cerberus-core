@@ -689,9 +689,14 @@ $(function () {
  * @param {type} element
  */
 function showLoader(element) {
+    // Check if element is already blocked
+    var uiElement = $(element);
+    if (uiElement.data('blockUI.isBlocked')) {
+        return;
+    }
     var doc = new Doc();
     var processing = doc.getDocLabel("page_global", "processing");
-    $(element).block({message: processing});
+    uiElement.block({message: processing});
 }
 
 /**

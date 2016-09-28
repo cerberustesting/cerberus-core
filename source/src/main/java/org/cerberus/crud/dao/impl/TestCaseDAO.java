@@ -817,7 +817,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status) {
+            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -842,6 +842,9 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(createInClauseFromList(group, "tec.group"));
         query.append(createInClauseFromList(status, "tec.status"));
         query.append("GROUP BY tec.test, tec.testcase ");
+        if (length != -1) {
+            query.append("LIMIT ?");
+        }
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -850,6 +853,9 @@ public class TestCaseDAO implements ITestCaseDAO {
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
+            if (length != -1) {
+                preStat.setInt(1, length);
+            }
 
             try {
                 ResultSet resultSet = preStat.executeQuery();

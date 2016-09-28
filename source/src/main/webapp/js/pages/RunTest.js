@@ -39,7 +39,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         appendCampaignList();
         appendCountryList(country);
         typeSelectHandler(test, testcase, environment, country);
-        showLoader("#filtersPanel");
+        showLoader("#chooseTest");
         $.when(
                 loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
@@ -52,12 +52,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
                 loadInvariantMultiSelect("priority", "PRIORITY"),
                 loadInvariantMultiSelect("group", "GROUP"),
-                loadInvariantMultiSelect("status", "TCSTATUS")
-                ).then(function () {
-            hideLoader("#filtersPanel");
-            if ($("#typeSelect").val() === "filters") {
+                loadInvariantMultiSelect("status", "TCSTATUS"),
+                loadHardDefinedSingleSelect("length", [{ label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+                )
+            .then(function () {
                 loadTestCaseFromFilter(test, testcase);
-            }
         });
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
@@ -155,7 +154,6 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#filters").show();
         $("#resetbutton").show();
         $("#filtersPanelContainer").show();
-        loadTestCaseFromFilter(test, testcase);
     } else if (value === "campaign") {
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -173,10 +171,12 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testURL = "&test=" + defTest;
     }
+    // Get the requested result size value
+    var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL,
+        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
@@ -641,6 +641,26 @@ function loadInvariantMultiSelect(selectName, idName) {
         error: showUnexpectedError
     });
     return jqXHR;
+}
+
+function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) {
+    // Construct select 
+    var select = $("#" + selectName + "Filter");
+    for (var index in values) {
+        // Define the option to append 
+        var option = $("<option></option>")
+            .text(values[index].label)
+            .val(values[index].value)
+            .data("item", values[index]);
+
+        // Check if this option has to be initially selected 
+        if (initialSelectionIndex !== undefined && index == initialSelectionIndex) {
+            option.prop("selected", true);
+        }
+
+        // Append this option to the associated select 
+        select.append(option);
+    }
 }
 
 /** FUNCTIONS TO HANDLE ROBOT/EXECUTION PREFERENCES **/
