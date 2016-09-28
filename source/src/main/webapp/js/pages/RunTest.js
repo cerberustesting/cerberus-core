@@ -121,7 +121,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#saveRobotPreferences").click(saveRobotPreferences);
         $("#saveExecutionParams").click(saveExecutionPreferences);
-        $("#robotConfig").change(function () {
+        $("#robot").change(function () {
             loadRobotInfo($(this).val());
         });
 
@@ -418,7 +418,7 @@ function setSingleExecutionDataForm(executionArray) {
     $("#manualExecutionATQ").val($("#manualExecution").val());
     $("#retriesATQ").val($("#retries").val());
     $("#screenSizeATQ").val($("#screenSize").val());
-    $("#manualRobotATQ").val($("#robotConfig").val());
+    $("#manualRobotATQ").val($("#robot").val());
     $("#ss_ipATQ").val($("#seleniumIP").val());
     $("#ss_pATQ").val($("#seleniumPort").val());
     $("#versionATQ").val($("#version").val());
@@ -706,7 +706,7 @@ function loadSelect(idName, selectName, forceReload) {
 function appendRobotList() {
     var jqXHR = $.getJSON("ReadRobot");
     $.when(jqXHR).then(function (data) {
-        var robotList = $("#robotConfig");
+        var robotList = $("#robot");
 
         robotList.append($('<option></option>').text("-- Custom configuration --").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
@@ -739,8 +739,8 @@ function loadRobotInfo(robot) {
     } else {
         var pref = JSON.parse(localStorage.getItem("robotSettings"));
         enableRobotFields();
-        if (pref !== null && pref.robotConfig === "") {
-            $("#robotConfig").val(pref.robotConfig);
+        if (pref !== null && pref.robot === "") {
+            $("#robot").val(pref.robot);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
             $("#browser").val(pref.browser);
@@ -822,9 +822,9 @@ function applyRobotPref(browser) {
     var pref = JSON.parse(localStorage.getItem("robotSettings"));
 
     if (pref !== null) {
-        if (pref.robotConfig === "") {
+        if (pref.robot === "") {
             enableRobotFields();
-            $("#robotConfig").val(pref.robotConfig);
+            $("#robot").val(pref.robot);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
 //            console.debug(browser);
@@ -837,8 +837,8 @@ function applyRobotPref(browser) {
             $("#platform").val(pref.Platform);
             $("#screenSize").val(pref.screenSize);
         } else {
-            $("#robotConfig").val(pref.robotConfig);
-            loadRobotInfo(pref.robotConfig);
+            $("#robot").val(pref.robot);
+            loadRobotInfo(pref.robot);
         }
     }
 }
@@ -884,7 +884,7 @@ function oldPreferenceCompatibility() {
         var user = getUser();
 
         var robotConfig = {
-            robotConfig: user.robot,
+            robot: user.robot,
             seleniumIP: user.robotHost,
             seleniumPort: user.robotPort,
             version: user.robotVersion,
