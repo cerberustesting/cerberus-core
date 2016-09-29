@@ -464,10 +464,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SearchManualTestCaseInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualtestcase.SearchManualTestCaseInformation</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecution</servlet-class>
     </servlet>
@@ -1388,10 +1384,6 @@
         <url-pattern>/GetDataForTestCaseSearch</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SearchManualTestCaseInformation</servlet-name>
-        <url-pattern>/SearchManualTestCaseInformation</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SaveManualExecution</servlet-name>
         <url-pattern>/SaveManualExecution</url-pattern>
     </servlet-mapping>
@@ -1940,7 +1932,6 @@
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
-            <url-pattern>/SearchManualTestCaseInformation</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>
             <url-pattern>/GenerateGraph</url-pattern>
             <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
