@@ -25,6 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.exception.CerberusException;
@@ -40,7 +41,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
  * @author memiks
  */
 @WebServlet(name = "AddCampaignParameter", urlPatterns = {"/AddCampaignParameter"})
@@ -70,7 +70,7 @@ public class AddCampaignParameter extends HttpServlet {
 
             String newCampaignParameterId = String.valueOf(
                     campaignService.findCampaignParameterByCriteria(null, campaign.getCampaign(), parameter, value)
-                    .get(0).getCampaignparameterID()
+                            .get(0).getCampaignparameterID()
             );
 
             response.getWriter().append(newCampaignParameterId).close();

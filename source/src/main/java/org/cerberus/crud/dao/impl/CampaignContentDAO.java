@@ -25,9 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignContentDAO;
+import org.cerberus.crud.entity.Campaign;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.MessageEvent;
@@ -39,12 +41,13 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
- *
  * @author memiks
  */
 @Repository
@@ -60,6 +63,40 @@ public class CampaignContentDAO implements ICampaignContentDAO {
     private final String OBJECT_NAME = "CampaignContent";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
+
+    /**
+     * Declare SQL queries used by this {@link CampaignContent}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Get list of {@link CampaignContent} associated with the given
+         * {@link Campaign}'s name
+         */
+        String READ_BY_KEY = "SELECT * FROM `campaigncontent` WHERE `campaigncontentID` = ?";
+
+        /**
+         * Create a new {@link CampaignContent}
+         */
+        String CREATE = "INSERT INTO `campaigncontent` (`campaign`,`testbattery`) VALUES (?, ?)";
+
+        /**
+         * Update an existing {@link CampaignContent}
+         */
+        String UPDATE = "UPDATE `campaigncontent` SET  WHERE `campaign` = ? AND `testbattery` = ?";
+
+        /**
+         * Remove an existing {@link CampaignContent}
+         */
+        String DELETE = "DELETE FROM `campaigncontent` WHERE `campaigncontentID` = ?";
+
+        /**
+         * Remove all {@link CampaignContent} of a {@link Campaign}
+         */
+        String DELETE_BY_CAMPAIGN = "DELETE FROM `campaigncontent` WHERE `campaign` = ?";
+    }
 
     @Override
     public List<CampaignContent> findAll() throws CerberusException {
@@ -539,6 +576,204 @@ public class CampaignContentDAO implements ICampaignContentDAO {
         response.setResultMessage(msg);
         response.setDataList(campaignContentList);
         return response;
+    }
+
+    @Override
+    public AnswerList readByCampaign(String campaign) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg;
+        List<CampaignContent> result = new ArrayList<CampaignContent>();
+        ;
+
+        final String query = "SELECT * FROM campaigncontent WHERE campaign = ?";
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+
+                    while (resultSet.next()) {
+                        result.add(this.loadFromResultSet(resultSet));
+                    }
+                    if (result.isEmpty()) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+
+                } catch (SQLException exception) {
+                    MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                    result.clear();
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(InvariantDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(InvariantDAO.class.getName(), Level.WARN, e.toString());
+            }
+        }
+
+        answer.setTotalRows(result.size());
+        answer.setDataList(result);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public AnswerItem<CampaignContent> readByKey(int key) {
+        AnswerItem<CampaignContent> ans = new AnswerItem<>();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+            // Prepare and execute query
+            preStat.setInt(1, key);
+            ResultSet resultSet = preStat.executeQuery();
+
+            // Parse query
+            while (resultSet.next()) {
+                ans.setItem(loadFromResultSet(resultSet));
+            }
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "SELECT");
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer deleteByCampaign(String key) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE_BY_CAMPAIGN)) {
+            // Prepare and execute query
+            preStat.setString(1, key);
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE_BY_CAMPAIGN");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete campaign content by campaign: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+
+    @Override
+    public Answer delete(CampaignContent object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setInt(1, object.getCampaigncontentID());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete campaign content: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer update(CampaignContent object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getCampaign());
+            preStat.setString(2, object.getTestbattery());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create campaign content: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer create(CampaignContent object) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, object.getCampaign());
+            preStat.setString(2, object.getTestbattery());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create campaign content: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
     }
 
 }

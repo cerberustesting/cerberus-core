@@ -96,6 +96,23 @@ public class CampaignContent implements Serializable {
         return true;
     }
 
+    public boolean hasSameKey(CampaignContent obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CampaignContent other = (CampaignContent) obj;
+        if ((this.testbattery == null) ? (other.testbattery != null) : !this.testbattery.equals(other.testbattery)) {
+            return false;
+        }
+        if ((this.campaign == null) ? (other.campaign != null) : !this.campaign.equals(other.campaign)) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public String toString() {
         return "org.cerberus.crud.entity.CampaignContent[ campaigncontentID=" + campaigncontentID + " ]";

@@ -85,7 +85,7 @@ public class ReadSqlLibrary extends HttpServlet {
         // Nothing to do here as no sqlLibrary to check.
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = request.isUserInRole("Integrator");
+        boolean userHasPermissions = request.isUserInRole("TestAdmin");
         // Init Answer with potencial error from Parsing sqlLibrary.
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 

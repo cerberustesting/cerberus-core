@@ -20,6 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
@@ -27,7 +28,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ITestBatteryService {

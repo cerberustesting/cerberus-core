@@ -39,7 +39,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         appendCampaignList();
         appendCountryList(country);
         typeSelectHandler(test, testcase, environment, country);
-        showLoader("#filtersPanel");
+        showLoader("#chooseTest");
         $.when(
                 loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
@@ -52,12 +52,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
                 loadInvariantMultiSelect("priority", "PRIORITY"),
                 loadInvariantMultiSelect("group", "GROUP"),
-                loadInvariantMultiSelect("status", "TCSTATUS")
-                ).then(function () {
-            hideLoader("#filtersPanel");
-            if ($("#typeSelect").val() === "filters") {
+                loadInvariantMultiSelect("status", "TCSTATUS"),
+                loadHardDefinedSingleSelect("length", [{ label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+                )
+            .then(function () {
                 loadTestCaseFromFilter(test, testcase);
-            }
         });
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
@@ -121,7 +120,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#saveRobotPreferences").click(saveRobotPreferences);
         $("#saveExecutionParams").click(saveExecutionPreferences);
-        $("#robotConfig").change(function () {
+        $("#robot").change(function () {
             loadRobotInfo($(this).val());
         });
 
@@ -155,7 +154,6 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#filters").show();
         $("#resetbutton").show();
         $("#filtersPanelContainer").show();
-        loadTestCaseFromFilter(test, testcase);
     } else if (value === "campaign") {
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -173,10 +171,12 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testURL = "&test=" + defTest;
     }
+    // Get the requested result size value
+    var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL,
+        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
@@ -418,7 +418,7 @@ function setSingleExecutionDataForm(executionArray) {
     $("#manualExecutionATQ").val($("#manualExecution").val());
     $("#retriesATQ").val($("#retries").val());
     $("#screenSizeATQ").val($("#screenSize").val());
-    $("#manualRobotATQ").val($("#robotConfig").val());
+    $("#manualRobotATQ").val($("#robot").val());
     $("#ss_ipATQ").val($("#seleniumIP").val());
     $("#ss_pATQ").val($("#seleniumPort").val());
     $("#versionATQ").val($("#version").val());
@@ -643,6 +643,26 @@ function loadInvariantMultiSelect(selectName, idName) {
     return jqXHR;
 }
 
+function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) {
+    // Construct select 
+    var select = $("#" + selectName + "Filter");
+    for (var index in values) {
+        // Define the option to append 
+        var option = $("<option></option>")
+            .text(values[index].label)
+            .val(values[index].value)
+            .data("item", values[index]);
+
+        // Check if this option has to be initially selected 
+        if (initialSelectionIndex !== undefined && index == initialSelectionIndex) {
+            option.prop("selected", true);
+        }
+
+        // Append this option to the associated select 
+        select.append(option);
+    }
+}
+
 /** FUNCTIONS TO HANDLE ROBOT/EXECUTION PREFERENCES **/
 
 function loadSelect(idName, selectName, forceReload) {
@@ -706,7 +726,7 @@ function loadSelect(idName, selectName, forceReload) {
 function appendRobotList() {
     var jqXHR = $.getJSON("ReadRobot");
     $.when(jqXHR).then(function (data) {
-        var robotList = $("#robotConfig");
+        var robotList = $("#robot");
 
         robotList.append($('<option></option>').text("-- Custom configuration --").val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
@@ -739,8 +759,8 @@ function loadRobotInfo(robot) {
     } else {
         var pref = JSON.parse(localStorage.getItem("robotSettings"));
         enableRobotFields();
-        if (pref !== null && pref.robotConfig === "") {
-            $("#robotConfig").val(pref.robotConfig);
+        if (pref !== null && pref.robot === "") {
+            $("#robot").val(pref.robot);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
             $("#browser").val(pref.browser);
@@ -822,9 +842,9 @@ function applyRobotPref(browser) {
     var pref = JSON.parse(localStorage.getItem("robotSettings"));
 
     if (pref !== null) {
-        if (pref.robotConfig === "") {
+        if (pref.robot === "") {
             enableRobotFields();
-            $("#robotConfig").val(pref.robotConfig);
+            $("#robot").val(pref.robot);
             $("#seleniumIP").val(pref.ss_ip);
             $("#seleniumPort").val(pref.ss_p);
 //            console.debug(browser);
@@ -837,8 +857,8 @@ function applyRobotPref(browser) {
             $("#platform").val(pref.Platform);
             $("#screenSize").val(pref.screenSize);
         } else {
-            $("#robotConfig").val(pref.robotConfig);
-            loadRobotInfo(pref.robotConfig);
+            $("#robot").val(pref.robot);
+            loadRobotInfo(pref.robot);
         }
     }
 }
@@ -884,7 +904,7 @@ function oldPreferenceCompatibility() {
         var user = getUser();
 
         var robotConfig = {
-            robotConfig: user.robot,
+            robot: user.robot,
             seleniumIP: user.robotHost,
             seleniumPort: user.robotPort,
             version: user.robotVersion,

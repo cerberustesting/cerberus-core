@@ -21,10 +21,14 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import org.cerberus.crud.dao.IUserSystemDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserSystemService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,5 +89,48 @@ public class UserSystemService implements IUserSystemService {
             }
         }
     }
-    
+
+    @Override
+    public AnswerList<UserSystem> readByUser(String login) {
+        return userSystemDAO.readByUser(login);
+    }
+
+    @Override
+    public Answer create(UserSystem sys) {
+        return userSystemDAO.create(sys);
+    }
+
+    @Override
+    public Answer remove(UserSystem sys) {
+        return userSystemDAO.remove(sys);
+    }
+
+    @Override
+    public Answer updateSystemsByUser(User user, List<UserSystem> newGroups) {
+        Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        AnswerList an = this.readByUser(user.getLogin());
+        if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            List<UserSystem> oldGroups = an.getDataList();
+            //delete if don't exist in new
+            for (UserSystem old : oldGroups) {
+                if (!newGroups.contains(old)) {
+                    Answer del = userSystemDAO.remove(old);
+                    if(!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                        a = del;
+                    }
+                }
+            }
+            //insert if don't exist in old
+            for (UserSystem group : newGroups) {
+                if (!oldGroups.contains(group)) {
+                    Answer add = userSystemDAO.create(group);
+                    if(!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                        a = add;
+                    }
+                }
+            }
+        }
+        return a;
+    }
+
 }

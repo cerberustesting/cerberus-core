@@ -155,9 +155,9 @@ public class CreateInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -175,9 +175,9 @@ public class CreateInvariant2 extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateInvariant.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateInvariant2.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

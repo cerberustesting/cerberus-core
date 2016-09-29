@@ -18,6 +18,8 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -150,6 +152,18 @@ public interface IUserDAO {
      * @return
      */
     AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     */
+    AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *

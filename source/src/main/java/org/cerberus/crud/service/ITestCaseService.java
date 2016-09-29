@@ -167,6 +167,7 @@ public interface ITestCaseService {
      */
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
+
     /**
      *
      * @param test
@@ -176,7 +177,7 @@ public interface ITestCaseService {
     public AnswerItem readByKey(String test, String testCase);
 
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status);
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
  

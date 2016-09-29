@@ -43,15 +43,6 @@ public interface IInvariantDAO {
      */
     Invariant readByKey(String idName, String value) throws CerberusException;
 
-    //TODO REMOVE
-    /**
-     * @param idName
-     * @param sort
-     * @return
-     * @throws CerberusException
-     */
-    //Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
-
     /**
      * @param idName
      * @return
@@ -110,15 +101,6 @@ public interface IInvariantDAO {
     public AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbdays);
 
     public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
-
-    //TODO REMOVE
-    /*
-    public void create(Invariant invariant) throws CerberusException;
-
-    public void delete(Invariant invariant) throws CerberusException;
-
-    public void update(Invariant invariant) throws CerberusException;
-    */
 
     /**
      * Get a {@link Invariant} in database

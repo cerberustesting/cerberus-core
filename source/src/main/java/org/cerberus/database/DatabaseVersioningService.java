@@ -6864,10 +6864,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 929
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE documentation SET docdesc = 'Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR1%</code></td><td class=\\'ex\\'>VAR1 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR2%</code></td><td class=\\'ex\\'>VAR2 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR3%</code></td><td class=\\'ex\\'>VAR3 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR4%</code></td><td class=\\'ex\\'>VAR4 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TESTCASE%</code></td><td class=\\'ex\\'>TestCase</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTORAGEURL%</code></td><td class=\\'ex\\'>Path where media are stored (based from the exeid).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>' "); 
+        SQLS.append("UPDATE documentation SET docdesc = 'Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR1%</code></td><td class=\\'ex\\'>VAR1 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR2%</code></td><td class=\\'ex\\'>VAR2 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR3%</code></td><td class=\\'ex\\'>VAR3 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR4%</code></td><td class=\\'ex\\'>VAR4 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TESTCASE%</code></td><td class=\\'ex\\'>TestCase</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTORAGEURL%</code></td><td class=\\'ex\\'>Path where media are stored (based from the exeid).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>' ");
         SQLS.append("WHERE `DocTable`='testcasecountryproperties' and`DocField`='Value' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Remove COMPARATIVE and PROCESS Groups.
         //-- ------------------------ 930 - 932
         SQLS = new StringBuilder();
@@ -6880,7 +6880,129 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocDesc`='The group is a property of a <code class=\\'doc-crbvvoca\\'>test case</code> that can take the following values : <br><br><b>AUTOMATED</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> is fully automated and does not require any manual action.<br><b>MANUAL</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> has to be manually executed.<br><b>PRIVATE</b> : The <code class=\\'doc-crbvvoca\\'>test case</code> exist for technical reason and will never appear on the reporting area. For example : <code class=\\'doc-fixed\\'>Pre Testing</code> test cases that are used for login purpose should all be PRIVATE.' ");
         SQLS.append(" WHERE `DocTable`='invariant' and`DocField`='GROUP' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
-       
+
+        // New updated Documentation.
+        //-- ------------------------ 933
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_testcampaign','allTestcampaigns','','en','Test Campaigns','')");
+        SQLS.append(",('page_testcampaign','allTestcampaigns','','fr','Campagnes de Test','')");
+        SQLS.append(",('page_testcampaign','edittestcampaign_field','','en','Edit Campaign','')");
+        SQLS.append(",('page_testcampaign','edittestcampaign_field','','fr','Modifier la Campagne','')");
+        SQLS.append(",('page_testcampaign','addtestcampaign_field','','en','Add Campaign','')");
+        SQLS.append(",('page_testcampaign','addtestcampaign_field','','fr','Ajouter la Campagne','')");
+        SQLS.append(",('page_testcampaign','viewtestcampaign_field','','en','Campaign','')");
+        SQLS.append(",('page_testcampaign','viewtestcampaign_field','','fr','Campagne','')");
+        SQLS.append(",('page_testcampaign','campaign_field','','en','Campaign','')");
+        SQLS.append(",('page_testcampaign','campaign_field','','fr','Campagne','')");
+        SQLS.append(",('page_testcampaign','description_field','','en','Description','')");
+        SQLS.append(",('page_testcampaign','description_field','','fr','Description','')");
+        SQLS.append(",('page_testcampaign','description_tab','','en','Description','')");
+        SQLS.append(",('page_testcampaign','description_tab','','fr','Description','')");
+        SQLS.append(",('page_testcampaign','battery_tab','','en','Battery','')");
+        SQLS.append(",('page_testcampaign','battery_tab','','fr','Batterie','')");
+        SQLS.append(",('page_testcampaign','parameter_tab','','en','Parameter','')");
+        SQLS.append(",('page_testcampaign','parameter_tab','','fr','Paramètre','')");
+        SQLS.append(",('page_testcampaign','close_btn','','en','Close','')");
+        SQLS.append(",('page_testcampaign','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_testcampaign','save_btn','','en','Save','')");
+        SQLS.append(",('page_testcampaign','save_btn','','fr','Sauvegarder','')");
+        SQLS.append(",('page_testcampaign','button_create','','en','Create Campaign','')");
+        SQLS.append(",('page_testcampaign','button_create','','fr','Créer une Campagne','')");
+        SQLS.append(",('page_testcampaign','add_btn','','en','Add','')");
+        SQLS.append(",('page_testcampaign','add_btn','','fr','Ajouter','')");
+        SQLS.append(",('page_testcampaign','title_remove','','en','Remove Campaign','')");
+        SQLS.append(",('page_testcampaign','title_remove','','fr','Supprimer la Campagne','')");
+        SQLS.append(",('page_testcampaign','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_testcampaign','message_remove','','fr','Êtes-vous sûrs?','')");
+        SQLS.append(",('page_testcampaign','button_col','','en','Actions','')");
+        SQLS.append(",('page_testcampaign','button_col','','fr','Actions','')");
+        SQLS.append(",('page_testcampaign','testcampaign_col','','en','Test Campaign','')");
+        SQLS.append(",('page_testcampaign','testcampaign_col','','fr','Campagne de test','')");
+        SQLS.append(",('page_testcampaign','description_col','','en','Description','')");
+        SQLS.append(",('page_testcampaign','description_col','','fr','Description','')");
+        SQLS.append(",('page_testcampaign','button_remove','','en','Remove Campaign','')");
+        SQLS.append(",('page_testcampaign','button_remove','','fr','Supprimer la Campagne','')");
+        SQLS.append(",('page_testcampaign','button_edit','','en','Edit Campaign','')");
+        SQLS.append(",('page_testcampaign','button_edit','','fr','Editer la Campagne','')");
+        SQLS.append(",('page_testcampaign','button_view','','en','View Campaign','')");
+        SQLS.append(",('page_testcampaign','button_view','','fr','Voir la Campagne','')");
+        SQLS.append(",('page_testcampaign','testbattery_col','','en','Test Battery','')");
+        SQLS.append(",('page_testcampaign','testbattery_col','','fr','Batterie de test','')");
+        SQLS.append(",('page_testcampaign','test_col','','en','Test','')");
+        SQLS.append(",('page_testcampaign','test_col','','fr','Test','')");
+        SQLS.append(",('page_testcampaign','testcase_col','','en','Test Case','')");
+        SQLS.append(",('page_testcampaign','testcase_col','','fr','Cas de Test','')");
+        SQLS.append(",('page_testcampaign','value_col','','en','Value','')");
+        SQLS.append(",('page_testcampaign','value_col','','fr','Valeur','')");
+        SQLS.append(",('page_testcampaign','parameter_col','','en','Parameter','')");
+        SQLS.append(",('page_testcampaign','parameter_col','','fr','Paramètre','')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 934
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_user','allUsers','','en','Users','')");
+        SQLS.append(",('page_user','allUsers','','fr','Utilisateurs','')");
+        SQLS.append(",('page_user','edituser_field','','en','Edit User','')");
+        SQLS.append(",('page_user','edituser_field','','fr','Modifier l utilisateur','')");
+        SQLS.append(",('page_user','adduser_field','','en','Add User','')");
+        SQLS.append(",('page_user','adduser_field','','fr','Ajouter un utilisateur','')");
+        SQLS.append(",('page_user','login_field','','en','Login','')");
+        SQLS.append(",('page_user','login_field','','fr','Identifiant','')");
+        SQLS.append(",('page_user','name_field','','en','Name','')");
+        SQLS.append(",('page_user','name_field','','fr','Nom','')");
+        SQLS.append(",('page_user','team_field','','en','Team','')");
+        SQLS.append(",('page_user','team_field','','fr','Equipe','')");
+        SQLS.append(",('page_user','defaultsystem_field','','en','Default System','')");
+        SQLS.append(",('page_user','defaultsystem_field','','fr','Système par défaut','')");
+        SQLS.append(",('page_user','request_field','','en','Request','')");
+        SQLS.append(",('page_user','request_field','','fr','Requête','')");
+        SQLS.append(",('page_user','email_field','','en','Email','')");
+        SQLS.append(",('page_user','email_field','','fr','Email','')");
+        SQLS.append(",('page_user','systems_field','','en','System','')");
+        SQLS.append(",('page_user','systems_field','','fr','Système','')");
+        SQLS.append(",('page_user','groups_field','','en','Groups','')");
+        SQLS.append(",('page_user','groups_field','','fr','Groupes','')");
+        SQLS.append(",('page_user','information_tab','','en','Information','')");
+        SQLS.append(",('page_user','information_tab','','fr','Information','')");
+        SQLS.append(",('page_user','systems_tab','','en','Systems','')");
+        SQLS.append(",('page_user','systems_tab','','fr','Systèmes','')");
+        SQLS.append(",('page_user','close_btn','','en','Close','')");
+        SQLS.append(",('page_user','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_user','save_btn','','en','Save','')");
+        SQLS.append(",('page_user','save_btn','','fr','Sauvegarder','')");
+        SQLS.append(",('page_user','button_create','','en','Create User','')");
+        SQLS.append(",('page_user','button_create','','fr','Créer un Utilisateur','')");
+        SQLS.append(",('page_user','add_btn','','en','Add','')");
+        SQLS.append(",('page_user','add_btn','','fr','Ajouter','')");
+        SQLS.append(",('page_user','title_remove','','en','Remove User','')");
+        SQLS.append(",('page_user','title_remove','','fr','Supprimer l Utilisateur','')");
+        SQLS.append(",('page_user','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_user','message_remove','','fr','Êtes-vous sûrs?','')");
+        SQLS.append(",('page_user','button_remove','','en','Remove User','')");
+        SQLS.append(",('page_user','button_remove','','fr','Supprimer l Utilisateur','')");
+        SQLS.append(",('page_user','button_edit','','en','Edit User','')");
+        SQLS.append(",('page_user','button_edit','','fr','Editer l Utilisateur','')");
+        SQLS.append(",('page_user','button_col','','en','Actions','')");
+        SQLS.append(",('page_user','button_col','','fr','Actions','')");
+        SQLS.append(",('page_user','login_col','','en','Login','')");
+        SQLS.append(",('page_user','login_col','','fr','Identifiant','')");
+        SQLS.append(",('page_user','name_col','','en','Name','')");
+        SQLS.append(",('page_user','name_col','','fr','Nom','')");
+        SQLS.append(",('page_user','groups_col','','en','Groups','')");
+        SQLS.append(",('page_user','groups_col','','fr','Groupes','')");
+        SQLS.append(",('page_user','systems_col','','en','Systems','')");
+        SQLS.append(",('page_user','systems_col','','fr','Systèmes','')");
+        SQLS.append(",('page_user','team_col','','en','Team','')");
+        SQLS.append(",('page_user','team_col','','fr','Equipe','')");
+        SQLS.append(",('page_user','defaultsystem_col','','en','Default System','')");
+        SQLS.append(",('page_user','defaultsystem_col','','fr','Système par défaut','')");
+        SQLS.append(",('page_user','request_col','','en','Request','')");
+        SQLS.append(",('page_user','request_col','','fr','Requête','')");
+        SQLS.append(",('page_user','email_col','','en','Email','')");
+        SQLS.append(",('page_user','email_col','','fr','Email','')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

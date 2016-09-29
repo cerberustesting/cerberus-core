@@ -20,12 +20,14 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ICampaignContentDAO {
@@ -46,6 +48,18 @@ public interface ICampaignContentDAO {
     boolean deleteCampaignContent(CampaignContent campaignContent);
 
     List<CampaignContent> findCampaignContentByCriteria(String campaign, Integer campaignContentID, String testBattery) throws CerberusException;
-    
+
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    AnswerList readByCampaign(String campaign);
+
+    AnswerItem<CampaignContent> readByKey(int key);
+
+    Answer deleteByCampaign(String key);
+
+    Answer delete(CampaignContent object);
+
+    Answer update(CampaignContent object);
+
+    Answer create(CampaignContent object);
 }

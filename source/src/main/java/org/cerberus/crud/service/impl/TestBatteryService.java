@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+
 import org.cerberus.crud.dao.ITestBatteryContentDAO;
 import org.cerberus.crud.dao.ITestBatteryDAO;
 import org.cerberus.crud.entity.TestBattery;
@@ -32,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author memiks
  */
 @Service
@@ -118,7 +118,7 @@ public class TestBatteryService implements ITestBatteryService {
     public List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException {
         return testBatteryDAO.findTestBatteriesByTestCase(test, testCase);
     }
-    
+
     @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch) {
         return testBatteryDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);

@@ -26,15 +26,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IUserSystemDAO;
+import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.User;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryUserSystem;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -50,10 +56,45 @@ public class UserSystemDAO implements IUserSystemDAO{
     @Autowired
     private IFactoryUserSystem factoryUserSystem;
 
+    /**
+     * Declare SQL queries used by this {@link UserSystem}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Get list of {@link UserSystem} associated with the given
+         * {@link User}'s name
+         */
+        String READ_BY_USER = "SELECT * FROM usersystem uss WHERE uss.`login` = ? ";
+
+        /**
+         * Create a new {@link UserSystem}
+         */
+        String CREATE = "INSERT INTO `usersystem` (`login`, `system`) VALUES (?, ?)";
+
+        /**
+         * Remove an existing {@link UserSystem}
+         */
+        String DELETE = "DELETE FROM `usersystem` WHERE `login` = ? AND `system` = ?";
+
+    }
+
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOG = Logger.getLogger(UserSystemDAO.class);
+
+    /**
+     * The associated entity name to this DAO
+     */
+    private static final String OBJECT_NAME = UserSystem.class.getSimpleName();
+
     @Override
     public UserSystem findUserSystemByKey(String login, String system) throws CerberusException {
         UserSystem result = null;
-        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? and u.`system`";
+        final String query = "SELECT * FROM usersystem u WHERE u.`login` = ? and u.`system` = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -285,7 +326,91 @@ public class UserSystemDAO implements IUserSystemDAO{
     public void updateUserSystem(UserSystem userSystem) throws CerberusException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public AnswerList<UserSystem> readByUser(String login) {
+        AnswerList ans = new AnswerList();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+            PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
+            // Prepare and execute query
+            preStat.setString(1, login);
+            ResultSet resultSet = preStat.executeQuery();
+
+            // Parse query
+            List<UserSystem> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(loadUserSystemFromResultSet(resultSet));
+            }
+            ans.setDataList(result);
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "GET");
+        } catch (Exception e) {
+            LOG.warn("Unable to read userSystem: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer create(UserSystem sys) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, sys.getLogin());
+            preStat.setString(2, sys.getSystem());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create UserSystem: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer remove(UserSystem sys) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setString(1, sys.getLogin());
+            preStat.setString(2, sys.getSystem());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELTE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete UserSystem: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
     private UserSystem loadUserSystemFromResultSet(ResultSet rs) throws SQLException {
         String login = ParameterParserUtil.parseStringParam(rs.getString("login"), "");
         String system = ParameterParserUtil.parseStringParam(rs.getString("system"), "");

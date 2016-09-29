@@ -23,6 +23,8 @@ import java.util.List;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -37,7 +39,7 @@ public interface IUserSystemService {
      * @throws CerberusException
      */
     List<UserSystem> findallUser() throws CerberusException;
-    
+
     /**
      * @return a list of all the userSystem of a user
      * @throws CerberusException
@@ -68,5 +70,34 @@ public interface IUserSystemService {
      * @throws CerberusException
      */
     void updateUserSystems(User user, List<UserSystem> newSystems) throws CerberusException;
+
+    /**
+     * @return a list of all the userSystem of a user
+     * @throws CerberusException
+     */
+    AnswerList<UserSystem> readByUser(String login);
+
+    /**
+     * @param user
+     * @param newGroups
+     * @return
+     */
+    Answer updateSystemsByUser(User user, List<UserSystem> newGroups);
+
+    /**
+     * Adding the usersystem
+     *
+     * @param sys
+     * @return
+     */
+    Answer create(UserSystem sys);
+
+    /**
+     * Remove the usersystem
+     *
+     * @param sys
+     * @return
+     */
+    Answer remove(UserSystem sys);
     
 }
