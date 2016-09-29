@@ -19,13 +19,10 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.HashMap;
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerList;
 
@@ -73,14 +70,6 @@ public interface ICampaignService {
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 
-    /**
-     *
-     * @param tag
-     * @return
-     * @throws CerberusException
-     */
-    List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException;
-    
     List<String> findCountries(String campaignName) throws CerberusException;
 
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch);

@@ -84,7 +84,7 @@ public class ReadCerberusDetailInformation extends HttpServlet {
                 object.put("id", execution.getId());
                 object.put("test", execution.getTest());
                 object.put("testcase", execution.getTestCase());
-                object.put("system", execution.getApplication().getSystem());
+                object.put("system", execution.getApplicationObj().getSystem());
                 object.put("application", execution.getApplication());
                 object.put("environment", execution.getEnvironmentData());
                 object.put("country", execution.getCountry());

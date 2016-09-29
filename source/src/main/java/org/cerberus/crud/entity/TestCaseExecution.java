@@ -45,7 +45,7 @@ public class TestCaseExecution {
     private long end;
     private String controlStatus;
     private String controlMessage;
-    private Application application;
+    private String application;
     private String ip; // Host the Selenium IP
     private String url;
     private String port; // host the Selenium Port
@@ -60,6 +60,7 @@ public class TestCaseExecution {
     /**
      * From here are data outside database model.
      */
+    private Application applicationObj;
     private String environmentData;
     private Invariant environmentDataObj;
     private Invariant CountryObj;
@@ -96,6 +97,14 @@ public class TestCaseExecution {
     private List<RobotCapability> capabilities;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
     
     public String getUserAgent() {
         return userAgent;
@@ -353,12 +362,12 @@ public class TestCaseExecution {
         this.testCaseObj = testCase;
     }
 
-    public Application getApplication() {
-        return application;
+    public Application getApplicationObj() {
+        return applicationObj;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setApplicationObj(Application applicationObj) {
+        this.applicationObj = applicationObj;
     }
 
     public String getBrowser() {

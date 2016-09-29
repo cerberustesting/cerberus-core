@@ -20,7 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.crud.entity.TestCaseExecution;
 
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
@@ -98,7 +98,7 @@ public interface ITestCaseExecutionInQueueService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
+    List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
      * Find a {@link TestCaseExecutionInQueue} from database
@@ -140,4 +140,11 @@ public interface ITestCaseExecutionInQueueService {
             List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, 
             List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
             String comment, String bugid, String ticket);
+
+    /**
+     * Convert a testCaseExecutionInQueue object into TestCaseExecution
+     * @param testCaseExecutionInQueue
+     * @return TestCaseExecution Object
+     */
+    public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue);
 }

@@ -19,11 +19,14 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.crud.entity.TestCaseExecution;
 
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -80,13 +83,13 @@ public interface ITestCaseExecutionInQueueDAO {
     void remove(long id) throws CerberusException;
 
     /**
-     * Find a list of {@link TestCaseWithExecution}
+     * Find a list of {@link TestCaseExecutionInQueue}
      *
      * @param tag
-     * @return list of object TestCaseWithExecution
+     * @return list of object TestCaseExecutionInQueue
      * @throws CerberusException
      */
-    List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
+    List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
      * Fing a {@link TestCaseExecutionInQueue} record from the database knowing
@@ -115,4 +118,15 @@ public interface ITestCaseExecutionInQueueDAO {
     public AnswerList findTagList(int tagnumber);
 
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
+    
+    /**
+     * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
+     *
+     * @param resultSet ResultSet relative to select from table TestCaseExecutionInQueue
+     * @return object {@link TestCaseExecutionInQueue}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryTestCaseExecutionInQueue
+     */
+    TestCaseExecutionInQueue loadFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException;
 }

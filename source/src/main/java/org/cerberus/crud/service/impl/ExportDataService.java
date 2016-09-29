@@ -21,8 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import org.cerberus.service.export.ExportServiceFactory;
 import java.util.List;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IExportDataService;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.ExportServiceEnum;
 import org.cerberus.util.answer.Answer;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 public class ExportDataService implements IExportDataService{
     
     @Override
-    public Answer exportTestCaseExecutionByTag(List<TestCaseWithExecution> list, String Tag, List<String> exportOptions) {
+    public Answer exportTestCaseExecutionByTag(List<TestCaseExecution> list, String Tag, List<String> exportOptions) {
         
         ExportServiceFactory f = new ExportServiceFactory(list, Tag, ExportServiceEnum.XLSX, "TestCaseWithExecution", exportOptions);
         Answer ans = f.export();

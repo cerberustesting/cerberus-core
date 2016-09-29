@@ -730,14 +730,14 @@ function aoColumnsFunc(Columns) {
     var aoColumns = [
         {
             "data": "test",
-            "sName": "test",
+            "sName": "tec.test",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold"
         },
         {
             "data": "testCase",
-            "sName": "testCase",
+            "sName": "tec.testCase",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
@@ -791,7 +791,7 @@ function aoColumnsFunc(Columns) {
     var col =
             {
                 "data": "priority",
-                "sName": "priority",
+                "sName": "tec.priority",
                 "sClass": "priority",
                 "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("invariant", "PRIORITY")
@@ -804,7 +804,7 @@ function aoColumnsFunc(Columns) {
                             var link = '<a href="'+data.bugTrackerUrl+'">'+data.bugId+"</a>";
                             return link;
                         },
-                "sName": "bugId",
+                "sName": "tec.bugId",
                 "sClass": "bugid",
                 "sWidth": testCaseInfoWidth + "%",
                 "title": doc.getDocOnline("testcase", "BugID")
@@ -825,7 +825,7 @@ function customConfig(config) {
         }
     };
 
-    config.paginate = false;
+    config.bPaginate = false;
     config.lang.colVis = customColvisConfig;
     config.orderClasses = false;
     config.bDeferRender = true;

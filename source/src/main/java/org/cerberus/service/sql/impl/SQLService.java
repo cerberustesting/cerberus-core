@@ -85,7 +85,7 @@ public class SQLService implements ISQLService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
 
         try {
-            String system = tCExecution.getApplication().getSystem();
+            String system = tCExecution.getApplicationObj().getSystem();
             String country = testCaseProperties.getCountry();
             String environment = tCExecution.getEnvironmentData();
             countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system, country, environment, db));
@@ -132,7 +132,7 @@ public class SQLService implements ISQLService {
                     }
                 } else {
                     mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
-                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplicationObj().getSystem()));
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
                     mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
                     mes.setDescription(mes.getDescription().replace("%DB%", db));
@@ -140,7 +140,7 @@ public class SQLService implements ISQLService {
             }
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplicationObj().getSystem()));
             mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
             mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
             mes.setDescription(mes.getDescription().replace("%DB%", db));

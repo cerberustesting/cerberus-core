@@ -377,8 +377,8 @@ public class PropertyService implements IPropertyService {
         /**
          * Trying to replace by system environment variables .
          */
-        stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplication().getSystem());
-        stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplication().getApplication());
+        stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplicationObj().getSystem());
+        stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplicationObj().getApplication());
         stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
         stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
         stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
@@ -848,7 +848,7 @@ public class PropertyService implements IPropertyService {
 
         try {
             propertyValue = testCaseExecutionData.getValue1();
-            String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplication().getApplication(),
+            String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplicationObj().getApplication(),
                     tCExecution.getEnvironmentData(), tCExecution.getCountry()).getValue();
             if (valueFromTestData != null) {
                 testCaseExecutionData.setValue(valueFromTestData);
@@ -1114,7 +1114,7 @@ public class PropertyService implements IPropertyService {
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
-                tCExecution.getApplication().getSystem(), tCExecution.getEnvironmentData(),
+                tCExecution.getApplicationObj().getSystem(), tCExecution.getEnvironmentData(),
                 tCExecution.getCountry());
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answer.getItem() != null) {

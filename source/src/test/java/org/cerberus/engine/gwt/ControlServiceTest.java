@@ -86,7 +86,7 @@ public class ControlServiceTest {
     
     @Before
     public void before() {
-    	 when(tCExecution.getApplication()).thenReturn(application);
+    	 when(tCExecution.getApplicationObj()).thenReturn(application);
          when(application.getType()).thenReturn("GUI");
     }
     

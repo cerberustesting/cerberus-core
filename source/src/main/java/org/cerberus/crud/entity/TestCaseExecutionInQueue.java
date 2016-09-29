@@ -52,6 +52,29 @@ public class TestCaseExecutionInQueue {
     private String comment;
     private int retries;
     private boolean manualExecution;
+    
+    /**
+     * From here are data outside database model.
+     */
+    private Application applicationObj;
+    private TestCase testCaseObj;
+
+    
+    public TestCase getTestCaseObj() {
+        return testCaseObj;
+    }
+
+    public void setTestCaseObj(TestCase testCaseObj) {
+        this.testCaseObj = testCaseObj;
+    }
+
+    public Application getApplicationObj() {
+        return applicationObj;
+    }
+
+    public void setApplicationObj(Application applicationObj) {
+        this.applicationObj = applicationObj;
+    }
 
     public boolean isManualExecution() {
         return manualExecution;

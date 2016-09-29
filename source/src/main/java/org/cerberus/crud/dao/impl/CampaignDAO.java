@@ -28,10 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ICampaignDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
@@ -57,13 +55,10 @@ public class CampaignDAO implements ICampaignDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCampaign factoryCampaign;
-    @Autowired
-    private IApplicationDAO applicationDAO;
 
     private static final Logger LOG = Logger.getLogger(CampaignDAO.class);
 
     private final String OBJECT_NAME = "Campaign";
-    private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
@@ -366,121 +361,6 @@ public class CampaignDAO implements ICampaignDAO {
         String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
 
         return factoryCampaign.create(campaignId, campaign, description);
-    }
-
-    @Override
-    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
-        boolean throwEx = false;
-        final StringBuilder query = new StringBuilder("select * from ( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ")
-                .append("from testcase tc ")
-                .append("left join testcaseexecution tce ")
-                .append("on tce.Test = tc.Test ")
-                .append("and tce.TestCase = tc.TestCase ")
-                .append("where tce.tag = ? ");
-
-        query.append(" order by test, testcase, ID desc) as tce, application app ")
-                .append("where tce.application = app.application ")
-                .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
-
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query.toString());
-            LOG.debug("SQL.param.tag : " + tag);
-        }
-
-        List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-
-            preStat.setString(1, tag);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-                    while (resultSet.next()) {
-                        testCaseWithExecutionList.add(this.loadTestCaseWithExecutionFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                    testCaseWithExecutionList = null;
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                testCaseWithExecutionList = null;
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(CampaignDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            testCaseWithExecutionList = null;
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(CampaignDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-        return testCaseWithExecutionList;
-    }
-
-    public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
-        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
-
-        testCaseWithExecution.setTest(resultSet.getString("Test"));
-        testCaseWithExecution.setTestCase(resultSet.getString("TestCase"));
-        testCaseWithExecution.setApplication(resultSet.getString("Application"));
-        testCaseWithExecution.setProject(resultSet.getString("Project"));
-        testCaseWithExecution.setTicket(resultSet.getString("Ticket"));
-        testCaseWithExecution.setDescription(resultSet.getString("Description"));
-        testCaseWithExecution.setBehaviorOrValueExpected(resultSet.getString("BehaviorOrValueExpected"));
-        testCaseWithExecution.setPriority(resultSet.getInt("Priority"));
-        testCaseWithExecution.setStatus(resultSet.getString("Status"));
-        testCaseWithExecution.setTcActive(resultSet.getString("TcActive"));
-        testCaseWithExecution.setGroup(resultSet.getString("Group"));
-        testCaseWithExecution.setOrigine(resultSet.getString("Origine"));
-        testCaseWithExecution.setRefOrigine(resultSet.getString("RefOrigine"));
-        testCaseWithExecution.setHowTo(resultSet.getString("HowTo"));
-        testCaseWithExecution.setComment(resultSet.getString("Comment"));
-        testCaseWithExecution.setFromBuild(resultSet.getString("FromBuild"));
-        testCaseWithExecution.setFromRev(resultSet.getString("FromRev"));
-        testCaseWithExecution.setToBuild(resultSet.getString("ToBuild"));
-        testCaseWithExecution.setToRev(resultSet.getString("ToRev"));
-        testCaseWithExecution.setBugID(resultSet.getString("BugID"));
-        testCaseWithExecution.setTargetBuild(resultSet.getString("TargetBuild"));
-        testCaseWithExecution.setTargetRev(resultSet.getString("TargetRev"));
-        testCaseWithExecution.setUsrCreated(resultSet.getString("UsrCreated"));
-        testCaseWithExecution.setImplementer(resultSet.getString("Implementer"));
-        testCaseWithExecution.setUsrModif(resultSet.getString("UsrModif"));
-        testCaseWithExecution.setActiveQA(resultSet.getString("activeQA"));
-        testCaseWithExecution.setActiveUAT(resultSet.getString("activeUAT"));
-        testCaseWithExecution.setActivePROD(resultSet.getString("activePROD"));
-        testCaseWithExecution.setFunction(resultSet.getString("function"));
-        String start = resultSet.getString("Start");
-        if (start.endsWith(".0")) {
-            testCaseWithExecution.setStart(start.replace(".0", ""));
-        } else {
-            testCaseWithExecution.setStart(start);
-        }
-        if (!("PE".equals(resultSet.getString("ControlStatus")))) { // When execution is still PE End is not feeded correctly.
-            testCaseWithExecution.setEnd(resultSet.getString("End"));
-        }
-        testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
-        testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
-        testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));
-        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
-        testCaseWithExecution.setCountry(resultSet.getString("Country"));
-        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
-
-        testCaseWithExecution.setApplicationObject(applicationDAO.loadFromResultSet(resultSet));
-
-        return testCaseWithExecution;
     }
 
     @Override

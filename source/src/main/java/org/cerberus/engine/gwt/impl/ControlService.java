@@ -384,8 +384,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(html);
                     if (identifier.getIdentifier().equals("picture")) {
@@ -402,7 +402,7 @@ public class ControlService implements IControlService {
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
                 SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                 String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
                 if (xmlUnitService.isElementPresent(xmlResponse, html)) {
@@ -417,7 +417,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementPresent"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -430,7 +430,7 @@ public class ControlService implements IControlService {
             LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
         }
         MessageEvent mes;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI") || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
             if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
@@ -455,7 +455,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementInElement"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
     }
@@ -539,10 +539,10 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementEquals"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
 
@@ -560,10 +560,10 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementDifferent"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
 
@@ -586,7 +586,7 @@ public class ControlService implements IControlService {
         String actual = null;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getApplication().getType();
+            String applicationType = tCExecution.getApplicationObj().getType();
 
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -603,7 +603,7 @@ public class ControlService implements IControlService {
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
@@ -639,7 +639,7 @@ public class ControlService implements IControlService {
         String actual = null;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getApplication().getType();
+            String applicationType = tCExecution.getApplicationObj().getType();
 
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -656,7 +656,7 @@ public class ControlService implements IControlService {
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextNotInElement"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
@@ -912,8 +912,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
@@ -930,7 +930,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -943,8 +943,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
@@ -961,7 +961,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementNotClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -971,31 +971,31 @@ public class ControlService implements IControlService {
 
     private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
         return message;
     }
 
     private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GETPAGESOURCE);
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
         return message;
     }
 

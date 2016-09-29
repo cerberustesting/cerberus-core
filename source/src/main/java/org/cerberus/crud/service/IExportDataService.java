@@ -20,7 +20,7 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.util.answer.Answer;
 
 /**
@@ -28,5 +28,5 @@ import org.cerberus.util.answer.Answer;
  * @author FNogueira
  */
 public interface IExportDataService {
-    Answer exportTestCaseExecutionByTag(List<TestCaseWithExecution> list, String Tag, List<String> exportOptions);
+    Answer exportTestCaseExecutionByTag(List<TestCaseExecution> list, String Tag, List<String> exportOptions);
 }

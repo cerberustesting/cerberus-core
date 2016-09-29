@@ -45,7 +45,6 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
@@ -55,7 +54,6 @@ import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
-import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
 import org.cerberus.crud.service.ITestCaseExecutionwwwSumService;
@@ -69,7 +67,6 @@ import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
-import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.util.StringUtil;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
@@ -88,8 +85,6 @@ public class ExecutionRunService implements IExecutionRunService {
 
     @Autowired
     private ISeleniumServerService serverService;
-    @Autowired
-    private IWebDriverService webdriverService;
     @Autowired
     private IActionService actionService;
     @Autowired
@@ -115,8 +110,6 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private ITestCaseCountryPropertiesService testCaseCountryPropertiesService;
     @Autowired
-    private ITestCaseExecutionDataService testCaseExecutionDataService;
-    @Autowired
     private ICountryEnvParamService countryEnvParamService;
     @Autowired
     private ILoadTestCaseService loadTestCaseService;
@@ -126,8 +119,6 @@ public class ExecutionRunService implements IExecutionRunService {
     private IFactoryTestCaseStepActionExecution factoryTestCaseStepActionExecution;
     @Autowired
     private IFactoryTestCaseStepActionControlExecution factoryTestCaseStepActionControlExecution;
-    @Autowired
-    private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
     @Autowired
     private IFactoryTestCaseExecutionSysVer factoryTestCaseExecutionSysVer;
     @Autowired
@@ -151,7 +142,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 TestCaseExecutionSysVer myExeSysVer = null;
                 try {
                     LOG.debug(logPrefix + "Registering Main System Version.");
-                    myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplication().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
+                    myExeSysVer = factoryTestCaseExecutionSysVer.create(runID, tCExecution.getApplicationObj().getSystem(), tCExecution.getBuild(), tCExecution.getRevision());
                     testCaseExecutionSysVerService.insertTestCaseExecutionSysVer(myExeSysVer);
                 } catch (CerberusException ex) {
                     LOG.error(logPrefix + ex.getMessage());
@@ -165,7 +156,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.debug(logPrefix + "Registering Linked System Version.");
                 try {
                     List<CountryEnvLink> ceLink = null;
-                    ceLink = countryEnvLinkService.convert(countryEnvLinkService.readByVarious(tCExecution.getApplication().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment()));
+                    ceLink = countryEnvLinkService.convert(countryEnvLinkService.readByVarious(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment()));
                     for (CountryEnvLink myCeLink : ceLink) {
                         LOG.debug(logPrefix + "Linked environment found : " + myCeLink.getSystemLink() + myCeLink.getCountryLink() + myCeLink.getEnvironmentLink());
 
@@ -190,7 +181,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Get used SeleniumCapabilities (empty if application is not GUI)
              */
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
                 try {
                     Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
@@ -207,7 +198,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 tCExecution.setBrowser("");
                 tCExecution.setVersion("");
                 tCExecution.setPlatform("");
-                LOG.debug(logPrefix + "No Selenium capabitities loaded because application not GUI : " + tCExecution.getApplication().getType());
+                LOG.debug(logPrefix + "No Selenium capabitities loaded because application not GUI : " + tCExecution.getApplicationObj().getType());
             }
 
             /**
@@ -825,9 +816,9 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
                 //TODO:FN debug messages to be removed

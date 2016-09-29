@@ -47,8 +47,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.dto.SummaryStatisticsDTO;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.ExportServiceEnum;
 import org.cerberus.util.answer.Answer;
 
@@ -107,7 +107,7 @@ public class ExportServiceFactory {
         //handles the export of the execution by tag data
         HashMap<String, SummaryStatisticsDTO> summaryMap = new HashMap<String, SummaryStatisticsDTO>();
 
-        HashMap<String, HashMap<String, List<TestCaseWithExecution>>> mapList = new HashMap<String, HashMap<String, List<TestCaseWithExecution>>>();
+        HashMap<String, HashMap<String, List<TestCaseExecution>>> mapList = new HashMap<String, HashMap<String, List<TestCaseExecution>>>();
         List<String> mapCountries = new ArrayList<String>();
         List<CellStyle> stylesList = new LinkedList<CellStyle>();
 
@@ -127,7 +127,7 @@ public class ExportServiceFactory {
             stylesList.add(okStyle);
 
         }
-        for (TestCaseWithExecution execution : (List<TestCaseWithExecution>) list) {
+        for (TestCaseExecution execution : (List<TestCaseExecution>) list) {
             //check if the country and application shows
 
             if (exportOptions.contains("chart") || exportOptions.contains("summary")) {
@@ -154,20 +154,20 @@ public class ExportServiceFactory {
                     //all data is saved
 
                 }
-                HashMap<String, List<TestCaseWithExecution>> listExecution;
-                List<TestCaseWithExecution> testCaseList;
+                HashMap<String, List<TestCaseExecution>> listExecution;
+                List<TestCaseExecution> testCaseList;
                 String testKey = execution.getTest();
                 String testCaseKey = execution.getTestCase();
 
                 if (mapList.containsKey(testKey)) {
                     listExecution = mapList.get(testKey);
                 } else {
-                    listExecution = new HashMap<String, List<TestCaseWithExecution>>();
+                    listExecution = new HashMap<String, List<TestCaseExecution>>();
                 }
                 if (listExecution.containsKey(testCaseKey)) {
                     testCaseList = listExecution.get(testCaseKey);
                 } else {
-                    testCaseList = new ArrayList<TestCaseWithExecution>();
+                    testCaseList = new ArrayList<TestCaseExecution>();
                 }
                 testCaseList.add(execution);
                 listExecution.put(testCaseKey, testCaseList);
@@ -392,7 +392,7 @@ public class ExportServiceFactory {
                 startIndexForCountries++;
             }
 
-            TreeMap<String, HashMap<String, List<TestCaseWithExecution>>> sortedKeys = new TreeMap<String, HashMap<String, List<TestCaseWithExecution>>>(mapList);
+            TreeMap<String, HashMap<String, List<TestCaseExecution>>> sortedKeys = new TreeMap<String, HashMap<String, List<TestCaseExecution>>>(mapList);
             rowCount++;
             for (String keyMapList : sortedKeys.keySet()) {
                 rowCount = createRow(keyMapList, mapList.get(keyMapList), sheet, rowCount, mapCountries);
@@ -400,13 +400,13 @@ public class ExportServiceFactory {
         }
     }
 
-    private int createRow(String test, HashMap<String, List<TestCaseWithExecution>> executionsPerTestCase, Sheet sheet, int currentIndex, List<String> mapCountries) {
+    private int createRow(String test, HashMap<String, List<TestCaseExecution>> executionsPerTestCase, Sheet sheet, int currentIndex, List<String> mapCountries) {
 
         int lastRow = currentIndex + executionsPerTestCase.size();
 
         int current = currentIndex;
 
-        TreeMap<String, List<TestCaseWithExecution>> sortedKeys = new TreeMap<String, List<TestCaseWithExecution>>(executionsPerTestCase);
+        TreeMap<String, List<TestCaseExecution>> sortedKeys = new TreeMap<String, List<TestCaseExecution>>(executionsPerTestCase);
         CellStyle wrapStyle = sheet.getColumnStyle(0); //Create new style
         wrapStyle.setWrapText(true); //Set wordwrap
 
@@ -415,7 +415,7 @@ public class ExportServiceFactory {
             String application;
             String description;
             Row r = sheet.createRow(current);
-            List<TestCaseWithExecution> executionList = executionsPerTestCase.get(testCaseKey);
+            List<TestCaseExecution> executionList = executionsPerTestCase.get(testCaseKey);
             Cell testCell = r.createCell(0);
             testCell.setCellValue(test);
             testCell.setCellStyle(wrapStyle);
@@ -426,8 +426,8 @@ public class ExportServiceFactory {
                 application = "N/D";
                 description = "N/D";
             } else {
-                application = executionList.get(0).getBehaviorOrValueExpected();
-                description = executionList.get(0).getApplication();
+                application = executionList.get(0).getApplication();
+                description = executionList.get(0).getTestCaseObj().getBehaviorOrValueExpected();
             }
             //Sets the application and description
             r.createCell(2).setCellValue(application);
@@ -435,7 +435,7 @@ public class ExportServiceFactory {
 
             int rowStartedTestCaseInfo = current;
 
-            for (TestCaseWithExecution exec : executionList) {
+            for (TestCaseExecution exec : executionList) {
                 if (browserEnvironment.isEmpty()) {
                     browserEnvironment.add(exec.getEnvironment() + "_" + exec.getBrowser());
                     r.createCell(4).setCellValue(exec.getEnvironment());

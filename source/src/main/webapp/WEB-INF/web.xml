@@ -700,22 +700,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CampaignExecutionReport</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionRadarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionRadarGraphByFunction</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionStatusBarGraphByFunction</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionGraphByStatus</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReport</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReport</servlet-class>
     </servlet>
@@ -1615,22 +1599,6 @@
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CampaignExecutionReport</servlet-name>
-        <url-pattern>/CampaignExecutionReport</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionRadarGraphByFunction</servlet-name>
-        <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
-        <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
-        <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetReport</servlet-name>
         <url-pattern>/GetReport</url-pattern>
     </servlet-mapping>
@@ -2306,10 +2274,6 @@
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
-            <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
-            <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
-            <url-pattern>/CampaignExecutionReport</url-pattern>
-            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/VirtualProxy</url-pattern>

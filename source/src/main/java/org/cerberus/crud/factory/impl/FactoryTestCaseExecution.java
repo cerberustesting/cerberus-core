@@ -44,7 +44,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,
             MessageGeneral resultMessage, String executor) {
         TestCaseExecution newTce = new TestCaseExecution();
-        newTce.setApplication(application);
+        newTce.setApplicationObj(application);
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);

@@ -44,6 +44,13 @@ public interface IFactoryApplication {
             , int sort, String type, String system, String subsystem
             , String svnurl, String deploytype, String mavengroupid
             , String bugtrackerurl, String bugtrackernewurl);
+    
+    /**
+     * Return Application object with only application defined
+     * @param application
+     * @return 
+     */
+    Application create(String application);
 
 
 }

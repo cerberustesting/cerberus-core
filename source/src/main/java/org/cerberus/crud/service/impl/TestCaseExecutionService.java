@@ -32,7 +32,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.ParameterParserUtil;

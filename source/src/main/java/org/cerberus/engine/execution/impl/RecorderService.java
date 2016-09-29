@@ -90,13 +90,13 @@ public class RecorderService implements IRecorderService {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionExecution.getActionResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
             returnCode = testCaseStepActionExecution.getReturnCode();
         } else {
             myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
             returnCode = testCaseStepActionControlExecution.getReturnCode();
             controlNumber = testCaseStepActionControlExecution.getControl();
         }
@@ -352,7 +352,7 @@ public class RecorderService implements IRecorderService {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
-        if (testCaseExecution.getApplication().getType().equals("GUI")) {
+        if (testCaseExecution.getApplicationObj().getType().equals("GUI")) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
                 LOG.debug(logPrefix + "Starting to save Selenium log file.");

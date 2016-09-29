@@ -32,14 +32,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
+import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -71,11 +70,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private IFactoryTestCaseExecution factoryTCExecution;
     @Autowired
     private IApplicationDAO applicationDAO;
+    @Autowired
+    private ITestCaseDAO testCaseDAO;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionDAO.class);
 
     private final String OBJECT_NAME = "TestCase Execution";
-    private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
@@ -96,7 +96,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(5, tCExecution.getEnvironment());
                 preStat.setString(6, tCExecution.getCountry());
                 preStat.setString(7, tCExecution.getBrowser());
-                preStat.setString(8, tCExecution.getApplication().getApplication());
+                preStat.setString(8, tCExecution.getApplicationObj().getApplication());
                 preStat.setString(9, tCExecution.getIp());
                 preStat.setString(10, tCExecution.getUrl());
                 preStat.setString(11, tCExecution.getPort());
@@ -168,7 +168,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(5, tCExecution.getEnvironment());
                 preStat.setString(6, tCExecution.getCountry());
                 preStat.setString(7, tCExecution.getBrowser());
-                preStat.setString(8, tCExecution.getApplication().getApplication());
+                preStat.setString(8, tCExecution.getApplicationObj().getApplication());
                 preStat.setString(9, tCExecution.getIp());
                 preStat.setString(10, tCExecution.getUrl());
                 preStat.setString(11, tCExecution.getPort());
@@ -272,7 +272,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("select * from testcaseexecution ");
+        query.append("select * from testcaseexecution exe ");
 
         searchSQL.append(" where 1=1 ");
 
@@ -343,11 +343,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public TestCaseExecution findLastTCExecutionByCriteria(String test, String testcase, String environment, String country,
             String build, String revision) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
-                .append("WHERE tce.application = app.application ")
-                .append("AND test = ? AND testcase = ? AND environment = ? ")
-                .append("AND country = ? AND build = ? AND revision = ? ")
-                .append("ORDER BY id DESC").toString();
+        final String query = new StringBuffer("SELECT exe.* FROM testcaseexecution exe ")
+                .append("WHERE exe.test = ? AND exe.testcase = ? AND exe.environment = ? ")
+                .append("AND exe.country = ? AND exe.build = ? AND exe.revision = ? ")
+                .append("ORDER BY exe.id DESC").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -363,7 +362,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
@@ -396,12 +395,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             String build, String revision, String browser, String browserVersion,
             String ip, String port, String tag) {
         TestCaseExecution result = null;
-        final String query = new StringBuffer("SELECT * FROM testcaseexecution tce, application app ")
-                .append("WHERE tce.application = app.application AND test = ? AND testcase = ? ")
-                .append("AND environment LIKE ? AND country = ? AND build LIKE ? ")
-                .append("AND revision LIKE ? AND browser = ? AND browserfullversion LIKE ? ")
-                .append("AND ip LIKE ? AND port LIKE ? AND tag LIKE ? ")
-                .append("ORDER BY id DESC").toString();
+        final String query = new StringBuffer("SELECT exe.* FROM testcaseexecution exe ")
+                .append("WHERE exe.test = ? AND exe.testcase = ? ")
+                .append("AND exe.environment LIKE ? AND exe.country = ? AND exe.build LIKE ? ")
+                .append("AND exe.revision LIKE ? AND exe.browser = ? AND exe.browserfullversion LIKE ? ")
+                .append("AND exe.ip LIKE ? AND exe.port LIKE ? AND exe.tag LIKE ? ")
+                .append("ORDER BY exe.id DESC").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -422,7 +421,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -453,11 +452,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<TestCaseExecution> myTestCaseExecutions = null;
         TestCaseExecution Execution;
         boolean throwException = false;
-        final String query = new StringBuffer("SELECT * FROM testcaseexecution  tce LEFT JOIN application app ")
-                .append("ON tce.application = app.application WHERE start > ? ")
-                .append("AND test LIKE ? AND testcase LIKE ? AND environment LIKE ? ")
-                .append("AND country LIKE ? AND tce.application LIKE ? AND controlstatus LIKE ? ")
-                .append("AND status LIKE ?").toString();
+        final String query = new StringBuffer("SELECT exe.*, tec.*, app.* FROM testcaseexecution exe ")
+                .append("LEFT JOIN testcase tec ON exe.test = exe.test AND exe.testcase = tec.testcase ")
+                .append("LEFT JOIN application app ON exe.application = app.application ")
+                .append("WHERE exe.start > ? AND exe.test LIKE ? AND exe.testcase LIKE ? AND exe.environment LIKE ? ")
+                .append("AND exe.country LIKE ? AND exe.application LIKE ? AND exe.controlstatus LIKE ? ")
+                .append("AND exe.status LIKE ?").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -479,7 +479,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     } else {
                         myTestCaseExecutions = new ArrayList<TestCaseExecution>();
                         do {
-                            Execution = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
+                            Execution = this.loadWithDependenciesFromResultSet(resultSet);
 
                             myTestCaseExecutions.add(Execution);
                         } while (resultSet.next());
@@ -514,49 +514,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return myTestCaseExecutions;
     }
 
-    private TestCaseExecution loadTestCaseExecutionAndApplicationFromResultSet(ResultSet resultSet) throws SQLException {
-        long id = resultSet.getLong("ID");
-        String test = resultSet.getString("test");
-        String testcase = resultSet.getString("testcase");
-        String build = resultSet.getString("build");
-        String revision = resultSet.getString("revision");
-        String environment = resultSet.getString("environment");
-        String country = resultSet.getString("country");
-        String browser = resultSet.getString("browser");
-        String version = resultSet.getString("version");
-        String platform = resultSet.getString("platform");
-        String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
-        String controlStatus = resultSet.getString("controlStatus");
-        String controlMessage = resultSet.getString("controlMessage");
-        //TODO get Application
-        Application application = null;
-        try {
-            application = applicationDAO.loadFromResultSet(resultSet);
-        } catch (Exception e) {
-            LOG.warn("No Application found for theses testcaseexecution " + e.toString());
-        }
-        String ip = resultSet.getString("ip"); // Host the Selenium IP
-        String url = resultSet.getString("url");
-        String port = resultSet.getString("port"); // host the Selenium Port
-        String tag = resultSet.getString("tag");
-        String finished = resultSet.getString("finished");
-        int verbose = resultSet.getInt("verbose");
-        String status = resultSet.getString("status");
-        String crbVersion = resultSet.getString("crbVersion");
-        String executor = resultSet.getString("executor");
-        String screenSize = resultSet.getString("screensize");
-        return factoryTCExecution.create(id, test, testcase, build, revision, environment,
-                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url,
-                port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, null, null, null, null, null, executor, 0, screenSize);
-    }
-
     @Override
     public TestCaseExecution findTCExecutionByKey(long id) throws CerberusException {
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application AND ID = ?";
+        final String query = "SELECT * FROM testcaseexecution exe, application app WHERE exe.application = app.application AND ID = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -603,20 +564,20 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<TestCaseExecution> campaignTestCaseExecutions = null;
         boolean throwException = false;
 
-        final String query = new StringBuffer("select tce.*, app.* from ( ")
-                .append("select tce.* ")
-                .append("from testcaseexecution tce ")
+        final String query = new StringBuffer("select exe.*, app.* from ( ")
+                .append("select exe.* ")
+                .append("from testcaseexecution exe ")
                 .append("inner join testbatterycontent tbc ")
-                .append("on tbc.Test = tce.Test ")
-                .append("and tbc.TestCase = tce.TestCase ")
+                .append("on tbc.Test = exe.Test ")
+                .append("and tbc.TestCase = exe.TestCase ")
                 .append("inner join campaigncontent cc ")
                 .append("on cc.testbattery = tbc.testbattery ")
                 .append("where tag is not null ")
                 .append("and cc.campaign = ? ")
                 .append("and tag = ? ")
-                .append("order by test, testcase, ID desc) as tce, application app ")
-                .append("where tce.application = app.application ")
-                .append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ").toString();
+                .append("order by test, testcase, ID desc) as exe, application app ")
+                .append("where exe.application = app.application ")
+                .append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country ").toString();
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -632,7 +593,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     } else {
                         campaignTestCaseExecutions = new ArrayList<TestCaseExecution>();
                         do {
-                            campaignTestCaseExecutions.add(this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet));
+                            campaignTestCaseExecutions.add(this.loadFromResultSet(resultSet));
                         } while (resultSet.next());
                     }
                 } catch (SQLException exception) {
@@ -669,7 +630,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public TestCaseExecution findLastTestCaseExecutionNotPE(String test, String testCase) throws CerberusException {
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT ID, Environment, Country, Build, Revision, End, ControlStatus  FROM `testcaseexecution` ");
+        query.append("SELECT exe.*  FROM `testcaseexecution` exe ");
         query.append(" WHERE Test = ? and TestCase= ? and ID = ");
         query.append(" (SELECT MAX(ID) from `testcaseexecution` ");
         query.append("WHERE Test= ? and TestCase= ? and ControlStatus!='PE')");
@@ -686,23 +647,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        long id = resultSet.getLong("ID");
-                        String build = resultSet.getString("build");
-                        String revision = resultSet.getString("revision");
-                        String environment = resultSet.getString("environment");
-                        String country = resultSet.getString("country");
-                        long end;
-                        if (resultSet.getLong("end") != 0L) {
-                            end = resultSet.getTimestamp("end").getTime();
-                        } else {
-                            end = 0L;
-                        }
-                        String controlStatus = resultSet.getString("controlStatus");
-
-                        result = factoryTCExecution.create(id, test, testCase, build, revision, environment,
-                                country, null, null, null, null, 0, end, controlStatus, null, null, null, null,
-                                null, null, null, 0, 0, 0, 0, true, "", "", null, null, null, null, null,
-                                false, null, null, null, null, null, null, null, null, null);
+                        result = loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -735,36 +680,36 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         TestCaseExecution result = null;
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcaseexecution tce, application app WHERE tce.application = app.application ");
-        query.append("AND test = ? AND testcase = ? AND country = ? AND browser = ? ");
+        query.append("SELECT exe.* FROM testcaseexecution exe ")
+                .append("WHERE exe.test = ? AND exe.testcase = ? AND exe.country = ? AND exe.browser = ? ");
         if (!StringUtil.isNull(environment)) {
-            query.append("AND environment IN (");
+            query.append("AND exe.environment IN (");
             query.append(environment);
             query.append(") ");
         }
         if (!StringUtil.isNull(build)) {
-            query.append("AND build IN (");
+            query.append("AND exe.build IN (");
             query.append(build);
             query.append(") ");
         }
         if (!StringUtil.isNull(revision)) {
-            query.append("AND revision IN (");
+            query.append("AND exe.revision IN (");
             query.append(revision);
             query.append(") ");
         }
         if (!StringUtil.isNull(browserVersion)) {
-            query.append("AND browserfullversion LIKE ? ");
+            query.append("AND exe.browserfullversion LIKE ? ");
         }
         if (!StringUtil.isNull(ip)) {
-            query.append("AND ip LIKE ? ");
+            query.append("AND exe.ip LIKE ? ");
         }
         if (!StringUtil.isNull(port)) {
-            query.append("AND port LIKE ? ");
+            query.append("AND exe.port LIKE ? ");
         }
         if (!StringUtil.isNull(tag)) {
-            query.append("AND tag LIKE ? ");
+            query.append("AND exe.tag LIKE ? ");
         }
-        query.append("ORDER BY id DESC");
+        query.append("ORDER BY exe.id DESC");
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -794,7 +739,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        result = this.loadTestCaseExecutionAndApplicationFromResultSet(resultSet);
+                        result = this.loadFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -824,7 +769,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public List<String> findDistinctTag(boolean withUUIDTag) throws CerberusException {
         List<String> list = null;
         StringBuilder query = new StringBuilder();
-        query.append("select distinct tag from testcaseexecution tce ")
+        query.append("select distinct tag from testcaseexecution exe ")
                 .append("where tag != '' ");
         if (!withUUIDTag) {
             query.append(" and length(tag) != length('c3888898-c65a-11e3-9b3e-0000004047e0')");
@@ -874,7 +819,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<String> list = null;
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT DISTINCT tag FROM testcaseexecution WHERE tag != ''");
+        query.append("SELECT DISTINCT exe.tag FROM testcaseexecution exe WHERE tag != ''");
 
         if (tagnumber != 0) {
             query.append("ORDER BY id desc LIMIT ");
@@ -891,7 +836,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                     list = new ArrayList<String>();
 
                     while (resultSet.next()) {
-                        list.add(resultSet.getString("tag"));
+                        list.add(resultSet.getString("exe.tag"));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TagList").replace("%OPERATION%", "SELECT"));
                 } catch (SQLException exception) {
@@ -930,7 +875,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public void setTagToExecution(long id, String tag) throws CerberusException {
         boolean throwEx = false;
-        final String query = "UPDATE testcaseexecution SET tag = ? WHERE id = ?";
+        final String query = "UPDATE testcaseexecution exe SET exe.tag = ? WHERE exe.id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -971,28 +916,27 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         final StringBuffer query = new StringBuffer();
 
         query.append("SELECT * FROM ");
-        query.append("( select tc.*, tce.Start, tce.End, tce.ID as statusExecutionID, tce.ControlStatus, tce.ControlMessage, tce.Environment, tce.Country, tce.Browser ");
-        query.append("from testcase tc ");
-        query.append("left join testcaseexecution tce ");
-        query.append("on tce.Test = tc.Test ");
-        query.append("and tce.TestCase = tc.TestCase ");
+        query.append("( select exe.* ");
+        query.append("from testcaseexecution exe ");
 
         query.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(tag)) {
-            query.append("and tce.tag = ? ");
+            query.append("and exe.tag = ? ");
         }
 
-        query.append(" order by test, testcase, ID desc) as tce");
-        query.append(" , application app where tce.application = app.application ");
-
+        query.append(" order by exe.test, exe.testcase, exe.ID desc) as exe ");
+        query.append("left join testcase tec on exe.Test = tec.Test ");
+        query.append("and exe.TestCase = tec.TestCase ");
+        query.append("left join application app on tec.application = app.application ");
+        query.append(" where 1=1 ");
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            query.append("and (tce.`test` like ? ");
-            query.append(" or tce.`testCase` like ? ");
-            query.append(" or tce.`application` like ? ");
-            query.append(" or tc.`bugid` like ? ");
-            query.append(" or tc.`priority` like ? ");
-            query.append(" or tc.`description` like ? )");
+            query.append("and (exe.`test` like ? ");
+            query.append(" or exe.`testCase` like ? ");
+            query.append(" or exe.`application` like ? ");
+            query.append(" or tec.`bugid` like ? ");
+            query.append(" or tec.`priority` like ? ");
+            query.append(" or tec.`description` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             query.append(" and ( 1=1 ");
@@ -1004,10 +948,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
-        query.append("group by tce.test, tce.testcase, tce.Environment, tce.Browser, tce.Country ");
+        query.append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country ");
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by tce.`").append(column).append("` ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -1020,7 +964,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
-        List<TestCaseWithExecution> testCaseWithExecutionList = new ArrayList<TestCaseWithExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1044,15 +988,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        testCaseWithExecutionList.add(this.loadTestCaseWithExecutionFromResultSet(resultSet));
+                        testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseWithExecutionList, testCaseWithExecutionList.size());
+                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    testCaseWithExecutionList = null;
+                    testCaseExecutionList = null;
                 } finally {
                     resultSet.close();
                 }
@@ -1060,7 +1004,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                testCaseWithExecutionList = null;
+                testCaseExecutionList = null;
             } finally {
                 preStat.close();
             }
@@ -1068,7 +1012,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-            testCaseWithExecutionList = null;
+            testCaseExecutionList = null;
         } finally {
             try {
                 if (connection != null) {
@@ -1090,11 +1034,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         StringBuilder query = new StringBuilder();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
 
-        query.append("SELECT Environment, Country, Browser, ControlStatus FROM testcaseexecution WHERE tag = ? GROUP BY Environment, Country, Browser, ControlStatus");
+        query.append("SELECT exe.* FROM testcaseexecution exe WHERE exe.tag = ? GROUP BY exe.Environment, exe.Country, exe.Browser, exe.ControlStatus");
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseWithExecution> EnvCountryBrowserList = new ArrayList<TestCaseWithExecution>();
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1104,15 +1048,15 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        EnvCountryBrowserList.add(this.loadEnvCountryBrowserFromResultSet(resultSet));
+                        testCaseExecutionList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(EnvCountryBrowserList, EnvCountryBrowserList.size());
+                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                     msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                    EnvCountryBrowserList = null;
+                    testCaseExecutionList = null;
                 } finally {
                     if (resultSet != null) {
                         resultSet.close();
@@ -1122,7 +1066,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + ex.toString());
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
-                EnvCountryBrowserList = null;
+                testCaseExecutionList = null;
             } finally {
                 if (preStat != null) {
                     preStat.close();
@@ -1184,16 +1128,16 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
             query.append("SELECT ");
             query.append(distinct.toString());
-            query.append(" FROM testcaseexecution WHERE tag = ? GROUP BY ");
+            query.append(" FROM testcaseexecution exe WHERE exe.tag = ? GROUP BY ");
             query.append(distinct.toString());
         } else {
             //If there is no distinct, select nothing
-            query.append("SELECT * FROM testcaseexecution WHERE 1 = 0 AND tag = ?");
+            query.append("SELECT * FROM testcaseexecution exe WHERE 1 = 0 AND exe.tag = ?");
         }
 
         Connection connection = this.databaseSpring.connect();
 
-        List<TestCaseWithExecution> column = new ArrayList<TestCaseWithExecution>();
+        List<TestCaseExecution> column = new ArrayList<TestCaseExecution>();
 
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -1203,7 +1147,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        TestCaseWithExecution tmp = new TestCaseWithExecution();
+                        TestCaseExecution tmp = new TestCaseExecution();
                         if (env) {
                             tmp.setEnvironment(resultSet.getString("Environment"));
                         } else {
@@ -1266,70 +1210,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         return answer;
     }
 
-    public TestCaseWithExecution loadEnvCountryBrowserFromResultSet(ResultSet resultSet) throws SQLException {
-        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
-
-        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
-        testCaseWithExecution.setCountry(resultSet.getString("Country"));
-        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
-        testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
-
-        return testCaseWithExecution;
-    }
-
-    public TestCaseWithExecution loadTestCaseWithExecutionFromResultSet(ResultSet resultSet) throws SQLException {
-        TestCaseWithExecution testCaseWithExecution = new TestCaseWithExecution();
-
-        testCaseWithExecution.setTest(resultSet.getString("Test"));
-        testCaseWithExecution.setTestCase(resultSet.getString("TestCase"));
-        testCaseWithExecution.setApplication(resultSet.getString("Application"));
-        testCaseWithExecution.setProject(resultSet.getString("Project"));
-        testCaseWithExecution.setTicket(resultSet.getString("Ticket"));
-        testCaseWithExecution.setDescription(resultSet.getString("Description"));
-        testCaseWithExecution.setBehaviorOrValueExpected(resultSet.getString("BehaviorOrValueExpected"));
-        testCaseWithExecution.setPriority(resultSet.getInt("Priority"));
-        testCaseWithExecution.setStatus(resultSet.getString("Status"));
-        testCaseWithExecution.setTcActive(resultSet.getString("TcActive"));
-        testCaseWithExecution.setGroup(resultSet.getString("Group"));
-        testCaseWithExecution.setOrigine(resultSet.getString("Origine"));
-        testCaseWithExecution.setRefOrigine(resultSet.getString("RefOrigine"));
-        testCaseWithExecution.setHowTo(resultSet.getString("HowTo"));
-        testCaseWithExecution.setComment(resultSet.getString("Comment"));
-        testCaseWithExecution.setFromBuild(resultSet.getString("FromBuild"));
-        testCaseWithExecution.setFromRev(resultSet.getString("FromRev"));
-        testCaseWithExecution.setToBuild(resultSet.getString("ToBuild"));
-        testCaseWithExecution.setToRev(resultSet.getString("ToRev"));
-        testCaseWithExecution.setBugID(resultSet.getString("BugID"));
-        testCaseWithExecution.setTargetBuild(resultSet.getString("TargetBuild"));
-        testCaseWithExecution.setTargetRev(resultSet.getString("TargetRev"));
-        testCaseWithExecution.setUsrCreated(resultSet.getString("UsrCreated"));
-        testCaseWithExecution.setImplementer(resultSet.getString("Implementer"));
-        testCaseWithExecution.setUsrModif(resultSet.getString("UsrModif"));
-        testCaseWithExecution.setActiveQA(resultSet.getString("activeQA"));
-        testCaseWithExecution.setActiveUAT(resultSet.getString("activeUAT"));
-        testCaseWithExecution.setActivePROD(resultSet.getString("activePROD"));
-        testCaseWithExecution.setFunction(resultSet.getString("function"));
-        String start = resultSet.getString("Start");
-        if (start.endsWith(".0")) {
-            testCaseWithExecution.setStart(start.replace(".0", ""));
-        } else {
-            testCaseWithExecution.setStart(start);
-        }
-        if (!("PE".equals(resultSet.getString("ControlStatus")))) { // When execution is still PE End is not feeded correctly.
-            testCaseWithExecution.setEnd(resultSet.getString("End"));
-        }
-        testCaseWithExecution.setStatusExecutionID(resultSet.getLong("statusExecutionID"));
-        testCaseWithExecution.setControlStatus(resultSet.getString("ControlStatus"));
-        testCaseWithExecution.setControlMessage(resultSet.getString("ControlMessage"));
-        testCaseWithExecution.setEnvironment(resultSet.getString("Environment"));
-        testCaseWithExecution.setCountry(resultSet.getString("Country"));
-        testCaseWithExecution.setBrowser(resultSet.getString("Browser"));
-
-        testCaseWithExecution.setApplicationObject(applicationDAO.loadFromResultSet(resultSet));
-
-        return testCaseWithExecution;
-    }
-
     @Override
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList,
             List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList,
@@ -1339,7 +1219,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-        List<TestCaseWithExecution> tceList = new ArrayList<TestCaseWithExecution>();
+        List<TestCaseExecution> tceList = new ArrayList<TestCaseExecution>();
         List<String> whereClauses = new LinkedList<String>();
 
         StringBuilder query = new StringBuilder();
@@ -1347,132 +1227,126 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         int paramNumber = 0;
 
         query.append(" select t.ID as statusExecutionID, t.* from ( ");
-        query.append(" select tce.*, tc.Project, tc.Ticket, tc.Description, tc.BehaviorOrValueExpected, ");
-        query.append(" tc.Priority, tc.`Group`, tc.Origine, tc.RefOrigine, tc.HowTo, tc.`Comment`, ");
-        query.append(" tc.FromBuild, tc.FromRev, tc.ToBuild, tc.ToRev, tc.BugID, tc.TargetBuild, ");
-        query.append(" tc.TargetRev, tc.UsrCreated, tc.Implementer, tc.UsrModif, tc.activeQA, ");
-        query.append(" tc.activeUAT, tc.activePROD, tc.`function`, tc.TcActive, ");
-        query.append(" a.sort, a.`type`, a.`system`, a.SubSystem, a.svnurl, a.deploytype, ");
-        query.append(" a.mavengroupid, a.BugTrackerUrl, a.BugTrackerNewUrl ");
-        query.append(" from testcaseexecution tce ");
-        query.append(" inner join testcase tc on tce.test = tc.test and tce.testcase = tc.testcase ");
-        query.append(" inner join application a on tce.application = a.application ");
+        query.append(" select exe.*, tec.*, app.* ");
+        query.append(" from testcaseexecution exe ");
+        query.append(" inner join testcase tec on exe.test = tec.test and exe.testcase = tec.testcase ");
+        query.append(" inner join application app on exe.application = app.application ");
 
-        String testClause = SqlUtil.generateInClause("tce.test", testList);
+        String testClause = SqlUtil.generateInClause("exe.test", testList);
         if (!StringUtil.isNullOrEmpty(testClause)) {
             whereClauses.add(testClause);
         }
 
-        String applicationClause = SqlUtil.generateInClause("tce.application", applicationList);
+        String applicationClause = SqlUtil.generateInClause("exe.application", applicationList);
         if (!StringUtil.isNullOrEmpty(applicationClause)) {
             whereClauses.add(applicationClause);
         }
 
-        String projectClause = SqlUtil.generateInClause("tc.project", projectList);
+        String projectClause = SqlUtil.generateInClause("tec.project", projectList);
         if (!StringUtil.isNullOrEmpty(projectClause)) {
             whereClauses.add(projectClause);
         }
         //test case status: working, fully_implemented, ...
-        String tcsClause = SqlUtil.generateInClause("tce.status", tcstatusList);
+        String tcsClause = SqlUtil.generateInClause("exe.status", tcstatusList);
         if (!StringUtil.isNullOrEmpty(tcsClause)) {
             whereClauses.add(tcsClause);
         }
 
         //group 
-        String groupClause = SqlUtil.generateInClause("tc.group", groupList);
+        String groupClause = SqlUtil.generateInClause("tec.group", groupList);
         if (!StringUtil.isNullOrEmpty(groupClause)) {
             whereClauses.add(groupClause);
         }
         //test case active
-        String tcactiveClause = SqlUtil.generateInClause("tc.tcactive", tcactiveList);
+        String tcactiveClause = SqlUtil.generateInClause("tec.tcactive", tcactiveList);
         if (!StringUtil.isNullOrEmpty(tcactiveClause)) {
             whereClauses.add(tcactiveClause);
         }
 
         //test case active
-        String priorityClause = SqlUtil.generateInClause("tc.Priority", priorityList);
+        String priorityClause = SqlUtil.generateInClause("tec.Priority", priorityList);
         if (!StringUtil.isNullOrEmpty(priorityClause)) {
             whereClauses.add(priorityClause);
         }
 
         //target sprint
-        String targetsprintClause = SqlUtil.generateInClause("tc.TargetBuild", targetsprintList);
+        String targetsprintClause = SqlUtil.generateInClause("tec.TargetBuild", targetsprintList);
         if (!StringUtil.isNullOrEmpty(targetsprintClause)) {
             whereClauses.add(targetsprintClause);
         }
 
         //target revision
-        String targetrevisionClause = SqlUtil.generateInClause("tc.TargetRev", targetrevisionList);
+        String targetrevisionClause = SqlUtil.generateInClause("tec.TargetRev", targetrevisionList);
         if (!StringUtil.isNullOrEmpty(targetrevisionClause)) {
             whereClauses.add(targetrevisionClause);
         }
 
         //creator
-        String creatorClause = SqlUtil.generateInClause("tc.UsrCreated", creatorList);
+        String creatorClause = SqlUtil.generateInClause("tec.UsrCreated", creatorList);
         if (!StringUtil.isNullOrEmpty(creatorClause)) {
             whereClauses.add(creatorClause);
         }
 
         //implementer
-        String implementerClause = SqlUtil.generateInClause("tc.Implementer", implementerList);
+        String implementerClause = SqlUtil.generateInClause("tec.Implementer", implementerList);
         if (!StringUtil.isNullOrEmpty(implementerClause)) {
             whereClauses.add(implementerClause);
         }
 
         //build
-        String buildClause = SqlUtil.generateInClause("tce.Build", buildList);
+        String buildClause = SqlUtil.generateInClause("exe.Build", buildList);
         if (!StringUtil.isNullOrEmpty(buildClause)) {
             whereClauses.add(buildClause);
         }
         //revision
-        String revisionClause = SqlUtil.generateInClause("tce.Revision", revisionList);
+        String revisionClause = SqlUtil.generateInClause("exe.Revision", revisionList);
         if (!StringUtil.isNullOrEmpty(revisionClause)) {
             whereClauses.add(revisionClause);
         }
         //environment
-        String environmentClause = SqlUtil.generateInClause("tce.Environment", environmentList);
+        String environmentClause = SqlUtil.generateInClause("exe.Environment", environmentList);
         if (!StringUtil.isNullOrEmpty(environmentClause)) {
             whereClauses.add(environmentClause);
         }
         //country
-        String countryClause = SqlUtil.generateInClause("tce.Country", countryList);
+        String countryClause = SqlUtil.generateInClause("exe.Country", countryList);
         if (!StringUtil.isNullOrEmpty(countryClause)) {
             whereClauses.add(countryClause);
         }
         //browser
-        String browserClause = SqlUtil.generateInClause("tce.Browser", browserList);
+        String browserClause = SqlUtil.generateInClause("exe.Browser", browserList);
         if (!StringUtil.isNullOrEmpty(browserClause)) {
             whereClauses.add(browserClause);
         }
         //test case execution
-        String tcestatusClause = SqlUtil.generateInClause("tce.ControlStatus", tcestatusList);
+        String tcestatusClause = SqlUtil.generateInClause("exe.ControlStatus", tcestatusList);
         if (!StringUtil.isNullOrEmpty(tcestatusClause)) {
             whereClauses.add(tcestatusClause);
         }
 
         if (!StringUtil.isNullOrEmpty(system)) {
-            whereClauses.add(" a.system like ? ");
+            whereClauses.add(" app.system like ? ");
         }
         if (!StringUtil.isNullOrEmpty(ip)) {
-            whereClauses.add(" tce.IP like ? ");
+            whereClauses.add(" exe.IP like ? ");
         }
         if (!StringUtil.isNullOrEmpty(port)) {
-            whereClauses.add(" tce.port like ? ");
+            whereClauses.add(" exe.port like ? ");
         }
         if (!StringUtil.isNullOrEmpty(tag)) {
-            whereClauses.add(" tce.tag like ? ");
+            whereClauses.add(" exe.tag like ? ");
         }
         if (!StringUtil.isNullOrEmpty(browserversion)) {
-            whereClauses.add(" tce.browserfullversion like ? ");
+            whereClauses.add(" exe.browserfullversion like ? ");
         }
         if (!StringUtil.isNullOrEmpty(comment)) {
-            whereClauses.add(" tce.comment like ? ");
+            whereClauses.add(" exe.comment like ? ");
         }
         if (!StringUtil.isNullOrEmpty(bugid)) {
-            whereClauses.add(" tc.BugID like ? ");
+            whereClauses.add(" tec.BugID like ? ");
         }
         if (!StringUtil.isNullOrEmpty(ticket)) {
-            whereClauses.add(" tc.Ticket like ? ");
+            whereClauses.add(" tec.Ticket like ? ");
         }
 
         if (whereClauses.size() > 0) {
@@ -1481,7 +1355,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(joined);
         }
 
-        query.append(" order by tce.ID desc ");
+        query.append(" order by exe.ID desc ");
         query.append(" ) as t group by t.test, t.testcase, t.environment, t.browser, t.country");
         Connection connection = this.databaseSpring.connect();
 
@@ -1608,7 +1482,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
-                        tceList.add(loadTestCaseWithExecutionFromResultSet(resultSet));
+                        tceList.add(loadWithDependenciesFromResultSet(resultSet));
                     }
                     if (tceList.isEmpty()) {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
@@ -1658,7 +1532,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     public AnswerItem readByKey(long executionId) {
         AnswerItem ans = new AnswerItem();
         TestCaseExecution result = null;
-        final String query = "SELECT * FROM `testcaseexecution` WHERE `id` = ?";
+        final String query = "SELECT * FROM `testcaseexecution` exe WHERE exe.`id` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -1712,36 +1586,62 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
 
     @Override
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException {
-        long id = resultSet.getLong("ID");
-        String test = resultSet.getString("test");
-        String testcase = resultSet.getString("testcase");
-        String build = resultSet.getString("build");
-        String revision = resultSet.getString("revision");
-        String environment = resultSet.getString("environment");
-        String country = resultSet.getString("country");
-        String browser = resultSet.getString("browser");
-        String version = resultSet.getString("version");
-        String platform = resultSet.getString("platform");
-        String browserFullVersion = resultSet.getString("browserFullVersion");
-        long start = resultSet.getTimestamp("start").getTime();
-        long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
-        String controlStatus = resultSet.getString("controlStatus");
-        String controlMessage = resultSet.getString("controlMessage");
-        String application = resultSet.getString("application");
-        String ip = resultSet.getString("ip"); // Host the Selenium IP
-        String url = resultSet.getString("url");
-        String port = resultSet.getString("port"); // host the Selenium Port
-        String tag = resultSet.getString("tag");
-        String finished = resultSet.getString("finished");
-        int verbose = resultSet.getInt("verbose");
-        String status = resultSet.getString("status");
-        String crbVersion = resultSet.getString("crbVersion");
-        String executor = resultSet.getString("executor");
-        String screenSize = resultSet.getString("screensize");
-        return factoryTCExecution.create(id, test, testcase, build, revision, environment,
+        long id = ParameterParserUtil.parseLongParam(resultSet.getString("exe.ID"), 0);
+        String test = ParameterParserUtil.parseStringParam(resultSet.getString("exe.test"), "");
+        String testcase = ParameterParserUtil.parseStringParam(resultSet.getString("exe.testcase"), "");
+        String build = ParameterParserUtil.parseStringParam(resultSet.getString("exe.build"), "");
+        String revision = ParameterParserUtil.parseStringParam(resultSet.getString("exe.revision"), "");
+        String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
+        String country = ParameterParserUtil.parseStringParam(resultSet.getString("exe.country"), "");
+        String browser = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browser"), "");
+        String version = ParameterParserUtil.parseStringParam(resultSet.getString("exe.version"), "");
+        String platform = ParameterParserUtil.parseStringParam(resultSet.getString("exe.platform"), "");
+        String browserFullVersion = ParameterParserUtil.parseStringParam(resultSet.getString("exe.browserFullVersion"), "");
+        long start = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.start").getTime()), 0);
+        long end = ParameterParserUtil.parseLongParam(String.valueOf(resultSet.getTimestamp("exe.end").getTime()), 0);
+        String controlStatus = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlStatus"), "");
+        String controlMessage = ParameterParserUtil.parseStringParam(resultSet.getString("exe.controlMessage"), "");
+        String application = ParameterParserUtil.parseStringParam(resultSet.getString("exe.application"), "");
+        String ip = ParameterParserUtil.parseStringParam(resultSet.getString("exe.ip"), ""); // Host the Selenium IP
+        String url = ParameterParserUtil.parseStringParam(resultSet.getString("exe.url"), "");
+        String port = ParameterParserUtil.parseStringParam(resultSet.getString("exe.port"), ""); // host the Selenium Port
+        String tag = ParameterParserUtil.parseStringParam(resultSet.getString("exe.tag"), "");
+        String finished = ParameterParserUtil.parseStringParam(resultSet.getString("exe.finished"), "");
+        int verbose = ParameterParserUtil.parseIntegerParam(resultSet.getString("exe.verbose"), 0);
+        String status = ParameterParserUtil.parseStringParam(resultSet.getString("exe.status"), "");
+        String crbVersion = ParameterParserUtil.parseStringParam(resultSet.getString("exe.crbVersion"), "");
+        String executor = ParameterParserUtil.parseStringParam(resultSet.getString("exe.executor"), "");
+        String screenSize = ParameterParserUtil.parseStringParam(resultSet.getString("exe.screensize"), "");
+        TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, null, null, null, null, null, executor, 0, screenSize);
+        result.setApplication(application);
+        return result;
+    }
+
+    /**
+     * Uses data of ResultSet to create object {@link TestCaseExecution}
+     *
+     * @param resultSet ResultSet relative to select from table TestCaseExecution
+     * @return object {@link TestCaseExecution} with objects {@link TestCase} and {@link Application}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryTestCaseExecution
+     */
+    private TestCaseExecution loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseExecution testCaseExecution = new TestCaseExecution();
+        testCaseExecution = this.loadFromResultSet(resultSet);
+        testCaseExecution.setTestCaseObj(testCaseDAO.loadFromResultSet(resultSet));
+        testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
+        return testCaseExecution;
+    }
+    
+    private TestCaseExecution loadTestCaseExecutionAndApplicationFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseExecution testCaseExecution = new TestCaseExecution();
+        testCaseExecution = this.loadFromResultSet(resultSet);
+        testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
+        return testCaseExecution;
     }
 
 }

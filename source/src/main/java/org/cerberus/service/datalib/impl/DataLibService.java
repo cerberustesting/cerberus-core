@@ -130,7 +130,7 @@ public class DataLibService implements IDataLibService {
         if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
             rowLimit = nbRowsRequested;
         }
-        resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution.getApplication().getSystem(), tCExecution.getCountryEnvironmentParameters().getCountry(), tCExecution.getCountryEnvironmentParameters().getEnvironment());
+        resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution.getApplicationObj().getSystem(), tCExecution.getCountryEnvironmentParameters().getCountry(), tCExecution.getCountryEnvironmentParameters().getEnvironment());
 
         //Manage error message.
         if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_DATA.getCode()) {
@@ -364,7 +364,7 @@ public class DataLibService implements IDataLibService {
         // We get the list of values that are beeing used.
         Integer peTimeout;
         try {
-            peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", tCExecution.getApplication().getSystem()).getValue());
+            peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", tCExecution.getApplicationObj().getSystem()).getValue());
 
             List<String> pastValues = this.testCaseExecutionDataService.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 

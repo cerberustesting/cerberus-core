@@ -196,7 +196,7 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.setApplication(applicationService.convert(applicationService.readByKey(execution.getTestCaseObj().getApplication())));
+                    execution.setApplicationObj(applicationService.convert(applicationService.readByKey(execution.getTestCaseObj().getApplication())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
@@ -208,10 +208,10 @@ public class GetExecutionQueue extends HttpServlet {
                 execution.setEnvironmentData(execution.getEnvironment());
 
                 try {
-                    execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment())));
+                    execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplicationObj().getSystem()));
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
                     mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                     validator.setValid(false);

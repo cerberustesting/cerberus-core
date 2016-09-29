@@ -18,6 +18,8 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.TestCase;
@@ -127,4 +129,15 @@ public interface ITestCaseDAO {
     public Answer create(TestCase testCase);
 
     public Answer delete(TestCase testCase);
+    
+    /**
+     * Uses data of ResultSet to create object {@link Application}
+     *
+     * @param resultSet ResultSet relative to select from table TestCase
+     * @return object {@link TestCase}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryTestCase
+     */
+    public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

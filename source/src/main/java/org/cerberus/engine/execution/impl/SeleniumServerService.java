@@ -96,7 +96,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Setting the session.");
             long defaultWait;
             try {
-                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplication().getSystem());
+                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplicationObj().getSystem());
                 String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
                 defaultWait = Long.parseLong(to);
             } catch (CerberusException ex) {
@@ -146,7 +146,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
                     appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
@@ -156,10 +156,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                 } else {
                     driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             }
@@ -181,7 +181,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server
              */
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
                     && !caps.getPlatform().equals(Platform.ANDROID)) {
                 driver.manage().window().maximize();
                 getIPOfNode(tCExecution);
@@ -340,7 +340,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
             // Special case if capability if the browser
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") && cap.getCapability().equalsIgnoreCase("browser")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI") && cap.getCapability().equalsIgnoreCase("browser")) {
                 caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
                 continue;
             }
@@ -350,8 +350,8 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         // Second, if application is a mobile one, then set the "app" capability to the application binary path
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             // Set the app capability with the application path
             caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
         }

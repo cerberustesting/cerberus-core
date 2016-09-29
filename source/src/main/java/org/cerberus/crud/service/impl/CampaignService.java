@@ -24,7 +24,6 @@ import java.util.List;
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.dao.ICampaignDAO;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
@@ -143,11 +142,6 @@ public class CampaignService implements ICampaignService {
     @Override
     public boolean deleteCampaignParameter(CampaignParameter campaignParameter) {
         return campaignParameterDAO.deleteCampaignParameter(campaignParameter);
-    }
-
-    @Override
-    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
-        return campaignDAO.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
     }
 
     @Override
