@@ -116,6 +116,18 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.AddUser</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.CreateUser2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.DeleteUser2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser</servlet-class>
     </servlet>
@@ -1006,6 +1018,18 @@
     <servlet-mapping>
         <servlet-name>UpdateUser</servlet-name>
         <url-pattern>/UpdateUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateUser2</servlet-name>
+        <url-pattern>/CreateUser2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateUser2</servlet-name>
+        <url-pattern>/UpdateUser2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUser2</servlet-name>
+        <url-pattern>/DeleteUser2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateMyUserSystem</servlet-name>
@@ -2233,6 +2257,7 @@
             <url-pattern>/LogViewer.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
+            <url-pattern>/UserManager2.jsp</url-pattern>
             <url-pattern>/Invariant.jsp</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
@@ -2247,6 +2272,9 @@
             <url-pattern>/FindAllUsers</url-pattern>
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
+            <url-pattern>/CreateUser2</url-pattern>
+            <url-pattern>/UpdateUser2</url-pattern>
+            <url-pattern>/DeleteUser2</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/ReadLogEvent</url-pattern>
             <url-pattern>/CreateInvariant2</url-pattern>

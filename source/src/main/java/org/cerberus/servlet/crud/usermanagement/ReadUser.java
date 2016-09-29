@@ -21,7 +21,7 @@ package org.cerberus.servlet.crud.usermanagement;
 
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -29,7 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
+import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.crud.entity.UserSystem;
+import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
+import org.cerberus.crud.service.IUserSystemService;
+import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -100,7 +105,10 @@ public class ReadUser extends HttpServlet {
         try {
             JSONObject jsonResponse = new JSONObject();
             if ((request.getParameter("id") != null) && !(brpid_error)) { // ID parameter is specified so we return the unique record of object.
-//                answer = readByKey(appContext, brpid); // TODO
+                //answer = readByKey(appContext, brpid); // TODO
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("login") != null){
+                answer = readByKey(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else { // Default behaviour, we return the simple list of objects.
                 answer = findUserList(appContext, request, response);
@@ -174,13 +182,47 @@ public class ReadUser extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList resp = userService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         boolean userHasPermissions = request.isUserInRole("IntegratorRO");
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (User user : (List<User>) resp.getDataList()) {
-                jsonArray.put(convertUserToJSONObject(user));
+                JSONObject res = convertUserToJSONObject(user);
+                if(request.getParameter("systems") != null){
+                    IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
+                    AnswerList a = userSystemService.readByUser(user.getLogin());
+                    if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                        JSONArray JSONsystems = new JSONArray();
+                        List<UserSystem> systems = a.getDataList();
+                        for(UserSystem u : systems){
+                            JSONsystems.put(convertUserSystemToJSONObject(u));
+                        }
+                        res.put("systems",JSONsystems);
+                    }
+                }
+                if(request.getParameter("groups") != null) {
+                    IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+                    AnswerList a = userGroupService.readByUser(user.getLogin());
+                    if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                        JSONArray JSONgroups = new JSONArray();
+                        List<UserGroup> groups = a.getDataList();
+                        for(UserGroup u : groups){
+                            JSONgroups.put(convertUserGroupToJSONObject(u));
+                        }
+                        res.put("groups",JSONgroups);
+                    }
+                }
+                jsonArray.put(res);
             }
         }
 
@@ -194,6 +236,52 @@ public class ReadUser extends HttpServlet {
         return item;
     }
 
+    private AnswerItem readByKey(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+
+        String login = ParameterParserUtil.parseStringParam(request.getParameter("login"), "");
+        boolean userHasPermissions = request.isUserInRole("IntegratorRO");
+
+        AnswerItem item = new AnswerItem();
+        JSONObject jsonResponse = new JSONObject();
+        userService = appContext.getBean(UserService.class);
+
+        AnswerItem resp = userService.readByKey(login);
+
+        if(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {
+            User user = (User)resp.getItem();
+            JSONObject response = convertUserToJSONObject(user);
+            if(request.getParameter("systems") != null){
+                IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
+                AnswerList a = userSystemService.readByUser(login);
+                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                    JSONArray JSONsystems = new JSONArray();
+                    List<UserSystem> systems = a.getDataList();
+                    for(UserSystem u : systems){
+                        JSONsystems.put(convertUserSystemToJSONObject(u));
+                    }
+                    response.put("systems",JSONsystems);
+                }
+            }
+            if(request.getParameter("groups") != null) {
+                IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
+                AnswerList a = userGroupService.readByUser(login);
+                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getDataList() != null){
+                    JSONArray JSONgroups = new JSONArray();
+                    List<UserGroup> groups = a.getDataList();
+                    for(UserGroup u : groups){
+                        JSONgroups.put(convertUserGroupToJSONObject(u));
+                    }
+                    response.put("groups",JSONgroups);
+                }
+            }
+            jsonResponse.put("contentTable", response);
+        }
+        jsonResponse.put("hasPermissions", userHasPermissions);
+        item.setItem(jsonResponse);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
+    }
+
 
 
     private JSONObject convertUserToJSONObject(User user) throws JSONException {
@@ -202,6 +290,18 @@ public class ReadUser extends HttpServlet {
         JSONObject result = new JSONObject(gson.toJson(user));
         // For obvious security reasons, We avoid the password to be return from the servlet.
         result.remove("password");
+        return result;
+    }
+
+    private JSONObject convertUserSystemToJSONObject(UserSystem user) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(user));
+        return result;
+    }
+
+    private JSONObject convertUserGroupToJSONObject(UserGroup user) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(user));
         return result;
     }
 }

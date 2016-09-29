@@ -64,9 +64,10 @@ function getSubDataLabel(type) {
  * @param {String} forceReload true in order to force the reload of list from database.
  * @param {String} defaultValue [optional] value to be selected in combo.
  * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
  * @returns {void}
  */
-function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1) {
+function displayInvariantList(selectName, idName, forceReload, defaultValue, addValue1, asyn) {
     // Adding the specific value when defined.
     if (addValue1 !== undefined) {
         $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
@@ -75,6 +76,11 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
 //    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = true;
+    }
+
+    var async = true;
+    if(asyn != undefined){
+        async = asyn
     }
 
     var cacheEntryName = idName + "INVARIANT";
@@ -89,7 +95,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         $.ajax({
             url: "FindInvariantByID",
             data: {idName: idName},
-            async: true,
+            async: async,
             success: function (data) {
                 list = data;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
