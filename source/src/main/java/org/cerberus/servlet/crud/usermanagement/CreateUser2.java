@@ -122,7 +122,7 @@ public class CreateUser2 extends HttpServlet {
 
             LinkedList<UserGroup> newGroups = new LinkedList<>();
             for(int i = 0; i < JSONGroups.length(); i++){
-                newGroups.add(factoryGroup.create(JSONGroups.getString(i)));
+                newGroups.add(factoryGroup.create(login, JSONGroups.getString(i)));
             }
             LinkedList<UserSystem> newSystems = new LinkedList<>();
             for(int i = 0; i < JSONSystems.length(); i++){
