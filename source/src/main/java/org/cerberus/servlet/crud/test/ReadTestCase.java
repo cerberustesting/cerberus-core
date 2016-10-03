@@ -389,9 +389,10 @@ public class ReadTestCase extends HttpServlet {
         String[] priority = request.getParameterValues("priority");
         String[] group = request.getParameterValues("group");
         String[] status = request.getParameterValues("status");
+        int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
         testCaseService = appContext.getBean(TestCaseService.class);
-        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status);
+        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
@@ -421,7 +422,7 @@ public class ReadTestCase extends HttpServlet {
             testBattery[index] = testBatteryList.get(index).getTestbattery();
         }
 
-        AnswerList resp = testCaseService.readByVariousCriteria(null, null, null, null, null, null, testBattery, null, null, null, null);
+        AnswerList resp = testCaseService.readByVariousCriteria(null, null, null, null, null, null, testBattery, null, null, null, null, -1);
 
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) resp.getDataList()) {
