@@ -209,14 +209,14 @@ public class UpdateApplication extends HttpServlet {
             String environment = policy.sanitize(tcsaJson.getString("environment"));
             // Parameter that needs to be secured --> We SECURE+DECODE them
             // Parameter that we cannot secure as we need the html --> We DECODE them
-            String ip = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("ip"), "", charset);
-            String domain = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("domain"), "", charset);
-            String url = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("url"), "", charset);
-            String urlLogin = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("urlLogin"), "", charset);
-            String var1 = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("var1"), "", charset);
-            String var2 = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("var2"), "", charset);
-            String var3 = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("var3"), "", charset);
-            String var4 = ParameterParserUtil.parseStringParamAndDecode(tcsaJson.getString("var4"), "", charset);
+            String ip = tcsaJson.getString("ip");
+            String domain = tcsaJson.getString("domain");
+            String url = tcsaJson.getString("url");
+            String urlLogin = tcsaJson.getString("urlLogin");
+            String var1 = tcsaJson.getString("var1");
+            String var2 = tcsaJson.getString("var2");
+            String var3 = tcsaJson.getString("var3");
+            String var4 = tcsaJson.getString("var4");
 
             if (!delete) {
                 CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4);
