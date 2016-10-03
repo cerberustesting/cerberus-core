@@ -7003,6 +7003,44 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_user','email_col','','fr','Email','')");
         SQLInstruction.add(SQLS.toString());
 
+        // New updated Documentation.
+        //-- ------------------------ 935-936
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase set ");
+        SQLS.append("`BehaviorOrValueExpected` = coalesce(`BehaviorOrValueExpected`, ''), ");
+        SQLS.append("`howto` = coalesce(`howto`, ''), ");
+        SQLS.append("`Group` = coalesce(`Group`,''),");
+        SQLS.append("`Origine` = coalesce(`Origine`,''),");
+        SQLS.append("`RefOrigine` = coalesce(`RefOrigine`,''),");
+        SQLS.append("`Comment` = coalesce(`Comment`,''),");
+        SQLS.append("`FromBuild` = coalesce(`FromBuild`,''),");
+        SQLS.append("`FromRev` = coalesce(`FromRev`,''),");
+        SQLS.append("`ToBuild` = coalesce(`ToBuild`,''),");
+        SQLS.append("`ToRev` = coalesce(`ToRev`,''),");
+        SQLS.append("`BugID` = coalesce(`BugID`,''),");
+        SQLS.append("`TargetBuild` = coalesce(`TargetBuild`,''),");
+        SQLS.append("`TargetRev` = coalesce(`TargetRev`,''),");
+        SQLS.append("`Implementer` = coalesce(`Implementer`,'')");
+        SQLS.append("where `BehaviorOrValueExpected` is null or `howto` is null or `Group` is null or `Origine` is null or `RefOrigine` is null or `Comment` is null or `FromBuild` is null or `FromRev` is null or `ToBuild` is null or `ToRev` is null or `BugID` is null or `TargetBuild` is null or `TargetRev` is null or `Implementer` is null");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("CHANGE COLUMN `BehaviorOrValueExpected` `BehaviorOrValueExpected` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `Group` `Group` VARCHAR(45) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Origine` `Origine` VARCHAR(45) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `RefOrigine` `RefOrigine` VARCHAR(45) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `HowTo` `HowTo` TEXT NOT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Comment` `Comment` VARCHAR(500) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `FromBuild` `FromBuild` VARCHAR(10) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `FromRev` `FromRev` VARCHAR(20) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `ToBuild` `ToBuild` VARCHAR(10) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `ToRev` `ToRev` VARCHAR(20) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `BugID` `BugID` VARCHAR(10) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `TargetBuild` `TargetBuild` VARCHAR(10) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `TargetRev` `TargetRev` VARCHAR(20) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Implementer` `Implementer` VARCHAR(45) NOT NULL DEFAULT ''  ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

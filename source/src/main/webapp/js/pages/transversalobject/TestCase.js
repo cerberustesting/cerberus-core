@@ -300,6 +300,11 @@ function feedNewTestCaseModal(modalId) {
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
     feedTestCaseData(undefined, modalId, "ADD", true);
+    // Labels
+    loadLabel(undefined, undefined);
+    //Application Combo
+    appendApplicationList(undefined, undefined);
+
     formEdit.modal('show');
 }
 
@@ -327,7 +332,12 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             var currentSys = getUser().defaultSystem;
             var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
 
+            // Loading build and revision various combos.
             appendBuildRevListOnTestCase(appData.contentTable.system, testCase);
+            // Loading the labl list from aplication of the testcase.
+            loadLabel(testCase.labelList, appData.contentTable.system);
+            // Loading application combo from the system of the current application.
+            appendApplicationList(testCase.application, appData.contentTable.system);
 
             if (appData.contentTable.system !== currentSys) {
                 $("[name=application]").empty();
@@ -402,7 +412,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#project").prop("value", "");
         formEdit.find("#ticket").prop("value", "");
         formEdit.find("#function").prop("value", "");
-        appendApplicationList();
         formEdit.find("#group").prop("value", "");
         formEdit.find("#priority").prop("value", "");
         formEdit.find("#actQA").prop("value", "Y");
@@ -426,7 +435,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#project").prop("value", testCase.project);
         formEdit.find("#ticket").prop("value", testCase.ticket);
         formEdit.find("#function").prop("value", testCase.function);
-        appendApplicationList(testCase.application);
         formEdit.find("#group").prop("value", testCase.group);
         formEdit.find("#priority").prop("value", testCase.priority);
         formEdit.find("#actQA").prop("value", testCase.activeQA);
@@ -438,12 +446,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#active").prop("value", testCase.tcActive);
         formEdit.find("#bugId").prop("value", testCase.bugID);
         formEdit.find("#comment").prop("value", testCase.comment);
-    }
-    //Label
-    if (isEmpty(testCase)) {
-        loadLabel(undefined);
-    } else {
-        loadLabel(testCase.labelList);
     }
 
     // Authorities
@@ -652,11 +654,17 @@ function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
 /***
  * Build the list of label and flag them from the testcase values..
  * @param {String} labelList - list of labels from the testcase to flag.
+ * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @returns {null}
  */
-function loadLabel(labelList) {
+function loadLabel(labelList, mySystem) {
 
-    var jqxhr = $.get("ReadLabel?system=" + getUser().defaultSystem, "", "json");
+    var targetSystem = mySystem;
+    if (isEmpty(targetSystem)) {
+        targetSystem = getUser().defaultSystem;
+    }
+    
+    var jqxhr = $.get("ReadLabel?system=" + targetSystem, "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
@@ -694,11 +702,16 @@ function loadLabel(labelList) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function appendApplicationList(defautValue) {
-    var user = getUser();
-    $("[name=application]").empty();
+function appendApplicationList(defautValue, mySystem) {
 
-    var jqxhr = $.getJSON("ReadApplication", "system=" + encodeURIComponent(user.defaultSystem));
+    $("[name=application]").empty();
+    
+    var targetSystem = mySystem;
+    if (isEmpty(targetSystem)) {
+        targetSystem = getUser().defaultSystem;
+    }
+
+    var jqxhr = $.getJSON("ReadApplication", "system=" + targetSystem);
     $.when(jqxhr).then(function (data) {
         var applicationList = $("[name=application]");
 
@@ -713,7 +726,7 @@ function appendTestList(defautValue) {
     var user = getUser();
     $("[name=test]").empty();
 
-    var jqxhr = $.getJSON("ReadTest", "system=" + encodeURIComponent(user.defaultSystem));
+    var jqxhr = $.getJSON("ReadTest", "");
     $.when(jqxhr).then(function (data) {
         var testList = $("[name=test]");
 
