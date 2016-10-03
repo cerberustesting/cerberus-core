@@ -1116,7 +1116,7 @@ function eventNewChainPreview() {
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
         formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
-        $("#eventNewChainButton").removeProp("disabled");
+        $("#eventNewChainButton").removeAttr("disabled");
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
