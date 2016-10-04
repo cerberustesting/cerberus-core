@@ -106,7 +106,7 @@ public class ActionService implements IActionService {
          */
         if (false) {
             if (testCaseStepActionExecution.getValue1().contains("%")) {
-            boolean isCalledFromCalculateProperty = false;
+                boolean isCalledFromCalculateProperty = false;
                 if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
                     isCalledFromCalculateProperty = true;
                 }
@@ -1025,8 +1025,13 @@ public class ActionService implements IActionService {
         } else {
             try {
                 propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
-                message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-                message.setDescription(message.getDescription().replace("%PROP%", value1));
+                if ((testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("FA"))
+                        || (testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("NA"))) {
+                    message = testCaseStepActionExecution.getActionResultMessage();
+                } else {
+                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
+                    message.setDescription(message.getDescription().replace("%PROP%", value1));
+                }
             } catch (CerberusEventException cex) {
                 message = cex.getMessageError();
             }

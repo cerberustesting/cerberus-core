@@ -241,8 +241,8 @@ public class PropertyService implements IPropertyService {
             //if the property result message indicates that we need to stop the test action, then the action is notified               
             //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
             //then we notify the execution
-            if (tecd.getPropertyResultMessage().isStopTest()
-                    || tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode()) {
+            if (tecd.getPropertyResultMessage().getCodeString().equals("FA")
+                    || tecd.getPropertyResultMessage().getCodeString().equals("NA")) {
                 testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
                 testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));
@@ -503,8 +503,10 @@ public class PropertyService implements IPropertyService {
             // Removes the first and last '%' character to only get the property name
             rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
             // Removes the variable part of the property eg : (subdata)
-            String[] ramProp = rawProperty.split("\\(");
-            properties.add(ramProp[0]);
+            String[] ramProp1 = rawProperty.split("\\(");
+            // Removes the variable part of the property eg : .subdata
+            String[] ramProp2 = ramProp1[0].split("\\.");
+            properties.add(ramProp2[0]);
         }
         return properties;
     }
@@ -971,7 +973,7 @@ public class PropertyService implements IPropertyService {
             }
             // If value1 has no value defined, we force the new url to null.
             String newUrl = null;
-            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1()))){
+            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1()))) {
                 newUrl = testCaseExecutionData.getValue1();
             }
             String valueFromXml = xmlUnitService.getFromXml(xmlResponse, newUrl, testCaseExecutionData.getValue2());
