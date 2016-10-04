@@ -586,7 +586,7 @@ public class DataLibService implements IDataLibService {
                                         .replace("%SYSTEM%", system)
                                         .replace("%COUNTRY%", country)
                                         .replace("%ENV%", environment)
-                                        .replace("%DB%", lib.getDatabaseCsv()));
+                                        .replace("%DATABASE%", lib.getDatabaseCsv()));
                                 result.setResultMessage(msg);
                                 return result;
 
@@ -599,7 +599,7 @@ public class DataLibService implements IDataLibService {
                                             .replace("%SYSTEM%", system)
                                             .replace("%COUNTRY%", country)
                                             .replace("%ENV%", environment)
-                                            .replace("%DB%", lib.getDatabaseCsv()));
+                                            .replace("%DATABASE%", lib.getDatabaseCsv()));
                                     result.setResultMessage(msg);
                                     return result;
                                 }
@@ -628,7 +628,7 @@ public class DataLibService implements IDataLibService {
                                     .replace("%SYSTEM%", system)
                                     .replace("%COUNTRY%", country)
                                     .replace("%ENV%", environment)
-                                    .replace("%DB%", lib.getDatabaseCsv()));
+                                    .replace("%DATABASE%", lib.getDatabaseCsv()));
                             result.setResultMessage(msg);
                             return result;
                         }
@@ -762,7 +762,7 @@ public class DataLibService implements IDataLibService {
                                         .replace("%SYSTEM%", system)
                                         .replace("%COUNTRY%", country)
                                         .replace("%ENV%", environment)
-                                        .replace("%DB%", lib.getDatabaseUrl()));
+                                        .replace("%DATABASE%", lib.getDatabaseUrl()));
                                 result.setResultMessage(msg);
                                 return result;
 
@@ -775,7 +775,7 @@ public class DataLibService implements IDataLibService {
                                             .replace("%SYSTEM%", system)
                                             .replace("%COUNTRY%", country)
                                             .replace("%ENV%", environment)
-                                            .replace("%DB%", lib.getDatabaseUrl()));
+                                            .replace("%DATABASE%", lib.getDatabaseUrl()));
                                     result.setResultMessage(msg);
                                     return result;
                                 }
@@ -804,7 +804,7 @@ public class DataLibService implements IDataLibService {
                                     .replace("%SYSTEM%", system)
                                     .replace("%COUNTRY%", country)
                                     .replace("%ENV%", environment)
-                                    .replace("%DB%", lib.getDatabaseUrl()));
+                                    .replace("%DATABASE%", lib.getDatabaseUrl()));
                             result.setResultMessage(msg);
                             return result;
                         }
