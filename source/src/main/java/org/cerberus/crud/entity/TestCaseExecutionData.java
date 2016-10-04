@@ -34,6 +34,8 @@ public class TestCaseExecutionData {
     private String type;
     private String value1;
     private String value2;
+    private int retrynb;
+    private int retryperiod;
     private String RC;
     private String rMessage;
     private long start;
@@ -49,6 +51,22 @@ public class TestCaseExecutionData {
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+
+    public int getRetrynb() {
+        return retrynb;
+    }
+
+    public void setRetrynb(int retrynb) {
+        this.retrynb = retrynb;
+    }
+
+    public int getRetryperiod() {
+        return retryperiod;
+    }
+
+    public void setRetryperiod(int retryperiod) {
+        this.retryperiod = retryperiod;
+    }
 
     public int getIndex() {
         return index;

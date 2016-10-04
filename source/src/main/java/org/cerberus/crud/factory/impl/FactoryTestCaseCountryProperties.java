@@ -45,6 +45,8 @@ public class FactoryTestCaseCountryProperties implements IFactoryTestCaseCountry
         testCaseCountryProperties.setLength(length);
         testCaseCountryProperties.setRowLimit(rowLimit);
         testCaseCountryProperties.setNature(nature);
+        testCaseCountryProperties.setRetrynb(0);
+        testCaseCountryProperties.setRetryperiod(3000);
         return testCaseCountryProperties;
     }
 

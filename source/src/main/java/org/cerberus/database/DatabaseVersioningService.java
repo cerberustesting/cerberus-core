@@ -7041,6 +7041,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `Implementer` `Implementer` VARCHAR(45) NOT NULL DEFAULT ''  ;");
         SQLInstruction.add(SQLS.toString());
 
+        // New Parameter for Property calculation retry.
+        // ------------------------
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_property_maxretry', '50', 'Integer that correspond to the maximum number of retry allowed when calculating a property.');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_property_maxretrytotalduration', '1800000', 'Integer (in ms) that correspond to the maximum duration of the property calculation. In case the period is greated than this parameter, the period value will be replaced by this parameter with 1 single retry. If number of retries x period is greated than this parameter, the number of retry will be reduced to fit the constrain.');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

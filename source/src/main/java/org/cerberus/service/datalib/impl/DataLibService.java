@@ -100,7 +100,7 @@ public class DataLibService implements IDataLibService {
         AnswerList<HashMap<String, String>> result;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
-        // Length contains the nb of rows that the result must fetch. If defned at 0 we force at 1.
+        // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
         int nbRowsRequested = testCaseCountryProperty.getLength();
         if (nbRowsRequested < 1) {
             nbRowsRequested = 1;
@@ -178,7 +178,8 @@ public class DataLibService implements IDataLibService {
                 Logger.getLogger(DataLibService.class.getName()).log(Level.SEVERE, null, ex);
             }
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
-                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", resultString));
+                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription())
+                    .replace("%RESULT%", resultString));
             result.setResultMessage(msg);
 
         } else if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NATURENOMORERECORD.getCode()) {

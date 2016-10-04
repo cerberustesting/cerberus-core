@@ -606,7 +606,7 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
         return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null);
+                start, end, startLong, endLong, null, 0, 0);
     }
 
 

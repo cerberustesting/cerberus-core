@@ -36,6 +36,8 @@ public class TestCaseCountryProperties {
     private int length;
     private int rowLimit;
     private String nature;
+    private int retrynb;
+    private int retryperiod;
 
     /**
      * From here are data outside database model.
@@ -79,6 +81,22 @@ public class TestCaseCountryProperties {
 
     public void setTccList(List<TestCaseCountry> tccList) {
         this.tccList = tccList;
+    }
+
+    public int getRetrynb() {
+        return retrynb;
+    }
+
+    public void setRetrynb(int retrynb) {
+        this.retrynb = retrynb;
+    }
+
+    public int getRetryperiod() {
+        return retryperiod;
+    }
+
+    public void setRetryperiod(int retryperiod) {
+        this.retryperiod = retryperiod;
     }
 
     public String getValue2() {
