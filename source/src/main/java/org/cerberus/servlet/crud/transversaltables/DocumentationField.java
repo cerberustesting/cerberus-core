@@ -57,7 +57,7 @@ public class DocumentationField extends HttpServlet {
         String docTable = policy.sanitize(httpServletRequest.getParameter("docTable"));
         String docField = policy.sanitize(httpServletRequest.getParameter("docField"));
         String docLabel = policy.sanitize(httpServletRequest.getParameter("docLabel"));
-        String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
+        String lang = ParameterParserUtil.parseStringParamAndSanitize(httpServletRequest.getParameter("lang"), "en");
 
         result = docService.findLabelHTML(docTable, docField, docLabel, lang);
 
