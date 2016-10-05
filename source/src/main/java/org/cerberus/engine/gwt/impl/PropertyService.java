@@ -196,7 +196,7 @@ public class PropertyService implements IPropertyService {
              */
             now = new Date().getTime();
             tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
-                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING), eachTccp.getRetrynb(), eachTccp.getRetryperiod());
+                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING), eachTccp.getRetryNb(), eachTccp.getRetryPeriod());
             tecd.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tecd.getProperty() + "' " + tecd);
@@ -592,8 +592,8 @@ public class PropertyService implements IPropertyService {
         }
 
         int execution_count = 0;
-        int retries = testCaseCountryProperty.getRetrynb();
-        int periodms = testCaseCountryProperty.getRetryperiod();
+        int retries = testCaseCountryProperty.getRetryNb();
+        int periodms = testCaseCountryProperty.getRetryPeriod();
         LOG.debug("Init Retries : " + retries + " Period : " + periodms);
 
         boolean forced_retry = false;
@@ -614,7 +614,7 @@ public class PropertyService implements IPropertyService {
                 forced_retry = true;
             }
             if (forced_retry) {
-                forced_retry_message = "Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration;
+                forced_retry_message = "WARNING : Forced Retries : " + testCaseCountryProperty.getRetryNb() + "-->" + retries + " and Period : " + testCaseCountryProperty.getRetryPeriod()+ "-->" + periodms + " (in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration + ")";
                 LOG.debug("Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration);
             }
 
@@ -727,7 +727,7 @@ public class PropertyService implements IPropertyService {
         }
         if (forced_retry) { // If the retry and period parameter was changed, we notify it in the result message.
             res = testCaseExecutionData.getPropertyResultMessage();
-            res.setDescription(forced_retry_message+ " - " + res.getDescription());
+            res.setDescription(forced_retry_message + " - " + res.getDescription());
             testCaseExecutionData.setPropertyResultMessage(res);
         }
 

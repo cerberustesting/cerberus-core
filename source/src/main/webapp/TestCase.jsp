@@ -1666,7 +1666,7 @@
                                     <br>
                                     <div id="wob"><h4>Properties</h4>
                                     </div>
-                                    <% double widthValue = 55 - (1.5 * countryListTestcase.size()); 
+                                    <% double widthValue = 52 - (1.5 * countryListTestcase.size()); 
                                     if (canEdit) {%>
                                         <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
                                         <input type="button" class="buttonSaveChanges" value="Add Property" id="AddProperty"
@@ -1695,13 +1695,17 @@
                                                 </div>
                                                 <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database", myLang));%>
                                                 </div>
-                                                <div style="width: <%=55 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value", myLang));%>
+                                                <div style="width: <%=50 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value", myLang));%>
                                                 </div>
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length", myLang));%>
                                                 </div>
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit", myLang));%>
                                                 </div>
-                                                <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
+                                                <div style="width: 4%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
+                                                </div>
+                                                <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "retryNb", "Retry", myLang));%>
+                                                </div>
+                                                <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "retryPeriod", "Retry Period", myLang));%>
                                                 </div>
                                             </div>
                                             <div id="cache_properties">
@@ -1868,6 +1872,14 @@
                                                 <div style="float:left;width:5%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
                                                         "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
                                                                    "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                                </div>
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:50px">
+                                                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_retrynb_<%=incrementProperty%>"
+                                                           value="<%=tccp.getRetryNb()%>">
+                                                </div>
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
+                                                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_retryperiod_<%=incrementProperty%>"
+                                                           value="<%=tccp.getRetryPeriod()%>">
                                                 </div>
                                                 <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                                 </div>
@@ -2270,7 +2282,7 @@
                         <option value="">---</option>
                     </select>
                 </div>
-                <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
+                <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=52 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
                     <div class="pull-left showInlineElement" style="width:100%;">
                         <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"
                                   ></textarea>
@@ -2295,6 +2307,14 @@
                 </div>
                 <div style="float:left;width:5%;display:inline-block;height:100%">
                     <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                           data-id="properties_retrynb_template">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                           data-id="properties_retryperiod_template">
                 </div>
                 <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
                 </div>

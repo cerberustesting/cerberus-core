@@ -2400,6 +2400,10 @@ function addPropertyNew(widthValue) {
             .attr('name', 'properties_rowlimit_' + nextIncrementValue).val("0");
     $('#propertyRow' + nextIncrementValue).find('#properties_nature_template')
             .attr('name', 'properties_nature_' + nextIncrementValue);
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_retrynb_template"]')
+            .attr('name', 'properties_retrynb_' + nextIncrementValue).val("0");
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_retryperiod_template"]')
+            .attr('name', 'properties_retryperiod_' + nextIncrementValue).val("10000");
 }
 
 

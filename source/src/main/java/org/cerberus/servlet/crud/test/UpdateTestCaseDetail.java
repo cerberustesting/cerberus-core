@@ -188,7 +188,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * PROPERTIES
                  */
-                /*
+ /*
                  * Get Test, TestCase and Country to update
                  */
                 String test_testcase_no_format_prop = this.getStringParameter(
@@ -229,6 +229,10 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         "properties_length", request);
                 String[] testcase_properties_rowlimit = this.getStringTable(
                         "properties_rowlimit", request);
+                String[] testcase_properties_retrynb = this.getStringTable(
+                        "properties_retrynb", request);
+                String[] testcase_properties_retryperiod = this.getStringTable(
+                        "properties_retryperiod", request);
                 String[] testcase_properties_nature = this.getStringTable(
                         "properties_nature", request);
                 String[] testcase_properties_database = this.getStringTable(
@@ -255,6 +259,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_properties_info.add(testcase_properties_value2);
                 testcase_properties_info.add(testcase_properties_length);
                 testcase_properties_info.add(testcase_properties_rowlimit);
+                testcase_properties_info.add(testcase_properties_retrynb);
+                testcase_properties_info.add(testcase_properties_retryperiod);
                 testcase_properties_info.add(testcase_properties_nature);
                 testcase_properties_info.add(testcase_properties_database);
 
@@ -385,18 +391,21 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 String nature = testcase_properties_nature[i];
                                                 int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
                                                 int length = Integer.parseInt(testcase_properties_length[i]);
+                                                int retryNb = Integer.parseInt(testcase_properties_retrynb[i]);
+                                                int retryPeriod = Integer.parseInt(testcase_properties_retryperiod[i]);
                                                 String value1 = testcase_properties_value[i];
                                                 String value2 = testcase_properties_value2[i];
                                                 String type = testcase_properties_type[i];
                                                 String dtb = testcase_properties_database[i];
 
-                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature);
+                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature, retryNb, retryPeriod);
 
                                                 propertiesService.updateTestCaseCountryProperties(tccp);
 
                                             } else // the country property does'nt extist, make an
                                             // insert :
-                                            { /*
+                                            {
+                                                /*
                                                  * Insert new rows
                                                  */
 
@@ -408,12 +417,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                                 String nature = testcase_properties_nature[i];
                                                 int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
                                                 int length = Integer.parseInt(testcase_properties_length[i]);
+                                                int retryNb = Integer.parseInt(testcase_properties_retrynb[i]);
+                                                int retryPeriod = Integer.parseInt(testcase_properties_retryperiod[i]);
                                                 String value1 = testcase_properties_value[i];
                                                 String value2 = testcase_properties_value2[i];
                                                 String type = testcase_properties_type[i];
                                                 String dtb = testcase_properties_database[i];
 
-                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature);
+                                                TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature, retryNb, retryPeriod);
 
                                                 propertiesService.insertTestCaseCountryProperties(tccp);
 
@@ -449,12 +460,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                     String nature = testcase_properties_nature[i];
                                     int rowlimit = Integer.parseInt(testcase_properties_rowlimit[i]);
                                     int length = Integer.parseInt(testcase_properties_length[i]);
+                                    int retryNb = Integer.parseInt(testcase_properties_retrynb[i]);
+                                    int retryPeriod = Integer.parseInt(testcase_properties_retryperiod[i]);
                                     String value1 = testcase_properties_value[i];
                                     String value2 = testcase_properties_value2[i];
                                     String type = testcase_properties_type[i];
                                     String dtb = testcase_properties_database[i];
 
-                                    TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature);
+                                    TestCaseCountryProperties tccp = propertiesFactory.create(test, testcase, country, property, description, type, dtb, value1, value2, length, rowlimit, nature, retryNb, retryPeriod);
 
                                     propertiesService.insertTestCaseCountryProperties(tccp);
                                 } // Close the condition on the row number
@@ -498,7 +511,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * END OF PROPERTIES
                  */
-                /*
+ /*
                  * Get Test, TestCase and Country to update
                  */
                 String test_testcase_no_format = this.getStringParameter(
@@ -509,7 +522,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * Get TestCase Step Informations
                  */
-                /*
+ /*
                  * Step Number & Description
                  */
                 String step_delete[] = request.getParameterValues("testcasestep_delete");
@@ -572,7 +585,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * Properties
                  */
-                /*
+ /*
                  * Actions
                  */
                 List<String[]> testcase_actions_info = new ArrayList<String[]>();
@@ -601,7 +614,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * Test Case Step Description
                  */
-                /*
+ /*
                  * Update Test Case Step
                  */
                 int numberOfSteps = 0;
@@ -742,20 +755,18 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             TestCaseStepAction tcsa = actionFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(step_number_hide[i]), Integer.parseInt(step_sequence[i]),
                                     Integer.parseInt(step_sequence[i]), step_conditionOper[i], step_conditionVal[i], step_action[i], step_value1[i], step_value2[i], "", step_description[i], "");
 
-                            if (rs_stepaction.next()) { /*
+                            if (rs_stepaction.next()) {
+                                /*
                                  * Update
                                  */
 
                                 actionService.updateTestCaseStepAction(tcsa);
 
-                            } else { /*
+                            } else /*
                                  * Insert
-                                 */
+                             */ if (this.formIsFullFill(testcase_actions_info, i)) {
+                                actionService.insertTestCaseStepAction(tcsa);
 
-                                if (this.formIsFullFill(testcase_actions_info, i)) {
-                                    actionService.insertTestCaseStepAction(tcsa);
-
-                                }
                             }
                         } finally {
                             rs_stepaction.close();
@@ -766,7 +777,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 /*
                  * TestCase Step Controls
                  */
-                /*
+ /*
                  * Get Number of actual testcase controls
                  */
                 for (int i = 0; i < controls_control.length; i++) {

@@ -36,8 +36,8 @@ public class TestCaseCountryProperties {
     private int length;
     private int rowLimit;
     private String nature;
-    private int retrynb;
-    private int retryperiod;
+    private int retryNb;
+    private int retryPeriod;
 
     /**
      * From here are data outside database model.
@@ -83,20 +83,20 @@ public class TestCaseCountryProperties {
         this.tccList = tccList;
     }
 
-    public int getRetrynb() {
-        return retrynb;
+    public int getRetryNb() {
+        return retryNb;
     }
 
-    public void setRetrynb(int retrynb) {
-        this.retrynb = retrynb;
+    public void setRetryNb(int retrynb) {
+        this.retryNb = retrynb;
     }
 
-    public int getRetryperiod() {
-        return retryperiod;
+    public int getRetryPeriod() {
+        return retryPeriod;
     }
 
-    public void setRetryperiod(int retryperiod) {
-        this.retryperiod = retryperiod;
+    public void setRetryPeriod(int retryperiod) {
+        this.retryPeriod = retryperiod;
     }
 
     public String getValue2() {
@@ -248,6 +248,8 @@ public class TestCaseCountryProperties {
         hash = 83 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
         hash = 83 * hash + this.length;
         hash = 83 * hash + this.rowLimit;
+        hash = 83 * hash + this.retryNb;
+        hash = 83 * hash + this.retryPeriod;
         hash = 83 * hash + (this.nature != null ? this.nature.hashCode() : 0);
         return hash;
     }
@@ -292,6 +294,12 @@ public class TestCaseCountryProperties {
             return false;
         }
         if (this.rowLimit != other.rowLimit) {
+            return false;
+        }
+        if (this.retryNb != other.retryNb) {
+            return false;
+        }
+        if (this.retryPeriod != other.retryPeriod) {
             return false;
         }
         if ((this.nature == null) ? (other.nature != null) : !this.nature.equals(other.nature)) {
