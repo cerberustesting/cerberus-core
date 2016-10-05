@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
@@ -169,7 +170,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
         return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status, length);
     }
 

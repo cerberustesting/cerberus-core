@@ -19,6 +19,7 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseDAO;
@@ -66,7 +68,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryTestCase factoryTestCase;
-    
+
     private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
 
     private final String OBJECT_NAME = "TestCase";
@@ -304,7 +306,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     /**
      * Get test case information.
      *
-     * @param test Name of test group.
+     * @param test     Name of test group.
      * @param testCase Name of test case.
      * @return TestCase object or null.
      * @throws org.cerberus.exception.CerberusException
@@ -432,7 +434,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         ArrayList<String> countriesDB = new ArrayList<String>();
 
         List<String> countryList = new ArrayList<String>();
-        for (TestCaseCountry tcCountry : tc.getTestCaseCountry()){
+        for (TestCaseCountry tcCountry : tc.getTestCaseCountry()) {
             countryList.add(tcCountry.getCountry());
         }
         // Debug message on SQL.
@@ -534,7 +536,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));
@@ -817,7 +819,7 @@ public class TestCaseDAO implements ITestCaseDAO {
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -921,13 +923,13 @@ public class TestCaseDAO implements ITestCaseDAO {
         return answer;
     }
 
-     /**
+    /**
      * Uses data of ResultSet to create object {@link TestCase}
      *
      * @param rs ResultSet relative to select from table TestCase
      * @return object {@link TestCase}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCase
      */
     @Override
@@ -1850,7 +1852,7 @@ public class TestCaseDAO implements ITestCaseDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system)) {
@@ -2040,7 +2042,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(sql.toString());
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTest(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getTestCase(), ""));
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCase.getApplication(), ""));

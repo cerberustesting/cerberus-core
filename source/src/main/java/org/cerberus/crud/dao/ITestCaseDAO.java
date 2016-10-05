@@ -22,7 +22,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -61,22 +63,19 @@ public interface ITestCaseDAO {
     List<String> findUniqueDataOfColumn(String column);
 
     /**
-     *
      * @param testCase
      * @return true if delete is OK
      */
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     *
      * @param tc
      * @param columnName Name of the column to update
-     * @param value New value of the field columnName for the key name
+     * @param value      New value of the field columnName for the key name
      */
     void updateTestCaseField(TestCase tc, String columnName, String value);
 
     /**
-     *
      * @param tCase
      * @param system
      * @return
@@ -85,7 +84,6 @@ public interface ITestCaseDAO {
     List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system);
 
     /**
-     *
      * @param campaign the campaign name
      * @return the list of TCase used in the campaign
      * @since 1.0.2
@@ -93,8 +91,7 @@ public interface ITestCaseDAO {
     List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
-     *
-     * @param campaign the campaign name
+     * @param campaign  the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign
      * @since 1.0.2
@@ -121,22 +118,22 @@ public interface ITestCaseDAO {
                                             String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 
     public AnswerItem readByKey(String test, String testCase);
-    
+
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
-    
+
     public Answer update(TestCase testCase);
 
     public Answer create(TestCase testCase);
 
     public Answer delete(TestCase testCase);
-    
+
     /**
-     * Uses data of ResultSet to create object {@link Application}
+     * Uses data of ResultSet to create object {@link TestCase}
      *
      * @param resultSet ResultSet relative to select from table TestCase
      * @return object {@link TestCase}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCase
      */
     public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;

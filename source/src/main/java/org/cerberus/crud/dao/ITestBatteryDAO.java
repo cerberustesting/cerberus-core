@@ -20,9 +20,12 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -50,4 +53,22 @@ public interface ITestBatteryDAO {
     List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException;
 
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch);
+
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    AnswerItem readByKey(String key);
+
+    /**
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    Answer create(TestBattery tb);
+
+    Answer update(TestBattery tb);
+
+    Answer delete(TestBattery tb);
 }

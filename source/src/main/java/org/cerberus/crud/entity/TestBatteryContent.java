@@ -111,4 +111,24 @@ public class TestBatteryContent implements Serializable {
         return "org.cerberus.crud.entity.TestBatteryContent[ testbatterycontentID=" + testbatterycontentID + " ]";
     }
 
+    public boolean hasSameKey(TestBatteryContent obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestBatteryContent other = (TestBatteryContent) obj;
+        if ((this.testbattery == null) ? (other.testbattery != null) : !this.testbattery.equals(other.testbattery)) {
+            return false;
+        }
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        return true;
+    }
+
 }

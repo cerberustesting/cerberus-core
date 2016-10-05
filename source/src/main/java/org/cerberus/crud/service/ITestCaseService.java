@@ -21,6 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
+
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -28,7 +29,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author bcivel
  * @author tbernardes
  * @author FNogueira
@@ -36,7 +36,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseService {
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -84,22 +83,19 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system);
 
     /**
-     *
      * @param testCase
      * @return true if delete is OK
      */
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     *
-     * @param name Key of the table
+     * @param name       Key of the table
      * @param columnName Name of the column
-     * @param value New value of the columnName
+     * @param value      New value of the columnName
      */
     void updateTestCaseField(TestCase tc, String columnName, String value);
 
     /**
-     *
      * @param tCase
      * @param system
      * @return
@@ -108,7 +104,6 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system);
 
     /**
-     *
      * @param campaign the campaign name
      * @return the list of TCase used in the campaign
      * @since 1.0.2
@@ -116,8 +111,7 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
-     *
-     * @param campaign the campaign name
+     * @param campaign  the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign and activated for the
      * countries
@@ -128,7 +122,6 @@ public interface ITestCaseService {
     public void updateTestCase(TestCase tc) throws CerberusException;
 
     /**
-     *
      * @param test
      * @return
      * @since 1.0.2
@@ -145,8 +138,8 @@ public interface ITestCaseService {
      * Method that get all the testcases that use a determined testdatalib entry
      *
      * @param testDataLibId testdatalib unique identifier
-     * @param name testdatalib name
-     * @param country country for which testdatalib is defined
+     * @param name          testdatalib name
+     * @param country       country for which testdatalib is defined
      * @return an answer with the test cases and a message indicating the status
      * of the operation
      */
@@ -155,7 +148,6 @@ public interface ITestCaseService {
     AnswerList readTestCaseByStepsInLibrary(String test);
 
     /**
-     *
      * @param system
      * @param test
      * @param start
@@ -169,7 +161,6 @@ public interface ITestCaseService {
 
 
     /**
-     *
      * @param test
      * @param testCase
      * @return
@@ -180,7 +171,7 @@ public interface ITestCaseService {
                                             String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
- 
+
     public Answer update(TestCase testCase);
 
     public Answer create(TestCase testCase);

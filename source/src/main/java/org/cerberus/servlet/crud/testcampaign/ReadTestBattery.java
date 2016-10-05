@@ -22,7 +22,7 @@ package org.cerberus.servlet.crud.testcampaign;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestBattery;
+import org.cerberus.crud.entity.TestBatteryContent;
+import org.cerberus.crud.service.ITestBatteryContentService;
 import org.cerberus.crud.service.ITestBatteryService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -48,6 +50,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "ReadTestBattery", urlPatterns = {"/ReadTestBattery"})
 public class ReadTestBattery extends HttpServlet {
+
+    ITestBatteryService testBatteryService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -69,8 +73,16 @@ public class ReadTestBattery extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            answer = findTestBatteryList(appContext, request);
-            jsonResponse = (JSONObject) answer.getItem();
+            if (request.getParameter("columnName") != null) {
+                answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
+                jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("param") != null) {
+                answer = findBatteryByKey(request.getParameter("param"), true, appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            } else {
+                answer = findTestBatteryList(appContext, request);
+                jsonResponse = (JSONObject) answer.getItem();
+            }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
             jsonResponse.put("message", answer.getResultMessage().getDescription());
@@ -140,7 +152,15 @@ public class ReadTestBattery extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
 
-        answer = testBatteryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, "");
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        answer = testBatteryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
 //        boolean userHasPermissions = request.isUserInRole("TestAdmin");
         JSONArray jsonArray = new JSONArray();
@@ -161,7 +181,74 @@ public class ReadTestBattery extends HttpServlet {
         return item;
     }
 
+    private AnswerItem findBatteryByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testBatteryService = appContext.getBean(ITestBatteryService.class);
+
+        AnswerItem answer = testBatteryService.readByKey(key);
+        TestBattery p;
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            p = (TestBattery) answer.getItem();
+            JSONObject response = convertTestBatterytoJSONObject(p);
+
+            if (request.getParameter("test") != null) {
+                ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
+                AnswerList resp = testBatteryContentService.readByTestBattery(key);
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    JSONArray a = new JSONArray();
+                    for (Object c : resp.getDataList()) {
+                        TestBatteryContent cc = (TestBatteryContent) c;
+                        JSONObject ccJSON = convertTestBatteryContenttoJSONObject(cc);
+                        a.put(ccJSON);
+                    }
+                    response.put("battery", a);
+                }
+            }
+            object.put("contentTable", response);
+        }
+        object.put("hasPermissions", userHasPermissions);
+        item.setItem(object);
+        item.setResultMessage(answer.getResultMessage());
+
+        return item;
+    }
+
+    private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+
+        testBatteryService = appContext.getBean(ITestBatteryService.class);
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "testbatteryid, testbattery, Description");
+        String columnToSort[] = sColumns.split(",");
+
+        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        AnswerList applicationList = testBatteryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+
+        object.put("distinctValues", applicationList.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(applicationList.getResultMessage());
+        return answer;
+    }
+
     private JSONObject convertTestBatterytoJSONObject(TestBattery testBattery) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testBattery));
+        return result;
+    }
+
+    private JSONObject convertTestBatteryContenttoJSONObject(TestBatteryContent testBattery) throws JSONException {
         Gson gson = new Gson();
         JSONObject result = new JSONObject(gson.toJson(testBattery));
         return result;

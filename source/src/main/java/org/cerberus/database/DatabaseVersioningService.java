@@ -7049,7 +7049,60 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ('', 'cerberus_property_maxretrytotalduration', '1800000', 'Integer (in ms) that correspond to the maximum duration of the property calculation. In case the period is greated than this parameter, the period value will be replaced by this parameter with 1 single retry. If number of retries x period is greated than this parameter, the number of retry will be reduced to fit the constrain.');");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // New updated Documentation.
+        //-- ------------------------ 937
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_testbattery','allTestbatterys','','en','Test Battery','')");
+        SQLS.append(",('page_testbattery','allTestbatterys','','fr','Batterie de Test','')");
+        SQLS.append(",('page_testbattery','edittestbattery_field','','en','Edit Battery','')");
+        SQLS.append(",('page_testbattery','edittestbattery_field','','fr','Modifier la Batterie','')");
+        SQLS.append(",('page_testbattery','addtestbattery_field','','en','Add Battery','')");
+        SQLS.append(",('page_testbattery','addtestbattery_field','','fr','Ajouter la Batterie','')");
+        SQLS.append(",('page_testbattery','battery_field','','en','Battery','')");
+        SQLS.append(",('page_testbattery','battery_field','','fr','Batterie','')");
+        SQLS.append(",('page_testbattery','description_field','','en','Description','')");
+        SQLS.append(",('page_testbattery','description_field','','fr','Description','')");
+        SQLS.append(",('page_testbattery','description_tab','','en','Description','')");
+        SQLS.append(",('page_testbattery','description_tab','','fr','Description','')");
+        SQLS.append(",('page_testbattery','testcase_tab','','en','Test Case','')");
+        SQLS.append(",('page_testbattery','testcase_tab','','fr','Cas de test','')");
+        SQLS.append(",('page_testbattery','addtestcase_tab','','en','Add Test Case','')");
+        SQLS.append(",('page_testbattery','addtestcase_tab','','fr','Ajouter un cas de test','')");
+        SQLS.append(",('page_testbattery','close_btn','','en','Close','')");
+        SQLS.append(",('page_testbattery','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_testbattery','save_btn','','en','Save','')");
+        SQLS.append(",('page_testbattery','save_btn','','fr','Sauvegarder','')");
+        SQLS.append(",('page_testbattery','back_btn','','en','Back','')");
+        SQLS.append(",('page_testbattery','back_btn','','fr','Précédent','')");
+        SQLS.append(",('page_testbattery','add_btn','','en','Add','')");
+        SQLS.append(",('page_testbattery','add_btn','','fr','Ajouter','')");
+        SQLS.append(",('page_testbattery','button_create','','en','Create Battery','')");
+        SQLS.append(",('page_testbattery','button_create','','fr','Créer une Batterie','')");
+        SQLS.append(",('page_testbattery','button_add','','en','Add Test Case','')");
+        SQLS.append(",('page_testbattery','button_add','','fr','Ajouter un Cas de Test','')");
+        SQLS.append(",('page_testbattery','title_remove','','en','Remove Battery','')");
+        SQLS.append(",('page_testbattery','title_remove','','fr','Supprimer la Batterie','')");
+        SQLS.append(",('page_testbattery','message_remove','','en','Are you sure?','')");
+        SQLS.append(",('page_testbattery','message_remove','','fr','Êtes-vous sûrs?','')");
+        SQLS.append(",('page_testbattery','button_col','','en','Actions','')");
+        SQLS.append(",('page_testbattery','button_col','','fr','Actions','')");
+        SQLS.append(",('page_testbattery','testcampaign_col','','en','Test Battery','')");
+        SQLS.append(",('page_testbattery','testcampaign_col','','fr','Batterie de test','')");
+        SQLS.append(",('page_testbattery','description_col','','en','Description','')");
+        SQLS.append(",('page_testbattery','description_col','','fr','Description','')");
+        SQLS.append(",('page_testbattery','button_remove','','en','Remove Battery','')");
+        SQLS.append(",('page_testbattery','button_remove','','fr','Supprimer la Batterie','')");
+        SQLS.append(",('page_testbattery','button_edit','','en','Edit Battery','')");
+        SQLS.append(",('page_testbattery','button_edit','','fr','Editer la Batterie','')");
+        SQLS.append(",('page_testbattery','testbattery_col','','en','Test Battery','')");
+        SQLS.append(",('page_testbattery','testbattery_col','','fr','Batterie de test','')");
+        SQLS.append(",('page_testbattery','test_col','','en','Test','')");
+        SQLS.append(",('page_testbattery','test_col','','fr','Test','')");
+        SQLS.append(",('page_testbattery','testcase_col','','en','Test Case','')");
+        SQLS.append(",('page_testbattery','testcase_col','','fr','Cas de Test','')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

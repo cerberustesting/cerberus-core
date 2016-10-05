@@ -740,7 +740,7 @@ public class CampaignContentDAO implements ICampaignContentDAO {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
                     .resolveDescription("OPERATION", "UPDATE");
         } catch (Exception e) {
-            LOG.warn("Unable to create campaign content: " + e.getMessage());
+            LOG.warn("Unable to update campaign content: " + e.getMessage());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                     e.toString());
         } finally {

@@ -72,7 +72,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
  * @author cerberus
  */
 @WebServlet(name = "ReadTestCase", urlPatterns = {"/ReadTestCase"})
@@ -91,10 +90,10 @@ public class ReadTestCase extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -175,13 +174,14 @@ public class ReadTestCase extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -192,10 +192,10 @@ public class ReadTestCase extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request servlet request
+     * @param request  servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * @throws IOException      if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -356,7 +356,7 @@ public class ReadTestCase extends HttpServlet {
             response.put("labelList", labelArray);
 
             object.put("contentTable", response);
-            
+
             // Access right calculation.
             if (tc.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
                 hasPermissionsUpdate = isTestAdmin;
@@ -364,7 +364,7 @@ public class ReadTestCase extends HttpServlet {
                 hasPermissionsUpdate = isTest;
             }
             object.put("hasPermissionsUpdate", hasPermissionsUpdate);
-            
+
         }
 
         item.setItem(object);

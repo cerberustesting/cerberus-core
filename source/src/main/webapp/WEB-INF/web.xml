@@ -312,6 +312,18 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBattery</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteTestBattery2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBattery2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateTestBattery2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateTestBattery2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateTestBattery</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CreateTestBattery</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBatteryContent</servlet-class>
     </servlet>
@@ -1230,6 +1242,18 @@
     <servlet-mapping>
         <servlet-name>DeleteTestBattery</servlet-name>
         <url-pattern>/DeleteTestBattery</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestBattery2</servlet-name>
+        <url-pattern>/DeleteTestBattery2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestBattery2</servlet-name>
+        <url-pattern>/UpdateTestBattery2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateTestBattery</servlet-name>
+        <url-pattern>/CreateTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
@@ -2299,6 +2323,9 @@
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
             <url-pattern>/DeleteTestBattery</url-pattern>
+            <url-pattern>/DeleteTestBattery2</url-pattern>
+            <url-pattern>/UpdateTestBattery2</url-pattern>
+            <url-pattern>/CreateTestBattery</url-pattern>
             <url-pattern>/DeleteTestBatteryContent</url-pattern>
             <url-pattern>/UpdateTestBattery</url-pattern>
             <url-pattern>/importXML</url-pattern>
