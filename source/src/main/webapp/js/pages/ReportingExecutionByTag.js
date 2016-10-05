@@ -315,7 +315,7 @@ function loadReportList() {
         $.when(jqxhr).then(function (data) {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
-                $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
             }
 
@@ -687,22 +687,26 @@ function selectTableToCopy() {
 
 function createShortDescRow(row, data, index) {
     var tableAPI = $("#listTable").DataTable();
+    
     var createdRow = tableAPI.row(row);
-    var rowClass = "";
-
-    if (index % 2 === 0) {
-        rowClass = "odd printBorder";
-    } else {
-        rowClass = "even printBorder";
-    }
-
+    
     createdRow.child(data.shortDesc);
     $(row).children('.center').attr('rowspan', '2');
     $(row).children('.priority').attr('rowspan', '2');
     $(row).children('.bugid').attr('rowspan', '2');
-    $(createdRow.child()).attr('class', rowClass);
-    $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
+    $(createdRow.child()).children('td').attr('colspan', '4').attr('class', 'shortDesc');
+//    var labelValue = '';
+//                $.each(data.labels, function (i, e) {
+//                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
+//                });
+//    $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
+}
+
+function filterOnLabel(element) {
+    var newLabel = $(element).get(0).textContent;
+    var colIndex = $(element).parent().parent().get(0).cellIndex;
+    $("#listTable").dataTable().fnFilter(newLabel, colIndex);
 }
 
 function generateTooltip(data) {
@@ -750,6 +754,20 @@ function aoColumnsFunc(Columns) {
             "sName": "app.application",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("application", "Application")
+        },
+        {
+            "data": "labels",
+            "sName": "lab.label",
+            "title": doc.getDocOnline("label", "label"),
+            "sWidth": "170px",
+            "sDefaultContent": "",
+            "render": function (data, type, full, meta) {
+                var labelValue = '';
+                $.each(data, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
+                });
+                return labelValue;
+            }
         }
     ];
     for (var i = 0; i < colLen; i++) {
@@ -820,6 +838,9 @@ function customConfig(config) {
         "exclude": [0, 1, 2],
         "stateChange": function (iColumn, bVisible) {
             $('.shortDesc').each(function () {
+                $(this).attr('colspan', '3');
+            });
+            $('.label').each(function () {
                 $(this).attr('colspan', '3');
             });
         }

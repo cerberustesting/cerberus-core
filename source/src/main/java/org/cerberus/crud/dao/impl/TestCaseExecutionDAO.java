@@ -929,6 +929,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         query.append("left join testcase tec on exe.Test = tec.Test ");
         query.append("and exe.TestCase = tec.TestCase ");
         query.append("left join application app on tec.application = app.application ");
+        query.append("left join testcaselabel tel on tec.test = tel.test and tel.testcase = tec.testcase ");
+        query.append("left join label lab on tel.labelId = lab.id ");
         query.append(" where 1=1 ");
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`test` like ? ");

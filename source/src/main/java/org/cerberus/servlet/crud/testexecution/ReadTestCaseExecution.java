@@ -43,9 +43,11 @@ import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -69,6 +71,7 @@ public class ReadTestCaseExecution extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
     private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+    private ITestCaseLabelService testCaseLabelService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -267,6 +270,7 @@ public class ReadTestCaseExecution extends HttpServlet {
     private AnswerItem findExecutionList(ApplicationContext appContext, HttpServletRequest request, String Tag)
             throws CerberusException, ParseException, JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -296,6 +300,11 @@ public class ReadTestCaseExecution extends HttpServlet {
         String globalStart = "";
         String globalEnd = "";
         String globalStatus = "Finished";
+
+        /**
+         * Find the list of labels
+         */
+        AnswerList testCaseLabelList = testCaseLabelService.readByTestTestCase(null, null);
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
             try {
@@ -339,6 +348,24 @@ public class ReadTestCaseExecution extends HttpServlet {
                         ttcObject.put("comment", testCaseExecution.getTestCaseObj().getComment());
                         execTab.put(execKey, execution);
                         ttcObject.put("execTab", execTab);
+
+                        /**
+                         * Iterate on the label retrieved and generate HashMap
+                         * based on the key Test_TestCase
+                         */
+                        LinkedHashMap<String, JSONArray> testCaseWithLabel = new LinkedHashMap();
+                        for (TestCaseLabel label : (List<TestCaseLabel>) testCaseLabelList.getDataList()) {
+                            String key = label.getTest() + "_" + label.getTestcase();
+
+                            if (testCaseWithLabel.containsKey(key)) {
+                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                                testCaseWithLabel.get(key).put(jo);
+                            } else {
+                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                                testCaseWithLabel.put(key, new JSONArray().put(jo));
+                            }
+                        }
+                        ttcObject.put("labels", testCaseWithLabel.get(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase()));
                     }
                     ttc.put(testCaseExecution.getTest() + "_" + testCaseExecution.getTestCase(), ttcObject);
                 }
@@ -426,7 +453,7 @@ public class ReadTestCaseExecution extends HttpServlet {
     }
 
     private JSONObject testCaseExecutionToJSONObject(
-        TestCaseExecution testCaseExecution) throws JSONException {
+            TestCaseExecution testCaseExecution) throws JSONException {
         JSONObject result = new JSONObject();
         result.put("ID", String.valueOf(testCaseExecution.getId()));
         result.put("Test", JavaScriptUtils.javaScriptEscape(testCaseExecution.getTest()));

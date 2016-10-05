@@ -711,6 +711,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 .append(" order by exq.test, exq.testcase, exq.ID desc) as exq ")
                 .append("LEFT JOIN testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ")
                 .append("LEFT JOIN application app ON tec.application = app.application ")
+                .append("left join testcaselabel tel on tec.test = tel.test and tel.testcase = tec.testcase ")
+                .append("left join label lab on tel.labelId = lab.id ")
                 .append("where 1=1 ");
 
         gSearch.append("and (tec.`test` like '%");
