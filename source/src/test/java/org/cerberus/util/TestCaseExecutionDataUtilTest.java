@@ -52,7 +52,7 @@ public class TestCaseExecutionDataUtilTest {
     @Before
     public void setUp() {
         data = factoryTestCaseExecutionData.create(0, "property", 1, "description", "value", "type", "value1", "value2", "returnCode", "rMessage", START, START_LONG, END, END_LONG,
-                new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT));
+                new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TEXT), 0, 0);
     }
 
     @Test

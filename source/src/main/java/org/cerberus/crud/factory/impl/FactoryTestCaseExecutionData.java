@@ -33,7 +33,7 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
 
     @Override
     public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
-            String returnCode, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
+            String returnCode, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message,  int retrynb, int retryperiod) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
@@ -50,6 +50,8 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setStartLong(startLong);
         testCaseExecutionData.setEndLong(endLong);
         testCaseExecutionData.setPropertyResultMessage(message);
+        testCaseExecutionData.setRetrynb(retrynb);
+        testCaseExecutionData.setRetryperiod(retryperiod);
         return testCaseExecutionData;
 
     }

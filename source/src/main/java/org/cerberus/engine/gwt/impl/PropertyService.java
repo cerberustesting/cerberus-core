@@ -196,7 +196,7 @@ public class PropertyService implements IPropertyService {
              */
             now = new Date().getTime();
             tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
-                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING));
+                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING), eachTccp.getRetrynb(), eachTccp.getRetryperiod());
             tecd.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tecd.getProperty() + "' " + tecd);
@@ -224,11 +224,11 @@ public class PropertyService implements IPropertyService {
                 //saves the result 
                 try {
                     testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tecd));
-                    if (tecd.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all ros retreived in order to support nature such as NOTINUSe or RANDOMNEW.
+                    if (tecd.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                         for (int i = 1; i < (tecd.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
                             TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tecd.getId(), tecd.getProperty(), (i + 1), tecd.getDescription(), tecd.getDataLibRawData().get(i).get(""), tecd.getType(),
-                                    "", "", tecd.getRC(), "", now, now, now, now, null);
+                                    "", "", tecd.getRC(), "", now, now, now, now, null, 0, 0);
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                         }
 
@@ -591,89 +591,144 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setValue2(decodedValue);
         }
 
-        /**
-         * Calculate Property regarding the type
-         */
-        switch (testCaseCountryProperty.getType()) {
-            case TestCaseCountryProperties.TYPE_TEXT:
-                testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
-                break;
+        int execution_count = 0;
+        int retries = testCaseCountryProperty.getRetrynb();
+        int periodms = testCaseCountryProperty.getRetryperiod();
+        LOG.debug("Init Retries : " + retries + " Period : " + periodms);
 
-            case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
-                testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+        boolean forced_retry = false;
+        String forced_retry_message = "";
+        if (!(retries == 0)) {
+            int maxretry = parameterService.getParameterByKey("cerberus_property_maxretry", "", 50);
+            if (retries > maxretry) {
+                retries = maxretry;
+                forced_retry = true;
+            }
+            int maxtotalduration = parameterService.getParameterByKey("cerberus_property_maxretrytotalduration", "", 1800000);
+            if (periodms > maxtotalduration) {
+                periodms = maxtotalduration;
+                forced_retry = true;
+            }
+            if (retries * periodms > maxtotalduration) {
+                retries = (int) maxtotalduration / periodms;
+                forced_retry = true;
+            }
+            if (forced_retry) {
+                forced_retry_message = "Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration;
+                LOG.debug("Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration);
+            }
 
-            case TestCaseCountryProperties.TYPE_EXECUTESQL:
-                testCaseExecutionData = this.property_executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
-                break;
+        }
 
-            case TestCaseCountryProperties.TYPE_GETFROMHTML:
-                testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+        while (execution_count <= retries && !(testCaseExecutionData.getPropertyResultMessage().getCodeString().equals("OK"))) {
+            LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1());
 
-            case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
-                testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+            if (execution_count >= 1) { // We only wait the period if not on the very first calculation.
+                try {
+                    Thread.sleep(periodms);
+                    LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1() + " Waiting " + periodms + " ms");
+                } catch (InterruptedException ex) {
+                    LOG.error(ex.toString());
+                }
+            }
 
-            case TestCaseCountryProperties.TYPE_GETFROMJS:
-                testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+            /**
+             * Calculate Property regarding the type
+             */
+            switch (testCaseCountryProperty.getType()) {
+                case TestCaseCountryProperties.TYPE_TEXT:
+                    testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
-                testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
+                    testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMCOOKIE:
-                testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_EXECUTESQL:
+                    testCaseExecutionData = this.property_executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMXML:
-                testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMHTML:
+                    testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
-                testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
+                    testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMJSON:
-                testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMJS:
+                    testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
-                testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                break;
+                case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
+                    testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
-                testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
-                res = testCaseExecutionData.getPropertyResultMessage();
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                testCaseExecutionData.setPropertyResultMessage(res);
-                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMCOOKIE:
+                    testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
-                testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
-                res = testCaseExecutionData.getPropertyResultMessage();
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                testCaseExecutionData.setPropertyResultMessage(res);
-                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
+                case TestCaseCountryProperties.TYPE_GETFROMXML:
+                    testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
-                testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                res = testCaseExecutionData.getPropertyResultMessage();
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                testCaseExecutionData.setPropertyResultMessage(res);
-                logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
+                case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
+                    testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
 
-            default:
-                res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
-                res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
-                testCaseExecutionData.setPropertyResultMessage(res);
+                case TestCaseCountryProperties.TYPE_GETFROMJSON:
+                    testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, forceRecalculation);
+                    break;
+
+                case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
+                    testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    break;
+
+                case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
+                    testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                    res = testCaseExecutionData.getPropertyResultMessage();
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                    logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+
+                case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
+                    testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                    res = testCaseExecutionData.getPropertyResultMessage();
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                    logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+
+                case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
+                    testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                    res = testCaseExecutionData.getPropertyResultMessage();
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    testCaseExecutionData.setPropertyResultMessage(res);
+                    logEventService.createPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+
+                default:
+                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
+                    res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+            }
+            execution_count++;
+
+        }
+
+        if (execution_count >= 2) { // If there were at least 1 retry, we notify it in the result message.
+            res = testCaseExecutionData.getPropertyResultMessage();
+            res.setDescription("Retried " + (execution_count - 1) + " time(s) with " + periodms + "ms period - " + res.getDescription());
+            testCaseExecutionData.setPropertyResultMessage(res);
+        }
+        if (forced_retry) { // If the retry and period parameter was changed, we notify it in the result message.
+            res = testCaseExecutionData.getPropertyResultMessage();
+            res.setDescription(forced_retry_message+ " - " + res.getDescription());
+            testCaseExecutionData.setPropertyResultMessage(res);
         }
 
         testCaseExecutionData.setEnd(new Date().getTime());
