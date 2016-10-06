@@ -7134,6 +7134,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Updated Documentation
+        //-- ------------------------ 943
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','en','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

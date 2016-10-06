@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage.jsp</welcome-file>
     </welcome-file-list>
@@ -793,6 +794,10 @@
     <servlet>
         <servlet-name>GetExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadExecutionInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
@@ -1692,6 +1697,10 @@
         <url-pattern>/FindExecutionInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionInQueue</servlet-name>
+        <url-pattern>/ReadExecutionInQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>AddToExecutionQueue</servlet-name>
         <url-pattern>/AddToExecutionQueue</url-pattern>
     </servlet-mapping>
@@ -1934,6 +1943,7 @@
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
+            <url-pattern>/ExecutionPending2.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
@@ -1941,6 +1951,7 @@
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
             <url-pattern>/TestBattery.jsp</url-pattern>
+            <url-pattern>/TestBattery2.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseResult.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCampaign.jsp</url-pattern>
@@ -2090,6 +2101,7 @@
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
+            <url-pattern>/ReadExecutionInQueue</url-pattern>
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>

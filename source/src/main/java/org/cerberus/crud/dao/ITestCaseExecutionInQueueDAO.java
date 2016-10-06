@@ -22,11 +22,14 @@ package org.cerberus.crud.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.TestCaseExecution;
 
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -40,7 +43,7 @@ public interface ITestCaseExecutionInQueueDAO {
      * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
      *
      * @param inQueue the {@link TestCaseExecutionInQueue} to insert to the
-     * execution queue
+     *                execution queue
      * @throws CerberusException if an exception occurs
      */
     void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
@@ -48,7 +51,7 @@ public interface ITestCaseExecutionInQueueDAO {
     /**
      * Gets the next {@link TestCaseExecutionInQueue} to be executed and proceed
      * it.
-     *
+     * <p>
      * <p>
      * A {@link TestCaseExecutionInQueue} is proceeded when its database
      * Proceeded field is set to <code>true</code>
@@ -56,7 +59,6 @@ public interface ITestCaseExecutionInQueueDAO {
      *
      * @return the next {@link TestCaseExecutionInQueue} to be executed and
      * which has just been proceeded
-     *
      * @throws CerberusException if an exception occurs
      */
     TestCaseExecutionInQueue getNextAndProceed() throws CerberusException;
@@ -67,8 +69,8 @@ public interface ITestCaseExecutionInQueueDAO {
      * and which have been marked with the given tag.
      *
      * @param tag the tag to find proceeded {@link TestCaseExecutionInQueue}. If
-     * <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
-     * will be returned
+     *            <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
+     *            will be returned
      * @return a list of {@link TestCaseExecutionInQueue}
      * @throws CerberusException if an exception occurs
      */
@@ -111,6 +113,8 @@ public interface ITestCaseExecutionInQueueDAO {
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
 
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
@@ -118,14 +122,22 @@ public interface ITestCaseExecutionInQueueDAO {
     public AnswerList findTagList(int tagnumber);
 
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket);
-    
+
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+
+    public Answer create(TestCaseExecutionInQueue test);
+
+    public Answer update(TestCaseExecutionInQueue test);
+
+    public Answer delete(TestCaseExecutionInQueue test);
+
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
      *
      * @param resultSet ResultSet relative to select from table TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionInQueue}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCaseExecutionInQueue
      */
     TestCaseExecutionInQueue loadFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException;
