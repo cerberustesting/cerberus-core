@@ -151,7 +151,7 @@ public class UserDAO implements IUserDAO {
     @Override
     public boolean insertUser(User user) {
         boolean bool = false;
-        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences) VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '')";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -1026,8 +1026,8 @@ public class UserDAO implements IUserDAO {
     public Answer create(User user) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email)");
-        query.append("  VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("INSERT INTO user (Login, Password, Name, Request, ReportingFavorite, RobotHost, DefaultSystem, Team, Language, Email, UserPreferences)");
+        query.append("  VALUES (?, SHA(?), ?, ?, ?, ?, ?, ?, ?, ?, '')");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
