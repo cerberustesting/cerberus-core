@@ -5734,7 +5734,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 939
+        //-- ------------------------ 940
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasecountryproperties` ");
         SQLS.append("ADD COLUMN `RetryNb` INT(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '' AFTER `Nature`,");
@@ -5742,7 +5742,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 940-941
+        //-- ------------------------ 941-942
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -7128,14 +7128,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Resize Script column.
-        //-- ------------------------ 942
+        //-- ------------------------ 943
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testdatalib` ");
         SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
         // Updated Documentation
-        //-- ------------------------ 943
+        //-- ------------------------ 944
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
         SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
@@ -7159,7 +7159,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         
         
 // Add timeout parameters replacing the existing one.
-        //-- ------------------------ 944 - 946
+        //-- ------------------------ 945 - 947
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ");
         SQLS.append("('cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
@@ -7171,7 +7171,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         
         SQLS = new StringBuilder();
-        SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` from parameter p1 where p1.`param` = 'selenium_defaultWait') p3 ) ");
+        SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` * 1000 from parameter p1 where p1.`param` = 'selenium_defaultWait' and p1.`system` = '') p3 ) ");
         SQLS.append("where p2.`param` in ('cerberus_selenium_wait_element', 'cerberus_selenium_setScriptTimeout', 'cerberus_selenium_pageLoadTimeout','cerberus_appium_wait_element' , 'cerberus_action_wait_default');");
         SQLInstruction.add(SQLS.toString());
         
