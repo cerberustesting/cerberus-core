@@ -24,10 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -48,6 +46,7 @@ import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -118,6 +117,33 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private ITestCaseDAO testCaseDAO;
     @Autowired
     private IApplicationDAO applicationDAO;
+
+    private final int MAX_ROW_SELECTED = 100000;
+
+    private final String OBJECT_NAME = "TestCaseExecutionInQueue";
+
+    /**
+     * Declare SQL queries used by this {@link RobotCapabilityDAO}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Create a new {@link TestCaseExecutionInQueueDAO}
+         */
+        String CREATE = "INSERT INTO `testcaseexecutionqueue` (`test`, `testCase`, `country`, `environment`, `robot`, `robotIP`, `robotPort`, `browser`, `browserVersion`, `platform`, `manualURL`, `manualContextRoot`, `manualLoginRelativeURL`, `manualEnvData`, `tag`, `outputFormat`, `screenshot`, `verbose`, `timeout`, `synchroneous`, `pageSource`, `seleniumLog`, `requestDate`, `proceeded`, `comment`, `retries`, `manualexecution`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        /**
+         * Update an existing {@link TestCaseExecutionInQueueDAO}
+         */
+        String UPDATE = "UPDATE `testcaseexecutionqueue` SET `test` = ? and `testCase` = ? and `country` = ? and `environment` = ? and `robot` = ? and `robotIP` = ? and `robotPort` = ? and `browser` = ? and `browserVersion` = ? and `platform` = ? and `manualURL` = ? and `manualContextRoot` = ? and `manualLoginRelativeURL` = ? and `manualEnvData` = ? and `tag` = ? and `outputFormat` = ? and `screenshot` = ? and `verbose` = ? and `timeout` = ? and `synchroneous` = ? and `pageSource` = ? and `seleniumLog` = ? and `requestDate` = ? and `proceeded` = ? and `comment` = ? and `retries` = ? and `manualexecution` = ? WHERE `id` = ? ";
+
+        /**
+         * Remove an existing {@link TestCaseExecutionInQueueDAO}
+         */
+        String DELETE = "DELETE FROM `testcaseexecutionqueue` WHERE `ID` = ? ";
+    }
 
     @Override
     public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
@@ -792,6 +818,160 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+
+        AnswerList response = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<TestCaseExecutionInQueue> objectList = new ArrayList<TestCaseExecutionInQueue>();
+        StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+
+        StringBuilder query = new StringBuilder();
+        //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
+        //were applied -- used for pagination p
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcaseexecutionqueue exq ");
+
+        query.append(" WHERE 1=1");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (exq.ID like ?");
+            searchSQL.append(" or exq.Test like ?");
+            searchSQL.append(" or exq.TestCase like ?");
+            searchSQL.append(" or exq.Country like ?");
+            searchSQL.append(" or exq.Environment like ?");
+            searchSQL.append(" or exq.Browser like ?");
+            searchSQL.append(" or exq.Tag like ?");
+            searchSQL.append(" or exq.Processed like ?)");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and ");
+                String key = "IFNULL(exq." + entry.getKey() + ",'')";
+                String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
+                if (q == null || q == "") {
+                    q = "(exq." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
+                }
+                searchSQL.append(q);
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
+        }
+
+        query.append(searchSQL);
+
+        if (!StringUtil.isNullOrEmpty(column)) {
+            query.append(" order by exq.").append(column).append(" ").append(dir);
+        }
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                int i = 1;
+
+                if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                }
+                for (String individualColumnSearchValue : individalColumnSearchValues) {
+                    preStat.setString(i++, individualColumnSearchValue);
+                }
+
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    //gets the data
+                    while (resultSet.next()) {
+                        objectList.add(this.loadFromResultSet(resultSet));
+                    }
+
+                    //get the total number of rows
+                    resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+                    int nrTotalRows = 0;
+
+                    if (resultSet != null && resultSet.next()) {
+                        nrTotalRows = resultSet.getInt(1);
+                    }
+
+                    if (objectList.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                        LOG.error("Partial Result in the query.");
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                        response = new AnswerList(objectList, nrTotalRows);
+                    } else if (objectList.size() <= 0) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                        response = new AnswerList(objectList, nrTotalRows);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        response = new AnswerList(objectList, nrTotalRows);
+                    }
+
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } catch (FactoryCreationException exception) {
+                    LOG.error("Unable to create Test Case Execution In Queue from Factory : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        response.setResultMessage(msg);
+        response.setDataList(objectList);
+        return response;
+    }
+
+    @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         AnswerList answer = new AnswerList();
         StringBuilder query = new StringBuilder();
@@ -1360,6 +1540,109 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchTerm, Map<String, List<String>> individualSearch, String column) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<String> distinctValues = new ArrayList<>();
+        StringBuilder searchSQL = new StringBuilder();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT distinct exq.");
+        query.append(columnName);
+        query.append(" as distinctValues FROM testcaseexecutionqueue exq");
+        query.append(" where 1=1");
+
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            searchSQL.append(" and (exq.ID like ?");
+            searchSQL.append(" or exq.Test like ?");
+            searchSQL.append(" or exq.TestCase like ?");
+            searchSQL.append(" or exq.Country like ?");
+            searchSQL.append(" or exq.Environment like ?");
+            searchSQL.append(" or exq.Browser like ?");
+            searchSQL.append(" or exq.Tag like ?");
+            searchSQL.append(" or exq.Processed like ?)");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            searchSQL.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                searchSQL.append(" and exq.");
+                searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            searchSQL.append(" )");
+        }
+        query.append(searchSQL);
+        query.append(" group by ifnull(exq.").append(columnName).append(",'')");
+        query.append(" order by exq.").append(columnName).append(" asc");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+
+            int i = 1;
+            if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            ResultSet resultSet = preStat.executeQuery();
+
+            //gets the data
+            while (resultSet.next()) {
+                distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+            }
+
+            //get the total number of rows
+            resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+            int nrTotalRows = 0;
+
+            if (resultSet != null && resultSet.next()) {
+                nrTotalRows = resultSet.getInt(1);
+            }
+
+            if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                LOG.error("Partial Result in the query.");
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            } else if (distinctValues.size() <= 0) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            answer.setResultMessage(msg);
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(distinctValues);
+        return answer;
+    }
+
+    @Override
     public TestCaseExecutionInQueue loadFromResultSet(ResultSet resultSet) throws FactoryCreationException, SQLException {
         return factoryTestCaseExecutionInQueue.create(resultSet.getLong(COLUMN_ID),
                 resultSet.getString(COLUMN_TEST),
@@ -1392,15 +1675,90 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
     }
 
+    @Override
+    public Answer create(TestCaseExecutionInQueue test) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, test.getTest());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create TestCase Execution In Queue: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer update(TestCaseExecutionInQueue test) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+            // Prepare and execute query
+            preStat.setString(1, test.getTest());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "UPDATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to update TestCase Execution in Queue " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer delete(TestCaseExecutionInQueue test) {
+        Answer ans = new Answer();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setLong(1, test.getId());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete testCase Execution in queue: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     * TestCaseExecutionInQueue
+     *                  TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionInQueue} with objects
      * {@link TestCase} and {@link Application}
      * @throws SQLException when trying to get value from
-     * {@link java.sql.ResultSet#getString(String)}
+     *                      {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCaseExecutionInQueue
      */
     private TestCaseExecutionInQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {

@@ -20,6 +20,7 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
@@ -32,6 +33,7 @@ import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -121,6 +123,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        return testCaseExecutionInQueueDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
     }
@@ -128,6 +135,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     @Override
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app) {
         return testCaseExecutionInQueueDAO.readDistinctColumnByTag(tag, env, country, browser, app);
+    }
+
+    @Override
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column) {
+        return testCaseExecutionInQueueDAO.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);
     }
 
     @Override
@@ -144,6 +156,21 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public Answer create(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.create(test);
+    }
+
+    @Override
+    public Answer update(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.update(test);
+    }
+
+    @Override
+    public Answer delete(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.delete(test);
+    }
+
+    @Override
     public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue) {
         String test = testCaseExecutionInQueue.getTest();
         String testCase = testCaseExecutionInQueue.getTestCase();
@@ -152,12 +179,12 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String browser = testCaseExecutionInQueue.getBrowser();
         String version = testCaseExecutionInQueue.getBrowserVersion();
         String platform = testCaseExecutionInQueue.getPlatform();
-        long start = testCaseExecutionInQueue.getRequestDate()!=null?testCaseExecutionInQueue.getRequestDate().getTime():0;
+        long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
         long end = 0;
         String controlStatus = "NE";
         String controlMessage = "Not Executed";
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
-        String application = testCaseExecutionInQueue.getApplicationObj()!=null?testCaseExecutionInQueue.getApplicationObj().getApplication():"";
+        String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
         String ip = testCaseExecutionInQueue.getRobotIP();
         String port = testCaseExecutionInQueue.getRobotPort();
         String tag = testCaseExecutionInQueue.getTag();

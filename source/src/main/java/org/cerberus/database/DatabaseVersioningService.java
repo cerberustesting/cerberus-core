@@ -7133,9 +7133,52 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testdatalib` ");
         SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
+
+        // Updated Documentation
+        //-- ------------------------ 943
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','en','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
+        SQLInstruction.add(SQLS.toString());
         
         
+// Add timeout parameters replacing the existing one.
+        //-- ------------------------ 944 - 946
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ");
+        SQLS.append("('cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
+        SQLS.append("('cerberus_selenium_implicitlyWait', '0', 'Integer that correspond to the number of milliseconds that selenium will implicitely wait when searching an element.'),");
+        SQLS.append("('cerberus_selenium_setScriptTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when executing a Javascript Script.'),");
+        SQLS.append("('cerberus_action_wait_default', '45000', 'Integer that correspond to the number of milliseconds that cerberus will wait by default using the wait action.'),");
+        SQLS.append("('cerberus_selenium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when searching an element.'),");
+        SQLS.append("('cerberus_appium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that appium will wait before give timeout, when searching an element.');");
+        SQLInstruction.add(SQLS.toString());
         
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` from parameter p1 where p1.`param` = 'selenium_defaultWait') p3 ) ");
+        SQLS.append("where p2.`param` in ('cerberus_selenium_wait_element', 'cerberus_selenium_setScriptTimeout', 'cerberus_selenium_pageLoadTimeout','cerberus_appium_wait_element' , 'cerberus_action_wait_default');");
+        SQLInstruction.add(SQLS.toString());
+        
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM parameter where `param` = 'selenium_defaultWait' ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
