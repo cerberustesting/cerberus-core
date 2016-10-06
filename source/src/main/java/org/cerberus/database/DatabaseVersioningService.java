@@ -7133,7 +7133,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testdatalib` ");
         SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
         SQLInstruction.add(SQLS.toString());
-
+        
+        
+        
         return SQLInstruction;
     }
 

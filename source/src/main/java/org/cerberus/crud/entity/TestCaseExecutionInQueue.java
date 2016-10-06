@@ -43,7 +43,7 @@ public class TestCaseExecutionInQueue {
     private String outputFormat;
     private int screenshot;
     private int verbose;
-    private long timeout;
+    private String timeout;
     private boolean synchroneous;
     private int pageSource;
     private int seleniumLog;
@@ -304,11 +304,11 @@ public class TestCaseExecutionInQueue {
         this.verbose = verbose;
     }
 
-    public long getTimeout() {
+    public String getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(long timeout) {
+    public void setTimeout(String timeout) {
         this.timeout = timeout;
     }
 

@@ -114,7 +114,7 @@ public class ExecutionThreadPoolService {
         paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, lastInQueue.getOutputFormat());
         paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(lastInQueue.getScreenshot()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(lastInQueue.getVerbose()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, Long.toString(lastInQueue.getTimeout()));
+        paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, lastInQueue.getTimeout());
         paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, lastInQueue.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
                 : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
         paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(lastInQueue.getPageSource()));

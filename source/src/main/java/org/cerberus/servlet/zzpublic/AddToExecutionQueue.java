@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
@@ -42,8 +43,10 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -280,8 +283,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService parameterService = appContext.getBean(IParameterService.class);
-        long defaultWait = Long.parseLong(parameterService.findParameterByKey("selenium_defaultWait", "").getValue());
-        
+
         Date requestDate = new Date();
 
         String robot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_ROBOT), null, charset);
@@ -297,7 +299,7 @@ public class AddToExecutionQueue extends HttpServlet {
         String outputFormat = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT, charset);
         int screenshot = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT, charset);
         int verbose = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE, charset);
-        long timeout = ParameterParserUtil.parseLongParamAndDecode(req.getParameter(PARAMETER_TIMEOUT), defaultWait, charset);
+        String timeout = req.getParameter(PARAMETER_TIMEOUT);
         boolean synchroneous = ParameterParserUtil.parseBooleanParamAndDecode(req.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS, charset);
         int pageSource = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE, charset);
         int seleniumLog = ParameterParserUtil.parseIntegerParamAndDecode(req.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG, charset);

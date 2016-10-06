@@ -26,6 +26,7 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -45,6 +46,8 @@ import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentParameters;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  *
@@ -191,7 +194,7 @@ public class ExecutionStartService implements IExecutionStartService {
             LOG.debug(mes.getDescription());
             throw new CerberusException(mes);
         }
-        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - "+ tCExecution.getCountryObj().getDescription());
+        LOG.debug("Country Information Loaded - " + tCExecution.getCountryObj().getValue() + " - " + tCExecution.getCountryObj().getDescription());
 
         /**
          * Checking if execution is manual or automaticaly configured. If
@@ -211,8 +214,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost()
-                        , "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "");
+                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "");
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
@@ -315,6 +317,27 @@ public class ExecutionStartService implements IExecutionStartService {
             throw new CerberusException(mes);
         }
         LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
+
+        /**
+         * Get the cerberus_action_wait_default parameter. This parameter will be used 
+         * by tha wait action if no timeout/event is defined.
+         */
+        try {
+            AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", "cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem());
+            if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
+                if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
+                    tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue()));
+                } else {
+                    tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value()));
+                }
+            }  else {
+                LOG.warn("Parameter cerberus_action_wait_default not set in Parameter table, default value set to 90000 milliseconds. ");
+                tCExecution.setCerberus_action_wait_default(90000);
+            }
+        } catch (NumberFormatException ex) {
+            LOG.warn("Parameter cerberus_action_wait_default must be an integer, default value set to 90000 milliseconds. " + ex.toString());
+            tCExecution.setCerberus_action_wait_default(90000);
+        }
 
         /**
          * What is that for ???

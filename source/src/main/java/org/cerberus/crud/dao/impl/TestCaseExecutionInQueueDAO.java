@@ -149,7 +149,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             statementInsert.setString(17, inQueue.getOutputFormat());
             statementInsert.setInt(18, inQueue.getScreenshot());
             statementInsert.setInt(19, inQueue.getVerbose());
-            statementInsert.setLong(20, inQueue.getTimeout());
+            statementInsert.setString(20, inQueue.getTimeout());
             statementInsert.setBoolean(21, inQueue.isSynchroneous());
             statementInsert.setInt(22, inQueue.getPageSource());
             statementInsert.setInt(23, inQueue.getSeleniumLog());
@@ -1381,7 +1381,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_OUTPUT_FORMAT),
                 resultSet.getInt(COLUMN_SCREENSHOT),
                 resultSet.getInt(COLUMN_VERBOSE),
-                resultSet.getLong(COLUMN_TIMEOUT),
+                resultSet.getString(COLUMN_TIMEOUT),
                 resultSet.getBoolean(COLUMN_SYNCHRONEOUS),
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
                 resultSet.getInt(COLUMN_SELENIUM_LOG),

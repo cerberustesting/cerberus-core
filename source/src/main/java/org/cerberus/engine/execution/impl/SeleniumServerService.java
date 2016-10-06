@@ -49,7 +49,9 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.ISeleniumServerService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
@@ -94,16 +96,18 @@ public class SeleniumServerService implements ISeleniumServerService {
              * Set Session
              */
             LOG.debug(logPrefix + "Setting the session.");
-            long defaultWait;
-            try {
-                Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplicationObj().getSystem());
-                String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
-                defaultWait = Long.parseLong(to);
-            } catch (CerberusException ex) {
-                LOG.warn(logPrefix + "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
-                defaultWait = 90;
-            }
-            LOG.debug(logPrefix + "TimeOut defined on session : " + defaultWait);
+            String system = tCExecution.getApplicationObj().getSystem();
+            /**
+             * Get the parameters that will be used to set the servers
+             * (selenium/appium)
+             */
+            Integer cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
+            Integer cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
+            Integer cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
+            Integer cerberus_selenium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_wait_element", 90000, logPrefix);
+            Integer cerberus_appium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_appium_wait_element", 90000, logPrefix);;
+
+            LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
             List<SessionCapabilities> capabilities = new ArrayList();
             SessionCapabilities sc = new SessionCapabilities();
             sc.create("browser", tCExecution.getBrowser());
@@ -126,7 +130,11 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
 
             Session session = new Session();
-            session.setDefaultWait(defaultWait);
+            session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
+            session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
+            session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
+            session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
+            session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             session.setCapabilities(capabilities);
@@ -170,9 +178,9 @@ public class SeleniumServerService implements ISeleniumServerService {
              * https://github.com/vertigo17/Cerberus/issues/754)
              */
             if (driver != null && appiumDriver == null) {
-                driver.manage().timeouts().pageLoadTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
-                driver.manage().timeouts().implicitlyWait(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
-                driver.manage().timeouts().setScriptTimeout(tCExecution.getSession().getDefaultWait(), TimeUnit.SECONDS);
+                driver.manage().timeouts().pageLoadTimeout(cerberus_selenium_pageLoadTimeout, TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().implicitlyWait(cerberus_selenium_implicitlyWait, TimeUnit.MILLISECONDS);
+                driver.manage().timeouts().setScriptTimeout(cerberus_selenium_setScriptTimeout, TimeUnit.MILLISECONDS);
             }
             tCExecution.getSession().setDriver(driver);
             tCExecution.getSession().setAppiumDriver(appiumDriver);
@@ -452,5 +460,23 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     private String getScreenSize(WebDriver driver) {
         return driver.manage().window().getSize().toString();
+    }
+
+    private Integer getTimeoutSetInParameterTable(String system, String parameter, Integer defaultWait, String logPrefix) {
+        try {
+            AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", parameter, system);
+            if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
+                if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
+                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue());
+                } else {
+                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value());
+                }
+            } else {
+                LOG.warn(logPrefix + "Parameter (" + parameter + ") not set in Parameter table, default value set to " + defaultWait + " milliseconds. ");
+            }
+        } catch (NumberFormatException ex) {
+            LOG.warn(logPrefix + "Parameter (" + parameter + ") must be an integer, default value set to " + defaultWait + " milliseconds. " + ex.toString());
+        }
+        return defaultWait;
     }
 }

@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
@@ -132,6 +133,7 @@ public class GetExecutionQueue extends HttpServlet {
             ITestService testService = appContext.getBean(ITestService.class);
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
             testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
             List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
 
@@ -269,7 +271,6 @@ public class GetExecutionQueue extends HttpServlet {
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             IFactoryTestCaseExecutionInQueue inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
             ITestCaseExecutionInQueueService inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-            long defaultWait = Long.parseLong(parameterService.findParameterByKey("selenium_defaultWait", "").getValue());
             int addedToQueue = 0;
             JSONArray toAddList = new JSONArray(request.getParameter("toAddList"));
             JSONArray browsers = new JSONArray(request.getParameter("browsers"));
@@ -290,7 +291,7 @@ public class GetExecutionQueue extends HttpServlet {
             String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
             int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT);
             int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE);
-            long timeout = ParameterParserUtil.parseLongParam(request.getParameter(PARAMETER_TIMEOUT), defaultWait);
+            String timeout = request.getParameter(PARAMETER_TIMEOUT);
             boolean synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS);
             int pageSource = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE);
             int seleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG);

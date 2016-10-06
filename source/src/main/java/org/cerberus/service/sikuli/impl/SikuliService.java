@@ -72,7 +72,7 @@ public class SikuliService implements ISikuliService {
         result.put("action", action);
         result.put("picture", picture);
         result.put("text", text);
-        result.put("defaultWait", defaultWait * 1000);
+        result.put("defaultWait", defaultWait);
         result.put("pictureExtension", mimeType);
         return result;
     }
@@ -93,7 +93,7 @@ public class SikuliService implements ISikuliService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text, session.getDefaultWait());
+            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_selenium_wait_element());
             connection.setDoOutput(true);
 
             // Send post request

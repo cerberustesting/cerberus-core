@@ -166,7 +166,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         int pageSource = testCaseExecutionInQueue.getPageSource();
         int seleniumLog = testCaseExecutionInQueue.getSeleniumLog();
         boolean synchroneous = testCaseExecutionInQueue.isSynchroneous();
-        long timeout = testCaseExecutionInQueue.getTimeout();
+        String timeout = testCaseExecutionInQueue.getTimeout();
         String outputFormat = testCaseExecutionInQueue.getOutputFormat();
         TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
         boolean manualURL = testCaseExecutionInQueue.isManualURL();
@@ -176,7 +176,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform, browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource, seleniumLog, synchroneous, String.valueOf(timeout), outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, null, null);
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform, browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, null, null);
         result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());

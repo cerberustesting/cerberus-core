@@ -95,8 +95,17 @@ public class TestCaseExecution {
     private AnswerList testCaseStepExecutionAnswerList;
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
+    private Integer cerberus_action_wait_default;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
+
+    public Integer getCerberus_action_wait_default() {
+        return cerberus_action_wait_default;
+    }
+
+    public void setCerberus_action_wait_default(Integer cerberus_action_wait_default) {
+        this.cerberus_action_wait_default = cerberus_action_wait_default;
+    }
 
     public String getApplication() {
         return application;

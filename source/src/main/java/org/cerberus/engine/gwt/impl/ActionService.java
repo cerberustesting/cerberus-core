@@ -682,7 +682,7 @@ public class ActionService implements IActionService {
                  * Identifier (identifier, locator)
                  */
                 if (StringUtil.isNullOrEmpty(element)) {
-                    timeToWaitInMs = 1000 * tCExecution.getSession().getDefaultWait();
+                    timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
                 } else if (StringUtil.isNumeric(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 } else {
@@ -700,18 +700,7 @@ public class ActionService implements IActionService {
             } else { // For any other application we wait for the integer value.
                 if (StringUtil.isNullOrEmpty(element)) {
                     // Get default wait from parameter
-                    long defaultWait;
-                    try {
-                        Parameter param = parameterService.findParameterByKey("selenium_defaultWait", tCExecution.getApplicationObj().getSystem());
-                        String to = tCExecution.getTimeout().equals("") ? param.getValue() : tCExecution.getTimeout();
-                        defaultWait = Long.parseLong(to);
-                    } catch (CerberusException ex) {
-                        //MyLogger.log(RunTestCase.class.getName(), Level.WARN, "Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds");
-                        LOG.warn("Parameter (selenium_defaultWait) not in Parameter table, default wait set to 90 seconds. " + ex.toString());
-                        defaultWait = 90;
-                    }
-
-                    timeToWaitInMs = 1000 * defaultWait;
+                    timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
                 } else if (StringUtil.isNumeric(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 }

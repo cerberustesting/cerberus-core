@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -118,7 +119,7 @@ public class WebDriverService implements IWebDriverService {
         By locator = this.getBy(identifier);
         MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(session.getDriver(), session.getDefaultWait());
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
             WebElement element;
             if (visible) {
                 if (clickable) {
@@ -340,7 +341,7 @@ public class WebDriverService implements IWebDriverService {
 
     public File takeScreenShotFile(Session session) {
         boolean event = true;
-        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
             try {
@@ -369,7 +370,7 @@ public class WebDriverService implements IWebDriverService {
     public BufferedImage takeScreenShot(Session session) {
         BufferedImage newImage = null;
         boolean event = true;
-        long timeout = System.currentTimeMillis() + (1000 * session.getDefaultWait());
+        long timeout = System.currentTimeMillis() + (session.getCerberus_selenium_wait_element());
         //Try to capture picture. Try again until timeout is WebDriverException is raised.
         while (event) {
             try {
@@ -456,7 +457,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -493,7 +494,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -528,7 +529,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -573,7 +574,7 @@ public class WebDriverService implements IWebDriverService {
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -655,7 +656,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -695,7 +696,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -730,7 +731,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -818,7 +819,7 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
 
         } catch (WebDriverException exception) {
@@ -851,7 +852,7 @@ public class WebDriverService implements IWebDriverService {
             }
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_OPENURL_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
             message.setDescription(message.getDescription().replace("%URL%", url));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
         } catch (WebDriverException exception) {
@@ -889,7 +890,7 @@ public class WebDriverService implements IWebDriverService {
                 return message;
             } catch (TimeoutException exception) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-                message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+                message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
                 MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
                 return message;
             }
@@ -980,7 +981,7 @@ public class WebDriverService implements IWebDriverService {
 
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_URLLOGIN_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_pageLoadTimeout())));
             message.setDescription(message.getDescription().replace("%URL%", url));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
         } catch (Exception e) {
@@ -1014,7 +1015,7 @@ public class WebDriverService implements IWebDriverService {
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
@@ -1115,7 +1116,7 @@ public class WebDriverService implements IWebDriverService {
             return message;
         } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getDefaultWait())));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
             return message;
         } catch (WebDriverException exception) {
