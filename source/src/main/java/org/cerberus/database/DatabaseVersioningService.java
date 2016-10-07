@@ -7156,27 +7156,45 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
         SQLInstruction.add(SQLS.toString());
-        
-        
-// Add timeout parameters replacing the existing one.
-        //-- ------------------------ 945 - 947
+
+        // Add timeout parameters replacing the existing one.
+        //-- ------------------------ 945-947
         SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`param`, `value`, `description`) VALUES ");
-        SQLS.append("('cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
-        SQLS.append("('cerberus_selenium_implicitlyWait', '0', 'Integer that correspond to the number of milliseconds that selenium will implicitely wait when searching an element.'),");
-        SQLS.append("('cerberus_selenium_setScriptTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when executing a Javascript Script.'),");
-        SQLS.append("('cerberus_action_wait_default', '45000', 'Integer that correspond to the number of milliseconds that cerberus will wait by default using the wait action.'),");
-        SQLS.append("('cerberus_selenium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when searching an element.'),");
-        SQLS.append("('cerberus_appium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that appium will wait before give timeout, when searching an element.');");
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
+        SQLS.append("('', 'cerberus_selenium_implicitlyWait', '0', 'Integer that correspond to the number of milliseconds that selenium will implicitely wait when searching an element.'),");
+        SQLS.append("('', 'cerberus_selenium_setScriptTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when executing a Javascript Script.'),");
+        SQLS.append("('', 'cerberus_action_wait_default', '45000', 'Integer that correspond to the number of milliseconds that cerberus will wait by default using the wait action.'),");
+        SQLS.append("('', 'cerberus_selenium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when searching an element.'),");
+        SQLS.append("('', 'cerberus_appium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that appium will wait before give timeout, when searching an element.');");
         SQLInstruction.add(SQLS.toString());
-        
         SQLS = new StringBuilder();
         SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` * 1000 from parameter p1 where p1.`param` = 'selenium_defaultWait' and p1.`system` = '') p3 ) ");
         SQLS.append("where p2.`param` in ('cerberus_selenium_wait_element', 'cerberus_selenium_setScriptTimeout', 'cerberus_selenium_pageLoadTimeout','cerberus_appium_wait_element' , 'cerberus_action_wait_default');");
         SQLInstruction.add(SQLS.toString());
-        
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM parameter where `param` = 'selenium_defaultWait' ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Cleaned testcaseexecutiondata table keeping all values of testcasecountryproperty.
+        //-- ------------------------ 948
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(45) NULL DEFAULT NULL AFTER `Index`,");
+        SQLS.append("CHANGE COLUMN `RC` `RC` VARCHAR(10) NULL DEFAULT NULL AFTER `EndLong`,");
+        SQLS.append("CHANGE COLUMN `RMessage` `RMessage` TEXT NULL AFTER `RC`,");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL DEFAULT '' AFTER `RMessage`,");
+        SQLS.append("CHANGE COLUMN `Value` `Value` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL ,");
+        SQLS.append("ADD COLUMN `Database` VARCHAR(45) NULL AFTER `Value`,");
+        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Database`,");
+        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
+        SQLS.append("ADD COLUMN `Length` INT(10) NULL AFTER `Value2`,");
+        SQLS.append("ADD COLUMN `RowLimit` INT(10) NULL AFTER `Length`,");
+        SQLS.append("ADD COLUMN `Nature` VARCHAR(45) NULL AFTER `RowLimit`,");
+        SQLS.append("ADD COLUMN `RetryNb` INT(10) NULL AFTER `Nature`,");
+        SQLS.append("ADD COLUMN `RetryPeriod` INT(10) NULL AFTER `RetryNb`;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

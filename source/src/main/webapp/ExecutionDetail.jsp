@@ -288,10 +288,10 @@
                     </tr>
                     <tr>
                         <td colspan=2><span id="exetag"><code><%= testCaseExecution.getTag() == null ? "" : StringEscapeUtils.escapeHtml4(testCaseExecution.getTag())%>
-                                                                 
+
                                 </code><input type="button" name="editTag" value="edit" onclick="openChangeTagPopin('<%=id_filter%>')">
                             </span>
-                                                                
+
                         </td>
                         <%
                             String tagEncoded = testCaseExecution.getTag();
@@ -325,9 +325,9 @@
                                 AnswerList myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
                                 List<TestCaseExecutionFile> myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
                                 for (TestCaseExecutionFile myFile : myFiles) {
-                                %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                    %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
                                     }
-                                %></table></span>
+                                                %></table></span>
                         </td>
                         <td colspan=4><span id="bugid"><%
                             if (StringUtil.isNullOrEmpty(bugid)) {
@@ -485,7 +485,7 @@
                                 <a id="dropDownUpArrow<%=stepIdentifier%>" style="display:<%=conditionalDisplay%>"
                                    onclick="javascript:switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'dropDownUpArrow<%=stepIdentifier%>');
                                            switchTableVisibleInvisible('dropDownDownArrow<%=stepIdentifier%>', 'actionTable<%=stepIdentifier%>');
-                                           "><img src="images/dropdownup.gif"/></a>
+                                   "><img src="images/dropdownup.gif"/></a>
 
                                 <a id="dropDownDownArrow<%=stepIdentifier%>" style="display:<%=conditionalHidden%>"
                                    onclick="javascript:switchTableVisibleInvisible('actionTable<%=stepIdentifier%>', 'dropDownDownArrow<%=stepIdentifier%>');
@@ -526,10 +526,10 @@
                                             myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
                                             myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
                                             for (TestCaseExecutionFile myFile : myFiles) {
-                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                                %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
                                                 }
-                                            %>
-                                        </table></td>
+                                                            %>
+                                            </table></td>
                                     </tr>
                                     <tr class="tableContent">
                                         <td style="width:1%">&nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -563,10 +563,10 @@
                                                     }
                                                 }
                                             %>
-<code><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
-</i></code></td>
+                                            <code><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
+                                                </i></code></td>
                                     </tr>
-                                    
+
                                     <tr>
                                         <td colspan="10">
                                             <%
@@ -594,24 +594,24 @@
                                                     <td title="Control Value" id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></code></td>
                                                     <td title="Fatal"><%=myControlData.getFatal()%></td>
                                                     <td title="Control Files"><table><%
-                                            levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence()+ "-" + myControlData.getControl();
-                                            myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
-                                            myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
-                                            for (TestCaseExecutionFile myFile : myFiles) {
-                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                                        levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence() + "-" + myControlData.getControl();
+                                                        myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                                        myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                                        for (TestCaseExecutionFile myFile : myFiles) {
+                                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
                                                 }
-                                            %>
-                                                    </table></td>
+                                                                        %>
+                                                        </table></td>
                                                 </tr>
                                                 <tr class="tableContent">
-                                        <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
-                                        <td title="Control Return Code" style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
-                                        <td title="Control Return Message" colspan="9" class="<%=myControlData.getReturnCode()%>F">
-                                            <code><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
-                                                </span></i></code></td>
-                                    </tr>
-                                    <tr></tr>
+                                                    <td style="width:10px">&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                    <td title="Control Return Code" style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
+                                                    <td title="Control Return Message" colspan="9" class="<%=myControlData.getReturnCode()%>F">
+                                                        <code><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
+                                                                </span></i></code></td>
+                                                </tr>
+                                                <tr></tr>
                                                 <%
                                                     }
 
@@ -643,7 +643,8 @@
                             <td title="Description"><span id="DESCRIPTION-<%=myData.getProperty()%>"><%= myData.getDescription() == null || myData.getDescription().isEmpty() ? "<i>No description defined.</i>" : myData.getDescription()%></span></td>
                             <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
-                            <td title="Value1 / Value2" style="font-size: x-small"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%> / <%=myData.getValue2()%></code></td>
+                            <td title="Property Value1" style="font-size: x-small"><table><tr><td title="Property Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1Init())%></code></td></tr><tr><td title="Property Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%></code></td></tr></table></td>
+                            <td title="Property Value2" style="font-size: x-small"><table><tr><td title="Property Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2Init())%></code></td></tr><tr><td title="Property Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2())%></code></td></tr></table></td>
                             <%
                                 String propMessage = myData.getrMessage();
                                 //TODO this should handled differently, in the servlet or javascript file
@@ -659,26 +660,26 @@
                             %>
                             <td title="Message" ><code><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></code></td>
                             <td title="Media Files" ><table><%
-                                            levelFile = myData.getProperty()+"-"+myData.getIndex();
-                                            myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
-                                            myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
-                                            for (TestCaseExecutionFile myFile : myFiles) {
-                                            %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
+                                levelFile = myData.getProperty() + "-" + myData.getIndex();
+                                myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
+                                myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
+                                for (TestCaseExecutionFile myFile : myFiles) {
+                                    %><tr><td><a href="<%= mediaURL + myFile.getFileName()%>" target='_blank' ><%= myFile.getFileDesc()%></a></td></tr><%
                                                 }
-                                            %>
-                            </table></td>
+                                                %>
+                                </table></td>
                         </tr>
                         <%
                             }
 
                         %>                        
                     </table>
-                <br><br>
+                    <br><br>
                     <%  if (!(myApplication.equalsIgnoreCase(""))) {
                     %>
-                <h4>Contextual Actions</h4>
-                <table class="tableBorder"  style="text-align: left" border="1" >
-                    <tr>
+                    <h4>Contextual Actions</h4>
+                    <table class="tableBorder"  style="text-align: left" border="1" >
+                        <tr>
                             <%if (tcGroup.equalsIgnoreCase("MANUAL") && !"PE".equalsIgnoreCase(controlStatus)) {%>
                             <td> 
                                 <button style="cursor:pointer; background:none; border:none;margin:0;padding:0;color: #008CDA;text-decoration: none;font-family: helvetica;font-size:11.2px " 
@@ -692,41 +693,41 @@
                             <td><a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                     Run the same Test Case again</a><br>
-                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>"
+                                <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>"
                                    title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
                                     Run the same Test Case again (Beta)</a></td>
                                     <% } else if (tcGroup.equalsIgnoreCase("MANUAL")) {%>
-                        <td>
-                            <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
-                                title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
-                                Edit configurations and Run the same Test Case again</a><br>
-                            <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
-                                title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
-                                Edit configurations and Run the same Test Case again (Beta)</a>
-                        </td>
+                            <td>
+                                <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testCase%>&MySystem=<%=appSystem%>&Country=<%=country%>&Environment=<%=environment%>&browser=<%=browser%>&Tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
+                                   title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                    Edit configurations and Run the same Test Case again</a><br>
+                                <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testCase%>&country=<%=country%>&environment=<%=environment%>&browser=<%=browser%>&tag=<%=testCaseExecution.getTag() == null ? "" : tagEncoded%>&manualExecution=Y"
+                                   title="Allows the user to execute the current test case. The user can modify the configurations associated with the execution: tag, environment, country... ">
+                                    Edit configurations and Run the same Test Case again (Beta)</a>
+                            </td>
                             <%}%>                           
-                        <td>
-                            <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a><br>
-                            <a href="TestCaseScript.jsp?test=<%=test%>&testcase=<%=testCase%>">Modify the Test Case (Beta).</a>
-                        </td>
-                        <td>
-                    <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
-                </td>
-                        <td>
+                            <td>
+                                <a href="TestCase.jsp?Test=<%=test%>&TestCase=<%=testCase%>&Load=Load">Modify the Test Case.</a><br>
+                                <a href="TestCaseScript.jsp?test=<%=test%>&testcase=<%=testCase%>">Modify the Test Case (Beta).</a>
+                            </td>
+                            <td>
+                                <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                            </td>
+                            <td>
                                 <%
                                     if (StringUtil.isNullOrEmpty(newBugURL)) {
                                 %>
-                            <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
+                                <a href="javascript:void(0)" title="Define the New Bug URL at the application level in order to open a bug from here.">Open a bug.</a> 
                                 <%
                                 } else {
                                 %>
-                            <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
+                                <a href="<%= newBugURL%>" target='_blank' title="title">Open a bug.</a> 
                                 <%                                }
 
                                 %>
-                        </td>
-                    </tr>
-                </table>
+                            </td>
+                        </tr>
+                    </table>
                     <%  }
                     } else {
                     %>
@@ -738,10 +739,10 @@
                     <%              }
                     %>
 
-                <input style="display:none" id="refreshAuto">
-            </div>
-            <div id="popin" title="Manual Execution"></div>
-            <script>
+                    <input style="display:none" id="refreshAuto">
+                </div>
+                <div id="popin" title="Manual Execution"></div>
+                <script>
                     $(document).ready(function () {
                         var stat = document.getElementById("statushidden").value;
                         var idtc = document.getElementById("exeid").innerHTML;
@@ -805,11 +806,11 @@
                         $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
                         $('#dialogTheDiff').dialog();
                     }
-                                </script>
+                </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>
                 <div id="setTagToExecution">
-                    
+
                 </div>
-            </body>
-            </html>
+                </body>
+                </html>

@@ -196,7 +196,9 @@ public class PropertyService implements IPropertyService {
              */
             now = new Date().getTime();
             tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
-                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING), eachTccp.getRetryNb(), eachTccp.getRetryPeriod());
+                    eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
+                    eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
+                    eachTccp.getRowLimit(), eachTccp.getNature());
             tecd.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tecd.getProperty() + "' " + tecd);
@@ -227,8 +229,9 @@ public class PropertyService implements IPropertyService {
                     if (tecd.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                         for (int i = 1; i < (tecd.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
-                            TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tecd.getId(), tecd.getProperty(), (i + 1), tecd.getDescription(), tecd.getDataLibRawData().get(i).get(""), tecd.getType(),
-                                    "", "", tecd.getRC(), "", now, now, now, now, null, 0, 0);
+                            TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tecd.getId(), tecd.getProperty(), (i + 1),
+                                    tecd.getDescription(), tecd.getDataLibRawData().get(i).get(""), tecd.getType(), "", "",
+                                    tecd.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
                         }
 
@@ -596,6 +599,13 @@ public class PropertyService implements IPropertyService {
         int periodms = testCaseCountryProperty.getRetryPeriod();
         LOG.debug("Init Retries : " + retries + " Period : " + periodms);
 
+        /**
+         * Controling that retrynb and retryperiod are correctly feeded. <br>
+         * This is to avoid that <br>
+         * 1/ retry is greater than cerberus_property_maxretry <br>
+         * 2/ total duration of property calculation is longuer than
+         * cerberus_property_maxretrytotalduration
+         */
         boolean forced_retry = false;
         String forced_retry_message = "";
         if (!(retries == 0)) {
@@ -614,12 +624,16 @@ public class PropertyService implements IPropertyService {
                 forced_retry = true;
             }
             if (forced_retry) {
-                forced_retry_message = "WARNING : Forced Retries : " + testCaseCountryProperty.getRetryNb() + "-->" + retries + " and Period : " + testCaseCountryProperty.getRetryPeriod()+ "-->" + periodms + " (in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration + ")";
+                forced_retry_message = "WARNING : Forced Retries : " + testCaseCountryProperty.getRetryNb() + "-->" + retries + " and Period : " + testCaseCountryProperty.getRetryPeriod() + "-->" + periodms + " (in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration + ")";
                 LOG.debug("Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration);
             }
 
         }
 
+        /**
+         * Looping on calculating the action until result is OK or reach the max
+         * retry.
+         */
         while (execution_count <= retries && !(testCaseExecutionData.getPropertyResultMessage().getCodeString().equals("OK"))) {
             LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1());
 
