@@ -172,18 +172,18 @@ public class ExportTestCase extends HttpServlet {
                             JSONObject controlObject = new JSONObject();
                             controlObject.put("step", control.getStep());
                             controlObject.put("sequence", control.getSequence());
-                            controlObject.put("order", control.getControl());
-                            controlObject.put("action", control.getType());
-                            controlObject.put("object", control.getControlProperty());
-                            controlObject.put("property", control.getControlValue());
+                            controlObject.put("order", control.getControlSequence());
+                            controlObject.put("action", control.getControl());
+                            controlObject.put("object", control.getValue2());
+                            controlObject.put("property", control.getValue1());
                             controlObject.put("fatal", control.getFatal());
                             controlList.put(controlObject);
                             //test
                             controlObject = new JSONObject();
                             controlObject.put("sequence", i);
-                            controlObject.put("action", control.getType());
-                            controlObject.put("object", control.getControlProperty());
-                            controlObject.put("property", control.getControlValue());
+                            controlObject.put("action", control.getControl());
+                            controlObject.put("object", control.getValue2());
+                            controlObject.put("property", control.getValue1());
                             controlObject.put("fatal", control.getFatal());
                             sequenceList.put(controlObject);
                         }

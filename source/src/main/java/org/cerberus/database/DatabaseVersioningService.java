@@ -17,10 +17,8 @@
  */
 package org.cerberus.database;
 
-import org.apache.log4j.Level;
 import org.cerberus.crud.entity.MyVersion;
 import org.cerberus.crud.service.IMyVersionService;
-import org.cerberus.log.MyLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +33,8 @@ import java.util.ArrayList;
 @Service
 public class DatabaseVersioningService implements IDatabaseVersioningService {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(DatabaseVersioningService.class);
+
     @Autowired
     private IMyVersionService MyversionService;
     @Autowired
@@ -42,21 +42,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
     @Override
     public String exeSQL(String SQLString) {
+        LOG.info("Starting Execution of '" + SQLString + "'");
         Statement preStat;
         Connection connection = this.databaseSpring.connect();
         try {
             preStat = connection.createStatement();
             try {
                 preStat.execute(SQLString);
-                MyLogger.log(DatabaseVersioningService.class.getName(), Level.INFO, SQLString + " Executed successfully.");
+                LOG.info("'" + SQLString + "' Executed successfully.");
             } catch (Exception exception1) {
-                MyLogger.log(DatabaseVersioningService.class.getName(), Level.ERROR, exception1.toString());
+                LOG.error(exception1.toString());
                 return exception1.toString();
             } finally {
                 preStat.close();
             }
         } catch (Exception exception1) {
-            MyLogger.log(DatabaseVersioningService.class.getName(), Level.ERROR, exception1.toString());
+            LOG.error(exception1.toString());
             return exception1.toString();
         } finally {
             try {
@@ -64,7 +65,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(DatabaseVersioningService.class.getName(), Level.WARN, e.toString());
+                LOG.warn(e.toString());
             }
         }
         return "OK";
@@ -82,7 +83,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         if (SQLList.size() == MVersion.getValue()) {
             return true;
         }
-        MyLogger.log(DatabaseVersioningService.class.getName(), Level.INFO, "Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
+        LOG.info("Database needs an upgrade - Script : " + SQLList.size() + " Database : " + MVersion.getValue());
         return false;
     }
 
@@ -7195,6 +7196,52 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `Nature` VARCHAR(45) NULL AFTER `RowLimit`,");
         SQLS.append("ADD COLUMN `RetryNb` INT(10) NULL AFTER `Nature`,");
         SQLS.append("ADD COLUMN `RetryPeriod` INT(10) NULL AFTER `RetryNb`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Cleaned testcasestepactioncontrol table.
+        //-- ------------------------ 949-953
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `Type` `Control` VARCHAR(200) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Control`,");
+        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL  AFTER `Value1`,");
+        SQLS.append("CHANGE COLUMN `ControlDescription` `Description` VARCHAR(255) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `Fatal` `Fatal` VARCHAR(1) NULL DEFAULT 'Y' AFTER `Value2`,");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY USING BTREE (`Test`, `TestCase`, `Step`, `Sequence`, `ControlSequence`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `ControlType` `Control` VARCHAR(200) NULL DEFAULT NULL ,");
+        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Control`,");
+        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
+        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Value2Init`,");
+        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL ,");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Fatal`,");
+        SQLS.append("CHANGE COLUMN `ReturnCode` `ReturnCode` VARCHAR(2) NOT NULL AFTER `Description`,");
+        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL AFTER `ReturnCode`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL AFTER `RetryPeriod`,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NOT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NOT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1Init` `Value1Init` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2Init` `Value2Init` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

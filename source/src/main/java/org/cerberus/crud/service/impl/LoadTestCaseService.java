@@ -209,7 +209,7 @@ public class LoadTestCaseService implements ILoadTestCaseService {
         List<TestCaseStepActionControl> controlList = testCaseStepActionControlService.findControlByTestTestCaseStepSequence(testCaseAction.getTest(), testCaseAction.getTestCase(), testCaseAction.getStep(), testCaseAction.getSequence());
         if (controlList != null) {
             for (TestCaseStepActionControl testCaseStepActionControl : controlList) {
-                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set control :" + testCaseStepActionControl.getType());
+                MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "set control :" + testCaseStepActionControl.getControl());
                 testCaseStepActionControl.setTest(testCaseStep.getTest());
                 testCaseStepActionControl.setTestCase(testCaseStep.getTestCase());
                 testCaseStepActionControl.setStep(testCaseStep.getStep());

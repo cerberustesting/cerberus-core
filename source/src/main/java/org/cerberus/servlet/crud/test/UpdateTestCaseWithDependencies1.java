@@ -188,8 +188,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                                 if (tcsa.getTestCaseStepActionControl() != null) {
                                     int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
                                     for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
-                                        if (tscac.getControl() == -1) {
-                                            tscac.setControl(++nextControlNumber);
+                                        if (tscac.getControlSequence() == -1) {
+                                            tscac.setControlSequence(++nextControlNumber);
                                         }
                                         tscac.setStep(tcs.getStep());
                                         tscac.setSequence(tcsa.getSequence());
@@ -286,8 +286,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         int nextControlNumber = 0;
         if (controls != null) {
             for (TestCaseStepActionControl control : controls) {
-                if (nextControlNumber < control.getControl()) {
-                    nextControlNumber = control.getControl();
+                if (nextControlNumber < control.getControlSequence()) {
+                    nextControlNumber = control.getControlSequence();
                 }
             }
         }

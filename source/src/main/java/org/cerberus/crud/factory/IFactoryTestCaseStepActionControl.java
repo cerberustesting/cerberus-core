@@ -28,10 +28,10 @@ public interface IFactoryTestCaseStepActionControl {
 
     @Deprecated
     TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                     int control, String type, String controlValue, String controlProperty, String fatal, String description);
+                                     int controlSequence, String control, String value1, String value2, String fatal, String description);
     
     TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                     int control, int sort, String type, String controlValue, String controlProperty, String fatal, String description, String screenshotFilename);
+                                     int controlSequence, int sort, String control, String value1, String value2, String fatal, String description, String screenshotFilename);
    
     
 }

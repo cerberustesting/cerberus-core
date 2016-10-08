@@ -98,7 +98,7 @@ public class RecorderService implements IRecorderService {
             getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
             applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
             returnCode = testCaseStepActionControlExecution.getReturnCode();
-            controlNumber = testCaseStepActionControlExecution.getControl();
+            controlNumber = testCaseStepActionControlExecution.getControlSequence();
         }
 
         /**

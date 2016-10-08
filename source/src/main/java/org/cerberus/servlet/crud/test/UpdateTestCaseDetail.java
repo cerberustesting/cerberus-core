@@ -563,16 +563,16 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         request);
                 String controls_sequence[] = this.getStringTable(
                         "controls_sequence", request);
+                String controls_controlsequence[] = this.getStringTable("controls_controlsequence",
+                        request);
                 String controls_control[] = this.getStringTable("controls_control",
                         request);
-                String controls_type[] = this.getStringTable("controls_type",
-                        request);
-                String controls_controlvalue[] = this.getStringTable(
-                        "controls_controlvalue", request);
-                String controls_controlproperty[] = this.getStringTable(
-                        "controls_controlproperty", request);
-                String controls_controldescription[] = this.getStringTable(
-                        "controls_controldescription", request, true);
+                String controls_value1[] = this.getStringTable(
+                        "controls_value1", request);
+                String controls_value2[] = this.getStringTable(
+                        "controls_value2", request);
+                String controls_description[] = this.getStringTable(
+                        "controls_description", request, true);
                 String controls_fatal[] = this.getStringTable("controls_fatal",
                         request);
 
@@ -602,13 +602,13 @@ public class UpdateTestCaseDetail extends HttpServlet {
                  * Controls
                  */
                 List<String[]> testcase_controls_info = new ArrayList<String[]>();
-                testcase_controls_info.add(controls_control);
-                testcase_controls_info.add(controls_controldescription);
-                testcase_controls_info.add(controls_controlproperty);
-                testcase_controls_info.add(controls_controlvalue);
-                testcase_controls_info.add(controls_sequence);
                 testcase_controls_info.add(controls_step);
-                testcase_controls_info.add(controls_type);
+                testcase_controls_info.add(controls_sequence);
+                testcase_controls_info.add(controls_controlsequence);
+                testcase_controls_info.add(controls_description);
+                testcase_controls_info.add(controls_control);
+                testcase_controls_info.add(controls_value1);
+                testcase_controls_info.add(controls_value2);
                 testcase_controls_info.add(controls_fatal);
 
                 /*
@@ -756,15 +756,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                     Integer.parseInt(step_sequence[i]), step_conditionOper[i], step_conditionVal[i], step_action[i], step_value1[i], step_value2[i], "", step_description[i], "");
 
                             if (rs_stepaction.next()) {
-                                /*
-                                 * Update
-                                 */
-
                                 actionService.updateTestCaseStepAction(tcsa);
 
-                            } else /*
-                                 * Insert
-                             */ if (this.formIsFullFill(testcase_actions_info, i)) {
+                            } else if (this.formIsFullFill(testcase_actions_info, i)) {
                                 actionService.insertTestCaseStepAction(tcsa);
 
                             }
@@ -780,7 +774,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
  /*
                  * Get Number of actual testcase controls
                  */
-                for (int i = 0; i < controls_control.length; i++) {
+                for (int i = 0; i < controls_controlsequence.length; i++) {
 
                     /*
                      * Select to know if need to update or insert
@@ -792,14 +786,14 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 + " AND TestCase = '" + test_testcase_format[1]
                                 + "' " + " AND Step = " + controls_step[i] + " "
                                 + " AND Sequence = " + controls_sequence[i] + " "
-                                + " AND control = " + controls_control[i]);
+                                + " AND controlSequence = " + controls_controlsequence[i]);
                         ResultSet rs_stepactioncontrol = stmt4.executeQuery(sql);
                         try {
                             IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
                             ITestCaseStepActionControlService controlService = appContext.getBean(ITestCaseStepActionControlService.class);
                             TestCaseStepActionControl control = controlFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(controls_step[i]),
-                                    Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_control[i]), controls_type[i], (controls_controlvalue[i]),
-                                    controls_controlproperty[i], controls_fatal[i], controls_controldescription[i]);
+                                    Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_controlsequence[i]), 0, controls_control[i], (controls_value1[i]),
+                                    controls_value2[i], controls_fatal[i], controls_description[i], "");
 
                             if (rs_stepactioncontrol.next()) {
 
@@ -869,7 +863,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                                 + "' " + " AND TestCase = '"
                                 + test_testcase_format[1] + "' " + " AND Step = "
                                 + key_delete[0] + " " + " AND Sequence = "
-                                + key_delete[1] + " " + " AND Control = "
+                                + key_delete[1] + " " + " AND ControlSequence = "
                                 + key_delete[2] + "");
 
                     }

@@ -97,9 +97,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyStringEqual");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyStringEqual");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -119,9 +119,9 @@ public class ControlServiceTest {
         String msg = "'" + value + "' is not equal to '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyStringEqual");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyStringEqual");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -143,9 +143,9 @@ public class ControlServiceTest {
         String msg = "'" + value + "' is different from '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyStringDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyStringDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -165,9 +165,9 @@ public class ControlServiceTest {
         String msg = "'" + value + "' is not different from '" + property + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyStringDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyStringDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -189,9 +189,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is greater than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -211,9 +211,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not greater than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -235,9 +235,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -259,9 +259,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerGreater");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -283,9 +283,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is minor than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerMinor");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -305,9 +305,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not minor than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerMinor");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -329,9 +329,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerMinor");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -353,9 +353,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerMinor");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -377,9 +377,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerEquals");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -399,9 +399,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerEquals");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -423,9 +423,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerEquals");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -447,9 +447,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerEquals");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -471,9 +471,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is different from '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -493,9 +493,9 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not different from '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -517,9 +517,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -541,9 +541,9 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyIntegerDifferent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -569,9 +569,9 @@ public class ControlServiceTest {
         identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -597,9 +597,9 @@ public class ControlServiceTest {
         identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -624,9 +624,9 @@ public class ControlServiceTest {
         String msg = "Object is 'null'. This is mandatory in order to perform the control verify element present";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -652,9 +652,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         tCExecution.setSession(session);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
@@ -683,9 +683,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
         TestCaseStepActionExecution tcsae = new TestCaseStepActionExecution();
@@ -711,9 +711,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -738,9 +738,9 @@ Identifier identifier = new Identifier();
         String msg = "Object is 'null'. This is mandatory in order to perform the control verify element not present";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -766,9 +766,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotPresent");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotPresent");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -797,9 +797,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotVisible");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotVisible");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -827,9 +827,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotVisible");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotVisible");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -854,9 +854,9 @@ Identifier identifier = new Identifier();
         String msg = "Object is 'null'. This is mandatory in order to perform the control verify element not visible";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotVisible");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotVisible");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -882,9 +882,9 @@ Identifier identifier = new Identifier();
         identifier.setLocator("test");
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementNotVisible");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementNotVisible");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -908,9 +908,9 @@ Identifier identifier = new Identifier();
         String msg = "Element '"+value+"' is not child of element '"+property+"'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementInElement");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementInElement");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -933,9 +933,9 @@ Identifier identifier = new Identifier();
         String msg = "Element '"+value+"' is not child of element '"+property+"'.";
         
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementInElement");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementInElement");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -966,9 +966,9 @@ Identifier identifier = new Identifier();
         when(webdriverService.isElementInElement(session, identifier, identifierValue)).thenReturn(Boolean.FALSE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementInElement");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementInElement");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -999,9 +999,9 @@ Identifier identifier = new Identifier();
         when(webdriverService.isElementInElement(session, identifier, identifierValue)).thenReturn(Boolean.TRUE);
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementInElement");
-        tcsace.setControlProperty(property);
-        tcsace.setControlValue(value);
+        tcsace.setControl("verifyElementInElement");
+        tcsace.setValue1(property);
+        tcsace.setValue2(value);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -1022,9 +1022,9 @@ Identifier identifier = new Identifier();
         String expectedElement = "<bar>baz</bar>";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControlType("verifyElementEquals");
-        tcsace.setControlProperty(xpath);
-        tcsace.setControlValue(expectedElement);
+        tcsace.setControl("verifyElementEquals");
+        tcsace.setValue1(xpath);
+        tcsace.setValue2(expectedElement);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);

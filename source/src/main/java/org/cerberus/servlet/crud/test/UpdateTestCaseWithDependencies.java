@@ -285,8 +285,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                     if (tcsa.getTestCaseStepActionControl() != null) {
                         int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
                         for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
-                            if (tscac.getControl() == -1) {
-                                tscac.setControl(++nextControlNumber);
+                            if (tscac.getControlSequence() == -1) {
+                                tscac.setControlSequence(++nextControlNumber);
                             }
                             tscac.setStep(tcs.getStep());
                             tscac.setSequence(tcsa.getSequence());
@@ -370,8 +370,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         int nextControlNumber = 0;
         if (controls != null) {
             for (TestCaseStepActionControl control : controls) {
-                if (nextControlNumber < control.getControl()) {
-                    nextControlNumber = control.getControl();
+                if (nextControlNumber < control.getControlSequence()) {
+                    nextControlNumber = control.getControlSequence();
                 }
             }
         }
@@ -665,16 +665,16 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         if (stepActionControl_increment != null) {
             for (String inc : stepActionControl_increment) {
                 String delete = getParameterIfExists(request, "control_delete_" + stepInc + "_" + actionInc + "_" + inc);
-                int control = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
-                int sort = Integer.valueOf(getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc));
-                String type = getParameterIfExists(request, "control_type_" + stepInc + "_" + actionInc + "_" + inc);
-                String controlValue = getParameterIfExists(request, "control_value_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
-                String controlProperty = getParameterIfExists(request, "control_property_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
+                int controlsequence = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
+                int sort = Integer.valueOf(getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc));
+                String control = getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc);
+                String value1 = getParameterIfExists(request, "control_value1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
+                String value2 = getParameterIfExists(request, "control_value2_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String fatal = getParameterIfExists(request, "control_fatal_" + stepInc + "_" + actionInc + "_" + inc);
                 String description = getParameterIfExists(request, "control_description_" + stepInc + "_" + actionInc + "_" + inc);
                 String screenshot = getParameterIfExists(request, "control_screenshot_" + stepInc + "_" + actionInc + "_" + inc);
                 if (delete == null) {
-                    testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, -1, -1, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
+                    testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, -1, -1, controlsequence, sort, control, value1, value2, fatal, description, screenshot));
                 }
             }
         }

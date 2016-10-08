@@ -611,7 +611,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             //TODO Replace with Action and control ENUM
             if (testCaseStepActionExecution.getAction().equals("skipAction")) {
-                testCaseStepActionControl.setType("skipControl");
+                testCaseStepActionControl.setControl("skipControl");
             }
 
             /**
@@ -620,12 +620,12 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
-                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getSort(),
-                            null, null, testCaseStepActionControl.getType(), testCaseStepActionControl.getControlProperty(), testCaseStepActionControl.getControlValue(),
+                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
+                            null, null, testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
                             testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
-            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControl() + " type : " + testCaseStepActionControlExecution.getControlType());
+            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControlSequence() + " type : " + testCaseStepActionControlExecution.getControl());
             testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution);
 
             /**
@@ -671,7 +671,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Register Control in database
          */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControl());
+        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 

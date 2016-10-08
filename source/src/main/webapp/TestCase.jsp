@@ -1476,7 +1476,7 @@
                                                                 <%  if (!useStep) {%>
                                                                 <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
                                                                 <input  class="wob" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none; margin-top:20px; background-color: transparent"
-                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControl()%>">
+                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControlSequence()%>">
                                                                 <% }%>
                                                                 <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
                                                                 <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
@@ -1502,8 +1502,8 @@
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
                                                                 <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>" data-field="control"
                                                                        data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" 
-                                                                       name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
-                                                                <input type="hidden" name="control_technical_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getControl()%>">
+                                                                       name="control_controlsequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
+                                                                <input type="hidden" name="control_technical_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getControlSequence()%>">
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left;display:inline-block">
                                                                 <div class="functional_description" style="clear:both;width:100%;height:20px">
@@ -1515,32 +1515,32 @@
                                                                                maxlength="1000"  <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                 </div>
-                                                                <div style="clear:both;display:inline-block; width:100%; height:15px">
+                                                                <div style="clear:both;display:inline-block; width:100%; height:15px" >
                                                                     <div style="width:30%; float:left;">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Type</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
-                                                                            <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
+                                                                            <%=ComboInvariant(appContext, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getControl(), "", null)%>
                                                                         <%}else{
-                                                                            String controlTypeid = "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
+                                                                            String controlTypeid = "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
                                                                             %>    
-                                                                            <input value="<%=tcsac.getType()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
+                                                                            <input value="<%=tcsac.getControl()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
                                                                         <%}%>    
+                                                                    </div>
+                                                                    <div class="technical_part" style="width:30%;float:left; ">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
+                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
+                                                                                     value="<%=tcsac.getValue1().replace("\"","&quot;")%>" 
+                                                                                     id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                                     name="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
-                                                                               value="<%=tcsac.getControlProperty().replace("\"","&quot;")%>" 
-                                                                               id="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
-                                                                               name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
-                                                                    </div>
-                                                                    <div class="technical_part" style="width:30%;float:left; ">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
-                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
-                                                                                     value="<%=tcsac.getControlValue().replace("\"","&quot;")%>" 
-                                                                                     id="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
-                                                                                     name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
+                                                                               value="<%=tcsac.getValue2().replace("\"","&quot;")%>" 
+                                                                               id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                               name="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:8%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
@@ -2104,7 +2104,7 @@
                 </div>
                 <div style="width:2%;float:left;height:100%;display:inline-block">
                     <input data-field="control" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;"
-                           data-id="control_control_template">
+                           data-id="control_controlsequence_template">
                 </div>
                 <input type="hidden" data-id="control_technical_control_template">
                 <div style="height:100%;width:89%;float:left;display:inline-block">
@@ -2120,18 +2120,18 @@
                         <div style="width:30%; float:left;">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType", myLang));%></p>
                             </div>
-                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_type_template", "wob", "CONTROL", "", "", null)%>
+                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_control_template", "wob", "CONTROL", "", "", null)%>
                         </div>
                         <div class="technical_part" style="width:30%;float:left;">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
                             </div>
                             <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
-                                   data-id="control_property_template">
+                                   data-id="control_value1_template">
                         </div>
                         <div class="technical_part" style="width:30%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
                             </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent;"
-                                         data-id="control_value_template">
+                                         data-id="control_value2_template">
                         </div>
                         <div class="technical_part" style="width:8%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>

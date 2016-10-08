@@ -153,12 +153,12 @@ public class RunTestCaseManually extends HttpServlet {
         JSONObject control = new JSONObject();
 
         control.append("Description", testCaseStepActionControl.getDescription());
-        control.append("Control", testCaseStepActionControl.getControl());
-        control.append("Property", testCaseStepActionControl.getControlProperty());
-        control.append("Value", testCaseStepActionControl.getControlValue());
+        control.append("Control", testCaseStepActionControl.getControlSequence());
+        control.append("Property", testCaseStepActionControl.getValue2());
+        control.append("Value", testCaseStepActionControl.getValue1());
         control.append("Fatal", testCaseStepActionControl.getFatal());
         control.append("Sequence", testCaseStepActionControl.getSequence());
-        control.append("Type", testCaseStepActionControl.getType());
+        control.append("Type", testCaseStepActionControl.getControl());
 
         return control;
     }

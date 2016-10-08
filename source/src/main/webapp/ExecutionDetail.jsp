@@ -587,11 +587,11 @@
                                                     <td title="Control Return Code" class="<%=myControlData.getReturnCode()%>"><span class="<%=myControlData.getReturnCode()%>F" id="CTLSTS-<%=myAction + "-" + myControlData.getControl()%>"><%=myControlData.getReturnCode()%></span></td>
                                                     <td title="Control Start Time"><%=DateUtil.getFormatedDate(myControlData.getStartLong())%></td>
                                                     <td title="Control Elapsed Time"><%=DateUtil.getFormatedElapsed(myControlData.getStartLong(), myControlData.getEndLong())%></td>
-                                                    <td title="Control Sort" data-id="<%=myAction + "-" + myControlData.getControl()%>" class="control <%=myControlData.getControl()%>"><%=myControlData.getSort()%></td>
+                                                    <td title="Control Sort" data-id="<%=myAction + "-" + myControlData.getControlSequence()%>" class="control <%=myControlData.getControlSequence()%>"><%=myControlData.getSort()%></td>
                                                     <td title="Control Description"><%=myControlData.getDescription()%></td>
-                                                    <td title="Control Function"><b><%=myControlData.getControlType()%></b></td>
-                                                    <td title="Control Property" id="CTLPRP-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlProperty())%></td>
-                                                    <td title="Control Value" id="CTLVAL-<%=myAction + "-" + myControlData.getControl()%>"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getControlValue())%></code></td>
+                                                    <td title="Control Function"><b><%=myControlData.getControl()%></b></td>
+                                        <td title="Control Value1"><table><tr><td title="Control Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1Init())%></code></td></tr><tr><td title="Control Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1())%></code></td></tr></table></td>
+                                        <td title="Control Value2"><table><tr><td title="Control Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2Init())%></code></td></tr><tr><td title="Control Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2())%></code></td></tr></table></td>
                                                     <td title="Fatal"><%=myControlData.getFatal()%></td>
                                                     <td title="Control Files"><table><%
                                                         levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence() + "-" + myControlData.getControl();
