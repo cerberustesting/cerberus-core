@@ -61,12 +61,6 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Test</a></li>
-                    <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp" style="width:160px">Test Per Application</a></li>
-                </ul>
-            </li>
-            <li id="active"><a id="menuTestCase" name="menu" href="#" style="width:100px">TestCase
-                    <img src="images/dropdown.gif"/></a>
-                <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp" style="width:130px">TestCase List</a></li>
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
                     <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
@@ -79,7 +73,6 @@
             <li id="active"><a id="menuData" name="menu" href="#" style="width:100px">Data
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:190px">SQL Library</a></li>
                     <li id="subactive"><a id="menuTestData" href="TestData.jsp" style="width:190px">Test Data<input type="button" class="btn btn-danger btn-small active" value="Deprecated" style="padding: 0px; margin-left: 5px; color: red"></a></li>
                     <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp" style="width:190px">Test Data Lib</a></li>
                 </ul>
@@ -112,17 +105,25 @@
             </li>
             <% }%>
             <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
+            <li id="active"><a id="menuApplications" name="menu" href="#" style="width:100px">Application
+                    <img src="images/dropdown.gif"/></a>
+                <ul class="subnav" id="subnavlist">
+                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:200px">Applications</a></li>
+                    <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
+                    <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp" style="width:190px">SQL Library</a></li>
+                    <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
+                </ul>
+            </li>
+            <% }%>
+            <% if (request.getUserPrincipal() != null && request.isUserInRole("IntegratorRO")) {%>
             <li id="active"><a id="menuIntegration" name="menu" href="#" style="width:100px">Integration
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp" style="width:200px">Integration Status</a></li>
-                    <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp" style="width:200px">Applications</a></li>
-                    <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp" style="width:130px">SOAP Library</a></li>
                     <li id="subactive"><a name="menu" id="menuEnvironments" href="Environment.jsp" style="width:200px">Environments</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp" style="width:200px">Build/Rev Definition</a></li>
                     <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp" style="width:200px">Build Content</a></li>
                     <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp" style="width:200px">Project</a></li>
-                    <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp" style="width:200px">Deploy Type</a></li>
                     <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp" style="width:200px">Batch</a></li>
                 </ul>
             </li>
@@ -135,8 +136,7 @@
                     <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp" style="width:200px">Log Viewer</a></li>
                     <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp" style="width:200px">Database Maintenance</a></li>
                     <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp" style="width:200px">Parameters</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp" style="width:200px">Edit Public Invariants</a></li>
-                    <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp" style="width:200px">See Private Invariants</a></li>
+                    <li id="subactive"><a name="menu" id="menuInvariants" href="Invariant.jsp" style="width:200px">Invariants</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp" style="width:200px">Monitoring</a></li>
                 </ul>
             </li>

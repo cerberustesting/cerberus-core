@@ -1,0 +1,3 @@
+In this section, you will find information on how is organized the Cerberus application. 
+
+We assume that you already configured your application, as described in the <<Application configuration>> section.

@@ -22,6 +22,8 @@ package org.cerberus.crud.dao;
 import java.util.List;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -67,5 +69,26 @@ public interface IUserSystemDAO {
      * @throws CerberusException
      */
     void updateUserSystem(UserSystem userSystem) throws CerberusException;
+
+    /**
+     * @return a list of all the userSystem of a user
+     */
+    AnswerList<UserSystem> readByUser(String login);
+
+    /**
+     * Adding the usersystem
+     *
+     * @param sys
+     * @return
+     */
+    Answer create(UserSystem sys);
+
+    /**
+     * Remove the usersystem
+     *
+     * @param sys
+     * @return
+     */
+    Answer remove(UserSystem sys);
     
 }

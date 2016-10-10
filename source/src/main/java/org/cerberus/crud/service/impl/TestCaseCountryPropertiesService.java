@@ -28,7 +28,7 @@ import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -130,18 +130,18 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException {
         List<TestCaseCountryProperties> tccpList = new ArrayList();
         List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList();
-        TCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
+        TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
         //find all properties of preTests
-        List<TCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
-        for (TCase tcase : tcptList) {
+        List<TestCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
+        for (TestCase tcase : tcptList) {
             tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
             tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }
 
         //find all properties of the used step
-        List<TCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
-        for (TCase tcase : tcList) {
+        List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
+        for (TestCase tcase : tcList) {
             tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
             tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
         }

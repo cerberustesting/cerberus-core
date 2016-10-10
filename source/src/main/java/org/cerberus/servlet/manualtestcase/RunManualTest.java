@@ -259,7 +259,7 @@ public class RunManualTest extends HttpServlet {
                 String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepSort + "_" + inc);
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, sort, actionReturnCode,
-                        actionReturnMessage, "Manual Action", null, null, "", now, now, now, now,
+                        actionReturnMessage,"", "", "Manual Action", "", "", "", "", "", now, now, now, now,
                         null, "", null, null));
             }
         }
@@ -288,7 +288,7 @@ public class RunManualTest extends HttpServlet {
                 String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepSort + "_" + actionSort + "_" + inc);
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, sort,
-                        controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, now, now,
+                        controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, null, null, now, now,
                         now, now, "", null, null));
             }
         }

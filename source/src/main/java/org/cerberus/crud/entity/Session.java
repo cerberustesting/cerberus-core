@@ -33,9 +33,53 @@ public class Session {
     private String port;
     private WebDriver driver;
     private AppiumDriver appiumDriver;
-    private long defaultWait;
+    private Integer cerberus_selenium_pageLoadTimeout;
+    private Integer cerberus_selenium_implicitlyWait;
+    private Integer cerberus_selenium_setScriptTimeout;
+    private Integer cerberus_selenium_wait_element;
+    private Integer cerberus_appium_wait_element;
     private boolean started;
     List<SessionCapabilities> capabilities;
+
+    public Integer getCerberus_selenium_pageLoadTimeout() {
+        return cerberus_selenium_pageLoadTimeout;
+    }
+
+    public void setCerberus_selenium_pageLoadTimeout(Integer cerberus_selenium_pageLoadTimeout) {
+        this.cerberus_selenium_pageLoadTimeout = cerberus_selenium_pageLoadTimeout;
+    }
+
+    public Integer getCerberus_selenium_implicitlyWait() {
+        return cerberus_selenium_implicitlyWait;
+    }
+
+    public void setCerberus_selenium_implicitlyWait(Integer cerberus_selenium_implicitlyWait) {
+        this.cerberus_selenium_implicitlyWait = cerberus_selenium_implicitlyWait;
+    }
+
+    public Integer getCerberus_selenium_setScriptTimeout() {
+        return cerberus_selenium_setScriptTimeout;
+    }
+
+    public void setCerberus_selenium_setScriptTimeout(Integer cerberus_selenium_setScriptTimeout) {
+        this.cerberus_selenium_setScriptTimeout = cerberus_selenium_setScriptTimeout;
+    }
+
+    public Integer getCerberus_selenium_wait_element() {
+        return cerberus_selenium_wait_element;
+    }
+
+    public void setCerberus_selenium_wait_element(Integer cerberus_selenium_wait_element) {
+        this.cerberus_selenium_wait_element = cerberus_selenium_wait_element;
+    }
+
+    public Integer getCerberus_appium_wait_element() {
+        return cerberus_appium_wait_element;
+    }
+
+    public void setCerberus_appium_wait_element(Integer cerberus_appium_wait_element) {
+        this.cerberus_appium_wait_element = cerberus_appium_wait_element;
+    }
 
     public AppiumDriver getAppiumDriver() {
         return appiumDriver;
@@ -77,14 +121,6 @@ public class Session {
         this.driver = driver;
     }
 
-    public long getDefaultWait() {
-        return defaultWait;
-    }
-
-    public void setDefaultWait(long defaultWait) {
-        this.defaultWait = defaultWait;
-    }
-
     public boolean isStarted() {
         return started;
     }
@@ -92,7 +128,14 @@ public class Session {
     public void setStarted(boolean started) {
         this.started = started;
     }
-    
-    
+
+    public void quit() {
+        if (driver != null) {
+            driver.quit();
+        }
+        if (appiumDriver != null) {
+            appiumDriver.closeApp();
+        }
+    }
     
 }

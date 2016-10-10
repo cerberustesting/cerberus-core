@@ -56,7 +56,7 @@ public class ReadDocumentation extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
 
-        String lang = ParameterParserUtil.parseStringParam(policy.sanitize(httpServletRequest.getParameter("lang")), "en");
+        String lang = ParameterParserUtil.parseStringParamAndSanitize(httpServletRequest.getParameter("lang"), "en");
 
         result = docService.findAllWithEmptyDocLabel(lang);
         format = docService.formatGroupByDocTable(result);

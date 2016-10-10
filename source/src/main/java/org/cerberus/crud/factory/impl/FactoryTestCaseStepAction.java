@@ -30,16 +30,13 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, String action, String object, String property, String description) {
-        return create(test, testCase, step, sequence, sequence, action, object, property, "", description, null);
-    }
-
-    @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String action, String object, String property, String forceExeStatus, String description, String screenshotFilename) {
+    public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String conditionOper, String conditionVal1, String action, String value1, String value2, String forceExeStatus, String description, String screenshotFilename) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
+        testCaseStepAction.setConditionOper(conditionOper);
+        testCaseStepAction.setConditionVal1(conditionVal1);
         testCaseStepAction.setAction(action);
-        testCaseStepAction.setObject(object);
-        testCaseStepAction.setProperty(property);
+        testCaseStepAction.setValue1(value1);
+        testCaseStepAction.setValue2(value2);
         testCaseStepAction.setForceExeStatus(forceExeStatus);
         testCaseStepAction.setSequence(sequence);
         testCaseStepAction.setStep(step);
@@ -50,5 +47,4 @@ public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
         testCaseStepAction.setScreenshotFilename(screenshotFilename);
         return testCaseStepAction;
     }
-
 }

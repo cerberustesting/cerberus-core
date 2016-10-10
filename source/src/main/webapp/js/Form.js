@@ -2042,6 +2042,10 @@ function addTCSANew(rowID, step, obj) {
             .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_forceexestatus_template')
             .attr('name', 'action_forceexestatus_' + step + '_' + newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_conditionoper_template')
+            .attr('name', 'action_conditionoper_' + step + '_' + newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_conditionval_template"]')
+            .attr('name', 'action_conditionval_' + step + '_' + newNumberOfAction);
 
     callEvent();
 
@@ -2338,7 +2342,7 @@ function addPropertyNew(widthValue) {
     }
     DIV.setAttribute('class', 'generalPropertyDiv');
     DIV.setAttribute('id', 'propertyRow' + nextIncrementValue);
-    DIV.setAttribute('style', 'height:50px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
+    DIV.setAttribute('style', 'height:57px; clear:both; display:block;border-style: solid; border-width:thin ; border-color:#CCCCCC;');
     var referenceNode = document.getElementById('propertyRow' + numberOfProperty);
     referenceNode.parentNode.insertBefore(DIV, referenceNode.nextSibling);
 
@@ -2396,6 +2400,10 @@ function addPropertyNew(widthValue) {
             .attr('name', 'properties_rowlimit_' + nextIncrementValue).val("0");
     $('#propertyRow' + nextIncrementValue).find('#properties_nature_template')
             .attr('name', 'properties_nature_' + nextIncrementValue);
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_retrynb_template"]')
+            .attr('name', 'properties_retrynb_' + nextIncrementValue).val("0");
+    $('#propertyRow' + nextIncrementValue).find('input[data-id="properties_retryperiod_template"]')
+            .attr('name', 'properties_retryperiod_' + nextIncrementValue).val("10000");
 }
 
 

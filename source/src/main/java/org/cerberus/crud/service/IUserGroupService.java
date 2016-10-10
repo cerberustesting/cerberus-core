@@ -24,6 +24,8 @@ import java.util.List;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -47,4 +49,15 @@ public interface IUserGroupService {
      * @throws CerberusException
      */
     List<UserGroup> findGroupByKey(String login) throws CerberusException;
+
+    /**
+     * @return a list of all the userSystem of a user
+     */
+    AnswerList<UserGroup> readByUser(String login);
+
+    /**
+     * @param user      the user to update the group
+     * @param newGroups the user list of Groups
+     */
+    Answer updateGroupsByUser(User user, List<UserGroup> newGroups);
 }

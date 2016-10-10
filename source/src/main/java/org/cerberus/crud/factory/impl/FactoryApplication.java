@@ -49,5 +49,12 @@ public class FactoryApplication implements IFactoryApplication {
         return newApplication;
     }
 
+    @Override
+    public Application create(String application) {
+        Application newApplication = new Application();
+        newApplication.setApplication(application);
+        return newApplication;
+    }
+
 
 }

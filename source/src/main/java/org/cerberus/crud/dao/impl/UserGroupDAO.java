@@ -25,12 +25,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IUserGroupDAO;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.factory.IFactoryGroup;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -48,6 +54,41 @@ public class UserGroupDAO implements IUserGroupDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryGroup factoryGroup;
+
+    /**
+     * Declare SQL queries used by this {@link UserGroup}
+     *
+     * @author Aurelien Bourdon
+     */
+    private static interface Query {
+
+        /**
+         * Get list of {@link UserGroup} associated with the given
+         * {@link User}'s name
+         */
+        String READ_BY_USER = "SELECT * FROM usergroup usg WHERE usg.`login` = ? ";
+
+        /**
+         * Create a new {@link UserGroup}
+         */
+        String CREATE = "INSERT INTO `usergroup` (`login`, `groupName`) VALUES (?, ?)";
+
+        /**
+         * Remove an existing {@link UserGroup}
+         */
+        String DELETE = "DELETE FROM `usergroup` WHERE `login` = ? AND `groupName` = ?";
+
+    }
+
+    /**
+     * The associated {@link Logger} to this class
+     */
+    private static final Logger LOG = Logger.getLogger(UserSystemDAO.class);
+
+    /**
+     * The associated entity name to this DAO
+     */
+    private static final String OBJECT_NAME = UserGroup.class.getSimpleName();
 
     @Override
     public boolean addGroupToUser(UserGroup group, User user) {
@@ -155,5 +196,100 @@ public class UserGroupDAO implements IUserGroupDAO {
             }
         }
         return list;
+    }
+
+    @Override
+    public AnswerList<UserGroup> readByUser(String login) {
+        AnswerList ans = new AnswerList();
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+            PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
+            // Prepare and execute query
+            preStat.setString(1, login);
+            ResultSet resultSet = preStat.executeQuery();
+
+            // Parse query
+            List<UserGroup> result = new ArrayList<>();
+            while (resultSet.next()) {
+                result.add(loadUserGroupFromResultSet(resultSet));
+            }
+            ans.setDataList(result);
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to read UserGroup: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer create(UserGroup group) {
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+            // Prepare and execute query
+            preStat.setString(1, group.getLogin());
+            preStat.setString(2, group.getGroup());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "CREATE");
+        } catch (Exception e) {
+            LOG.warn("Unable to create userGroup: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer remove(UserGroup group) {
+        Answer ans = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        MessageEvent msg = null;
+
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+            // Prepare and execute query
+            preStat.setString(1, group.getLogin());
+            preStat.setString(2, group.getGroup());
+            preStat.executeUpdate();
+
+            // Set the final message
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "DELETE");
+        } catch (Exception e) {
+            LOG.warn("Unable to delete userGroup: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public Answer removeGroupByUser(UserGroup group, User user) {
+        return null;
+    }
+
+    private UserGroup loadUserGroupFromResultSet(ResultSet rs) throws SQLException {
+        String login = ParameterParserUtil.parseStringParam(rs.getString("login"), "");
+        String groupName = ParameterParserUtil.parseStringParam(rs.getString("groupName"), "");
+        return factoryGroup.create(login, groupName);
     }
 }

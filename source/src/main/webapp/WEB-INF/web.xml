@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <welcome-file-list>
         <welcome-file>Homepage.jsp</welcome-file>
     </welcome-file-list>
@@ -116,6 +117,18 @@
         <servlet-class>org.cerberus.servlet.crud.usermanagement.AddUser</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.CreateUser2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteUser2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.usermanagement.DeleteUser2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateUser</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.usermanagement.UpdateUser</servlet-class>
     </servlet>
@@ -173,7 +186,9 @@
         <servlet-class>org.cerberus.servlet.zzpublic.NewRelease</servlet-class>
     </servlet>
     <servlet>
-        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance monitoring.</description>
+        <description>This Servlet is used to monitor from Nagios the number of execution performed for Performance
+            monitoring.
+        </description>
         <servlet-name>GetNumberOfExecutions</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.GetNumberOfExecutions</servlet-class>
     </servlet>
@@ -186,10 +201,6 @@
         <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateParameter2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateParameter2</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetInvariantList</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.GetInvariantList</servlet-class>
     </servlet>
@@ -200,6 +211,10 @@
     <servlet>
         <servlet-name>ReadCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaign</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadCampaignContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadCampaignContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadCampaignParameter</servlet-name>
@@ -230,12 +245,20 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateCampaign2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaign2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateCampaignParameter</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateCampaignParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaign</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateCampaign</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CreateCampaign</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AddCampaignParameter</servlet-name>
@@ -246,8 +269,16 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignContent</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>AddCampaignContent2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.AddCampaignContent2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteCampaign</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCampaign2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaign2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteCampaignParameter</servlet-name>
@@ -256,6 +287,10 @@
     <servlet>
         <servlet-name>DeleteCampaignContent</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignContent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCampaignContent2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteCampaignContent2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetTestBattery</servlet-name>
@@ -278,8 +313,24 @@
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBattery</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteTestBattery2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBattery2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateTestBattery2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.UpdateTestBattery2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateTestBattery</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.CreateTestBattery</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testcampaign.DeleteTestBatteryContent</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTestBatteryContent</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testcampaign.ReadTestBatteryContent</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateTestBattery</servlet-name>
@@ -371,11 +422,11 @@
     </servlet>
     <servlet>
         <servlet-name>UpdateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.UpdateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.ReadApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
@@ -426,20 +477,12 @@
         <servlet-class>org.cerberus.servlet.crud.test.GetDataForTestCaseSearch</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SearchManualTestCaseInformation</servlet-name>
-        <servlet-class>org.cerberus.servlet.manualtestcase.SearchManualTestCaseInformation</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SaveManualExecution</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecution</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetParameterSystem</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetParameterSystem2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.GetParameterSystem2</servlet-class>
+        <servlet-name>ReadParameter</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.ReadParameter</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ImportTestCaseStep</servlet-name>
@@ -474,17 +517,34 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSqlLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateSqlLibrary2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteSqlLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>FindAllSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSqlLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadSqlLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadSqlLibrary</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSqlLibrary</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateSqlLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSqlLibrary2</servlet-class>
+    </servlet>
+    <!-- // TODO REMOVE
     <servlet>
         <servlet-name>FindAllInvariantPublic</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPublic</servlet-class>
@@ -492,34 +552,50 @@
     <servlet>
         <servlet-name>FindAllInvariantPrivate</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPrivate</servlet-class>
-    </servlet>
+    </servlet>-->
     <servlet>
         <servlet-name>CreateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateSoapLibrary2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSoapLibrary</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>DeleteSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteSoapLibrary2</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>FindAllSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSoapLibrary</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadSoapLibrary</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadSoapLibrary</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant</servlet-class>
+        <servlet-name>UpdateSoapLibrary2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSoapLibrary2</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant</servlet-class>
+        <servlet-name>CreateInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.CreateInvariant2</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteInvariant</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant</servlet-class>
+        <servlet-name>UpdateInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.UpdateInvariant2</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteInvariant2</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.transversaltables.DeleteInvariant2</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadProject</servlet-name>
@@ -539,11 +615,11 @@
     </servlet>
     <servlet>
         <servlet-name>CreateApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.CreateApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.test.DeleteApplication</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteApplication</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -658,22 +734,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CampaignExecutionReport</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionReport</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionRadarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionRadarGraphByFunction</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionStatusBarGraphByFunction</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testcampaign.CampaignExecutionGraphByStatus</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReport</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReport</servlet-class>
     </servlet>
@@ -734,6 +794,10 @@
     <servlet>
         <servlet-name>GetExecutionQueue</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.GetExecutionQueue</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadExecutionInQueue</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadExecutionInQueue</servlet-class>
     </servlet>
     <servlet>
         <description>Execute the next record from the execution queue.</description>
@@ -873,6 +937,14 @@
         <servlet-class>org.cerberus.servlet.crud.test.ReadTestCaseLabel</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>CreateTestCaseCountry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.CreateTestCaseCountry</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteTestCaseCountry</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseCountry</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>SaveTestCaseLabel</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.SaveTestCaseLabel</servlet-class>
     </servlet>
@@ -943,6 +1015,18 @@
     <servlet-mapping>
         <servlet-name>UpdateUser</servlet-name>
         <url-pattern>/UpdateUser</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateUser2</servlet-name>
+        <url-pattern>/CreateUser2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateUser2</servlet-name>
+        <url-pattern>/UpdateUser2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteUser2</servlet-name>
+        <url-pattern>/DeleteUser2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateMyUserSystem</servlet-name>
@@ -1017,10 +1101,6 @@
         <url-pattern>/UpdateParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateParameter2</servlet-name>
-        <url-pattern>/UpdateParameter2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>Homepage</servlet-name>
         <url-pattern>/Homepage</url-pattern>
     </servlet-mapping>
@@ -1069,6 +1149,10 @@
         <url-pattern>/ReadCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadCampaignContent</servlet-name>
+        <url-pattern>/ReadCampaignContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadCampaignParameter</servlet-name>
         <url-pattern>/ReadCampaignParameter</url-pattern>
     </servlet-mapping>
@@ -1097,6 +1181,10 @@
         <url-pattern>/UpdateCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateCampaign2</servlet-name>
+        <url-pattern>/UpdateCampaign2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateCampaignParameter</servlet-name>
         <url-pattern>/UpdateCampaignParameter</url-pattern>
     </servlet-mapping>
@@ -1105,8 +1193,16 @@
         <url-pattern>/AddCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateCampaign</servlet-name>
+        <url-pattern>/CreateCampaign</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>AddCampaignContent</servlet-name>
         <url-pattern>/AddCampaignContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddCampaignContent2</servlet-name>
+        <url-pattern>/AddCampaignContent2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddCampaignParameter</servlet-name>
@@ -1117,8 +1213,16 @@
         <url-pattern>/DeleteCampaign</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DeleteCampaign2</servlet-name>
+        <url-pattern>/DeleteCampaign2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteCampaignContent</servlet-name>
         <url-pattern>/DeleteCampaignContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCampaignContent2</servlet-name>
+        <url-pattern>/DeleteCampaignContent2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DeleteCampaignParameter</servlet-name>
@@ -1145,8 +1249,24 @@
         <url-pattern>/DeleteTestBattery</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>DeleteTestBattery2</servlet-name>
+        <url-pattern>/DeleteTestBattery2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestBattery2</servlet-name>
+        <url-pattern>/UpdateTestBattery2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateTestBattery</servlet-name>
+        <url-pattern>/CreateTestBattery</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteTestBatteryContent</servlet-name>
         <url-pattern>/DeleteTestBatteryContent</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestBatteryContent</servlet-name>
+        <url-pattern>/ReadTestBatteryContent</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestBattery</servlet-name>
@@ -1293,20 +1413,12 @@
         <url-pattern>/GetDataForTestCaseSearch</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SearchManualTestCaseInformation</servlet-name>
-        <url-pattern>/SearchManualTestCaseInformation</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>SaveManualExecution</servlet-name>
         <url-pattern>/SaveManualExecution</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetParameterSystem</servlet-name>
-        <url-pattern>/GetParameterSystem</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetParameterSystem2</servlet-name>
-        <url-pattern>/GetParameterSystem2</url-pattern>
+        <servlet-name>ReadParameter</servlet-name>
+        <url-pattern>/ReadParameter</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ImportTestCaseStep</servlet-name>
@@ -1341,52 +1453,76 @@
         <url-pattern>/CreateSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateSqlLibrary2</servlet-name>
+        <url-pattern>/CreateSqlLibrary2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteSqlLibrary</servlet-name>
         <url-pattern>/DeleteSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSqlLibrary2</servlet-name>
+        <url-pattern>/DeleteSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllSqlLibrary</servlet-name>
         <url-pattern>/FindAllSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadSqlLibrary</servlet-name>
+        <url-pattern>/ReadSqlLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateSqlLibrary</servlet-name>
         <url-pattern>/UpdateSqlLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>FindAllInvariantPublic</servlet-name>
-        <url-pattern>/FindAllInvariantPublic</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindAllInvariantPrivate</servlet-name>
-        <url-pattern>/FindAllInvariantPrivate</url-pattern>
+        <servlet-name>UpdateSqlLibrary2</servlet-name>
+        <url-pattern>/UpdateSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateSoapLibrary</servlet-name>
         <url-pattern>/CreateSoapLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateSoapLibrary2</servlet-name>
+        <url-pattern>/CreateSoapLibrary2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteSoapLibrary</servlet-name>
         <url-pattern>/DeleteSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteSoapLibrary2</servlet-name>
+        <url-pattern>/DeleteSoapLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FindAllSoapLibrary</servlet-name>
         <url-pattern>/FindAllSoapLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadSoapLibrary</servlet-name>
+        <url-pattern>/ReadSoapLibrary</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>UpdateSoapLibrary</servlet-name>
         <url-pattern>/UpdateSoapLibrary</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateInvariant</servlet-name>
-        <url-pattern>/CreateInvariant</url-pattern>
+        <servlet-name>UpdateSoapLibrary2</servlet-name>
+        <url-pattern>/UpdateSoapLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateInvariant</servlet-name>
-        <url-pattern>/UpdateInvariant</url-pattern>
+        <servlet-name>CreateInvariant2</servlet-name>
+        <url-pattern>/CreateInvariant2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteInvariant</servlet-name>
-        <url-pattern>/DeleteInvariant</url-pattern>
+        <servlet-name>UpdateInvariant2</servlet-name>
+        <url-pattern>/UpdateInvariant2</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteInvariant2</servlet-name>
+        <url-pattern>/DeleteInvariant2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadProject</servlet-name>
@@ -1525,22 +1661,6 @@
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CampaignExecutionReport</servlet-name>
-        <url-pattern>/CampaignExecutionReport</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionRadarGraphByFunction</servlet-name>
-        <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionStatusBarGraphByFunction</servlet-name>
-        <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CampaignExecutionGraphByStatus</servlet-name>
-        <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetReport</servlet-name>
         <url-pattern>/GetReport</url-pattern>
     </servlet-mapping>
@@ -1575,6 +1695,10 @@
     <servlet-mapping>
         <servlet-name>FindExecutionInQueue</servlet-name>
         <url-pattern>/FindExecutionInQueue</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadExecutionInQueue</servlet-name>
+        <url-pattern>/ReadExecutionInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AddToExecutionQueue</servlet-name>
@@ -1729,6 +1853,14 @@
         <url-pattern>/ReadTestCaseLabel</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>CreateTestCaseCountry</servlet-name>
+        <url-pattern>/CreateTestCaseCountry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteTestCaseCountry</servlet-name>
+        <url-pattern>/DeleteTestCaseCountry</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>SaveTestCaseLabel</servlet-name>
         <url-pattern>/SaveTestCaseLabel</url-pattern>
     </servlet-mapping>
@@ -1786,12 +1918,14 @@
     </security-role>
     <security-role>
         <description>Can deploy a new Chain in an environment.
-            ie : Can modify the build and revision for an environment.</description>
+            ie : Can modify the build and revision for an environment.
+        </description>
         <role-name>IntegratorDeploy</role-name>
     </security-role>
     <security-role>
         <description>Access to administration tools
-            ie User management, parameter management, log viewer, database management.</description>
+            ie User management, parameter management, log viewer, database management.
+        </description>
         <role-name>Administrator</role-name>
     </security-role>
     <security-constraint>
@@ -1809,6 +1943,7 @@
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
+            <url-pattern>/ExecutionPending2.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
@@ -1816,11 +1951,12 @@
             <url-pattern>/TestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCaseSearchNew.jsp</url-pattern>
             <url-pattern>/TestBattery.jsp</url-pattern>
+            <url-pattern>/TestBattery2.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseResult.jsp</url-pattern>
             <url-pattern>/TestBatteryTestCaseSearch.jsp</url-pattern>
             <url-pattern>/TestCampaign.jsp</url-pattern>
+            <url-pattern>/TestCampaign2.jsp</url-pattern>
             <url-pattern>/ViewProperty.jsp</url-pattern>
-            <url-pattern>/TestPerApplication.jsp</url-pattern>
             <url-pattern>/ReadTestCaseStep</url-pattern>
         </web-resource-collection>
         <web-resource-collection>
@@ -1831,7 +1967,6 @@
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>
             <url-pattern>/GetDataForTestCaseSearch</url-pattern>
-            <url-pattern>/SearchManualTestCaseInformation</url-pattern>
             <url-pattern>/TCEwwwDetail</url-pattern>
             <url-pattern>/GenerateGraph</url-pattern>
             <url-pattern>/TestCaseActionExecutionDetail</url-pattern>
@@ -1862,7 +1997,9 @@
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
+            <url-pattern>/SqlLibrary2.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
+            <url-pattern>/SoapLibrary2.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
@@ -1871,6 +2008,8 @@
             <description>servlet</description>
             <url-pattern>/DuplicateTestCase</url-pattern>
             <url-pattern>/UpdateTestCase</url-pattern>
+            <url-pattern>/CreateTestCaseCountry</url-pattern>
+            <url-pattern>/DeleteTestCaseCountry</url-pattern>
             <url-pattern>/CalculatePropertyForTestCase</url-pattern>
             <url-pattern>/UpdateProperties</url-pattern>
             <url-pattern>/CreateTestCase</url-pattern>
@@ -1886,7 +2025,9 @@
             <url-pattern>/ReadTestDataLib</url-pattern>
             <url-pattern>/ReadTestDataLibData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
+            <url-pattern>/ReadSqlLibrary</url-pattern>
             <url-pattern>/FindAllSoapLibrary</url-pattern>
+            <url-pattern>/ReadSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
@@ -1924,8 +2065,11 @@
             <url-pattern>/DeleteTestCase</url-pattern>
             <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
             <url-pattern>/CreateSqlLibrary</url-pattern>
+            <url-pattern>/CreateSqlLibrary2</url-pattern>
             <url-pattern>/DeleteSqlLibrary</url-pattern>
+            <url-pattern>/DeleteSqlLibrary2</url-pattern>
             <url-pattern>/UpdateSqlLibrary</url-pattern>
+            <url-pattern>/UpdateSqlLibrary2</url-pattern>
             <url-pattern>/UpdateTest</url-pattern>
             <url-pattern>/DeleteTestCase2</url-pattern>
             <url-pattern>/CreateTest1</url-pattern>
@@ -1957,6 +2101,7 @@
             <url-pattern>/RunManualTest</url-pattern>
             <url-pattern>/SetTagToExecution</url-pattern>
             <url-pattern>/FindExecutionInQueue</url-pattern>
+            <url-pattern>/ReadExecutionInQueue</url-pattern>
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
@@ -1981,6 +2126,9 @@
             <url-pattern>/CreateSoapLibrary</url-pattern>
             <url-pattern>/DeleteSoapLibrary</url-pattern>
             <url-pattern>/UpdateSoapLibrary</url-pattern>
+            <url-pattern>/CreateSoapLibrary2</url-pattern>
+            <url-pattern>/DeleteSoapLibrary2</url-pattern>
+            <url-pattern>/UpdateSoapLibrary2</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>
@@ -2103,10 +2251,9 @@
             <description>jsp</description>
             <url-pattern>/LogViewer.jsp</url-pattern>
             <url-pattern>/Parameter.jsp</url-pattern>
-            <url-pattern>/Parameter2.jsp</url-pattern>
             <url-pattern>/UserManager.jsp</url-pattern>
-            <url-pattern>/InvariantPublic.jsp</url-pattern>
-            <url-pattern>/InvariantPrivate.jsp</url-pattern>
+            <url-pattern>/UserManager2.jsp</url-pattern>
+            <url-pattern>/Invariant.jsp</url-pattern>
             <url-pattern>/ExecutionThreadMonitoring.jsp</url-pattern>
             <url-pattern>/CerberusInformation.jsp</url-pattern>
         </web-resource-collection>
@@ -2114,21 +2261,20 @@
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
             <url-pattern>/GetParameter</url-pattern>
-            <url-pattern>/GetParameterSystem</url-pattern>
-            <url-pattern>/GetParameterSystem2</url-pattern>
+            <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
-            <url-pattern>/UpdateParameter2</url-pattern>
             <url-pattern>/GetUsers</url-pattern>
             <url-pattern>/FindAllUsers</url-pattern>
             <url-pattern>/AddUser</url-pattern>
             <url-pattern>/UpdateUser</url-pattern>
+            <url-pattern>/CreateUser2</url-pattern>
+            <url-pattern>/UpdateUser2</url-pattern>
+            <url-pattern>/DeleteUser2</url-pattern>
             <url-pattern>/DeleteUser</url-pattern>
             <url-pattern>/ReadLogEvent</url-pattern>
-            <url-pattern>/FindAllInvariantPublic</url-pattern>
-            <url-pattern>/FindAllInvariantPrivate</url-pattern>
-            <url-pattern>/CreateInvariant</url-pattern>
-            <url-pattern>/UpdateInvariant</url-pattern>
-            <url-pattern>/DeleteInvariant</url-pattern>
+            <url-pattern>/CreateInvariant2</url-pattern>
+            <url-pattern>/UpdateInvariant2</url-pattern>
+            <url-pattern>/DeleteInvariant2</url-pattern>
             <url-pattern>/DeleteApplication</url-pattern>
             <url-pattern>/ReadCerberusDetailInformation</url-pattern>
         </web-resource-collection>
@@ -2143,6 +2289,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/DatabaseMaintenance.jsp</url-pattern>
+            <url-pattern>/Documentation1.jsp</url-pattern>
             <url-pattern>/Documentation.jsp</url-pattern>
             <url-pattern>/Login.jsp</url-pattern>
             <url-pattern>/Logout.jsp</url-pattern>
@@ -2172,36 +2319,42 @@
             <url-pattern>/GetCampaignExecutionsCommand</url-pattern>
             <url-pattern>/ListCampaignParameter</url-pattern>
             <url-pattern>/UpdateCampaign</url-pattern>
+            <url-pattern>/UpdateCampaign2</url-pattern>
             <url-pattern>/UpdateCampaignParameter</url-pattern>
             <url-pattern>/AddCampaign</url-pattern>
+            <url-pattern>/CreateCampaign</url-pattern>
             <url-pattern>/AddCampaignContent</url-pattern>
+            <url-pattern>/AddCampaignContent2</url-pattern>
             <url-pattern>/AddCampaignParameter</url-pattern>
             <url-pattern>/DeleteCampaign</url-pattern>
+            <url-pattern>/DeleteCampaign2</url-pattern>
             <url-pattern>/DeleteCampaignContent</url-pattern>
+            <url-pattern>/DeleteCampaignContent2</url-pattern>
             <url-pattern>/DeleteCampaignParameter</url-pattern>
             <url-pattern>/GetTestBattery</url-pattern>
             <url-pattern>/AddTestBattery</url-pattern>
             <url-pattern>/AddTestBatteryContent</url-pattern>
             <url-pattern>/DeleteTestBattery</url-pattern>
+            <url-pattern>/DeleteTestBattery2</url-pattern>
+            <url-pattern>/UpdateTestBattery2</url-pattern>
+            <url-pattern>/CreateTestBattery</url-pattern>
             <url-pattern>/DeleteTestBatteryContent</url-pattern>
             <url-pattern>/UpdateTestBattery</url-pattern>
             <url-pattern>/importXML</url-pattern>
             <url-pattern>/importFile</url-pattern>
             <url-pattern>/NewRelease</url-pattern>
             <url-pattern>/TestcaseListGrid</url-pattern>
-            <url-pattern>/CampaignExecutionRadarGraphByFunction</url-pattern>
-            <url-pattern>/CampaignExecutionStatusBarGraphByFunction</url-pattern>
-            <url-pattern>/CampaignExecutionReport</url-pattern>
-            <url-pattern>/CampaignExecutionGraphByStatus</url-pattern>
             <url-pattern>/ExecuteNextInQueue</url-pattern>
             <url-pattern>/ExecutionThreadReset</url-pattern>
             <url-pattern>/VirtualProxy</url-pattern>
+            <url-pattern>/ReadTestBatteryContent</url-pattern>
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
             <url-pattern>/ReadCampaign</url-pattern>
+            <url-pattern>/ReadCampaignContent</url-pattern>
             <url-pattern>/ReadCampaignParameter</url-pattern>
             <url-pattern>/ReadTestBattery</url-pattern>
             <url-pattern>/ReadInvariant</url-pattern>

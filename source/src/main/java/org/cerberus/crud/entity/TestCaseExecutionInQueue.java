@@ -43,7 +43,7 @@ public class TestCaseExecutionInQueue {
     private String outputFormat;
     private int screenshot;
     private int verbose;
-    private long timeout;
+    private String timeout;
     private boolean synchroneous;
     private int pageSource;
     private int seleniumLog;
@@ -52,6 +52,29 @@ public class TestCaseExecutionInQueue {
     private String comment;
     private int retries;
     private boolean manualExecution;
+    
+    /**
+     * From here are data outside database model.
+     */
+    private Application applicationObj;
+    private TestCase testCaseObj;
+
+    
+    public TestCase getTestCaseObj() {
+        return testCaseObj;
+    }
+
+    public void setTestCaseObj(TestCase testCaseObj) {
+        this.testCaseObj = testCaseObj;
+    }
+
+    public Application getApplicationObj() {
+        return applicationObj;
+    }
+
+    public void setApplicationObj(Application applicationObj) {
+        this.applicationObj = applicationObj;
+    }
 
     public boolean isManualExecution() {
         return manualExecution;
@@ -281,11 +304,11 @@ public class TestCaseExecutionInQueue {
         this.verbose = verbose;
     }
 
-    public long getTimeout() {
+    public String getTimeout() {
         return timeout;
     }
 
-    public void setTimeout(long timeout) {
+    public void setTimeout(String timeout) {
         this.timeout = timeout;
     }
 

@@ -41,6 +41,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
+        displayTestCaseLabel(doc);
+        
         displayInvariantList("group", "GROUP", false);
         displayInvariantList("status", "TCSTATUS", false);
         displayInvariantList("priority", "PRIORITY", false);
@@ -56,9 +58,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             selector: ".wysiwyg"
         });
 
-        $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
-        $("#editEntryButton").click(saveUpdateEntryHandler);
-        $("#editTcInfo").click({test: test, testcase: testcase}, editEntry);
+        // Edit TestCase open the TestCase Modal
+        $("#editTcInfo").click(function () {
+            editTestCaseClick(test, testcase);
+        });
 
         $("#manageProp").click(function () {
             $("#propertiesModal").modal('show');
@@ -583,242 +586,6 @@ function loadLibraryStep() {
 }
 
 
-/** EDIT TEST CASE INFO **/
-
-function editEntry(event) {
-    var test = event.data.test;
-    var testCase = event.data.testcase;
-    clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadTestCase", "test=" + encodeURIComponent(test) + "&testCase=" + encodeURIComponent(testCase));
-    $.when(jqxhr).then(function (data) {
-
-        var formEdit = $('#editEntryModal');
-        var testInfo = $.getJSON("ReadTest", "test=" + encodeURIComponent(test));
-        var appInfo = $.getJSON("ReadApplication", "application=" + encodeURIComponent(data.application));
-
-        $.when(testInfo).then(function (data) {
-            formEdit.find("#testDesc").prop("value", data.contentTable.description);
-        });
-
-        $.when(appInfo).then(function (appData) {
-            var currentSys = getUser().defaultSystem;
-            var bugTrackerUrl = appData.contentTable.bugTrackerUrl;
-
-            appendBuildRevList(appData.contentTable.system, data);
-
-            if (appData.contentTable.system !== currentSys) {
-                $("[name=application]").empty();
-                formEdit.find("#application").append($('<option></option>').text(data.application).val(data.application));
-                appendApplicationList(currentSys);
-            }
-            formEdit.find("#application").prop("value", data.application);
-
-            if (data.bugID !== "" && bugTrackerUrl) {
-                bugTrackerUrl = bugTrackerUrl.replace("%BUGID%", data.bugID);
-            }
-
-            formEdit.find("#link").prop("href", bugTrackerUrl).text(bugTrackerUrl);
-
-        });
-
-        //test info
-        formEdit.find("#test").prop("value", data.test);
-        formEdit.find("#testCase").prop("value", data.testCase);
-
-        //test case info
-        formEdit.find("#creator").prop("value", data.creator);
-        formEdit.find("#lastModifier").prop("value", data.lastModifier);
-        formEdit.find("#implementer").prop("value", data.implementer);
-        formEdit.find("#tcDateCrea").prop("value", data.tcDateCrea);
-        formEdit.find("#ticket").prop("value", data.ticket);
-        formEdit.find("#function").prop("value", data.function);
-        formEdit.find("#origin").prop("value", data.origin);
-        formEdit.find("#refOrigin").prop("value", data.refOrigin);
-        formEdit.find("#project").prop("value", data.project);
-
-        // test case parameters
-        formEdit.find("#application").prop("value", data.application);
-        formEdit.find("#group").prop("value", data.group);
-        formEdit.find("#status").prop("value", data.status);
-        formEdit.find("#priority").prop("value", data.priority);
-        formEdit.find("#actQA").prop("value", data.runQA);
-        formEdit.find("#actUAT").prop("value", data.runUAT);
-        formEdit.find("#actProd").prop("value", data.runPROD);
-        for (var country in data.countryList) {
-            $('#countryList input[name="' + data.countryList[country] + '"]').prop("checked", true);
-        }
-        formEdit.find("#shortDesc").prop("value", data.shortDescription);
-        tinyMCE.get('behaviorOrValueExpected1').setContent(data.description);
-        tinyMCE.get('howTo1').setContent(data.howTo);
-
-        //activation criteria
-        formEdit.find("#active").prop("value", data.active);
-        formEdit.find("#bugId").prop("value", data.bugID);
-        formEdit.find("#comment").prop("value", data.comment);
-
-
-        //We desactivate or activate the access to the fields depending on if user has the credentials.
-        if (!(data["hasPermissionsUpdate"])) { // If readonly, we only readonly all fields
-            //test case info
-            formEdit.find("#implementer").prop("readonly", "readonly");
-            formEdit.find("#origin").prop("disabled", "disabled");
-            formEdit.find("#project").prop("disabled", "disabled");
-            formEdit.find("#ticket").prop("readonly", "readonly");
-            formEdit.find("#function").prop("readonly", "readonly");
-            // test case parameters
-            formEdit.find("#application").prop("disabled", "disabled");
-            formEdit.find("#status").prop("disabled", "disabled");
-            formEdit.find("#group").prop("disabled", "disabled");
-            formEdit.find("#priority").prop("disabled", "disabled");
-            formEdit.find("#actQA").prop("disabled", "disabled");
-            formEdit.find("#actUAT").prop("disabled", "disabled");
-            formEdit.find("#actProd").prop("disabled", "disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").prop("disabled", "disabled");
-            formEdit.find("#shortDesc").prop("readonly", "readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', false);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', false);
-            //activation criteria
-            formEdit.find("#active").prop("disabled", "disabled");
-            formEdit.find("#fromSprint").prop("disabled", "disabled");
-            formEdit.find("#fromRev").prop("disabled", "disabled");
-            formEdit.find("#toSprint").prop("disabled", "disabled");
-            formEdit.find("#toRev").prop("disabled", "disabled");
-            formEdit.find("#targetSprint").prop("disabled", "disabled");
-            formEdit.find("#targetRev").prop("disabled", "disabled");
-            formEdit.find("#bugId").prop("readonly", "readonly");
-            formEdit.find("#comment").prop("readonly", "readonly");
-            // Save button is hidden.
-            $('#editEntryButton').attr('class', '');
-            $('#editEntryButton').attr('hidden', 'hidden');
-        } else {
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-
-            //test case info
-            formEdit.find("#implementer").removeProp("readonly");
-            formEdit.find("#origin").removeProp("disabled");
-            formEdit.find("#project").removeProp("disabled");
-            formEdit.find("#ticket").removeProp("readonly");
-            formEdit.find("#function").removeProp("readonly");
-            // test case parameters
-            formEdit.find("#application").removeProp("disabled");
-            formEdit.find("#status").removeProp("disabled");
-            formEdit.find("#group").removeProp("disabled");
-            formEdit.find("#priority").removeProp("disabled");
-            formEdit.find("#actQA").removeProp("disabled");
-            formEdit.find("#actUAT").removeProp("disabled");
-            formEdit.find("#actProd").removeProp("disabled");
-            var myCountryList = $('#countryList');
-            myCountryList.find("[class='countrycb']").removeProp("disabled");
-            formEdit.find("#shortDesc").removeProp("readonly");
-            tinyMCE.get('behaviorOrValueExpected1').getBody().setAttribute('contenteditable', true);
-            tinyMCE.get('howTo1').getBody().setAttribute('contenteditable', true);
-            //activation criteria
-            formEdit.find("#active").removeProp("disabled");
-            formEdit.find("#fromSprint").removeProp("disabled");
-            formEdit.find("#fromRev").removeProp("disabled");
-            formEdit.find("#toSprint").removeProp("disabled");
-            formEdit.find("#toRev").removeProp("disabled");
-            formEdit.find("#targetSprint").removeProp("disabled");
-            formEdit.find("#targetRev").removeProp("disabled");
-            formEdit.find("#bugId").removeProp("readonly");
-            formEdit.find("#comment").removeProp("readonly");
-            // Save button is displayed.
-            $('#editEntryButton').attr('class', 'btn btn-primary');
-            $('#editEntryButton').removeProp('hidden');
-        }
-
-        formEdit.modal('show');
-    });
-}
-
-function saveUpdateEntryHandler() {
-    clearResponseMessage($('#editEntryModal'));
-
-    var formEdit = $('#editEntryModalForm');
-    tinyMCE.triggerSave();
-
-    showLoaderInModal('#editEntryModal');
-    updateEntry("UpdateTestCase2", formEdit, "#testCaseTable");
-}
-
-function appendBuildRevList(system, editData) {
-
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=1");
-    $.when(jqxhr).then(function (data) {
-        var fromBuild = $("[name=fromSprint]");
-        var toBuild = $("[name=toSprint]");
-        var targetBuild = $("[name=targetSprint]");
-
-        fromBuild.empty();
-        toBuild.empty();
-        targetBuild.empty();
-
-        fromBuild.append($('<option></option>').text("-----").val(""));
-        toBuild.append($('<option></option>').text("-----").val(""));
-        targetBuild.append($('<option></option>').text("-----").val(""));
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            fromBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetBuild.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-        }
-
-        if (editData !== undefined) {
-            var formEdit = $('#editEntryModal');
-
-            formEdit.find("#fromSprint").prop("value", editData.fromSprint);
-            formEdit.find("#toSprint").prop("value", editData.toSprint);
-            formEdit.find("#targetSprint").prop("value", editData.targetSprint);
-        }
-
-    });
-
-    var jqxhr = $.getJSON("ReadBuildRevisionInvariant", "system=" + encodeURIComponent(system) + "&level=2");
-    $.when(jqxhr).then(function (data) {
-        var fromRev = $("[name=fromRev]");
-        var toRev = $("[name=toRev]");
-        var targetRev = $("[name=targetRev]");
-
-        fromRev.empty();
-        toRev.empty();
-        targetRev.empty();
-
-        fromRev.append($('<option></option>').text("-----").val(""));
-        toRev.append($('<option></option>').text("-----").val(""));
-        targetRev.append($('<option></option>').text("-----").val(""));
-
-        for (var index = 0; index < data.contentTable.length; index++) {
-            fromRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            toRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-            targetRev.append($('<option></option>').text(data.contentTable[index].versionName).val(data.contentTable[index].versionName));
-        }
-
-        if (editData !== undefined) {
-            var formEdit = $('#editEntryModal');
-
-            formEdit.find("#fromRevision").prop("value", editData.fromRevision);
-            formEdit.find("#toRevision").prop("value", editData.toRevision);
-            formEdit.find("#targetRevision").prop("value", editData.targetRevision);
-        }
-    });
-}
-
-function appendCountryList() {
-    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
-    $.when(jqxhr).then(function (data) {
-        var countryList = $("[name=countryList]");
-
-        for (var index = 0; index < data.length; index++) {
-            var country = data[index].value;
-
-            countryList.append('<label class="checkbox-inline"><input class="countrycb" type="checkbox" name="' + country + '"/>' + country + '\
-                                <input id="countryCheckB" class="countrycb-hidden" type="hidden" name="' + country + '" value="off"/></label>');
-        }
-    });
-}
-
 /** DRAG AND DROP HANDLERS **/
 
 var source;
@@ -1225,11 +992,11 @@ Action.prototype.generateContent = function () {
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("rowAction form-inline");
 
-    var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").addClass("form-control input-sm");
-    var propertyField = $("<input>").addClass("form-control input-sm");
-    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
+    var actionList = $("<select></select>").addClass("form-control input-sm no-border");
+    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
+    var objectField = $("<input>").addClass("form-control input-sm no-border");
+    var propertyField = $("<input>").addClass("form-control input-sm no-border");
+    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
     descField.on("change", function () {
@@ -1397,11 +1164,11 @@ Control.prototype.generateContent = function () {
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("rowControl form-inline");
 
-    var controlList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
-    var controlValueField = $("<input>").addClass("form-control input-sm");
-    var controlPropertyField = $("<input>").addClass("form-control input-sm");
-    var fatalList = $("<select></select>").addClass("form-control input-sm");
+    var controlList = $("<select></select>").addClass("form-control input-sm no-border");
+    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Description");
+    var controlValueField = $("<input>").addClass("form-control input-sm no-border");
+    var controlPropertyField = $("<input>").addClass("form-control input-sm no-border");
+    var fatalList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
     descField.on("change", function () {
@@ -1523,70 +1290,66 @@ function setPlaceholderAction() {
      */
     var placeHoldersList = {"fr": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "skipAction", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": null, "property": null},
             {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
-            {"type": "clickAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
-            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
-            {"type": "enter", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
             {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
+            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
+            {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
+            {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
             {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
             {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL à appeler", "property": null},
             {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "selectAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
             {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
-            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
             {"type": "callSoap", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
             {"type": "callSoapWithBase", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
-            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
-            {"type": "getPageSource", "object": null, "property": null},
             {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
             {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
             {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "doNothing", "object": null, "property": null}
+            {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
+            {"type": "doNothing", "object": null, "property": null},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "getPageSource", "object": null, "property": null}
         ], "en": [
             {"type": "Unknown", "object": null, "property": null},
-            {"type": "skipAction", "object": null, "property": null},
+            {"type": "keypress", "object": "[opt] Element path", "property": ""},
             {"type": "hideKeyboard", "object": null, "property": null},
             {"type": "swipe", "object": null, "property": null},
             {"type": "click", "object": "Element path", "property": null},
-            {"type": "clickAndWait", "object": "Deprecated", "property": "Deprecated"},
-            {"type": "calculateProperty", "object": null, "property": "Property Name"},
-            {"type": "doubleClick", "object": "Element path", "property": null},
-            {"type": "enter", "object": "Deprecated", "property": "Deprecated"},
-            {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Element path", "property": ""},
             {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
             {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
+            {"type": "doubleClick", "object": "Element path", "property": null},
+            {"type": "rightClick", "object": "Element path", "property": null},
+            {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
+            {"type": "focusDefaultIframe", "object": null, "property": null},
+            {"type": "switchToWindow", "object": "Window id", "property": null},
+            {"type": "manageDialog", "object": "ok or cancel", "property": null},
             {"type": "mouseOver", "object": "Element path", "property": null},
             {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
             {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
             {"type": "openUrlLogin", "object": null, "property": null},
             {"type": "openUrl", "object": "URL to call", "property": null},
             {"type": "select", "object": "Element path", "property": "Option path"},
-            {"type": "selectAndWait", "object": "Deprecated", "property": "Deprecated"},
             {"type": "type", "object": "Element path", "property": "Property Name"},
             {"type": "wait", "object": "Time(ms) or Element", "property": null},
-            {"type": "switchToWindow", "object": "Window id", "property": null},
             {"type": "callSoap", "object": "Soap Name (library)", "property": "Property Name"},
             {"type": "callSoapWithBase", "object": "Soap Name (library)", "property": "Property Name"},
-            {"type": "manageDialog", "object": "ok or cancel", "property": null},
-            {"type": "getPageSource", "object": null, "property": null},
             {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
             {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
             {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-            {"type": "doNothing", "object": null, "property": null}
+            {"type": "calculateProperty", "object": null, "property": "Property Name"},
+            {"type": "doNothing", "object": null, "property": null},
+            {"type": "skipAction", "object": null, "property": null},
+            {"type": "getPageSource", "object": null, "property": null}
         ]};
 
     var user = getUser();
@@ -1628,17 +1391,17 @@ function setPlaceholderControl() {
             {"type": "verifyStringGreater", "controlValue": "String1 ex : AAA", "controlProp": "String2 ex: ZZZ", "fatal": ""},
             {"type": "verifyStringMinor", "controlValue": "String1 ex : ZZZ", "controlProp": "String2 ex: AAA", "fatal": ""},
             {"type": "verifyStringContains", "controlValue": "String1 ex : toto", "controlProp": "String2 ex : ot", "fatal": ""},
-            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
-            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyIntegerEquals", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
             {"type": "verifyIntegerDifferent", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
+            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
             {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
             {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
@@ -1650,7 +1413,9 @@ function setPlaceholderControl() {
             {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "fatal": ""},
             {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
             {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
-            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null}
+            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "skipControl", "controlValue": null, "controlProp": null, "fatal": null}
         ], "en": [
             {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
             {"type": "verifyStringEqual", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
@@ -1658,17 +1423,17 @@ function setPlaceholderControl() {
             {"type": "verifyStringGreater", "controlValue": "String1 ex : AAA", "controlProp": "String2 ex: ZZZ", "fatal": ""},
             {"type": "verifyStringMinor", "controlValue": "String1 ex : ZZZ", "controlProp": "String2 ex: AAA", "fatal": ""},
             {"type": "verifyStringContains", "controlValue": "String1 ex : toto", "controlProp": "String2 ex : ot", "fatal": ""},
-            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
-            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyIntegerEquals", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
             {"type": "verifyIntegerDifferent", "controlValue": "Integer1", "controlProp": "Integer2", "fatal": ""},
+            {"type": "verifyIntegerGreater", "controlValue": "Integer1 ex : 10", "controlProp": "Integer2 ex : 20", "fatal": ""},
+            {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
-            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
             {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
+            {"type": "verifyElementInElement", "controlValue": "Sub Element", "controlProp": "Master Element", "fatal": ""},
             {"type": "verifyElementClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotClickable", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyTextInElement", "controlValue": "Text", "controlProp": "Element", "fatal": ""},
@@ -1680,7 +1445,9 @@ function setPlaceholderControl() {
             {"type": "verifyUrl", "controlValue": null, "controlProp": "URL", "fatal": ""},
             {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
             {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
-            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null}
+            {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null},
+            {"type": "skipControl", "controlValue": null, "controlProp": null, "fatal": null}
         ]};
 
     var user = getUser();

@@ -32,20 +32,24 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCaseStepActionControlExecution {
 
     @Override
-    public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence, int control, int sort, String returnCode, String returnMessage, String controlType, String controlProperty, String controlValue, String fatal, long start, long end, long startLong, long endLong, String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
+    public TestCaseStepActionControlExecution create(long id, String test, String testCase, int step, int sequence, int controlSequence, int sort, String returnCode, 
+            String returnMessage, String control, String value1Init, String value2Init, String value1, String value2, String fatal, long start, long end, long startLong, long endLong, 
+            String description, TestCaseStepActionExecution testCaseStepActionExecution, MessageEvent resultMessage) {
         TestCaseStepActionControlExecution testCaseStepActionControlExecution = new TestCaseStepActionControlExecution();
         testCaseStepActionControlExecution.setId(id);
         testCaseStepActionControlExecution.setTest(test);
         testCaseStepActionControlExecution.setTestCase(testCase);
         testCaseStepActionControlExecution.setStep(step);
         testCaseStepActionControlExecution.setSequence(sequence);
-        testCaseStepActionControlExecution.setControl(control);
+        testCaseStepActionControlExecution.setControlSequence(controlSequence);
         testCaseStepActionControlExecution.setSort(sort);
         testCaseStepActionControlExecution.setReturnCode(returnCode);
         testCaseStepActionControlExecution.setReturnMessage(returnMessage);
-        testCaseStepActionControlExecution.setControlType(controlType);
-        testCaseStepActionControlExecution.setControlProperty(controlProperty);
-        testCaseStepActionControlExecution.setControlValue(controlValue);
+        testCaseStepActionControlExecution.setControl(control);
+        testCaseStepActionControlExecution.setValue1(value1);
+        testCaseStepActionControlExecution.setValue2(value2);
+        testCaseStepActionControlExecution.setValue1Init(value1Init);
+        testCaseStepActionControlExecution.setValue2Init(value2Init);
         testCaseStepActionControlExecution.setFatal(fatal);
         testCaseStepActionControlExecution.setStart(start);
         testCaseStepActionControlExecution.setEnd(end);

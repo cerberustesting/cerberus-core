@@ -19,7 +19,12 @@ package org.cerberus.crud.dao;
 
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * {Insert class description here}
@@ -31,7 +36,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface IInvariantDAO {
 
     /**
-     *
      * @param idName
      * @param value
      * @return
@@ -40,23 +44,12 @@ public interface IInvariantDAO {
     Invariant readByKey(String idName, String value) throws CerberusException;
 
     /**
-     *
-     * @param idName
-     * @param sort
-     * @return
-     * @throws CerberusException
-     */
-    Invariant readByIdnameBySort(String idName, Integer sort) throws CerberusException;
-
-    /**
-     *
      * @param idName
      * @return
      */
     AnswerList readByIdname(String idName);
 
     /**
-     *
      * @param idName
      * @param gp
      * @return
@@ -64,7 +57,6 @@ public interface IInvariantDAO {
     AnswerList readByIdnameByGp1(String idName, String gp);
 
     /**
-     *
      * @param start
      * @param amount
      * @param column
@@ -75,6 +67,28 @@ public interface IInvariantDAO {
      * @return
      */
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch, String PublicPrivateFilter);
+
+    /**
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param PublicPrivateFilter
+     * @return
+     */
+
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter);
+
+    /**
+     * @param column
+     * @param dir
+     * @param searchTerm
+     * @param individualSearch
+     * @param PublicPrivateFilter
+     * @return
+     */
+
+    public AnswerList readDistinctValuesByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String PublicPrivateFilter, String columnName);
 
     /**
      * Getting the list of country invariant for which exist at least 1 change
@@ -88,9 +102,36 @@ public interface IInvariantDAO {
 
     public Integer getNumberOfInvariant(String searchTerm, String PublicPrivateFilter) throws CerberusException;
 
-    public void create(Invariant invariant) throws CerberusException;
+    /**
+     * Get a {@link Invariant} in database
+     *
+     * @param id
+     * @param value
+     * @return
+     */
+    AnswerItem readByKey2(String id, String value);
 
-    public void delete(Invariant invariant) throws CerberusException;
+    /**
+     * Create an {@link Invariant} in database
+     *
+     * @param object
+     * @return
+     */
+    Answer create2(Invariant object);
 
-    public void update(Invariant invariant) throws CerberusException;
+    /**
+     * Delete an {@link Invariant} in database
+     *
+     * @param object
+     * @return
+     */
+    Answer delete2(Invariant object);
+
+    /**
+     * Update an {@link Invariant} in database
+     *
+     * @param object
+     * @return
+     */
+    Answer update2(Invariant object);
 }

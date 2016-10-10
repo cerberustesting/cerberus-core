@@ -81,6 +81,9 @@ public class CreateNotDefinedProperty extends HttpServlet {
         try {
 
             String propertyName = request.getParameter("property");
+            if (propertyName != null) {
+                propertyName = propertyName.replace("%", "");
+            }
             String toTest = request.getParameter("totest");
             String toTestCase = request.getParameter("totestcase");
             String propertyType = request.getParameter("propertyType");
@@ -121,7 +124,7 @@ public class CreateNotDefinedProperty extends HttpServlet {
                             "",
                             0,
                             0,
-                            "STATIC"
+                            "STATIC", 0, 10000
                     ));
                 }
 

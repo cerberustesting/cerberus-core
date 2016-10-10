@@ -33,17 +33,17 @@ public interface IFactoryTestCaseExecutionInQueue {
 
 	TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
 			String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-			String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate)
+			String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate)
 			throws FactoryCreationException;
 
 	TestCaseExecutionInQueue create(String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
 			String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-			String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, Integer retries, boolean manualExecution)
+			String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, Integer retries, boolean manualExecution)
 			throws FactoryCreationException;
         
         TestCaseExecutionInQueue create(long id, String test, String testCase, String country, String environment, String robot, String robotIP, String robotPort, String browser,
 			String browserVersion, String platform, boolean manualURL, String manualHost, String manualContextRoot, String manualLoginRelativeURL, String manualEnvData,
-			String tag, String outputFormat, int screenshot, int verbose, long timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, String processed, String comment, Integer retries, boolean manualExecution)
+			String tag, String outputFormat, int screenshot, int verbose, String timeout, boolean synchroneous, int pageSource, int seleniumLog, Date requestDate, String processed, String comment, Integer retries, boolean manualExecution)
 			throws FactoryCreationException;
 
 }

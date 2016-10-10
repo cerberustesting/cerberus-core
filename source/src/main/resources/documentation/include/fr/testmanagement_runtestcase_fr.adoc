@@ -1,0 +1,48 @@
+La page d'execution est découpée en trois parties.
+
+=== Selection du périmètre à executer
+
+image:runtestselection.png[RunTestSelection]
+
+=== Selection du robot et de ses paramètres à utiliser
+
+image:runrobotsettings.png[RunRobotSettings, 500, 500] 
+
+|=== 
+
+| *Field* | *Description*  
+
+| Select Robot Config | Permet de charger la configuration d'un robot, ou de selectionner la personalisation d'un robot.
+
+| Selenium Server IP | Cell in column 2, row 3
+
+| Selenium Server Port | Cell in column 2, row 3
+
+| Browser | Le ou les navigateurs sur lesquel les cas de tests seront lancé.
+
+| Version    | This correspond to the URL that points to the page where a new bug can be created on the Bug system of the application. More detail in the <<New Bug URL>> section.
+
+|=== 
+
+
+=== Définition des paramètres d'execution
+
+image:runexecutionsettings.png[RunExecutionSettings, 500, 500]
+
+|=== 
+
+| *Field* | *Description*  
+
+| Select Robot Config | Permet de charger la configuration d'un robot, ou de selectionner la personalisation d'un robot.
+
+| Selenium Server IP | Cell in column 2, row 3
+
+| Selenium Server Port | Cell in column 2, row 3
+
+| Browser | Le ou les navigateurs sur lesquel les cas de tests seront lancé.
+
+| Version    | This correspond to the URL that points to the page where a new bug can be created on the Bug system of the application. More detail in the <<New Bug URL>> section.
+
+|=== 
+
+

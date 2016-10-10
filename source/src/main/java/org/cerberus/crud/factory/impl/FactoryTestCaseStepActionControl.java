@@ -31,22 +31,23 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
 
     @Override
     public TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                            int control, String type, String controlValue, String controlProperty, String fatal, String description) {
-        return create(test, testCase, step, sequence, control, control, type, controlValue, controlProperty, fatal, description, null);
+                                            int controlSequence, String control, String value1, String value2, String fatal, String description) {
+        return create(test, testCase, step, sequence, controlSequence, controlSequence, control, value1, value2, fatal, description, null);
     }
 
     @Override
-    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int control, int sort, String type, String controlValue, String controlProperty, String fatal, String description, String screenshotFilename) {
+    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String control, String value1, 
+            String value2, String fatal, String description, String screenshotFilename) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestCase(testCase);
-        testCaseStepActionControl.setType(type);
+        testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setStep(step);
         testCaseStepActionControl.setSequence(sequence);
-        testCaseStepActionControl.setControl(control);
+        testCaseStepActionControl.setControlSequence(controlSequence);
         testCaseStepActionControl.setSort(sort);
-        testCaseStepActionControl.setControlValue(controlValue);
-        testCaseStepActionControl.setControlProperty(controlProperty);
+        testCaseStepActionControl.setValue1(value1);
+        testCaseStepActionControl.setValue2(value2);
         testCaseStepActionControl.setFatal(fatal);
         testCaseStepActionControl.setDescription(description);
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);

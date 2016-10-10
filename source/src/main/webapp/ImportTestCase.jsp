@@ -19,7 +19,7 @@
 --%>
 
 <%@page import="org.cerberus.crud.entity.TestCaseStep"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.service.ITestCaseStepService"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
@@ -64,13 +64,13 @@
             %><option value="All">-- Choose Test First --</option><%                    } else {%>
             <option value="---">-- Choose TestCase --</option>
             <%
-                for (TCase tCase : testCaseService.findTestCaseByTest(test)) {
-                    if (tCase.getActive().equalsIgnoreCase("Y")) {
+                for (TestCase tCase : testCaseService.findTestCaseByTest(test)) {
+                    if (tCase.getTcActive().equalsIgnoreCase("Y")) {
                         optstyle = "font-weight:bold;";
                     } else {
                         optstyle = "font-weight:lighter;";
                     }
-            %><option style="<%=optstyle%>" value="<%=tCase.getTestCase()%>" <%=testcase.compareTo(tCase.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tCase.getTestCase()%>  [<%=tCase.getApplication()%>]  : <%=tCase.getShortDescription()%></option><%
+            %><option style="<%=optstyle%>" value="<%=tCase.getTestCase()%>" <%=testcase.compareTo(tCase.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tCase.getTestCase()%>  [<%=tCase.getApplication()%>]  : <%=tCase.getDescription()%></option><%
                 }
             }
             %>

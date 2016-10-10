@@ -37,13 +37,13 @@ public class TestCaseStep {
     private List<TestCaseStepAction> testCaseStepAction;
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
-    private TCase testCaseObj;
+    private TestCase testCaseObj;
 
-    public TCase getTestCaseObj() {
+    public TestCase getTestCaseObj() {
         return testCaseObj;
     }
 
-    public void setTestCaseObj(TCase testCaseObj) {
+    public void setTestCaseObj(TestCase testCaseObj) {
         this.testCaseObj = testCaseObj;
     }
 

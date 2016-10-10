@@ -19,9 +19,16 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.entity.TestCaseCountry;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseStepBatch;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * @author bcivel
@@ -29,39 +36,109 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryTestCase implements IFactoryTestCase {
 
+    private TestCase newTestCase;
+
     @Override
-    public TestCase create(String test, String testCase, String origin, String refOrigin, String creator, String implementer, String lastModifier, String project, String ticket, String application, String runQA, String runUAT, String runPROD, int priority, String group, String status, String shortDescription, String description, String howTo, String active, String fromSprint, String fromRevision, String toSprint, String toRevision, String lastExecutionStatus, String bugID, String targetSprint, String targetRevision, String comment) {
-        TestCase newTestCase = new TestCase();
-        newTestCase.setActive(active);
+    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String fromBuild, String fromRev,
+            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String userAgent, List<TestCaseCountry> testCaseCountry,
+            List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
+        newTestCase = new TestCase();
+        newTestCase.setTcActive(tcActive);
         newTestCase.setApplication(application);
         newTestCase.setBugID(bugID);
         newTestCase.setComment(comment);
-        newTestCase.setCreator(creator);
+        newTestCase.setBehaviorOrValueExpected(behavior);
+        newTestCase.setFromRev(fromRev);
+        newTestCase.setFromBuild(fromBuild);
+        newTestCase.setGroup(group);
+        newTestCase.setHowTo(howTo);
+        newTestCase.setImplementer(implementer);
+        newTestCase.setOrigine(origine);
+        newTestCase.setPriority(priority);
+        newTestCase.setProject(project);
+        newTestCase.setRefOrigine(refOrigine);
+        newTestCase.setActivePROD(activePROD);
+        newTestCase.setActiveQA(activeQA);
+        newTestCase.setActiveUAT(activeUAT);
         newTestCase.setDescription(description);
-        newTestCase.setFromRevision(fromRevision);
-        newTestCase.setFromSprint(fromSprint);
+        newTestCase.setStatus(status);
+        newTestCase.setTargetRev(targetRev);
+        newTestCase.setTargetBuild(targetBuild);
+        newTestCase.setTest(test);
+        newTestCase.setTestCase(testCase);
+        newTestCase.setTicket(ticket);
+        newTestCase.setToRev(toRev);
+        newTestCase.setToBuild(toBuild);
+        newTestCase.setUsrCreated(usrCreated);
+        newTestCase.setUsrModif(usrModif);
+        newTestCase.setUserAgent(userAgent);
+        newTestCase.setLastExecutionStatus(lastExecutionStatus);
+        newTestCase.setTestCaseCountry(testCaseCountry);
+        newTestCase.setTestCaseCountryProperties(testCaseCountryProperties);
+        newTestCase.setTestCaseStep(testCaseStep);
+        newTestCase.setTestCaseStepBatch(testCaseStepBatch);
+        newTestCase.setFunction(function);
+
+        return newTestCase;
+    }
+
+    @Override
+    public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
+            String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String fromBuild, String fromRev,
+            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, Timestamp dateModif) {
+        newTestCase = new TestCase();
+        newTestCase.setTcActive(tcActive);
+        newTestCase.setApplication(application);
+        newTestCase.setBugID(bugID);
+        newTestCase.setComment(comment);
+        newTestCase.setBehaviorOrValueExpected(behavior);
+        newTestCase.setFromRev(fromRev);
+        newTestCase.setFromBuild(fromBuild);
         newTestCase.setGroup(group);
         newTestCase.setHowTo(howTo);
         newTestCase.setImplementer(implementer);
         newTestCase.setLastExecutionStatus(lastExecutionStatus);
-        newTestCase.setLastModifier(lastModifier);
-        newTestCase.setOrigin(refOrigin);
+        newTestCase.setOrigine(origine);
         newTestCase.setPriority(priority);
         newTestCase.setProject(project);
-        newTestCase.setRefOrigin(refOrigin);
-        newTestCase.setRunPROD(runPROD);
-        newTestCase.setRunQA(runQA);
-        newTestCase.setRunUAT(runUAT);
-        newTestCase.setShortDescription(shortDescription);
+        newTestCase.setRefOrigine(refOrigine);
+        newTestCase.setActivePROD(activePROD);
+        newTestCase.setActiveQA(activeQA);
+        newTestCase.setActiveUAT(activeUAT);
+        newTestCase.setDescription(description);
         newTestCase.setStatus(status);
-        newTestCase.setTargetRevision(targetRevision);
-        newTestCase.setTargetSprint(targetSprint);
+        newTestCase.setTargetRev(targetRev);
+        newTestCase.setTargetBuild(targetBuild);
         newTestCase.setTest(test);
         newTestCase.setTestCase(testCase);
         newTestCase.setTicket(ticket);
-        newTestCase.setToRevision(toRevision);
-        newTestCase.setToSprint(toSprint);
+        newTestCase.setToRev(toRev);
+        newTestCase.setToBuild(toBuild);
+        newTestCase.setFunction(function);
+        newTestCase.setUsrCreated(usrCreated);
+        newTestCase.setDateCreated(dateCreated);
+        newTestCase.setDateModif(dateModif);
+        newTestCase.setUsrModif(usrModif);
+        newTestCase.setUserAgent(userAgent);
 
+        return newTestCase;
+    }
+
+    @Override
+    public TestCase create(String test, String testCase) {
+        newTestCase = new TestCase();
+        newTestCase.setTest(test);
+        newTestCase.setTestCase(testCase);
+        return newTestCase;
+    }
+
+    @Override
+    public TestCase create(String test, String testCase, String description) {
+        newTestCase = new TestCase();
+        newTestCase.setTest(test);
+        newTestCase.setTestCase(testCase);
+        newTestCase.setDescription(description);
         return newTestCase;
     }
 }

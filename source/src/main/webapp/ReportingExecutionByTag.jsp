@@ -192,7 +192,7 @@
                                 </label>
                             </div>
                             <div id="tableArea">
-                                <table id="listTable" class="table table-hover display" name="listTable"></table>
+                                <table id="listTable" class="table display" name="listTable"></table>
                                 <div class="marginBottom20"></div>
                             </div>
                         </div>

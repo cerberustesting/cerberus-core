@@ -35,6 +35,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Session;
+import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.json.JSONException;
@@ -70,7 +72,7 @@ public class SikuliService implements ISikuliService {
         result.put("action", action);
         result.put("picture", picture);
         result.put("text", text);
-        result.put("defaultWait", defaultWait * 1000);
+        result.put("defaultWait", defaultWait);
         result.put("pictureExtension", mimeType);
         return result;
     }
@@ -91,7 +93,7 @@ public class SikuliService implements ISikuliService {
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
             connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
-            JSONObject postParameters = generatePostParameters(action, locator, text, session.getDefaultWait());
+            JSONObject postParameters = generatePostParameters(action, locator, text, session.getCerberus_selenium_wait_element());
             connection.setDoOutput(true);
 
             // Send post request
@@ -156,29 +158,29 @@ public class SikuliService implements ISikuliService {
 
     private MessageEvent getResultMessage(String action, String locator, String text) {
         MessageEvent message = null;
-        if (action.equals("click")) {
+        if (action.equals(TestCaseStepAction.ACTION_CLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("rightClick")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_RIGHTCLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("doubleClick")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_DOUBLECLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("type")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_TYPE)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             message.setDescription(message.getDescription().replace("%DATA%", text));
-        } else if (action.equals("mouseOver")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_MOUSEOVER)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("keyPress")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_KEYPRESS)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("wait")) {
+        } else if (action.equals( TestCaseStepAction.ACTION_WAIT)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals("verifyElementPresent")) {
+        } else if (action.equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT)) {
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
             message.setDescription(message.getDescription().replace("%STRING1%", locator));
         }

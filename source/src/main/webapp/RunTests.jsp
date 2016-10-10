@@ -103,7 +103,7 @@
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, tceiq.getOutputFormat());
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
-                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, Long.toString(tceiq.getTimeout()));
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, tceiq.getTimeout());
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, tceiq.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
                                     : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));

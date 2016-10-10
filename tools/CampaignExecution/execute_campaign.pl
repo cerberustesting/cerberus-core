@@ -30,6 +30,7 @@ my $robot = 'MyRobot';
 my $screenshot = 1;
 my $tag = $campaignName . '-' . time();
 my $cerberusUrl = 'http://localhost:8080/Cerberus/';
+my $outputformat = 'compact';
 
 # Retrieve value of parameters
 GetOptions(
@@ -42,6 +43,7 @@ GetOptions(
 	'tag=s'		=> \$tag,
 	'cerberusUrl=s' => \$cerberusUrl,
 	'help!'		=> \$help,
+	'outputformat'  => \$outputformat
 ) or die "Usage incorrect!\n";
 
 # Set parameter values
@@ -54,7 +56,8 @@ my %parameters = ('campaign'=>$campaign,
 	'tag'=>$tag,
 	'cerberus'=> $cerberusUrl,
 	'servlet'=> 'GetCampaignExecutionsCommand',
-	'timeout'=> 150000
+	'timeout'=> 150000,
+	'outputformat'=> $outputformat
 );
 
 # if -help is specified, print help and exit

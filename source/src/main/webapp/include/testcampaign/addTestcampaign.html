@@ -1,0 +1,72 @@
+<!--Add testcampaign page-->
+<div data-backdrop="static" class="modal fade center" id="addTestcampaignModal" tabindex="-1" role="dialog"
+     aria-labelledby="addTestcampaignModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addTestcampaignModalLabel" name="addTestcampaignField">Add Testcampaign</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addTestcampaignModalForm" name="addTestcampaignModalForm" title="Add Testcampaign" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                    <span class="glyphicon glyphicon-trash alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="campaignKey" name="campaignKey" value="" />
+                        <input type="hidden" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly></input>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="campaign" name="campaignField">Campaign</label>
+                                <input type="text" class="form-control" name="campaign" id="campaign" aria-describedby="basic-addon1"></input>
+                            </div>
+                        </div>
+
+                        <ul id="tabsAdd" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsCreate-11" id="createTab1Text" name="tabDescription">Description</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-12" id="createTab2Text" name="tabBatteries">Test Batteries</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-13" id="createTab3Text" name="tabParameters">Parameters</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-11">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea class="form-control" name="description" id="description"
+                                                  aria-describedby="basic-addon1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-12">
+                                <div id="addModalBatteryTestcampaignList">
+                                    <table id="addModalBatteryTestcampaignsTable" class="table table-bordered table-hover display" name="addModalBatteryTestcampaignsTable"></table>
+                                    <div class="marginBottom20"></div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-13">
+                                <div id="addModalParameterTestcampaignList">
+                                    <table id="addModalParameterTestcampaignsTable" class="table table-bordered table-hover display" name="addModalParameterTestcampaignsTable"></table>
+                                    <div class="marginBottom20"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addTestcampaignButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

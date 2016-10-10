@@ -4,7 +4,7 @@
 
     <groupId>org.cerberus</groupId>
     <artifactId>cerberus</artifactId>
-    <version>1.1.6-SNAPSHOT</version>
+    <version>1.1.7-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Cerberus</name>
@@ -46,6 +46,7 @@
         <appium.version>3.4.1</appium.version>
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
+        <asciidoctor.version>1.5.4</asciidoctor.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -247,6 +248,11 @@
             <groupId>org.kohsuke</groupId>
             <artifactId>groovy-sandbox</artifactId>
             <version>${groovy-sandbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>${asciidoctor.version}</version> 
         </dependency>
 
         <!-- Provided scope -->
@@ -467,6 +473,26 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>1.5.2</version> 
+                <executions>
+                    <execution>
+                        <id>output-html</id> 
+                        <phase>generate-resources</phase> 
+                        <goals>
+                            <goal>process-asciidoc</goal> 
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDirectory>${basedir}/src/main/resources/documentation</sourceDirectory>
+                    <outputDirectory>${basedir}/src/main/webapp/documentation</outputDirectory>
+                    <backend>html</backend>
+                    <doctype>book</doctype>
+                </configuration>
             </plugin>
         </plugins>
     </build>

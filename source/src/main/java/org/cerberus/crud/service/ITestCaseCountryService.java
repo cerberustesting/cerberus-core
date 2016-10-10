@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
@@ -50,20 +51,10 @@ public interface ITestCaseCountryService {
     boolean insertListTestCaseCountry(List<TestCaseCountry> testCaseCountryList);
 
     //void updateTestCaseCountry(TestCaseCountry tccLeft) throws CerberusException;
-    
     void deleteTestCaseCountry(TestCaseCountry tcc) throws CerberusException;
 
     void deleteListTestCaseCountry(List<TestCaseCountry> tccToDelete) throws CerberusException;
-    
-    /**
-     *
-     * @param system
-     * @param test
-     * @param testCase
-     * @return
-     */
-    public AnswerList readByTestTestCase(String system, String test, String testCase);
-    
+
     /**
      *
      * @param test
@@ -71,6 +62,99 @@ public interface ITestCaseCountryService {
      * @param country
      * @return
      */
-    public AnswerItem readByKey(String test, String testCase, String country);
+    AnswerItem readByKey(String test, String testCase, String country);
 
+    /**
+     *
+     * @param system
+     * @param test
+     * @param testCase
+     * @return
+     */
+    AnswerList readByTestTestCase(String system, String test, String testCase);
+
+    /**
+     *
+     * @param test
+     * @param testcase
+     * @param country
+     * @return
+     */
+    boolean exist(String test, String testcase, String country);
+
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer create(TestCaseCountry testDataLibData);
+
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer update(TestCaseCountry testDataLibData);
+
+    /**
+     *
+     * @param testDataLibData
+     * @return
+     */
+    Answer delete(TestCaseCountry testDataLibData);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    Answer createList(List<TestCaseCountry> objectList);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    Answer deleteList(List<TestCaseCountry> objectList);
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param newList
+     * @return
+     */
+    Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseCountry> newList);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCaseCountry convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCaseCountry> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+    
+    /**
+     * 
+     * @param objectList
+     * @param targetTest
+     * @param targetTestCase
+     * @return 
+     */
+    Answer duplicateList(List<TestCaseCountry> objectList, String targetTest, String targetTestCase);
 }

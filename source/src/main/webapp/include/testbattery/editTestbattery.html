@@ -1,0 +1,72 @@
+<!--Edit testbattery page-->
+<div data-backdrop="static" class="modal fade center" id="editTestbatteryModal" tabindex="-1" role="dialog"
+     aria-labelledby="editTestbatteryModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editTestbatteryModalLabel" name="editTestbatteryField">Edit Testbattery</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editTestbatteryModalForm" name="editTestbatteryModalForm" title="Edit Testbattery" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                    <span class="glyphicon glyphicon-trash alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="batteryKey" name="batteryKey" value="" />
+                        <input type="hidden" class="form-control" name="id" id="id" aria-describedby="basic-addon1" readonly/>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="battery" name="batteryField">Battery</label>
+                                <input type="text" class="form-control" name="battery" id="battery" aria-describedby="basic-addon1"/>
+                            </div>
+                        </div>
+
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsCreate-1" id="createTab1Text" name="tabDescription">Description</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-2" id="createTab2Text" name="tabTestCase">Test Case</a></li>
+                            <li><a data-toggle="tab" href="#tabsCreate-3" id="createTab3Text" name="tabAddTestCase">Add Test Case</a></li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsCreate-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea class="form-control" name="description" id="description"
+                                                  aria-describedby="basic-addon1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-2">
+                                <div id="batteryTestcaseList">
+                                    <table id="batteryTestcasesTable" class="table table-bordered table-hover display" name="batteryTestcasesTable"></table>
+                                    <div class="marginBottom20"></div>
+                                </div>
+                            </div>
+                            <div class="center tab-pane fade marginTop25" id="tabsCreate-3">
+                                <div id="batteryTestcase3List">
+                                    <table id="batteryTestcases2Table" class="table table-bordered table-hover display" name="batteryTestcases2Table"></table>
+                                    <div class="marginBottom20"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editTestbatteryButton" class="btn btn-primary" name="buttonEdit">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -85,7 +85,7 @@ public class SQLService implements ISQLService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_SQL);
 
         try {
-            String system = tCExecution.getApplication().getSystem();
+            String system = tCExecution.getApplicationObj().getSystem();
             String country = testCaseProperties.getCountry();
             String environment = tCExecution.getEnvironmentData();
             countryEnvironmentDatabase = this.countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system, country, environment, db));
@@ -122,7 +122,7 @@ public class SQLService implements ISQLService {
                         } else {
                             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_NODATA);
                         }
-                        mes.setDescription(mes.getDescription().replace("%DB%", db));
+                        mes.setDescription(mes.getDescription().replace("%DATABASE%", db));
                         mes.setDescription(mes.getDescription().replace("%SQL%", sql));
                         mes.setDescription(mes.getDescription().replace("%JDBCPOOLNAME%", connectionName));
                         testCaseExecutionData.setPropertyResultMessage(mes);
@@ -132,18 +132,18 @@ public class SQLService implements ISQLService {
                     }
                 } else {
                     mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_EMPTYJDBCPOOL);
-                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplicationObj().getSystem()));
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
                     mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
-                    mes.setDescription(mes.getDescription().replace("%DB%", db));
+                    mes.setDescription(mes.getDescription().replace("%DATABASE%", db));
                 }
             }
         } catch (CerberusException ex) {
             mes = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_SQL_JDBCPOOLNOTCONFIGURED);
-            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplication().getSystem()));
+            mes.setDescription(mes.getDescription().replace("%SYSTEM%", tCExecution.getApplicationObj().getSystem()));
             mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseProperties.getCountry()));
             mes.setDescription(mes.getDescription().replace("%ENV%", tCExecution.getEnvironmentData()));
-            mes.setDescription(mes.getDescription().replace("%DB%", db));
+            mes.setDescription(mes.getDescription().replace("%DATABASE%", db));
         }
 
         testCaseExecutionData.setPropertyResultMessage(mes);
@@ -279,7 +279,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.contains("cerberus")) {
+                    if (connectionName.equals("cerberus"+ System.getProperty("org.cerberus.environment"))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
 
@@ -335,14 +335,14 @@ public class SQLService implements ISQLService {
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
                     msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
                     msg.setDescription(msg.getDescription().replace("%ENV%", environment));
-                    msg.setDescription(msg.getDescription().replace("%DB%", database));
+                    msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
                 }
             } else {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_DATABASENOTCONFIGURED);
                 msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
                 msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
                 msg.setDescription(msg.getDescription().replace("%ENV%", environment));
-                msg.setDescription(msg.getDescription().replace("%DB%", database));
+                msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
             }
         } catch (CerberusException ex) {
             LOG.error(ex.toString());
@@ -419,14 +419,14 @@ public class SQLService implements ISQLService {
                     msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
                     msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
                     msg.setDescription(msg.getDescription().replace("%ENV%", environment));
-                    msg.setDescription(msg.getDescription().replace("%DB%", database));
+                    msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
                 }
             } else {
                 msg = new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_DATABASENOTCONFIGURED);
                 msg.setDescription(msg.getDescription().replace("%SYSTEM%", system));
                 msg.setDescription(msg.getDescription().replace("%COUNTRY%", country));
                 msg.setDescription(msg.getDescription().replace("%ENV%", environment));
-                msg.setDescription(msg.getDescription().replace("%DB%", database));
+                msg.setDescription(msg.getDescription().replace("%DATABASE%", database));
             }
         } catch (CerberusException ex) {
             LOG.error(ex.toString());

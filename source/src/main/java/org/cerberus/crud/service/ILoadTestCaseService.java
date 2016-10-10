@@ -22,7 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 
 /**
@@ -32,7 +32,7 @@ public interface ILoadTestCaseService {
 
     void loadTestCase(TestCaseExecution tCExecution);
 
-    List<TestCaseStep> loadTestCaseStep(TCase testCase);
+    List<TestCaseStep> loadTestCaseStep(TestCase testCase);
         
     
 }

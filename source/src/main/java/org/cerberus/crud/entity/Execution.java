@@ -23,7 +23,7 @@ package org.cerberus.crud.entity;
  */
 public class Execution {
 
-    private TCase testCase;
+    private TestCase testCase;
     private TestCaseExecution testCaseExecution;
     private String country;
 
@@ -35,11 +35,11 @@ public class Execution {
         this.country = country;
     }
 
-    public TCase getTestCase() {
+    public TestCase getTestCase() {
         return testCase;
     }
 
-    public void setTestCase(TCase testCase) {
+    public void setTestCase(TestCase testCase) {
         this.testCase = testCase;
     }
 

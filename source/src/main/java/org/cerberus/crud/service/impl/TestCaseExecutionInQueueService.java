@@ -20,15 +20,20 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
-import org.cerberus.dto.TestCaseWithExecution;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +48,10 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
 
     @Autowired
     private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
-
     @Autowired
     private ITestCaseCountryDAO testCaseCountryDAO;
+    @Autowired
+    private IFactoryTestCaseExecution factoryTestCaseExecution;
 
     @Override
     public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
@@ -82,8 +88,8 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
-    public List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.findTestCaseWithExecutionInQueuebyTag(tag);
+    public List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException {
+        return testCaseExecutionInQueueDAO.findTestCaseExecutionInQueuebyTag(tag);
     }
 
     @Override
@@ -117,6 +123,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+        return testCaseExecutionInQueueDAO.readByCriteria(start, amount, column, dir, searchTerm, individualSearch);
+    }
+
+    @Override
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag) {
         return testCaseExecutionInQueueDAO.readDistinctEnvCoutnryBrowserByTag(tag);
     }
@@ -127,15 +138,76 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column) {
+        return testCaseExecutionInQueueDAO.readDistinctValuesByCriteria(columnName, sort, searchParameter, individualSearch, column);
+    }
+
+    @Override
     public AnswerList findTagList(int tagnumber) {
         return testCaseExecutionInQueueDAO.findTagList(tagnumber);
     }
 
     @Override
     public AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, String comment, String bugid, String ticket) {
-        return testCaseExecutionInQueueDAO.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList, 
-                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList, 
+        return testCaseExecutionInQueueDAO.readBySystemByVarious(system, testList, applicationList, projectList, tcstatusList, groupList, tcactiveList, priorityList, targetsprintList,
+                targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
                 ip, port, tag, browserversion, comment, bugid, ticket);
-    
+
     }
+
+    @Override
+    public Answer create(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.create(test);
+    }
+
+    @Override
+    public Answer update(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.update(test);
+    }
+
+    @Override
+    public Answer delete(TestCaseExecutionInQueue test) {
+        return testCaseExecutionInQueueDAO.delete(test);
+    }
+
+    @Override
+    public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue) {
+        String test = testCaseExecutionInQueue.getTest();
+        String testCase = testCaseExecutionInQueue.getTestCase();
+        String environment = testCaseExecutionInQueue.getEnvironment();
+        String country = testCaseExecutionInQueue.getCountry();
+        String browser = testCaseExecutionInQueue.getBrowser();
+        String version = testCaseExecutionInQueue.getBrowserVersion();
+        String platform = testCaseExecutionInQueue.getPlatform();
+        long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
+        long end = 0;
+        String controlStatus = "NE";
+        String controlMessage = "Not Executed";
+        Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
+        String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
+        String ip = testCaseExecutionInQueue.getRobotIP();
+        String port = testCaseExecutionInQueue.getRobotPort();
+        String tag = testCaseExecutionInQueue.getTag();
+        int verbose = testCaseExecutionInQueue.getVerbose();
+        int screenshot = testCaseExecutionInQueue.getScreenshot();
+        int pageSource = testCaseExecutionInQueue.getPageSource();
+        int seleniumLog = testCaseExecutionInQueue.getSeleniumLog();
+        boolean synchroneous = testCaseExecutionInQueue.isSynchroneous();
+        String timeout = testCaseExecutionInQueue.getTimeout();
+        String outputFormat = testCaseExecutionInQueue.getOutputFormat();
+        TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
+        boolean manualURL = testCaseExecutionInQueue.isManualURL();
+        String myHost = testCaseExecutionInQueue.getManualHost();
+        String myContextRoot = testCaseExecutionInQueue.getManualContextRoot();
+        String myLoginRelativeURL = testCaseExecutionInQueue.getManualLoginRelativeURL();
+        String myEnvData = testCaseExecutionInQueue.getManualEnvData();
+        String seleniumIP = testCaseExecutionInQueue.getRobotIP();
+        String seleniumPort = testCaseExecutionInQueue.getRobotPort();
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform, browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, null, null);
+        result.setApplication(application);
+        result.setIdFromQueue(testCaseExecutionInQueue.getId());
+        result.setId(testCaseExecutionInQueue.getId());
+        return result;
+    }
+
 }

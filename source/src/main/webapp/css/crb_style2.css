@@ -769,6 +769,10 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
     color: black;  
 }
 
+.editable-click, a.editable-click, a.editable-click:hover{
+    border-bottom: none;
+}
+
 
 /**
 *Specifc for Alert Message Button size
@@ -791,8 +795,10 @@ table.dataTable thead th {
     clear: both;
 }
 
-.popover{
+.editable-checklist{
     max-height: 350px;
+    width: 120%;
+    max-width: 500px;
     overflow: auto;
 }
 

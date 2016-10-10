@@ -100,7 +100,7 @@ public class DataLibService implements IDataLibService {
         AnswerList<HashMap<String, String>> result;
         MessageEvent msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS);
 
-        // Length contains the nb of rows that the result must fetch. If defned at 0 we force at 1.
+        // Length contains the nb of rows that the result must fetch. If defined at 0 we force at 1.
         int nbRowsRequested = testCaseCountryProperty.getLength();
         if (nbRowsRequested < 1) {
             nbRowsRequested = 1;
@@ -130,7 +130,7 @@ public class DataLibService implements IDataLibService {
         if (testCaseCountryProperty.getNature().equalsIgnoreCase(TestCaseCountryProperties.NATURE_STATIC)) { // If Nature of the property is static, we don't need to getch more than reqested record.
             rowLimit = nbRowsRequested;
         }
-        resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution.getApplication().getSystem(), tCExecution.getCountryEnvironmentParameters().getCountry(), tCExecution.getCountryEnvironmentParameters().getEnvironment());
+        resultData = getDataObjectList(lib, columnList, rowLimit, tCExecution.getApplicationObj().getSystem(), tCExecution.getCountryEnvironmentParameters().getCountry(), tCExecution.getCountryEnvironmentParameters().getEnvironment());
 
         //Manage error message.
         if (resultData.getResultMessage().getCode() == MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_DATA.getCode()) {
@@ -178,7 +178,8 @@ public class DataLibService implements IDataLibService {
                 Logger.getLogger(DataLibService.class.getName()).log(Level.SEVERE, null, ex);
             }
             msg.setDescription(msg.getDescription().replace("%DATAMESSAGE%", resultData.getMessageDescription())
-                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription()).replace("%RESULT%", resultString));
+                    .replace("%FILTERNATUREMESSAGE%", result.getMessageDescription())
+                    .replace("%RESULT%", resultString));
             result.setResultMessage(msg);
 
         } else if (result.getResultMessage().getCode() == MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_GENERIC_NATURENOMORERECORD.getCode()) {
@@ -364,7 +365,7 @@ public class DataLibService implements IDataLibService {
         // We get the list of values that are beeing used.
         Integer peTimeout;
         try {
-            peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", tCExecution.getApplication().getSystem()).getValue());
+            peTimeout = Integer.valueOf(parameterService.findParameterByKey("cerberus_notinuse_timeout", tCExecution.getApplicationObj().getSystem()).getValue());
 
             List<String> pastValues = this.testCaseExecutionDataService.getInUseValuesOfProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), tCExecution.getEnvironmentData(), tCExecution.getCountry(), peTimeout);
 
@@ -586,7 +587,7 @@ public class DataLibService implements IDataLibService {
                                         .replace("%SYSTEM%", system)
                                         .replace("%COUNTRY%", country)
                                         .replace("%ENV%", environment)
-                                        .replace("%DB%", lib.getDatabaseCsv()));
+                                        .replace("%DATABASE%", lib.getDatabaseCsv()));
                                 result.setResultMessage(msg);
                                 return result;
 
@@ -599,7 +600,7 @@ public class DataLibService implements IDataLibService {
                                             .replace("%SYSTEM%", system)
                                             .replace("%COUNTRY%", country)
                                             .replace("%ENV%", environment)
-                                            .replace("%DB%", lib.getDatabaseCsv()));
+                                            .replace("%DATABASE%", lib.getDatabaseCsv()));
                                     result.setResultMessage(msg);
                                     return result;
                                 }
@@ -628,7 +629,7 @@ public class DataLibService implements IDataLibService {
                                     .replace("%SYSTEM%", system)
                                     .replace("%COUNTRY%", country)
                                     .replace("%ENV%", environment)
-                                    .replace("%DB%", lib.getDatabaseCsv()));
+                                    .replace("%DATABASE%", lib.getDatabaseCsv()));
                             result.setResultMessage(msg);
                             return result;
                         }
@@ -762,7 +763,7 @@ public class DataLibService implements IDataLibService {
                                         .replace("%SYSTEM%", system)
                                         .replace("%COUNTRY%", country)
                                         .replace("%ENV%", environment)
-                                        .replace("%DB%", lib.getDatabaseUrl()));
+                                        .replace("%DATABASE%", lib.getDatabaseUrl()));
                                 result.setResultMessage(msg);
                                 return result;
 
@@ -775,7 +776,7 @@ public class DataLibService implements IDataLibService {
                                             .replace("%SYSTEM%", system)
                                             .replace("%COUNTRY%", country)
                                             .replace("%ENV%", environment)
-                                            .replace("%DB%", lib.getDatabaseUrl()));
+                                            .replace("%DATABASE%", lib.getDatabaseUrl()));
                                     result.setResultMessage(msg);
                                     return result;
                                 }
@@ -804,7 +805,7 @@ public class DataLibService implements IDataLibService {
                                     .replace("%SYSTEM%", system)
                                     .replace("%COUNTRY%", country)
                                     .replace("%ENV%", environment)
-                                    .replace("%DB%", lib.getDatabaseUrl()));
+                                    .replace("%DATABASE%", lib.getDatabaseUrl()));
                             result.setResultMessage(msg);
                             return result;
                         }

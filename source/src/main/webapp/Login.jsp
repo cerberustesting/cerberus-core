@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 <%@page import="org.cerberus.crud.factory.impl.FactoryLogEvent"%>
 <%@page import="org.cerberus.crud.factory.IFactoryLogEvent"%>
 <%@page import="org.cerberus.crud.service.impl.LogEventService"%>
@@ -45,10 +46,12 @@
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IParameterService myParameterService = appContext.getBean(IParameterService.class);
+            IDatabaseVersioningService databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
             try {
                 String CerberusSupportEmail = myParameterService.findParameterByKey("cerberus_support_email", "").getValue();
                 String errorMessage = "";
                 String display = "";
+                String cerberusVersion = Infos.getInstance().getProjectVersion() + "-" + databaseVersionService.getSQLScript().size();
 
                 if (request.getParameter("error") != null && request.getParameter("error").equalsIgnoreCase("1")) {
                     errorMessage = "User or password invalid !!!";
@@ -66,7 +69,7 @@
         <div id="error"><%=display%></div>
         <div style="padding-top: 7%; padding-left: 30%">
             <div id="login-box" class="login-box" >
-                <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
+                <H2>Cerberus Login</H2><br>V<%=cerberusVersion%><br><br>
                 Please login in order to change TestCases and run Tests.<br>
                 If you don't have login, please contact <%= CerberusSupportEmail%>
                 <br>
@@ -96,7 +99,7 @@
                 </div>
             </div>
             <div id="forgot-password-box" style="display: none" class="login-box">
-                <H2>Cerberus Login</H2><br>V<%=Infos.getInstance().getProjectVersion()%><br><br>
+                <H2>Cerberus Login</H2><br>V<%=cerberusVersion%><br><br>
                 Please feed the field with your login. An email will be sent with the recovery information.<br>
                 If you don't have login, please contact <%= CerberusSupportEmail%>
                 <br>

@@ -33,23 +33,33 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
 
     @Override
     public TestCaseExecutionData create(long id, String property, int index, String description, String value, String type, String value1, String value2,
-            String returnCode, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message) {
+            String rC, String rMessage, long start, long end, long startLong, long endLong, MessageEvent message, int retrynb, int retryperiod,
+            String database, String value1Init, String value2Init, int Length, int rowLimit, String nature) {
         TestCaseExecutionData testCaseExecutionData = new TestCaseExecutionData();
         testCaseExecutionData.setId(id);
         testCaseExecutionData.setProperty(property);
         testCaseExecutionData.setIndex(index);
-        testCaseExecutionData.setDescription(description);
-        testCaseExecutionData.setValue(value);
         testCaseExecutionData.setType(type);
+        testCaseExecutionData.setValue(value);
+        testCaseExecutionData.setDatabase(database);
+        testCaseExecutionData.setValue1Init(value1Init);
+        testCaseExecutionData.setValue2Init(value2Init);
         testCaseExecutionData.setValue1(value1);
         testCaseExecutionData.setValue2(value2);
-        testCaseExecutionData.setRC(returnCode);
-        testCaseExecutionData.setrMessage(rMessage);
+        testCaseExecutionData.setLength(Length);
+        testCaseExecutionData.setRowLimit(rowLimit);
+        testCaseExecutionData.setNature(nature);
+        testCaseExecutionData.setRetryNb(retrynb);
+        testCaseExecutionData.setRetryPeriod(retryperiod);
         testCaseExecutionData.setStart(start);
         testCaseExecutionData.setEnd(end);
         testCaseExecutionData.setStartLong(startLong);
         testCaseExecutionData.setEndLong(endLong);
+        testCaseExecutionData.setRC(rC);
+        testCaseExecutionData.setrMessage(rMessage);
+        testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setPropertyResultMessage(message);
+
         return testCaseExecutionData;
 
     }

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
@@ -75,7 +75,7 @@ public class RunTestCaseManually extends HttpServlet {
 
             ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
 
-            TCase testCase = new TCase();
+            TestCase testCase = new TestCase();
 
             PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
 
@@ -136,8 +136,8 @@ public class RunTestCaseManually extends HttpServlet {
 
         action.append("Description", testCaseStepAction.getDescription());
         action.append("Action", testCaseStepAction.getAction());
-        action.append("Object", testCaseStepAction.getObject());
-        action.append("Property", testCaseStepAction.getProperty());
+        action.append("Object", testCaseStepAction.getValue1());
+        action.append("Property", testCaseStepAction.getValue2());
         action.append("Sequence", testCaseStepAction.getSequence());
 
         JSONArray controls = new JSONArray();
@@ -153,12 +153,12 @@ public class RunTestCaseManually extends HttpServlet {
         JSONObject control = new JSONObject();
 
         control.append("Description", testCaseStepActionControl.getDescription());
-        control.append("Control", testCaseStepActionControl.getControl());
-        control.append("Property", testCaseStepActionControl.getControlProperty());
-        control.append("Value", testCaseStepActionControl.getControlValue());
+        control.append("Control", testCaseStepActionControl.getControlSequence());
+        control.append("Property", testCaseStepActionControl.getValue2());
+        control.append("Value", testCaseStepActionControl.getValue1());
         control.append("Fatal", testCaseStepActionControl.getFatal());
         control.append("Sequence", testCaseStepActionControl.getSequence());
-        control.append("Type", testCaseStepActionControl.getType());
+        control.append("Type", testCaseStepActionControl.getControl());
 
         return control;
     }

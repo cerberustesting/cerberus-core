@@ -19,22 +19,26 @@
  */
 package org.cerberus.crud.dao;
 
+import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestBatteryContent;
+
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
-@Entity
-@Table(catalog = "cerberus", schema = "", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"testbattery", "Test", "TestCase"})})
-@XmlRootElement
-@NamedQueries({
-    @NamedQuery(name = "TestBatteryContent.findAll", query = "SELECT t FROM testbatterycontent t"),
-    @NamedQuery(name = "TestBatteryContent.findByTestbatterycontentID", query = "SELECT t FROM testbatterycontent t WHERE t.testbatterycontentID = :testbatterycontentID")})
+ * @Entity
+ * @Table(catalog = "cerberus", schema = "", uniqueConstraints = {
+ * @UniqueConstraint(columnNames = {"testbattery", "Test", "TestCase"})})
+ * @XmlRootElement
+ * @NamedQueries({
+ * @NamedQuery(name = "TestBatteryContent.findAll", query = "SELECT t FROM testbatterycontent t"),
+ * @NamedQuery(name = "TestBatteryContent.findByTestbatterycontentID", query = "SELECT t FROM testbatterycontent t WHERE t.testbatterycontentID = :testbatterycontentID")})
  */
 public interface ITestBatteryContentDAO {
 
@@ -46,6 +50,18 @@ public interface ITestBatteryContentDAO {
 
     List<TestBatteryContentWithDescription> findTestBatteryContentsWithDescriptionByTestBatteryName(String testBattery) throws CerberusException;
 
+    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    public AnswerList readByCriteria(int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    /**
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName
+     * @return
+     */
+    public AnswerList<String> readDistinctValuesByCampaignByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
     boolean updateTestBatteryContent(TestBatteryContent testBatteryContent);
 
     boolean createTestBatteryContent(TestBatteryContent testBatteryContent);
@@ -55,5 +71,15 @@ public interface ITestBatteryContentDAO {
     List<TestBatteryContent> findTestBatteryContentsByCriteria(Integer testBatteryContentID, String testBattery, String test, String testCase) throws CerberusException;
 
     AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+
+    AnswerList readByTestBattery(String key);
+
+    Answer deleteByTestBattery(String key);
+
+    Answer create(TestBatteryContent tbc);
+
+    Answer delete(TestBatteryContent tbc);
+
+    Answer update(TestBatteryContent tbc);
+
 }

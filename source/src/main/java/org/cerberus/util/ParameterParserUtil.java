@@ -103,11 +103,11 @@ public final class ParameterParserUtil {
     /**
      * @param inParam
      * @param defaultVal
-     * @return an empty string if the inParam is empty or null. It returns
+     * @return an empty string if the inParam is null. It returns
      * inParam if OK.
      */
     public static String parseStringParam(String inParam, String defaultVal) {
-        if (inParam != null && inParam.compareTo("") != 0) {
+        if (inParam != null) {
             return inParam;
         }
         return defaultVal;

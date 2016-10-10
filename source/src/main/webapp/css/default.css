@@ -130,6 +130,10 @@ td
     margin-right: 5px;
 }
 
+.marginRight10{
+    margin-right: 10px;
+}
+
 .marginLeft5{
     margin-left:5px;
 }
@@ -182,6 +186,7 @@ td
 #page-layout table > tbody > tr > td {
     vertical-align: top;
     min-height: 40%;
+    padding: 5px;
 }
 
 div button.margin-right25{

@@ -21,21 +21,23 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.dao.ICampaignDAO;
 import org.cerberus.crud.dao.ICampaignParameterDAO;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author memiks
  */
 @Service
@@ -146,11 +148,6 @@ public class CampaignService implements ICampaignService {
     }
 
     @Override
-    public List<TestCaseWithExecution> getCampaignTestCaseExecutionForEnvCountriesBrowserTag(String tag) throws CerberusException {
-        return campaignDAO.getCampaignTestCaseExecutionForEnvCountriesBrowserTag(tag);
-    }
-
-    @Override
     public List<String> findCountries(String campaignName) throws CerberusException {
         List<String> result = new ArrayList<String>();
         List<CampaignParameter> parameters = this.findCampaignParametersByCampaignName(campaignName);
@@ -166,5 +163,35 @@ public class CampaignService implements ICampaignService {
     @Override
     public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, String individualSearch) {
         return campaignDAO.readByCriteria(start, amount, colName, dir, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String colName, String dir, String searchParameter, Map<String, List<String>> individualSearch) {
+        return campaignDAO.readByCriteria(start, amount, colName, dir, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerItem readByKey(String key) {
+        return campaignDAO.readByKey(key);
+    }
+
+    @Override
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return campaignDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public Answer create(Campaign object) {
+        return campaignDAO.create(object);
+    }
+
+    @Override
+    public Answer update(Campaign object) {
+        return campaignDAO.update(object);
+    }
+
+    @Override
+    public Answer delete(Campaign object) {
+        return campaignDAO.delete(object);
     }
 }

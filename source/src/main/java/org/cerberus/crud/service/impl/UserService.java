@@ -20,6 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.cerberus.crud.dao.IUserDAO;
 import org.cerberus.crud.entity.MessageEvent;
@@ -191,6 +193,11 @@ public class UserService implements IUserService {
     @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String string) {
         return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, string);
+    }
+
+    @Override
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return userDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override

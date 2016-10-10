@@ -17,7 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
 <%@page import="java.net.URLEncoder"%>
@@ -76,23 +76,22 @@
                     <tbody>
                     <%
 
-                        TCase searchTCase = new TCase();
+                        TestCase searchTCase = new TestCase();
                         searchTCase.setTest(getValues(request, "Test"));
                         searchTCase.setProject(getValues(request, "Project"));
                         String system = getValues(request, "System");
                         searchTCase.setApplication(getValues(request, "Application"));
-                        searchTCase.setActive(getValues(request, "TcActive"));
+                        searchTCase.setTcActive(getValues(request, "TcActive"));
                         searchTCase.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("Priority"), -1));
                         searchTCase.setStatus(getValues(request, "Status"));
                         searchTCase.setGroup(getValues(request, "Group"));
-                        searchTCase.setTargetSprint(getValues(request, "TargetBuild"));
-                        searchTCase.setTargetRevision(getValues(request, "TargetRev"));
-                        searchTCase.setCreator(getValues(request, "Creator"));
+                        searchTCase.setTargetBuild(getValues(request, "TargetBuild"));
+                        searchTCase.setTargetRev(getValues(request, "TargetRev"));
+                        searchTCase.setUsrCreated(getValues(request, "Creator"));
                         searchTCase.setImplementer(getValues(request, "Implementer"));
 
                         int indexColor = 0;
-//                        for (TCase tCase : testCaseService.findTestCaseByAllCriteria(searchTCase, "", system)) {
-                        for (TCase tCase : testCaseService.findTestCaseByGroupInCriteria(searchTCase, system)) {
+                        for (TestCase tCase : testCaseService.findTestCaseByGroupInCriteria(searchTCase, system)) {
                             if(!tCase.getGroup().equalsIgnoreCase("PRIVATE")) {
                                 indexColor++;
                     %>
@@ -101,8 +100,8 @@
                         <td ><%=tCase.getTest()%></td>
                         <td ><a href="TestCase.jsp?Load=Load&Test=<%=tCase.getTest()%>&TestCase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
                         <td ><%=tCase.getApplication()%></td>
-                        <td ><%=tCase.getShortDescription()%></td>
                         <td ><%=tCase.getDescription()%></td>
+                        <td ><%=tCase.getBehaviorOrValueExpected()%></td>
                     <%
                             }
                         }

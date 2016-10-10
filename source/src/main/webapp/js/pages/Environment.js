@@ -27,12 +27,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
-    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    var urlCountry = GetURLParameter('country'); // Feed Country combo with Country list.
-    var urlEnvironment = GetURLParameter('environment'); // Feed Environment combo with Environment list.
-    var urlEnvGp = GetURLParameter('envgp'); // Feed Environment Group combo with Environment list.
-    var urlActive = GetURLParameter('active'); // Feed Active combo with Active list.
+    var urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
+    var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
+    var urlCountry = GetURLParameter('country', 'ALL'); // Feed Country combo with Country list.
+    var urlEnvironment = GetURLParameter('environment', 'ALL'); // Feed Environment combo with Environment list.
+    var urlEnvGp = GetURLParameter('envgp', 'ALL'); // Feed Environment Group combo with Environment list.
+    var urlActive = GetURLParameter('active', 'ALL'); // Feed Active combo with Active list.
 
     appendBuildList("build", "1", urlBuild);
     appendBuildList("revision", "2", urlRevision);
@@ -40,22 +40,18 @@ function initPage() {
     var select = $('#selectCountry');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("country", "COUNTRY", false, urlCountry);
-    select.val("ALL");
 
     var select = $('#selectEnvironment');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("environment", "ENVIRONMENT", false, urlEnvironment);
-    select.val("ALL");
 
     var select = $('#selectEnvGp');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("envGp", "ENVGP", false, urlEnvGp);
-    select.val("ALL");
 
     var select = $('#selectActive');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayInvariantList("active", "ENVACTIVE", false, urlActive);
-    select.val("ALL");
 
     displayInvariantList("system", "SYSTEM", false);
     displayInvariantList("type", "ENVTYPE", false);
@@ -179,6 +175,10 @@ function displayPageLabel() {
     $("[name='applicationHeader']").html(doc.getDocOnline("application", "Application"));
     $("[name='ipHeader']").html(doc.getDocOnline("countryenvironmentparameters", "IP") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
     $("[name='urlHeader']").html(doc.getDocOnline("countryenvironmentparameters", "URL") + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
+    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
+    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
+            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
     // Databases List
     $("[name='databaseHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "Database"));
     $("[name='connectionPoolNameHeader']").html(doc.getDocOnline("countryenvironmentdatabase", "ConnectionPoolName"));
@@ -237,22 +237,22 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     //configure and create the dataTable
     var contentUrl = "ReadCountryEnvParam?forceList=Y&system=" + getUser().defaultSystem;
-    if (selectEnvironment !== 'ALL') {
+    if ((selectEnvironment!==null) && (selectEnvironment !== 'ALL')) {
         contentUrl = contentUrl + "&environment=" + selectEnvironment;
     }
-    if (selectCountry !== 'ALL') {
+    if ((selectCountry!==null) && (selectCountry !== 'ALL')) {
         contentUrl = contentUrl + "&country=" + selectCountry;
     }
-    if (selectBuild !== 'ALL') {
+    if ((selectBuild!==null) && (selectBuild !== 'ALL')) {
         contentUrl = contentUrl + "&build=" + selectBuild;
     }
-    if (selectRevision !== 'ALL') {
+    if ((selectRevision!==null) && (selectRevision !== 'ALL')) {
         contentUrl = contentUrl + "&revision=" + selectRevision;
     }
-    if (selectEnvGp !== 'ALL') {
+    if ((selectEnvGp!==null) && (selectEnvGp !== 'ALL')) {
         contentUrl = contentUrl + "&envgp=" + selectEnvGp;
     }
-    if (selectActive !== 'ALL') {
+    if ((selectActive!==null) && (selectActive !== 'ALL')) {
         contentUrl = contentUrl + "&active=" + selectActive;
     }
 
@@ -293,7 +293,7 @@ function appendBuildList(selectName, level, defaultValue) {
             }
             if (defaultValue !== undefined && defaultValue !== null) {
                 select.val(defaultValue);
-            }else{
+            } else {
                 select.val("ALL");
             }
 
@@ -357,7 +357,7 @@ function addEntryModalSaveHandler() {
 
     // Get the header data from the form.
     var dataForm = convertSerialToJSONObject(formAdd.serialize());
-    
+
     showLoaderInModal('#addEnvModal');
     var jqxhr = $.post("CreateCountryEnvParam", dataForm);
     $.when(jqxhr).then(function (data) {
@@ -674,6 +674,11 @@ function appendApplicationRow(app) {
     var domainInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "domain") + " --\">").addClass("form-control input-sm").val(app.domain);
     var urlInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URL") + " --\">").addClass("form-control input-sm").val(app.url);
     var urlLoginInput = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "URLLOGIN") + " --\">").addClass("form-control input-sm").val(app.urlLogin);
+    var variable1 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var1") + " --\">").addClass("form-control input-sm").val(app.var1);
+    var variable2 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var2") + " --\">").addClass("form-control input-sm").val(app.var2);
+    var variable3 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var3") + " --\">").addClass("form-control input-sm").val(app.var3);
+    var variable4 = $("<input  maxlength=\"150\" placeholder=\"-- " + doc.getDocLabel("countryenvironmentparameters", "Var4") + " --\">").addClass("form-control input-sm").val(app.var4);
+    
     var table = $("#applicationTableBody");
 
     var row = $("<tr></tr>");
@@ -681,6 +686,9 @@ function appendApplicationRow(app) {
     var application = $("<td></td>").append(selectApplication.val(app.application));
     var ipName = $("<td></td>").append(ipInput).append(urlLoginInput);
     var urlName = $("<td></td>").append(urlInput).append(domainInput);
+    var vars1 = $("<td></td>").append(variable1).append(variable2);
+    var vars2 = $("<td></td>").append(variable3).append(variable4);
+    
     deleteBtn.click(function () {
         app.toDelete = (app.toDelete) ? false : true;
         if (app.toDelete) {
@@ -704,10 +712,24 @@ function appendApplicationRow(app) {
     urlLoginInput.change(function () {
         app.urlLogin = $(this).val();
     });
+    variable1.change(function () {
+        app.var1 = $(this).val();
+    });
+    variable2.change(function () {
+        app.var2 = $(this).val();
+    });
+    variable3.change(function () {
+        app.var3 = $(this).val();
+    });
+    variable4.change(function () {
+        app.var4 = $(this).val();
+    });
     row.append(deleteBtnRow);
     row.append(application);
     row.append(ipName);
     row.append(urlName);
+    row.append(vars1);
+    row.append(vars2);
     app.application = selectApplication.prop("value"); // Value that has been requested by dtb parameter may not exist in combo vlaues so we take the real selected value.
     row.data("application", app);
     table.append(row);
@@ -720,6 +742,10 @@ function addNewApplicationRow() {
         domain: "",
         url: "",
         urlLogin: "",
+        var1: "",
+        var2: "",
+        var3: "",
+        var4: "",
         toDelete: false
     };
     appendApplicationRow(newApplication);
@@ -855,7 +881,7 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find('#newRevision').val(revision);
     // Select next Revision.
     $('#newRevision option:selected').next().attr('selected', 'selected');
-    
+
     $("#eventEnableButton").prop("disabled", "disabled");
 
     // Clean Old field values.
@@ -953,7 +979,7 @@ function refreshlistInstallInstructions() {
             + "&build=" + selectBuildTo + "&revision=" + selectRevisionTo + "&getSVNRelease");
     $.when(jqxhr).then(function (result) {
         $.each(result["contentTable"], function (idx, obj) {
-            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeploy, obj.release, "", obj.mavenVersion, obj.install);
+            appendNewInstallRow(obj.build, obj.revision, obj.application, obj.appDeployType, obj.release, "", obj.mavenVersion, obj.install);
         });
     }).fail(handleErrorAjaxAfterTimeout);
 
@@ -996,7 +1022,7 @@ function appendNewInstallRow(build, revision, application, appdeploytype, releas
         <td><div class="nomarginbottom form-group form-group-sm">\n\
             ' + revision + '<span></span></div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
-            ' + application + '<span></span> ['+ appdeploytype +']</div></td>\n\\n\
+            ' + application + '<span></span> [' + appdeploytype + ']</div></td>\n\\n\
         <td><div class="nomarginbottom form-group form-group-sm">\n\
             ' + release + '<span></span></div></td>\n\\n\
         <td style="text-align:center"><div class="nomarginbottom form-group form-group-sm">' + link_html + '</div></td>\n\\n\
@@ -1090,7 +1116,7 @@ function eventNewChainPreview() {
         formEvent.find("#notifCc").prop("value", data.notificationCC);
         formEvent.find("#notifSubject").prop("value", data.notificationSubject);
         formEvent.find("#notifBody").append("<div>" + data.notificationBody + "</div>");
-        $("#eventNewChainButton").removeProp("disabled");
+        $("#eventNewChainButton").removeAttr("disabled");
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

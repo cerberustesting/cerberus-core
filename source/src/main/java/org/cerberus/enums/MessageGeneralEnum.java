@@ -39,6 +39,8 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TYPE_DIFFERENT(52, "", "The type of environment is defined as Comparison but not the test case."),
     VALIDATION_FAILED_RANGE_DIFFERENT(53, "", "The Build/Revision of test case isn't in the range of build."),
     VALIDATION_FAILED_RANGE_WRONGFORMAT(54, "", "The Build/Revision of test case isn't formatted as expected."),
+    VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_NOTDEFINED(54, "", "The Build/Revision of environment isn't defined. To check that the testcase can be executed in a specific Build/Revision range, Build/Revision of the environment must be set from BuildRevisionParameter page."),
+    VALIDATION_FAILED_RANGE_ENVIRONMENT_BUILDREVISION_BADLYDEFINED(54, "", "The Build/Revision of environment isn't properly defined. To check that the testcase can be executed in a specific Build/Revision range, Build/Revision of the environment must be set from BuildRevisionParameter page."),
     VALIDATION_FAILED_TARGET_DIFFERENT(55, "", "The target Build/Revision of test case isn't in the range of build."),
     VALIDATION_FAILED_TARGET_WRONGFORMAT(56, "", "The target Build/Revision of test case isn't formatted as expected."),
     VALIDATION_FAILED_RUNQA_NOTDEFINED(57, "", "The test case isn't defined to run in QA environment. You try to run it on '%ENV%' that belong to the QA environment group."),
@@ -68,6 +70,7 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_URL_MALFORMED(86, "", "URL to access Selenium server '%URL%' is not correct and cannot be handled by Cerberus. Please check your Selenium server and port parameter."),
     VALIDATION_FAILED_TEST_NOT_FOUND(87, "", "Test '%TEST%' does not exist."),
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "", "The test '%TEST%' isn't active."),
+    VALIDATION_FAILED_USERAGENTDIFFERENT(90, "", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
     VALIDATION_SUCCEEDED(89, "", "The validation succeeded"),
 
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),

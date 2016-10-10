@@ -40,7 +40,7 @@
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionService"%>
 <%@page import="org.cerberus.crud.entity.TestCaseExecution"%>
 <%@page import="org.cerberus.crud.service.ITestCaseCountryService"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.entity.Test"%>
 <%@page import="org.cerberus.crud.service.ITestService"%>
@@ -467,9 +467,9 @@
                             <option style="width: 750px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
-                                List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                for (TCase tc : tcList) {%>
-                            <option style="width: 750px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getShortDescription()%>
+                                List<TestCase> tcList = testCaseService.findTestCaseByTest(test);
+                                for (TestCase tc : tcList) {%>
+                            <option style="width: 750px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getDescription()%>
                             </option>
                             <%  }
                                 } %>
@@ -483,7 +483,7 @@
             <br>
             <br>
             <%if (!test.equals("") && !testcase.equals("")) {
-                    TCase tcase = null;
+                    TestCase tcase = null;
                     boolean isTestCaseExist = false;
                     tcase = testCaseService.findTestCaseByKey(test, testcase);
                     isTestCaseExist = (tcase == null) ? false : true;
@@ -546,7 +546,7 @@
 
                 group = tcase.getGroup();
                 status = tcase.getStatus();
-                String dateCrea = tcase.getTcDateCrea() != null ? tcase.getTcDateCrea() : "-- unknown --";
+                String dateCrea = tcase.getDateCreated()!= null ? tcase.getDateCreated(): "-- unknown --";
                 // Define the list of country available for this test
                 String countries = "";
                 for (String c : countryListTestcase) {
@@ -642,9 +642,9 @@
                                                     <option style="width: 250px" value="All">-- Choose Test First --
                                                     </option>
                                                     <%  } else {
-                                                        List<TCase> tcList = testCaseService.findTestCaseByTest(test);
-                                                        for (TCase tc : tcList) {%>
-                                                    <option style="width: 250px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
+                                                        List<TestCase> tcList = testCaseService.findTestCaseByTest(test);
+                                                        for (TestCase tc : tcList) {%>
+                                                    <option style="width: 250px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>
                                                     </option>
                                                     <%  }
                                                         }%>
@@ -693,12 +693,12 @@
                                                     <td class="wob" style="width: 400px"><%out.print(docService.findLabelHTML("testcase", "Function", "Function", myLang));%></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="wob"><input id="editOrigin" style="width: 90px;" name="editOrigin" value="<%=tcase.getOrigin()%>"></td>
-                                                    <td class="wob"><input id="editRefOrigin" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigin" value="<%=tcase.getRefOrigin()%>"></td>
+                                                    <td class="wob"><input id="editOrigin" style="width: 90px;" name="editOrigin" value="<%=tcase.getOrigine()%>"></td>
+                                                    <td class="wob"><input id="editRefOrigin" style="width: 90px;  background-color: #DCDCDC" name="editRefOrigin" value="<%=tcase.getRefOrigine()%>"></td>
                                                     <td class="wob"><%=dateCrea%></td>
-                                                    <td class="wob"><input readonly="readonly" id="editCreator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=tcase.getCreator()%>"></td>
+                                                    <td class="wob"><input readonly="readonly" id="editCreator" style="width: 90px; background-color: #DCDCDC" name="editCreator" value="<%=tcase.getUsrCreated()%>"></td>
                                                     <td class="wob"><input id="editImplementer" style="width: 90px;" name="editImplementer" value="<%=tcase.getImplementer() == null ? "" : tcase.getImplementer()%>"></td>
-                                                    <td class="wob"><input readonly="readonly" id="editLastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getLastModifier()%>"></td>
+                                                    <td class="wob"><input readonly="readonly" id="editLastModifier" style="width: 90px; background-color: #DCDCDC" name="editLastModifier" value="<%=tcase.getUsrModif()%>"></td>
                                                     <td class="wob">
                                                         <% out.print(ComboProject(appContext, "editProject", "width: 90px", "editProject", "", tcase.getProject(), "", true, "", "No Project Defined."));%>
                                                     </td>
@@ -737,9 +737,9 @@
                                                             %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                             <% }%>
                                                         </select></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getRunQA(), "", null)%></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getRunUAT(), "", null)%></td>
-                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getRunPROD(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getActiveQA(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunUAT", "width: 75px", "editRunUAT", "runuat", "RUNUAT", tcase.getActiveUAT(), "", null)%></td>
+                                                    <td class="wob"><%=ComboInvariant(appContext, "editRunPROD", "width: 75px", "editRunPROD", "runprod", "RUNPROD", tcase.getActivePROD(), "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", String.valueOf(tcase.getPriority()), "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
@@ -774,7 +774,7 @@
                                                     <td class="wob" style="width: 1200px"><%out.print(docService.findLabelHTML("testcase", "description", "Description", myLang));%></td>
                                                 </tr><tr>
                                                     <td class="wob"><input id="editDescription" style="width: 1200px;" name="editDescription"
-                                                                           value="<%=tcase.getShortDescription()%>"></td>
+                                                                           value="<%=tcase.getDescription()%>"></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -846,15 +846,15 @@
                                         <td class="wob" style="width: 80px"><%out.print(docService.findLabelHTML("testcase", "TargetRev", "", myLang));%></td>
                                     </tr>
                                     <tr>
-                                        <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getActive(), "", null)%></td>
+                                        <td class="wob"><%=ComboInvariant(appContext, "editTcActive", "width: 50px", "editTcActive", "active", "TCACTIVE", tcase.getTcActive(), "", null)%></td>
                                         <td class="wob">
                                             <select id="editFromBuild" name="editFromBuild" class="active" style="width: 70px" >
-                                                <%  String fromBuild = ParameterParserUtil.parseStringParam(tcase.getFromSprint(), "");
-                                                    String fromRev = ParameterParserUtil.parseStringParam(tcase.getFromRevision(), "");
-                                                    String toBuild = ParameterParserUtil.parseStringParam(tcase.getToSprint(), "");
-                                                    String toRev = ParameterParserUtil.parseStringParam(tcase.getToRevision(), "");
-                                                    String targetBuild = ParameterParserUtil.parseStringParam(tcase.getTargetSprint(), "");
-                                                    String targetRev = ParameterParserUtil.parseStringParam(tcase.getTargetRevision(), "");
+                                                <%  String fromBuild = ParameterParserUtil.parseStringParam(tcase.getFromBuild(), "");
+                                                    String fromRev = ParameterParserUtil.parseStringParam(tcase.getFromRev(), "");
+                                                    String toBuild = ParameterParserUtil.parseStringParam(tcase.getToBuild(), "");
+                                                    String toRev = ParameterParserUtil.parseStringParam(tcase.getToRev(), "");
+                                                    String targetBuild = ParameterParserUtil.parseStringParam(tcase.getTargetBuild(), "");
+                                                    String targetRev = ParameterParserUtil.parseStringParam(tcase.getTargetRev(), "");
                                                 %>
                                                 <option style="width: 100px" value="" <%=fromBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <% for (BuildRevisionInvariant myBR : listBuildRev) {%>
@@ -948,7 +948,7 @@
                             <td id="wob" style="width: 150px">APP: [<%=tcase.getApplication()%>]  </td>
                             <td id="wob" style="width: 160px">GROUP: [<%=tcase.getGroup()%>]  </td>
                             <td id="wob" style="width: 200px">STATUS: [<%=tcase.getStatus()%>]  </td>
-                            <td id="wob" style="width: 60px">ACT: [<%=tcase.getActive()%>]  </td>
+                            <td id="wob" style="width: 60px">ACT: [<%=tcase.getTcActive()%>]  </td>
                             <td id="wob" style="width: 170px">Last Exe: [<%=LastExeMessage%>]  </td>
                             <td id="wob" style="width: 300px">Countries: [<%=countries%>]</td>
                             <td id="wob" align="right"><input id="button1" style="height:18px; width:10px" type="button" value="+" onclick="javascript:setVisible();"></td>
@@ -1122,7 +1122,7 @@
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
                                                 <div><div><input maxlength="150" style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
-                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription()%>">
+                                                                 placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription().replace("\"", "&quot;")%>">
                                                     </div></div></div>
                                             <div id="StepUseStepDiv" style="float:left">UseStep
                                                 <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 
@@ -1197,9 +1197,9 @@
                                                     <option style="width: 400px" value="">---</option>
                                                     <%  } else {
                                                         AnswerList anstcaseList = testCaseService.readTestCaseByStepsInLibrary(testCombo);
-                                                        List<TCase>tcaseList =  anstcaseList.getDataList();
-                                                        for (TCase tc : tcaseList) {%>
-                                                    <option style="width: 400px;" class="font_weight_bold_<%=tc.getActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getShortDescription()%>
+                                                        List<TestCase>tcaseList =  anstcaseList.getDataList();
+                                                        for (TestCase tc : tcaseList) {%>
+                                                    <option style="width: 400px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=tcs.getUseStepTestCase().compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%> [<%=tc.getApplication()%>] : <%=tc.getDescription()%>
                                                     </option>
                                                     <% }
                                                         }%>
@@ -1313,7 +1313,7 @@
                                                                 <div class="functional_description" style="height:20px;display:inline-block;clear:both;width:100%; background-color: transparent">
 
                                                                     <div style="float:left; width:80%">
-                                                                        <div style="float:left;width:80px; "><p name="labelTestCaseStepActionDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
+                                                                        <div style="float:left;width:120px; "><p name="labelTestCaseStepActionDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                         </div>
                                                                         <input class="wob" class="functional_description" data-fieldtype="Description" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                                value="<%=tcsa.getDescription()%>" placeholder="Description"
@@ -1325,6 +1325,27 @@
                                                                     </div>
                                                                 </div>
                                                                 <div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionConditionOper" style="float:right;font-weight:bold;" link="white" >C. Ope</p>
+                                                                         </div>
+                                                                        <%if (!useStep) {%>
+                                                                            <%=ComboInvariant(appContext, "action_conditionoper_" + incrementStep + "_" + incrementAction, "width:55%;border: 1px solid white; color:#888888", "action_conditionoper_" + incrementStep + "_" + incrementAction, "wob", "ACTIONCONDITIONOPER", 
+                                                                                    tcsa.getConditionOper(), "showChangedRow(this.parentNode.parentNode.parentNode.parentNode)", null)%>
+                                                                        <%}else{
+                                                                            String action_action_id = "action_conditionoper_" + incrementStep + "_" + incrementAction;
+                                                                            %>
+                                                                            <input id="<%=action_action_id%>" value="<%=tcsa.getConditionOper()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
+                                                                        <%}%>
+                                                                    </div>
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionConditionVal" style="float:right;font-weight:bold;" link="white" >C. Val</p>
+                                                                         </div>
+                                                                        <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:55%; color:#999999"
+                                                                               value="<%=tcsa.getConditionVal1()%>"
+                                                                               onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
+                                                                               id="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" 
+                                                                               name="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
+                                                                    </div>
                                                                     <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
@@ -1337,34 +1358,34 @@
                                                                             <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 35%; float:left; background-color: transparent">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Object</p>
+                                                                    <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Val1</p>
                                                                          </div>
                                                                         <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
-                                                                               value="<%=tcsa.getObject().replace("\"","&quot;")%>"
+                                                                               value="<%=tcsa.getValue1().replace("\"","&quot;")%>"
                                                                                onchange="showChangedRow(this.parentNode.parentNode.parentNode.parentNode)" 
                                                                                id="action_object_<%=incrementStep%>_<%=incrementAction%>" 
                                                                                name="action_object_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
-                                                                        <% if (tcsa.getObject().startsWith("picture=")){%>
+                                                                        <% if (tcsa.getValue1().startsWith("picture=")){%>
                                                                         <div>
                                                                             <%if(!useStep){%>
-                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" 
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getValue1().split("picture=")[1]%>" 
                                                                                  onclick="showPicture('<%=tcsa.getScreenshotFilename()%>', <%=incrementStep%>, <%=incrementAction%>, null)"/>                                                                                
                                                                             <%}else{%>
-                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getObject().split("picture=")[1]%>" />
+                                                                                <img class="wob" width="45" height="35" src="<%=tcsa.getValue1().split("picture=")[1]%>" />
                                                                                 
                                                                             <%}%>
                                                                             </div>
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 25%; float:left; background-color:transparent">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
+                                                                    <div class="technical_part" style="width: 20%; float:left; background-color:transparent">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
                                                                         </div>
                                                                         <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
-                                                                                value="<%=tcsa.getProperty()%>"
+                                                                                value="<%=tcsa.getValue2()%>"
                                                                                 <%if (useStep) {
                                                                                     //if is the step was imported, then adds the propertu to the list
-                                                                                    listOfImportedProperties.add(tcsa.getProperty());
+                                                                                    listOfImportedProperties.add(tcsa.getValue2());
                                                                                     //defines each attribute related to the test case step that was imported
                                                                                 %>
                                                                                 data-usestep-test="<%=testForQuery%>"
@@ -1373,7 +1394,7 @@
                                                                                 <%}
                                                                                 else{
                                                                                     //verify if the property is currently in the list of imported properties
-                                                                                    if(listOfImportedProperties.contains(tcsa.getProperty())){
+                                                                                    if(listOfImportedProperties.contains(tcsa.getValue2())){
                                                                                     //defines one attribute that will distinguish if the imported property
                                                                                     //from the undefined property
                                                                                     %>              
@@ -1386,7 +1407,7 @@
                                                                                 id="action_property_<%=incrementStep%>_<%=incrementAction%>"
                                                                                 name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:60px; "><p name="labelTestCaseStepActionForce" style="float:right;font-weight:bold;" link="white" >Force RC</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
@@ -1455,7 +1476,7 @@
                                                                 <%  if (!useStep) {%>
                                                                 <img style="margin-top:12px" src="images/bin.png" id="img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" onclick="checkDeleteBox('img_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>', 'StepListOfControlDiv<%=incrementStep%><%=incrementAction%><%=incrementControl%>', 'RowActionDiv')">
                                                                 <input  class="wob" type="checkbox" data-associatedaction="action_delete_<%=incrementStep%>_<%=incrementAction%>" name="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none; margin-top:20px; background-color: transparent"
-                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControl()%>">
+                                                                        id="control_delete_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getStep() + '_' + tcsac.getSequence() + '_' + tcsac.getControlSequence()%>">
                                                                 <% }%>
                                                                 <input type="hidden" value="<%=incrementControl%>" name="control_increment_<%=incrementStep%>_<%=incrementAction%>">
                                                                 <input type="hidden" value="<%=incrementStep%>" name="control_step_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-fieldtype="stepNumber">
@@ -1481,8 +1502,8 @@
                                                             <div style="width:2%;float:left;height:100%;display:inline-block">
                                                                 <input class="wob" style="margin-top:20px;width: 20px; font-weight: bold; color:<%=actionFontColor%>" data-field="control"
                                                                        data-fieldtype="control_<%=incrementStep%>_<%=incrementAction%>" value="<%=incrementControl%>" 
-                                                                       name="control_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
-                                                                <input type="hidden" name="control_technical_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getControl()%>">
+                                                                       name="control_controlsequence_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"  <%if (useStep) {%>readonly<%}%> />
+                                                                <input type="hidden" name="control_technical_control_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" value="<%=tcsac.getControlSequence()%>">
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left;display:inline-block">
                                                                 <div class="functional_description" style="clear:both;width:100%;height:20px">
@@ -1494,32 +1515,32 @@
                                                                                maxlength="1000"  <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                 </div>
-                                                                <div style="clear:both;display:inline-block; width:100%; height:15px">
+                                                                <div style="clear:both;display:inline-block; width:100%; height:15px" >
                                                                     <div style="width:30%; float:left;">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Type</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
-                                                                            <%=ComboInvariant(appContext, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getType(), "", null)%>
+                                                                            <%=ComboInvariant(appContext, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getControl(), "", null)%>
                                                                         <%}else{
-                                                                            String controlTypeid = "control_type_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
+                                                                            String controlTypeid = "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
                                                                             %>    
-                                                                            <input value="<%=tcsac.getType()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
+                                                                            <input value="<%=tcsac.getControl()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
                                                                         <%}%>    
+                                                                    </div>
+                                                                    <div class="technical_part" style="width:30%;float:left; ">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
+                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
+                                                                                     value="<%=tcsac.getValue1().replace("\"","&quot;")%>" 
+                                                                                     id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                                     name="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
-                                                                               value="<%=tcsac.getControlProperty().replace("\"","&quot;")%>" 
-                                                                               id="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
-                                                                               name="control_property_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
-                                                                    </div>
-                                                                    <div class="technical_part" style="width:30%;float:left; ">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
-                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
-                                                                                     value="<%=tcsac.getControlValue().replace("\"","&quot;")%>" 
-                                                                                     id="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
-                                                                                     name="control_value_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
+                                                                               value="<%=tcsac.getValue2().replace("\"","&quot;")%>" 
+                                                                               id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                               name="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:8%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
@@ -1645,7 +1666,7 @@
                                     <br>
                                     <div id="wob"><h4>Properties</h4>
                                     </div>
-                                    <% double widthValue = 55 - (1.5 * countryListTestcase.size()); 
+                                    <% double widthValue = 52 - (1.5 * countryListTestcase.size()); 
                                     if (canEdit) {%>
                                         <input type="button" onclick="submitTestCaseModificationNew('propertyAnchor');" class="buttonSaveChanges" value="Save Changes" id="SavePropertyChanges">              
                                         <input type="button" class="buttonSaveChanges" value="Add Property" id="AddProperty"
@@ -1674,13 +1695,17 @@
                                                 </div>
                                                 <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "database", "Database", myLang));%>
                                                 </div>
-                                                <div style="width: <%=55 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value", myLang));%>
+                                                <div style="width: <%=50 - (1.5 * countryListTestcase.size())%>%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "value", "Value", myLang));%>
                                                 </div>
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "length", "Length", myLang));%>
                                                 </div>
                                                 <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "rowlimit", "RowLimit", myLang));%>
                                                 </div>
-                                                <div style="width: 5%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
+                                                <div style="width: 4%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "nature", "Nature", myLang));%>
+                                                </div>
+                                                <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "retryNb", "Retry", myLang));%>
+                                                </div>
+                                                <div style="width: 3%; float:left"><%out.print(docService.findLabelHTML("testcasecountryproperties", "retryPeriod", "Retry Period", myLang));%>
                                                 </div>
                                             </div>
                                             <div id="cache_properties">
@@ -1750,7 +1775,7 @@
                                                         <tr style="width:100%">
                                                             <td class="wob" style="width:100%">
                                                                 <div style="width:100%">
-                                                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;padding-top:0px;padding-bottom:0px"
                                                                               name="properties_description_<%=incrementProperty%>" id="properties_description_<%=incrementProperty%>" placeholder="Feed Property description"><%=tccp.getDescription()%></textarea>
                                                                 </div>
                                                             </td>
@@ -1847,6 +1872,14 @@
                                                 <div style="float:left;width:5%;display:inline-block;height:50px"><%=ComboInvariant(appContext, "properties_nature_" + incrementProperty, 
                                                         "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_" + incrementProperty, "wob", "PROPERTYNATURE", tccp.getNature(), 
                                                                    "trackChanges(0, this.selectedIndex, 'submitButtonChanges')", null)%>
+                                                </div>
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:50px">
+                                                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_retrynb_<%=incrementProperty%>"
+                                                           value="<%=tccp.getRetryNb()%>">
+                                                </div>
+                                                <div style="border-right-width:thin;border-right-style:solid;background-color:transparent;border-right-color:#CCCCCC;float:left;width:3%;display:inline-block;height:50px">
+                                                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" name="properties_retryperiod_<%=incrementProperty%>"
+                                                           value="<%=tccp.getRetryPeriod()%>">
                                                 </div>
                                                 <div style="background-color:yellow; width:3px;height:50px;display:inline-block;float:right">
                                                 </div>
@@ -2010,19 +2043,30 @@
                         </div>
                     </div>
                     <div style="display:inline-block;clear:both; height:15px;width:99%;background-color:transparent">
-                        <div class="technical_part" style="width: 30%; float:left; background-color: transparent">
+                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Oper</p>
+                            </div>
+                            <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_conditionoper_template", "wob", "ACTIONCONDITIONOPER", "", "", null)%>
+                        </div>
+                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Val1</p>
+                            </div>
+                            <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:55%; background-color: transparent;"
+                                   data-id="action_conditionval_template">
+                        </div>
+                        <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "action", "Action", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_action_template", "wob", "ACTION", "", "", null)%>
                         </div>
-                        <div class="technical_part" style="width: 35%; float:left; background-color: transparent">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "object", "Object", myLang));%></p>
+                        <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value1", "Val1", myLang));%></p>
                             </div>
                             <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
                                    data-id="action_object_template">
                         </div>
-                        <div class="technical_part" style="width: 25%; float:left; background-color:transparent">
-                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "property", "Property", myLang));%></p>
+                        <div class="technical_part" style="width: 15%; float:left; background-color:transparent">
+                            <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value2", "Val2", myLang));%></p>
                             </div>
                             <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
                                     data-id="action_property_template">
@@ -2030,7 +2074,7 @@
                         <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
                             <div style="float:left;width:60px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "ForceExeStatus", "Force Execution Status", myLang));%></p>
                             </div>
-                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "action_forceexestatus_template", "wob", "ACTIONFORCEEXESTATUS", "", "", null)%>
+                            <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_forceexestatus_template", "wob", "ACTIONFORCEEXESTATUS", "", "", null)%>
                         </div>
                     </div>
                 </div>
@@ -2060,7 +2104,7 @@
                 </div>
                 <div style="width:2%;float:left;height:100%;display:inline-block">
                     <input data-field="control" class="wob" style="margin-top:20px;width: 20px; font-weight: bold;"
-                           data-id="control_control_template">
+                           data-id="control_controlsequence_template">
                 </div>
                 <input type="hidden" data-id="control_technical_control_template">
                 <div style="height:100%;width:89%;float:left;display:inline-block">
@@ -2076,18 +2120,18 @@
                         <div style="width:30%; float:left;">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType", myLang));%></p>
                             </div>
-                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_type_template", "wob", "CONTROL", "", "", null)%>
+                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_control_template", "wob", "CONTROL", "", "", null)%>
                         </div>
                         <div class="technical_part" style="width:30%;float:left;">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
                             </div>
                             <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
-                                   data-id="control_property_template">
+                                   data-id="control_value1_template">
                         </div>
                         <div class="technical_part" style="width:30%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
                             </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent;"
-                                         data-id="control_value_template">
+                                         data-id="control_value2_template">
                         </div>
                         <div class="technical_part" style="width:8%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>
@@ -2202,7 +2246,7 @@
                         <tr style="width:100%">
                             <td class="wob" style="width:100%">
                                 <div style="width:100%">
-                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;"
+                                    <textarea class="wob properties_id_<%=rowNumber%> property_description" style="background-color:transparent;width:100%;padding-top:0px;padding-bottom:0px"
                                               data-id="properties_description_template"></textarea>
                                 </div>
                             </td>
@@ -2238,9 +2282,9 @@
                         <option value="">---</option>
                     </select>
                 </div>
-                <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=55 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
+                <div data-id="divProperties_value1_template" style="background-color:transparent;float:left;border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;width:<%=52 - (1.5 * countryListTestcase.size())%>%;display:inline-block;height:100%">
                     <div class="pull-left showInlineElement" style="width:100%;">
-                        <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px" 
+                        <textarea data-id="properties_value1_template" rows="2" class="wob" style="background-color:transparent;width: 100%;height:50px"
                                   ></textarea>
                     </div>
                     <div data-id="selectEntry_Data_template"  class="hideElement">
@@ -2263,6 +2307,14 @@
                 </div>
                 <div style="float:left;width:5%;display:inline-block;height:100%">
                     <%=ComboInvariant(appContext, "", "background-color:transparent;margin-top:20px;width: 100%;", "properties_nature_template", "wob", "PROPERTYNATURE", "", "", null)%>
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                           data-id="properties_retrynb_template">
+                </div>
+                <div style="border-right-width:thin;border-right-style:solid;border-right-color:#CCCCCC;float:left;width:2%;display:inline-block;height:100%">
+                    <input class="wob" style="background-color:transparent;width: 100%;margin-top:20px;" 
+                           data-id="properties_retryperiod_template">
                 </div>
                 <div style="background-color:yellow; width:3px;height:100%;display:inline-block;float:right">
                 </div>

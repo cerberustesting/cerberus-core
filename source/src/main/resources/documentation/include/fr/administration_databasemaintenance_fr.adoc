@@ -1,0 +1,17 @@
+NOTE: Every new release of Cerberus come with embeded scripts to upgrade the database
+ in order to guaranty consistency between the application and its database.
+
+After updating your cerberus version, as described in the <<Upgrade Cerberus Version>> section,
+you will be notified logging in Cerberus as an administrator.
+
+image:databasemaintenancealert.png[databasemaintenance]
+
+Then, you are redirected to the Cerberus Database Maintenance page that allow to apply the scripts one by one.
+
+image:databasemaintenanceapplynext.png[databasemaintenance]
+
+When the database is up-to-date, you will find this information.
+
+image:databasemaintenance.png[databasemaintenance]
+
+WARNING: Application and Database Must be in the same version.

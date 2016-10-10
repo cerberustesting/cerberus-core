@@ -32,19 +32,21 @@ public class TestCaseStepActionControlExecution {
     private String testCase;
     private int step;
     private int sequence;
-    private int control;
+    private int controlSequence;
     private int sort;
+    private String control;
+    private String value1Init;
+    private String value2Init;
+    private String value1;
+    private String value2;
+    private String fatal;
+    private String description;
     private String returnCode;
     private String returnMessage;
-    private String controlType;
-    private String controlProperty;
-    private String controlValue;
-    private String fatal;
     private long start;
     private long end;
     private long startLong;
     private long endLong;
-    private String description;
     /**
      *
      */
@@ -89,12 +91,12 @@ public class TestCaseStepActionControlExecution {
         this.testCaseStepActionExecution = testCaseStepActionExecution;
     }
 
-    public int getControl() {
-        return control;
+    public int getControlSequence() {
+        return controlSequence;
     }
 
-    public void setControl(int control) {
-        this.control = control;
+    public void setControlSequence(int control) {
+        this.controlSequence = control;
     }
 
     public int getSort() {
@@ -105,28 +107,28 @@ public class TestCaseStepActionControlExecution {
         this.sort = sort;
     }
 
-    public String getControlProperty() {
-        return controlProperty;
+    public String getValue1() {
+        return value1;
     }
 
-    public void setControlProperty(String controlProperty) {
-        this.controlProperty = controlProperty;
+    public void setValue1(String controlProperty) {
+        this.value1 = controlProperty;
     }
 
-    public String getControlType() {
-        return controlType;
+    public String getControl() {
+        return control;
     }
 
-    public void setControlType(String controlType) {
-        this.controlType = controlType;
+    public void setControl(String controlType) {
+        this.control = controlType;
     }
 
-    public String getControlValue() {
-        return controlValue;
+    public String getValue2() {
+        return value2;
     }
 
-    public void setControlValue(String controlValue) {
-        this.controlValue = controlValue;
+    public void setValue2(String controlValue) {
+        this.value2 = controlValue;
     }
 
     public long getEnd() {
@@ -233,6 +235,22 @@ public class TestCaseStepActionControlExecution {
         this.description = description;
     }
 
+    public String getValue1Init() {
+        return value1Init;
+    }
+
+    public void setValue1Init(String value1Init) {
+        this.value1Init = value1Init;
+    }
+
+    public String getValue2Init() {
+        return value2Init;
+    }
+
+    public void setValue2Init(String value2Init) {
+        this.value2Init = value2Init;
+    }
+
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -241,11 +259,11 @@ public class TestCaseStepActionControlExecution {
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
             result.put("sequence", this.getSequence());
-            result.put("control", this.getControl());
+            result.put("control", this.getControlSequence());
             result.put("sort", this.getSort());
-            result.put("controlType", this.getControlType());
-            result.put("controlProperty", this.getControlProperty());
-            result.put("controlValue", this.getControlValue());
+            result.put("controlType", this.getControl());
+            result.put("controlProperty", this.getValue1());
+            result.put("controlValue", this.getValue2());
             result.put("fatal", this.getFatal());
             result.put("start", this.getStart());
             result.put("end", this.getEndLong());

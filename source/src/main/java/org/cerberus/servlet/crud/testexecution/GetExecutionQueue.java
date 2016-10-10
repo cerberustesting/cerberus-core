@@ -33,7 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
@@ -68,7 +69,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "GetExecutionQueue", urlPatterns = {"/GetExecutionQueue"})
 public class GetExecutionQueue extends HttpServlet {
 
-    private static final String PARAMETER_ROBOT = "Robot";
+    private static final String PARAMETER_ROBOT = "robot";
     private static final String PARAMETER_ROBOT_IP = "ss_ip";
     private static final String PARAMETER_ROBOT_PORT = "ss_p";
     private static final String PARAMETER_BROWSER = "Browser";
@@ -132,6 +133,7 @@ public class GetExecutionQueue extends HttpServlet {
             ITestService testService = appContext.getBean(ITestService.class);
             ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
             ICountryEnvParamService cepService = appContext.getBean(ICountryEnvParamService.class);
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
             testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
             List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
 
@@ -142,13 +144,13 @@ public class GetExecutionQueue extends HttpServlet {
             /**
              * Creating all the list from the JSON to call the services
              */
-            List<TCase> TCList = new ArrayList<TCase>();
+            List<TestCase> TCList = new ArrayList<TestCase>();
             List<String> envList = new ArrayList<String>();
             List<String> countries = new ArrayList<String>();
 
             for (int index = 0; index < testCaseList.length(); index++) {
                 JSONObject testCaseJson = testCaseList.getJSONObject(index);
-                TCase tc = new TCase();
+                TestCase tc = new TestCase();
 
                 tc.setTest(testCaseJson.getString("test"));
                 tc.setTestCase(testCaseJson.getString("testcase"));
@@ -185,7 +187,7 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.settCase(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
+                    execution.setTestCaseObj(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%TEST%", execution.getTest()));
@@ -196,10 +198,10 @@ public class GetExecutionQueue extends HttpServlet {
                 }
 
                 try {
-                    execution.setApplication(applicationService.convert(applicationService.readByKey(execution.gettCase().getApplication())));
+                    execution.setApplicationObj(applicationService.convert(applicationService.readByKey(execution.getTestCaseObj().getApplication())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.gettCase().getApplication()));
+                    mes.setDescription(mes.getDescription().replace("%APPLI%", execution.getTestCaseObj().getApplication()));
                     validator.setValid(false);
                     validator.setMessage(mes.getDescription());
                     exception = true;
@@ -208,10 +210,10 @@ public class GetExecutionQueue extends HttpServlet {
                 execution.setEnvironmentData(execution.getEnvironment());
 
                 try {
-                    execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplication().getSystem(), execution.getCountry(), execution.getEnvironment())));
+                    execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment())));
                 } catch (CerberusException ex) {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND);
-                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplication().getSystem()));
+                    mes.setDescription(mes.getDescription().replace("%SYSTEM%", execution.getApplicationObj().getSystem()));
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", execution.getCountry()));
                     mes.setDescription(mes.getDescription().replace("%ENV%", execution.getEnvironmentData()));
                     validator.setValid(false);
@@ -269,7 +271,6 @@ public class GetExecutionQueue extends HttpServlet {
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             IFactoryTestCaseExecutionInQueue inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
             ITestCaseExecutionInQueueService inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-            long defaultWait = Long.parseLong(parameterService.findParameterByKey("selenium_defaultWait", "").getValue());
             int addedToQueue = 0;
             JSONArray toAddList = new JSONArray(request.getParameter("toAddList"));
             JSONArray browsers = new JSONArray(request.getParameter("browsers"));
@@ -290,7 +291,7 @@ public class GetExecutionQueue extends HttpServlet {
             String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
             int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SCREENSHOT), DEFAULT_VALUE_SCREENSHOT);
             int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_VERBOSE), DEFAULT_VALUE_VERBOSE);
-            long timeout = ParameterParserUtil.parseLongParam(request.getParameter(PARAMETER_TIMEOUT), defaultWait);
+            String timeout = request.getParameter(PARAMETER_TIMEOUT);
             boolean synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter(PARAMETER_SYNCHRONEOUS), DEFAULT_VALUE_SYNCHRONEOUS);
             int pageSource = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_PAGE_SOURCE), DEFAULT_VALUE_PAGE_SOURCE);
             int seleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter(PARAMETER_SELENIUM_LOG), DEFAULT_VALUE_SELENIUM_LOG);

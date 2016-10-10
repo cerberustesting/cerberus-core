@@ -87,16 +87,16 @@ public class ControlService implements IControlService {
             //if the getvalue() indicates that the execution should stop then we stop it before the doControl  or
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
-            if (testCaseStepActionControlExecution.getControlProperty().contains("%")) {
-                testCaseStepActionControlExecution.setControlProperty(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+            if (testCaseStepActionControlExecution.getValue1().contains("%")) {
+                testCaseStepActionControlExecution.setValue1(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
                 }
             }
 
-            if (testCaseStepActionControlExecution.getControlValue().contains("%")) {
-                testCaseStepActionControlExecution.setControlValue(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+            if (testCaseStepActionControlExecution.getValue2().contains("%")) {
+                testCaseStepActionControlExecution.setValue2(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
@@ -118,104 +118,104 @@ public class ControlService implements IControlService {
 
         try {
             //TODO On JDK 7 implement switch with string
-            if (testCaseStepActionControlExecution.getControlType().equals("verifyStringEqual")) {
-                res = this.verifyStringEqual(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+            if (testCaseStepActionControlExecution.getControl().equals("verifyStringEqual")) {
+                res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringDifferent")) {
-                res = this.verifyStringDifferent(testCaseStepActionControlExecution.getControlValue(), testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringDifferent")) {
+                res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringGreater")) {
-                res = this.verifyStringGreater(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringGreater")) {
+                res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringMinor")) {
-                res = this.verifyStringMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringMinor")) {
+                res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringContains")) {
+                res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerGreater")) {
-                res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerEquals")) {
+                res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerMinor")) {
-                res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerDifferent")) {
+                res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerEquals")) {
-                res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerGreater")) {
+                res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerMinor")) {
+                res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyIntegerDifferent")) {
-                res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
-
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementPresent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementPresent")) {
                 //TODO validate properties
-                res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotPresent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotPresent")) {
                 //TODO validate properties
-                res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementInElement")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementVisible")) {
                 //TODO validate properties
-                res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+                res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementVisible")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotVisible")) {
                 //TODO validate properties
-                res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotVisible")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementEquals")) {
+                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementDifferent")) {
+                res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementInElement")) {
                 //TODO validate properties
-                res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+                res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementEquals")) {
-                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementClickable")) {
+                res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementDifferent")) {
-                res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotClickable")) {
+                res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInElement")) {
-                res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInElement")) {
+                res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextNotInElement")) {
-                res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextNotInElement")) {
+                res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInDialog")) {
-                res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyRegexInElement")) {
+                res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyRegexInElement")) {
-                res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInPage")) {
+                res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextInPage")) {
-                res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextNotInPage")) {
+                res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTextNotInPage")) {
-                res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTitle")) {
+                res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyTitle")) {
-                res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyUrl")) {
+                res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementClickable")) {
-                res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInDialog")) {
+                res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyElementNotClickable")) {
-                res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getControlProperty());
+            } else if (testCaseStepActionControlExecution.getControl().equals("verifyXmlTreeStructure")) {
+                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyUrl")) {
-                res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getControlProperty());
-
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyStringContains")) {
-                res = this.verifyStringContains(testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
-
-            } else if (testCaseStepActionControlExecution.getControlType().equals("verifyXmlTreeStructure")) {
-                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getControlProperty(), testCaseStepActionControlExecution.getControlValue());
-
-            } else if (testCaseStepActionControlExecution.getControlType().equals("takeScreenshot")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("takeScreenshot")) {
                 res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("getPageSource")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("getPageSource")) {
                 res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
-            } else if (testCaseStepActionControlExecution.getControlType().equals("skipControl")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals("skipControl")) {
                 res = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SKIPCONTROL);
 
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
-                res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControlType()));
+                res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));
             }
 
             testCaseStepActionControlExecution.setControlResultMessage(res);
@@ -384,8 +384,8 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(html);
                     if (identifier.getIdentifier().equals("picture")) {
@@ -402,7 +402,7 @@ public class ControlService implements IControlService {
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
-            } else if (tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
                 SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                 String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
                 if (xmlUnitService.isElementPresent(xmlResponse, html)) {
@@ -417,7 +417,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementPresent"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -430,7 +430,7 @@ public class ControlService implements IControlService {
             LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
         }
         MessageEvent mes;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI") || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI") || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
             if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
@@ -455,7 +455,7 @@ public class ControlService implements IControlService {
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementInElement"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
     }
@@ -539,10 +539,10 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementEquals"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
 
@@ -560,10 +560,10 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplication().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementDifferent"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
         }
 
@@ -586,7 +586,7 @@ public class ControlService implements IControlService {
         String actual = null;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getApplication().getType();
+            String applicationType = tCExecution.getApplicationObj().getType();
 
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -603,7 +603,7 @@ public class ControlService implements IControlService {
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
@@ -639,7 +639,7 @@ public class ControlService implements IControlService {
         String actual = null;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
-            String applicationType = tCExecution.getApplication().getType();
+            String applicationType = tCExecution.getApplicationObj().getType();
 
             if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -656,7 +656,7 @@ public class ControlService implements IControlService {
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextNotInElement"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
 
@@ -912,8 +912,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
@@ -930,7 +930,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -943,8 +943,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplication().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
@@ -961,7 +961,7 @@ public class ControlService implements IControlService {
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementNotClickable"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplication().getType()));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
                 return mes;
             }
         } else {
@@ -971,31 +971,31 @@ public class ControlService implements IControlService {
 
     private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-            recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+            recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
         return message;
     }
 
     private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplication().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplication().getType().equalsIgnoreCase("IPA")) {
-            recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControl());
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+            recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GETPAGESOURCE);
             return message;
         }
         message = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%CONTROL%", "takeScreenShot"));
-        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType()));
+        message.setDescription(message.getDescription().replace("%APPLICATIONTYPE%", testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType()));
         return message;
     }
 

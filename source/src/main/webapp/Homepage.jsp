@@ -26,7 +26,7 @@
 <%@page import="org.cerberus.crud.service.IInvariantService"%>
 <%@page import="org.cerberus.database.IDatabaseVersioningService"%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%><!DOCTYPE HTML>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>

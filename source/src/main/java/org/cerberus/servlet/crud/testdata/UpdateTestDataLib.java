@@ -119,10 +119,6 @@ public class UpdateTestDataLib extends HttpServlet {
         }
 
         try {
-            // Getting list of application from JSON Call
-            JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
-            List<TestDataLibData> tdldList = new ArrayList();
-            tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray);
 
             // Prepare the final answer.
             MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
@@ -196,9 +192,16 @@ public class UpdateTestDataLib extends HttpServlet {
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
 
-                    // Update the Database with the new list.
-                    ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
-                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    // Getting list of SubData from JSON Call
+                    if (request.getParameter("subDataList") != null) {
+                        JSONArray objSubDataArray = new JSONArray(request.getParameter("subDataList"));
+                        List<TestDataLibData> tdldList = new ArrayList();
+                        tdldList = getSubDataFromParameter(request, appContext, testdatalibid, objSubDataArray);
+
+                        // Update the Database with the new list.
+                        ans = tdldService.compareListAndUpdateInsertDeleteElements(testdatalibid, tdldList);
+                        finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    }
 
                 }
 

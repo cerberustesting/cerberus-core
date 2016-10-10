@@ -1,0 +1,26 @@
+In this section, you will find information on build content in Cerberus
+
+image:buildcontentpage.png[BuildContentPage]
+
+=== Build content attributes
+|=== 
+
+| *Field* | *Description*  
+
+| To build | To Build.
+
+|=== 
+
+=== Create build content
+
+==== Manually 
+
+. Go to *[red]#Integration -> Build Content#*. image:buildcontentcreate.png[CreateBatch,200,200,float="right",align="center"]
+. Click on *[red]#Create new build content#*.
+.. Select the *[red]#Build#*.
+.. Continue to describe.
+.. Click on *[red]#Save#*.
+
+==== Automatically
+
+To describe.

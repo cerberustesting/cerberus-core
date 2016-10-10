@@ -18,10 +18,13 @@
  */
 package org.cerberus.crud.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.TCase;
+
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.factory.impl.FactoryTestCase;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -36,17 +39,17 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseDAO {
 
-    List<TCase> findTestCaseByTest(String test);
+    List<TestCase> findTestCaseByTest(String test);
 
-    TCase findTestCaseByKey(String test, String testCase) throws CerberusException;
+    TestCase findTestCaseByKey(String test, String testCase) throws CerberusException;
 
     boolean updateTestCaseInformation(TestCase testCase);
 
     boolean updateTestCaseInformationCountries(TestCase tc);
 
-    boolean createTestCase(TCase testCase);
+    boolean createTestCase(TestCase testCase);
 
-    List<TCase> findTestCaseByCriteria(String test, String application, String country, String active);
+    List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
     /**
      * @param testCase
@@ -55,60 +58,55 @@ public interface ITestCaseDAO {
      * @return
      * @since 0.9.1
      */
-    List<TCase> findTestCaseByCriteria(TCase testCase, String text, String system);
+    List<TestCase> findTestCaseByCriteria(TestCase testCase, String text, String system);
 
     List<String> findUniqueDataOfColumn(String column);
 
     /**
-     *
      * @param testCase
      * @return true if delete is OK
      */
-    boolean deleteTestCase(TCase testCase);
+    boolean deleteTestCase(TestCase testCase);
 
     /**
-     *
      * @param tc
      * @param columnName Name of the column to update
-     * @param value New value of the field columnName for the key name
+     * @param value      New value of the field columnName for the key name
      */
-    void updateTestCaseField(TCase tc, String columnName, String value);
+    void updateTestCaseField(TestCase tc, String columnName, String value);
 
     /**
-     *
      * @param tCase
      * @param system
      * @return
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByGroupInCriteria(TCase tCase, String system);
+    List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system);
 
     /**
-     *
      * @param campaign the campaign name
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByCampaignName(String campaign);
+    List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
-     *
-     * @param campaign the campaign name
+     * @param campaign  the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign
      * @since 1.0.2
      */
-    List<TCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
+    List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries);
 
-    public void updateTestCase(TCase tc) throws CerberusException;
+    public void updateTestCase(TestCase tc) throws CerberusException;
 
-    List<TCase> findTestCaseByTestSystems(String test, List<String> systems);
+    List<TestCase> findTestCaseByTestSystems(String test, List<String> systems);
 
     String getMaxNumberTestCase(String test);
 
-    public List<TCase> findTestCaseByTestSystem(String test, String system);
+    public List<TestCase> findTestCaseByTestSystem(String test, String system);
 
-    List<TCase> findTestCaseByCriteria(String testClause, String projectClause, String appClause, String activeClause, String priorityClause, String statusClause, String groupClause, String targetBuildClause, String targetRevClause, String creatorClause, String implementerClause, String functionClause, String campaignClause, String batteryClause);
+    List<TestCase> findTestCaseByCriteria(String[] test, String[] project, String[] app, String[] active, String[] priority, String[] status, String[] group, String[] targetBuild, String[] targetRev, String[] creator, String[] implementer, String[] function, String[] campaign, String[] battery);
 
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException;
 
@@ -117,15 +115,26 @@ public interface ITestCaseDAO {
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status);
+                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 
     public AnswerItem readByKey(String test, String testCase);
-    
+
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
-    
-    public Answer update(TCase testCase);
 
-    public Answer create(TCase testCase);
+    public Answer update(TestCase testCase);
 
-    public Answer delete(TCase testCase);
+    public Answer create(TestCase testCase);
+
+    public Answer delete(TestCase testCase);
+
+    /**
+     * Uses data of ResultSet to create object {@link TestCase}
+     *
+     * @param resultSet ResultSet relative to select from table TestCase
+     * @return object {@link TestCase}
+     * @throws SQLException when trying to get value from
+     *                      {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryTestCase
+     */
+    public TestCase loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseService;
 import org.json.JSONArray;
@@ -58,7 +58,7 @@ public class GetTestCaseList extends HttpServlet {
         String test = policy.sanitize(httpServletRequest.getParameter("test"));
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
-        for (TCase testcase : testService.findTestCaseByTest(test)) {
+        for (TestCase testcase : testService.findTestCaseByTest(test)) {
             array.put(testcase.getTestCase());
         }
         try {

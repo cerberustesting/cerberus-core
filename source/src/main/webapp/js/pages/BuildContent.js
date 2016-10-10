@@ -27,9 +27,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     displayPageLabel();
 
-    var urlBuild = GetURLParameter('build'); // Feed Build combo with Build list.
-    var urlRevision = GetURLParameter('revision'); // Feed Revision combo with Revision list.
-    var urlApplication = GetURLParameter('application');
+    var urlBuild = GetURLParameter('build', 'ALL'); // Feed Build combo with Build list.
+    var urlRevision = GetURLParameter('revision', 'ALL'); // Feed Revision combo with Revision list.
+    var urlApplication = GetURLParameter('application', 'ALL');
 
     // Filter combo
     displayBuildList('#selectBuild', getUser().defaultSystem, "1", urlBuild, "Y", "Y", true);
@@ -55,7 +55,6 @@ function initPage() {
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayApplicationList("application", getUser().defaultSystem, urlApplication);
-    select.val('ALL');
     
     displayProjectList("project");
     displayUserList("releaseowner");
@@ -136,13 +135,13 @@ function displayPageLabel() {
 function loadBCTable(selectBuild, selectRevision, selectApplication) {
 
     if (isEmpty(selectBuild)) {
-        selectBuild = $("#selectBuild").val('ALL').val();
+        selectBuild = $("#selectBuild").val();
     }
     if (isEmpty(selectRevision)) {
-        selectRevision = $("#selectRevision").val('ALL').val();
+        selectRevision = $("#selectRevision").val();
     }
     if (isEmpty(selectApplication)) {
-        selectApplication = $("#selectApplication").val('ALL').val();
+        selectApplication = $("#selectApplication").val();
     }
 
     // We add the Browser history.

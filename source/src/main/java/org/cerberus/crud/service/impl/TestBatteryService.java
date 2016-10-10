@@ -20,6 +20,8 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.dao.ITestBatteryContentDAO;
 import org.cerberus.crud.dao.ITestBatteryDAO;
 import org.cerberus.crud.entity.TestBattery;
@@ -27,12 +29,13 @@ import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestBatteryService;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
  * @author memiks
  */
 @Service
@@ -118,10 +121,40 @@ public class TestBatteryService implements ITestBatteryService {
     public List<TestBattery> findTestBatteriesByTestCase(String test, String testCase) throws CerberusException {
         return testBatteryDAO.findTestBatteriesByTestCase(test, testCase);
     }
-    
+
     @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, String individualSearch) {
         return testBatteryDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
+        return testBatteryDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public AnswerItem readByKey(String key) {
+        return testBatteryDAO.readByKey(key);
+    }
+
+    @Override
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        return testBatteryDAO.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public Answer create(TestBattery tb) {
+        return testBatteryDAO.create(tb);
+    }
+
+    @Override
+    public Answer update(TestBattery tb) {
+        return testBatteryDAO.update(tb);
+    }
+
+    @Override
+    public Answer delete(TestBattery tb) {
+        return testBatteryDAO.delete(tb);
     }
 
 }

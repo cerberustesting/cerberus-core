@@ -36,14 +36,17 @@ public final class ServletUtil {
     }
 
     /**
-     * This method should be called in every servlet call. That allow transversal action to be performed in debug mode.
-     * Actions can be for example to delay every called to simulate a slow response time and validate the behaviour of the GUI.
+     * This method should be called in every servlet call. That allow
+     * transversal action to be performed in debug mode. Actions can be for
+     * example to delay every called to simulate a slow response time and
+     * validate the behaviour of the GUI.
+     *
      * @param request
      */
     public static void servletStart(HttpServletRequest request) {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Servlet Waiting : " + DEFAULT_WAIT_MS);
+            LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + DEFAULT_WAIT_MS);
             try {
                 Thread.sleep(DEFAULT_WAIT_MS);
             } catch (InterruptedException ex) {

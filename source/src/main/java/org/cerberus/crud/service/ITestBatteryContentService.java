@@ -19,14 +19,40 @@
  */
 package org.cerberus.crud.service;
 
+import org.cerberus.crud.entity.TestBattery;
+import org.cerberus.crud.entity.TestBatteryContent;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.util.List;
+import java.util.Map;
+
 /**
- *
  * @author cerberus
  */
 public interface ITestBatteryContentService {
-    
+
     AnswerList readByTestBatteryByCriteria(String testBattery, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
-    
+
+    public AnswerList readByCampaignByCriteria(String campaign, int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    public AnswerList readByCriteria(int start, int amount, String columnName, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
+
+    public AnswerList<String> readDistinctValuesByCampaignByCriteria(String campaign, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    AnswerList readByTestBattery(String key);
+
+    Answer deleteByTestBattery(String key);
+
+    public Answer createList(List<TestBatteryContent> objectList);
+
+    public Answer deleteList(List<TestBatteryContent> objectList);
+
+    Answer compareListAndUpdateInsertDeleteElements(String tb, List<TestBatteryContent> tbc);
+
+    TestBatteryContent convert(AnswerItem answerItem) throws CerberusException;
+
+    List<TestBatteryContent> convert(AnswerList answerList) throws CerberusException;
 }

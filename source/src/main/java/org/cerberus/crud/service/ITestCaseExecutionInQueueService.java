@@ -20,10 +20,13 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
-import org.cerberus.dto.TestCaseWithExecution;
+import java.util.Map;
+
+import org.cerberus.crud.entity.TestCaseExecution;
 
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -48,7 +51,7 @@ public interface ITestCaseExecutionInQueueService {
      * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
      *
      * @param inQueue the {@link TestCaseExecutionInQueue} to insert to the
-     * execution queue
+     *                execution queue
      * @throws CerberusException if an exception occurs
      */
     void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
@@ -56,7 +59,7 @@ public interface ITestCaseExecutionInQueueService {
     /**
      * Gets the next {@link TestCaseExecutionInQueue} to be executed and proceed
      * it.
-     *
+     * <p>
      * <p>
      * A {@link TestCaseExecutionInQueue} is proceeded when its database
      * Proceeded field is set to <code>true</code>
@@ -64,7 +67,6 @@ public interface ITestCaseExecutionInQueueService {
      *
      * @return the next {@link TestCaseExecutionInQueue} to be executed and
      * which has just been proceeded
-     *
      * @throws CerberusException if an exception occurs
      */
     TestCaseExecutionInQueue getNextAndProceed() throws CerberusException;
@@ -75,8 +77,8 @@ public interface ITestCaseExecutionInQueueService {
      * and which have been marked with the given tag.
      *
      * @param tag the tag to find proceeded {@link TestCaseExecutionInQueue}. If
-     * <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
-     * will be returned
+     *            <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
+     *            will be returned
      * @return a list of {@link TestCaseExecutionInQueue}
      * @throws CerberusException if an exception occurs
      */
@@ -98,7 +100,7 @@ public interface ITestCaseExecutionInQueueService {
      * @return
      * @throws CerberusException
      */
-    List<TestCaseWithExecution> findTestCaseWithExecutionInQueuebyTag(String tag) throws CerberusException;
+    List<TestCaseExecutionInQueue> findTestCaseExecutionInQueuebyTag(String tag) throws CerberusException;
 
     /**
      * Find a {@link TestCaseExecutionInQueue} from database
@@ -108,36 +110,56 @@ public interface ITestCaseExecutionInQueueService {
      * @throws CerberusException
      */
     TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
-    
-    
+
+
     /**
      * Find the list of TestCaseWithExecution object with Procedeed = 0 from testcaseexecutionqueue
+     *
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     List<TestCaseExecutionInQueue> findAllNotProcedeed() throws CerberusException;
-    
+
     /**
      * Find the list of TestCaseWithExecution object from testcaseexecutionqueue
+     *
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     List<TestCaseExecutionInQueue> findAll() throws CerberusException;
 
     public void setProcessedTo(Long l, String changeTo) throws CerberusException;
-    
-    public void updateComment(Long queueId, String comment)throws CerberusException;
-    
+
+    public void updateComment(Long queueId, String comment) throws CerberusException;
+
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException;
-    
+
+    public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
-    
+
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
-    
+
+    public AnswerList readDistinctValuesByCriteria(String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch, String column);
+
     public AnswerList findTagList(int tagnumber);
-    
-    AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList, 
-            List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList, 
-            List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion, 
-            String comment, String bugid, String ticket);
+
+    AnswerList readBySystemByVarious(String system, List<String> testList, List<String> applicationList, List<String> projectList, List<String> tcstatusList, List<String> groupList,
+                                     List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList,
+                                     List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
+                                     String comment, String bugid, String ticket);
+
+    public Answer create(TestCaseExecutionInQueue test);
+
+    public Answer update(TestCaseExecutionInQueue test);
+
+    public Answer delete(TestCaseExecutionInQueue test);
+
+    /**
+     * Convert a testCaseExecutionInQueue object into TestCaseExecution
+     *
+     * @param testCaseExecutionInQueue
+     * @return TestCaseExecution Object
+     */
+    public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue);
 }

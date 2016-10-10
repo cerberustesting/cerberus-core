@@ -90,15 +90,15 @@ public class RecorderService implements IRecorderService {
             myExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionExecution.getActionResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionExecution.getActionResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            applicationType = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
             returnCode = testCaseStepActionExecution.getReturnCode();
         } else {
             myExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
             doScreenshot = testCaseStepActionControlExecution.getControlResultMessage().isDoScreenshot();
             getPageSource = testCaseStepActionControlExecution.getControlResultMessage().isGetPageSource();
-            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplication().getType();
+            applicationType = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution().getApplicationObj().getType();
             returnCode = testCaseStepActionControlExecution.getReturnCode();
-            controlNumber = testCaseStepActionControlExecution.getControl();
+            controlNumber = testCaseStepActionControlExecution.getControlSequence();
         }
 
         /**
@@ -284,12 +284,14 @@ public class RecorderService implements IRecorderService {
             // Index file created to database.
             testCaseExecutionFileService.create(runId, level, "SOAP Request", relativeFilenameURL, "XML", "");
 
-            // RESPONSE.
-            this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
-            recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
+            // RESPONSE is exists.
+            if (null != se.getSOAPResponse()) {
+                this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
+                recordFile(fullPath, fileName, SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
 
-            // Index file created to database.
-            testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+                // Index file created to database.
+                testCaseExecutionFileService.create(runId, level, "SOAP Response", relativeFilenameURL, "XML", "");
+            }
 
             xmlFullFilename = relativeFilenameURL;
 
@@ -350,7 +352,7 @@ public class RecorderService implements IRecorderService {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
-        if (testCaseExecution.getApplication().getType().equals("GUI")) {
+        if (testCaseExecution.getApplicationObj().getType().equals("GUI")) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
                 LOG.debug(logPrefix + "Starting to save Selenium log file.");
@@ -502,10 +504,11 @@ public class RecorderService implements IRecorderService {
         fileName = fileName.replace(" ", "");
 
         /**
-         * Level. 5 levels possible. Keys are defined seperated by -. 1/ Execution
-         * level --> emptyString. 2/ Step level --> test+testcase+Step 3/ Action level
-         * --> test+testcase+Step+action 4/ Control level -->
-         * test+testcase+Step+action+control 5/ Property level --> property+index
+         * Level. 5 levels possible. Keys are defined seperated by -. 1/
+         * Execution level --> emptyString. 2/ Step level --> test+testcase+Step
+         * 3/ Action level --> test+testcase+Step+action 4/ Control level -->
+         * test+testcase+Step+action+control 5/ Property level -->
+         * property+index
          */
         level = "";
         if (!(StringUtil.isNullOrEmpty(controlString))) {

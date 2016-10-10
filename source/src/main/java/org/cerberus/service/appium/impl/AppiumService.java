@@ -176,7 +176,7 @@ public abstract class AppiumService implements IAppiumService {
 
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(driver, session.getDefaultWait());
+            WebDriverWait wait = new WebDriverWait(driver, session.getCerberus_appium_wait_element());
             if (visible) {
                 if (clickable) {
                     wait.until(ExpectedConditions.elementToBeClickable(locator));

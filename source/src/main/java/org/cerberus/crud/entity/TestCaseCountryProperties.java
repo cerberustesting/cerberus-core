@@ -36,6 +36,8 @@ public class TestCaseCountryProperties {
     private int length;
     private int rowLimit;
     private String nature;
+    private int retryNb;
+    private int retryPeriod;
 
     /**
      * From here are data outside database model.
@@ -45,23 +47,29 @@ public class TestCaseCountryProperties {
     private List<TestCaseCountry> tccList;
 
     /**
-     * Invariant String.
+     * Invariant PROPERTY TYPE String.
      */
     public static final String TYPE_TEXT = "text";
-    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
+    public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
     public static final String TYPE_EXECUTESQL = "executeSql";
-    public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
-    public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
     public static final String TYPE_GETFROMHTML = "getFromHtml";
     public static final String TYPE_GETFROMHTMLVISIBLE = "getFromHtmlVisible";
     public static final String TYPE_GETFROMJS = "getFromJS";
     public static final String TYPE_GETATTRIBUTEFROMHTML = "getAttributeFromHtml";
+    public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMXML = "getFromXml";
     public static final String TYPE_GETDIFFERENCESFROMXML = "getDifferencesFromXml";
-    public static final String TYPE_GETFROMCOOKIE = "getFromCookie";
     public static final String TYPE_GETFROMJSON = "getFromJson";
-    public static final String TYPE_GETFROMDATALIB = "getFromDataLib";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
+    @Deprecated
+    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
+    @Deprecated
+    public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
+    @Deprecated
+    public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";
+    /**
+     * Invariant PROPERTY NATURE String.
+     */
     public static final String NATURE_STATIC = "STATIC";
     public static final String NATURE_RANDOM = "RANDOM";
     public static final String NATURE_RANDOMNEW = "RANDOMNEW";
@@ -73,6 +81,22 @@ public class TestCaseCountryProperties {
 
     public void setTccList(List<TestCaseCountry> tccList) {
         this.tccList = tccList;
+    }
+
+    public int getRetryNb() {
+        return retryNb;
+    }
+
+    public void setRetryNb(int retrynb) {
+        this.retryNb = retrynb;
+    }
+
+    public int getRetryPeriod() {
+        return retryPeriod;
+    }
+
+    public void setRetryPeriod(int retryperiod) {
+        this.retryPeriod = retryperiod;
     }
 
     public String getValue2() {
@@ -224,6 +248,8 @@ public class TestCaseCountryProperties {
         hash = 83 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
         hash = 83 * hash + this.length;
         hash = 83 * hash + this.rowLimit;
+        hash = 83 * hash + this.retryNb;
+        hash = 83 * hash + this.retryPeriod;
         hash = 83 * hash + (this.nature != null ? this.nature.hashCode() : 0);
         return hash;
     }
@@ -268,6 +294,12 @@ public class TestCaseCountryProperties {
             return false;
         }
         if (this.rowLimit != other.rowLimit) {
+            return false;
+        }
+        if (this.retryNb != other.retryNb) {
+            return false;
+        }
+        if (this.retryPeriod != other.retryPeriod) {
             return false;
         }
         if ((this.nature == null) ? (other.nature != null) : !this.nature.equals(other.nature)) {

@@ -38,10 +38,9 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
@@ -56,10 +55,9 @@ import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  * {Insert class description here}
@@ -117,8 +115,6 @@ public class RunTestCase extends HttpServlet {
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
         logEventService.createPublicCalls("/RunTestCase", "CALL", "RunTestCaseV0 called : " + request.getRequestURL(), request);
 
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-
         //Tool
         String ss_ip = ""; // Selenium IP
         String ss_p = ""; // Selenium Port
@@ -137,44 +133,44 @@ public class RunTestCase extends HttpServlet {
         List<RobotCapability> capabilities = null;
 
         //Test
-        String test = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Test")), "");
-        String testCase = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("TestCase")), "");
-        String country = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Country")), "");
-        String environment = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Environment")), "");
+        String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Test"), "");
+        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("TestCase"), "");
+        String country = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Country"), "");
+        String environment = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Environment"), "");
 
         //Test Dev Environment
-        boolean manualURL = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("manualURL")), false);
-        String myHost = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myhost")), "");
-        String myContextRoot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("mycontextroot")), "");
-        String myLoginRelativeURL = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myloginrelativeurl")), "");
+        boolean manualURL = ParameterParserUtil.parseBooleanParam(request.getParameter("manualURL"), false);
+        String myHost = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("myhost"), "");
+        String myContextRoot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("mycontextroot"), "");
+        String myLoginRelativeURL = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("myloginrelativeurl"), "");
         //TODO find another solution
         myLoginRelativeURL = myLoginRelativeURL.replace("&#61;", "=");
-        String myEnvData = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("myenvdata")), "");
+        String myEnvData = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("myenvdata"), "");
 
         //Execution
-        String tag = ParameterParserUtil.parseStringParam(request.getParameter("Tag"), "");
-        String outputFormat = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("outputformat")), "compact");
-        int screenshot = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("screenshot")), 1);
-        int verbose = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("verbose")), 0);
-        timeout = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("timeout")), "");
-        synchroneous = ParameterParserUtil.parseBooleanParam(policy.sanitize(request.getParameter("synchroneous")), true);
-        getPageSource = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("pageSource")), 1);
-        getSeleniumLog = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("seleniumLog")), 1);
-        manualExecution = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("manualExecution")), "N");
-        long idFromQueue = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("IdFromQueue")), 0);
-        int numberOfRetries = ParameterParserUtil.parseIntegerParam(policy.sanitize(request.getParameter("retries")), 0);
-        screenSize = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("screenSize")), "");
+        String tag = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Tag"), "");
+        String outputFormat = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("outputformat"), "compact");
+        int screenshot = ParameterParserUtil.parseIntegerParam(request.getParameter("screenshot"), 1);
+        int verbose = ParameterParserUtil.parseIntegerParam(request.getParameter("verbose"), 0);
+        timeout = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("timeout"), "");
+        synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), true);
+        getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
+        getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
+        manualExecution = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("manualExecution"), "N");
+        long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
+        int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
+        screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
 
-        robot = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("robot")), "");
-        ss_ip = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_ip")), "");
-        ss_p = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("ss_p")), "");
+        robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
+        ss_ip = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_ip"), "");
+        ss_p = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_p"), "");
         if (request.getParameter("Browser") != null && !"".equals(request.getParameter("Browser"))) {
-            browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("Browser")), "firefox");
+            browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Browser"), "firefox");
         } else {
-            browser = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("browser")), "firefox");
+            browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("browser"), "firefox");
         }
-        version = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("version")), "");
-        platform = ParameterParserUtil.parseStringParam(policy.sanitize(request.getParameter("platform")), "");
+        version = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("version"), "");
+        platform = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("platform"), "");
 
         String helpMessage = "\nThis servlet is used to start the execution of a test case.\n"
                 + "Parameter list :\n"
@@ -307,10 +303,10 @@ public class RunTestCase extends HttpServlet {
                 LOG.debug("STARTED: Test " + test + "-" + testCase);
 
                 IRunTestCaseService runTestCaseService = appContext.getBean(IRunTestCaseService.class);
-                IFactoryTCase factoryTCase = appContext.getBean(IFactoryTCase.class);
+                IFactoryTestCase factoryTCase = appContext.getBean(IFactoryTestCase.class);
                 IFactoryTestCaseExecution factoryTCExecution = appContext.getBean(IFactoryTestCaseExecution.class);
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
-                TCase tCase = factoryTCase.create(test, testCase);
+                TestCase tCase = factoryTCase.create(test, testCase);
 
                 TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "", capabilities,
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,

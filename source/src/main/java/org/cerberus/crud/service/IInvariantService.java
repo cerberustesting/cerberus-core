@@ -20,19 +20,20 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author bcivel
  */
 public interface IInvariantService {
 
     Invariant findInvariantByIdValue(String idName, String value) throws CerberusException;
-
-    Invariant findInvariantByIdSort(String idName, Integer sort) throws CerberusException;
 
     AnswerList readByIdname(String idName);
 
@@ -40,9 +41,17 @@ public interface IInvariantService {
 
     AnswerList readInvariantCountryListEnvironmentLastChanges(String system, Integer nbDays);
 
-    List<Invariant> readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
-    List<Invariant> readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+    AnswerList readByPublicByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    AnswerList readDistinctValuesByPublicByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
+
+    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+
+    AnswerList readByPrivateByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
+
+    AnswerList readDistinctValuesByPrivateByCriteria(String column, String dir, String searchTerm, Map<String, List<String>> individualSearch, String columnName);
 
     AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch);
 
@@ -52,11 +61,15 @@ public interface IInvariantService {
 
     boolean isInvariantExist(String idName, String value);
 
-    void createInvariant(Invariant invariant) throws CerberusException;
+    AnswerItem isInvariantPublic(Invariant object);
 
-    void deleteInvariant(Invariant invariant) throws CerberusException;
+    AnswerItem readByKey(String id, String value);
 
-    void updateInvariant(Invariant invariant) throws CerberusException;
+    Answer create(Invariant invariant);
+
+    Answer delete(Invariant invariant);
+
+    Answer update(Invariant invariant);
 
     String getPublicPrivateFilter(String filter);
 }

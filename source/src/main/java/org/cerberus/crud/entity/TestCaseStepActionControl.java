@@ -26,17 +26,17 @@ public class TestCaseStepActionControl {
     private String testCase;
     private int step;
     private int sequence;
-    private int control;
+    private int controlSequence;
     private int sort;
-    private String type;
-    private String controlValue;
-    private String controlProperty;
+    private String control;
+    private String value1;
+    private String value2;
     private String fatal;
     private String description;
     private String screenshotFilename;
 
     /**
-     * Invariant String.
+     * Invariant CONTROL TYPE String.
      */
     public static final String CONTROL_UNKNOWN = "Unknown";
     public static final String CONTROL_VERIFYSTRINGEQUAL = "verifyStringEqual";
@@ -44,17 +44,17 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYSTRINGGREATER = "verifyStringGreater";
     public static final String CONTROL_VERIFYSTRINGMINOR = "verifyStringMinor";
     public static final String CONTROL_VERIFYSTRINGCONTAINS = "verifyStringContains";
-    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
-    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
     public static final String CONTROL_VERIFYINTEGEREQUALS = "verifyIntegerEquals";
     public static final String CONTROL_VERIFYINTEGERDIFFERENT = "verifyIntegerDifferent";
+    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
+    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
     public static final String CONTROL_VERIFYELEMENTPRESENT = "verifyElementPresent";
     public static final String CONTROL_VERIFYELEMENTNOTPRESENT = "verifyElementNotPresent";
     public static final String CONTROL_VERIFYELEMENTVISIBLE = "verifyElementVisible";
     public static final String CONTROL_VERIFYELEMENTNOTVISIBLE = "verifyElementNotVisible";
     public static final String CONTROL_VERIFYELEMENTEQUALS = "verifyElementEquals";
-    public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";
     public static final String CONTROL_VERIFYELEMENTDIFFERENT = "verifyElementDifferent";
+    public static final String CONTROL_VERIFYELEMENTINELEMENT = "verifyElementInElement";
     public static final String CONTROL_VERIFYELEMENTCLICKABLE = "verifyElementClickable";
     public static final String CONTROL_VERIFYELEMENTNOTCLICKABLE = "verifyElementNotClickable";
     public static final String CONTROL_VERIFYTEXTINELEMENT = "verifyTextInElement";
@@ -67,6 +67,11 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYTEXTINDIALOG = "verifyTextInDialog";
     public static final String CONTROL_VERIFYXMLTREESTRUCTURE = "verifyXmlTreeStructure";
     public static final String CONTROL_TAKESCREENSHOT = "takeScreenshot";
+    public static final String CONTROL_GETPAGESOURCE = "getPageSource";
+    public static final String CONTROL_SKIPCONTROL = "skipControl";
+    /**
+     * Invariant CONTROL TYPE String.
+     */
     public static final String FATAL_YES = "Y";
     public static final String FATAL_NO = "N";
 
@@ -86,12 +91,12 @@ public class TestCaseStepActionControl {
         this.description = description;
     }
 
-    public int getControl() {
-        return control;
+    public int getControlSequence() {
+        return controlSequence;
     }
 
-    public void setControl(int control) {
-        this.control = control;
+    public void setControlSequence(int control) {
+        this.controlSequence = control;
     }
 
     public int getSort() {
@@ -102,20 +107,20 @@ public class TestCaseStepActionControl {
         this.sort = sort;
     }
 
-    public String getControlProperty() {
-        return controlProperty;
+    public String getValue2() {
+        return value2;
     }
 
-    public void setControlProperty(String controlProperty) {
-        this.controlProperty = controlProperty;
+    public void setValue2(String controlProperty) {
+        this.value2 = controlProperty;
     }
 
-    public String getControlValue() {
-        return controlValue;
+    public String getValue1() {
+        return value1;
     }
 
-    public void setControlValue(String controlValue) {
-        this.controlValue = controlValue;
+    public void setValue1(String controlValue) {
+        this.value1 = controlValue;
     }
 
     public String getFatal() {
@@ -158,12 +163,12 @@ public class TestCaseStepActionControl {
         this.testCase = testCase;
     }
 
-    public String getType() {
-        return type;
+    public String getControl() {
+        return control;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setControl(String type) {
+        this.control = type;
     }
 
     public boolean hasSameKey(TestCaseStepActionControl obj) {
@@ -186,7 +191,7 @@ public class TestCaseStepActionControl {
         if (this.sequence != other.sequence) {
             return false;
         }
-        if (this.control != other.control) {
+        if (this.controlSequence != other.controlSequence) {
             return false;
         }
         return true;
@@ -199,11 +204,11 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 67 * hash + this.step;
         hash = 67 * hash + this.sequence;
-        hash = 67 * hash + this.control;
+        hash = 67 * hash + this.controlSequence;
         hash = 67 * hash + this.sort;
-        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 67 * hash + (this.controlValue != null ? this.controlValue.hashCode() : 0);
-        hash = 67 * hash + (this.controlProperty != null ? this.controlProperty.hashCode() : 0);
+        hash = 67 * hash + (this.control != null ? this.control.hashCode() : 0);
+        hash = 67 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
+        hash = 67 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
         hash = 67 * hash + (this.fatal != null ? this.fatal.hashCode() : 0);
         hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
         return hash;
@@ -230,19 +235,19 @@ public class TestCaseStepActionControl {
         if (this.sequence != other.sequence) {
             return false;
         }
-        if (this.control != other.control) {
+        if (this.controlSequence != other.controlSequence) {
             return false;
         }
         if (this.sort != other.sort) {
             return false;
         }
-        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+        if ((this.control == null) ? (other.control != null) : !this.control.equals(other.control)) {
             return false;
         }
-        if ((this.controlValue == null) ? (other.controlValue != null) : !this.controlValue.equals(other.controlValue)) {
+        if ((this.value1 == null) ? (other.value1 != null) : !this.value1.equals(other.value1)) {
             return false;
         }
-        if ((this.controlProperty == null) ? (other.controlProperty != null) : !this.controlProperty.equals(other.controlProperty)) {
+        if ((this.value2 == null) ? (other.value2 != null) : !this.value2.equals(other.value2)) {
             return false;
         }
         if ((this.fatal == null) ? (other.fatal != null) : !this.fatal.equals(other.fatal)) {
@@ -259,7 +264,7 @@ public class TestCaseStepActionControl {
 
     @Override
     public String toString() {
-        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + control + ", type=" + type + ", controlValue=" + controlValue + ", controlProperty=" + controlProperty + ", fatal=" + fatal + ", description=" + description + '}';
+        return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", fatal=" + fatal + ", description=" + description + '}';
     }
 
 }

@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.transversaltables;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,76 +28,184 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryLogEvent;
-import org.cerberus.crud.factory.IFactoryParameter;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
 import org.cerberus.crud.factory.impl.FactoryParameter;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.LogEventService;
-import org.cerberus.crud.service.impl.ParameterService;
-import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.owasp.html.PolicyFactory;
+import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
- *
  * @author ip100003
  */
 @WebServlet(name = "UpdateParameter", urlPatterns = {"/UpdateParameter"})
 public class UpdateParameter extends HttpServlet {
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
-    }
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, CerberusException, JSONException {
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //TODO create class Validator to validate all parameter from page
-        String param = request.getParameter("id");
-        int columnPosition = Integer.parseInt(request.getParameter("columnPosition"));
-        String value = request.getParameter("value").replace("'", "");
-        String mySystem = request.getParameter("system");
+        JSONObject jsonResponse = new JSONObject();
+        Answer ans = new Answer();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        ans.setResultMessage(msg);
+        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
+        String charset = request.getCharacterEncoding();
+        ILogEventService logEventService;
 
-        MyLogger.log(UpdateParameter.class.getName(), Level.DEBUG, "System : " + mySystem + " value : " + value + " columnPosition : " + columnPosition + " param : " + param);
+        String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("id"), "", charset);
+        String value = ParameterParserUtil.parseStringParam(request.getParameter("value"), "");
+        String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
+        String system1value = ParameterParserUtil.parseStringParam(request.getParameter("system1Value"), null);
+        String system1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system1"), null, charset);
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IParameterService parameterService = appContext.getBean(ParameterService.class);
-        IFactoryParameter parameterFactory = appContext.getBean(FactoryParameter.class);
+        boolean userHasPermissions = request.isUserInRole("Administrator");
 
-        Parameter myParameter = null;
-        try {
-            switch (columnPosition) {
-                case 1:
-                    myParameter = parameterService.findParameterByKey(param, "");
-                    myParameter.setValue(value);
-                    break;
-                case 2:
-                    myParameter = parameterFactory.create(mySystem, param, value, "");
-                    break;
-            }
-            try {
-                parameterService.saveParameter(myParameter);
+        // Prepare the final answer.
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
 
+        /**
+         * Checking all constrains before calling the services.
+         */
+        if (StringUtil.isNullOrEmpty(id) || StringUtil.isNullOrEmpty(system1)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Parameter")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Parameter id or system1 is missing!"));
+            finalAnswer.setResultMessage(msg);
+        } else if (!userHasPermissions) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Parameter")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "You don't have the right to do that"));
+            finalAnswer.setResultMessage(msg);
+        } else {
+            /**
+             * All data seems cleans so we can call the services.
+             */
+
+            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+            IParameterService parameterService = appContext.getBean(IParameterService.class);
+            FactoryParameter factoryparameter = appContext.getBean(FactoryParameter.class);
+
+            Parameter para = factoryparameter.create(system, id, value, "");
+            ans = parameterService.save(para);
+            if (!ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED.getCode())) {
                 /**
-                 * Adding Log entry.
+                 * Object could not be found. We stop here and report the error.
                  */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateParameter", "UPDATE", "Update parameter : " + param, request);
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+            } else {
+                /**
+                 * Object updated. Adding Log entry.
+                 */
 
-                response.getWriter().print(value);
-            } catch (CerberusException ex) {
-                response.getWriter().print(ex.getMessageError().getDescription());
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/UpdateParameter", "UPDATE", "Update Parameter : ['" + id + "','" + system + "']", request);
+                }
+                if (system1 != null && system1value != null) {
+                    Parameter para1 = factoryparameter.create(system1, id, system1value, "");
+                    ans = parameterService.save(para1);
+
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Object updated. Adding Log entry.
+                         */
+                        logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateParameter", "UPDATE", "Update Parameter : ['" + id + "','" + system1 + "']", request);
+                    }
+                }
             }
-        } catch (CerberusException ex) {
-            response.getWriter().print(ex.getMessageError().getDescription());
+
         }
 
+        /**
+         * Formating and returning the json result.
+         */
+        jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
+        jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
+
+        response.getWriter().print(jsonResponse);
+        response.getWriter().flush();
+
     }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateLabel.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateLabel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request  servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException      if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+
+        } catch (CerberusException ex) {
+            Logger.getLogger(UpdateLabel.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(UpdateLabel.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
 }

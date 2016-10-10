@@ -45,7 +45,7 @@ public class TestCaseExecution {
     private long end;
     private String controlStatus;
     private String controlMessage;
-    private Application application;
+    private String application;
     private String ip; // Host the Selenium IP
     private String url;
     private String port; // host the Selenium Port
@@ -60,14 +60,15 @@ public class TestCaseExecution {
     /**
      * From here are data outside database model.
      */
+    private Application applicationObj;
     private String environmentData;
     private Invariant environmentDataObj;
     private Invariant CountryObj;
     private int screenshot;
     private String outputFormat;
     private Test testObj;
-    private TCase tCase;
-    private List<TCase> PreTCase;
+    private TestCase testCaseObj;
+    private List<TestCase> PreTestCaseList;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private boolean manualURL;
@@ -94,8 +95,25 @@ public class TestCaseExecution {
     private AnswerList testCaseStepExecutionAnswerList;
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
+    private Integer cerberus_action_wait_default;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
+
+    public Integer getCerberus_action_wait_default() {
+        return cerberus_action_wait_default;
+    }
+
+    public void setCerberus_action_wait_default(Integer cerberus_action_wait_default) {
+        this.cerberus_action_wait_default = cerberus_action_wait_default;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    public void setApplication(String application) {
+        this.application = application;
+    }
     
     public String getUserAgent() {
         return userAgent;
@@ -345,20 +363,20 @@ public class TestCaseExecution {
         this.testObj = testObj;
     }
 
-    public TCase gettCase() {
-        return tCase;
+    public TestCase getTestCaseObj() {
+        return testCaseObj;
     }
 
-    public void settCase(TCase tCase) {
-        this.tCase = tCase;
+    public void setTestCaseObj(TestCase testCase) {
+        this.testCaseObj = testCase;
     }
 
-    public Application getApplication() {
-        return application;
+    public Application getApplicationObj() {
+        return applicationObj;
     }
 
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setApplicationObj(Application applicationObj) {
+        this.applicationObj = applicationObj;
     }
 
     public String getBrowser() {
@@ -529,12 +547,12 @@ public class TestCaseExecution {
         this.verbose = verbose;
     }
 
-    public List<TCase> getPreTCase() {
-        return PreTCase;
+    public List<TestCase> getPreTestCaseList() {
+        return PreTestCaseList;
     }
 
-    public void setPreTCase(List<TCase> PreTCase) {
-        this.PreTCase = PreTCase;
+    public void setPreTestCaseList(List<TestCase> PreTCase) {
+        this.PreTestCaseList = PreTCase;
     }
 
     public List<TestCaseExecutionData> getTestCaseExecutionDataList() {

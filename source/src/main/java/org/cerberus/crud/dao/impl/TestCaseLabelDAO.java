@@ -221,8 +221,8 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         Answer response = new Answer();
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaselabel ( `test`, `testcase`, `labelId`, `usrCreated`, `dateCreated`, `usrModif`, `dateModif` ) ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO testcaselabel ( `test`, `testcase`, `labelId`, `usrCreated`) ");
+        query.append("VALUES (?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -235,9 +235,6 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
             preStat.setString(2, object.getTestcase());
             preStat.setInt(3, object.getLabelId());
             preStat.setString(4, object.getUsrCreated());
-            preStat.setTimestamp(5, object.getDateCreated());
-            preStat.setString(6, object.getUsrModif());
-            preStat.setTimestamp(7, object.getDateModif());
 
             preStat.executeUpdate();
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -286,7 +283,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     public Answer update(TestCaseLabel object) {
         Answer response = new Answer();
         MessageEvent msg = null;
-        final String query = "UPDATE testcaselabel SET `test` = ?, `testcase` = ?, `labelId` = ?,  `usrModif` = ?, `dateModif` = ?  WHERE id = ?";
+        final String query = "UPDATE testcaselabel SET `test` = ?, `testcase` = ?, `labelId` = ?,  `usrModif` = ?, `dateModif` = NOW()  WHERE id = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -298,8 +295,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 preStat.setString(2, object.getTestcase());
                 preStat.setInt(3, object.getLabelId());
                 preStat.setString(4, object.getUsrModif());
-                preStat.setTimestamp(5, object.getDateModif());
-                preStat.setInt(6, object.getId());
+                preStat.setInt(5, object.getId());
                 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

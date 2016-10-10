@@ -155,6 +155,15 @@ public interface ITestCaseExecutionDAO {
 
     public AnswerItem readByKey(long executionId);
 
+    /**
+     * Uses data of ResultSet to create object {@link TestCaseExecution}
+     *
+     * @param resultSet ResultSet relative to select from table TestCaseExecution
+     * @return object {@link TestCaseExecution}
+     * @throws SQLException when trying to get value from
+     * {@link java.sql.ResultSet#getString(String)}
+     * @see FactoryTestCaseExecution
+     */
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 
 }

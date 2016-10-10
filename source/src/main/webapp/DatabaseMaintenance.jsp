@@ -59,7 +59,8 @@
                 //Integer SQLLimit = 509; // 1.0.0 Version LEVEL.
                 //Integer SQLLimit = 651; // 1.1.2 Version LEVEL.
                 //Integer SQLLimit = 740; // 1.1.3 Version LEVEL.
-                Integer SQLLimit = 784; // 1.1.4 Version LEVEL.
+                //Integer SQLLimit = 784; // 1.1.4 Version LEVEL.
+                Integer SQLLimit = 928; // 1.1.6 Version LEVEL.
                 IFactoryMyversion factoryMyversion;
 
                 try {
@@ -85,8 +86,8 @@
                     // Start to build the SQL Script here.
                     SQLInstruction = new ArrayList<String>();
                     appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-                    IDatabaseVersioningService DatabaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
-                    SQLInstruction = DatabaseVersionService.getSQLScript();
+                    IDatabaseVersioningService databaseVersionService = appContext.getBean(IDatabaseVersioningService.class);
+                    SQLInstruction = databaseVersionService.getSQLScript();
 
                     // Initialize the array that will receive the RC of every execution.
                     SQLRC = new ArrayList<String>();
@@ -114,7 +115,7 @@
                                     out.print("</textarea></td>");
                                     // Execute the SQL Here
                                     MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
-                                    MySQLRC = DatabaseVersionService.exeSQL(MySQL);
+                                    MySQLRC = databaseVersionService.exeSQL(MySQL);
                                     SQLExecuted = true;
                                     SQLRC.add(MySQLRC);
                                     if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3

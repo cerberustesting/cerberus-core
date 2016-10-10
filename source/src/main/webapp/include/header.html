@@ -36,11 +36,6 @@
                 <li class="dropdown TestRO" style="display:none"><a name="menu" id ="menuTest" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Test <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp">Test</a></li>
-                        <li id="subactive"><a name="menu" id="menuTestPerApplication" href="TestPerApplication.jsp">Test Per Application</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown TestRO" style="display:none"><a name="menu" id="menuTestCase" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">TestCase <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp">TestCase List</a></li>
                         <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp">Edit TestCase</a></li>
                         <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp">Search TestCase</a></li>
@@ -50,7 +45,6 @@
                 </li>
                 <li class="dropdown TestDataManager" style="display:none"><a name="menu" id="menuData" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Data <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
                         <li id="subactive"><a name="menuDeprecated" id="menuTestData" href="TestData.jsp">Test Data</a></li>
                         <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Test Data Lib</a></li>
                     </ul>
@@ -75,16 +69,21 @@
                         <li id="subactive"><a name="menuBeta" id="menuReportingExecutionStatus" href="ReportingExecution1.jsp">Execution Status</a></li>
                     </ul>
                 </li>
+                <li class="dropdown IntegratorRO" style="display:none"><a name="menu" id="menuApplications" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Application <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="subnavlist">
+                        <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp">Applications</a></li>
+                        <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp">SOAP Library</a></li>
+                        <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
+                        <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp">Deploy Type</a></li>
+                    </ul>
+                </li>
                 <li class="dropdown IntegratorRO" style="display:none"><a name="menu" id="menuIntegration" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Integration <span class="caret"></span></a>
                     <ul class="dropdown-menu" id="subnavlist">
                         <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp">Integration Status</a></li>
-                        <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp">Applications</a></li>
-                        <li id="subactive"><a name="menu" id="menuSoapLibrary" href="SoapLibrary.jsp">SOAP Library</a></li>
                         <li id="subactive"><a name="menu" id="menuEnvironments" href="Environment.jsp">Environments</a></li>
                         <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
                         <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp">Build Content</a></li>
                         <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp">Project</a></li>
-                        <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp">Deploy Type</a></li>
                         <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp">Batch</a></li>
                     </ul>
                 </li>
@@ -94,9 +93,13 @@
                         <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp">Log Viewer</a></li>
                         <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
                         <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp">Parameters</a></li>
-                        <li id="subactive"><a name="menu" id="menuInvariantPublic" href="InvariantPublic.jsp">Edit Public Invariants</a></li>
-                        <li id="subactive"><a name="menu" id="menuInvariantPrivate" href="InvariantPrivate.jsp">See Private Invariants</a></li>
+                        <li id="subactive"><a name="menu" id="menuInvariants" href="Invariant.jsp">Invariants</a></li>
                         <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp">Monitoring</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown TestRO" style="display:none"><a name="menu" id="menuHelp" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Help <span class="caret"></span></a>
+                    <ul class="dropdown-menu" id="subnavlist">
+                        <li id="subactive"><a name="menu" id="menuDocumentation" href="Documentation1.jsp">Documentation</a></li>
                     </ul>
                 </li>
             </ul>

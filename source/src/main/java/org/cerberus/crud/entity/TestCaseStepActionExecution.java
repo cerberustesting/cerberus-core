@@ -36,17 +36,21 @@ public class TestCaseStepActionExecution {
     private int step;
     private int sequence;
     private int sort;
+    private String conditionOper;
+    private String conditionVal1;
+    private String action;
+    private String value1Init;
+    private String value2Init;
+    private String value1;
+    private String value2;
+    private String forceExeStatus;
+    private String description;
     private String returnCode;
     private String returnMessage;
-    private String action;
-    private String object;
-    private String property;
-    private String forceExeStatus;
     private long start;
     private long end;
     private long startLong;
     private long endLong;
-    private String description;
 
     /**
      * From here are data outside database model.
@@ -59,6 +63,38 @@ public class TestCaseStepActionExecution {
     private boolean stopExecution;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private AnswerList testCaseStepActionControlExecutionList;
+
+    public String getConditionOper() {
+        return conditionOper;
+    }
+
+    public void setConditionOper(String conditionOper) {
+        this.conditionOper = conditionOper;
+    }
+
+    public String getConditionVal1() {
+        return conditionVal1;
+    }
+
+    public void setConditionVal1(String conditionVal1) {
+        this.conditionVal1 = conditionVal1;
+    }
+
+    public String getValue1Init() {
+        return value1Init;
+    }
+
+    public void setValue1Init(String value1Init) {
+        this.value1Init = value1Init;
+    }
+
+    public String getValue2Init() {
+        return value2Init;
+    }
+
+    public void setValue2Init(String value2Init) {
+        this.value2Init = value2Init;
+    }
 
     public String getForceExeStatus() {
         return forceExeStatus;
@@ -160,20 +196,20 @@ public class TestCaseStepActionExecution {
         this.id = id;
     }
 
-    public String getObject() {
-        return object;
+    public String getValue1() {
+        return value1;
     }
 
-    public void setObject(String object) {
-        this.object = object;
+    public void setValue1(String value1) {
+        this.value1 = value1;
     }
 
-    public String getProperty() {
-        return property;
+    public String getValue2() {
+        return value2;
     }
 
-    public void setProperty(String property) {
-        this.property = property;
+    public void setValue2(String value2) {
+        this.value2 = value2;
     }
 
     public String getReturnCode() {
@@ -274,8 +310,8 @@ public class TestCaseStepActionExecution {
             result.put("sequence", this.getSequence());
             result.put("sort", this.getSort());
             result.put("action", this.getAction());
-            result.put("object", this.getObject());
-            result.put("property", this.getProperty());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
             result.put("forceExeStatus", this.getForceExeStatus());
             result.put("start", this.getStart());
             result.put("end", this.getEndLong());

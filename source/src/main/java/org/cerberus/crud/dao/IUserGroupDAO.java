@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  * {Insert class description here}
@@ -54,4 +56,35 @@ public interface IUserGroupDAO {
      * @return a list of group user that correspond to the login.
      */
     public List<UserGroup> findGroupByKey(String login);
+
+
+    /**
+     * @return a list of all the userSystem of a user
+     */
+    AnswerList<UserGroup> readByUser(String login);
+
+    /**
+     * Adding the group
+     *
+     * @param group
+     * @return
+     */
+    Answer create(UserGroup group);
+
+    /**
+     * Remove the group
+     *
+     * @param group
+     * @return
+     */
+    Answer remove(UserGroup group);
+
+    /**
+     * Remove the group from the user.
+     *
+     * @param group
+     * @param user
+     * @return true if remove successfully amd false if an error occur
+     */
+    Answer removeGroupByUser(UserGroup group, User user);
 }

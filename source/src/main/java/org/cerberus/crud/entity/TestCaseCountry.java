@@ -28,15 +28,19 @@ public class TestCaseCountry {
     private String test;
     private String testCase;
     private String country;
-    private List<TestCaseCountryProperties> testCaseCountryProperty;
-    private TCase tCase;
 
-    public TCase gettCase() {
-        return tCase;
+    /**
+     * From here are data outside database model.
+     */
+    private List<TestCaseCountryProperties> testCaseCountryProperty;
+    private TestCase testCaseObj;
+
+    public TestCase getTestCaseObj() {
+        return testCaseObj;
     }
 
-    public void settCase(TCase tCase) {
-        this.tCase = tCase;
+    public void setTestCaseObj(TestCase testCase) {
+        this.testCaseObj = testCase;
     }
 
     public List<TestCaseCountryProperties> getTestCaseCountryProperty() {
@@ -71,8 +75,24 @@ public class TestCaseCountry {
         this.testCase = testCase;
     }
 
-    public boolean hasSameKey(TestCaseCountry tccRight) {
-        return equals(tccRight);
+    public boolean hasSameKey(TestCaseCountry obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseCountry other = (TestCaseCountry) obj;
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testCase == null) ? (other.testCase != null) : !this.testCase.equals(other.testCase)) {
+            return false;
+        }
+        if ((this.country == null) ? (other.country != null) : !this.country.equals(other.country)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -109,7 +129,5 @@ public class TestCaseCountry {
     public String toString() {
         return "TestCaseCountry{" + "test=" + test + ", testCase=" + testCase + ", country=" + country + '}';
     }
-    
-    
-    
+
 }

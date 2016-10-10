@@ -1,0 +1,28 @@
+In this section, you will find information on build revision invariants
+
+image:buildrevisionpage.png[BuildRevisionPage]
+
+=== Build Revision invariant attributes
+|=== 
+
+| *Field* | *Description*  
+
+| System | The *[red]#system#* for which the *[red]#batch#* will be available.
+
+| Level | to describe.
+
+| Sequence | to describe.
+
+| Version Name | to describe.
+
+|=== 
+
+=== Create build/revision invariant 
+
+. Go to *[red]#Integration -> Build Rev Definition#*. image:buildrevisioncreate.png[CreateBatch,200,200,float="right",align="center"]
+. Click on *[red]#Create new build revision definition#*.
+.. Select the *[red]#system#* for which the *[red]#build/revision#* will be available.
+.. Select the *[red]#Level#*. 1 for Build and 2 for Revision.
+.. Feed the *[red]#Sequence#* field with a number to sort the build/revision.
+.. Feed the *[red]#Version Name#* field that will be displayed.
+.. Click on *[red]#Save#*.

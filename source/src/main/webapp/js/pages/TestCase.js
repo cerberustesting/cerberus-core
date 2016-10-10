@@ -42,14 +42,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Loads the list of property types used to create the dropdown tha twill create the property
          * @param {type} data
          */
-        getInvariantList("PROPERTYTYPE", function(data) {
+        /*getInvariantList("PROPERTYTYPE", function(data) {
             listOfPropertyTypes = data;
             /**
              * For each property adds the icon corresponding to its state
              */
+        /*
             $("input.property_value").each(drawPropertySymbolHandler);
 
-        });
+        });*/
 
         /**
          * Removes all rows when the modal window is hidden and clears the message
@@ -1010,7 +1011,7 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary) {
         htmlToAppend += '</div>';
         htmlToAppend += '</div>';
         htmlToAppend += '<div style="display:inline-block;clear:both; height:15px;width:100%;background-color:transparent">';
-        htmlToAppend += '<div style="width: 30%; float:left; background-color: transparent" class="technical_part">';
+        htmlToAppend += '<div style="width: 20%; float:left; background-color: transparent" class="technical_part">';
         htmlToAppend += '<div style="float:left;width:80px; "><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionAction">Action \n\
         <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Action&amp;Lang=en&quot;)" class="docOnline">\n\
         <span class="glyphicon glyphicon-question-sign"></span></a></p>';
@@ -1027,15 +1028,13 @@ function drawStep(parentNode, stepNumber, actionList, stepType, temporary) {
                     action.sequence + '"  readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"/>';
         }
         htmlToAppend += '</div>';
-        htmlToAppend += '<div style="width: 40%; float:left; background-color: transparent" class="technical_part">';
-        htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionObject">Object \n\
-        <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Object&amp;Lang=en&quot;)" class="docOnline">\n\
-        <span class="glyphicon glyphicon-question-sign"></span></a></p>';
+        htmlToAppend += '<div style="width: 25%; float:left; background-color: transparent" class="technical_part">';
+        htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionObject1">Val1</p>';
         htmlToAppend += '</div>';
         htmlToAppend += '<input ' + readonly + ' name="action_object_' + stepNumber + '_' + action.sequence + '" id="action_object_' + stepNumber + '_' + action.sequence + '" \n\
         value="' + action.object + '" style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999">';
         htmlToAppend += '</div>';
-        htmlToAppend += '<div style="width: 30%; float:left; background-color:transparent" class="technical_part">';
+        htmlToAppend += '<div style="width: 20%; float:left; background-color:transparent" class="technical_part">';
         htmlToAppend += '<div style="float:left;"><p link="white" style="float:right;font-weight:bold;" name="labelTestCaseStepActionProperty">\n\
         Property <a onclick="stopPropagation(event)" href="javascript:popup(&quot;Documentation.jsp?DocTable=testcasestepaction&amp;DocField=Property&amp;Lang=en&quot;)" \n\
         class="docOnline"><span class="glyphicon glyphicon-question-sign"></span></a></p>';
@@ -1287,7 +1286,8 @@ function drawControlList(stepNumber, controlList, temporary, stepType) {
  */
 function overrideProperty(element) {
     var property = $(element).next("input.property_value");//gets the input tag next to the img tag
-    var propertyName = $(property).attr("value"); //gets the name of the property
+    var propertyName = cleanPropertyName($(property).attr("value")); //gets the name of the property
+    if (propertyName)
     var testID = $("#hiddenInformationTest").attr("value");
     var testCaseID = $("#hiddenInformationTestCase").attr("value");
 
@@ -1324,6 +1324,14 @@ function checkUndefinedProperties() {
     return true;
 }
 
+/**
+ * Clean the property name by removing any % character
+ *
+ * @param propertyName the property name to clean
+ */
+function cleanPropertyName(propertyName) {
+    return propertyName === undefined || propertyName === '' ? propertyName : propertyName.replace(/%/g, '');
+}
 
 /**
  * Auxiliary function that draws the icon near to the property name based on whether it is defined, imported or overridden.
@@ -1333,7 +1341,7 @@ function drawPropertySymbolHandler() {
     var doc = new Doc();
 
     var element = this;
-    var propertyValue = element.value;
+    var propertyValue = cleanPropertyName(element.value);
 
 
     //type:
@@ -1348,15 +1356,15 @@ function drawPropertySymbolHandler() {
         var toolTipMessage = "";
         var testDesc = $(element).attr('data-usestep-test');
 
-        if (!Boolean(testDesc) && $("input.property_name[value='" + element.value + "']").length === 0) {
+        if (!Boolean(testDesc) && $("input.property_name[value='" + propertyValue + "']").length === 0) {
             //check if is an access to a subdata entry
             var isToCreate = true;
-            var isSubDataAccess = element.value.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
+            var isSubDataAccess = propertyValue.match("^[_A-Za-z0-9]+\\([_A-Za-z0-9]+\\)$");
             //is a format of the subdataaccess
             if (isSubDataAccess !== null) {
                 //check if the property from getdatalibrary exists
                 //get the name for the property
-                var name = element.value.split(new RegExp("\\s+|\\(\\s*|\\)"));
+                var name = propertyValue.split(new RegExp("\\s+|\\(\\s*|\\)"));
                 if (($("input.property_name[value='" + name[0] + "'] ").length !== 0)) {
                     //only adds the button to create if the type is not getFromDataLib
                     //gets the type of the property
@@ -1491,9 +1499,11 @@ function displayPageLabel() {
     $("*[name='labelTestCase']").html(doc.getDocOnline("testcase", "TestCase"));
     $("*[name='labelTestCaseStepActionDescription']").html(doc.getDocOnline("testcasestepaction", "description"));
     $("*[name='labelTestCaseStepActionAction']").html(doc.getDocOnline("testcasestepaction", "Action"));
-    $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Object"));
-    $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Property"));
+    $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Value1"));
+    $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Value2"));
     $("*[name='labelTestCaseStepActionForce']").html(doc.getDocOnline("testcasestepaction", "ForceExeStatus"));
+    $("*[name='labelTestCaseStepActionControlType']").html(doc.getDocOnline("testcasestepactioncontrol", "Type"));
+
 }
 /**
  * Applies the translations for the get list of test cases modal.
@@ -1796,7 +1806,7 @@ function findStepBySystemTest(testElement, system, testCaseElement, refreshEleme
                 $(testCaseElement).append($("<option></option>")
                         .attr('value', data.testCaseStepList[i].testCase)
                         .attr('style', 'width:400px;')
-                        .text(data.testCaseStepList[i].testCase + " : " + data.testCaseStepList[i].tcdesc));
+                        .text(data.testCaseStepList[i].testCase + " [" + data.testCaseStepList[i].tcapp + "] : " + data.testCaseStepList[i].tcdesc));
                 testFromLib = data.testCaseStepList[i].testCase;
             }
         }

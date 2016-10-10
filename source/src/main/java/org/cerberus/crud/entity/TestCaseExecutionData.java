@@ -29,17 +29,25 @@ public class TestCaseExecutionData {
     private long id;
     private String property;
     private int index;
-    private String description;
-    private String value;
     private String type;
+    private String value;
+    private String database;
+    private String value1Init;
+    private String value2Init;
     private String value1;
     private String value2;
-    private String RC;
-    private String rMessage;
+    private int length;
+    private int rowLimit;
+    private String nature;
+    private int retryNb;
+    private int retryPeriod;
     private long start;
     private long end;
     private long startLong;
     private long endLong;
+    private String RC;
+    private String rMessage;
+    private String description;
     /**
      *
      */
@@ -49,6 +57,69 @@ public class TestCaseExecutionData {
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getValue1Init() {
+        return value1Init;
+    }
+
+    public void setValue1Init(String value1Init) {
+        this.value1Init = value1Init;
+    }
+
+    public String getValue2Init() {
+        return value2Init;
+    }
+
+    public void setValue2Init(String value2Init) {
+        this.value2Init = value2Init;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    public int getRowLimit() {
+        return rowLimit;
+    }
+
+    public void setRowLimit(int rowLimit) {
+        this.rowLimit = rowLimit;
+    }
+
+    public String getNature() {
+        return nature;
+    }
+
+    public void setNature(String nature) {
+        this.nature = nature;
+    }
+    public int getRetryNb() {
+        return retryNb;
+    }
+
+    public void setRetryNb(int retrynb) {
+        this.retryNb = retrynb;
+    }
+
+    public int getRetryPeriod() {
+        return retryPeriod;
+    }
+
+    public void setRetryPeriod(int retryperiod) {
+        this.retryPeriod = retryperiod;
+    }
 
     public int getIndex() {
         return index;

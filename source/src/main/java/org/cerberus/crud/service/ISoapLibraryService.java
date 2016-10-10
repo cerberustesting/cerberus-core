@@ -18,8 +18,13 @@
 package org.cerberus.crud.service;
 
 import java.util.List;
+import java.util.Map;
+
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 
 /**
  *
@@ -85,5 +90,50 @@ public interface ISoapLibraryService {
      * @return The number of records for these criterias
      */
     Integer getNumberOfSoapLibraryPerCrtiteria(String searchTerm, String inds);
+
+    /**
+     *  Get the {@link SoapLibrary} List of the given {@link System} with the given Criteria
+     *
+     * @param startPosition         the start index to look for
+     * @param length                the number of {@link SoapLibrary} to get
+     * @param columnName            the Column name to sort
+     * @param searchParameter       the string to search in the {@link SoapLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+
+    /**
+     *  Get the {@link SoapLibrary} of the given key
+     *
+     * @param key                the key of the {@link SoapLibrary} to get
+     */
+    AnswerItem readByKey(String key);
+
+    /**
+     *  Get the distinctValue of the column
+     *
+     * @param columnName            the Column name to get
+     * @param searchParameter       the string to search in the {@link SoapLibrary}
+     * @param individualSearch      the string to search for each column
+     */
+    AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
+    /**
+     * @param object the {@link SoapLibrary} to Create
+     * @return {@link AnswerItem}
+     */
+    Answer create(SoapLibrary object);
+
+    /**
+     * @param object the {@link SoapLibrary} to Update
+     * @return {@link AnswerItem}
+     */
+    Answer update(SoapLibrary object);
+
+    /**
+     * @param object the {@link SoapLibrary} to Delete
+     * @return {@link AnswerItem}
+     */
+    Answer delete(SoapLibrary object);
     
 }

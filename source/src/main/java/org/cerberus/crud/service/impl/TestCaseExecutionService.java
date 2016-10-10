@@ -26,13 +26,12 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.entity.MessageGeneral;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
-import org.cerberus.dto.TestCaseWithExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -163,10 +162,10 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
-    public List<TestCaseExecution> createAllTestCaseExecution(List<TCase> testCaseList, List<String> envList, List<String> countryList) {
+    public List<TestCaseExecution> createAllTestCaseExecution(List<TestCase> testCaseList, List<String> envList, List<String> countryList) {
         List<TestCaseExecution> result = new ArrayList<TestCaseExecution>();
 
-        for (TCase tc : testCaseList) {
+        for (TestCase tc : testCaseList) {
             for (String environment : envList) {
                 for (String country : countryList) {
                     TestCaseExecution execution = new TestCaseExecution();

@@ -27,7 +27,7 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.springframework.stereotype.Service;
@@ -39,12 +39,12 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam,
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,
             MessageGeneral resultMessage, String executor) {
         TestCaseExecution newTce = new TestCaseExecution();
-        newTce.setApplication(application);
+        newTce.setApplicationObj(application);
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);
@@ -69,7 +69,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setUrl(url);
         newTce.setVerbose(verbose);
         newTce.setScreenshot(screenshot);
-        newTce.settCase(tCase);
+        newTce.setTestCaseObj(tCase);
         newTce.setCountryEnvParam(countryEnvParam);
         newTce.setCountryEnvironmentParameters(countryEnvironmentParameters);
         newTce.setManualURL(manualURL);
@@ -91,14 +91,14 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
     }
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData, String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries) {
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData, String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries) {
         TestCaseExecution newTce = this.create(id, test, testCase, build, revision, environment, country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url, port, tag, finished, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, status, crbVersion, tCase, countryEnvParam, countryEnvironmentParameters, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, testCaseStepExecution, resultMessage, executor);
         newTce.setNumberOfRetries(numberOfRetries);
         return newTce;
     }
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TCase tCase, CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData, String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries, String screenSize) {
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage, Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData, String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries, String screenSize) {
         TestCaseExecution newTce = this.create(id, test, testCase, build, revision, environment, country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, ip, url, port, tag, finished, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, status, crbVersion, tCase, countryEnvParam, countryEnvironmentParameters, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, testCaseStepExecution, resultMessage, executor);
         newTce.setNumberOfRetries(numberOfRetries);
         newTce.setScreenSize(screenSize);
@@ -111,7 +111,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             String browserFullVersion, List<RobotCapability> capabilities, long start, long end, String controlStatus,
             String controlMessage, Application application, String ip, String url, String port, String tag,
             String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous,
-            String timeout, String outputFormat, String status, String crbVersion, TCase tCase,
+            String timeout, String outputFormat, String status, String crbVersion, TestCase tCase,
             CountryEnvParam countryEnvParam, CountryEnvironmentParameters countryEnvironmentParameters,
             boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution,

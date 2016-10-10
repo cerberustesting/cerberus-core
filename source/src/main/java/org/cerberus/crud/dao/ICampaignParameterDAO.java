@@ -20,12 +20,13 @@
 package org.cerberus.crud.dao;
 
 import java.util.List;
+
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 
 /**
- *
  * @author memiks
  */
 public interface ICampaignParameterDAO {
@@ -44,5 +45,15 @@ public interface ICampaignParameterDAO {
 
     List<CampaignParameter> findCampaignParameterByCriteria(Integer campaignparameterID, String campaign, String parameter, String value) throws CerberusException;
 
-    public AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+    AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
+
+    AnswerList readByCampaign(String campaign);
+
+    Answer deleteByCampaign(String key);
+
+    Answer delete(CampaignParameter object);
+
+    Answer update(CampaignParameter object);
+
+    Answer create(CampaignParameter object);
 }

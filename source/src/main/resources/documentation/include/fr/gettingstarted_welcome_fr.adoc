@@ -1,0 +1,27 @@
+=== Connection
+
+L'accès à Cerberus requiert une authentification. Il est donc nécessaire d'utiliser 
+les informations de connection reçues par mail à la création de votre compte.
+
+image:loginpage.png[LoginPage,300,300]
+
+NOTE: Si vous n'avez pas de compte utilisateur, contactez votre administrateur Cerberus (l'e-mail est présent 
+dans la popup de login).
+
+NOTE: En cas d'oubli, la réinitialisation automatique du mot de passe est possible en remplissant le formulaire 
+accessible en cliquant sur le lien "Mot de passe oublié".
+
+Une fois connecté, vous accedez à la page d'accueil.
+
+=== Page d'accueil
+
+Sur cette page d'accueil, vous trouverez des informations sur ::
+* les cas de tests par application regroupés par status (Plus d'information sur les status dans le section <<workflow>>); 
+* les dernières executions par tag (Cf <<Personalisation>>);
+* les versions des applications déployées par environnement;
+
+image:homepage.png[Homepage]
+
+==== Personalisation
+
+image:homepagecustomtag.png[HomepageCustomTag, 300, 300]

@@ -185,7 +185,7 @@ function loadTagFilters(urlTag) {
                 var option = $('<option></option>').attr("value", encodedString).text(data.contentTable[index]);
                 $('#selectTag').append(option);
             }
-            
+
             $('#selectTag').select2();
 
             //if the tag is passed as a url parameter, then it loads the report from this tag
@@ -315,7 +315,7 @@ function loadReportList() {
         $.when(jqxhr).then(function (data) {
             if ($("#listTable_wrapper").hasClass("initialized")) {
                 $("#tableArea").empty();
-                $("#tableArea").html('<table id="listTable" class="table table-hover display" name="listTable">\n\
+                $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
             }
 
@@ -687,21 +687,19 @@ function selectTableToCopy() {
 
 function createShortDescRow(row, data, index) {
     var tableAPI = $("#listTable").DataTable();
+    
     var createdRow = tableAPI.row(row);
-    var rowClass = "";
-
-    if (index % 2 === 0) {
-        rowClass = "odd printBorder";
-    } else {
-        rowClass = "even printBorder";
-    }
-
-    createdRow.child(data.shortDesc);
-    $(row).children('.center').attr('rowspan', '2');
-    $(row).children('.priority').attr('rowspan', '2');
-    $(row).children('.bugid').attr('rowspan', '2');
-    $(createdRow.child()).attr('class', rowClass);
+    
+    createdRow.child([data.shortDesc,"labels"]);
+    $(row).children('.center').attr('rowspan', '3');
+    $(row).children('.priority').attr('rowspan', '3');
+    $(row).children('.bugid').attr('rowspan', '3');
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
+    var labelValue = '';
+                $.each(data.labels, function (i, e) {
+                    labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
+                });
+    $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
 }
 
@@ -730,14 +728,14 @@ function aoColumnsFunc(Columns) {
     var aoColumns = [
         {
             "data": "test",
-            "sName": "test",
+            "sName": "tec.test",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("test", "Test"),
             "sClass": "bold"
         },
         {
             "data": "testCase",
-            "sName": "testCase",
+            "sName": "tec.testCase",
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
@@ -788,25 +786,29 @@ function aoColumnsFunc(Columns) {
         };
         aoColumns.push(col);
     }
-    var col = 
-        {
-            "data": "priority",
-            "sName": "priority",
-            "sClass": "priority",
-            "sWidth": testCaseInfoWidth + "%",
-            "title": doc.getDocOnline("invariant", "PRIORITY")
-        };
-        aoColumns.push(col);
     var col =
-        {
-            "data": "bugId",
-            "sName": "bugId",
-            "sClass": "bugid",
-            "sWidth": testCaseInfoWidth + "%",
-            "title": doc.getDocOnline("testcase", "BugID")
-        };
-        aoColumns.push(col);
-        
+            {
+                "data": "priority",
+                "sName": "tec.priority",
+                "sClass": "priority",
+                "sWidth": testCaseInfoWidth + "%",
+                "title": doc.getDocOnline("invariant", "PRIORITY")
+            };
+    aoColumns.push(col);
+    var col =
+            {
+                "data": "bugId", 
+                        "mRender": function (data) {
+                            var link = '<a href="'+data.bugTrackerUrl+'">'+data.bugId+"</a>";
+                            return link;
+                        },
+                "sName": "tec.bugId",
+                "sClass": "bugid",
+                "sWidth": testCaseInfoWidth + "%",
+                "title": doc.getDocOnline("testcase", "BugID")
+            };
+    aoColumns.push(col);
+
     return aoColumns;
 }
 
@@ -818,10 +820,13 @@ function customConfig(config) {
             $('.shortDesc').each(function () {
                 $(this).attr('colspan', '3');
             });
+            $('.label').each(function () {
+                $(this).attr('colspan', '3');
+            });
         }
     };
 
-    config.paginate = false;
+    config.bPaginate = false;
     config.lang.colVis = customColvisConfig;
     config.orderClasses = false;
     config.bDeferRender = true;

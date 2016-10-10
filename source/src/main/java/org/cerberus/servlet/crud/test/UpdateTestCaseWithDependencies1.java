@@ -31,13 +31,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.TCase;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.factory.IFactoryTCase;
 import org.cerberus.crud.factory.IFactoryTestCaseCountry;
 import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
@@ -64,6 +63,7 @@ import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.HtmlUtils;
+import org.cerberus.crud.factory.IFactoryTestCase;
 
 /**
  *
@@ -124,7 +124,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
 
             AnswerItem resp = testCaseService.readByKey(test, testCase);
-            TCase tc = (TCase) resp.getItem();
+            TestCase tc = (TestCase) resp.getItem();
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
@@ -139,8 +139,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-            {
-                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -162,49 +161,49 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                      */
                     List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
                     tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
-                    
+
                     /*
                     * Get steps, actions and controls from page by:
                     * - generating a new step, action or control number,
                     * - setting the correct related step and action for action or control
-                    */
-                   List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
-                   List<TestCaseStepAction> tcsaFromPage = new ArrayList();
-                   List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
+                     */
+                    List<TestCaseStep> tcsFromPage = getTestCaseStepFromParameter(request, appContext, test, testCase, duplicate);
+                    List<TestCaseStepAction> tcsaFromPage = new ArrayList();
+                    List<TestCaseStepActionControl> tcsacFromPage = new ArrayList();
 
-                   int nextStepNumber = getMaxStepNumber(tcsFromPage);
-                   for (TestCaseStep tcs : tcsFromPage) {
-                       if (tcs.getStep() == -1) {
-                           tcs.setStep(++nextStepNumber);
-                       }
+                    int nextStepNumber = getMaxStepNumber(tcsFromPage);
+                    for (TestCaseStep tcs : tcsFromPage) {
+                        if (tcs.getStep() == -1) {
+                            tcs.setStep(++nextStepNumber);
+                        }
 
-                       if (tcs.getTestCaseStepAction() != null) {
-                           int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
-                           for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
-                               if (tcsa.getSequence() == -1) {
-                                   tcsa.setSequence(++nextSequenceNumber);
-                               }
-                               tcsa.setStep(tcs.getStep());
+                        if (tcs.getTestCaseStepAction() != null) {
+                            int nextSequenceNumber = getMaxSequenceNumber(tcs.getTestCaseStepAction());
+                            for (TestCaseStepAction tcsa : tcs.getTestCaseStepAction()) {
+                                if (tcsa.getSequence() == -1) {
+                                    tcsa.setSequence(++nextSequenceNumber);
+                                }
+                                tcsa.setStep(tcs.getStep());
 
-                               if (tcsa.getTestCaseStepActionControl() != null) {
-                                       int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
-                                   for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
-                                       if (tscac.getControl() == -1) {
-                                           tscac.setControl(++nextControlNumber);
-                                       }
-                                       tscac.setStep(tcs.getStep());
-                                       tscac.setSequence(tcsa.getSequence());
-                                   }
-                                   tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
-                               }
-                           }
-                           tcsaFromPage.addAll(tcs.getTestCaseStepAction());
-                       }
-                   }
+                                if (tcsa.getTestCaseStepActionControl() != null) {
+                                    int nextControlNumber = getMaxControlNumber(tcsa.getTestCaseStepActionControl());
+                                    for (TestCaseStepActionControl tscac : tcsa.getTestCaseStepActionControl()) {
+                                        if (tscac.getControlSequence() == -1) {
+                                            tscac.setControlSequence(++nextControlNumber);
+                                        }
+                                        tscac.setStep(tcs.getStep());
+                                        tscac.setSequence(tcsa.getSequence());
+                                    }
+                                    tcsacFromPage.addAll(tcsa.getTestCaseStepActionControl());
+                                }
+                            }
+                            tcsaFromPage.addAll(tcs.getTestCaseStepAction());
+                        }
+                    }
 
-                   /*
+                    /*
                     * Create, update or delete step, action and control according to the needs
-                    */
+                     */
                     List<TestCaseStep> tcsFromDtb = new ArrayList(tcsService.getListOfSteps(initialTest, initialTestCase));
                     tcsService.compareListAndUpdateInsertDeleteElements(tcsFromPage, tcsFromDtb, duplicate);
 
@@ -226,7 +225,6 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     }
 
                 }
-            }
         }
 
         /**
@@ -239,10 +237,10 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         response.getWriter().flush();
 
     }
-    
+
     /**
      * Get the highest step number from the given steps
-     * 
+     *
      * @param steps a collection of steps from which get the highest step number
      * @return the highest step number from the given steps
      */
@@ -257,11 +255,12 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         }
         return nextStepNumber;
     }
-    
+
     /**
      * Get the highest action sequence from the given actions
-     * 
-     * @param steps a collection of actions from which get the highest action sequence
+     *
+     * @param steps a collection of actions from which get the highest action
+     * sequence
      * @return the highest action sequence from the given actions
      */
     private int getMaxSequenceNumber(Collection<TestCaseStepAction> actions) {
@@ -275,19 +274,20 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         }
         return nextSequenceNumber;
     }
-    
+
     /**
      * Get the highest control number from the given controls
-     * 
-     * @param controls a collection of controls from which get the highest control number
+     *
+     * @param controls a collection of controls from which get the highest
+     * control number
      * @return the highest control number from the given controls
      */
     private int getMaxControlNumber(Collection<TestCaseStepActionControl> controls) {
         int nextControlNumber = 0;
         if (controls != null) {
             for (TestCaseStepActionControl control : controls) {
-                if (nextControlNumber < control.getControl()) {
-                    nextControlNumber = control.getControl();
+                if (nextControlNumber < control.getControlSequence()) {
+                    nextControlNumber = control.getControlSequence();
                 }
             }
         }
@@ -301,9 +301,9 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
      * @return TestCase object
      * @see org.cerberus.crud.entity.TestCase
      */
-    private TCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
+    private TestCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
 
-        IFactoryTCase testCaseFactory = appContext.getBean(IFactoryTCase.class);
+        IFactoryTestCase testCaseFactory = appContext.getBean(IFactoryTestCase.class);
         String origin = request.getParameter("editOrigin");
         String refOrigin = request.getParameter("editRefOrigin");
         String creator = request.getParameter("editCreator");
@@ -331,9 +331,10 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         String targetRevision = request.getParameter("editTargetRev");
         String comment = HtmlUtils.htmlEscape(request.getParameter("editComment"));
         String function = request.getParameter("editFunction");
+        String userAgent = request.getParameter("editUserAgent");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
                 runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
-                toRevision, null, bugID, targetSprint, targetRevision, comment, null, null, null, null);
+                toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
     }
 
     private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
@@ -388,6 +389,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String value2 = propJson.getString("value2");
             int length = propJson.getInt("length");
             int rowLimit = propJson.getInt("rowLimit");
+            int retryNb = propJson.getInt("retryNb");
+            int retryPeriod = propJson.getInt("retryPeriod");
             String nature = propJson.getString("nature");
             String database = propJson.getString("database");
             JSONArray countries = propJson.getJSONArray("country");
@@ -395,7 +398,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 for (int j = 0; j < countries.length(); j++) {
                     String country = countries.getString(j);
 
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature));
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
                 }
             }
         }
@@ -455,6 +458,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int step = tcsaJson.isNull("step") ? -1 : tcsaJson.getInt("step");
             int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
+            String conditionOper = tcsaJson.getString("conditionOper");
+            String conditionVal = tcsaJson.getString("conditionVal");
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");
@@ -464,7 +469,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, action, object, property, forceExeStatus, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal, action, object, property, forceExeStatus, description, screenshot);
                 tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -502,7 +507,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
      * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
-         * @param response servlet response
+     * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */

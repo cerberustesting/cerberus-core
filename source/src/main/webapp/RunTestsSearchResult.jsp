@@ -20,7 +20,7 @@
 <%@page import="org.springframework.context.ApplicationContext"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
-<%@page import="org.cerberus.crud.entity.TCase"%>
+<%@page import="org.cerberus.crud.entity.TestCase"%>
 <%@page import="org.cerberus.crud.service.IManualTestCaseService"%>
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.service.IDocumentationService"%>
@@ -57,18 +57,18 @@
                     <tbody>
                     <%
 
-                        TCase searchTCase = new TCase();
+                        TestCase searchTCase = new TestCase();
                         searchTCase.setTest(request.getParameter("Test"));
                         searchTCase.setProject(request.getParameter("Project"));
                         String system = request.getParameter("System");
                         searchTCase.setApplication(request.getParameter("Application"));
-                        searchTCase.setActive(request.getParameter("TcActive"));
+                        searchTCase.setTcActive(request.getParameter("TcActive"));
                         searchTCase.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("Priority"), -1));
                         searchTCase.setStatus(request.getParameter("Status"));
                         searchTCase.setGroup(request.getParameter("Group"));
-                        searchTCase.setTargetSprint(request.getParameter("TargetBuild"));
-                        searchTCase.setTargetRevision(request.getParameter("TargetRev"));
-                        searchTCase.setCreator(request.getParameter("Creator"));
+                        searchTCase.setTargetBuild(request.getParameter("TargetBuild"));
+                        searchTCase.setTargetRev(request.getParameter("TargetRev"));
+                        searchTCase.setUsrCreated(request.getParameter("Creator"));
                         searchTCase.setImplementer(request.getParameter("Implementer"));
                         searchTCase.setFunction(request.getParameter("Function"));
                         String[] test = request.getParameter("Test")==null?null:request.getParameterValues("Test");
@@ -87,7 +87,7 @@
                         String[] battery = request.getParameter("Battery")==null?null:request.getParameterValues("Battery");
                         
                         int indexColor = 0;
-                        for (TCase tCase : testCaseService.findByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign, battery)) {
+                        for (TestCase tCase : testCaseService.findByCriteria(test, project, app, active, priority, status, group, targetBuild, targetRev, creator, implementer, function, campaign, battery)) {
                             if(!tCase.getGroup().equalsIgnoreCase("PRIVATE")) {
                                 indexColor++;
                     %>
@@ -96,7 +96,7 @@
                         <td  onclick="addToSelectedTest()"><%=tCase.getTest()%></td>
                         <td ><a href="TestCase.jsp?Load=Load&Test=<%=tCase.getTest()%>&TestCase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
                         <td ><%=tCase.getApplication()%></td>
-                        <td ><%=tCase.getShortDescription()%></td>
+                        <td ><%=tCase.getDescription()%></td>
                         </tr>
                     <%
                             }

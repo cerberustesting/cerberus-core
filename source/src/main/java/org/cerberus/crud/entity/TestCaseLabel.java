@@ -32,6 +32,10 @@ public class TestCaseLabel {
     private Timestamp dateCreated;
     private String usrModif;
     private Timestamp dateModif;
+
+    /**
+     * Not included in table.
+     */
     private Label label;
 
     public Label getLabel() {
@@ -105,7 +109,7 @@ public class TestCaseLabel {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public boolean hasSameKey(TestCaseLabel obj) {
         if (obj == null) {
             return false;
@@ -125,4 +129,37 @@ public class TestCaseLabel {
         }
         return true;
     }
+    
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + (this.labelId != null ? this.labelId.hashCode() : 0);
+        hash = 29 * hash + (this.test != null ? this.test.hashCode() : 0);
+        hash = 29 * hash + (this.testcase != null ? this.testcase.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TestCaseLabel other = (TestCaseLabel) obj;
+        if ((this.labelId == null) ? (other.labelId != null) : !this.labelId.equals(other.labelId)) {
+            return false;
+        }
+        if ((this.test == null) ? (other.test != null) : !this.test.equals(other.test)) {
+            return false;
+        }
+        if ((this.testcase == null) ? (other.testcase != null) : !this.testcase.equals(other.testcase)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
 }

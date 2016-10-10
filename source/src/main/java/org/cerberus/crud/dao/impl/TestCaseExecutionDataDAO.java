@@ -411,8 +411,9 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     public Answer create(TestCaseExecutionData object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO testcaseexecutiondata(id, property, `index`, description, VALUE, TYPE, VALUE1,VALUE2, rc, rmessage, start, END, startlong, endlong)  ");
-        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        query.append("INSERT INTO testcaseexecutiondata (`id`, `property`, `index`, `description`, `value`, `type`, `value1`, `value2`, `rc`, ");
+        query.append("`rmessage`, `start`, `end`, `startlong`, `endlong`, `database`, `value1Init`, `value2Init`, `length`, `rowLimit`, `nature`, `retrynb`, `retryperiod`) ");
+        query.append("VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -430,20 +431,29 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setLong(1, object.getId());
-                preStat.setString(2, object.getProperty());
-                preStat.setInt(3, object.getIndex());
-                preStat.setString(4, object.getDescription());
-                preStat.setString(5, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-                preStat.setString(6, object.getType());
-                preStat.setString(7, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(8, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
-                preStat.setString(9, object.getRC());
-                preStat.setString(10, StringUtil.getLeftString(object.getrMessage(), 3000));
-                preStat.setTimestamp(11, new Timestamp(object.getStart()));
-                preStat.setTimestamp(12, new Timestamp(object.getEnd()));
-                preStat.setString(13, df.format(object.getStart()));
-                preStat.setString(14, df.format(object.getEnd()));
+                int i = 1;
+                preStat.setLong(i++, object.getId());
+                preStat.setString(i++, object.getProperty());
+                preStat.setInt(i++, object.getIndex());
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
+                preStat.setString(i++, object.getType());
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
+                preStat.setString(i++, object.getRC());
+                preStat.setString(i++, object.getrMessage());
+                preStat.setTimestamp(i++, new Timestamp(object.getStart()));
+                preStat.setTimestamp(i++, new Timestamp(object.getEnd()));
+                preStat.setString(i++, df.format(object.getStart()));
+                preStat.setString(i++, df.format(object.getEnd()));
+                preStat.setString(i++, object.getDatabase());
+                preStat.setString(i++, object.getValue1Init());
+                preStat.setString(i++, object.getValue2Init());
+                preStat.setInt(i++, object.getLength());
+                preStat.setInt(i++, object.getRowLimit());
+                preStat.setString(i++, object.getNature());
+                preStat.setInt(i++, object.getRetryNb());
+                preStat.setInt(i++, object.getRetryPeriod());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -528,11 +538,16 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
     @Override
     public Answer update(TestCaseExecutionData object) {
         MessageEvent msg = null;
-        final String query = "UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, END = ?, startlong = ?, endlong = ? WHERE id = ? AND property = ? AND `index` = ?";
+        StringBuilder query = new StringBuilder();
+
+        query.append("UPDATE testcaseexecutiondata SET DESCRIPTION = ?, VALUE = ?, TYPE = ?, VALUE1 = ?, VALUE2 = ?, rc = ?, rmessage = ?, start = ?, ");
+        query.append("END = ?, startlong = ?, endlong = ?, `database` = ?, `value1Init` = ?, `value2Init` = ?, ");
+        query.append("`length` = ?, `rowLimit` = ?, `nature` = ?, `retrynb` = ?, `retryperiod` = ? ");
+        query.append("WHERE id = ? AND property = ? AND `index` = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
+            LOG.debug("SQL : " + query.toString());
             LOG.debug("SQL.param.id : " + object.getId());
             LOG.debug("SQL.param.property : " + object.getProperty());
             LOG.debug("SQL.param.index : " + object.getIndex());
@@ -543,23 +558,32 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
 
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query);
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
-                preStat.setString(1, object.getDescription());
-                preStat.setString(2, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-                preStat.setString(3, object.getType());
-                preStat.setString(4, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(5, StringUtil.getLeftString(object.getValue2(), 2500));
-                preStat.setString(6, object.getRC());
-                preStat.setString(7, StringUtil.getLeftString(object.getrMessage(), 3000));
-                preStat.setTimestamp(8, new Timestamp(object.getStart()));
-                preStat.setTimestamp(9, new Timestamp(object.getEnd()));
-                preStat.setString(10, df.format(object.getStart()));
-                preStat.setString(11, df.format(object.getEnd()));
-                preStat.setLong(12, object.getId());
-                preStat.setString(13, object.getProperty());
-                preStat.setInt(14, object.getIndex());
+                int i = 1;
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
+                preStat.setString(i++, object.getType());
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
+                preStat.setString(i++, StringUtil.getLeftString(object.getValue2(), 2500));
+                preStat.setString(i++, object.getRC());
+                preStat.setString(i++, StringUtil.getLeftString(object.getrMessage(), 3000));
+                preStat.setTimestamp(i++, new Timestamp(object.getStart()));
+                preStat.setTimestamp(i++, new Timestamp(object.getEnd()));
+                preStat.setString(i++, df.format(object.getStart()));
+                preStat.setString(i++, df.format(object.getEnd()));
+                preStat.setString(i++, object.getDatabase());
+                preStat.setString(i++, object.getValue1Init());
+                preStat.setString(i++, object.getValue2Init());
+                preStat.setInt(i++, object.getLength());
+                preStat.setInt(i++, object.getRowLimit());
+                preStat.setString(i++, object.getNature());
+                preStat.setInt(i++, object.getRetryNb());
+                preStat.setInt(i++, object.getRetryPeriod());
+                preStat.setLong(i++, object.getId());
+                preStat.setString(i++, object.getProperty());
+                preStat.setInt(i++, object.getIndex());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -597,20 +621,24 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
         String type = resultSet.getString("exd.type");
         String value1 = resultSet.getString("exd.value1");
         String value2 = resultSet.getString("exd.value2");
+        String value1Init = resultSet.getString("exd.value1Init");
+        String value2Init = resultSet.getString("exd.value2Init");
         String returnCode = resultSet.getString("exd.rc");
         String returnMessage = resultSet.getString("exd.rmessage");
         long start = resultSet.getTimestamp("exd.start").getTime();
         long end = resultSet.getTimestamp("exd.end").getTime();
         long startLong = resultSet.getLong("exd.startlong");
         long endLong = resultSet.getLong("exd.endlong");
+        int length = resultSet.getInt("exd.length");
+        int rowLimit = resultSet.getInt("exd.rowlimit");
+        String nature = resultSet.getString("exd.nature");
+        String database = resultSet.getString("exd.database");
+        int retryNb = resultSet.getInt("exd.RetryNb");
+        int retryPeriod = resultSet.getInt("exd.RetryPeriod");
 
         factoryTestCaseExecutionData = new FactoryTestCaseExecutionData();
         return factoryTestCaseExecutionData.create(id, property, index, description, value, type, value1, value2, returnCode, returnMessage,
-                start, end, startLong, endLong, null);
+                start, end, startLong, endLong, null, retryNb, retryPeriod, database, value1Init, value2Init, length, rowLimit, nature);
     }
-
-
-
-
 
 }
