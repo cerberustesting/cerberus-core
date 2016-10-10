@@ -95,6 +95,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             configurations.showColvis = false;
             if ($('#homePageTable').hasClass('dataTable') === false) {
                 createDataTable(configurations);
+                showTitleWhenTextOverflow();
             } else {
                 var oTable = $("#homePageTable").dataTable();
                 oTable.fnClearTable();
