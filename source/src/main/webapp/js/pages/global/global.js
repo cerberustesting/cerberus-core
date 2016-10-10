@@ -1106,7 +1106,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 //updates the table with basis on the permissions that the current user has
 
                 displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
-                $('[data-toggle="tooltip"]').tooltip();
+                showTitleWhenTextOverflow();
 
                 if (callbackFunction !== undefined)
                     callbackFunction(data);
@@ -1272,7 +1272,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
-                $('[data-toggle="tooltip"]').tooltip();
+                showTitleWhenTextOverflow();
             });
         };
     } else {
@@ -2057,3 +2057,16 @@ $.extend({
         return $.getUrlVars()[name];
     }
 });
+
+function showTitleWhenTextOverflow() {
+    $('td, th').each(function () {
+        var $ele = $(this);
+        if (this.offsetWidth < this.scrollWidth)
+            $ele.attr('title', '<div>'+$ele.text()+'</div>');
+            $ele.attr('data-html', true);
+            $ele.attr('data-toggle', 'tooltip');
+    });
+    $('[data-toggle="tooltip"]').tooltip({
+            container : 'body'
+    } );
+}

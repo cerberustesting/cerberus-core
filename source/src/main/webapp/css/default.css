@@ -303,7 +303,7 @@ select option{
 }*/
 
 table.display { table-layout:fixed;}
-table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ word-wrap:break-word; overflow:hidden; 
+table.display  th, #listOfTestDataLib td , #viewTestDataLibDataEntriesTable td{ overflow:hidden; 
                                                                                 text-overflow: ellipsis; }
 
 #viewTestDataLibDataEntriesTable.display{

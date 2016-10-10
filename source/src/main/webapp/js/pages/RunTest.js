@@ -149,7 +149,12 @@ function typeSelectHandler(test, testcase, environment, country) {
 
         $("#testCaseList").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        displayUniqueEnvList("environment", getUser().defaultSystem, environment);
+        if(environment != undefined && environment != null){
+            $("[name='environment']").append($('<option></option>').text(environment).val(environment));
+            $("[name='environment']").val(environment);
+        }else {
+            displayUniqueEnvList("environment", getUser().defaultSystem, environment);
+        }
         $("#campaignSelection").hide();
         $("#filters").show();
         $("#resetbutton").show();
@@ -165,32 +170,47 @@ function typeSelectHandler(test, testcase, environment, country) {
 }
 
 function loadTestCaseFromFilter(defTest, defTestcase) {
+
 //    console.debug("loadTestCaseFromFilter Called" + defTest + defTestcase);
     showLoader("#chooseTest");
-    var testURL = ""
+    var testURL = "";
+    var testCaseURL = "";
     if ((defTest !== null) && (defTest !== undefined)) { // If test is defined, we limit the testcase list on that test.
         testURL = "&test=" + defTest;
+    }
+    if ((defTestcase !== null) && (defTestcase !== undefined)) { // If test is defined, we limit the testcase list on that test.
+        testCaseURL = "&testCase=" + defTestcase;
     }
     // Get the requested result size value
     var lengthURL = '&length=' + $("#lengthFilter").find(':selected').val();
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL + lengthURL,
+        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {
+
             var testCaseList = $("#testCaseList");
 
             testCaseList.empty();
+            if(data.contentTable.length > 0) {
+                for (var i = 0; i < data.contentTable.length; i++) {
 
-            for (var index = 0; index < data.contentTable.length; index++) {
-                var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
+                    var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
+
+                    testCaseList.append($("<option></option>")
+                        .text(text)
+                        .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                        .data("item", data.contentTable[i]));
+                }
+            }else{
+                var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
 
                 testCaseList.append($("<option></option>")
-                        .text(text)
-                        .val(data.contentTable[index].test + "-" + data.contentTable[index].testCase)
-                        .data("item", data.contentTable[index]));
+                    .text(text)
+                    .val(data.contentTable.test + "-" + data.contentTable.testCase)
+                    .data("item", data.contentTable));
             }
             hideLoader("#chooseTest");
             if ((defTest !== null) && (defTest !== undefined)) { // if test is defined we select the value in the select list.
@@ -613,6 +633,14 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
             }
 
             select.multiselect(new multiSelectConf(selectName));
+
+            if(selectName == "test"){
+                var test = GetURLParameter("test");
+                if(test != undefined && test != null && test != "") {
+                    $("#filters").find("select[id='testFilter'] option[value='" + test + "']").attr("selected", "selected");
+                    select.multiselect("rebuild");
+                }
+            }
         },
         "error": showUnexpectedError
     });
@@ -681,7 +709,7 @@ function loadSelect(idName, selectName, forceReload) {
     var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
-        $.ajax({
+        return $.ajax({
             url: "FindInvariantByID",
             data: {idName: idName},
             async: true,
