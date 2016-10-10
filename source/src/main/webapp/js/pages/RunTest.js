@@ -709,7 +709,7 @@ function loadSelect(idName, selectName, forceReload) {
     var select = $("<select></select>").addClass("form-control input-sm");
 
     if (list === null) {
-        $.ajax({
+        return $.ajax({
             url: "FindInvariantByID",
             data: {idName: idName},
             async: true,
