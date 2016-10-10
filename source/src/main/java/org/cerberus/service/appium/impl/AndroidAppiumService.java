@@ -98,7 +98,8 @@ public class AndroidAppiumService extends AppiumService {
         RETURN(AndroidKeyCode.ENTER),
         ENTER(AndroidKeyCode.ENTER),
         SEARCH(AndroidKeyCode.ENTER),
-        BACKSPACE(AndroidKeyCode.BACKSPACE);
+        BACKSPACE(AndroidKeyCode.BACKSPACE),
+        BACK(AndroidKeyCode.BACK); 
 
         private int code;
 
