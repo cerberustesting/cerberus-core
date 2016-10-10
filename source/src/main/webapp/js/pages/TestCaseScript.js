@@ -41,7 +41,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
-        displayTestCaseLabel(doc);
         
         displayInvariantList("group", "GROUP", false);
         displayInvariantList("status", "TCSTATUS", false);
@@ -452,7 +451,7 @@ function editStep() {
     $("#stepInfo").hide();
     $("#editStepDescription").prop("placeholder", "Description").prop("maxlength", "150").val(step.description);
     $("#editStep").show();
-
+    
     if (step.useStep === "Y") {
         $("#addInLibArea").hide();
     } else {
@@ -795,6 +794,7 @@ Step.prototype.show = function () {
     object.stepActionContainer.show();
     $("#stepDescription").text(object.description);
     $("#stepInfo").show();
+    $("#addActionContainer").show();
 };
 
 Step.prototype.setActionList = function (actionList) {
@@ -1244,7 +1244,7 @@ Control.prototype.getJsonData = function () {
  * @returns {undefined}
  */
 function listenEnterKeypressWhenFocusingOnDescription() {
-    $("input[class='description form-control']").each(function (index, field) {
+    $("input[class='description form-control no-border']").each(function (index, field) {
         $(field).off('keydown');
         $(field).on('keydown', function (e) {
             if (e.which === 13) {
