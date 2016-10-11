@@ -818,8 +818,8 @@
                                         + tce.getEnvironment() + " in "
                                         + tce.getCountry() + " on "
                                         + new Date(tce.getEnd())
-                                        + "<a onclick='return checkUndefinedProperties();'  width : 390px ; href=\"RunTests.jsp?Test=" + test + "&TestCase=" + testcase + "&MySystem=" + appSystem
-                                        + "&Country=" + tce.getCountry() + "&Environment=" + tce.getEnvironment() + "\"><i> (Run it again) </i></a>";
+                                        + "<a onclick='return checkUndefinedProperties();'  width : 390px ; href=\"RunTests1.jsp?test=" + test + "&testcase=" + testcase
+                                        + "&country=" + tce.getCountry() + "&environment=" + tce.getEnvironment() + "\"><i> (Run it again) </i></a>";
                             }
                             if ((tcase.getBugID() != null)
                                     && (tcase.getBugID().compareToIgnoreCase("") != 0)
@@ -1992,11 +1992,11 @@
                 <tr>
                     <% if (tcase.getGroup().equalsIgnoreCase("AUTOMATED")) {%>
                     <td>
-                        <a onclick="return checkUndefinedProperties();" href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>">Run this Test Case.</a>
+                        <a onclick="return checkUndefinedProperties();" href="RunTests1.jsp?test=<%=test%>&testcase=<%=testcase%>">Run this Test Case.</a>
                     </td>
                     <%        } else if (tcase.getGroup().equalsIgnoreCase("MANUAL")) {%>
                     <td>
-                        <a href="RunTests.jsp?Test=<%=test%>&TestCase=<%=testcase%>&MySystem=<%=appSystem%>&manualExecution=Y">Run this Test Case.</a>
+                        <a href="RunTests1.jsp?test=<%=test%>&testcase=<%=testcase%>&manualExecution=Y">Run this Test Case.</a>
                     </td>
                     <%        }%>    
                     <td>
