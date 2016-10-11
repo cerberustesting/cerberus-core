@@ -53,15 +53,31 @@ _Note: It is not yet possible to change a user's password, except by modifying i
 
 ### How to run Web Application tests
 
+#### Configure Cerberus to access to the Selenium Grid
+
 This composition provide a ready-to-use Selenium Grid to run Web Application tests easier. To do so, simply feed the Cerberus Robot settings by the following information:
 
 - Selenium ip/host: `selenium-hub`
 - Selenium port: `4444`
 - Browser: `firefox` or `chrome`
 
-_Note 1: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all under the **2.53.0** version._
+_Note: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all under the **2.53.0** version._
 
-_Note 2: The Selenium Grid console can be reached from `<docker_host>:14444/grid/console`._
+#### Access to the Selenium Grid Console
+
+The Selenium Grid Console can be reached from `<docker_host>:14444/grid/console`.
+
+#### View running test on browser
+
+The Selenium Grid is using the _debug_ version of the associated nodes.
+This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_Network_Computing) that can be reached through a VNC client.
+
+Assume you already installed your own VNC client, then viewing running test on browser can be simply done by connecting your VNC client to:
+
+- `vnc://<docker_host>:15900`, for the Mozilla Firefox Selenium node 
+- `vnc://<docker_host>:25900`, for the Google Chrome Selenium node 
+    
+Where `<docker_host>` is your Docker host.
 
 ### Associated images
 
@@ -70,8 +86,8 @@ Image                                                                           
 [`cerberustesting/cerberus-db-mysql`](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/)              | Run a Cerberus dedicated MySQL database instance
 [`cerberustesting/cerberus-as-glassfish`](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/)      | Run a Cerberus instance into a Glassfish application server
 [`selenium/hub`](https://hub.docker.com/r/selenium/hub/)                                                        | Run a Selenium Grid instance
-[`selenium/node-firefox`](https://hub.docker.com/r/selenium/node-firefox/)                                      | Run a Selenium node with Mozilla Firefox installed
-[`selenium/node-chrome`](https://hub.docker.com/r/selenium/node-chrome/)                                        | Run a Selenium node with Google Chrome installed
+[`selenium/node-firefox-debug`](https://hub.docker.com/r/selenium/node-firefox-debug/)                          | Run a Selenium node with Mozilla Firefox and a VNC server installed
+[`selenium/node-chrome-debug`](https://hub.docker.com/r/selenium/node-chrome-debug/)                            | Run a Selenium node with Google Chrome and a VNC server installed
 
 ### Ports
 
@@ -83,6 +99,8 @@ Port             | Description
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
 `14444`          | the Selenium Grid access port
+`15900`          | the VNC server access to the Mozilla Firefox Selenium node
+`25900`          | the VNC server access to the Google Chrome Selenium node
 
 ### Mapped volumes
 

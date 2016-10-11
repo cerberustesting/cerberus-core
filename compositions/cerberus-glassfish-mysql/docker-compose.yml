@@ -74,10 +74,14 @@ services:
     ports:
       - "14444:4444"
   selenium-node-firefox:
-    image: selenium/node-firefox:2.53.0
+    image: selenium/node-firefox-debug:2.53.0
+    ports:
+      - "15900:5900"
     environment:
       HUB_PORT_4444_TCP_ADDR: selenium-hub
   selenium-node-chrome:
-    image: selenium/node-chrome:2.53.0
+    image: selenium/node-chrome-debug:2.53.0
+    ports:
+      - "25900:5900"
     environment:
       HUB_PORT_4444_TCP_ADDR: selenium-hub
