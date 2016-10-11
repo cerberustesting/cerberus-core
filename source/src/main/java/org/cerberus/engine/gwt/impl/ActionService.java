@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
 import org.apache.log4j.Level;
@@ -1013,7 +1014,20 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY));
         } else {
             try {
-                propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
+                // if value2 is not defined, then decode value1 property
+                if (StringUtil.isNullOrEmpty(value2)) {
+                    propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
+                }
+                // If not, then set value1 property to the decoded value2 property
+                else {
+                    String decodedValue2 =  propertyService.decodeValueWithExistingProperties("%" + value2 + "%", testCaseStepActionExecution, true);
+                    TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+                    for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
+                        if (value1.equals(property.getProperty())) {
+                            property.setValue(decodedValue2);
+                        }
+                    }
+                }
                 if ((testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("FA"))
                         || (testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("NA"))) {
                     message = testCaseStepActionExecution.getActionResultMessage();
