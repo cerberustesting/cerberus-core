@@ -322,6 +322,7 @@ function displayEnvList(selectName, system, defaultValue) {
  */
 function displayUniqueEnvList(selectName, system, defaultValue) {
     $.when($.getJSON("ReadCountryEnvParam", "unique=true&system=" + system)).then(function (data) {
+        $("[name='" + selectName + "']").empty();
         for (var option in data.contentTable) {
             var text = data.contentTable[option].environment;
             if (data.contentTable[option].active === false)

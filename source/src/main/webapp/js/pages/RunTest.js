@@ -148,6 +148,7 @@ function typeSelectHandler(test, testcase, environment, country) {
         });
 
         $("#testCaseList").prop("disabled", false);
+        $("input[name='envSettings']").prop("disabled", false);
         $("#envSettingsAuto select").empty();
         if(environment != undefined && environment != null){
             $("[name='environment']").append($('<option></option>').text(environment).val(environment));
@@ -159,6 +160,9 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#filters").show();
         $("#resetbutton").show();
         $("#filtersPanelContainer").show();
+
+        loadTestCaseFromFilter();
+
     } else if (value === "campaign") {
         $("#filtersPanelContainer").hide();
         $("#campaignSelection").show();
@@ -263,7 +267,7 @@ function loadCampaignContent(campaign) {
                 testCaseList.empty().prop("disabled", "disabled");
 
                 for (var index = 0; index < data.contentTable.length; index++) {
-                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].shortDescription;
+                    var text = data.contentTable[index].test + " - " + data.contentTable[index].testCase + " [" + data.contentTable[index].application + "]: " + data.contentTable[index].description;
 
                     testCaseList.append($("<option></option>")
                             .text(text)
@@ -304,6 +308,9 @@ function loadCampaignParameter(campaign) {
             }
 
             $("#envSettingsAuto select").prop("disabled", "disabled").val(env);
+
+            $("input[name='envSettings'][value='auto']").click();
+            $("input[name='envSettings']").prop("disabled", true);
 
             $("#countryList input.countrycb").each(function () {
                 var country = $(this).prop("name");
