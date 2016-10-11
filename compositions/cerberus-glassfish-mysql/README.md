@@ -8,7 +8,9 @@ Here you will find information about the `cerberus-glassfish-mysql` Docker compo
 
 The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glassfish](https://glassfish.java.net/) application server and a [MySQL](https://www.mysql.com/) database.
 
-### How to run it
+It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.jsp), initialized with two nodes with respectively [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/products/) and [Google Chrome](https://www.google.com/chrome/browser/index.html) Web browsers to get ready to run Web Application tests.
+
+### Get started
 
  1. Clone the [Cerberus Docker files repository](https://github.com/cerberustesting/cerberus-docker):
 
@@ -30,9 +32,9 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
 	
 	`docker-compose up -d --remove-orphans`
 	
-	[Optional] Adding more nodes to your selenium grid:
+	[Optional] Adding more nodes to your Selenium Grid:
 
-	`docker-compose scale firefox=3 chrome=3`
+	`docker-compose scale selenium-node-firefox=3 selenium-node-chrome=3`
 
  4. Wait for the images to startup
 
@@ -47,14 +49,29 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
    
  8. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish/README.md).
 
-*Note: It is not yet possible to change a user's password, except by modifying its value directly in the database.*
+_Note: It is not yet possible to change a user's password, except by modifying its value directly in the database._
+
+### How to run Web Application tests
+
+This composition provide a ready-to-use Selenium Grid to run Web Application tests easier. To do so, simply feed the Cerberus Robot settings by the following information:
+
+- Selenium ip/host: `selenium-hub`
+- Selenium port: `4444`
+- Browser: `firefox` or `chrome`
+
+_Note 1: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all under the **2.53.0** version._
+
+_Note 2: The Selenium Grid console can be reached from `<docker_host>:14444/grid/console`._
 
 ### Associated images
 
-Image                                                                                                                                       | Description
---------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------
-[`cerberustesting/cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-db-mysql)              | Run a Cerberus dedicated MySQL database instance
-[`cerberustesting/cerberus-as-glassfish`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish)      | Run a Cerberus instance into a Glassfish application server
+Image                                                                                                           | Description
+----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------
+[`cerberustesting/cerberus-db-mysql`](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/)              | Run a Cerberus dedicated MySQL database instance
+[`cerberustesting/cerberus-as-glassfish`](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/)      | Run a Cerberus instance into a Glassfish application server
+[`selenium/hub`](https://hub.docker.com/r/selenium/hub/)                                                        | Run a Selenium Grid instance
+[`selenium/node-firefox`](https://hub.docker.com/r/selenium/node-firefox/)                                      | Run a Selenium node with Mozilla Firefox installed
+[`selenium/node-chrome`](https://hub.docker.com/r/selenium/node-chrome/)                                        | Run a Selenium node with Google Chrome installed
 
 ### Ports
 
@@ -65,6 +82,7 @@ Port             | Description
 `18080`          | the Glassfish HTTP access port
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
+`14444`          | the Selenium Grid access port
 
 ### Mapped volumes
 

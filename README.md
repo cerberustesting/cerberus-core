@@ -2,7 +2,7 @@
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
-This project gather all Ceberus [Docker](https://www.docker.com/) related files.
+This project gather all Cerberus [Docker](https://www.docker.com/) related files.
 
 ## Get started
 

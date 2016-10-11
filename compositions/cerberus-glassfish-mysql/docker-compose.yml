@@ -18,6 +18,7 @@
 # Cerberus Glassfish MySQL composition.
 
 # Run a Cerberus instance with a Glassfish application server and a MySQL database.
+# Run also a Selenium hub with two nodes with respectively the Mozilla Firefox and Google Chrome Web browsers.
 #
 # How to run:
 #   - $ git clone https://github.com/cerberustesting/cerberus-docker.git
@@ -30,6 +31,7 @@
 #   - 13306: MySQL database access
 #   - 18080: Glassfish HTTP access
 #   - 14848: Glassfsh administration console access
+#   - 14444: The Selenium hub port
 #
 # Volumes:
 #   - MySQL data directory                      : FROM /var/lib/mysql                                                             TO ../localdata/mysql-db      (SERVICE cerberus-db-mysql)
@@ -39,9 +41,9 @@
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
 version: '2'
 services:
+  # Cerebrus internal services
   cerberus-db-mysql:
     image: cerberustesting/cerberus-db-mysql:latest
-    restart: always
     expose:
       - "3306"
     ports:
@@ -50,7 +52,6 @@ services:
       - ./localdata/mysql-db:/var/lib/mysql
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
-    restart: always
     environment:
       - DATABASE_HOST=cerberus-db-mysql
       - DATABASE_PORT=3306
@@ -64,18 +65,19 @@ services:
       - cerberus-db-mysql
     links:
       - cerberus-db-mysql
-    hub:
-      restart: always
-      image: selenium/hub:latest
-      ports:
-        - "4444:4444"
-    firefox:
-      restart: always
-      image: selenium/node-firefox:latest
-      environment:
-        HUB_PORT_4444_TCP_ADDR: hub
-    chrome:
-      restart: always
-      image: selenium/node-chrome:latest
-      environment:
-        HUB_PORT_4444_TCP_ADDR: hub
+
+  # Selenium-related services
+  selenium-hub:
+    image: selenium/hub:2.53.0
+    expose:
+      - "4444"
+    ports:
+      - "14444:4444"
+  selenium-node-firefox:
+    image: selenium/node-firefox:2.53.0
+    environment:
+      HUB_PORT_4444_TCP_ADDR: selenium-hub
+  selenium-node-chrome:
+    image: selenium/node-chrome:2.53.0
+    environment:
+      HUB_PORT_4444_TCP_ADDR: selenium-hub

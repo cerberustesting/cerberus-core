@@ -2,7 +2,7 @@
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
-Here you will find Ceberus Docker compositions.
+Here you will find Cerberus Docker compositions.
 
 ## Available compositions
 
