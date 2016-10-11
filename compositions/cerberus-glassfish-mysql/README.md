@@ -75,9 +75,9 @@ This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_N
 Assume you already installed your own VNC client, then viewing running test on browser can be simply done by connecting your VNC client to:
 
 - `vnc://<docker_host>:15900`, for the Mozilla Firefox Selenium node 
-- `vnc://<docker_host>:25900`, for the Google Chrome Selenium node 
+- `vnc://<docker_host>:25900`, for the Google Chrome Selenium node
     
-Where `<docker_host>` is your Docker host.
+Where `<docker_host>` is your Docker host, and `secret` as prompted password.
 
 _Note: This configuration could not be efficient in production environment. You may want to remove the -debug suffix from Selenium node image names to get production ready Selenium nodes._
 
