@@ -18,9 +18,23 @@ The `cerberus-glassfish-mysql` Docker composition runs Cerberus under the [Glass
 
  3. Execute the following command:
 
+	To run the docker-compose normally
+	
     `docker-compose up`
+	
+	To run the docker-compose asynchronously
+	
+	`docker-compose up -d`
+	
+	To run the docker-compose and remove already existing images
+	
+	`docker-compose up -d --remove-orphans`
+	
+	[Optional] Adding more nodes to your selenium grid:
 
- 4. Waiting for images startup
+	`docker-compose scale firefox=3 chrome=3`
+
+ 4. Wait for the images to startup
 
  5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
 

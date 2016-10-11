@@ -41,6 +41,7 @@ version: '2'
 services:
   cerberus-db-mysql:
     image: cerberustesting/cerberus-db-mysql:latest
+    restart: always
     expose:
       - "3306"
     ports:
@@ -49,6 +50,7 @@ services:
       - ./localdata/mysql-db:/var/lib/mysql
   cerberus-as-glassfish:
     image: cerberustesting/cerberus-as-glassfish:latest
+    restart: always
     environment:
       - DATABASE_HOST=cerberus-db-mysql
       - DATABASE_PORT=3306
@@ -62,3 +64,18 @@ services:
       - cerberus-db-mysql
     links:
       - cerberus-db-mysql
+    hub:
+      restart: always
+      image: selenium/hub:latest
+      ports:
+        - "4444:4444"
+    firefox:
+      restart: always
+      image: selenium/node-firefox:latest
+      environment:
+        HUB_PORT_4444_TCP_ADDR: hub
+    chrome:
+      restart: always
+      image: selenium/node-chrome:latest
+      environment:
+        HUB_PORT_4444_TCP_ADDR: hub
