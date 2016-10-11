@@ -2108,18 +2108,20 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
             .attr('onclick', 'addTCSACNew(\'StepListOfControlDiv' + step + incrementAction + nextIncControl + '\', \'' + step + '\', \'' + incrementAction + '\', this)');
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_sequence_template"]')
             .attr('name', 'control_sequence_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'ctrlseq_' + step).val(incremAction);
-    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_control_template"]')
-            .attr('name', 'control_control_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'control_' + step + '_' + incremAction).val(incrementControl + 1);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_controlsequence_template"]')
+            .attr('name', 'control_controlsequence_' + step + '_' + incrementAction + '_' + nextIncControl).attr('data-fieldtype', 'control_' + step + '_' + incremAction).val(incrementControl + 1);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_technical_control_template"]')
             .attr('name', 'control_technical_control_' + step + '_' + incrementAction + '_' + nextIncControl).val(-1);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_description_template"]')
             .attr('name', 'control_description_' + step + '_' + incrementAction + '_' + nextIncControl);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_control_template')
+        .attr('name', 'control_control_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_type_template')
             .attr('name', 'control_type_' + step + '_' + incrementAction + '_' + nextIncControl);
-    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_property_template"]')
-            .attr('name', 'control_property_' + step + '_' + incrementAction + '_' + nextIncControl);
-    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_value_template"]')
-            .attr('name', 'control_value_' + step + '_' + incrementAction + '_' + nextIncControl);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_value1_template"]')
+            .attr('name', 'control_value1_' + step + '_' + incrementAction + '_' + nextIncControl);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_value2_template"]')
+            .attr('name', 'control_value2_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_fatal_template')
             .attr('name', 'control_fatal_' + step + '_' + incrementAction + '_' + nextIncControl);
 
