@@ -79,6 +79,8 @@ Assume you already installed your own VNC client, then viewing running test on b
     
 Where `<docker_host>` is your Docker host.
 
+_Note: This configuration could not be efficient in production environment. You may want to remove the -debug suffix from Selenium node image names to get production ready Selenium nodes._
+
 ### Associated images
 
 Image                                                                                                           | Description
