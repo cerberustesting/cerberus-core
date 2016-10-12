@@ -159,13 +159,17 @@ public class ReadTestBatteryContent extends HttpServlet {
             }
         }
 
-        answer = testBatteryContentService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        if(request.getParameter("campaign") != null) {
+            answer = testBatteryContentService.readByCampaignByCriteria(request.getParameter("campaign"), startPosition, length, columnName, sort, searchParameter, individualSearch);
+        }else{
+            answer = testBatteryContentService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        }
 
 //        boolean userHasPermissions = request.isUserInRole("TestAdmin");
         JSONArray jsonArray = new JSONArray();
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestBattery testBattery : (List<TestBattery>) answer.getDataList()) {
-                jsonArray.put(convertTestBatterytoJSONObject(testBattery));
+            for (TestBatteryContent testBattery : (List<TestBatteryContent>) answer.getDataList()) {
+                jsonArray.put(convertTestBatteryContenttoJSONObject(testBattery));
             }
         }
 
