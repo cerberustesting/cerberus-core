@@ -30,17 +30,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var tag = GetURLParameter("tag");
         var browser = GetURLParameter("browser");
 
-        oldPreferenceCompatibility();
-
         displayHeaderLabel(doc);
         displayFooter(doc);
         bindToggleCollapse();
 
         appendCampaignList();
         appendCountryList(country);
-        typeSelectHandler(test, testcase, environment, country);
         showLoader("#chooseTest");
+
+
         $.when(
+                loadExecForm(tag),
+                loadRobotForm(browser),
                 loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
                 loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application"),
@@ -56,7 +57,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadHardDefinedSingleSelect("length", [{ label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
                 )
             .then(function () {
-                loadTestCaseFromFilter(test, testcase);
+                typeSelectHandler(test, testcase, environment, country);
         });
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
@@ -104,9 +105,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#notValidNumber").click(function () {
             $("#notValidTC").modal("show");
         });
-
-        loadExecForm(tag);
-        loadRobotForm(browser);
 
         $('[name="envSettings"]').on("change", function () {
             if (this.value === "auto") {
@@ -824,7 +822,7 @@ function saveExecutionPreferences() {
 }
 
 function loadExecForm(tag) {
-    $.when(
+    return $.when(
 //    displayInvariantList("group", "GROUP", false);
             loadSelect("OUTPUTFORMAT", "outputformat"),
             loadSelect("VERBOSE", "Verbose"),
@@ -840,7 +838,7 @@ function loadExecForm(tag) {
 }
 
 function loadRobotForm(browser) {
-    $.when(
+    return $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
             $("[name=Platform]").append($('<option></option>').text("Default").val("")),
@@ -914,53 +912,4 @@ function enableRobotFields() {
     $("#version").prop("readonly", false);
     $("#platform").prop("disabled", false);
     $("#screenSize").prop("disabled", false);
-}
-
-/** UTILITY FUNCTIONS TO MIGRATE THE PREFERENCES !!!TO DELETE AFTER THE PAGE IS LIVE FOR A FEW DAYS!!!  **/
-
-function getCookie(cname) {
-    var name = cname + "=";
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i].trim();
-        if (c.indexOf(name) === 0)
-            var value = c.substring(name.length, c.length);
-
-        document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
-        return value;
-    }
-    return "";
-}
-
-function oldPreferenceCompatibility() {
-    if (localStorage.getItem("robotSettings") === null
-            && localStorage.getItem("executionSettings") === null) {
-
-        var user = getUser();
-
-        var robotConfig = {
-            robot: user.robot,
-            seleniumIP: user.robotHost,
-            seleniumPort: user.robotPort,
-            version: user.robotVersion,
-            platform: user.robotPlatform,
-            screenSize: getCookie("ExecutionScreenSize")
-        };
-
-        var execConfig = {
-            tag: getCookie("TagPreference"),
-            outputFormt: getCookie("OutputFormatPreference"),
-            verbose: getCookie("VerbosePreference"),
-            screenshot: getCookie("ScreenshotPreference"),
-            pageSource: getCookie("PageSourcePreference"),
-            seleniumLog: getCookie("SeleniumLogPreference"),
-            synchroneous: getCookie("SynchroneousPreference"),
-            timeout: getCookie("TimeoutPreference"),
-            retries: getCookie("ExecutionRetries"),
-            manualExecution: getCookie("ManualExecutionPreference")
-        };
-
-        localStorage.setItem("executionSettings", JSON.stringify(execConfig));
-        localStorage.setItem("robotSettings", JSON.stringify(robotConfig));
-    }
 }
