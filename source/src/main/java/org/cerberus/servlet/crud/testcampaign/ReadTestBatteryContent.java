@@ -51,6 +51,7 @@ import java.util.*;
 public class ReadTestBatteryContent extends HttpServlet {
 
     ITestBatteryService testBatteryService;
+    ITestBatteryContentService testBatteryContentService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -222,6 +223,7 @@ public class ReadTestBatteryContent extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
+        testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
         testBatteryService = appContext.getBean(ITestBatteryService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
@@ -236,7 +238,12 @@ public class ReadTestBatteryContent extends HttpServlet {
             }
         }
 
-        AnswerList applicationList = testBatteryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList applicationList;
+        if(request.getParameter("campaign") != null) {
+            applicationList = testBatteryContentService.readDistinctValuesByCampaignByCriteria(request.getParameter("campaign"), searchParameter, individualSearch, columnName);
+        }else{
+            applicationList = testBatteryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        }
 
         object.put("distinctValues", applicationList.getDataList());
 
