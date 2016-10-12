@@ -63,7 +63,6 @@
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Test</a></li>
                     <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp" style="width:130px">TestCase List</a></li>
                     <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
-                    <li id="subactive"><a name="menu" id="menuSearchTestCase" href="TestCaseSearch.jsp" style="width:130px">Search TestCase</a></li>
                     <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp" style="width:130px">Test Battery</a></li>
                     <li id="subactive"><a name="menu" id="menuLabel" href="Label.jsp" style="width:130px">Label</a></li>
                 </ul>
@@ -83,7 +82,6 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests1.jsp" style="width:200px">Run Tests</a></li>
-                    <li id="subactive"><a name="menu" id="menuRunTestTriggerBatchExecution" href="RunTestsTriggerBatchExecution.jsp" style="width:200px">Run Multiple Tests</a></li>
                     <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp" style="width:200px">See Execution In Queue</a></li>
                     <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                     <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign.jsp" style="width:160px">Test Campaign</a></li>
