@@ -34,11 +34,6 @@ function initPage() {
     $('#addApplicationObjectModal').on('hidden.bs.modal', addEntryModalCloseHandler);
     $('#editApplicationObjectModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
-    // Load the select needed in localStorage cache.
-    getSelectInvariant("ENVIRONMENT", true);
-    getSelectInvariant("COUNTRY", true);
-
-
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList");
@@ -83,9 +78,6 @@ function displayPageLabel() {
     $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
             + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
 
-    displayInvariantList("system", "SYSTEM", false);
-    displayInvariantList("type", "APPLITYPE", false);
-    displayDeployTypeList("deploytype");
     displayFooter(doc);
 }
 
@@ -104,8 +96,9 @@ function renderOptionsForApplicationObject(data) {
 }
 
 function deleteEntryHandlerClick() {
-    var idApplicationObject = $('#confirmationModal').find('#hiddenField1').prop("value");
-    var jqxhr = $.post("DeleteApplicationObject", {applicationObject: idApplicationObject}, "json");
+    var application = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var object = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var jqxhr = $.post("DeleteApplicationObject", {application:application,object:object}, "json");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -126,12 +119,12 @@ function deleteEntryHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function deleteEntryClick(idApplicationObject) {
+function deleteEntryClick(application, object) {
     clearResponseMessageMainPage();
     var doc = new Doc();
     var messageComplete = doc.getDocLabel("page_applicationObject", "message_delete");
-    messageComplete = messageComplete.replace("%ENTRY%", idApplicationObject);
-    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, idApplicationObject, "", "", "");
+    messageComplete = messageComplete.replace("%ENTRY%", application + ", " + object);
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
 }
 
 function addEntryModalSaveHandler() {
@@ -169,6 +162,8 @@ function addEntryModalCloseHandler() {
 function addEntryClick() {
     clearResponseMessageMainPage();
 
+    displayApplicationList("application","");
+
     // When creating a new applicationObject, System takes the default value of the 
     // system already selected in header.
     var formAdd = $('#addApplicationObjectModal');
@@ -193,7 +188,7 @@ function editEntryModalSaveHandler() {
         data: {application: data.application,
             object: data.object,
             value: data.value,
-            screenhotfilename: data.screenhotfilename},
+            screenshotfilename: data.screenshotfilename},
         success: function (data) {
             hideLoaderInModal('#editApplicationObjectModal');
             if (getAlertType(data.messageType) === "success") {
@@ -221,35 +216,24 @@ function editEntryModalCloseHandler() {
 
 function editEntryClick(application, object) {
     clearResponseMessageMainPage();
-    var jqxhr = $.getJSON("ReadApplicationObject", "application=" + application, "object=" + object);
+    var jqxhr = $.getJSON("ReadApplicationObject", "application=" + application + "&object=" + object);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
 
         var formEdit = $('#editApplicationObjectModal');
 
-        formEdit.find("#applicationObject").prop("value", id);
-        formEdit.find("#description").prop("value", obj["description"]);
-        formEdit.find("#sort").prop("value", obj["sort"]);
-        formEdit.find("#type").prop("value", obj["type"]);
-        formEdit.find("#system").prop("value", obj["system"]);
-        formEdit.find("#subsystem").prop("value", obj["subsystem"]);
-        formEdit.find("#svnurl").prop("value", obj["svnurl"]);
-        formEdit.find("#bugtrackerurl").prop("value", obj["bugTrackerUrl"]);
-        formEdit.find("#bugtrackernewurl").prop("value", obj["bugTrackerNewUrl"]);
-        formEdit.find("#deploytype").prop("value", obj["deploytype"]);
-        formEdit.find("#mavengroupid").prop("value", obj["mavengroupid"]);
+        formEdit.find("#application option[value='" + obj["application"] + "']").prop("selected", true);
+        formEdit.find("#object").prop("value", obj["object"]);
+        formEdit.find("#value").prop("value", obj["value"]);
+        formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
+
+        formEdit.find("#object").prop("readonly", "readonly");
+        formEdit.find("#value").prop("readonly", "readonly");
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
-            formEdit.find("#description").prop("readonly", "readonly");
-            formEdit.find("#sort").prop("readonly", "readonly");
-            formEdit.find("#type").prop("disabled", "disabled");
-            formEdit.find("#system").prop("disabled", "disabled");
-            formEdit.find("#subsystem").prop("readonly", "readonly");
-            formEdit.find("#svnurl").prop("readonly", "readonly");
-            formEdit.find("#bugtrackerurl").prop("readonly", "readonly");
-            formEdit.find("#bugtrackernewurl").prop("readonly", "readonly");
-            formEdit.find("#deploytype").prop("disabled", "disabled");
-            formEdit.find("#mavengroupid").prop("readonly", "readonly");
+
+            formEdit.find("#screenshotfilename").prop("readonly", "readonly");
+            formEdit.find("#application").prop("readonly", "readonly");
 
             $('#editApplicationObjectButton').attr('class', '');
             $('#editApplicationObjectButton').attr('hidden', 'hidden');
@@ -257,6 +241,8 @@ function editEntryClick(application, object) {
 
         formEdit.modal('show');
     });
+
+    displayApplicationList("application","");
 }
 
 function aoColumnsFunc(tableId) {
@@ -269,15 +255,15 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["Application"] + '\', \'' + obj["Object"] + '\');"\n\
+                var editApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["Application"] + '\', \'' + obj["Object"] + '\');"\n\
+                var viewApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';
-                var deleteApplicationObject = '<button id="deleteApplicationObject" onclick="deleteEntryClick(\'' + obj["Application"] + '\', \'' + obj["Object"] + '\');" \n\
+                var deleteApplicationObject = '<button id="deleteApplicationObject" onclick="deleteEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');" \n\
                                     class="deleteApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="deleteApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_delete") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-trash"></span></button>';

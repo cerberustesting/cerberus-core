@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -96,10 +97,8 @@ public class UpdateApplicationObject extends HttpServlet {
         String object = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("object"), null, charset);
         String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
         String screenshotfilename = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenshotfilename"), "", charset);
-        String usrcreated = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("usrcreated"), "", charset);
-        String datecreated = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("datecreated"), "", charset);
-        String usrmodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("usrmodif"), "", charset);
-        String datemodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("datemodif"), "", charset);
+        String usrmodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
+        String datemodif = new Timestamp(new java.util.Date().getTime()).toString();
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         // Getting list of application from JSON Call
@@ -144,8 +143,6 @@ public class UpdateApplicationObject extends HttpServlet {
                 ApplicationObject applicationData = (ApplicationObject) resp.getItem();
                 applicationData.setValue(value);
                 applicationData.setScreenShotFileName(screenshotfilename);
-                applicationData.setUsrCreated(usrcreated);
-                applicationData.setDateCreated(datecreated);
                 applicationData.setUsrModif(usrmodif);
                 applicationData.setDateModif(datemodif);
                 ans = applicationObjectService.update(applicationData);

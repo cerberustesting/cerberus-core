@@ -97,7 +97,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         /**
          * Update an existing {@link ApplicationObject}
          */
-        String UPDATE = "UPDATE `applicationobject` SET  WHERE `application` = ? AND `object` = ? AND `value` = ? AND `screenshotfilename` = ? AND `usrcreated` = ? AND `datecreated` = ? AND `usrmodif` = ? AND `datemodif` = ?";
+        String UPDATE = "UPDATE `applicationobject` SET `value` = ?, `screenshotfilename` = ?, `usrcreated` = ?, `datecreated` = ?, `usrmodif` = ?, `datemodif` = ? WHERE `application` = ? AND `object` = ?";
 
         /**
          * Remove an existing {@link ApplicationObject}
@@ -143,11 +143,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
+            ApplicationObject ao = new ApplicationObject();
             // Prepare and execute query
             preStat.setString(1, application);
             preStat.setString(2, object);
             ResultSet rs = preStat.executeQuery();
-            ApplicationObject ao = loadFromResultSet(rs);
+            while(rs.next()) {
+                ao = loadFromResultSet(rs);
+            }
             ans.setItem(ao);
             // Set the final message
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
@@ -545,14 +548,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
             // Prepare and execute query
-            preStat.setString(1, object.getApplication());
-            preStat.setString(2, object.getObject());
-            preStat.setString(3, object.getValue());
-            preStat.setString(4, object.getScreenShotFileName());
-            preStat.setString(5, object.getUsrCreated());
-            preStat.setString(6, object.getDateCreated());
-            preStat.setString(7, object.getUsrModif());
-            preStat.setString(8, object.getDateModif());
+            preStat.setString(1, object.getValue());
+            preStat.setString(2, object.getScreenShotFileName());
+            preStat.setString(3, object.getUsrCreated());
+            preStat.setString(4, object.getDateCreated());
+            preStat.setString(5, object.getUsrModif());
+            preStat.setString(6, object.getDateModif());
+            preStat.setString(7, object.getApplication());
+            preStat.setString(8, object.getObject());
             preStat.executeUpdate();
 
             // Set the final message

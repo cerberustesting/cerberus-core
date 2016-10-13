@@ -1,15 +1,15 @@
-<!--Edit applicationObject page-->
-<div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="editAplicationModalLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom width1000">
+<!--Edit an applicationObject -->
+<div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="editApplicationObjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="editApplicationObjectModalLabel" name="editApplicationObjectField">Edit ApplicationObject</h4>
+                <h4 class="modal-title" id="editApplicationObjectModalLabel" name="createApplicationObjectField">Create Application Object</h4>
             </div>
             <div class="modal-body">
 
                 <!--edit form-->
-                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  title="Edit ApplicationObject" role="form">
+                <form id="editApplicationObjectModalForm" name="editApplicationObjectModalForm"  title="Edit Aplication Object" role="form">
                     <div class="container-fluid center">
                         <!-- messages area-->
                         <div id="DialogMessagesArea">
@@ -22,107 +22,26 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-xs-12">
-                                <label for="applicationObject" name="applicationObjectField">ApplicationObject</label>
-                                <input type="text" class="form-control" name="applicationObject" id="applicationObject" aria-describedby="basic-addon1" readonly>
+                                <label for="application" name="applicationField">Application</label>
+                                <select class="form-control" name="application" id="application" aria-describedby="basic-editon1" maxlength="200"></select>
                             </div>
                         </div>
-                        <!-- tabs definition-->
-                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab3Text" name="tabsEdit2">Environment</a></li>
-                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab4Text" name="tabsEdit3">Object</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="description" name="descriptionField">Description</label>
-                                        <input type="text" class="form-control" name="description" id="description" aria-describedby="basic-addon1" maxlength="200">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="sort" name="sortField">Sort</label>
-                                        <input type="text" class="form-control" name="sort" id="sort" aria-describedby="basic-addon1" maxlength="10">
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="type" name="typeField">Type</label>
-                                        <select class="form-control"  id="type" name="type">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="system" name="systemField">System</label>
-                                        <select class="form-control"  id="system" name="system">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="SubSystem" name="subsystemField">Sub System</label>
-                                        <input type="text" class="form-control" name="subsystem" id="subsystem" aria-describedby="basic-addon1" maxlength="200">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="svnurl" name="svnurlField">Description</label>
-                                        <input type="text" class="form-control" name="svnurl" id="svnurl" aria-describedby="basic-addon1" maxlength="150">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="bugtrackerurl" name="bugtrackerurlField">Bug Tracker URL</label>
-                                        <textarea id="bugtrackerurl" name="bugtrackerurl"
-                                                  class="form-control" maxlength="5000"></textarea> 
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-12">
-                                        <label for="bugtrackernewurl" name="bugtrackernewurlField">Bug Tracker New URL</label>
-                                        <textarea id="bugtrackernewurl" name="bugtrackernewurl"
-                                                  class="form-control" maxlength="5000"></textarea>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-xs-6">
-                                        <label for="deploytype" name="deploytypeField">Deploy Type</label>
-                                        <select class="form-control"  id="deploytype" name="deploytype">
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-xs-6">
-                                        <label for="mavengroupid" name="mavengroupidField">Maven Group Id</label>
-                                        <input type="text" class="form-control" name="mavengroupid" id="mavengroupid" aria-describedby="basic-addon1" maxlength="50">
-                                    </div>
-                                </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="object" name="objectField">Object</label>
+                                <input type="text" class="form-control" name="object" id="object" aria-describedby="basic-editon1" maxlength="200">
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-2">
-                                <div id="listPanelEnvironment">
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <table class="table table-bordered table-hover nomarginbottom" id="EnvironmentTable">
-                                                <thead>
-                                                <tr>
-                                                    <th style="width: 5%;"></th>
-                                                    <th class="text-center" id="environmentHeader">Environment</th>
-                                                    <th class="text-center" id="countryHeader">Country</th>
-                                                    <th class="text-center" id="ipHeader">IP</th>
-                                                    <th class="text-center" id="urlHeader">URL</th>
-                                                    <th class="text-center" id="var1Header">Var1L</th>
-                                                    <th class="text-center" id="var3Header">Var2</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody id="environmentTableBody">
-                                                </tbody>
-                                            </table>
-                                            <button type="button" class="btn btn-default" id="addEnvironment">Add Environment</button>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="value" name="valueField">Value</label>
+                                <input type="text" class="form-control" name="value" id="value" aria-describedby="basic-editon1" maxlength="200">
                             </div>
-                            <div class="center tab-pane fade marginTop25" id="tabsEdit-3">
-                                <div id="applicationObjectObjectList">
-                                    <table id="applicationObjectObjectsTable" class="table table-bordered table-hover display" name="applicationObjectObjectsTable"></table>
-                                    <div class="marginBottom20"></div>
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="screenshotfilename" name="screenshotfilenameField">Screenshot FileName</label>
+                                <input type="text" class="form-control" name="screenshotfilename" id="screenshotfilename" aria-describedby="basic-editon1" maxlength="200">
                             </div>
                         </div>
                     </div>
@@ -130,7 +49,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
-                <button type="button" id="editApplicationObjectButton" class="btn btn-primary" name="buttonAdd">Save</button>
+                <button type="button" id="editApplicationObjectButton" class="btn btn-primary" name="buttonEdit">Save</button>
             </div>
         </div>
     </div>
