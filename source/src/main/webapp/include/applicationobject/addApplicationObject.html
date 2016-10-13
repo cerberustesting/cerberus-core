@@ -1,0 +1,56 @@
+<!--Add an applicationObject -->
+<div data-backdrop="static" class="modal fade center" id="addApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="addApplicationObjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="addApplicationObjectModalLabel" name="createApplicationObjectField">Create Application Object</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="addApplicationObjectModalForm" name="addApplicationObjectModalForm"  title="Add Aplication Object" role="form">
+                    <div class="container-fluid center">
+                         <!-- messages area-->
+                         <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="application" name="applicationField">Application</label>
+                                <input type="text" class="form-control" name="application" id="application" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="object" name="objectField">Object</label>
+                                <input type="text" class="form-control" name="object" id="object" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="value" name="valueField">Value</label>
+                                <input type="text" class="form-control" name="value" id="value" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="screenshotfilename" name="screenshotfilenameField">Screenshot FileName</label>
+                                <input type="text" class="form-control" name="screenshotfilename" id="screenshotfilename" aria-describedby="basic-addon1" maxlength="200">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="addApplicationObjectButton" class="btn btn-primary" name="buttonAdd">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

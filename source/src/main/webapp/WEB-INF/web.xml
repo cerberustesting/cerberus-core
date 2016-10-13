@@ -429,6 +429,14 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplication</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateApplicationObject</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateApplicationObject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadApplicationObject</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplicationObject</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>NewBuildRev</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
@@ -620,6 +628,14 @@
     <servlet>
         <servlet-name>DeleteApplication</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteApplication</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CreateApplicationObject</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateApplicationObject</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteApplicationObject</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteApplicationObject</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -1345,6 +1361,14 @@
         <url-pattern>/ReadApplication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateApplicationObject</servlet-name>
+        <url-pattern>/UpdateApplicationObject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadApplicationObject</servlet-name>
+        <url-pattern>/ReadApplicationObject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>CreateDeployType</servlet-name>
         <url-pattern>/CreateDeployType</url-pattern>
     </servlet-mapping>
@@ -1547,6 +1571,14 @@
     <servlet-mapping>
         <servlet-name>DeleteApplication</servlet-name>
         <url-pattern>/DeleteApplication</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CreateApplicationObject</servlet-name>
+        <url-pattern>/CreateApplicationObject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteApplicationObject</servlet-name>
+        <url-pattern>/DeleteApplicationObject</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateBuildRevisionInvariant</servlet-name>
@@ -2139,6 +2171,7 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/Application.jsp</url-pattern>
+            <url-pattern>/ApplicationObject.jsp</url-pattern>
             <url-pattern>/BuildContent.jsp</url-pattern>
             <url-pattern>/BuildRevDefinition.jsp</url-pattern>
             <url-pattern>/Environment.jsp</url-pattern>
@@ -2181,6 +2214,9 @@
             <description>servlet</description>
             <url-pattern>/CreateApplication</url-pattern>
             <url-pattern>/UpdateApplication</url-pattern>
+            <url-pattern>/CreateApplicationObject</url-pattern>
+            <url-pattern>/UpdateApplicationObject</url-pattern>
+            <url-pattern>/DeleteApplicationObject</url-pattern>
             <url-pattern>/UpdateCountryEnv</url-pattern>
             <url-pattern>/CreateProject</url-pattern>
             <url-pattern>/DeleteProject</url-pattern>
@@ -2388,6 +2424,7 @@
             <url-pattern>/FindInvariantByID</url-pattern>
             <url-pattern>/GetReportData</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
+            <url-pattern>/ReadApplicationObject</url-pattern>
             <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadRobot</url-pattern>
