@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.geom.Line2D;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author bcivel
@@ -176,7 +177,7 @@ public abstract class AppiumService implements IAppiumService {
 
         LOG.debug("Waiting for Element : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            WebDriverWait wait = new WebDriverWait(driver, session.getCerberus_appium_wait_element());
+            WebDriverWait wait = new WebDriverWait(driver, TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_appium_wait_element()));
             if (visible) {
                 if (clickable) {
                     wait.until(ExpectedConditions.elementToBeClickable(locator));
