@@ -142,7 +142,12 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#envSettingsAuto select").prop("disabled", false).val("");
 
         $("#countryList input.countrycb").each(function () {
-            $(this).prop("disabled", false).prop("checked", false);
+            console.log($(this).attr("name"));
+            if($(this).attr("name") == country){
+                $(this).prop("disabled", false).prop("checked", true);
+            }else {
+                $(this).prop("disabled", false).prop("checked", false);
+            }
         });
 
         $("#testCaseList").prop("disabled", false);
@@ -159,7 +164,7 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#resetbutton").show();
         $("#filtersPanelContainer").show();
 
-        loadTestCaseFromFilter();
+        loadTestCaseFromFilter(test, testcase);
 
     } else if (value === "campaign") {
         $("#filtersPanelContainer").hide();
