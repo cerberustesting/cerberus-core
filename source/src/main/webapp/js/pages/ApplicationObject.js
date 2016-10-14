@@ -162,6 +162,7 @@ function addEntryModalCloseHandler() {
 function addEntryClick() {
     clearResponseMessageMainPage();
 
+    $('#addApplicationObjectModal #application').empty();
     displayApplicationList("application","");
 
     // When creating a new applicationObject, System takes the default value of the 
@@ -216,6 +217,8 @@ function editEntryModalCloseHandler() {
 
 function editEntryClick(application, object) {
     clearResponseMessageMainPage();
+    $('#editApplicationObjectModal #application').empty();
+    displayApplicationList("application","",application);
     var jqxhr = $.getJSON("ReadApplicationObject", "application=" + application + "&object=" + object);
     $.when(jqxhr).then(function (data) {
         var obj = data["contentTable"];
@@ -228,7 +231,7 @@ function editEntryClick(application, object) {
         formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
 
         formEdit.find("#object").prop("readonly", "readonly");
-        formEdit.find("#value").prop("readonly", "readonly");
+        formEdit.find("#application").prop("disabled", "disabled");
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
 
@@ -242,7 +245,6 @@ function editEntryClick(application, object) {
         formEdit.modal('show');
     });
 
-    displayApplicationList("application","");
 }
 
 function aoColumnsFunc(tableId) {
