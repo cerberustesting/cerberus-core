@@ -216,7 +216,7 @@ function editEntryClick(param) {
 
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editTestbatteryModal'));
-    var formEdit = $('#editTestbatteryModal #editTestbatteryModalForm');
+    var formEdit = $('#editTestbatteryModal #editTestbatteryModalForm :input');
 
     var sa = formEdit.serializeArray();
     var data = {}

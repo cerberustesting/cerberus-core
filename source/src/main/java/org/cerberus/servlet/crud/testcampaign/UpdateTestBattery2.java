@@ -78,7 +78,7 @@ public class UpdateTestBattery2 extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         int tID = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("testbatteryID"), 0, charset);
         String testBattery = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testBattery"), null, charset);
-        String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
+        String desc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String batteryContent = ParameterParserUtil.parseStringParam(request.getParameter("batteryContent"), null);
 
