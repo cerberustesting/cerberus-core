@@ -1997,9 +1997,7 @@
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
-            <url-pattern>/SqlLibrary2.jsp</url-pattern>
             <url-pattern>/SoapLibrary.jsp</url-pattern>
-            <url-pattern>/SoapLibrary2.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>

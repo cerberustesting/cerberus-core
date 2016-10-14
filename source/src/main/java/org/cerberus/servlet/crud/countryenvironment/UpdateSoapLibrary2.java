@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * @author cte
@@ -71,13 +72,12 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        // CTE - on utilise la méthode utilitaire pour encoder le xml
         String envelope = ParameterParserUtil.parseStringParam(request.getParameter("Envelope"), null);
         //String envelopeBDD = HtmlUtils.htmlEscape(envelope);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
+        String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("ServicePath"), null);
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
-        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
+        String method = ParameterParserUtil.parseStringParam(request.getParameter("Method"), null);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 
         // Prepare the final answer.

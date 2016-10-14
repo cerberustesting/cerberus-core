@@ -1,5 +1,5 @@
-<%-- 
-   ~ Cerberus  Copyright (C) 2013  vertigo17
+<%--
+  ~ Cerberus  Copyright (C) 2013  vertigo17
   ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
   ~
   ~ This file is part of Cerberus.
@@ -17,187 +17,38 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<% Date DatePageStart = new Date() ; %>
-
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SOAP Library</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions_old.html" %>
-        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/jqueryui-editable.css">
-        <link rel="stylesheet" type="text/css" href="dependencies/zz_OldDependencies/css/jqueryui-editable.extend.css">
-        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jqueryui-editable.min.js"></script>
-        <script type="text/javascript">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%@ include file="include/dependenciesInclusions.html" %>
+    <title>SOAP Library</title>
+    <script type="text/javascript" src="js/pages/SoapLibrary.js"></script>
+</head>
+<body>
+<%@ include file="include/header.html" %>
+<div class="container-fluid center" id="page-layout">
+    <%@ include file="include/messagesArea.html" %>
+    <%@ include file="include/utils/modal-confirmation.html" %>
+    <%@ include file="include/soapLibrary/editSoapLibrary.html" %>
+    <%@ include file="include/soapLibrary/addSoapLibrary.html" %>
 
-        	// The DataTables columns
-        	var aoColumns =  [
-        		{"sName": "Name", "sWidth": "10%"},
-        	    {"sName": "Type", "sWidth": "10%"},
-        	    {"sName": "Envelope", "sWidth": "40%"},
-        	    {"sName": "Description", "sWidth": "40%"},
-        	    {"sName": "ServicePath", "sWidth": "40%"},
-        	    {"sName": "Method", "sWidth": "40%"},
-        	    {"sName": "ParsingAnswer", "sWidth": "40%"}
-        	];
-        
-            $(document).ready(function() {
-                var oTable = $('#soapLibraryList').dataTable({
-                    "aaSorting": [[1, "asc"]],
-                    "bServerSide": true,
-                    "sAjaxSource": "FindAllSoapLibrary",
-                    "bJQueryUI": true,
-                    "bProcessing": false,
-                    "bPaginate": true,
-                    "bAutoWidth": false,
-                    "sPaginationType": "full_numbers",
-                    "bSearchable": true,
-                    "aTargets": [0],
-                    "iDisplayLength": 25,
-                    "aoColumns": aoColumns,
-                    "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    	// Making editable fields
-                    	for (index in aoColumns) {
-                    		// Some of indexes should not be editable 
-                    		if (index == 0) {
-                    			continue;
-                    		}
-                    		
-                    		// Common configuration for each editable cell
-                    		var editConfiguration = {
-                         		pk: $('td:eq(0)', nRow).text(),
-                         		name: aoColumns[index].sName,
-                         		url: 'UpdateSoapLibrary',
-                         		type: 'text',
-                         		send: 'auto',
-                         		mode: 'inline'
-                         	};
-                    		
-                    		// Special case for the Envelope and Description cells
-                    		if (index == 2 || index == 3) {
-                    			jQuery.extend(editConfiguration, {
-                    				type: 'textarea'
-                    			})
-                    		}
-                    		
-                    		// Makes the cell editable
-                    		$("td:eq(" + index + ")", nRow).editable(editConfiguration)
-                    	}
-                     }
-                }
-                ).makeEditable({
-                    sAddURL: "CreateSoapLibrary",
-                    sAddHttpMethod: "POST",
-                    oAddNewRowButtonOptions: {
-                        label: "<b>Create SOAP Data...</b>",
-                        background: "#AAAAAA",
-                        icons: {primary: 'ui-icon-plus'}
-                    },
-                    sDeleteHttpMethod: "POST",
-                    sDeleteURL: "DeleteSoapLibrary",
-                    sAddDeleteToolbarSelector: ".dataTables_length",
-                    oDeleteRowButtonOptions: {
-                        label: "Remove",
-                        icons: {primary: 'ui-icon-trash'}
-                    },
-                    sUpdateURL: "UpdateSoapLibrary",
-                    fnOnEdited: function(status) {
-                        $(".dataTables_processing").css('visibility', 'hidden');
-                    },
-                    oAddNewRowFormOptions: {
-                        title: 'Add SOAP Data',
-                        show: "blind",
-                        hide: "explode",
-                        width: "900px"
-                    },
-                    "aoColumns": [
-                        null,
-                        null, 
-                        null,
-                        null,
-                        null, 
-                        null,
-                        null
-                    ]
-                });
-            });
-
-        </script>
-    </head>
-    <body  id="wrapper">
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-
-        <p class="dttTitle">SOAP Library</p>
-        <div style="width: 100%; font: 90% sans-serif">
-            <table id="soapLibraryList" class="display">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Envelope</th>
-                        <th>Description</th>
-                        <th>ServicePath</th>
-                        <th>Method</th>
-                        <th>ParsingAnswer</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+    <h1 class="page-title-line" id="title">SQL Library</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading" id="soapLibraryListLabel">
+            <span class="glyphicon glyphicon-list"></span>
+            SQL Library
         </div>
-        <div>
-            <form id="formAddNewRow" action="#" title="Add SOAP Data" method="post">
-               
-                    <label for="Name" style="font-weight:bold" >Name</label>
-                    <input id="Name" name="Name" style="width:250px;" 
-                           class="ncdetailstext" rel="0" >
-               
-                    <label for="Type" style="font-weight:bold">Type</label>
-                    <input id="Type" name="Type" style="width:250px;" 
-                           class="ncdetailstext" rel="1" >
-                    <br>
-                    <br>
-                   
-               
-                    <label for="Description" style="font-weight:bold">Description</label>
-                    <input id="Description" name="Description" style="width:700px;"
-                           class="ncdetailstext" rel="2" >
-                    <br>
-                    <br>
-                
-                    <label for="ServicePath" style="font-weight:bold">ServicePath</label>
-                    <input id="ServicePath" name="ServicePath" style="width:400px;" 
-                           class="ncdetailstext" rel="3" >
-                
-                
-                    <label for="Method" style="font-weight:bold">Method</label>
-                    <input id="Method" name="Method" style="width:300px;" 
-                           class="ncdetailstext" rel="4" >
-                
-                    <br>
-                    <br>
-                    <label for="ParsingAnswer" style="font-weight:bold">ParsingAnswer</label>
-                    <input id="ParsingAnswer" name="ParsingAnswer" style="width:750px;" 
-                           class="ncdetailstext" rel="5" >
-                    <br>
-                    <br>
- 
-                
-                    <label for="Envelope" style="font-weight:bold">Envelope</label>
-                    <textarea id="Envelope" name="Envelope" style="width:780px;" rows="5" 
-                           class="ncdetailstext" rel="6"></textarea>
-                          
-                    <br>
-                    <br>
-                    <div style="width: 250px; float:right">
-                    <button id="btnAddNewRowOk">Add</button>
-                    <button id="btnAddNewRowCancel">Cancel</button>
-                    </div>
-            </form>
+        <div class="panel-body" id="soapLibraryList">
+            <table id="soapLibrarysTable" class="table table-bordered table-hover display"
+                   name="soapLibrarysTable"></table>
+            <div class="marginBottom20"></div>
         </div>
-        <br><%
-            out.print(display_footer(DatePageStart));
-        %>
-    </body>
+    </div>
+    <footer class="footer">
+        <div class="container-fluid" id="footer"></div>
+    </footer>
+</div>
+</body>
 </html>

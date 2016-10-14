@@ -40,6 +40,16 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList");
 }
 
+/**
+ * After table feeds, 
+ * @returns {undefined}
+ */
+function afterTableLoad() {
+    $.each($("code[name='scriptField']"), function (i, e) {
+        Prism.highlightElement($(e).get(0));
+    });
+}
+
 function displayPageLabel() {
     var doc = new Doc();
 
@@ -90,7 +100,7 @@ function editEntryClick(name) {
             if (data.messageType === "OK") {
                 formEdit.find("#name").prop("value", data.name);
                 formEdit.find("#type").prop("value", $('<div/>').html(data.type).text());
-                formEdit.find("#script").prop("value", $('<div/>').html(data.script).text());
+                formEdit.find("#script").text(data.script);
                 formEdit.find("#description").prop("value", $('<div/>').html(data.description).text());
                 formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -103,6 +113,20 @@ function editEntryClick(name) {
                     $('#editSqlLibraryButton').attr('class', '');
                     $('#editSqlLibraryButton').attr('hidden', 'hidden');
                 }
+
+                //Highlight envelop on modal loading
+                Prism.highlightElement($("#script")[0]);
+
+                /**
+                 * On edition, get the caret position, refresh the envelope to have 
+                 * syntax coloration in real time, then set the caret position.
+                 */
+                $('#editSqlLibraryModal #script').on("keyup", function (e) {
+                    var pos = $(this).caret('pos');
+                    Prism.highlightElement($("#editSqlLibraryModal #script")[0]);
+                    $(this).caret('pos', pos);
+                });
+
                 formEdit.modal('show');
             } else {
                 showUnexpectedError();
@@ -115,14 +139,21 @@ function editEntryClick(name) {
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSqlLibraryModal'));
     var formEdit = $('#editSqlLibraryModal #editSqlLibraryModalForm');
-    /*
-     var sa = formEdit.serializeArray();
-     var data = {}
-     for (var i in sa) {
-     data[sa[i].name] = sa[i].value;
-     }*/
+
+    var sa = formEdit.serializeArray();
+    //Add script to the form
+    var script = {
+        name: "script",
+        value: $("#script").text()
+    };
+    sa.push(script);
+
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formEdit.serialize());
+    //var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
         url: "UpdateSqlLibrary2",
@@ -150,6 +181,7 @@ function editEntryModalSaveHandler() {
 function editEntryModalCloseHandler() {
     // reset form values
     $('#editSqlLibraryModal #editSqlLibraryModalForm')[0].reset();
+    $('#editSqlLibraryModal #script').empty();
     // remove all errors on the form fields
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
@@ -158,7 +190,23 @@ function editEntryModalCloseHandler() {
 
 function addEntryClick() {
     clearResponseMessageMainPage();
+    /**
+     * Clear previous form
+     */
     $("#addSqlLibraryModal #idname").empty();
+    $('#addSqlLibraryModal #envelope').empty();
+
+    /**
+     * On edition, get the caret position, refresh the envelope to have 
+     * syntax coloration in real time, then set the caret position.
+     */
+
+    $('#addSqlLibraryModal #script').on("keyup", function (e) {
+        var pos = $(this).caret('pos');
+        Prism.highlightElement($("#addSqlLibraryModal #script")[0]);
+        $(this).caret('pos', pos);
+    });
+
 
     $('#addSqlLibraryModal').modal('show');
 }
@@ -167,13 +215,21 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
     var formEdit = $('#addSqlLibraryModal #addSqlLibraryModalForm');
 
-    /*var sa = formEdit.serializeArray();
-     var data = {}
-     for (var i in sa) {
-     data[sa[i].name] = sa[i].value;
-     }*/
+    var sa = formEdit.serializeArray();
+
+    //Add envelope to the form
+    var script = {
+        name: "script",
+        value: $("#addSqlLibraryModal #script").text()
+    };
+    sa.push(script);
+
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formEdit.serialize());
+    //var data = convertSerialToJSONObject(formEdit.serialize());
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
         url: "CreateSqlLibrary2",
@@ -264,7 +320,10 @@ function aoColumnsFunc(tableId) {
         {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_sqlLibrary", "sqlLibrary_col")},
         {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_sqlLibrary", "type_col")},
         {"data": "database", "sName": "Database", "title": doc.getDocLabel("page_sqlLibrary", "database_col")},
-        {"data": "script", "sName": "Script", "title": doc.getDocLabel("page_sqlLibrary", "script_col")},
+        {"data": "script", "sName": "Script", "sWidth": "450px", "title": doc.getDocLabel("page_sqlLibrary", "script_col"),
+            "mRender": function (data, type, obj) {
+                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='scriptField' class='language-sql'></code>").text(obj['script']))).html();
+            }},
         {"data": "description", "sName": "Description", "title": doc.getDocLabel("page_sqlLibrary", "description_col")}
     ];
     return aoColumns;

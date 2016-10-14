@@ -40,6 +40,16 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForSoapLibrary, "#soapLibraryList");
 }
 
+/**
+ * After table feeds, 
+ * @returns {undefined}
+ */
+function afterTableLoad(){
+    $.each($("code[name='envelopeField']"), function(i,e){
+        Prism.highlightElement($(e).get(0));
+    });
+}
+
 function displayPageLabel() {
     var doc = new Doc();
 
@@ -95,7 +105,7 @@ function editEntryClick(name) {
                 formEdit.find("#type").prop("value", data.type);
                 formEdit.find("#servicepath").prop("value", data.servicePath);
                 formEdit.find("#method").prop("value", data.method);
-                formEdit.find("#envelope").prop("value", data.envelope);
+                formEdit.find("#envelope").text(data.envelope);
                 formEdit.find("#parsinganswer").prop("value", data.parsingAnswer);
                 formEdit.find("#description").prop("value", data.description);
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -110,6 +120,21 @@ function editEntryClick(name) {
                     $('#editSoapLibraryButton').attr('class', '');
                     $('#editSoapLibraryButton').attr('hidden', 'hidden');
                 }
+
+                //Highlight envelop on modal loading
+                Prism.highlightElement($("#envelope")[0]);
+
+                /**
+                 * On edition, get the caret position, refresh the envelope to have 
+                 * syntax coloration in real time, then set the caret position.
+                 */
+                $('#editSoapLibraryModal #envelope').on("keyup", function (e) {
+                    var pos = $(this).caret('pos');
+                    Prism.highlightElement($("#editSoapLibraryModal #envelope")[0]);
+                    $(this).caret('pos', pos);
+                });
+
+
                 formEdit.modal('show');
             } else {
                 showUnexpectedError();
@@ -124,6 +149,13 @@ function editEntryModalSaveHandler() {
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
 
     var sa = formEdit.serializeArray();
+    //Add envelope to the form
+    var envelope = {
+        name: "envelope",
+        value: $("#envelope").text()
+    };
+    sa.push(envelope);
+
     var data = {}
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
@@ -167,7 +199,22 @@ function editEntryModalCloseHandler() {
 
 function addEntryClick() {
     clearResponseMessageMainPage();
+    /**
+     * Clear previous form
+     */
     $("#addSoapLibraryModal #idname").empty();
+    $('#addSoapLibraryModal #envelope').empty();
+    /**
+     * On edition, get the caret position, refresh the envelope to have 
+     * syntax coloration in real time, then set the caret position.
+     */
+    
+    $('#addSoapLibraryModal #envelope').on("keyup", function (e) {
+        var pos = $(this).caret('pos');
+        Prism.highlightElement($("#addSoapLibraryModal #envelope")[0]);
+        $(this).caret('pos', pos);
+    });
+
 
     $('#addSoapLibraryModal').modal('show');
 }
@@ -177,6 +224,14 @@ function addEntryModalSaveHandler() {
     var formEdit = $('#addSoapLibraryModal #addSoapLibraryModalForm');
 
     var sa = formEdit.serializeArray();
+    
+    //Add envelope to the form
+    var envelope = {
+        name: "envelope",
+        value: $("#addSoapLibraryModalForm #envelope").text()
+    };
+    sa.push(envelope);
+
     var data = {}
     for (var i in sa) {
         data[sa[i].name] = sa[i].value;
@@ -275,9 +330,10 @@ function aoColumnsFunc(tableId) {
         {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_soapLibrary", "soapLibrary_col")},
         {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_soapLibrary", "type_col")},
         {
-            "data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),
+            "data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),"sWidth": "350px",
             "mRender": function (data, type, obj) {
-                return $("<div></div>").text(obj['envelope']).html();
+                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['envelope']))).html();
+                //return $("<pre><code class='language-markup'>"+obj['envelope']+"</code></pre>").text();
             }
         },
         {

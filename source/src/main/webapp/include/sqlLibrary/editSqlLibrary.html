@@ -51,9 +51,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
+                            <div class="col-xs-12">
                                 <label for="script" name="scriptField">Script</label>
-                                <textarea class="form-control" name="script" id="script" aria-describedby="basic-addon1"></textarea>
+                                <div name="scriptContainer" id="scriptContainer"
+                                     aria-describedby="basic-editon1">
+                                    <pre style="min-height:150px"><code id='script' name='script' contentEditable='true' class='language-sql'></code></pre>
+                                </div>
                             </div>
                         </div>
                     </div>

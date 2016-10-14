@@ -7249,6 +7249,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\\n\\n<br/><br/>\\n\\nUsage :<br/>\\n\\n<doc class=\\\"usage\\\">\\n <table>\\n  <tr>\\n   <th class=\\'ex\\'>Field</th>\\n   <th class=\\'ex\\'>Usage</th>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>Value1</td>\\n   <td class=\\'ex\\'>Property name to be calculated.</td>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>Value2</td>\\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\\n  </tr>\\n </table>\\n</doc>\\n\\n<br/><br/>\\n\\nExamples :<br/>\\n\\n<doc class=\\\"examples\\\">\\n <table>\\n  <tr>\\n   <th class=\\'ex\\'>Value1</th>\\n   <th class=\\'ex\\'>Value2</th>\\n   <th class=\\'ex\\'>Result</th>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\\n   <td class=\\'ex\\'></td>\\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\\n  </tr>\\n </table>\\n</doc>' WHERE `DocTable`='testcasestepaction' and`DocField`='Action' and`DocValue`='calculateProperty' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
+        
+        // Remove HTML Escape encoding in soap library
+        //-- ------------------------ 955
+        SQLS = new StringBuilder();
+        SQLS.append("Update soaplibrary set `envelope` = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(`envelope`, '&amp;', '&'),'&lt;','<'),'&gt;','>'),'&apos;','\\''),'&quot;','\\\"')");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }

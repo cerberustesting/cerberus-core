@@ -54,10 +54,12 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
+                            <div class="col-xs-12">
                                 <label for="envelope" name="envelopeField">Envelope</label>
-                                <textarea class="form-control" name="envelope" id="envelope"
-                                          aria-describedby="basic-editon1"></textarea>
+                                <div name="envelopeContainer" id="envelopeContainer"
+                                     aria-describedby="basic-editon1">
+                                    <pre><code id='envelope' name='envelope' contentEditable='true' class='language-markup'></code></pre>
+                                </div>
                             </div>
                         </div>
                         <div class="row">

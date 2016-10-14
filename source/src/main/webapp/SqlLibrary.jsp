@@ -17,149 +17,37 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<% Date DatePageStart = new Date();%>
-
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SQL Library</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <%@ include file="include/dependenciesInclusions_old.html" %>
-        <script type="text/javascript">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <%@ include file="include/dependenciesInclusions.html" %>
+    <title>SQL Library</title>
+    <script type="text/javascript" src="js/pages/SqlLibrary.js"></script>
+</head>
+<body>
+<%@ include file="include/header.html" %>
+<div class="container-fluid center" id="page-layout">
+    <%@ include file="include/messagesArea.html"%>
+    <%@ include file="include/utils/modal-confirmation.html"%>
+    <%@ include file="include/sqlLibrary/editSqlLibrary.html"%>
+    <%@ include file="include/sqlLibrary/addSqlLibrary.html"%>
 
-function refreshTable() {
-    $('#tableDiv').hide();
-                var oTable = $('#sqlLibraryList').dataTable({
-                    "aaSorting": [[1, "asc"]],
-                    "bServerSide": true,
-                    "sAjaxSource": "FindAllSqlLibrary",
-                    "bJQueryUI": true,
-                    "bProcessing": false,
-                    "bPaginate": true,
-                    "bDestroy":true,
-                    "bAutoWidth": false,
-                    "sPaginationType": "full_numbers",
-                    "bSearchable": true,
-                    "aTargets": [0],
-                    "iDisplayLength": 25,
-                    "aoColumns": [
-                        {"sName": "Name", "sWidth": "10%"},
-                        {"sName": "Type", "sWidth": "10%"},
-                        {"sName": "Database", "sWidth": "10%"},
-                        {"sName": "Script", "sWidth": "35%"},
-                        {"sName": "Description", "sWidth": "35%"}
-                        
-                    ]
-                }
-            ).makeEditable({
-                    sAddURL: "CreateSqlLibrary",
-                    sAddHttpMethod: "POST",
-                    oAddNewRowButtonOptions: {
-                        label: "<b>Create SQL Data...</b>",
-                        background: "#AAAAAA",
-                        icons: {primary: 'ui-icon-plus'}
-                    },
-                    sDeleteHttpMethod: "POST",
-                    sDeleteURL: "DeleteSqlLibrary",
-                    sAddDeleteToolbarSelector: ".dataTables_length",
-                    oDeleteRowButtonOptions: {
-                        label: "Remove",
-                        icons: {primary: 'ui-icon-trash'}
-                    },
-                    sUpdateURL: "UpdateSqlLibrary",
-                    fnOnEdited: function() {
-                        $(".dataTables_processing").css('visibility', 'hidden');
-                    },
-                    oAddNewRowFormOptions: {
-                        title: 'Add SQL Data',
-                        show: "blind",
-                        hide: "explode",
-                        width: "900px",
-                        close: function() {
-                                refreshTable();
-                            }
-                    },
-                    "aoColumns": [
-                        null,
-                        {onblur: 'submit',
-                            placeholder: ''}, 
-                        {
-                            loadtext: 'loading...',
-                            type: 'select',
-                            loadurl: 'GetInvariantList?idName=PROPERTYDATABASE',
-                            loadtype: 'GET',
-                            submit:'Save changes'
-                        },
-                        {onblur: 'submit',
-                            placeholder: ''},
-                        {onblur: 'submit',
-                            placeholder: ''}
-
-                    ]
-                })
-                $('#tableDiv').show();
-            }
-            
-            $(document).ready(function(){
-                refreshTable();
-
-            });
-
-
-        </script>
-
-    </head>
-    <body  id="wrapper">
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-
-        <p class="dttTitle">SQL Library</p>
-        <div id="tableDiv" style="width: 100%; font: 90% sans-serif">
-            <table id="sqlLibraryList" class="display">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Database</th>
-                        <th>Script</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+    <h1 class="page-title-line" id="title">SQL Library</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading" id="sqlLibraryListLabel">
+            <span class="glyphicon glyphicon-list"></span>
+            SQL Library
         </div>
-        <div>
-            <form id="formAddNewRow" action="#" title="Add SQL Data" style="width:350px" method="post">
-                <label for="Name" style="font-weight:bold">Name</label>
-                <input id="Name" name="Name" style="width:350px;" 
-                       class="ncdetailstext" rel="0" >
-                <label for="Type" style="font-weight:bold">Type</label>
-                <input id="Type" name="Type" style="width:350px;" 
-                       class="ncdetailstext" rel="1" >
-                <br />
-                <br />
-                <label for="Description" style="font-weight:bold">Description</label>
-                <input id="Description" name="Description" style="width:750px;" 
-                       class="ncdetailstext" rel="4" >
-                <br />
-                <br />
-                <label for="Database" style="font-weight:bold">Database</label>
-                <%=ComboInvariantAjax(appContext, "Database", "", "Database", "2", "PROPERTYDATABASE", "", "", false)%>
-                <br />
-                <label for="Script" style="font-weight:bold">Script</label>
-                <textarea id="Script" name="Script" style="width:800px;" rows="5" 
-                       class="ncdetailstext" rel="3" ></textarea>
-                <br />
-                <br />
-                <div style="width: 250px; float:right">
-                    <button id="btnAddNewRowOk">Add</button>
-                    <button id="btnAddNewRowCancel">Cancel</button>
-                </div>
-            </form>
+        <div class="panel-body" id="sqlLibraryList">
+            <table id="sqlLibrarysTable" class="table table-bordered table-hover display" name="sqlLibrarysTable"></table>
+            <div class="marginBottom20"></div>
         </div>
-        <br><%
-            out.print(display_footer(DatePageStart));
-        %>
-    </body>
+    </div>
+    <footer class="footer">
+        <div class="container-fluid" id="footer"></div>
+    </footer>
+</div>
+</body>
 </html>

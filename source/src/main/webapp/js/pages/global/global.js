@@ -79,7 +79,7 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
     }
 
     var async = true;
-    if(asyn != undefined){
+    if (asyn != undefined) {
         async = asyn
     }
 
@@ -1052,9 +1052,9 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
-                    'DataTables_' + settings.sInstance + '_' + location.pathname,
-                    JSON.stringify(data)
-                );
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
             }
         };
@@ -1105,9 +1105,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             });
             $.when(oSettings.jqXHR).then(function (data) {
                 //updates the table with basis on the permissions that the current user has
-
-                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
-                showTitleWhenTextOverflow();
+                afterDatatableFeeds(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
 
                 if (callbackFunction !== undefined)
                     callbackFunction(data);
@@ -1131,22 +1129,22 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper #restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-            .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
+                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
-            $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
-                updateUserPreferences();
-            })
-        );
+            updateUserPreferences();
+        })
+                );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
-            $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> " + restoreFilterButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", restoreFilterButtonTooltip).click(function () {
-                location.reload();
-            })
-        );
+            location.reload();
+        })
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1173,12 +1171,13 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
  */
 function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
     var paginate = "";
-    if (tableConfigurations.bPaginate){
-        paginate = "p";}
-      
-    var domConf = 'RCB<"clear">lf<"pull-right"'+paginate+'>rti<"marginTop5">';
+    if (tableConfigurations.bPaginate) {
+        paginate = "p";
+    }
+
+    var domConf = 'RCB<"clear">lf<"pull-right"' + paginate + '>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
-        domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"'+paginate+'>';
+        domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"' + paginate + '>';
     }
 
 
@@ -1227,9 +1226,9 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
-                    'DataTables_' + settings.sInstance + '_' + location.pathname,
-                    JSON.stringify(data)
-                );
+                        'DataTables_' + settings.sInstance + '_' + location.pathname,
+                        JSON.stringify(data)
+                        );
             } catch (e) {
             }
         };
@@ -1272,8 +1271,7 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
                 error: showUnexpectedError
             });
             $.when(oSettings.jqXHR).then(function (data) {
-                displayColumnSearch(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
-                showTitleWhenTextOverflow();
+                afterDatatableFeeds(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
             });
         };
     } else {
@@ -1289,22 +1287,22 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
         $("#saveTableConfigurationButton").remove();
         $("#restoreFilterButton").remove();
         $("#" + tableConfigurations.divId + "_wrapper")
-            .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-            .addClass("btn btn-default").click(function () {
+                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
+                .addClass("btn btn-default").click(function () {
             $("#" + tableConfigurations.divIdrobots + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
         $("#showHideColumnsButton").parent().before(
-            $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
+                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
                 .click(function () {
                     updateUserPreferences();
                 })
-        );
+                );
         $("#saveTableConfigurationButton").before(
-            $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
+                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
                 .click(function () {
                     location.reload();
                 })
-        );
+                );
     }
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
     $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
@@ -1319,6 +1317,47 @@ function createDataTable(tableConfigurations, callbackFunction, userCallbackFunc
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
 
     return oTable;
+}
+
+/**
+ * Function called after data loaded in tables
+ * @returns {undefined}
+ */
+function afterDatatableFeeds(divId, ajaxSource, oSettings) {
+    /**
+     * Display individual search on each columns
+     */
+    displayColumnSearch(divId, ajaxSource, oSettings);
+    
+    /**
+     * Add tooltip on fields where data need to be wrapped.
+     */
+    showTitleWhenTextOverflow();
+
+    /**
+     * If specific function defined in page, call 
+     */
+    if (typeof afterTableLoad === "function") {
+        afterTableLoad();
+    }
+}
+
+/**
+ * This function add a tooltip if data in table field has to be wrapped
+ * @returns {undefined}
+ */
+function showTitleWhenTextOverflow() {
+    $('td, th, pre').each(function () {
+        var $ele = $(this);
+        if (this.offsetWidth < this.scrollWidth)
+            $ele.attr('title', '<div>' + $ele.text() + '</div>');
+        $ele.attr('data-html', true);
+        $ele.attr('data-toggle', 'tooltip');
+    });
+    $('[data-toggle="tooltip"]').tooltip({
+        container: 'body'
+    });
+
 }
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////SEARCH/FILTERS////////////////////////////////////////////
@@ -1493,60 +1532,60 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             if (table.ajax.params()["bSearchable_" + colIndex]) {
                 //Then init the editable object
                 var select = $('<span class="label"></span>')
-                    .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
-                        .attr('data-order', index))
-                    .editable({
-                        type: 'checklist',
-                        title: title,
-                        source: function () {
-                            //Check if URL already contains parameters
-                            var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
-                            var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
-                            var result;
-                            $.ajax({
-                                type: 'GET',
-                                async: false,
-                                url: url,
-                                success: function (responseObject) {
-                                    if (responseObject.distinctValues !== undefined) {
-                                        result = responseObject.distinctValues;
-                                    } else {
+                        .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
+                                .attr('data-order', index))
+                        .editable({
+                            type: 'checklist',
+                            title: title,
+                            source: function () {
+                                //Check if URL already contains parameters
+                                var urlSeparator = contentUrl.indexOf("?") > -1 ? "&" : "?";
+                                var url = './' + contentUrl + urlSeparator + 'columnName=' + title;
+                                var result;
+                                $.ajax({
+                                    type: 'GET',
+                                    async: false,
+                                    url: url,
+                                    success: function (responseObject) {
+                                        if (responseObject.distinctValues !== undefined) {
+                                            result = responseObject.distinctValues;
+                                        } else {
+                                            //TODO : To remove when all servlet have method to find distinct values
+                                            //if undefined, display the distinct value displayed in the table
+                                            result = data;
+                                        }
+                                    },
+                                    error: function () {
                                         //TODO : To remove when all servlet have method to find distinct values
-                                        //if undefined, display the distinct value displayed in the table
+                                        //if error, display the distinct value displayed in the table
                                         result = data;
                                     }
-                                },
-                                error: function () {
-                                    //TODO : To remove when all servlet have method to find distinct values
-                                    //if error, display the distinct value displayed in the table
-                                    result = data;
-                                }
-                            });
-                            return result;
-                        }
-                        ,
-                        onblur: 'cancel',
-                        mode: 'popup',
-                        placement: 'bottom',
-                        emptytext: display,
-                        send: 'always',
-                        validate: function (value) {
-                            if (value === null || value === '' || value.length === 0) {
-                                $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
+                                });
+                                return result;
                             }
-                        },
-                        display: function (value, sourceData) {
-                            var val;
-                            $(value).each(function (i) {
-                                val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
-                            });
-                            $(this).html(val);
-                        },
-                        success: function (response, newValue) {
-                            console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
-                            $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
-                        }
-                    });
+                            ,
+                            onblur: 'cancel',
+                            mode: 'popup',
+                            placement: 'bottom',
+                            emptytext: display,
+                            send: 'always',
+                            validate: function (value) {
+                                if (value === null || value === '' || value.length === 0) {
+                                    $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
+                                }
+                            },
+                            display: function (value, sourceData) {
+                                var val;
+                                $(value).each(function (i) {
+                                    val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
+                                });
+                                $(this).html(val);
+                            },
+                            success: function (response, newValue) {
+                                console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
+                                $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
+                            }
+                        });
             }
             columnVisibleIndex++;
         }
@@ -1602,24 +1641,24 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             }
         });
         $(this.parentNode).find("h3").after($('<div></div>').append($('<input>').attr('placeholder', 'Search...')
-            .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
-            .attr('data-type', 'custom').on('keyup', function () {
-                $('#' + tableId + '_wrapper .editable-checklist > div').hide();
-                $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')').show();
-            })));
+                .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
+                .attr('data-type', 'custom').on('keyup', function () {
+            $('#' + tableId + '_wrapper .editable-checklist > div').hide();
+            $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')').show();
+        })));
         //Add selectAll/unSelectAll button
         $("#" + tableId + "_wrapper [name='searchField']").after(
-            $('<button>').attr('class', 'glyphicon glyphicon-check')
+                $('<button>').attr('class', 'glyphicon glyphicon-check')
                 .attr('title', 'select all').attr('name', 'selectAll')
                 .attr('data-type', 'custom').on('click', function () {
-                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
-            }));
+            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
+        }));
         $("#" + tableId + "_wrapper [name='searchField']").after(
-            $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
                 .attr('title', 'unselect all').attr('name', 'unSelectAll')
                 .attr('data-type', 'custom').on('click', function () {
-                $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
-            }));
+            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
+        }));
 
 
     });
@@ -1734,10 +1773,10 @@ jQuery.fn.dataTableExt.oApi.fnSetFilteringDelay = function (oSettings, iDelay) {
     this.each(function (i) {
         $.fn.dataTableExt.iApiIndex = i;
         var
-            $this = this,
-            oTimerId = null,
-            sPreviousSearch = null,
-            anControl = $('input', _that.fnSettings().aanFeatures.f);
+                $this = this,
+                oTimerId = null,
+                sPreviousSearch = null,
+                anControl = $('input', _that.fnSettings().aanFeatures.f);
 
         anControl.unbind('keyup search input').bind('keyup search input', function () {
             var $$this = $this;
@@ -1939,9 +1978,9 @@ function loadSelectElement(data, element, includeEmpty, includeEmptyText) {
 
 function escapeHtml(unsafe) {
     return unsafe
-        .replace(/"/g, "&quot;")
-        .replace(/\\/g, '\\\\')
-        .replace(/'/g, "\\'");
+            .replace(/"/g, "&quot;")
+            .replace(/\\/g, '\\\\')
+            .replace(/'/g, "\\'");
 }
 
 function generateExecutionLink(status, id) {
@@ -2059,15 +2098,3 @@ $.extend({
     }
 });
 
-function showTitleWhenTextOverflow() {
-    $('td, th').each(function () {
-        var $ele = $(this);
-        if (this.offsetWidth < this.scrollWidth)
-            $ele.attr('title', '<div>'+$ele.text()+'</div>');
-            $ele.attr('data-html', true);
-            $ele.attr('data-toggle', 'tooltip');
-    });
-    $('[data-toggle="tooltip"]').tooltip({
-            container : 'body'
-    } );
-}

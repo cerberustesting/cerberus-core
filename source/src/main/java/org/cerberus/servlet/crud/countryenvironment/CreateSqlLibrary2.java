@@ -73,7 +73,7 @@ public class CreateSqlLibrary2 extends HttpServlet {
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
         String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
-        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
+        String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), null);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
 

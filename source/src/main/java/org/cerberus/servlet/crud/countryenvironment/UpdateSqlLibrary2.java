@@ -77,11 +77,8 @@ public class UpdateSqlLibrary2 extends HttpServlet {
         String database = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("database"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String script = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("script"), null, charset);
-        //String scriptBDD = StringEscapeUtils.escapeHtml4(script);
-
-//        String scriptBDD = HtmlUtils.htmlEscape(script);
-
+        String script = ParameterParserUtil.parseStringParam(request.getParameter("script"), null);
+        
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
