@@ -26,6 +26,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
+
+    var application = GetURLParameter("application");
+
     // handle the click for specific action buttons
     $("#addApplicationObjectButton").click(addEntryModalSaveHandler);
     $("#editApplicationObjectButton").click(editEntryModalSaveHandler);
@@ -35,8 +38,13 @@ function initPage() {
     $('#editApplicationObjectModal').on('hidden.bs.modal', editEntryModalCloseHandler);
 
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [3, 'asc']);
+    var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList");
+
+    if(application != null) {
+        clearIndividualFilter("applicationObjectsTable",undefined,true);
+        filterOnColumn("applicationObjectsTable", "application", application);
+    }
 }
 
 function displayPageLabel() {
@@ -129,13 +137,17 @@ function deleteEntryClick(application, object) {
 
 function addEntryModalSaveHandler() {
     clearResponseMessage($('#addApplicationObjectModal'));
-    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm");
+    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm :input");
 
     // Get the header data from the form.
-    var dataForm = convertSerialToJSONObject(formAdd.serialize());
+    var sa = formAdd.serializeArray();
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
     
     showLoaderInModal('#addApplicationObjectModal');
-    var jqxhr = $.post("CreateApplicationObject", dataForm);
+    var jqxhr = $.post("CreateApplicationObject", data);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationObjectModal');
 //        console.log(data.messageType);
@@ -176,10 +188,15 @@ function addEntryClick() {
 
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editApplicationObjectModal'));
+    $('#editApplicationObjectModal #editApplicationObjectModalForm select#application').attr("disabled",false);
     var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
 
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formEdit.serialize());
+    var sa = formEdit.serializeArray();
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
 
     showLoaderInModal('#editApplicationObjectModal');
     $.ajax({
