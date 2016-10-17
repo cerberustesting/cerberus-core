@@ -86,6 +86,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 listenEnterKeypressWhenFocusingOnDescription();
                 setPlaceholderAction();
                 setPlaceholderControl();
+                loadApplicationObject(data);
 
                 // Building full list of country from testcase.
                 var myCountry = [];
@@ -144,6 +145,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#runTestCase").click(function () {
             runTestCase(test, testcase);
         });
+
     });
 });
 
@@ -378,6 +380,7 @@ function loadProperties(test, testcase, testcaseinfo) {
                 property.toDelete = false;
                 drawProperty(property, testcaseinfo);
             }
+
         },
         error: showUnexpectedError
     });
@@ -580,6 +583,18 @@ function loadLibraryStep() {
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
             });
+        }
+    });
+}
+
+function loadApplicationObject(data){
+    $.ajax({
+        url: "ReadApplicationObject?application="+data.info.application,
+        dataType: "json",
+        success: function(data) {
+            for(var i = 0; i<data.contentTable.length; i++){
+                $("datalist#objects").append("<option value='object=" + data.contentTable[i].object + "'></option>");
+            }
         }
     });
 }
@@ -994,8 +1009,8 @@ Action.prototype.generateContent = function () {
 
     var actionList = $("<select></select>").addClass("form-control input-sm no-border");
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").addClass("form-control input-sm no-border");
-    var propertyField = $("<input>").addClass("form-control input-sm no-border");
+    var objectField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
+    var propertyField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
     var forceExeStatusList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
@@ -1017,15 +1032,23 @@ Action.prototype.generateContent = function () {
 //        setPlaceholderAction();
     });
 
+    function displayApplicationObject(){
+        if ($(this).val().startsWith("object=")) {
+            $(this).attr("list", "objects");
+        } else {
+            $(this).removeAttr("list");
+        }
+    }
+
     objectField.val(this.object);
     objectField.on("change", function () {
         obj.object = objectField.val();
-    });
+    }).bind('input', displayApplicationObject);
 
     propertyField.val(this.property);
     propertyField.on("change", function () {
         obj.property = propertyField.val();
-    });
+    }).bind('input', displayApplicationObject);
 
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
@@ -1526,4 +1549,5 @@ function setPlaceholderProperty() {
             }
         }
     });
+
 }

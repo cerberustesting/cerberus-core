@@ -138,10 +138,26 @@ public class ActionService implements IActionService {
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
                 return testCaseStepActionExecution;
             }
+        } else if (testCaseStepActionExecution.getValue1().contains("object=")) {
+            try {
+                testCaseStepActionExecution.setValue1(propertyService.decodeValueWithExistingObjects(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
+            } catch (CerberusEventException cex) {
+                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+                return testCaseStepActionExecution;
+            }
         }
         if (testCaseStepActionExecution.getValue2().contains("%")) {
             try {
                 testCaseStepActionExecution.setValue2(propertyService.decodeValueWithExistingProperties(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
+            } catch (CerberusEventException cex) {
+                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+                return testCaseStepActionExecution;
+            }
+        } else if (testCaseStepActionExecution.getValue2().contains("object=")) {
+            try {
+                testCaseStepActionExecution.setValue2(propertyService.decodeValueWithExistingObjects(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
             } catch (CerberusEventException cex) {
                 testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
                 testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));

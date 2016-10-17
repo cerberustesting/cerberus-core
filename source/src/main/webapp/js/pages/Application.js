@@ -26,6 +26,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
+
     // handle the click for specific action buttons
     $("#addApplicationButton").click(addEntryModalSaveHandler);
     $("#editApplicationButton").click(editEntryModalSaveHandler);
@@ -41,8 +42,17 @@ function initPage() {
     getSelectInvariant("ENVIRONMENT", true);
     getSelectInvariant("COUNTRY", true);
 
+    $('#editApplicationModal a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var doc = new Doc();
+        var target = $(e.target).attr("href"); // activated tab
 
-    //configure and create the dataTable
+        if (target == "#tabsEdit-3") {
+            $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
+        }
+    });
+
+
+            //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList");
 }
@@ -106,6 +116,17 @@ function renderOptionsForApplication(data) {
     }
 }
 
+function renderOptionsForApplication2(id, data) {
+    var doc = new Doc();
+    //check if user has permissions to perform the add and import operations
+    if ($("#createApplicationObjectButton").length === 0) {
+        var contentToAdd = "<div class='marginBottom10'><a href='ApplicationObject.jsp?application="+id+"' target='_blank'><button id='createApplicationObjectButton' type='button' class='btn btn-default'>\n\
+        " + doc.getDocLabel("page_application", "button_manage") + "</button></a></div>";
+
+        $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
+    }
+}
+
 function deleteEntryHandlerClick() {
     var idApplication = $('#confirmationModal').find('#hiddenField1').prop("value");
     var jqxhr = $.post("DeleteApplication", {application: idApplication}, "json");
@@ -162,7 +183,6 @@ function addEntryModalSaveHandler() {
     var jqxhr = $.post("CreateApplication", dataForm);
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationModal');
-//        console.log(data.messageType);
         if (getAlertType(data.messageType) === 'success') {
             var oTable = $("#applicationsTable").dataTable();
             oTable.fnDraw(true);
@@ -287,6 +307,13 @@ function editEntryClick(id, system) {
 
             $('#editApplicationButton').attr('class', '');
             $('#editApplicationButton').attr('hidden', 'hidden');
+        }
+
+        if ($("#editApplicationModal #applicationObjectsTable_wrapper").length > 0) {
+            $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
+        } else {
+            var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application="+id, "contentTable", aoColumnsFunc2("applicationObjectsTable"), [1, 'asc']);
+            var table = createDataTableWithPermissions(configurations, function(data){renderOptionsForApplication2(id,data);}, "#applicationObjectList");
         }
 
         formEdit.modal('show');
@@ -471,6 +498,39 @@ function aoColumnsFunc(tableId) {
         {"data": "mavengroupid",
             "sName": "mavengroupid",
             "title": doc.getDocOnline("application", "mavengroupid")}
+    ];
+    return aoColumns;
+}
+
+function aoColumnsFunc2(tableId) {
+    var doc = new Doc();
+    var aoColumns = [
+        {"data": "application",
+            "sName": "application",
+            "title": doc.getDocOnline("applicationObject", "Application")},
+        {"data": "object",
+            "sName": "object",
+            "title": doc.getDocOnline("applicationObject", "Object")},
+        {"data": "value",
+            "sName": "value",
+            "title": doc.getDocOnline("applicationObject", "Value")},
+        {"data": "screenshotfilename",
+            "sName": "screenshotfilename",
+            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")},
+        {"data": "usrcreated",
+            "sName": "usrcreated",
+            "title": doc.getDocOnline("applicationObject", "UsrCreated")},
+        {"data": "datecreated",
+            "sName": "datecreated",
+            "title": doc.getDocOnline("applicationObject", "DateCreated")},
+        {"data": "usrmodif",
+            "sName": "usrmodif",
+            "title": doc.getDocOnline("applicationObject", "UsrModif")
+        },
+        {"data": "datemodif",
+            "sName": "datemodif",
+            "title": doc.getDocOnline("applicationObject", "DateModif")
+        }
     ];
     return aoColumns;
 }

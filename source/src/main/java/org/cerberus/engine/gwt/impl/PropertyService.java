@@ -37,14 +37,9 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.entity.TestDataLib;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ISoapLibraryService;
-import org.cerberus.crud.service.ISqlLibraryService;
-import org.cerberus.crud.service.ITestCaseExecutionDataService;
-import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.ITestDataService;
+import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -116,6 +111,10 @@ public class PropertyService implements IPropertyService {
     private IDataLibService dataLibService;
     @Autowired
     private ILogEventService logEventService;
+    @Autowired
+    private ITestCaseService testCaseService;
+    @Autowired
+    private IApplicationObjectService applicationObjectService;
 
     /**
      * The property variable {@link Pattern}
@@ -272,6 +271,39 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Finished to decode String : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
         }
         return stringToDecode;
+    }
+
+    @Override
+    public String decodeValueWithExistingObjects(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+        String result = "";
+        String test = testCaseStepActionExecution.getTest();
+        String testcase = testCaseStepActionExecution.getTestCase();
+        AnswerItem aTestCase = testCaseService.readByKey(test,testcase);
+        if(aTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && aTestCase.getItem() != null){
+            TestCase tc = (TestCase) aTestCase.getItem();
+            String application = tc.getApplication();
+            String object = stringToDecode.replace("object=","");
+            AnswerItem aApplicationObject = applicationObjectService.readByKey(application,object);
+            if(aApplicationObject.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if(aTestCase.getItem() != null){
+                    ApplicationObject ao = (ApplicationObject) aApplicationObject.getItem();
+                    result = ao.getValue();
+                }
+            }else{
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Unable to find the ApplicationObject :" + application + ", " + object);
+                }
+            }
+        }else{
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Unable to find the Application of the Test case: " + test + ", " + testcase);
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Finished to decode String : '" + stringToDecode + "' to :'" + result + "'");
+        }
+        return result;
     }
 
     /**

@@ -120,6 +120,9 @@ public class ReadApplicationObject extends HttpServlet {
             } else if (request.getParameter("application") == null) {
                 answer = findApplicationObjectList(null, appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
+            } else if (request.getParameter("iDisplayStart") == null){
+                answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions);
+                jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findApplicationObjectList(request.getParameter("application"), appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
@@ -211,6 +214,32 @@ public class ReadApplicationObject extends HttpServlet {
         }
 
         AnswerList resp = applicationObjectService.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch);
+
+        JSONArray jsonArray = new JSONArray();
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (ApplicationObject applicationObject : (List<ApplicationObject>) resp.getDataList()) {
+                jsonArray.put(convertApplicationObjectToJSONObject(applicationObject));
+            }
+        }
+
+        object.put("hasPermissions", userHasPermissions);
+        object.put("contentTable", jsonArray);
+        object.put("iTotalRecords", resp.getTotalRows());
+        object.put("iTotalDisplayRecords", resp.getTotalRows());
+
+        item.setItem(object);
+        item.setResultMessage(resp.getResultMessage());
+        return item;
+    }
+
+    private AnswerItem findApplicationObjectList(String application, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+
+        AnswerItem item = new AnswerItem();
+        JSONObject object = new JSONObject();
+        applicationObjectService = appContext.getBean(IApplicationObjectService.class);
+
+
+        AnswerList resp = applicationObjectService.readByApplication(application);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values

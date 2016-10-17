@@ -102,6 +102,7 @@
                         </div>
                     </div>
                 </div>
+                <datalist id="objects"></datalist>
             </div>
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>

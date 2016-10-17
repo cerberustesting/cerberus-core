@@ -585,7 +585,20 @@
                     //add a loader to the editabl area - prevents save actions done by mistake
                     //TODO:FN this need to be refactored while the page conversion to the new standards
                     showLoader($("#editableContent"));
-                </script>    
+                </script>    <script>
+                $(document).ready(function() {
+                    $.ajax({
+                        url: "ReadApplicationObject?application=<%=tcase.getApplication()%>",
+                        dataType: "json",
+                        success: function(data) {
+                            for(var i = 0; i<data.contentTable.length; i++){
+                                $("datalist#objects").append("<option value='object=" + data.contentTable[i].object + "'></option>");
+                            }
+                        }
+                    });
+
+                });
+            </script>
                 <form method="post" name="UpdateTestCase"  id="UpdateTestCase"  action="UpdateTestCaseWithDependencies">
                     <table id="generalparameter" class="arrond"
                            <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
@@ -2062,13 +2075,13 @@
                         <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value1", "Val1", myLang));%></p>
                             </div>
-                            <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
-                                   data-id="action_object_template">
+                            <input id="val1" style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
+                                   data-id="action_object_template" >
                         </div>
                         <div class="technical_part" style="width: 15%; float:left; background-color:transparent">
                             <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value2", "Val2", myLang));%></p>
                             </div>
-                            <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
+                            <input id="val2" class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
                                     data-id="action_property_template">
                         </div>
                         <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
@@ -2076,6 +2089,7 @@
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_forceexestatus_template", "wob", "ACTIONFORCEEXESTATUS", "", "", null)%>
                         </div>
+                        <datalist id="objects"></datalist>
                     </div>
                 </div>
                 <div style="background-color:blue; width:3px;height:45px;display:inline-block;float:right">
@@ -2342,6 +2356,18 @@
                 });
             });</script>
             <%}%>
+        <script>
+            $(document).ready(function() {
+                $("input[id^='action_property'],input[id^='action_object'],input[id^='control_value']").bind('input', function () {
+                    if ($(this).val().startsWith("object=")) {
+                        $(this).attr("list", "objects");
+                    } else {
+                        $(this).removeAttr("list");
+                    }
+                    console.log("salut");
+                })
+            });
+        </script>
         <script>
             function checkDeletePropertiesUncheckingCountry(country) {
                 for (var a = 0; a < document.getElementsByName('properties_delete').length; a++) {
