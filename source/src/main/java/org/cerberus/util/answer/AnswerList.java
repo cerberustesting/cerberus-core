@@ -20,7 +20,7 @@
 package org.cerberus.util.answer;
 
 import java.util.List;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 
 /**
  * Auxiliary class that is used to store an answer that contains a message and a

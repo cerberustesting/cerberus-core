@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.dao.IProjectDAO;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.Project;
 import org.cerberus.enums.MessageEventEnum;

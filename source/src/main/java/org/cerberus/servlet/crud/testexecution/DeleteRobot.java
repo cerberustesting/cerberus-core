@@ -25,7 +25,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;

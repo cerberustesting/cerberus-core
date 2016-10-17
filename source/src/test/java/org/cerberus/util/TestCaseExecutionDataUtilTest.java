@@ -21,7 +21,7 @@ package org.cerberus.util;
 
 import junit.framework.Assert;
 
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.factory.impl.FactoryTestCaseExecutionData;

@@ -17,7 +17,7 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.factory.IFactorySoapLibrary;
 import org.cerberus.crud.service.ILogEventService;

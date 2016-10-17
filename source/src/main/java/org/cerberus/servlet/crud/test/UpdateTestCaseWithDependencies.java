@@ -43,7 +43,6 @@ import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
-import org.cerberus.crud.service.IGroupService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -63,6 +62,7 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.service.IUserGroupService;
 
 /**
  *
@@ -99,13 +99,14 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         ITestCaseStepActionControlService tcsacService = appContext.getBean(ITestCaseStepActionControlService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IUserService userService = appContext.getBean(IUserService.class);
-        IGroupService groupService = appContext.getBean(IGroupService.class);
+        IUserGroupService userGroupService = appContext.getBean(IUserGroupService.class);
 
         /**
          * Get User and Groups of this user
          */
         User user = userService.findUserByKey(request.getUserPrincipal().getName());
-        List<UserGroup> userGroupList = groupService.findGroupByUser(user);
+//        List<UserGroup> userGroupList = groupService.findGroupByUser(user);
+        List<UserGroup> userGroupList = userGroupService.convert(userGroupService.readByUser(user.getLogin()));
         List<String> groupList = new ArrayList();
         for (UserGroup group : userGroupList) {
             groupList.add(group.getGroup());

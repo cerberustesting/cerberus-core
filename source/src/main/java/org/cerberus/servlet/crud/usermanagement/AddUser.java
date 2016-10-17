@@ -27,18 +27,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
+import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryGroup;
-import org.cerberus.crud.factory.IFactoryLogEvent;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryGroup;
-import org.cerberus.crud.factory.impl.FactoryLogEvent;
+import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.crud.factory.impl.FactoryUser;
 import org.cerberus.crud.factory.impl.FactoryUserSystem;
 import org.cerberus.crud.service.ILogEventService;
@@ -56,6 +51,7 @@ import org.cerberus.service.email.impl.EmailGeneration;
 import org.cerberus.util.ParameterParserUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author Tiago Bernardes <tbernardes@redoute.pt>
@@ -103,7 +99,7 @@ public class AddUser extends HttpServlet {
             String defaultSystem = ParameterParserUtil.parseStringParam(request.getParameter("defaultSystem"), "");
             String email = ParameterParserUtil.parseStringParam(request.getParameter("email"), "");
 
-            IFactoryGroup factoryGroup = new FactoryGroup();
+            IFactoryUserGroup factoryGroup = new FactoryUserGroup();
             List<UserGroup> groups = new ArrayList<UserGroup>();
             for (String group : request.getParameterValues("groups")) {
                 groups.add(factoryGroup.create(group));

@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;

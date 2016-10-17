@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IRobotCapabilityDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.factory.IFactoryRobotCapability;

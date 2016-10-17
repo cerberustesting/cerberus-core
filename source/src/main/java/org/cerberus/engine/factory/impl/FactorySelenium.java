@@ -17,30 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.factory.impl;
+package org.cerberus.engine.factory.impl;
 
-import org.cerberus.crud.entity.UserGroup;
-import org.cerberus.crud.factory.IFactoryGroup;
+import org.cerberus.engine.entity.Selenium;
+import org.cerberus.engine.factory.IFactorySelenium;
+import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Service;
 
 /**
- * @author vertigo
+ * @author bcivel
  */
 @Service
-public class FactoryGroup implements IFactoryGroup {
+public class FactorySelenium implements IFactorySelenium {
 
     @Override
-    public UserGroup create(String group) {
-        UserGroup newGroup = new UserGroup();
-        newGroup.setGroup(group);
-        return newGroup;
-    }
+    public Selenium create(String host, String port, String browser, String version, String platform, String login, String ip, WebDriver driver, long wait) {
+        Selenium newSelenium = new Selenium();
+        newSelenium.setHost(host == null ? "localhost" : host);
+        newSelenium.setPort(port);
+        newSelenium.setBrowser(browser);
+        newSelenium.setVersion(version);
+        newSelenium.setPlatform(platform);
+        newSelenium.setLogin(login.startsWith("/") ? login.substring(1) : login);
+        newSelenium.setIp(ip);
+        newSelenium.setDefaultWait(wait);
 
-    @Override
-    public UserGroup create(String login, String group) {
-        UserGroup newGroup = new UserGroup();
-        newGroup.setGroup(group);
-        newGroup.setLogin(login);
-        return newGroup;
+        return newSelenium;
     }
 }

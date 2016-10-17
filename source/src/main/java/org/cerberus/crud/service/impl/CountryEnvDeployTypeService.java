@@ -27,8 +27,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvDeployType;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;

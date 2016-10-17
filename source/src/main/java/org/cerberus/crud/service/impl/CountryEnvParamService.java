@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.cerberus.crud.dao.ICountryEnvParamDAO;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryCountryEnvParam;
 import org.cerberus.crud.service.ICountryEnvParamService;

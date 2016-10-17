@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseExecutionFileDAO;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.enums.MessageEventEnum;

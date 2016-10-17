@@ -17,23 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.factory;
+package org.cerberus.engine.factory;
 
-import org.cerberus.crud.entity.UserGroup;
+import org.cerberus.engine.entity.Selenium;
+import org.openqa.selenium.WebDriver;
 
 /**
  *
- * @author vertigo
+ * @author bcivel
  */
-public interface IFactoryGroup {
-    
+public interface IFactorySelenium {
+
     /**
-     *
-     * @param group
-     * @return
+     * 
+     * @param host : IP of the Test Machine
+     * @param port : Port ued for connection to the test Machine
+     * @param browser : Browser Name used for the test
+     * @param version : Version of the browser
+     * @param platform : Platform of the robot (MAC/LINUX/WINDOWS...)
+     * @param login
+     * @param ip
+     * @param driver
+     * @param wait
+     * @return 
      */
-    UserGroup create(String group);
-    
-    UserGroup create(String login, String group);
-        
+    Selenium create(String host, String port, String browser, String version, String platform, String login, String ip, WebDriver driver, long wait);
 }

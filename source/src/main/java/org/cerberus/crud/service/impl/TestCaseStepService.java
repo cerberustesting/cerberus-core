@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.exception.CerberusException;

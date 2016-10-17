@@ -39,7 +39,7 @@ import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionParameters;
 import org.cerberus.crud.entity.CountryEnvDeployType;
 
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionParametersService;
 import org.cerberus.crud.service.ICountryEnvDeployTypeService;

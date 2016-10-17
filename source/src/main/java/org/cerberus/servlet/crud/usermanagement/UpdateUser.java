@@ -32,9 +32,8 @@ import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryGroup;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryGroup;
+import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserGroupService;
@@ -45,6 +44,7 @@ import org.cerberus.crud.service.impl.UserGroupService;
 import org.cerberus.crud.service.impl.UserService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author ip100003
@@ -72,7 +72,7 @@ public class UpdateUser extends HttpServlet {
         IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
         IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
 
-        IFactoryGroup factoryGroup = new FactoryGroup();
+        IFactoryUserGroup factoryGroup = new FactoryUserGroup();
 
         User myUser;
         List<UserGroup> newGroups = null;

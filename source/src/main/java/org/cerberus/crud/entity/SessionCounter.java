@@ -33,10 +33,10 @@ import org.springframework.stereotype.Component;
 public class SessionCounter {
 
     private Map<String, String> users;
-    
+
     @PostConstruct
-    public void init(){
-    users = new HashMap<String, String>();
+    public void init() {
+        users = new HashMap<String, String>();
     }
 
     public boolean isAuthentified(String sessionId) {

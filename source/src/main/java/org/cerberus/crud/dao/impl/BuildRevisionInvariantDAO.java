@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionInvariant;
 import org.cerberus.crud.factory.impl.FactoryBuildRevisionInvariant;
 import org.cerberus.enums.MessageEventEnum;

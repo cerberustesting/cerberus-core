@@ -21,7 +21,7 @@ package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;

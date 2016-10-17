@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.database.DatabaseSpring;

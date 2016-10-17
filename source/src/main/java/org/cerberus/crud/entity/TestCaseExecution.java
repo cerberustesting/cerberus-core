@@ -17,6 +17,9 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.Session;
+import org.cerberus.engine.entity.Selenium;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.util.answer.AnswerItem;

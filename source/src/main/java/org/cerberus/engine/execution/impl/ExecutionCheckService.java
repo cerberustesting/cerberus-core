@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseExecution;

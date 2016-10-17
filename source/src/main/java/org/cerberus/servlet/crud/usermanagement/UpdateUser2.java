@@ -20,12 +20,11 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.UserSystem;
-import org.cerberus.crud.factory.IFactoryGroup;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryGroup;
+import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.ILogEventService;
@@ -58,6 +57,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author bcivel
@@ -86,7 +86,7 @@ public class UpdateUser2 extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IFactoryGroup factoryGroup = new FactoryGroup();
+        IFactoryUserGroup factoryGroup = new FactoryUserGroup();
         IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
 
         String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("id"), "", charset);

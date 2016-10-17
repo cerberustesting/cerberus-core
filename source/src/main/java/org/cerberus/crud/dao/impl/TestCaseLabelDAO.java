@@ -32,7 +32,7 @@ import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
 import org.cerberus.crud.entity.Label;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryTestCaseLabel;

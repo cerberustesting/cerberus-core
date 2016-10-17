@@ -20,7 +20,7 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryCampaignContent;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignService;

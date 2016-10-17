@@ -18,13 +18,12 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.UserSystem;
-import org.cerberus.crud.factory.IFactoryGroup;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.factory.IFactoryUserSystem;
-import org.cerberus.crud.factory.impl.FactoryGroup;
+import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.crud.service.*;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -50,6 +49,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author bcivel
@@ -115,7 +115,7 @@ public class CreateUser2 extends HttpServlet {
 
             IUserService userService = appContext.getBean(IUserService.class);
             IFactoryUser factoryUser = appContext.getBean(IFactoryUser.class);
-            IFactoryGroup factoryGroup = new FactoryGroup();
+            IFactoryUserGroup factoryGroup = new FactoryUserGroup();
             IFactoryUserSystem userSystemFactory = appContext.getBean(IFactoryUserSystem.class);
             IUserGroupService userGroupService = appContext.getBean(UserGroupService.class);
             IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);

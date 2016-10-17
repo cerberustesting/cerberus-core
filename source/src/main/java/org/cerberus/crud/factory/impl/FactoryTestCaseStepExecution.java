@@ -20,7 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.math.BigDecimal;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepExecution;

@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.impl.FactoryApplication;

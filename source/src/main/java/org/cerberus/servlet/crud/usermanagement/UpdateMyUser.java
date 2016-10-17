@@ -28,8 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactoryGroup;
-import org.cerberus.crud.factory.impl.FactoryGroup;
+import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
@@ -40,6 +39,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author ip100003

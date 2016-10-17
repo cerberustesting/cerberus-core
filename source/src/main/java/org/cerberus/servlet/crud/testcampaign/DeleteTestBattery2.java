@@ -18,7 +18,7 @@
 package org.cerberus.servlet.crud.testcampaign;
 
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.service.*;
 import org.cerberus.crud.service.impl.LogEventService;

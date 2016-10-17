@@ -25,7 +25,7 @@ import java.util.Map;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.enums.MessageGeneralEnum;

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.BuildRevisionParameters;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionParametersService;

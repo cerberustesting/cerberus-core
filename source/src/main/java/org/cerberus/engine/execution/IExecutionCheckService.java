@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.execution;
 
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 
 /**

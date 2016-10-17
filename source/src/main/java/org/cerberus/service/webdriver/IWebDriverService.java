@@ -21,9 +21,9 @@ package org.cerberus.service.webdriver;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
-import org.cerberus.crud.entity.Identifier;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Session;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.exception.CerberusEventException;
 
 /**

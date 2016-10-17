@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;

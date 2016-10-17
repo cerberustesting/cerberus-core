@@ -19,7 +19,7 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.impl.SqlLibraryService;

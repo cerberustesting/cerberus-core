@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestDataLibData;

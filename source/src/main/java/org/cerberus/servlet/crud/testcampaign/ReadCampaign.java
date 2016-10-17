@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
+import org.cerberus.engine.entity.MessageEvent;
 import com.google.common.base.*;
 import com.google.gson.Gson;
 

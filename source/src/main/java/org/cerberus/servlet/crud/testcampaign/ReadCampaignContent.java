@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.enums.MessageEventEnum;

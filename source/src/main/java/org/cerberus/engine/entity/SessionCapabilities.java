@@ -1,4 +1,6 @@
-/* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
  *
@@ -15,23 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.dao;
-
-import java.util.List;
-
-import org.cerberus.crud.entity.UserGroup;
-import org.cerberus.crud.entity.User;
+package org.cerberus.engine.entity;
 
 /**
  *
- * @author vertigo
+ * @author bcivel
  */
-public interface IGroupDAO {
+public class SessionCapabilities {
 
-    /**
-     *
-     * @param user
-     * @return
-     */
-    List<UserGroup> findGroupByUser(User user);
+    String capability;
+    String value;
+
+    public String getCapability() {
+        return capability;
+    }
+
+    public void setCapability(String capability) {
+        this.capability = capability;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public void create(String capability, String value) {
+        this.capability = (capability);
+        this.value = (value);
+    }
+
 }

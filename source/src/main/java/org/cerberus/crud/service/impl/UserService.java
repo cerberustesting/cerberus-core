@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.cerberus.crud.dao.IUserDAO;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.crud.service.IUserService;

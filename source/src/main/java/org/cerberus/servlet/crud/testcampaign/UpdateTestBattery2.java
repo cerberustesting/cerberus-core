@@ -17,6 +17,7 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryCampaignContent;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;

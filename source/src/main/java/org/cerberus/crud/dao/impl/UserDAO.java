@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IUserDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.factory.IFactoryUser;
 import org.cerberus.crud.factory.impl.FactoryUser;

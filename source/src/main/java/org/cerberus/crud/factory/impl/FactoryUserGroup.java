@@ -17,36 +17,30 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.entity;
+package org.cerberus.crud.factory.impl;
+
+import org.cerberus.crud.entity.UserGroup;
+import org.springframework.stereotype.Service;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
- *
- * @author bcivel
+ * @author vertigo
  */
-public class SessionCapabilities {
+@Service
+public class FactoryUserGroup implements IFactoryUserGroup {
 
-    String capability;
-    String value;
-
-    public String getCapability() {
-        return capability;
+    @Override
+    public UserGroup create(String group) {
+        UserGroup newGroup = new UserGroup();
+        newGroup.setGroup(group);
+        return newGroup;
     }
 
-    public void setCapability(String capability) {
-        this.capability = capability;
+    @Override
+    public UserGroup create(String login, String group) {
+        UserGroup newGroup = new UserGroup();
+        newGroup.setGroup(group);
+        newGroup.setLogin(login);
+        return newGroup;
     }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public void create(String capability, String value) {
-        this.capability = (capability);
-        this.value = (value);
-    }
-
 }

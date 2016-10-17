@@ -17,7 +17,7 @@
  */
 package org.cerberus.exception;
 
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 
 /**
  * {Insert class description here}

@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.tool.Extension;
 import org.cerberus.crud.dao.IParameterDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;

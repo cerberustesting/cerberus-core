@@ -21,7 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import org.cerberus.crud.dao.IUserSystemDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.crud.entity.UserSystem;
 import org.cerberus.enums.MessageEventEnum;

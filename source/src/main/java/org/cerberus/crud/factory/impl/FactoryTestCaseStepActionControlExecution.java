@@ -19,7 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;

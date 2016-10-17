@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICountryEnvLinkDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.CountryEnvLink;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryCountryEnvLink;
 import org.cerberus.crud.factory.impl.FactoryCountryEnvLink;
 import org.cerberus.enums.MessageEventEnum;

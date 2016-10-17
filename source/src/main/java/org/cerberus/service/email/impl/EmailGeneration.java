@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BatchInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.crud.dao.IRobotCapabilityDAO;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.service.IRobotCapabilityService;
 import org.cerberus.enums.MessageEventEnum;

@@ -21,8 +21,8 @@ package org.cerberus.crud.service.impl;
 
 import org.cerberus.crud.dao.ICampaignParameterDAO;
 import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;

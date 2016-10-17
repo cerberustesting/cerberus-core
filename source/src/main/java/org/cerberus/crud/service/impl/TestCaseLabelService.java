@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseLabelDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.ITestCaseLabelService;

@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +28,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.google.common.base.Strings;
-import org.cerberus.crud.entity.*;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,8 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestBatteryContentDAO;
+import org.cerberus.crud.entity.TestBatteryContent;
+import org.cerberus.crud.entity.TestBatteryContentWithDescription;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;

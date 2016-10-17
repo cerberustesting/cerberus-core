@@ -32,7 +32,7 @@ import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryCountryEnvDeployType;
 import org.cerberus.crud.factory.IFactoryCountryEnvLink;
 import org.cerberus.crud.factory.IFactoryCountryEnvironmentDatabase;

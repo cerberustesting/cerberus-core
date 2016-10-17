@@ -18,7 +18,7 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;

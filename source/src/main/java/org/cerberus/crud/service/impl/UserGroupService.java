@@ -22,15 +22,16 @@ package org.cerberus.crud.service.impl;
 import java.util.List;
 
 import org.cerberus.crud.dao.IUserGroupDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.UserGroup;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IUserGroupService;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,13 +101,13 @@ public class UserGroupService implements IUserGroupService {
     public Answer updateGroupsByUser(User user, List<UserGroup> newGroups) {
         Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         AnswerList an = this.readByUser(user.getLogin());
-        if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserGroup> oldGroups = an.getDataList();
             //delete if don't exist in new
             for (UserGroup old : oldGroups) {
                 if (!newGroups.contains(old)) {
                     Answer del = userGroupDAO.remove(old);
-                    if(!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    if (!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = del;
                     }
                 }
@@ -115,7 +116,7 @@ public class UserGroupService implements IUserGroupService {
             for (UserGroup group : newGroups) {
                 if (!oldGroups.contains(group)) {
                     Answer add = userGroupDAO.create(group);
-                    if(!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    if (!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = add;
                     }
                 }
@@ -123,4 +124,32 @@ public class UserGroupService implements IUserGroupService {
         }
         return a;
     }
+
+    @Override
+    public UserGroup convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (UserGroup) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<UserGroup> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<UserGroup>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

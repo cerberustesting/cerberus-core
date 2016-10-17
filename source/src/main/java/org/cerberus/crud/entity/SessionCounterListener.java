@@ -32,13 +32,13 @@ public class SessionCounterListener implements HttpSessionListener {
 
     @Autowired
     SessionCounter cs;
-    
-@Override
+
+    @Override
     public void sessionCreated(HttpSessionEvent arg0) {
         WebApplicationContextUtils
-        .getRequiredWebApplicationContext(arg0.getSession().getServletContext())
-        .getAutowireCapableBeanFactory()
-        .autowireBean(this);
+                .getRequiredWebApplicationContext(arg0.getSession().getServletContext())
+                .getAutowireCapableBeanFactory()
+                .autowireBean(this);
     }
 
     @Override

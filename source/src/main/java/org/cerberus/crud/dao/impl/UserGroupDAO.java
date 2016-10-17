@@ -27,11 +27,10 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IUserGroupDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
-import org.cerberus.crud.factory.IFactoryGroup;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
@@ -39,6 +38,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * {Insert class description here}
@@ -53,7 +53,7 @@ public class UserGroupDAO implements IUserGroupDAO {
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryGroup factoryGroup;
+    private IFactoryUserGroup factoryGroup;
 
     /**
      * Declare SQL queries used by this {@link UserGroup}

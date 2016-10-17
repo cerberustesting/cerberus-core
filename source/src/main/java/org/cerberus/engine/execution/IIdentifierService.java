@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.execution;
 
-import org.cerberus.crud.entity.Identifier;
+import org.cerberus.engine.entity.Identifier;
 import org.cerberus.exception.CerberusEventException;
 
 /**

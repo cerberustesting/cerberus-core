@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
 import org.cerberus.crud.entity.BatchInvariant;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.enums.MessageEventEnum;

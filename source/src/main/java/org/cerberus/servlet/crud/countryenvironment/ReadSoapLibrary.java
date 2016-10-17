@@ -20,7 +20,7 @@ package org.cerberus.servlet.crud.countryenvironment;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.SoapLibraryService;

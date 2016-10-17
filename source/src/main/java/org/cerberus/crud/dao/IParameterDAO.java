@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.ParameterSystem;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;

@@ -19,9 +19,9 @@
  */
 package org.cerberus.service.appium;
 
-import org.cerberus.crud.entity.Identifier;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Session;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.SwipeAction;
 
 /**

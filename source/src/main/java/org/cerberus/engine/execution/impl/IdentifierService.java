@@ -20,8 +20,8 @@
 package org.cerberus.engine.execution.impl;
 
 import java.util.Arrays;
-import org.cerberus.crud.entity.Identifier;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.engine.execution.IIdentifierService;

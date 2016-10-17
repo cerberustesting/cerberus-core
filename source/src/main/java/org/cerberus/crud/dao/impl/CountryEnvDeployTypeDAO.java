@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.cerberus.crud.entity.CountryEnvDeployType;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryCountryEnvDeployType;
 import org.cerberus.crud.factory.impl.FactoryCountryEnvDeployType;
 import org.cerberus.enums.MessageEventEnum;

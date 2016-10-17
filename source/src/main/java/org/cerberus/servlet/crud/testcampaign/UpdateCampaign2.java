@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.factory.IFactoryCampaignContent;

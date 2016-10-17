@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.ParameterService;

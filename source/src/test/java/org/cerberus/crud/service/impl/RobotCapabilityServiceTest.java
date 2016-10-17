@@ -22,7 +22,7 @@ package org.cerberus.crud.service.impl;
 import java.util.Arrays;
 import java.util.List;
 import org.cerberus.crud.dao.IRobotCapabilityDAO;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerList;

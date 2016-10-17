@@ -24,7 +24,7 @@ import java.util.Map;
 import org.cerberus.crud.dao.ICountryEnvParam_logDAO;
 
 import org.cerberus.crud.entity.CountryEnvParam_log;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.factory.IFactoryCountryEnvParam_log;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
 import org.cerberus.enums.MessageGeneralEnum;

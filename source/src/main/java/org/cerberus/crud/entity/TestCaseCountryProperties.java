@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.engine.entity.MessageEvent;
 import java.util.List;
 
 /**

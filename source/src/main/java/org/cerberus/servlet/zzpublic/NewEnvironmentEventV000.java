@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IBatchInvariantService;
 import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;

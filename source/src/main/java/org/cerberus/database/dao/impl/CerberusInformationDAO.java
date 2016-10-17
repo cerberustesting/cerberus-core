@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.crud.dao.impl;
+package org.cerberus.database.dao.impl;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -23,9 +23,9 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.ICerberusInformationDAO;
+import org.cerberus.database.dao.ICerberusInformationDAO;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;

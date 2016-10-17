@@ -24,7 +24,7 @@ import java.util.Map;
 import org.cerberus.crud.dao.IBuildRevisionBatchDAO;
 import org.cerberus.crud.entity.BuildRevisionBatch;
 
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.factory.IFactoryBuildRevisionBatch;
 import org.cerberus.crud.service.IBuildRevisionBatchService;
 import org.cerberus.enums.MessageGeneralEnum;

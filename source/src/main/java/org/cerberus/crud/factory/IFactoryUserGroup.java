@@ -19,27 +19,21 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.Selenium;
-import org.openqa.selenium.WebDriver;
+import org.cerberus.crud.entity.UserGroup;
 
 /**
  *
- * @author bcivel
+ * @author vertigo
  */
-public interface IFactorySelenium {
+public interface IFactoryUserGroup {
 
     /**
-     * 
-     * @param host : IP of the Test Machine
-     * @param port : Port ued for connection to the test Machine
-     * @param browser : Browser Name used for the test
-     * @param version : Version of the browser
-     * @param platform : Platform of the robot (MAC/LINUX/WINDOWS...)
-     * @param login
-     * @param ip
-     * @param driver
-     * @param wait
-     * @return 
+     *
+     * @param group
+     * @return
      */
-    Selenium create(String host, String port, String browser, String version, String platform, String login, String ip, WebDriver driver, long wait);
+    UserGroup create(String group);
+
+    UserGroup create(String login, String group);
+
 }

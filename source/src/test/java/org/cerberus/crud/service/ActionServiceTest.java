@@ -21,8 +21,8 @@
 package org.cerberus.crud.service;
 
 import junit.framework.Assert;
-import org.cerberus.crud.entity.MessageEvent;
-import org.cerberus.crud.entity.Selenium;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Selenium;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;

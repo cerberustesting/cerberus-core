@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
 import java.util.HashMap;
 import java.util.List;
 

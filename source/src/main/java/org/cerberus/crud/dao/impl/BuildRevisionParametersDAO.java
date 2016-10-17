@@ -32,7 +32,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBuildRevisionParameters;
 import org.cerberus.crud.factory.impl.FactoryBuildRevisionParameters;
 import org.cerberus.enums.MessageEventEnum;

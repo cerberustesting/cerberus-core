@@ -17,6 +17,8 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Level;

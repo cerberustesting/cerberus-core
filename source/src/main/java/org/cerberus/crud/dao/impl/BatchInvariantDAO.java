@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IBatchInvariantDAO;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.crud.entity.BatchInvariant;
-import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.factory.IFactoryBatchInvariant;
 import org.cerberus.crud.factory.impl.FactoryBatchInvariant;
 import org.cerberus.enums.MessageEventEnum;

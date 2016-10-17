@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.execution;
 
-import org.cerberus.crud.entity.Session;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.openqa.selenium.Capabilities;

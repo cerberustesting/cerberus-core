@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.cerberus.crud.dao.IBuildRevisionInvariantDAO;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.enums.MessageEventEnum;

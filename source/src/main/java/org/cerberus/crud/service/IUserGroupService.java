@@ -25,6 +25,7 @@ import org.cerberus.crud.entity.UserGroup;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -37,7 +38,7 @@ import org.cerberus.util.answer.AnswerList;
 public interface IUserGroupService {
 
     /**
-     * @param user      the user to update the group
+     * @param user the user to update the group
      * @param newGroups the user list of Groups
      * @throws CerberusException
      */
@@ -56,8 +57,32 @@ public interface IUserGroupService {
     AnswerList<UserGroup> readByUser(String login);
 
     /**
-     * @param user      the user to update the group
+     * @param user the user to update the group
      * @param newGroups the user list of Groups
      */
     Answer updateGroupsByUser(User user, List<UserGroup> newGroups);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    UserGroup convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<UserGroup> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

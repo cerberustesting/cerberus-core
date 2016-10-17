@@ -59,6 +59,7 @@ public interface IUserGroupDAO {
 
 
     /**
+     * @param login
      * @return a list of all the userSystem of a user
      */
     AnswerList<UserGroup> readByUser(String login);

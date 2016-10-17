@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.ILabelDAO;
 import org.cerberus.crud.entity.Label;
-import org.cerberus.crud.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.service.ILabelService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
