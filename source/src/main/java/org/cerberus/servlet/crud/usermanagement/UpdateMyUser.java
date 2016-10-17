@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.User;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.impl.FactoryUserGroup;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
@@ -39,7 +38,6 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.cerberus.crud.factory.IFactoryUserGroup;
 
 /**
  * @author ip100003
@@ -61,7 +59,7 @@ public class UpdateMyUser extends HttpServlet {
         String column = request.getParameter("column");
         String value = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("value"), "", charset);
 
-        MyLogger.log(UpdateMyUser.class.getName(), Level.INFO, "value : " + value + " column : " + column + " login : " + login);
+        MyLogger.log(UpdateMyUser.class.getName(), Level.DEBUG, "value : " + value + " column : " + column + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
