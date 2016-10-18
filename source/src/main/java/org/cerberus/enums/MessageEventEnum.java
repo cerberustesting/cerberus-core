@@ -171,7 +171,7 @@ public enum MessageEventEnum {
     ACTION_SUCCESS_KEYPRESS_NO_ELEMENT(200, "OK", "Key '%KEY%' pressed with success.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_OPENURL(200, "OK", "Opened URL '%URL%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_SELECT(200, "OK", "Element '%ELEMENT%' selected with '%DATA%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    ACTION_SUCCESS_PROPERTYCALCULATED(200, "OK", "Property '%PROP%' has been calculated.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_SUCCESS_PROPERTYCALCULATED(200, "OK", "Property '%PROP%' has been calculated with value '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_FOCUSTOIFRAME(200, "OK", "Focus of Selenium was changed to Iframe '%IFRAME%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_FOCUSDEFAULTIFRAME(200, "OK", "Focus of Selenium was changed to default Iframe", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_SUCCESS_TAKESCREENSHOT(200, "OK", "Screenshot taken.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

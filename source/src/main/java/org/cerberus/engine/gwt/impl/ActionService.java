@@ -1009,22 +1009,23 @@ public class ActionService implements IActionService {
 
     private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String propertyName) {
         MessageEvent message;
-        if (StringUtil.isNullOrEmpty(value1)) {
+        if (StringUtil.isNullOrEmpty(value1)) { // Value1 is a mandatory parameter.
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY));
         } else {
             try {
-                // if value2 is not defined, then decode value1 property
+                String propertyValueResult = "";
+                // if value2 is not defined, then decode the property defined in value1.
                 if (StringUtil.isNullOrEmpty(value2)) {
-                    propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
+                    propertyValueResult = propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
                 }
                 // If not, then set value1 property to the decoded value2 property
                 else {
-                    String decodedValue2 =  propertyService.decodeValueWithExistingProperties("%" + value2 + "%", testCaseStepActionExecution, true);
+                    propertyValueResult =  propertyService.decodeValueWithExistingProperties("%" + value2 + "%", testCaseStepActionExecution, true);
                     TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
                     for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
                         if (value1.equals(property.getProperty())) {
-                            property.setValue(decodedValue2);
+                            property.setValue(propertyValueResult);
                         }
                     }
                 }
@@ -1033,7 +1034,7 @@ public class ActionService implements IActionService {
                     message = testCaseStepActionExecution.getActionResultMessage();
                 } else {
                     message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-                    message.setDescription(message.getDescription().replace("%PROP%", value1));
+                    message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
                 }
             } catch (CerberusEventException cex) {
                 message = cex.getMessageError();
