@@ -575,7 +575,6 @@ function appendNewInstallRow(build, revision, application, release, link, versio
 }
 
 function selectAll() {
-    console.debug("toto");
     if ($(this).prop("checked"))
         $("[data-line='select']").prop("checked", true);
     else

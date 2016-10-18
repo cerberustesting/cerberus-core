@@ -880,8 +880,8 @@ function eventEnableClick(system, country, environment, build, revision) {
     formEvent.find('#newBuild').val(build);
     formEvent.find('#newRevision').val(revision);
     // Select next Revision.
-    $('#newRevision option:selected').next().attr('selected', 'selected');
-
+    var sRev = $('#newRevision option:selected').next().val();
+    $('#newRevision').prop("value", sRev);
     $("#eventEnableButton").prop("disabled", "disabled");
 
     // Clean Old field values.
