@@ -5681,7 +5681,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("select 1 from DUAL;");
         SQLInstruction.add(SQLS.toString());
 
-        // New updated Documentation.
+        // Altering testcase table to put notnull with default empty value in most columns.
         //-- ------------------------ 935-936
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcase set ");
@@ -5744,6 +5744,126 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New updated Documentation.
         //-- ------------------------ 941-942
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Resize Script column.
+        //-- ------------------------ 943
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ");
+        SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Documentation
+        //-- ------------------------ 944
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add timeout parameters replacing the existing one.
+        //-- ------------------------ 945-947
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
+        SQLS.append("('', 'cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
+        SQLS.append("('', 'cerberus_selenium_implicitlyWait', '0', 'Integer that correspond to the number of milliseconds that selenium will implicitely wait when searching an element.'),");
+        SQLS.append("('', 'cerberus_selenium_setScriptTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when executing a Javascript Script.'),");
+        SQLS.append("('', 'cerberus_action_wait_default', '45000', 'Integer that correspond to the number of milliseconds that cerberus will wait by default using the wait action.'),");
+        SQLS.append("('', 'cerberus_selenium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when searching an element.'),");
+        SQLS.append("('', 'cerberus_appium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that appium will wait before give timeout, when searching an element.');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` * 1000 from parameter p1 where p1.`param` = 'selenium_defaultWait' and p1.`system` = '') p3 ) ");
+        SQLS.append("where p2.`param` in ('cerberus_selenium_wait_element', 'cerberus_selenium_setScriptTimeout', 'cerberus_selenium_pageLoadTimeout','cerberus_appium_wait_element' , 'cerberus_action_wait_default');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM parameter where `param` = 'selenium_defaultWait' ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Cleaned testcaseexecutiondata table keeping all values of testcasecountryproperty.
+        //-- ------------------------ 948
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
+        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(45) NULL DEFAULT NULL AFTER `Index`,");
+        SQLS.append("CHANGE COLUMN `RC` `RC` VARCHAR(10) NULL DEFAULT NULL AFTER `EndLong`,");
+        SQLS.append("CHANGE COLUMN `RMessage` `RMessage` TEXT NULL AFTER `RC`,");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL DEFAULT '' AFTER `RMessage`,");
+        SQLS.append("CHANGE COLUMN `Value` `Value` TEXT NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL ,");
+        SQLS.append("ADD COLUMN `Database` VARCHAR(45) NULL AFTER `Value`,");
+        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Database`,");
+        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
+        SQLS.append("ADD COLUMN `Length` INT(10) NULL AFTER `Value2`,");
+        SQLS.append("ADD COLUMN `RowLimit` INT(10) NULL AFTER `Length`,");
+        SQLS.append("ADD COLUMN `Nature` VARCHAR(45) NULL AFTER `RowLimit`,");
+        SQLS.append("ADD COLUMN `RetryNb` INT(10) NULL AFTER `Nature`,");
+        SQLS.append("ADD COLUMN `RetryPeriod` INT(10) NULL AFTER `RetryNb`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Cleaned testcasestepactioncontrol table.
+        //-- ------------------------ 949-953
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `Type` `Control` VARCHAR(200) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Control`,");
+        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL  AFTER `Value1`,");
+        SQLS.append("CHANGE COLUMN `ControlDescription` `Description` VARCHAR(255) NOT NULL DEFAULT '' ,");
+        SQLS.append("CHANGE COLUMN `Fatal` `Fatal` VARCHAR(1) NULL DEFAULT 'Y' AFTER `Value2`,");
+        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY USING BTREE (`Test`, `TestCase`, `Step`, `Sequence`, `ControlSequence`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
+        SQLS.append("CHANGE COLUMN `ControlType` `Control` VARCHAR(200) NULL DEFAULT NULL ,");
+        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Control`,");
+        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
+        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Value2Init`,");
+        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL ,");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Fatal`,");
+        SQLS.append("CHANGE COLUMN `ReturnCode` `ReturnCode` VARCHAR(2) NOT NULL AFTER `Description`,");
+        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL AFTER `ReturnCode`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
+        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL AFTER `RetryPeriod`,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ");
+        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NOT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NOT NULL  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1Init` `Value1Init` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2Init` `Value2Init` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ,");
+        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add value2 usage to the calculateProperty action.
+        //-- ------------------------ 954
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Remove HTML Escape encoding in soap library
+        //-- ------------------------ 955
+        SQLS = new StringBuilder();
+        SQLS.append("Update soaplibrary set `envelope` = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(`envelope`, '&amp;', '&'),'&lt;','<'),'&gt;','>'),'&apos;','\\''),'&quot;','\\\"')");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 956-957
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -6719,6 +6839,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase','tooltip_step_used','','en','This step is being used by another step(s)!','')");
         SQLS.append(",('page_testcase','txt_property_not_defined','','en','** Property not defined **','')");
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','')");
+        SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
+        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
+        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','')");
+        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','en','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','')");
         SQLS.append(",('page_testcaselist','activationCriteria','','en','Activation Criteria','')");
         SQLS.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','')");
         SQLS.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL)");
@@ -7002,7 +7140,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcaselabel','labelId','','fr','ID du label','')");
         SQLS.append(",('testcasestep','step','','en','Step','A step is a group of actions.')");
         SQLS.append(",('testcasestepaction','Action','','en','Action','It is the action that will be executed by Cerberus.<br><br>It can take the following values :')");
-        SQLS.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Property name to be calculated.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>PROPERTY_NAME</td><td class=\\'ex\\'></td><td class=\\'ex\\'>PROPERTY_NAME will be calculated</td></tr></table></doc>')");
+        SQLS.append(",('testcasestepaction','Action','calculateProperty','en','Calculate a Cerberus property.','<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\n\n<br/><br/>\n\nUsage :<br/>\n\n<doc class=\"usage\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Field</th>\n   <th class=\\'ex\\'>Usage</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value1</td>\n   <td class=\\'ex\\'>Property name to be calculated.</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>Value2</td>\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\n  </tr>\n </table>\n</doc>\n\n<br/><br/>\n\nExamples :<br/>\n\n<doc class=\"examples\">\n <table>\n  <tr>\n   <th class=\\'ex\\'>Value1</th>\n   <th class=\\'ex\\'>Value2</th>\n   <th class=\\'ex\\'>Result</th>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'></td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\n  </tr>\n  <tr>\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\n  </tr>\n </table>\n</doc>')");
         SQLS.append(",('testcasestepaction','Action','callSoap','en','Call Soap.','TBD')");
         SQLS.append(",('testcasestepaction','Action','callSoapWithBase','en','Call Soap with Base','<code class=\\'doc-fixed\\'>callSoapWithBase</code> will allow you to make a SOAP call (Stored on the <a href=\"./SoapLibrary.jsp\">SoapLibrary</a>) using the servicePath stored at the countryenvrionmentparameters level. That allow to call the soap on the environment of the execution.<br><br> The result will be stored in the memory. On this result, you can make some control (verify the presence or the content of the elements for exemple) or get some information using property getFromXML<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Name of the SOAP from the SOAPLibrary.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>WEATHER</td><td class=\\'ex\\'></td><td class=\\'ex\\'>WEATHER soapCall will be made.</td></tr></table></doc>')");
         SQLS.append(",('testcasestepaction','Action','click','en','Clicking on a button.','<code class=\\'doc-fixed\\'>click</code> will allow you to click on an element inside the current page.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Identifier and name of the element to click in the form of : identifier=html_reference.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'></td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>id=html_reference</td><td class=\\'ex\\'></td><td class=\\'ex\\'>element that has id equal to html_reference will be clicked</td></tr></table></doc>')");
@@ -7038,48 +7176,47 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Sequence','','en','Sequence','Sequence of execution of the actions inside the step.')");
         SQLS.append(",('testcasestepaction','Value1','','en','Val1','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
         SQLS.append(",('testcasestepaction','Value2','','en','Val2','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
-        SQLS.append(",('testcasestepactioncontrol','Control','','en','CtrlNum','This is the number of the control.<br>If you have more than one control attached to an action, use this value to order their execution.')");
-        SQLS.append(",('testcasestepactioncontrol','ControleDescription','','en','Description','This is the functional desciption of the control.')");
-        SQLS.append(",('testcasestepactioncontrol','ControleProperty','','en','CtrlProp','This is the property that is going to be used inside the control.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.')");
-        SQLS.append(",('testcasestepactioncontrol','ControleValue','','en','CtrlValue','This is the value that is going to be used inside the control.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.')");
+        SQLS.append(",('testcasestepactioncontrol','Control','','en','Control','It is the control that will be executed by Cerberus.<br><br>It can take the following values :<br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','getPageSource','en','Save source of the page.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','skipControl','en','Skip the control.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','takeScreenshot','en','Take a screenshot.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','Unknown','en','Default Control in Cerberus','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementClickable','en','True if element is clickable.','<b>verifyElementClickable</b><br><br>Verify if an element is clickable.<br><br><i>Control Property :</i> Element container<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementDifferent','en','True if the ControlProp does not contains the same element ControlValue.','<b>verifyElementDifferent</b><br><br>Verify if the element is different from an another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The element to be different<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementEquals','en','True if the ControlProp contains the same element ControlValue.','<b>verifyElementEquals</b><br><br>Verify if the element equals to another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The expected element<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementInElement','en','True if the ControlProp contains an element ControlValue.','<b>verifyElementInElement</b><br><br>Verify if an element is contained in another on the webpage.<br><br><i>Control Property :</i> Element container<br><br><i>Control Value :</i> Element contained in the element Container<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementNotClickable','en','True if element is not clickable.','<b>verifyElementNotClickable</b><br><br>Verify if an element is not clickable.<br><br><i>Control Property :</i> Element container<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementNotPresent','en','True if element is not found on the current page.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementNotVisible','en','True if element is present but not visible on the current page.','<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementPresent','en','True if element is found on the current page.','<b>verifyElementPresent</b><br><br>Verify if an specific element is present on the web page <br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyElementVisible','en','True if element is visible on the current page.','<b>verifyElementVisible</b><br><br>Verify if the HTML element specified is exists, is visible and has text on it<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerDifferent','en','True if the ControlProp is different than the integer ControlValue.','<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerEquals','en','True if the ControlProp is equal to the integer ControlValue.','<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerGreater','en','True if an integer is greater than another.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerMinor','en','True if an integer is lower than another.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyRegexInElement','en','True if a regex match the content of a field.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyStringContains','en','True if Property String contains value String.','<b>verifyStringContains</b><br><br>Verify if the value is contains in the propery<br><b>This test is case sensitive</b>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyStringDifferent','en','True if 2 strings are different.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyStringEqual','en','True if 2 strings are equal.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyStringGreater','en','True if a string is greater than another.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyStringMinor','en','True if a string is before another.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTextInDialog','en','True if property or value is equal to dialog text retrieved.','<b>verifyTextInDialog</b><br><br>Verify if the text in dialog is equal to property or dialog.')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTextInElement','en','True if a text is inside a field.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTextInPage','en','True if a text is inside the source of the current page.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTextNotInElement','en','True if a text is not inside a field.','<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTextNotInPage','en','True if a text is not inside the source of the current page.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyTitle','en','True if the title of the current page equal to a string.','<b>verifytitle</b><br><br>Verify if the title of the webpage is the same than the value specified<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyUrl','en','True if the URL of the current page equal to a string.','<b>verifyurl</b><br><br>Verify if the URL of the webpage is the same than the value specified<br><br><i>Control Value :</i>should be null<br><br><i>Control Property :</i> URL expected (without the base)<br><br>')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyXmlTreeStructure','en','Check if XML tree Structure is correct.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','ControlSequence','','en','CtrlNum','This is the number of the control.<br>If you have more than one control attached to an action, use this value to order their execution.')");
+        SQLS.append(",('testcasestepactioncontrol','Description','','en','Description','This is the functional desciption of the control.')");
         SQLS.append(",('testcasestepactioncontrol','Fatal','','en','Fatal','This define if the control is fatal.<br><br>If the control is fatal and KO, the execution will stop and execution status will report KO.<br>If the control is not fatal and KO, the execution will continue but execution status will still report a KO.')");
         SQLS.append(",('testcasestepactioncontrol','Sequence','','en','Sequence','It is the number of the sequence in which the control will be performed.<br><br>NB : Controls are performed after each action.')");
         SQLS.append(",('testcasestepactioncontrol','Step','','en','Step','')");
-        SQLS.append(",('testcasestepactioncontrol','Type','','en','Type','It is the control that will be executed by Cerberus.<br><br>It can take the following values :<br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','getPageSource','en','Save source of the page.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','skipControl','en','Skip the control.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','takeScreenshot','en','Take a screenshot.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','Unknown','en','Default Control in Cerberus','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementClickable','en','True if element is clickable.','<b>verifyElementClickable</b><br><br>Verify if an element is clickable.<br><br><i>Control Property :</i> Element container<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementDifferent','en','True if the ControlProp does not contains the same element ControlValue.','<b>verifyElementDifferent</b><br><br>Verify if the element is different from an another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The element to be different<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementEquals','en','True if the ControlProp contains the same element ControlValue.','<b>verifyElementEquals</b><br><br>Verify if the element equals to another in an XML file.<br><br><i>Control Property :</i> XPath to the element<br><br><i>Control Value :</i> The expected element<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementInElement','en','True if the ControlProp contains an element ControlValue.','<b>verifyElementInElement</b><br><br>Verify if an element is contained in another on the webpage.<br><br><i>Control Property :</i> Element container<br><br><i>Control Value :</i> Element contained in the element Container<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementNotClickable','en','True if element is not clickable.','<b>verifyElementNotClickable</b><br><br>Verify if an element is not clickable.<br><br><i>Control Property :</i> Element container<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementNotPresent','en','True if element is not found on the current page.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementNotVisible','en','True if element is present but not visible on the current page.','<b>verifyElementNotVisible</b><br><br>Verify if the HTML element specified exists, is not visible and has text on it')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementPresent','en','True if element is found on the current page.','<b>verifyElementPresent</b><br><br>Verify if an specific element is present on the web page <br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyElementVisible','en','True if element is visible on the current page.','<b>verifyElementVisible</b><br><br>Verify if the HTML element specified is exists, is visible and has text on it<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyIntegerDifferent','en','True if the ControlProp is different than the integer ControlValue.','<b>verifyIntegerDifferent</b><br><br>Verify if two integers are differents.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyIntegerEquals','en','True if the ControlProp is equal to the integer ControlValue.','<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyIntegerGreater','en','True if an integer is greater than another.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyIntegerMinor','en','True if an integer is lower than another.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyRegexInElement','en','True if a regex match the content of a field.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyStringContains','en','True if Property String contains value String.','<b>verifyStringContains</b><br><br>Verify if the value is contains in the propery<br><b>This test is case sensitive</b>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyStringDifferent','en','True if 2 strings are different.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyStringEqual','en','True if 2 strings are equal.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyStringGreater','en','True if a string is greater than another.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyStringMinor','en','True if a string is before another.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTextInDialog','en','True if property or value is equal to dialog text retrieved.','<b>verifyTextInDialog</b><br><br>Verify if the text in dialog is equal to property or dialog.')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTextInElement','en','True if a text is inside a field.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTextInPage','en','True if a text is inside the source of the current page.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTextNotInElement','en','True if a text is not inside a field.','<b>verifyTextNotInElement</b><br><br>True if a text is not inside a field.<br><br><i>Control Property :</i> The field location<br><br><i>Control Value :</i> The text to test against the value from the field locatin<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTextNotInPage','en','True if a text is not inside the source of the current page.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyTitle','en','True if the title of the current page equal to a string.','<b>verifytitle</b><br><br>Verify if the title of the webpage is the same than the value specified<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyUrl','en','True if the URL of the current page equal to a string.','<b>verifyurl</b><br><br>Verify if the URL of the webpage is the same than the value specified<br><br><i>Control Value :</i>should be null<br><br><i>Control Property :</i> URL expected (without the base)<br><br>')");
-        SQLS.append(",('testcasestepactioncontrol','Type','verifyXmlTreeStructure','en','Check if XML tree Structure is correct.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Value1','','en','Val1','This is the property that is going to be used inside the control.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.')");
+        SQLS.append(",('testcasestepactioncontrol','Value2','','en','Val2','This is the value that is going to be used inside the control.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.')");
         SQLS.append(",('testcasestepactioncontrolexecution','ReturnCode','','en','Control Return Code','Return Code of the Control.')");
         SQLS.append(",('testcasestepactioncontrolexecution','ReturnMessage','','en','Return Message','This is the return message on that specific control.')");
-        SQLS.append(",('testcasestepactioncontrolexecution','screenshotfilename','','en','Screenshot Filename','This is the filename of the screenshot.<br>It is null if no screenshots were taken.')");
         SQLS.append(",('testcasestepactionexecution','ForceExeStatus','','en','Force Execution RC','This is the value of the Force Execution Status data used by the engine during the execution of the testcase.')");
         SQLS.append(",('testcasestepactionexecution','ReturnCode','','en','Action Return Code','This is the return code of the action.')");
         SQLS.append(",('testcasestepactionexecution','screenshotfilename','','en','Screenshot Filename','This is the filename of the screenshot.<br>It is null if no screenshots were taken.')");
@@ -7126,134 +7263,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Resize Script column.
-        //-- ------------------------ 943
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ");
-        SQLS.append("CHANGE COLUMN `Script` `Script` TEXT NOT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Updated Documentation
-        //-- ------------------------ 944
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
-        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
-        SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
-        SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
-        SQLS.append(",('page_testcaseexecutionqueue','test_col','','en','Test','')");
-        SQLS.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','')");
-        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','')");
-        SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','')");
-        SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','')");
-        SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
-        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
-        SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
-        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
-        SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
-        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
-        SQLS.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','')");
-        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
-        SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add timeout parameters replacing the existing one.
-        //-- ------------------------ 945-947
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` (`system`, `param`, `value`, `description`) VALUES ");
-        SQLS.append("('', 'cerberus_selenium_pageLoadTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when loading a page.'),");
-        SQLS.append("('', 'cerberus_selenium_implicitlyWait', '0', 'Integer that correspond to the number of milliseconds that selenium will implicitely wait when searching an element.'),");
-        SQLS.append("('', 'cerberus_selenium_setScriptTimeout', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when executing a Javascript Script.'),");
-        SQLS.append("('', 'cerberus_action_wait_default', '45000', 'Integer that correspond to the number of milliseconds that cerberus will wait by default using the wait action.'),");
-        SQLS.append("('', 'cerberus_selenium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that selenium will wait before give timeout, when searching an element.'),");
-        SQLS.append("('', 'cerberus_appium_wait_element', '45000', 'Integer that correspond to the number of milliseconds that appium will wait before give timeout, when searching an element.');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE parameter p2 set `value` = (select * from (select `value` * 1000 from parameter p1 where p1.`param` = 'selenium_defaultWait' and p1.`system` = '') p3 ) ");
-        SQLS.append("where p2.`param` in ('cerberus_selenium_wait_element', 'cerberus_selenium_setScriptTimeout', 'cerberus_selenium_pageLoadTimeout','cerberus_appium_wait_element' , 'cerberus_action_wait_default');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM parameter where `param` = 'selenium_defaultWait' ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Cleaned testcaseexecutiondata table keeping all values of testcasecountryproperty.
-        //-- ------------------------ 948
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutiondata` ");
-        SQLS.append("CHANGE COLUMN `Type` `Type` VARCHAR(45) NULL DEFAULT NULL AFTER `Index`,");
-        SQLS.append("CHANGE COLUMN `RC` `RC` VARCHAR(10) NULL DEFAULT NULL AFTER `EndLong`,");
-        SQLS.append("CHANGE COLUMN `RMessage` `RMessage` TEXT NULL AFTER `RC`,");
-        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL DEFAULT '' AFTER `RMessage`,");
-        SQLS.append("CHANGE COLUMN `Value` `Value` TEXT NOT NULL ,");
-        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL ,");
-        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL ,");
-        SQLS.append("ADD COLUMN `Database` VARCHAR(45) NULL AFTER `Value`,");
-        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Database`,");
-        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
-        SQLS.append("ADD COLUMN `Length` INT(10) NULL AFTER `Value2`,");
-        SQLS.append("ADD COLUMN `RowLimit` INT(10) NULL AFTER `Length`,");
-        SQLS.append("ADD COLUMN `Nature` VARCHAR(45) NULL AFTER `RowLimit`,");
-        SQLS.append("ADD COLUMN `RetryNb` INT(10) NULL AFTER `Nature`,");
-        SQLS.append("ADD COLUMN `RetryPeriod` INT(10) NULL AFTER `RetryNb`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Cleaned testcasestepactioncontrol table.
-        //-- ------------------------ 949-953
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
-        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
-        SQLS.append("CHANGE COLUMN `Type` `Control` VARCHAR(200) NOT NULL DEFAULT '' ,");
-        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Control`,");
-        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL  AFTER `Value1`,");
-        SQLS.append("CHANGE COLUMN `ControlDescription` `Description` VARCHAR(255) NOT NULL DEFAULT '' ,");
-        SQLS.append("CHANGE COLUMN `Fatal` `Fatal` VARCHAR(1) NULL DEFAULT 'Y' AFTER `Value2`,");
-        SQLS.append("DROP PRIMARY KEY, ADD PRIMARY KEY USING BTREE (`Test`, `TestCase`, `Step`, `Sequence`, `ControlSequence`) ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("CHANGE COLUMN `Control` `ControlSequence` INT(10) UNSIGNED NOT NULL ,");
-        SQLS.append("CHANGE COLUMN `ControlType` `Control` VARCHAR(200) NULL DEFAULT NULL ,");
-        SQLS.append("ADD COLUMN `Value1Init` TEXT NULL AFTER `Control`,");
-        SQLS.append("ADD COLUMN `Value2Init` TEXT NULL AFTER `Value1Init`,");
-        SQLS.append("CHANGE COLUMN `ControlProperty` `Value1` TEXT NULL AFTER `Value2Init`,");
-        SQLS.append("CHANGE COLUMN `ControlValue` `Value2` TEXT NULL ,");
-        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Fatal`,");
-        SQLS.append("CHANGE COLUMN `ReturnCode` `ReturnCode` VARCHAR(2) NOT NULL AFTER `Description`,");
-        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL AFTER `ReturnCode`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountryproperties` ");
-        SQLS.append("CHANGE COLUMN `Description` `Description` VARCHAR(255) NULL AFTER `RetryPeriod`,");
-        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepaction` ");
-        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NOT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NOT NULL  ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("CHANGE COLUMN `ConditionVal1` `ConditionVal1` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value1Init` `Value1Init` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value2Init` `Value2Init` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value1` `Value1` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `Value2` `Value2` TEXT NULL  ,");
-        SQLS.append("CHANGE COLUMN `ReturnMessage` `ReturnMessage` TEXT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add value2 usage to the calculateProperty action.
-        //-- ------------------------ 954
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>calculateProperty</code> will allow you to calculate a property defined in the property section of the test case.\\n\\n<br/><br/>\\n\\nUsage :<br/>\\n\\n<doc class=\\\"usage\\\">\\n <table>\\n  <tr>\\n   <th class=\\'ex\\'>Field</th>\\n   <th class=\\'ex\\'>Usage</th>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>Value1</td>\\n   <td class=\\'ex\\'>Property name to be calculated.</td>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>Value2</td>\\n   <td class=\\'ex\\'>[Optional] Property name from which get value to affect property from Value1. Useful to override the one defined from the property section.</td>\\n  </tr>\\n </table>\\n</doc>\\n\\n<br/><br/>\\n\\nExamples :<br/>\\n\\n<doc class=\\\"examples\\\">\\n <table>\\n  <tr>\\n   <th class=\\'ex\\'>Value1</th>\\n   <th class=\\'ex\\'>Value2</th>\\n   <th class=\\'ex\\'>Result</th>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\\n   <td class=\\'ex\\'></td>\\n   <td class=\\'ex\\'>PROPERTY_NAME will be calculated</td>\\n  </tr>\\n  <tr>\\n   <td class=\\'ex\\'>PROPERTY_NAME</td>\\n   <td class=\\'ex\\'>OTHER_PROPERTY_NAME</td>\\n   <td class=\\'ex\\'>PROPERTY_NAME will be affected by the calculated value of OTHER_PROPERTY_NAME</td>\\n  </tr>\\n </table>\\n</doc>' WHERE `DocTable`='testcasestepaction' and`DocField`='Action' and`DocValue`='calculateProperty' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-        
-        // Remove HTML Escape encoding in soap library
-        //-- ------------------------ 955
-        SQLS = new StringBuilder();
-        SQLS.append("Update soaplibrary set `envelope` = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(`envelope`, '&amp;', '&'),'&lt;','<'),'&gt;','>'),'&apos;','\\''),'&quot;','\\\"')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

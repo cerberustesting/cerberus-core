@@ -1502,7 +1502,7 @@ function displayPageLabel() {
     $("*[name='labelTestCaseStepActionObject']").html(doc.getDocOnline("testcasestepaction", "Value1"));
     $("*[name='labelTestCaseStepActionProperty']").html(doc.getDocOnline("testcasestepaction", "Value2"));
     $("*[name='labelTestCaseStepActionForce']").html(doc.getDocOnline("testcasestepaction", "ForceExeStatus"));
-    $("*[name='labelTestCaseStepActionControlType']").html(doc.getDocOnline("testcasestepactioncontrol", "Type"));
+    $("*[name='labelTestCaseStepActionControlType']").html(doc.getDocOnline("testcasestepactioncontrol", "Control"));
 
 }
 /**

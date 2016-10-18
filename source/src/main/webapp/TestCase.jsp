@@ -1517,7 +1517,7 @@
                                                                 </div>
                                                                 <div style="clear:both;display:inline-block; width:100%; height:15px" >
                                                                     <div style="width:30%; float:left;">
-                                                                        <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Type</p>
+                                                                        <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlType" style="float:right;font-weight:bold;" link="white" >Control</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
                                                                             <%=ComboInvariant(appContext, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_control_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROL", tcsac.getControl(), "", null)%>
@@ -1528,14 +1528,14 @@
                                                                         <%}%>    
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left; ">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Value</p>
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Val1</p>
                                                                         </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
                                                                                      value="<%=tcsac.getValue1().replace("\"","&quot;")%>" 
                                                                                      id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                      name="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                                value="<%=tcsac.getValue2().replace("\"","&quot;")%>" 
@@ -2118,23 +2118,23 @@
                     </div>
                     <div style="clear:both; width:100%; height:15px">
                         <div style="width:30%; float:left;">
-                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Type", "ControlType", myLang));%></p>
+                            <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Control", "Control", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_control_template", "wob", "CONTROL", "", "", null)%>
                         </div>
                         <div class="technical_part" style="width:30%;float:left;">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controleproperty", "controleproperty", myLang));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Value1", "Value1", myLang));%></p>
                             </div>
                             <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
                                    data-id="control_value1_template">
                         </div>
                         <div class="technical_part" style="width:30%;float:left; ">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "controlevalue", "controlevalue", myLang));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Value2", "Value2", myLang));%></p>
                             </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent;"
                                          data-id="control_value2_template">
                         </div>
                         <div class="technical_part" style="width:8%;float:left; ">
-                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "fatal", "fatal", myLang));%></p>
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Fatal", "Fatal", myLang));%></p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 40%;border: 1px solid white; background-color:transparent;", "control_fatal_template", "wob", "CTRLFATAL", "", "", null)%>
                         </div>
