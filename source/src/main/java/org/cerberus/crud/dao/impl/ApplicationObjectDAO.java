@@ -17,15 +17,19 @@
  */
 package org.cerberus.crud.dao.impl;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.entity.MessageEvent;
+import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryApplicationObject;
 import org.cerberus.crud.factory.impl.FactoryApplication;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -37,6 +41,10 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,6 +68,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryApplicationObject factoryApplicationObject;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = Logger.getLogger(ApplicationObjectDAO.class);
 
@@ -193,6 +203,103 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
         }
 
         return ans;
+    }
+
+    @Override
+    public BufferedImage readImageByKey(String application, String object) {
+        BufferedImage image = null;
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                "cerberus_mediastorage_url Parameter not found");
+        AnswerItem a = parameterService.readByKey("","cerberus_mediastorage_url");
+        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            Parameter p = (Parameter) a.getItem();
+            String uploadPath = p.getValue();
+            a = readByKey(application,object);
+            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                ApplicationObject ao = (ApplicationObject)a.getItem();
+                File picture = new File(uploadPath + "/" + application + "/" + object + "/" + ao.getScreenShotFileName());
+                try {
+                    image = ImageIO.read(picture);
+                } catch (IOException e) {
+                    LOG.warn("Impossible to read the image");
+                }
+            }else{
+                LOG.warn("Application Object not found");
+            }
+        }else{
+            LOG.warn("cerberus_mediastorage_url Parameter not found");
+        }
+        a.setResultMessage(msg);
+        return image;
+    }
+
+    private static void deleteFolder(File folder, boolean deleteit){
+        File[] files = folder.listFiles();
+        if (files != null) { //some JVMs return null for empty dirs
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f, true);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        if(deleteit) {
+            folder.delete();
+        }
+    }
+
+    @Override
+    public Answer uploadFile(String application, String object, FileItem file) {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                "cerberus_mediastorage_url Parameter not found");
+        AnswerItem a = parameterService.readByKey("","cerberus_mediastorage_url");
+        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+            Parameter p = (Parameter)a.getItem();
+            String uploadPath = p.getValue();
+            File appDir = new File(uploadPath + "/" + application);
+            if(!appDir.exists()){
+                try{
+                    appDir.mkdir();
+                }
+                catch(SecurityException se){
+                    LOG.warn("Unable to create application dir: " + se.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            se.toString());
+                    a.setResultMessage(msg);
+                }
+            }
+            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                File objectDir = new File(uploadPath + "/" + application + "/" + object);
+                if (!objectDir.exists()) {
+                    try {
+                        objectDir.mkdir();
+                    } catch (SecurityException se) {
+                        LOG.warn("Unable to create object dir: " + se.getMessage());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                se.toString());
+                        a.setResultMessage(msg);
+                    }
+                }
+                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    deleteFolder(objectDir, false);
+                    File picture = new File(uploadPath + "/" + application + "/" + object + "/" + file.getName());
+                    try {
+                        file.write(picture);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                                "Application Object file uploaded");
+                    } catch (Exception e) {
+                        LOG.warn("Unable to upload application object file: " + e.getMessage());
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                                e.toString());
+                    }
+                }
+            }
+        }else{
+            LOG.warn("cerberus_mediastorage_url Parameter not found");
+        }
+        a.setResultMessage(msg);
+        return a;
     }
 
     @Override

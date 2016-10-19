@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
@@ -36,6 +37,7 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +71,11 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
+    public Answer uploadFile(String application, String object, FileItem file) {
+        return ApplicationObjectDAO.uploadFile(application, object, file);
+    }
+
+    @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationObjectDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
@@ -76,6 +83,11 @@ public class ApplicationObjectService implements IApplicationObjectService {
     @Override
     public AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return ApplicationObjectDAO.readByApplicationByCriteria(application, startPosition, length, columnName, sort, searchParameter, individualSearch);
+    }
+
+    @Override
+    public BufferedImage readImageByKey(String application, String object) {
+        return ApplicationObjectDAO.readImageByKey(application, object);
     }
 
     @Override

@@ -17,6 +17,11 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.crud.entity.MessageEvent;
@@ -46,8 +51,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.out;
 
 /**
  *
@@ -81,16 +92,39 @@ public class CreateApplicationObject extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
+        Map<String, String> fileData = new HashMap<String, String>();
+        FileItem file = null;
+
+        FileItemFactory factory = new DiskFileItemFactory();
+        ServletFileUpload upload = new ServletFileUpload(factory);
+        try {
+            List<FileItem> fields = upload.parseRequest(request);
+            Iterator<FileItem> it = fields.iterator();
+            if (!it.hasNext()) {
+                return;
+            }
+            while (it.hasNext()) {
+                FileItem fileItem = it.next();
+                boolean isFormField = fileItem.isFormField();
+                if (isFormField) {
+                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileItem.getString(), null, charset));
+                } else {
+                    file = fileItem;
+                }
+            }
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
         
         /**
          * Parsing and securing all required parameters.
          */
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
-        String object = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("object"), null, charset);
-        String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
-        String screenshotfilename = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenshotfilename"), "", charset);
+        String application = fileData.get("application");
+        String object = fileData.get("object");
+        String value = fileData.get("value");
+
         String usrcreated = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
         String datecreated = new Timestamp(new java.util.Date().getTime()).toString();
         String usrmodif = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getRemoteUser(), "", charset);
@@ -120,7 +154,15 @@ public class CreateApplicationObject extends HttpServlet {
             IApplicationObjectService applicationobjectService = appContext.getBean(IApplicationObjectService.class);
             IFactoryApplicationObject factoryApplicationobject = appContext.getBean(IFactoryApplicationObject.class);
 
-            ApplicationObject applicationData = factoryApplicationobject.create(-1,application,object,value,screenshotfilename,usrcreated,datecreated,usrmodif,datemodif);
+            String fileName = "";
+            if(file != null){
+                ans = applicationobjectService.uploadFile(application, object, file);
+                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    fileName = file.getName();
+                }
+            }
+
+            ApplicationObject applicationData = factoryApplicationobject.create(-1,application,object,value,fileName,usrcreated,datecreated,usrmodif,datemodif);
             ans = applicationobjectService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

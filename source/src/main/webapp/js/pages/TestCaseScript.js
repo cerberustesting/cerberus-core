@@ -594,6 +594,7 @@ function loadApplicationObject(data){
         success: function(data) {
             for(var i = 0; i<data.contentTable.length; i++){
                 $("datalist#objects").append("<option value='object=" + data.contentTable[i].object + "'></option>");
+                $("datalist#objects").append("<option value='picture=" + data.contentTable[i].object + "'></option>");
             }
         }
     });
@@ -1033,7 +1034,7 @@ Action.prototype.generateContent = function () {
     });
 
     function displayApplicationObject(){
-        if ($(this).val().startsWith("object=")) {
+        if ($(this).val().startsWith("object=") || $(this).val().startsWith("picture=")) {
             $(this).attr("list", "objects");
         } else {
             $(this).removeAttr("list");

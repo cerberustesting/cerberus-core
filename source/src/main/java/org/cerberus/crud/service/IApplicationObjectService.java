@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.exception.CerberusException;
@@ -26,6 +27,7 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +61,15 @@ public interface IApplicationObjectService {
 
     /**
      *
+     * @param application
+     * @param object
+     * @param file
+     * @return
+     */
+    Answer uploadFile(String application, String object, FileItem file);
+
+    /**
+     *
      * @param startPosition
      * @param length
      * @param columnName
@@ -82,6 +93,13 @@ public interface IApplicationObjectService {
      */
     AnswerList readByApplicationByCriteria(String application, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
+    /**
+     *
+     * @param application
+     * @param object
+     * @return
+     */
+    BufferedImage readImageByKey(String application, String object);
     /**
      *
      * @param object

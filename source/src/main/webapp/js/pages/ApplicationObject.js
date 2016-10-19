@@ -138,16 +138,24 @@ function deleteEntryClick(application, object) {
 function addEntryModalSaveHandler() {
     clearResponseMessage($('#addApplicationObjectModal'));
     var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm :input");
-
-    // Get the header data from the form.
+    var file = $("#addApplicationObjectModal input[type=file]");
+    // Get the header data from the form
     var sa = formAdd.serializeArray();
+    var formData = new FormData();
     var data = {}
     for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
+        formData.append(sa[i].name, sa[i].value);
     }
-    
+
+    formData.append("file",file.prop("files")[0]);
     showLoaderInModal('#addApplicationObjectModal');
-    var jqxhr = $.post("CreateApplicationObject", data);
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "CreateApplicationObject",
+        data: formData,
+        processData: false,
+        contentType: false
+    });
     $.when(jqxhr).then(function (data) {
         hideLoaderInModal('#addApplicationObjectModal');
 //        console.log(data.messageType);
@@ -190,23 +198,25 @@ function editEntryModalSaveHandler() {
     clearResponseMessage($('#editApplicationObjectModal'));
     $('#editApplicationObjectModal #editApplicationObjectModalForm select#application').attr("disabled",false);
     var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
-
+    var file = $("#editApplicationObjectModal input[type=file]");
     // Get the header data from the form.
     var sa = formEdit.serializeArray();
+    var formData = new FormData();
     var data = {}
     for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
+        formData.append(sa[i].name, sa[i].value);
     }
+
+    formData.append("file",file.prop("files")[0]);
 
     showLoaderInModal('#editApplicationObjectModal');
     $.ajax({
+        type: "POST",
         url: "UpdateApplicationObject",
+        data: formData,
         async: true,
-        method: "POST",
-        data: {application: data.application,
-            object: data.object,
-            value: data.value,
-            screenshotfilename: data.screenshotfilename},
+        processData: false,
+        contentType: false,
         success: function (data) {
             hideLoaderInModal('#editApplicationObjectModal');
             if (getAlertType(data.messageType) === "success") {
@@ -245,7 +255,7 @@ function editEntryClick(application, object) {
         formEdit.find("#application option[value='" + obj["application"] + "']").prop("selected", true);
         formEdit.find("#object").prop("value", obj["object"]);
         formEdit.find("#value").prop("value", obj["value"]);
-        formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
+        //formEdit.find("#screenshotfilename").prop("value", obj["screenshotfilename"]);
 
         formEdit.find("#object").prop("readonly", "readonly");
         formEdit.find("#application").prop("disabled", "disabled");
@@ -303,7 +313,11 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocOnline("applicationObject", "Value")},
         {"data": "screenshotfilename",
             "sName": "screenshotfilename",
-            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName")},
+            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName"),
+            "mRender": function(data, type, obj) {
+                return "<image src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "'></image>"
+            }
+        },
         {"data": "usrcreated",
             "sName": "usrcreated",
             "title": doc.getDocOnline("applicationObject", "UsrCreated")},

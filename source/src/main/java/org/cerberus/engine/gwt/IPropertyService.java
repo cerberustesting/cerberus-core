@@ -35,4 +35,6 @@ public interface IPropertyService {
 
     String decodeValueWithExistingObjects(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
+    String decodeValueWithExistingPictures(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+
 }

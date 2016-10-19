@@ -306,6 +306,47 @@ public class PropertyService implements IPropertyService {
         return result;
     }
 
+    @Override
+    public String decodeValueWithExistingPictures(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+        String result = "";
+        String test = testCaseStepActionExecution.getTest();
+        String testcase = testCaseStepActionExecution.getTestCase();
+        AnswerItem aTestCase = testCaseService.readByKey(test,testcase);
+        if(aTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && aTestCase.getItem() != null){
+            TestCase tc = (TestCase) aTestCase.getItem();
+            String application = tc.getApplication();
+            String object = stringToDecode.replace("picture=","");
+            AnswerItem aApplicationObject = applicationObjectService.readByKey(application,object);
+            if(aApplicationObject.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                if(aTestCase.getItem() != null){
+                    ApplicationObject ao = (ApplicationObject) aApplicationObject.getItem();
+                    AnswerItem ansProperty = parameterService.readByKey("","cerberus_mediastorage_url");
+                    if(ansProperty.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        Parameter p = (Parameter) ansProperty.getItem();
+                        result = p.getValue() + "/" + application + "/" + object + "/" + ao.getScreenShotFileName();
+                    }else{
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Unable to find the Parameter : cerberus_mediastorage_url");
+                        }
+                    }
+                }
+            }else{
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Unable to find the ApplicationObject :" + application + ", " + object);
+                }
+            }
+        }else{
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Unable to find the Application of the Test case: " + test + ", " + testcase);
+            }
+        }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Finished to decode String : '" + stringToDecode + "' to :'" + result + "'");
+        }
+        return result;
+    }
+
     /**
      * Auxiliary method that returns the execution data for a property.
      *

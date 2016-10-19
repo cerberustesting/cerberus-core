@@ -17,13 +17,10 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-<%@page import="java.util.Set"%>
 <%@page import="org.cerberus.crud.entity.UserSystem"%>
 <%@page import="org.cerberus.crud.entity.User"%>
 <%@page import="org.cerberus.util.ParameterParserUtil"%>
 <%@page import="org.cerberus.crud.service.IUserService"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="java.util.HashSet"%>
 <%@page import="org.json.JSONArray"%>
 <%@page import="org.cerberus.crud.service.impl.TestCaseStepService"%>
 <%@page import="org.cerberus.crud.service.IUserSystemService"%>
@@ -44,10 +41,7 @@
 <%@page import="org.cerberus.crud.service.ITestCaseService"%>
 <%@page import="org.cerberus.crud.entity.Test"%>
 <%@page import="org.cerberus.crud.service.ITestService"%>
-<%@page import="java.util.Enumeration"%>
 <%@page import="org.cerberus.crud.entity.Parameter"%>
-<%@page import="java.util.ArrayList"%>
-<%@page import="java.util.List"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.Connection"%>
@@ -62,6 +56,7 @@
 <%@page import="org.cerberus.util.StringUtil"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="org.cerberus.util.answer.AnswerList"%>
+<%@ page import="java.util.*" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -370,6 +365,8 @@
         <div id="body">
             <%
                 boolean booleanFunction = false;
+                String tcaseapplication = "";
+                java.util.LinkedList<String> tcProperties = new java.util.LinkedList<String>();
                 try {
                     /*
                      * Services
@@ -489,7 +486,7 @@
                     isTestCaseExist = (tcase == null) ? false : true;
 
                     if (isTestCaseExist) {
-
+                        tcaseapplication = tcase.getApplication();
                         //First Check if testcase can be edited (good system selected)
                         User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
 
@@ -585,20 +582,7 @@
                     //add a loader to the editabl area - prevents save actions done by mistake
                     //TODO:FN this need to be refactored while the page conversion to the new standards
                     showLoader($("#editableContent"));
-                </script>    <script>
-                $(document).ready(function() {
-                    $.ajax({
-                        url: "ReadApplicationObject?application=<%=tcase.getApplication()%>",
-                        dataType: "json",
-                        success: function(data) {
-                            for(var i = 0; i<data.contentTable.length; i++){
-                                $("datalist#objects").append("<option value='object=" + data.contentTable[i].object + "'></option>");
-                            }
-                        }
-                    });
-
-                });
-            </script>
+                </script>
                 <form method="post" name="UpdateTestCase"  id="UpdateTestCase"  action="UpdateTestCaseWithDependencies">
                     <table id="generalparameter" class="arrond"
                            <%if (tinf == false) {%> style="display : none" <%} else {%>style="display : table"<%}%> >
@@ -1359,7 +1343,7 @@
                                                                                id="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" 
                                                                                name="action_conditionval_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
+                                                                    <div class="technical_part" style="width: 18%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionAction" style="float:right;font-weight:bold;" link="white" >Action</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
@@ -1371,7 +1355,7 @@
                                                                             <input id="<%=action_action_id%>" value="<%=tcsa.getAction()%>" readonly style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:65%; color:#999999" />
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                                                                    <div class="technical_part" style="width: 18%; float:left; background-color: transparent">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionObject" style="float:right;font-weight:bold;" link="white" >Val1</p>
                                                                          </div>
                                                                         <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; color:#999999"
@@ -1391,7 +1375,8 @@
                                                                             </div>
                                                                         <%}%>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 20%; float:left; background-color:transparent">
+                                                                    <img style="max-height:20px; float:left;" id="action_object_<%=incrementStep%>_<%=incrementAction%>" style="display:none;">
+                                                                    <div class="technical_part" style="width: 18%; float:left; background-color:transparent">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
                                                                         </div>
                                                                         <input  class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#888888"
@@ -1420,7 +1405,8 @@
                                                                                 id="action_property_<%=incrementStep%>_<%=incrementAction%>"
                                                                                 name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
-                                                                    <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
+                                                                    <img style="max-height:20px; float:left;" id="action_property_<%=incrementStep%>_<%=incrementAction%>" style="display:none;">
+                                                                    <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:60px; "><p name="labelTestCaseStepActionForce" style="float:right;font-weight:bold;" link="white" >Force RC</p>
                                                                         </div>
                                                                         <%if (!useStep) {%>
@@ -1540,7 +1526,7 @@
                                                                             <input value="<%=tcsac.getControl()%>" name="<%=controlTypeid%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlTypeid%>" readonly />
                                                                         <%}%>    
                                                                     </div>
-                                                                    <div class="technical_part" style="width:30%;float:left; ">
+                                                                    <div class="technical_part" style="width:20%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlValue" style="float:right;font-weight:bold;" link="white" >Val1</p>
                                                                         </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
                                                                                      value="<%=tcsac.getValue1().replace("\"","&quot;")%>" 
@@ -1549,12 +1535,16 @@
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
+                                                                    <img style="max-height:20px; float:left;" id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none;">
+                                                                    <div class="technical_part" style="width:20%;float:left;">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                                value="<%=tcsac.getValue2().replace("\"","&quot;")%>" 
                                                                                id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                name="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
                                                                     </div>
+                                                                    <img style="max-height:20px; float:left;" id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none;">
                                                                     <div class="technical_part" style="width:8%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
                                                                         </div>
@@ -1730,6 +1720,7 @@
                                                 //double widthValue = 55 - (1.5 * countryListTestcase.size());
 
                                                 for (TestCaseCountryProperties tccp : tccpList) {
+                                                    tcProperties.add(tccp.getProperty());
                                                     incrementProperty++;
                                                     List<String> countryOfProperty = tccpService.findCountryByProperty(tccp);
 
@@ -2056,12 +2047,12 @@
                         </div>
                     </div>
                     <div style="display:inline-block;clear:both; height:15px;width:99%;background-color:transparent">
-                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                        <div class="technical_part" style="width: 17%; float:left; background-color: transparent">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Oper</p>
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_conditionoper_template", "wob", "ACTIONCONDITIONOPER", "", "", null)%>
                         </div>
-                        <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
+                        <div class="technical_part" style="width: 17%; float:left; background-color: transparent">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" >C. Val1</p>
                             </div>
                             <input style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:55%; background-color: transparent;"
@@ -2072,7 +2063,7 @@
                             </div>
                             <%=ComboInvariant(appContext, "", "width: 50%;border: 1px solid white; background-color:transparent;", "action_action_template", "wob", "ACTION", "", "", null)%>
                         </div>
-                        <div class="technical_part" style="width: 25%; float:left; background-color: transparent">
+                        <div class="technical_part" style="width: 20%; float:left; background-color: transparent">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value1", "Val1", myLang));%></p>
                             </div>
                             <input id="val1" style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
@@ -2358,14 +2349,147 @@
             <%}%>
         <script>
             $(document).ready(function() {
-                $("input[id^='action_property'],input[id^='action_object'],input[id^='control_value']").bind('input', function () {
-                    if ($(this).val().startsWith("object=")) {
-                        $(this).attr("list", "objects");
-                    } else {
-                        $(this).removeAttr("list");
+                $.ajax({
+                    url: "ReadApplicationObject?application=<%=tcaseapplication%>",
+                    dataType: "json",
+                    success: function(data) {
+                        var availableObjects = [];
+                        for(var i = 0; i<data.contentTable.length; i++){
+                            availableObjects.push(data.contentTable[i].object);
+                        }
+                        var availableTags = [
+                            "property",
+                            "object",
+                            "picture"
+                        ];
+                        var availableProperties = [
+                            <%
+                                for (String p : tcProperties) {
+                            %>
+                                "<%=p%>",
+                            <%
+                            }
+                            %>
+                        ];
+                        var Tags = [
+                            {
+                                array : availableObjects,
+                                separator : "%object.",
+                                regex : "%object\.",
+                                addBefore : "object.",
+                                addAfter : "",
+                                endOfVariable : true
+                            },
+                            {
+                                array : availableObjects,
+                                separator : "%picture.",
+                                regex : "%picture\.",
+                                addBefore : "picture.",
+                                addAfter : "",
+                                endOfVariable : true
+                            },
+                            {
+                                array : availableProperties,
+                                separator : "%property.",
+                                regex : "%property\.",
+                                addBefore : "property.",
+                                addAfter : "",
+                                endOfVariable : true
+                            },
+                            {
+                                array : availableTags,
+                                separator : "%",
+                                regex : "%",
+                                addBefore : "",
+                                addAfter : ".",
+                                endOfVariable : false
+                            }
+                        ];
+                        function split( val, separator) {
+                            //return val.split( /%object\.(?!.*%object\.)/ ).length>1?val.split( /%object\.(?!.*%object\.)/ ):val.split( /%picture\.(?!.*%picture\.)/ );
+                            return val.split(new RegExp(separator+"(?!.*"+separator+")"))
+                        }
+                        function extractLast( term, separator ) {
+                            return split( term, separator ).pop();
+                        }
+
+                        $( "input[id^='action_property'],input[id^='action_object'],input[id^='control_value']" )
+                        // don't navigate away from the field on tab when selecting an item
+                            .on( "keydown", function( event ) {
+                                if ( event.keyCode === $.ui.keyCode.TAB &&
+                                        $( this ).autocomplete( "instance" ).menu.active ) {
+                                    event.preventDefault();
+                                }
+                            })
+                            .autocomplete({
+                                minLength: 1,
+                                messages: {
+                                    noResults: '',
+                                    results: function() {}
+                                },
+                                source: function( request, response ) {
+                                    var selectionStart = this.element[0].selectionStart;
+                                    // delegate back to autocomplete, but extract the last term
+                                    var stringToAnalyse = this.term.substring(0, selectionStart);
+                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                    if ((this.term.match(/%/g) || []).length % 2 > 0){
+                                        var tag = 0;
+                                        var found = false;
+                                        while(tag < Tags.length && !found){
+                                            if(identifier.indexOf(Tags[tag].separator) != -1){
+                                                response($.ui.autocomplete.filter(
+                                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
+                                                found = true;
+                                            }
+                                            tag++;
+                                        }
+                                    }
+                                },
+                                focus: function() {
+                                    // prevent value inserted on focus
+                                    return false;
+                                },
+                                select: function( event, ui ) {
+                                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+                                    var stringToAnalyse = this.value.substring(0,this.selectionStart);
+                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                    //Start iterating on Tags
+                                    var found = false;
+                                    var tag = 0;
+                                    while(tag < Tags.length && !found){
+                                        //If we find our separator, we compute the output
+                                        if(identifier.indexOf(Tags[tag].separator) != -1){
+                                            var terms = split( this.value.substring(0, this.selectionStart), Tags[tag].regex );
+                                            // remove the current input
+                                            terms.pop();
+                                            // add the selected item and eventually the content to add
+                                            terms.push( Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter );
+                                            //If it is the end of the variable, we automaticly add a % at the end of the line
+                                            if(Tags[tag].endOfVariable) {
+                                                terms.push("");
+                                            }
+                                            this.value = $.trim(terms.join("%") + this.value.substring(this.selectionStart));
+                                            this.setSelectionRange(terms.join("%").length,terms.join("%").length);
+
+                                            found = true;
+                                        }
+                                        tag++;
+                                    }
+                                    $(this).trigger("input");
+                                    $("span[role='status']").hide();
+                                    return false;
+                                },
+                                close : function (event, ui) {
+                                    val = $(this).val();
+                                    $(this).autocomplete( "search", val ); //keep autocomplete open by
+                                    //searching the same input again
+                                    $(this).focus();
+                                    return false;
+                                }
+                            });
                     }
-                    console.log("salut");
-                })
+                });
+
             });
         </script>
         <script>
@@ -2440,6 +2564,23 @@
                         }
                     });
                 });
+                $("input[id^='action_property'],input[id^='action_object'],input[id^='control_value']").bind('input', function () {
+                    var picture = $(this).val().split("%");
+                    var str = picture.pop();
+                    while(str != undefined && str.indexOf("picture.") == -1 && picture.length>0){
+                        //look for picture
+                        str = picture.pop();
+                    }
+                    if (str != undefined && str.indexOf("picture.") != -1) {
+                        var pic = str.split("picture.");
+                        var idPic = pic.pop();
+                        $("img#"+$(this).attr("id")).show();
+                        $("img#"+$(this).attr("id")).attr("src","ReadApplicationObjectImage?application=<%=tcaseapplication%>&object="+idPic);
+                    } else {
+                        $("img#"+$(this).attr("id")).hide();
+                        $("img#"+$(this).attr("id")).removeAttr("src");
+                    }
+                }).trigger("input");
             }</script>
        
     <script>

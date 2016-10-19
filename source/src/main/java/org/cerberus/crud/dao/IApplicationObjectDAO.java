@@ -17,12 +17,14 @@
  */
 package org.cerberus.crud.dao;
 
+import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
+import java.awt.image.BufferedImage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -60,6 +62,23 @@ public interface IApplicationObjectDAO {
      * @return
      */
     AnswerList readByApplication(String Application);
+
+    /**
+     *
+     * @param application
+     * @param object
+     * @return
+     */
+    BufferedImage readImageByKey(String application, String object);
+
+    /**
+     *
+     * @param application
+     * @param object
+     * @param file
+     * @return
+     */
+    Answer uploadFile(String application, String object, FileItem file);
 
     /**
      *
