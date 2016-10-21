@@ -507,6 +507,16 @@ public class ParameterDAO implements IParameterDAO {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
         }
         a.setResultMessage(msg);
         a.setItem(p);
@@ -580,7 +590,7 @@ public class ParameterDAO implements IParameterDAO {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(system1)) {
@@ -645,7 +655,7 @@ public class ParameterDAO implements IParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY)) {
             // Prepare and execute query
             preStat.setString(1, system);
             preStat.setString(2, param);
@@ -674,7 +684,7 @@ public class ParameterDAO implements IParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
             preStat.setString(1, object.getSystem());
             preStat.setString(2, object.getParam());
@@ -702,7 +712,7 @@ public class ParameterDAO implements IParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
             // Prepare and execute query
             preStat.setString(1, object.getValue());
             preStat.setString(2, object.getSystem());
@@ -729,7 +739,7 @@ public class ParameterDAO implements IParameterDAO {
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setString(1, object.getSystem());
             preStat.setString(2, object.getParam());
