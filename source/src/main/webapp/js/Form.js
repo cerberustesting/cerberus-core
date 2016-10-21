@@ -2037,9 +2037,13 @@ function addTCSANew(rowID, step, obj) {
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_action_template')
             .attr('name', 'action_action_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_object_template"]')
-            .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
+        .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="action_object_template_img"]')
+        .attr('name', 'action_object_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('input[data-id="action_property_template"]')
-            .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
+        .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
+    $('#StepListOfActionDiv' + step + newNumberOfAction).find('img[data-id="action_property_template_img"]')
+        .attr('name', 'action_property_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_forceexestatus_template')
             .attr('name', 'action_forceexestatus_' + step + '_' + newNumberOfAction);
     $('#StepListOfActionDiv' + step + newNumberOfAction).find('#action_conditionoper_template')
@@ -2119,9 +2123,13 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_type_template')
             .attr('name', 'control_type_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_value1_template"]')
-            .attr('name', 'control_value1_' + step + '_' + incrementAction + '_' + nextIncControl);
+        .attr('name', 'control_value1_' + step + '_' + incrementAction + '_' + nextIncControl);;
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="control_value1_template_img"]')
+        .attr('name', 'control_value1_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_value2_template"]')
-            .attr('name', 'control_value2_' + step + '_' + incrementAction + '_' + nextIncControl);
+        .attr('name', 'control_value2_' + step + '_' + incrementAction + '_' + nextIncControl);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('img[data-id="control_value2_template_img"]')
+        .attr('name', 'control_value2_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('#control_fatal_template')
             .attr('name', 'control_fatal_' + step + '_' + incrementAction + '_' + nextIncControl);
 

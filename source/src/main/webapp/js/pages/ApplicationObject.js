@@ -53,38 +53,15 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_applicationObject", "title"));
     $("#title").html(doc.getDocOnline("page_applicationObject", "title"));
-    $("[name='createApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "button_create"));
-    $("[name='confirmationField']").html(doc.getDocLabel("page_applicationObject", "button_delete"));
-    $("[name='editApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "button_edit"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_global", "buttonAdd"));
-    $("[name='buttonClose']").html(doc.getDocLabel("page_global", "buttonClose"));
-    $("[name='buttonConfirm']").html(doc.getDocLabel("page_global", "buttonConfirm"));
-    $("[name='buttonDismiss']").html(doc.getDocLabel("page_global", "buttonDismiss"));
-    $("[name='applicationObjectField']").html(doc.getDocOnline("applicationObject", "ApplicationObject"));
-    $("[name='descriptionField']").html(doc.getDocOnline("applicationObject", "Description"));
-    $("[name='sortField']").html(doc.getDocOnline("applicationObject", "sort"));
-    $("[name='typeField']").html(doc.getDocOnline("applicationObject", "type"));
-    $("[name='systemField']").html(doc.getDocOnline("applicationObject", "system"));
-    $("[name='subsystemField']").html(doc.getDocOnline("applicationObject", "subsystem"));
-    $("[name='svnurlField']").html(doc.getDocOnline("applicationObject", "svnurl"));
-    $("[name='bugtrackerurlField']").html(doc.getDocOnline("applicationObject", "bugtrackerurl"));
-    $("[name='bugtrackernewurlField']").html(doc.getDocOnline("applicationObject", "bugtrackernewurl"));
-    $("[name='deploytypeField']").html(doc.getDocOnline("applicationObject", "deploytype"));
-    $("[name='mavengroupidField']").html(doc.getDocOnline("applicationObject", "mavengroupid"));
+    $("[name='createApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "createapplicationobjectfield"));
+    $("[name='editApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "editapplicationobjectfield"));
+    $("[name='applicationField']").html(doc.getDocLabel("page_applicationObject", "applicationfield"));
+    $("[name='objectField']").html(doc.getDocLabel("page_applicationObject", "objectfield"));
+    $("[name='valueField']").html(doc.getDocLabel("page_applicationObject", "valuefield"));
+    $("[name='screenshotfilenameField']").html(doc.getDocLabel("page_applicationObject", "screenshotfilenamefield"));
+    $("[name='buttonClose']").html(doc.getDocLabel("page_applicationObject", "button_close"));
+    $("[name='buttonAdd']").html(doc.getDocLabel("page_applicationObject", "button_add"));
 
-    $("[name='tabsEdit1']").html(doc.getDocOnline("page_applicationObject", "tabDef"));
-    $("[name='tabsEdit2']").html(doc.getDocOnline("page_applicationObject", "tabEnv"));
-
-    $("#environmentHeader").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
-    $("#countryHeader").html(doc.getDocOnline("invariant", "COUNTRY"));
-    $("#ipHeader").html(doc.getDocOnline("countryenvironmentparameters", "IP") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "URLLOGIN"));
-    $("#urlHeader").html(doc.getDocOnline("countryenvironmentparameters", "URL") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "domain"));
-    $("#var1Header").html(doc.getDocOnline("countryenvironmentparameters", "Var1") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var2"));
-    $("#var3Header").html(doc.getDocOnline("countryenvironmentparameters", "Var3") 
-            + '<br>' + doc.getDocOnline("countryenvironmentparameters", "Var4"));
 
     displayFooter(doc);
 }
@@ -304,33 +281,33 @@ function aoColumnsFunc(tableId) {
         },
         {"data": "application",
             "sName": "application",
-            "title": doc.getDocOnline("applicationObject", "Application")},
+            "title": doc.getDocOnline("page_applicationObject", "Application")},
         {"data": "object",
             "sName": "object",
-            "title": doc.getDocOnline("applicationObject", "Object")},
+            "title": doc.getDocOnline("page_applicationObject", "Object")},
         {"data": "value",
             "sName": "value",
-            "title": doc.getDocOnline("applicationObject", "Value")},
+            "title": doc.getDocOnline("page_applicationObject", "Value")},
         {"data": "screenshotfilename",
             "sName": "screenshotfilename",
-            "title": doc.getDocOnline("applicationObject", "ScreenshotFileName"),
+            "title": doc.getDocOnline("page_applicationObject", "ScreenshotFileName"),
             "mRender": function(data, type, obj) {
-                return "<image src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "'></image>"
+                return "<image src='ReadApplicationObjectImage?application=" + obj["application"] + "&object=" + obj["object"] + "&time=" + new Date().getTime() + "'></image>"
             }
         },
         {"data": "usrcreated",
             "sName": "usrcreated",
-            "title": doc.getDocOnline("applicationObject", "UsrCreated")},
+            "title": doc.getDocOnline("page_applicationObject", "UsrCreated")},
         {"data": "datecreated",
             "sName": "datecreated",
-            "title": doc.getDocOnline("applicationObject", "DateCreated")},
+            "title": doc.getDocOnline("page_applicationObject", "DateCreated")},
         {"data": "usrmodif",
             "sName": "usrmodif",
-            "title": doc.getDocOnline("applicationObject", "UsrModif")
+            "title": doc.getDocOnline("page_applicationObject", "UsrModif")
         },
         {"data": "datemodif",
             "sName": "datemodif",
-            "title": doc.getDocOnline("applicationObject", "DateModif")
+            "title": doc.getDocOnline("page_applicationObject", "DateModif")
         }
     ];
     return aoColumns;

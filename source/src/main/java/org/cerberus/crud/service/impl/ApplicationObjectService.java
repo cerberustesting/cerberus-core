@@ -25,7 +25,6 @@ import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.MessageGeneral;
 import org.cerberus.crud.service.IApplicationObjectService;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.enums.MessageEventEnum;

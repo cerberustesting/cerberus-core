@@ -26,7 +26,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationObjectService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;

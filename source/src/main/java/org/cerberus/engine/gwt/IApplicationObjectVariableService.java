@@ -29,7 +29,7 @@ import org.cerberus.exception.CerberusEventException;
  * @version 1.0, 10/01/2013
  * @since 2.0.0
  */
-public interface IPropertyService {
+public interface IApplicationObjectVariableService {
 
     String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 

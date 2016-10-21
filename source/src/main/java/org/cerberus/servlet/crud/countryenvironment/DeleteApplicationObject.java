@@ -19,11 +19,11 @@ package org.cerberus.servlet.crud.countryenvironment;
 
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.service.IApplicationObjectService;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.StringUtil;

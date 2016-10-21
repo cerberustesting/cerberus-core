@@ -23,7 +23,6 @@ import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.IApplicationObjectDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryApplicationObject;
@@ -31,6 +30,7 @@ import org.cerberus.crud.factory.impl.FactoryApplication;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.ParameterService;
 import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -153,7 +153,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
 
         try (Connection connection = databaseSpring.connect();
              PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_KEY1)) {
-            ApplicationObject ao = new ApplicationObject();
+            ApplicationObject ao = null;
             // Prepare and execute query
             preStat.setString(1, application);
             preStat.setString(2, object);
@@ -209,8 +209,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     public BufferedImage readImageByKey(String application, String object) {
         BufferedImage image = null;
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "cerberus_mediastorage_url Parameter not found");
-        AnswerItem a = parameterService.readByKey("","cerberus_mediastorage_url");
+                "cerberus_applicationobject_path Parameter not found");
+        AnswerItem a = parameterService.readByKey("","cerberus_applicationobject_path");
         if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             Parameter p = (Parameter) a.getItem();
             String uploadPath = p.getValue();
@@ -227,7 +227,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 LOG.warn("Application Object not found");
             }
         }else{
-            LOG.warn("cerberus_mediastorage_url Parameter not found");
+            LOG.warn("cerberus_applicationobject_path Parameter not found");
         }
         a.setResultMessage(msg);
         return image;
@@ -252,8 +252,8 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     @Override
     public Answer uploadFile(String application, String object, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                "cerberus_mediastorage_url Parameter not found");
-        AnswerItem a = parameterService.readByKey("","cerberus_mediastorage_url");
+                "cerberus_applicationobject_path Parameter not found");
+        AnswerItem a = parameterService.readByKey("","cerberus_applicationobject_path");
         if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             Parameter p = (Parameter)a.getItem();
             String uploadPath = p.getValue();
@@ -296,7 +296,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 }
             }
         }else{
-            LOG.warn("cerberus_mediastorage_url Parameter not found");
+            LOG.warn("cerberus_applicationobject_path Parameter not found");
         }
         a.setResultMessage(msg);
         return a;

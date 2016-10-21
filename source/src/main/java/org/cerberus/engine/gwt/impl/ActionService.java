@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
@@ -38,6 +39,7 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.engine.entity.SOAPExecution;
+import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
@@ -59,6 +61,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import static org.apache.commons.lang3.StringUtils.split;
+
 /**
  *
  * @author bcivel
@@ -66,8 +70,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ActionService implements IActionService {
 
-    @Autowired
-    private IParameterService parameterService;
     @Autowired
     private IPropertyService propertyService;
     @Autowired
@@ -94,6 +96,8 @@ public class ActionService implements IActionService {
     private ISQLService sqlService;
     @Autowired
     private ILogEventService logEventService;
+    @Autowired
+    private IVariableService variableService;
 
     private static final Logger LOG = Logger.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
@@ -130,55 +134,19 @@ public class ActionService implements IActionService {
             }
         }
 
-        if (testCaseStepActionExecution.getValue1().contains("%")) {
-            try {
-                testCaseStepActionExecution.setValue1(propertyService.decodeValueWithExistingProperties(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
-        } else if (testCaseStepActionExecution.getValue1().contains("[object]")) {
-            try {
-                testCaseStepActionExecution.setValue1(propertyService.decodeValueWithExistingObjects(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
-        } else if (testCaseStepActionExecution.getValue1().contains("picture=")) {
-            try {
-                testCaseStepActionExecution.setValue1("picture=" + propertyService.decodeValueWithExistingPictures(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
+        try {
+            testCaseStepActionExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
+        } catch (CerberusEventException cex) {
+            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return testCaseStepActionExecution;
         }
-        if (testCaseStepActionExecution.getValue2().contains("%")) {
-            try {
-                testCaseStepActionExecution.setValue2(propertyService.decodeValueWithExistingProperties(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
-        } else if (testCaseStepActionExecution.getValue2().contains("object=")) {
-            try {
-                testCaseStepActionExecution.setValue2(propertyService.decodeValueWithExistingObjects(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
-        } else if (testCaseStepActionExecution.getValue2().contains("picture=")) {
-            try {
-                testCaseStepActionExecution.setValue2(propertyService.decodeValueWithExistingPictures(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
-            } catch (CerberusEventException cex) {
-                testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                return testCaseStepActionExecution;
-            }
+        try {
+            testCaseStepActionExecution.setValue2(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
+        } catch (CerberusEventException cex) {
+            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            return testCaseStepActionExecution;
         }
 
         /**

@@ -1375,7 +1375,7 @@
                                                                             </div>
                                                                         <%}%>
                                                                     </div>
-                                                                    <img style="max-height:20px; float:left;" id="action_object_<%=incrementStep%>_<%=incrementAction%>" style="display:none;">
+                                                                    <img style="max-height:20px; float:left;" id="action_object_<%=incrementStep%>_<%=incrementAction%>" data-incrementStep=<%=incrementStep%> data-incrementAction=<%=incrementAction%> style="display:none;" >
                                                                     <div class="technical_part" style="width: 18%; float:left; background-color:transparent">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
                                                                         </div>
@@ -1405,7 +1405,7 @@
                                                                                 id="action_property_<%=incrementStep%>_<%=incrementAction%>"
                                                                                 name="action_property_<%=incrementStep%>_<%=incrementAction%>" <%=isReadonly%>>
                                                                     </div>
-                                                                    <img style="max-height:20px; float:left;" id="action_property_<%=incrementStep%>_<%=incrementAction%>" style="display:none;">
+                                                                    <img style="max-height:20px; float:left;" id="action_property_<%=incrementStep%>_<%=incrementAction%>" data-incrementStep=<%=incrementStep%> data-incrementAction=<%=incrementAction%> style="display:none;">
                                                                     <div class="technical_part" style="width: 15%; float:left; background-color: transparent">
                                                                         <div style="float:left;width:60px; "><p name="labelTestCaseStepActionForce" style="float:right;font-weight:bold;" link="white" >Force RC</p>
                                                                         </div>
@@ -1532,19 +1532,17 @@
                                                                                      value="<%=tcsac.getValue1().replace("\"","&quot;")%>" 
                                                                                      id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                      name="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
+                                                                        <img style="max-height:20px; float:left;" id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-incrementStep=<%=incrementStep%> data-incrementAction=<%=incrementAction%> style="display:none;">
                                                                     </div>
                                                                     <div class="technical_part" style="width:30%;float:left;">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Val2</p>
-                                                                    <img style="max-height:20px; float:left;" id="control_value1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none;">
-                                                                    <div class="technical_part" style="width:20%;float:left;">
-                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlProperty" style="float:right;font-weight:bold;" link="white" >Property</p>
                                                                         </div>
                                                                         <input class="wob" style="width: 70%;border: 1px solid white;  color:<%=actionFontColor%>"
                                                                                value="<%=tcsac.getValue2().replace("\"","&quot;")%>" 
                                                                                id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
                                                                                name="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
+                                                                        <img style="max-height:20px; float:left;" id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-incrementStep=<%=incrementStep%> data-incrementAction=<%=incrementAction%> style="display:none;">
                                                                     </div>
-                                                                    <img style="max-height:20px; float:left;" id="control_value2_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" style="display:none;">
                                                                     <div class="technical_part" style="width:8%;float:left; ">
                                                                         <div style="float:left;"><p name="labelTestCaseStepActionControlFatal" style="float:right;font-weight:bold;" link="white" >Fatal</p>
                                                                         </div>
@@ -2068,12 +2066,14 @@
                             </div>
                             <input id="val1" style="float:left;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; height:100%;width:75%; background-color: transparent;"
                                    data-id="action_object_template" >
+                            <img style="max-height:20px;" data-id="action_object_template_img" style="display:none;">
                         </div>
                         <div class="technical_part" style="width: 15%; float:left; background-color:transparent">
                             <div style="float:left; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "Value2", "Val2", myLang));%></p>
                             </div>
                             <input id="val2" class="wob property_value" style="width:75%;border-style:groove;border-width:thin;border-color:white;border: 1px solid white; background-color: transparent;"
                                     data-id="action_property_template">
+                            <img style="max-height:20px;" data-id="action_property_template_img" style="display:none;">
                         </div>
                         <div class="technical_part" style="width: 10%; float:left; background-color: transparent">
                             <div style="float:left;width:60px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "ForceExeStatus", "Force Execution Status", myLang));%></p>
@@ -2132,11 +2132,13 @@
                             </div>
                             <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
                                    data-id="control_value1_template">
+                            <img style="max-height:20px;" data-id="control_value1_template_img" style="display:none;">
                         </div>
                         <div class="technical_part" style="width:30%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Value2", "Value2", myLang));%></p>
                             </div><input class="wob" style="width: 70%;border: 1px solid white; background-color:transparent;"
                                          data-id="control_value2_template">
+                            <img style="max-height:20px;" data-id="control_value2_template_img" style="display:none;">
                         </div>
                         <div class="technical_part" style="width:8%;float:left; ">
                             <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "Fatal", "Fatal", myLang));%></p>
@@ -2348,8 +2350,8 @@
             });</script>
             <%}%>
         <script>
-            $(document).ready(function() {
-                $.ajax({
+            function loadAutoComplete(){
+                return $.ajax({
                     url: "ReadApplicationObject?application=<%=tcaseapplication%>",
                     dataType: "json",
                     success: function(data) {
@@ -2366,11 +2368,22 @@
                             <%
                                 for (String p : tcProperties) {
                             %>
-                                "<%=p%>",
+                            "<%=p%>",
                             <%
                             }
                             %>
                         ];
+
+                        /*
+                         * Tags :
+                         * Each object represent a category of object to show in the autocomplete
+                         * @param array : List of data to display in autocomplete
+                         * @param separator : the string that will trigger the autocomplete
+                         * @param regex : regex to find that string (add \ to all special char for regex)
+                         * @param addBefore : string to add between the % and the selected value
+                         * @param addAfter : string to add after the selected value
+                         * @param endOfVariable : if true, when select we add % at the end so it close the variable
+                         */
                         var Tags = [
                             {
                                 array : availableObjects,
@@ -2406,90 +2419,96 @@
                             }
                         ];
                         function split( val, separator) {
-                            //return val.split( /%object\.(?!.*%object\.)/ ).length>1?val.split( /%object\.(?!.*%object\.)/ ):val.split( /%picture\.(?!.*%picture\.)/ );
                             return val.split(new RegExp(separator+"(?!.*"+separator+")"))
                         }
                         function extractLast( term, separator ) {
                             return split( term, separator ).pop();
                         }
 
-                        $( "input[id^='action_property'],input[id^='action_object'],input[id^='control_value']" )
+                        $( "input[id^='action_property'],input[id^='action_object'],input[id^='control_value'],input[id^='val'],input[name^='control_value']" )
                         // don't navigate away from the field on tab when selecting an item
-                            .on( "keydown", function( event ) {
-                                if ( event.keyCode === $.ui.keyCode.TAB &&
-                                        $( this ).autocomplete( "instance" ).menu.active ) {
-                                    event.preventDefault();
-                                }
-                            })
-                            .autocomplete({
-                                minLength: 1,
-                                messages: {
-                                    noResults: '',
-                                    results: function() {}
-                                },
-                                source: function( request, response ) {
-                                    var selectionStart = this.element[0].selectionStart;
-                                    // delegate back to autocomplete, but extract the last term
-                                    var stringToAnalyse = this.term.substring(0, selectionStart);
-                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                                    if ((this.term.match(/%/g) || []).length % 2 > 0){
-                                        var tag = 0;
+                                .on( "keydown", function( event ) {
+                                    if ( event.keyCode === $.ui.keyCode.TAB &&
+                                            $( this ).autocomplete( "instance" ).menu.active ) {
+                                        event.preventDefault();
+                                    }
+                                })
+                                .autocomplete({
+                                    minLength: 1,
+                                    messages: {
+                                        noResults: '',
+                                        results: function() {}
+                                    },
+                                    source: function( request, response ) {
+                                        //Get the part of the string we want (between the last % before our cursor and the cursor)
+                                        var selectionStart = this.element[0].selectionStart;
+                                        var stringToAnalyse = this.term.substring(0, selectionStart);
+                                        var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                        //If there is a pair number of % it means there is no open variable that needs to be autocompleted
+                                        if ((this.term.match(/%/g) || []).length % 2 > 0){
+                                            //Start Iterating on Tags
+                                            var tag = 0;
+                                            var found = false;
+                                            while(tag < Tags.length && !found){
+                                                //If We find the separator, then we filter with the already written part
+                                                if(identifier.indexOf(Tags[tag].separator) != -1){
+                                                    response($.ui.autocomplete.filter(
+                                                            Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
+                                                    found = true;
+                                                }
+                                                tag++;
+                                            }
+                                        }
+                                    },
+                                    focus: function() {
+                                        // prevent value inserted on focus
+                                        return false;
+                                    },
+                                    select: function( event, ui ) {
+                                        //Get the part of the string we want (between the last % before our cursor and the cursor)
+                                        var stringToAnalyse = this.value.substring(0,this.selectionStart);
+                                        var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                        //Start iterating on Tags
                                         var found = false;
+                                        var tag = 0;
                                         while(tag < Tags.length && !found){
+                                            //If we find our separator, we compute the output
                                             if(identifier.indexOf(Tags[tag].separator) != -1){
-                                                response($.ui.autocomplete.filter(
-                                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
+                                                var terms = split( this.value.substring(0, this.selectionStart), Tags[tag].regex );
+                                                // remove the current input
+                                                terms.pop();
+                                                // add the selected item and eventually the content to add
+                                                terms.push( Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter );
+                                                //If it is the end of the variable, we automaticly add a % at the end of the line
+                                                if(Tags[tag].endOfVariable) {
+                                                    terms.push("");
+                                                }
+                                                this.value = $.trim(terms.join("%") + this.value.substring(this.selectionStart));
+                                                this.setSelectionRange(terms.join("%").length,terms.join("%").length);
+
                                                 found = true;
                                             }
                                             tag++;
                                         }
+                                        // We trigger input to potentially display an image if there is one
+                                        $(this).trigger("input");
+                                        // We hide the message generated by autocomplete because we don't want it
+                                        $("span[role='status']").hide();
+                                        return false;
+                                    },
+                                    close : function (event, ui) {
+                                        val = $(this).val();
+                                        $(this).autocomplete( "search", val ); //keep autocomplete open by
+                                        //searching the same input again
+                                        $(this).focus();
+                                        return false;
                                     }
-                                },
-                                focus: function() {
-                                    // prevent value inserted on focus
-                                    return false;
-                                },
-                                select: function( event, ui ) {
-                                    //Get the part of the string we want (between the last % before our cursor and the cursor)
-                                    var stringToAnalyse = this.value.substring(0,this.selectionStart);
-                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                                    //Start iterating on Tags
-                                    var found = false;
-                                    var tag = 0;
-                                    while(tag < Tags.length && !found){
-                                        //If we find our separator, we compute the output
-                                        if(identifier.indexOf(Tags[tag].separator) != -1){
-                                            var terms = split( this.value.substring(0, this.selectionStart), Tags[tag].regex );
-                                            // remove the current input
-                                            terms.pop();
-                                            // add the selected item and eventually the content to add
-                                            terms.push( Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter );
-                                            //If it is the end of the variable, we automaticly add a % at the end of the line
-                                            if(Tags[tag].endOfVariable) {
-                                                terms.push("");
-                                            }
-                                            this.value = $.trim(terms.join("%") + this.value.substring(this.selectionStart));
-                                            this.setSelectionRange(terms.join("%").length,terms.join("%").length);
-
-                                            found = true;
-                                        }
-                                        tag++;
-                                    }
-                                    $(this).trigger("input");
-                                    $("span[role='status']").hide();
-                                    return false;
-                                },
-                                close : function (event, ui) {
-                                    val = $(this).val();
-                                    $(this).autocomplete( "search", val ); //keep autocomplete open by
-                                    //searching the same input again
-                                    $(this).focus();
-                                    return false;
-                                }
-                            });
+                                });
                     }
                 });
-
+            }
+            $(document).ready(function() {
+                loadAutoComplete();
             });
         </script>
         <script>
@@ -2564,23 +2583,36 @@
                         }
                     });
                 });
-                $("input[id^='action_property'],input[id^='action_object'],input[id^='control_value']").bind('input', function () {
+                $("input[id^='action_property'],input[id^='action_object'],input[id^='control_value'],input[id^='val'],input[data-id^='control_value'],input[data-id^='action_object'],input[data-id^='action_property']").bind('input', function () {
                     var picture = $(this).val().split("%");
-                    var str = picture.pop();
-                    while(str != undefined && str.indexOf("picture.") == -1 && picture.length>0){
-                        //look for picture
+                    var str = undefined;
+                    if(picture.length>2) {
+                        picture.pop();
                         str = picture.pop();
+                        while (str != undefined && picture.length > 1 && str.indexOf("picture.") == -1) {
+                            //look for picture
+                            str = picture.pop();
+                        }
                     }
                     if (str != undefined && str.indexOf("picture.") != -1) {
                         var pic = str.split("picture.");
                         var idPic = pic.pop();
-                        $("img#"+$(this).attr("id")).show();
-                        $("img#"+$(this).attr("id")).attr("src","ReadApplicationObjectImage?application=<%=tcaseapplication%>&object="+idPic);
+                        console.log($("img[id=" + $(this).attr("id") + "]"));
+                        $("img#" + $(this).attr("id")).show();
+                        $("img#" + $(this).attr("id")).attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
+                        $("img#" + $(this).attr("id")).click(function(){showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)});
+                        console.log($("img[name=" + $(this).attr("name") + "]"));
+                        $("img[name=" + $(this).attr("name") + "]").show();
+                        $("img[name=" + $(this).attr("name") + "]").attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
+                        $("img[name=" + $(this).attr("name") + "]").click(function(){showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)});
                     } else {
-                        $("img#"+$(this).attr("id")).hide();
-                        $("img#"+$(this).attr("id")).removeAttr("src");
+                        $("img#" + $(this).attr("id")).hide();
+                        $("img#" + $(this).attr("id")).removeAttr("src");
+                        $("img[data-id=" + $(this).attr("data-id") + "]").hide();
+                        $("img[data-id=" + $(this).attr("data-id") + "]").removeAttr("src");
                     }
                 }).trigger("input");
+                loadAutoComplete();
             }</script>
        
     <script>

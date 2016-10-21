@@ -111,10 +111,6 @@ public class PropertyService implements IPropertyService {
     private IDataLibService dataLibService;
     @Autowired
     private ILogEventService logEventService;
-    @Autowired
-    private ITestCaseService testCaseService;
-    @Autowired
-    private IApplicationObjectService applicationObjectService;
 
     /**
      * The property variable {@link Pattern}
@@ -271,80 +267,6 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Finished to decode String : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
         }
         return stringToDecode;
-    }
-
-    @Override
-    public String decodeValueWithExistingObjects(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
-        String result = "";
-        String test = testCaseStepActionExecution.getTest();
-        String testcase = testCaseStepActionExecution.getTestCase();
-        AnswerItem aTestCase = testCaseService.readByKey(test,testcase);
-        if(aTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && aTestCase.getItem() != null){
-            TestCase tc = (TestCase) aTestCase.getItem();
-            String application = tc.getApplication();
-            String object = stringToDecode.replace("object=","");
-            AnswerItem aApplicationObject = applicationObjectService.readByKey(application,object);
-            if(aApplicationObject.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                if(aTestCase.getItem() != null){
-                    ApplicationObject ao = (ApplicationObject) aApplicationObject.getItem();
-                    result = ao.getValue();
-                }
-            }else{
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Unable to find the ApplicationObject :" + application + ", " + object);
-                }
-            }
-        }else{
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Unable to find the Application of the Test case: " + test + ", " + testcase);
-            }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Finished to decode String : '" + stringToDecode + "' to :'" + result + "'");
-        }
-        return result;
-    }
-
-    @Override
-    public String decodeValueWithExistingPictures(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
-        String result = "";
-        String test = testCaseStepActionExecution.getTest();
-        String testcase = testCaseStepActionExecution.getTestCase();
-        AnswerItem aTestCase = testCaseService.readByKey(test,testcase);
-        if(aTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && aTestCase.getItem() != null){
-            TestCase tc = (TestCase) aTestCase.getItem();
-            String application = tc.getApplication();
-            String object = stringToDecode.replace("picture=","");
-            AnswerItem aApplicationObject = applicationObjectService.readByKey(application,object);
-            if(aApplicationObject.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                if(aTestCase.getItem() != null){
-                    ApplicationObject ao = (ApplicationObject) aApplicationObject.getItem();
-                    AnswerItem ansProperty = parameterService.readByKey("","cerberus_mediastorage_url");
-                    if(ansProperty.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        Parameter p = (Parameter) ansProperty.getItem();
-                        result = p.getValue() + "/" + application + "/" + object + "/" + ao.getScreenShotFileName();
-                    }else{
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Unable to find the Parameter : cerberus_mediastorage_url");
-                        }
-                    }
-                }
-            }else{
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Unable to find the ApplicationObject :" + application + ", " + object);
-                }
-            }
-        }else{
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Unable to find the Application of the Test case: " + test + ", " + testcase);
-            }
-        }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Finished to decode String : '" + stringToDecode + "' to :'" + result + "'");
-        }
-        return result;
     }
 
     /**
@@ -511,6 +433,7 @@ public class PropertyService implements IPropertyService {
 
                 // Key value of the DataLib.
                 if (tced.getValue() != null) {
+                    stringToReplace = stringToReplace.replace("%property." + tced.getProperty() + "%", tced.getValue());
                     stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
                 }
 
@@ -523,21 +446,27 @@ public class PropertyService implements IPropertyService {
                                 variableValue = dataRow.get(key);
 
                                 variableString1 = tced.getProperty() + "(" + (ind + 1) + ")" + "(" + key + ")";
+                                stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                 stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
                                 variableString2 = tced.getProperty() + "." + (ind + 1) + "." + key;
                                 stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
+                                stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
 
                                 if (key.equals("")) { // If subdata is empty we can omit the () or .
                                     variableString1 = tced.getProperty() + "(" + (ind + 1) + ")";
+                                    stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
                                     variableString2 = tced.getProperty() + "." + (ind + 1);
+                                    stringToReplace = stringToReplace.replace("%property." + variableString2 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
                                 }
 
                                 if (ind == 0) { // Dimention of the data is not mandatory for the 1st row.
                                     variableString1 = tced.getProperty() + "(" + key + ")";
+                                    stringToReplace = stringToReplace.replace("%property." + variableString1 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString1 + "%", variableValue);
                                     variableString2 = tced.getProperty() + "." + key;
+                                    stringToReplace = stringToReplace.replace("%property" + variableString2 + "%", variableValue);
                                     stringToReplace = stringToReplace.replace("%" + variableString2 + "%", variableValue);
                                 }
 
@@ -549,6 +478,7 @@ public class PropertyService implements IPropertyService {
 
             } else if (tced.getValue() != null) {
                 /* Replacement in case of normal PROPERTY */
+                stringToReplace = stringToReplace.replace("%property." + tced.getProperty() + "%", tced.getValue());
                 stringToReplace = stringToReplace.replace("%" + tced.getProperty() + "%", tced.getValue());
             }
         }
@@ -578,6 +508,8 @@ public class PropertyService implements IPropertyService {
             String rawProperty = propertyMatcher.group();
             // Removes the first and last '%' character to only get the property name
             rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
+            // Replace Property. if it exist and is in start
+            rawProperty = rawProperty.replaceFirst("^property\\.","");
             // Removes the variable part of the property eg : (subdata)
             String[] ramProp1 = rawProperty.split("\\(");
             // Removes the variable part of the property eg : .subdata

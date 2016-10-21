@@ -7265,6 +7265,61 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
 
+        // New updated Documentation.
+        //-- ------------------------ 958
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_applicationObject','title','','en','Application Object','')");
+        SQLS.append(",('page_applicationObject','title','','fr','Objet d application','')");
+        SQLS.append(",('page_applicationObject','button_create','','en','Create an Application Object','')");
+        SQLS.append(",('page_applicationObject','button_create','','fr','Créer un objet d application','')");
+        SQLS.append(",('page_applicationObject','button_delete','','en','Delete Object','')");
+        SQLS.append(",('page_applicationObject','button_delete','','fr','Supprimer l objet','')");
+        SQLS.append(",('page_applicationObject','message_delete','','en','Are you sure?','')");
+        SQLS.append(",('page_applicationObject','message_delete','','fr','Etes-vous sûrs?','')");
+        SQLS.append(",('page_applicationObject','button_edit','','en','Edit Object','')");
+        SQLS.append(",('page_applicationObject','button_edit','','fr','Modifier l objet','')");
+        SQLS.append(",('page_applicationObject','applicationfield','','en','Application','')");
+        SQLS.append(",('page_applicationObject','applicationfield','','fr','Application','')");
+        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','en','Create Application Object','')");
+        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d application','')");
+        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','')");
+        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','fr','Modifier un objet d application','')");
+        SQLS.append(",('page_applicationObject','objectfield','','en','Object','')");
+        SQLS.append(",('page_applicationObject','objectfield','','fr','Objet','')");
+        SQLS.append(",('page_applicationObject','valuefield','','en','Value','')");
+        SQLS.append(",('page_applicationObject','valuefield','','fr','Valeur','')");
+        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','en','FileName','')");
+        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','fr','Nom du ficher','')");
+        SQLS.append(",('page_applicationObject','button_close','','en','Close','')");
+        SQLS.append(",('page_applicationObject','button_close','','fr','Fermer','')");
+        SQLS.append(",('page_applicationObject','button_add','','en','Add','')");
+        SQLS.append(",('page_applicationObject','button_add','','fr','Ajouter','')");
+        SQLS.append(",('page_applicationObject','Application','','en','Application','')");
+        SQLS.append(",('page_applicationObject','Application','','fr','Application','')");
+        SQLS.append(",('page_applicationObject','Object','','en','Object','')");
+        SQLS.append(",('page_applicationObject','Object','','fr','Objet','')");
+        SQLS.append(",('page_applicationObject','Value','','en','Value','')");
+        SQLS.append(",('page_applicationObject','Value','','fr','Valeur','')");
+        SQLS.append(",('page_applicationObject','ScreenshotFileName','','en','File Name','')");
+        SQLS.append(",('page_applicationObject','ScreenshotFileName','','fr','Nom du fichier','')");
+        SQLS.append(",('page_applicationObject','UsrCreated','','en','Creator','')");
+        SQLS.append(",('page_applicationObject','UsrCreated','','fr','Createur','')");
+        SQLS.append(",('page_applicationObject','DateCreated','','en','Creation date','')");
+        SQLS.append(",('page_applicationObject','DateCreated','','fr','Date de création','')");
+        SQLS.append(",('page_applicationObject','UsrModif','','en','Last Modificator','')");
+        SQLS.append(",('page_applicationObject','UsrModif','','fr','Dernier Editeur','')");
+        SQLS.append(",('page_applicationObject','DateModif','','en','Last modification date','')");
+        SQLS.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add path to picture for appliation object in paramaters
+        //-- ------------------------ 959
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
