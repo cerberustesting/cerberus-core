@@ -15,7 +15,7 @@
     </properties>
 
 	<scm>
-		<developerConnection>scm:git:https://github.com/vertigo17/Cerberus.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
       <tag>HEAD</tag>
   </scm>
 
