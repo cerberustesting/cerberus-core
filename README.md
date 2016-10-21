@@ -1,4 +1,6 @@
 Cerberus
 ========
 
-Automated testing framework.
+User-friendly automated testing framework.
+
+http://www.cerberus-testing.org/
