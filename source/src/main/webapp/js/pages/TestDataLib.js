@@ -135,6 +135,19 @@ function initPage() {
 
 }
 
+/**
+ * After table feeds, 
+ * @returns {undefined}
+ */
+function afterTableLoad() {
+    $.each($("code[name='envelopeField']"), function (i, e) {
+        Prism.highlightElement($(e).get(0));
+    });
+    $.each($("code[name='scriptField']"), function (i, e) {
+        Prism.highlightElement($(e).get(0));
+    });
+}
+
 function displayPageLabel() {
     var doc = new Doc();
 
@@ -326,7 +339,26 @@ function addTestDataLibModalSaveHandler() {
     }
 
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formAdd.serialize());
+    //var data = convertSerialToJSONObject(formAdd.serialize());
+    var sa = formAdd.serializeArray();
+    
+    //Add envelope to the form
+    var envelope = {
+        name: "envelope",
+        value: $("#addTestDataLibModalForm #envelope").text()
+    };
+    sa.push(envelope);
+    //Add script to the form
+    var script = {
+        name: "script",
+        value: $("#addTestDataLibModalForm #script").text()
+    };
+    sa.push(script);
+
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -388,6 +420,17 @@ function addTestDataLibClick() {
         toDelete: false
     };
     appendSubDataRow(newSubData, "subdataTableBody");
+    
+    $('#addTestDataLibModal #envelope').on("keyup", function (e) {
+        var pos = $(this).caret('pos');
+        Prism.highlightElement($("#addTestDataLibModal #envelope")[0]);
+        $(this).caret('pos', pos);
+    });
+    $('#addTestDataLibModal #script').on("keyup", function (e) {
+        var pos = $(this).caret('pos');
+        Prism.highlightElement($("#addTestDataLibModal #script")[0]);
+        $(this).caret('pos', pos);
+    });
 
     $('#addTestDataLibModal').modal('show');
 }
@@ -431,7 +474,26 @@ function duplicateTestDataLibModalSaveHandler() {
     }
 
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formAdd.serialize());
+    //var data = convertSerialToJSONObject(formAdd.serialize());
+    var sa = formAdd.serializeArray();
+    
+    //Add envelope to the form
+    var envelope = {
+        name: "envelope",
+        value: $("#duplicateTestDataLibModal #envelope").text()
+    };
+    sa.push(envelope);
+    //Add script to the form
+    var script = {
+        name: "script",
+        value: $("#duplicateTestDataLibModal #script").text()
+    };
+    sa.push(script);
+
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -492,17 +554,17 @@ function duplicateTestDataLibClick(testDataLibID) {
         $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
         $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#duplicateTestDataLibModal #method').prop("value", obj.method);
-        $('#duplicateTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#duplicateTestDataLibModal #envelope').text(obj.envelope);
         $('#duplicateTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#duplicateTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#duplicateTestDataLibModal #separator').prop("value", obj.separator);
         $('#duplicateTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
-        $('#duplicateTestDataLibModal #script').prop("value", obj.script);
+        $('#duplicateTestDataLibModal #script').text(obj.script);
 
         //load TYPE
         $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
         $('#duplicateTestDataLibModal #group').prop("value", obj.group);
-
+        
         if (obj.type === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
             $("#panelSOAPDuplicate").collapse("hide");
@@ -538,6 +600,24 @@ function duplicateTestDataLibClick(testDataLibID) {
 
         loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_dup");
 
+        //Highlight envelop on modal loading
+        Prism.highlightElement($("#duplicateTestDataLibModal #envelope")[0]);
+        Prism.highlightElement($("#duplicateTestDataLibModal #script")[0]);
+
+        /**
+         * On edition, get the caret position, refresh the envelope to have 
+         * syntax coloration in real time, then set the caret position.
+         */
+        $('#duplicateTestDataLibModal #envelope').on("keyup", function (e) {
+            var pos = $(this).caret('pos');
+            Prism.highlightElement($("#duplicateTestDataLibModal #envelope")[0]);
+            $(this).caret('pos', pos);
+        });
+        $('#duplicateTestDataLibModal #script').on("keyup", function (e) {
+            var pos = $(this).caret('pos');
+            Prism.highlightElement($("#duplicateTestDataLibModal #script")[0]);
+            $(this).caret('pos', pos);
+        });
         //after everything. then shows the modal
         $("#duplicateTestDataLibModal").modal("show");
 
@@ -561,8 +641,25 @@ function editTestDataLibModalSaveHandler() {
         table_subdata.push($(table1[i]).data("subdata"));
     }
 
+    var sa = formEdit.serializeArray();
+    //Add envelope to the form
+    var envelope = {
+        name: "envelope",
+        value: $("form#editTestLibData #envelope").text()
+    };
+    sa.push(envelope);
+    var script = {
+        name: "script",
+        value: $("form#editTestLibData #script").text()
+    };
+    sa.push(script);
+
+    var data = {}
+    for (var i in sa) {
+        data[sa[i].name] = sa[i].value;
+    }
     // Get the header data from the form.
-    var data = convertSerialToJSONObject(formEdit.serialize());
+    //var data = convertSerialToJSONObject(formEdit.serialize());
 
     $.ajax({
         url: "UpdateTestDataLib",
@@ -625,12 +722,12 @@ function editTestDataLibClick(testDataLibID) {
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#editTestDataLibModal #method').prop("value", obj.method);
-        $('#editTestDataLibModal #envelope').prop("value", obj.envelope);
+        $('#editTestDataLibModal #envelope').text(obj.envelope);
         $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#editTestDataLibModal #separator').prop("value", obj.separator);
         $('#editTestDataLibModal #database').find('option[value="' + obj.database + '"]:first').prop("selected", "selected");
-        $('#editTestDataLibModal #script').prop("value", obj.script);
+        $('#editTestDataLibModal #script').text(obj.script);
 
         $('#editTestDataLibModal #libdescription').prop("value", obj.description);
         $('#editTestDataLibModal #group').prop("value", obj.group);
@@ -682,6 +779,24 @@ function editTestDataLibClick(testDataLibID) {
         // Loading the list of subdata.
         loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_edit");
 
+        //Highlight envelop on modal loading
+        Prism.highlightElement($("#editTestDataLibModal #envelope")[0]);
+        Prism.highlightElement($("#editTestDataLibModal #script")[0]);
+
+        /**
+         * On edition, get the caret position, refresh the envelope to have 
+         * syntax coloration in real time, then set the caret position.
+         */
+        $('#editTestDataLibModal #envelope').on("keyup", function (e) {
+            var pos = $(this).caret('pos');
+            Prism.highlightElement($("#editTestDataLibModal #envelope")[0]);
+            $(this).caret('pos', pos);
+        });
+        $('#editTestDataLibModal #script').on("keyup", function (e) {
+            var pos = $(this).caret('pos');
+            Prism.highlightElement($("#editTestDataLibModal #script")[0]);
+            $(this).caret('pos', pos);
+        });
         //after everything. then shows the modal
         $('#editTestDataLibModal').modal('show');
 
@@ -1030,12 +1145,10 @@ function aoColumnsFuncTestDataLib(tableId) {
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "database")
         },
-        {
-            "sName": "tdl.Script",
-            "data": "script",
-            "sWidth": "150px",
-            "title": doc.getDocOnline("testdatalib", "script")
-        },
+        {"data": "script", "sName": "tdl.Script", "sWidth": "450px", "title": doc.getDocLabel("testdatalib", "script"),
+            "mRender": function (data, type, obj) {
+                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='scriptField' class='language-sql'></code>").text(obj['script']))).html();
+            }},
         {
             "sName": "tdl.DatabaseUrl",
             "data": "databaseUrl",
@@ -1055,10 +1168,10 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "method")
         },
         {
-            "sName": "tdl.envelope",
-            "data": "envelope",
-            "sWidth": "150px",
-            "title": doc.getDocOnline("testdatalib", "envelope")
+            "data": "envelope", "sName": "tdl.envelope", "title": doc.getDocLabel("testdatalib", "envelope"),"sWidth": "350px",
+            "mRender": function (data, type, obj) {
+                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['envelope']))).html();
+            }
         },
         {
             "sName": "tdl.DatabaseCsv",

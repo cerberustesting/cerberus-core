@@ -1328,7 +1328,7 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
      * Display individual search on each columns
      */
     displayColumnSearch(divId, ajaxSource, oSettings);
-    
+
     /**
      * Add tooltip on fields where data need to be wrapped.
      */
@@ -1347,15 +1347,38 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
  * @returns {undefined}
  */
 function showTitleWhenTextOverflow() {
-    $('td, th, pre').each(function () {
+    /**
+     * for TH and TD, append title into div
+     */
+    $('td, th').each(function () {
         var $ele = $(this);
-        if (this.offsetWidth < this.scrollWidth)
+        //Check if text to display is bigger than the width
+        if (this.offsetWidth < this.scrollWidth && $ele.get(0).innerText.trim().length > 0) {
             $ele.attr('title', '<div>' + $ele.text() + '</div>');
-        $ele.attr('data-html', true);
-        $ele.attr('data-toggle', 'tooltip');
+            $ele.attr('data-html', true);
+            $ele.attr('data-toggle', 'tooltip');
+        }
     });
+    /**
+     * for PRE, create PRE and CODE tag into tooltip
+     */
+    $('pre').each(function () {
+        var $ele = $(this);
+        if (this.offsetWidth < this.scrollWidth) {
+            $ele.attr('title', '<div><pre><code class="language-markup">' + $ele.html() + '</code></pre></div>');
+            $ele.attr('data-html', true);
+            $ele.attr('data-toggle', 'tooltip');
+        }
+    });
+
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
+    });
+
+    $('[data-toggle="tooltip"]').on('inserted.bs.tooltip', function () {
+        if ($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("code").get(0) !== undefined) {
+            Prism.highlightElement($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("code").get(0));
+        }
     });
 
 }

@@ -838,7 +838,7 @@ public class WebDriverService implements IWebDriverService {
             if (!StringUtil.isNull(identifier.getLocator())) {
                 if (withBase) {
                     host = StringUtil.cleanHostURL(host);
-                    url = host + url;
+                    url = host + identifier.getLocator();
                 } else {
                     url = StringUtil.cleanHostURL(identifier.getLocator());
                 }

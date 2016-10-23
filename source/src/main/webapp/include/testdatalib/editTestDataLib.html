@@ -48,13 +48,13 @@
                         </div>         
                         <div class="form-group col-xs-4">
                             <label name="lbl_environment"  for="environment">Environment</label>
-                                <select class="form-control" id="environment" name="environment">
-                                </select>  
+                            <select class="form-control" id="environment" name="environment">
+                            </select>  
                         </div> 
                         <div class="form-group col-xs-4">
                             <label name="lbl_country" for="country">Country</label>
-                                <select class="form-control"  id="country" name="country">
-                                </select>  
+                            <select class="form-control"  id="country" name="country">
+                            </select>  
                         </div>            
                     </div>    
                     <!-- tabs definition-->
@@ -89,10 +89,12 @@
                                                     <input id="method" name="method" class="form-control" maxlength="45"  />
                                                 </div>
                                             </div>    
-                                            <div class="row form-group col-xs-12">
-                                                <label name="lbl_envelope" for="envelope">Envelope</label>                    
-                                                <textarea id="envelope" name="envelope" 
-                                                          class="form-control"></textarea>     
+                                            <div class="col-xs-12">
+                                                <label name="lbl_envelope" for="envelope">Envelope</label> 
+                                                <div name="envelopeContainer" id="envelopeContainer"
+                                                     aria-describedby="basic-editon1">
+                                                    <pre><code id='envelope' name='envelope' contentEditable='true' class='language-markup'></code></pre>
+                                                </div>
                                             </div> 
                                         </div> 
                                     </div>
@@ -113,10 +115,11 @@
                                                 </select> 
                                             </div>    
                                             <div class="row">
-                                                <div class="form-group col-xs-12"> 
+                                                <div class="col-xs-12"> 
                                                     <label name="lbl_script" for="script">Script</label> 
-                                                    <textarea id="script" name="script" 
-                                                              class="form-control"></textarea>     
+                                                    <div name="scriptContainer" id="scriptContainer" aria-describedby="basic-editon1">
+                                                        <pre style="min-height:150px"><code id='script' name='script' contentEditable='true' class='language-sql'></code></pre>
+                                                    </div>  
                                                 </div>                       
                                             </div>
 
