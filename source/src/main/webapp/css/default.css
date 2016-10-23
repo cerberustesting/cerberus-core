@@ -616,5 +616,4 @@ img.selectedPicture{
 .tooltip-inner {
     max-width: 1000px;
     overflow-wrap: break-word; 
-    //white-space: nowrap;
 }
