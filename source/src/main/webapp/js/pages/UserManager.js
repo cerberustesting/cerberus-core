@@ -96,13 +96,13 @@ function editEntryClick(param) {
         formEdit.find("#groups").empty();
         formEdit.find("#team").empty();
 
-        displayInvariantList("systems","SYSTEM",false,undefined,undefined,false);
-        displayInvariantList("defaultSystem","SYSTEM",false,undefined,undefined,false);
-        displayInvariantList("team","TEAM",false,"","",false);
-        displayInvariantList("groups","USERGROUP",false,undefined,undefined,false);
+        displayInvariantList("systems", "SYSTEM", false, undefined, undefined, false);
+        displayInvariantList("defaultSystem", "SYSTEM", false, undefined, undefined, false);
+        displayInvariantList("team", "TEAM", false, "", "", false);
+        displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
 
         formEdit.find("#defaultSystem option[value='" + obj["defaultSystem"] + "']").attr('selected', true);
-        formEdit.find("#request option").attr('selected',false);
+        formEdit.find("#request option").attr('selected', false);
         formEdit.find("#request option[value='" + obj["request"] + "']").attr('selected', true);
         formEdit.find("#team option[value='" + obj["team"] + "']").attr('selected', true);
 
@@ -120,21 +120,43 @@ function editEntryClick(param) {
             $('#editUserButton').attr('hidden', 'hidden');
         }
 
-        formEdit.find("#systems option").each(function(i, e){
-            for(var i = 0; i < obj.systems.length; i++){
-                if(obj.systems[i].system == $(e).val()){
-                    $(e).attr('selected','selected');
+        // SYSTEMS
+        // Selecting the values from the current user loaded.
+        formEdit.find("#systems option").each(function (i, e) {
+            for (var i = 0; i < obj.systems.length; i++) {
+                if (obj.systems[i].system == $(e).val()) {
+                    $(e).attr('selected', 'selected');
                 }
             }
+        });
+        // Removing the need to press ctrl on modify a selection.
+        formEdit.find("#systems option").mousedown(function (e) {
+            e.preventDefault();
+            $(this).prop('selected', !$(this).prop('selected'));
+            return false;
         });
 
-        formEdit.find("#groups option").each(function(i, e){
-            for(var i = 0; i < obj.groups.length; i++){
-                if(obj.groups[i].groupName == $(e).val()){
-                    $(e).attr('selected','selected');
+        // GROUPS
+        // Selecting the values from the current user loaded.
+        formEdit.find("#groups option").each(function (i, e) {
+            for (var i = 0; i < obj.groups.length; i++) {
+                if (obj.groups[i].groupName == $(e).val()) {
+                    $(e).attr('selected', 'selected');
                 }
             }
         });
+        // Removing the need to press ctrl on modify a selection AND pre(un)select on some groups.
+        formEdit.find("#groups option").mousedown(function (e) {
+            e.preventDefault();
+            $(this).prop('selected', !$(this).prop('selected'));
+            clickGroup($(this).val(), $(this).prop('selected'), $("#editUserModal"));
+            return false;
+        });
+
+        formEdit.find("#groups option").click(function () {
+            clickGroup($(this).val(), $(this).prop('selected'), formEdit);
+        });
+
         formEdit.find("#defaultSystem").select2();
         formEdit.find("#team").select2({
             allowClear: true,
@@ -148,6 +170,90 @@ function editEntryClick(param) {
     formEdit.modal('show');
 }
 
+function clickGroup(groupClicked, selected, formEdit) {
+    console.debug("clickGroup : " + selected);
+    if (selected) {
+        switch (groupClicked) {
+            case "TestRO":
+                break;
+            case "Test":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if ("TestRO" === $(e).val()) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+            case "TestAdmin":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("TestRO" === $(e).val()) || ("Test" === $(e).val())) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+            case "IntegratorRO":
+                break;
+            case "Integrator":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if ("IntegratorRO" === $(e).val()) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+            case "IntegratorNewChain":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("IntegratorRO" === $(e).val()) || ("Integrator" === $(e).val())) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+            case "IntegratorDeploy":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("IntegratorRO" === $(e).val()) || ("Integrator" === $(e).val())) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+        }
+    } else {
+        switch (groupClicked) {
+            case "TestRO":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("Test" === $(e).val()) || ("TestAdmin" === $(e).val())) {
+                        $(e).prop('selected', '');
+                    }
+                });
+                break;
+            case "Test":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if ("TestAdmin" === $(e).val()) {
+                        $(e).prop('selected', '');
+                    }
+                });
+                break;
+            case "TestAdmin":
+                break;
+            case "IntegratorRO":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("Integrator" === $(e).val()) || ("IntegratorNewChain" === $(e).val()) || ("IntegratorDeploy" === $(e).val())) {
+                        $(e).prop('selected', '');
+                    }
+                });
+                break;
+            case "Integrator":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("IntegratorNewChain" === $(e).val()) || ("IntegratorDeploy" === $(e).val())) {
+                        $(e).prop('selected', '');
+                    }
+                });
+                break;
+            case "IntegratorNewChain":
+                break;
+            case "IntegratorDeploy":
+                break;
+        }
+    }
+}
+
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editUserModal'));
     var formEdit = $('#editUserModal #editUserModalForm');
@@ -159,14 +265,14 @@ function editEntryModalSaveHandler() {
     }
 
     var systems = [];
-    $('#editUserModal #systems :selected').each(function(i, selected){
+    $('#editUserModal #systems :selected').each(function (i, selected) {
         systems[i] = $(selected).val();
     });
 
     data["systems"] = JSON.stringify(systems);
 
     var groups = [];
-    $('#editUserModal #groups :selected').each(function(i, selected){
+    $('#editUserModal #groups :selected').each(function (i, selected) {
         groups[i] = $(selected).val();
     });
 
@@ -214,10 +320,23 @@ function addEntryClick() {
     $("#addUserModal").find("#defaultSystem").empty();
     $("#addUserModal").find("#team").empty();
 
-    displayInvariantList("systems","SYSTEM",false,undefined,undefined,false);
-    displayInvariantList("defaultSystem","SYSTEM",false,undefined,undefined,false);
-    displayInvariantList("groups","USERGROUP",false,undefined,undefined,false);
-    displayInvariantList("team","TEAM",false,"","",false);
+    displayInvariantList("systems", "SYSTEM", false, undefined, undefined, false);
+    displayInvariantList("defaultSystem", "SYSTEM", false, undefined, undefined, false);
+    displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
+    displayInvariantList("team", "TEAM", false, "", "", false);
+
+    $("#addUserModal").find('#systems option').mousedown(function (e) {
+        e.preventDefault();
+        $(this).prop('selected', !$(this).prop('selected'));
+        return false;
+    });
+    
+    $("#addUserModal").find('#groups option').mousedown(function (e) {
+        e.preventDefault();
+        $(this).prop('selected', !$(this).prop('selected'));
+        clickGroup($(this).val(), $(this).prop('selected'), $("#addUserModal"));
+        return false;
+    });
 
     $("#addUserModal").find("#defaultSystem").select2();
     $("#addUserModal").find("#team").select2({
@@ -242,14 +361,14 @@ function addEntryModalSaveHandler() {
     }
 
     var systems = [];
-    $('#addUserModal #systems :selected').each(function(i, selected){
+    $('#addUserModal #systems :selected').each(function (i, selected) {
         systems[i] = $(selected).val();
     });
 
     data["systems"] = JSON.stringify(systems);
 
     var groups = [];
-    $('#addUserModal #groups :selected').each(function(i, selected){
+    $('#addUserModal #groups :selected').each(function (i, selected) {
         groups[i] = $(selected).val();
     });
 
@@ -342,8 +461,8 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "groups_col"),
             "mRender": function (data, type, obj) {
                 var systems = "";
-                for(var i = 0; i< obj["groups"].length; i++){
-                    if(i>0){
+                for (var i = 0; i < obj["groups"].length; i++) {
+                    if (i > 0) {
                         systems += ", ";
                     }
                     systems += obj["groups"][i].groupName;
@@ -360,8 +479,8 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("page_user", "systems_col"),
             "mRender": function (data, type, obj) {
                 var systems = "";
-                for(var i = 0; i< obj["systems"].length; i++){
-                    if(i>0){
+                for (var i = 0; i < obj["systems"].length; i++) {
+                    if (i > 0) {
                         systems += ", ";
                     }
                     systems += obj["systems"][i].system;
