@@ -118,8 +118,10 @@ To apply this runtime configuration to Cerberus instance, then:
 4. Set to the `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures/` value (note the important trailing `/`)
 5. Save changes
 3. Search the `cerberus_picture_url` parameter
-4. Set to the Cerberus base URL value (`<docker_host>:18080/Cerberus/` by default, note the important trailing `/`)
+4. Set to the Cerberus base URL value (`<docker_host>:18080/CerberusPictures/` by default, note the important trailing `/`)
 5. Save changes
+
+From the [1.1.6](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.6/Dockerfile) version, `cerberus_picture_path` and `cerberus_picture_url` parameters have been respectively renamed `cerberus_mediastorage_path` and `cerberus_mediastorage_path`.
 
 ## License
 
