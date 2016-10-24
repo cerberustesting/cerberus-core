@@ -890,6 +890,7 @@ Step.prototype.getJsonData = function () {
 };
 
 function Action(json, parentStep) {
+    console.log(json);
     this.html = $("<div></div>").addClass("action-group");
     this.parentStep = parentStep;
 
@@ -904,7 +905,11 @@ function Action(json, parentStep) {
         this.object = json.object;
         this.property = json.property;
         this.forceExeStatus = json.forceExeStatus;
+        this.conditionOper = json.conditionOper;
+        this.conditionVal = json.conditionVal1;
         this.screenshotFileName = json.screenshotFileName;
+        this.value1 = json.value1;
+        this.value2 = json.value2;
         this.controlList = [];
         this.setControlList(json.controlList);
     } else {
@@ -916,7 +921,11 @@ function Action(json, parentStep) {
         this.object = "";
         this.property = "";
         this.forceExeStatus = "";
+        this.conditionOper = "";
+        this.conditionVal = "";
         this.screenshotFileName = "";
+        this.value1 = "";
+        this.value2 = "";
         this.controlList = [];
     }
 
@@ -1012,26 +1021,48 @@ Action.prototype.generateContent = function () {
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
     var objectField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
     var propertyField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
+    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
+
+    var actionconditiononper = $("<select></select>").addClass("form-control input-sm no-border");
     var forceExeStatusList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
+    descField.css("width","100%");
     descField.on("change", function () {
         obj.description = descField.val();
     });
 
-    actionList = getSelectInvariant("ACTION", false);
+    actionconditionparam.css("width","100%");
+    actionconditionparam.on("change", function () {
+        obj.conditionVal = actionconditionparam.val();
+    });
+    actionconditionparam.val(this.conditionVal);
+
+    actionList = getSelectInvariant("ACTION", false).css("width","100%");
     actionList.val(this.action);
     actionList.on("change", function () {
         obj.action = actionList.val();
         setPlaceholderAction();
     });
 
-    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false);
+    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false).css("width","100%");
     forceExeStatusList.val(this.forceExeStatus);
     forceExeStatusList.on("change", function () {
         obj.forceExeStatus = forceExeStatusList.val();
 //        setPlaceholderAction();
     });
+
+    actionconditiononper = getSelectInvariant("ACTIONCONDITIONOPER", false).css("width","100%");
+    actionconditiononper.on("change", function () {
+        obj.conditionOper = actionconditiononper.val();
+        if(obj.conditionOper != "ifPropertyExist"){
+            actionconditionparam.parent().hide();
+        }else{
+            actionconditionparam.parent().show();
+        }
+//        setPlaceholderAction();
+    });
+    actionconditiononper.val(this.conditionOper).trigger("change");
 
     function displayApplicationObject(){
         if ($(this).val().startsWith("object=") || $(this).val().startsWith("picture=")) {
@@ -1041,21 +1072,27 @@ Action.prototype.generateContent = function () {
         }
     }
 
-    objectField.val(this.object);
+    objectField.val(this.value1);
+    objectField.css("width","100%");
     objectField.on("change", function () {
-        obj.object = objectField.val();
+        obj.value1 = objectField.val();
     }).bind('input', displayApplicationObject);
 
-    propertyField.val(this.property);
+    propertyField.val(this.value2);
+    propertyField.css("width","100%");
     propertyField.on("change", function () {
-        obj.property = propertyField.val();
+        obj.value2 = propertyField.val();
     }).bind('input', displayApplicationObject);
 
     firstRow.append(descField);
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditiononper));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditionparam));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionList));
+    secondRow.append($("<span></span>").addClass("col-lg-2").append(objectField));
     secondRow.append($("<span></span>").addClass("col-lg-2").append(propertyField));
     secondRow.append($("<span></span>").addClass("col-lg-2").append(forceExeStatusList));
+
+    actionconditiononper.trigger("change");
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1082,9 +1119,11 @@ Action.prototype.getJsonData = function () {
     json.sort = this.sort;
     json.description = this.description;
     json.action = this.action;
-    json.object = this.object;
-    json.property = this.property;
+    json.object = this.value1;
+    json.property = this.value2;
     json.forceExeStatus = this.forceExeStatus;
+    json.conditionOper = this.conditionOper;
+    json.conditionVal= this.conditionVal;
     json.screenshotFileName = "";
 
     return json;
