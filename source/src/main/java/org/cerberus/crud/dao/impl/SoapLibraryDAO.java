@@ -644,6 +644,16 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
             LOG.error("Unable to execute query : " + e.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
             msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
+        } finally {
+            try {
+                if (!this.databaseSpring.isOnTransaction()) {
+                    if (connection != null) {
+                        connection.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
         }
         a.setResultMessage(msg);
         a.setItem(p);
