@@ -105,7 +105,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Checking if environment is active");
         }
-        if (cep.isActive()) {
+        if (cep != null && cep.isActive()) {
             return true;
         }
         message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_NOTACTIVE);
