@@ -7322,6 +7322,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
         SQLInstruction.add(SQLS.toString());
 
+        // Create Table Application Object
+        //-- ------------------------ 960
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `applicationobject` (" +
+                "  `ID` int(11) NOT NULL AUTO_INCREMENT," +
+                "  `Application` varchar(200) NOT NULL," +
+                "  `Object` varchar(150) NOT NULL," +
+                "  `Value` text," +
+                "  `ScreenshotFileName` varchar(250) DEFAULT NULL," +
+                "  `UsrCreated` varchar(45) DEFAULT NULL," +
+                "  `DateCreated` timestamp NULL DEFAULT NULL," +
+                "  `UsrModif` varchar(45) DEFAULT NULL," +
+                "  `DateModif` timestamp NULL DEFAULT NULL," +
+                "  PRIMARY KEY (`Application`,`Object`)," +
+                "  UNIQUE KEY `ID_UNIQUE` (`ID`)," +
+                "  CONSTRAINT `fk_applicationobject_1` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ") ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;");
+
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
