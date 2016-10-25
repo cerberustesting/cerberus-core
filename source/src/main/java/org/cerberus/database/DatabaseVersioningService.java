@@ -7269,7 +7269,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //-- ------------------------ 958
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_applicationObject','title','','en','Application Object','')");
+        SQLS.append("('page_header','menuApplicationObjects','','en','Application Object','')");
+        SQLS.append(",('page_header','menuApplicationObjects','','fr','Objet d application','')");
+        SQLS.append(",('page_applicationObject','title','','en','Application Object','')");
         SQLS.append(",('page_applicationObject','title','','fr','Objet d application','')");
         SQLS.append(",('page_applicationObject','button_create','','en','Create an Application Object','')");
         SQLS.append(",('page_applicationObject','button_create','','fr','Créer un objet d application','')");

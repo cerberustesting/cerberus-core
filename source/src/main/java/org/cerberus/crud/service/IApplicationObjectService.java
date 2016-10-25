@@ -61,12 +61,11 @@ public interface IApplicationObjectService {
 
     /**
      *
-     * @param application
-     * @param object
+     * @param id
      * @param file
      * @return
      */
-    Answer uploadFile(String application, String object, FileItem file);
+    Answer uploadFile(int id, FileItem file);
 
     /**
      *

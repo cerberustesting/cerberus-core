@@ -2359,10 +2359,13 @@
                         for(var i = 0; i<data.contentTable.length; i++){
                             availableObjects.push(data.contentTable[i].object);
                         }
+                        var availableObjectProperties = [
+                            "value",
+                            "picture"
+                        ]
                         var availableTags = [
                             "property",
-                            "object",
-                            "picture"
+                            "object"
                         ];
                         var availableProperties = [
                             <%
@@ -2386,36 +2389,28 @@
                          */
                         var Tags = [
                             {
-                                array : availableObjects,
-                                separator : "%object.",
-                                regex : "%object\.",
-                                addBefore : "object.",
-                                addAfter : "",
-                                endOfVariable : true
+                                array : availableObjectProperties,
+                                regex : "%object\.[^\.]*\.",
+                                addBefore : "",
+                                addAfter : "%",
                             },
                             {
                                 array : availableObjects,
-                                separator : "%picture.",
-                                regex : "%picture\.",
-                                addBefore : "picture.",
-                                addAfter : "",
-                                endOfVariable : true
+                                regex : "%object\.",
+                                addBefore : "",
+                                addAfter : ".",
                             },
                             {
                                 array : availableProperties,
-                                separator : "%property.",
                                 regex : "%property\.",
-                                addBefore : "property.",
-                                addAfter : "",
-                                endOfVariable : true
+                                addBefore : "",
+                                addAfter : "%"
                             },
                             {
                                 array : availableTags,
-                                separator : "%",
                                 regex : "%",
                                 addBefore : "",
-                                addAfter : ".",
-                                endOfVariable : false
+                                addAfter : "."
                             }
                         ];
                         function split( val, separator) {
@@ -2423,6 +2418,11 @@
                         }
                         function extractLast( term, separator ) {
                             return split( term, separator ).pop();
+                        }
+                        function extractAllButLast( term, separator ) {
+                            var last = split( term, separator ).pop();
+                            var index = term.lastIndexOf(last);
+                            return term.substring(0, index);
                         }
 
                         $( "input[id^='action_property'],input[id^='action_object'],input[id^='control_value'],input[id^='val'],input[name^='control_value']" )
@@ -2451,7 +2451,7 @@
                                             var found = false;
                                             while(tag < Tags.length && !found){
                                                 //If We find the separator, then we filter with the already written part
-                                                if(identifier.indexOf(Tags[tag].separator) != -1){
+                                                if((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0){
                                                     response($.ui.autocomplete.filter(
                                                             Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
                                                     found = true;
@@ -2473,18 +2473,16 @@
                                         var tag = 0;
                                         while(tag < Tags.length && !found){
                                             //If we find our separator, we compute the output
-                                            if(identifier.indexOf(Tags[tag].separator) != -1){
-                                                var terms = split( this.value.substring(0, this.selectionStart), Tags[tag].regex );
+                                            if((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0){
                                                 // remove the current input
-                                                terms.pop();
+                                                var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
+                                                var afterCursor = this.value.substring(this.selectionStart, this.value.length);
                                                 // add the selected item and eventually the content to add
-                                                terms.push( Tags[tag].addBefore + ui.item.value + Tags[tag].addAfter );
+                                                var value = Tags[tag].addBefore + ui.item.value+ Tags[tag].addAfter;
                                                 //If it is the end of the variable, we automaticly add a % at the end of the line
-                                                if(Tags[tag].endOfVariable) {
-                                                    terms.push("");
-                                                }
-                                                this.value = $.trim(terms.join("%") + this.value.substring(this.selectionStart));
-                                                this.setSelectionRange(terms.join("%").length,terms.join("%").length);
+
+                                                this.value = beforeRegex + value + afterCursor;
+                                                this.setSelectionRange((beforeRegex + value).length,(beforeRegex + value).length);
 
                                                 found = true;
                                             }
@@ -2589,22 +2587,34 @@
                     if(picture.length>2) {
                         picture.pop();
                         str = picture.pop();
-                        while (str != undefined && picture.length > 1 && str.indexOf("picture.") == -1) {
+                        while (str != undefined && picture.length > 1 && str.indexOf("object.") != 0 && (str.indexOf(".picture") != str.length - 8 || str.indexOf(".value") != str.length - 6)) {
                             //look for picture
                             str = picture.pop();
                         }
                     }
-                    if (str != undefined && str.indexOf("picture.") != -1) {
-                        var pic = str.split("picture.");
-                        var idPic = pic.pop();
-                        console.log($("img[id=" + $(this).attr("id") + "]"));
-                        $("img#" + $(this).attr("id")).show();
-                        $("img#" + $(this).attr("id")).attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
-                        $("img#" + $(this).attr("id")).click(function(){showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)});
-                        console.log($("img[name=" + $(this).attr("name") + "]"));
-                        $("img[name=" + $(this).attr("name") + "]").show();
-                        $("img[name=" + $(this).attr("name") + "]").attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
-                        $("img[name=" + $(this).attr("name") + "]").click(function(){showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)});
+                    if (str != undefined && str.indexOf("object.") == 0 && (str.indexOf(".picture") == str.length - 8 || str.indexOf(".value") == str.length - 6)) {
+                        var pic = str.split(".");
+                        if(pic.length >= 3) {
+                            pic.pop();
+                            var idPic = pic.pop();
+
+                            $("img#" + $(this).attr("id")).show();
+                            $("img#" + $(this).attr("id")).attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
+                            $("img#" + $(this).attr("id")).click(function () {
+                                showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)
+                            });
+
+                            $("img[name=" + $(this).attr("name") + "]").show();
+                            $("img[name=" + $(this).attr("name") + "]").attr("src", "ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic);
+                            $("img[name=" + $(this).attr("name") + "]").click(function () {
+                                showPicture("ReadApplicationObjectImage?application=<%=tcaseapplication%>&object=" + idPic + "&h=400&w=600", $(this).attr("data-incrementStep"), $(this).attr("data-incrementAction"), null)
+                            });
+                        }else{
+                            $("img#" + $(this).attr("id")).hide();
+                            $("img#" + $(this).attr("id")).removeAttr("src");
+                            $("img[data-id=" + $(this).attr("data-id") + "]").hide();
+                            $("img[data-id=" + $(this).attr("data-id") + "]").removeAttr("src");
+                        }
                     } else {
                         $("img#" + $(this).attr("id")).hide();
                         $("img#" + $(this).attr("id")).removeAttr("src");

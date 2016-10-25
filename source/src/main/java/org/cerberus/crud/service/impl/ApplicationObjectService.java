@@ -70,8 +70,8 @@ public class ApplicationObjectService implements IApplicationObjectService {
     }
 
     @Override
-    public Answer uploadFile(String application, String object, FileItem file) {
-        return ApplicationObjectDAO.uploadFile(application, object, file);
+    public Answer uploadFile(int id, FileItem file) {
+        return ApplicationObjectDAO.uploadFile(id, file);
     }
 
     @Override

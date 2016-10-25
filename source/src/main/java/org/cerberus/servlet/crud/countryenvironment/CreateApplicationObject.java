@@ -36,6 +36,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,13 +154,9 @@ public class CreateApplicationObject extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IApplicationObjectService applicationobjectService = appContext.getBean(IApplicationObjectService.class);
             IFactoryApplicationObject factoryApplicationobject = appContext.getBean(IFactoryApplicationObject.class);
-
             String fileName = "";
-            if(file != null){
-                ans = applicationobjectService.uploadFile(application, object, file);
-                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                    fileName = file.getName();
-                }
+            if(file != null) {
+                fileName = file.getName();
             }
 
             ApplicationObject applicationData = factoryApplicationobject.create(-1,application,object,value,fileName,usrcreated,datecreated,usrmodif,datemodif);
@@ -171,6 +168,16 @@ public class CreateApplicationObject extends HttpServlet {
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
+
+                if (file != null) {
+                    AnswerItem an = applicationobjectService.readByKey(application,object);
+                    if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
+                        applicationData = (ApplicationObject) an.getItem();
+                        ans = applicationobjectService.uploadFile(applicationData.getID(), file);
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        }
+                    }
+                }
             }
         }
 

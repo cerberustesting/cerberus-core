@@ -171,7 +171,7 @@ public class UpdateApplicationObject extends HttpServlet {
 
                 String fileName = applicationData.getScreenShotFileName();
                 if(file != null){
-                    ans = applicationObjectService.uploadFile(application, object, file);
+                    ans = applicationObjectService.uploadFile(applicationData.getID(), file);
                     if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                         fileName = file.getName();
                     }

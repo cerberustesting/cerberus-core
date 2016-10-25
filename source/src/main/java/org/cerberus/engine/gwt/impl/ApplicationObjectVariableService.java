@@ -75,14 +75,13 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
     /**
      * The property variable {@link Pattern}
      */
-    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%(object|picture)\\.[^%]+%");
+    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%object\\.[^%]+%");
 
     @Override
     public String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         String application = tCExecution.getApplicationObj().getApplication();
 
-        long now = new Date().getTime();
         String stringToDecodeInit = stringToDecode;
 
         if (LOG.isDebugEnabled()) {
@@ -109,25 +108,27 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         while(i.hasNext()){
             String value = (String)i.next();
             String[] valueA = value.split("\\.");
-            AnswerItem ans = applicationObjectService.readByKey(application,valueA[1]);
-            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null){
-                ApplicationObject ao = (ApplicationObject)ans.getItem();
-                String val = null;
-                if("picture".equals(valueA[0])){
-                    AnswerItem an = parameterService.readByKey("","cerberus_applicationobject_path");
-                    if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
-                        Parameter url = (Parameter) an.getItem();
-                        val = url.getValue() + "/" + ao.getScreenShotFileName();
-                    }else{
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Cannot find the parameter that point the Application Object image folder");
+            if(valueA.length >= 3) {
+                AnswerItem ans = applicationObjectService.readByKey(application, valueA[1]);
+                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null) {
+                    ApplicationObject ao = (ApplicationObject) ans.getItem();
+                    String val = null;
+                    if ("picture".equals(valueA[2])) {
+                        AnswerItem an = parameterService.readByKey("", "cerberus_applicationobject_path");
+                        if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
+                            Parameter url = (Parameter) an.getItem();
+                            val = url.getValue() + "/" + ao.getID() + "/" + ao.getScreenShotFileName();
+                        } else {
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Cannot find the parameter that point the Application Object image folder");
+                            }
                         }
+                    } else if ("value".equals(valueA[2])) {
+                        val = ao.getValue();
                     }
-                }else if("object".equals(valueA[0])){
-                    val = ao.getValue();
-                }
-                if(val != null){
-                    stringToDecode = stringToDecode.replace("%" + value + "%", val);
+                    if (val != null) {
+                        stringToDecode = stringToDecode.replace("%" + value + "%", val);
+                    }
                 }
             }
         }
@@ -160,9 +161,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
             String rawProperty = propertyMatcher.group();
             // Removes the first and last '%' character to only get the property name
             rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
-            // Removes the variable part of the property eg : (subdata)
-            String[] ramProp1 = rawProperty.split("\\(");
-            properties.add(ramProp1[0]);
+            properties.add(rawProperty);
         }
         return properties;
     }

@@ -217,7 +217,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             a = readByKey(application,object);
             if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject)a.getItem();
-                File picture = new File(uploadPath + "/" + application + "/" + object + "/" + ao.getScreenShotFileName());
+                File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
                 try {
                     image = ImageIO.read(picture);
                 } catch (IOException e) {
@@ -250,14 +250,14 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
     }
 
     @Override
-    public Answer uploadFile(String application, String object, FileItem file) {
+    public Answer uploadFile(int id, FileItem file) {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
                 "cerberus_applicationobject_path Parameter not found");
         AnswerItem a = parameterService.readByKey("","cerberus_applicationobject_path");
         if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
             Parameter p = (Parameter)a.getItem();
             String uploadPath = p.getValue();
-            File appDir = new File(uploadPath + "/" + application);
+            File appDir = new File(uploadPath + "/" + id);
             if(!appDir.exists()){
                 try{
                     appDir.mkdir();
@@ -270,29 +270,16 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                 }
             }
             if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                File objectDir = new File(uploadPath + "/" + application + "/" + object);
-                if (!objectDir.exists()) {
-                    try {
-                        objectDir.mkdir();
-                    } catch (SecurityException se) {
-                        LOG.warn("Unable to create object dir: " + se.getMessage());
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                se.toString());
-                        a.setResultMessage(msg);
-                    }
-                }
-                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    deleteFolder(objectDir, false);
-                    File picture = new File(uploadPath + "/" + application + "/" + object + "/" + file.getName());
-                    try {
-                        file.write(picture);
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
-                                "Application Object file uploaded");
-                    } catch (Exception e) {
-                        LOG.warn("Unable to upload application object file: " + e.getMessage());
-                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                                e.toString());
-                    }
+                deleteFolder(appDir, false);
+                File picture = new File(uploadPath + "/" + id + "/" + file.getName());
+                try {
+                    file.write(picture);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
+                            "Application Object file uploaded");
+                } catch (Exception e) {
+                    LOG.warn("Unable to upload application object file: " + e.getMessage());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                            e.toString());
                 }
             }
         }else{
