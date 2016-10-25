@@ -259,7 +259,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
     /**
      * Get the highest action sequence from the given actions
      *
-     * @param steps a collection of actions from which get the highest action
+     * @param actions a collection of actions from which get the highest action
      * sequence
      * @return the highest action sequence from the given actions
      */
@@ -487,16 +487,17 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             boolean delete = controlJson.getBoolean("toDelete");
             int step = controlJson.isNull("step") ? -1 : controlJson.getInt("step");
             int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
-            int control = controlJson.isNull("control") ? -1 : controlJson.getInt("control");
+            int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
-            String type = controlJson.getString("type");
-            String controlValue = controlJson.getString("controlValue");
-            String controlProperty = controlJson.getString("controlProperty");
+            String type = controlJson.getString("objType");
+            String controlValue = controlJson.getString("control");
+            String value1 = controlJson.getString("value1");
+            String value2 = controlJson.getString("value2");
             String fatal = controlJson.getString("fatal");
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, type, controlValue, controlProperty, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, controlValue, value1, value2 , fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;
@@ -541,7 +542,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         } catch (JSONException ex) {
             Logger.getLogger(UpdateTestCaseWithDependencies1.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+        }
 
     /**
      * Returns a short description of the servlet.
