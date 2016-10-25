@@ -2392,13 +2392,13 @@
                                 array : availableObjectProperties,
                                 regex : "%object\.[^\.]*\.",
                                 addBefore : "",
-                                addAfter : "%",
+                                addAfter : "%"
                             },
                             {
                                 array : availableObjects,
                                 regex : "%object\.",
                                 addBefore : "",
-                                addAfter : ".",
+                                addAfter : "."
                             },
                             {
                                 array : availableProperties,
@@ -2427,81 +2427,94 @@
 
                         $( "input[id^='action_property'],input[id^='action_object'],input[id^='control_value'],input[id^='val'],input[name^='control_value']" )
                         // don't navigate away from the field on tab when selecting an item
-                                .on( "keydown", function( event ) {
-                                    if ( event.keyCode === $.ui.keyCode.TAB &&
-                                            $( this ).autocomplete( "instance" ).menu.active ) {
-                                        event.preventDefault();
-                                    }
-                                })
-                                .autocomplete({
-                                    minLength: 1,
-                                    messages: {
-                                        noResults: '',
-                                        results: function() {}
-                                    },
-                                    source: function( request, response ) {
-                                        //Get the part of the string we want (between the last % before our cursor and the cursor)
-                                        var selectionStart = this.element[0].selectionStart;
-                                        var stringToAnalyse = this.term.substring(0, selectionStart);
-                                        var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                                        //If there is a pair number of % it means there is no open variable that needs to be autocompleted
-                                        if ((this.term.match(/%/g) || []).length % 2 > 0){
-                                            //Start Iterating on Tags
-                                            var tag = 0;
-                                            var found = false;
-                                            while(tag < Tags.length && !found){
-                                                //If We find the separator, then we filter with the already written part
-                                                if((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0){
-                                                    response($.ui.autocomplete.filter(
-                                                            Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
-                                                    found = true;
-                                                }
-                                                tag++;
-                                            }
+                            .on( "keydown", function( event ) {
+                                if ( event.keyCode === $.ui.keyCode.TAB &&
+                                        $( this ).autocomplete( "instance" ).menu.active ) {
+                                    event.preventDefault();
+                                }
+                            })
+                            .autocomplete({
+                                minLength: 1,
+                                messages: {
+                                    noResults: '',
+                                    results: function() {}
+                                },
+                                create: function(){
+                                    $(this).data('ui-autocomplete')._renderItem = function( ul, item )
+                                    {
+                                        var icon = "";
+                                        if(Tags[this.currentIndexTag].addAfter != "%"){
+                                            icon = "<span class='glyphicon glyphicon-chevron-right' style='margin-top:3px; float:right'></span>";
                                         }
-                                    },
-                                    focus: function() {
-                                        // prevent value inserted on focus
-                                        return false;
-                                    },
-                                    select: function( event, ui ) {
-                                        //Get the part of the string we want (between the last % before our cursor and the cursor)
-                                        var stringToAnalyse = this.value.substring(0,this.selectionStart);
-                                        var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-                                        //Start iterating on Tags
-                                        var found = false;
+                                        return $( "<li class='ui-menu-item'>" )
+                                                .append( "<a class='ui-corner-all' tabindex='-1'>" + item.label + icon + "</a>" )
+                                                .appendTo( ul );
+                                    };
+                                },
+                                source: function( request, response ) {
+                                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+                                    var selectionStart = this.element[0].selectionStart;
+                                    var stringToAnalyse = this.term.substring(0, selectionStart);
+                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                    //If there is a pair number of % it means there is no open variable that needs to be autocompleted
+                                    if ((this.term.match(/%/g) || []).length % 2 > 0){
+                                        //Start Iterating on Tags
                                         var tag = 0;
+                                        var found = false;
                                         while(tag < Tags.length && !found){
-                                            //If we find our separator, we compute the output
+                                            //If We find the separator, then we filter with the already written part
                                             if((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0){
-                                                // remove the current input
-                                                var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
-                                                var afterCursor = this.value.substring(this.selectionStart, this.value.length);
-                                                // add the selected item and eventually the content to add
-                                                var value = Tags[tag].addBefore + ui.item.value+ Tags[tag].addAfter;
-                                                //If it is the end of the variable, we automaticly add a % at the end of the line
-
-                                                this.value = beforeRegex + value + afterCursor;
-                                                this.setSelectionRange((beforeRegex + value).length,(beforeRegex + value).length);
-
+                                                this.currentIndexTag = tag;
+                                                response($.ui.autocomplete.filter(
+                                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
                                                 found = true;
                                             }
                                             tag++;
                                         }
-                                        // We trigger input to potentially display an image if there is one
-                                        $(this).trigger("input");
-                                        // We hide the message generated by autocomplete because we don't want it
-                                        $("span[role='status']").hide();
-                                        return false;
-                                    },
-                                    close : function (event, ui) {
-                                        val = $(this).val();
-                                        $(this).autocomplete( "search", val ); //keep autocomplete open by
-                                        //searching the same input again
-                                        $(this).focus();
-                                        return false;
                                     }
-                                });
+                                },
+                                focus: function() {
+                                    // prevent value inserted on focus
+                                    return false;
+                                },
+                                select: function( event, ui ) {
+                                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+                                    var stringToAnalyse = this.value.substring(0,this.selectionStart);
+                                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+                                    //Start iterating on Tags
+                                    var found = false;
+                                    var tag = 0;
+                                    while(tag < Tags.length && !found){
+                                        //If we find our separator, we compute the output
+                                        if((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0){
+                                            // remove the current input
+                                            var beforeRegex = extractAllButLast(this.value.substring(0, this.selectionStart), Tags[tag].regex);
+                                            var afterCursor = this.value.substring(this.selectionStart, this.value.length);
+                                            // add the selected item and eventually the content to add
+                                            var value = Tags[tag].addBefore + ui.item.value+ Tags[tag].addAfter;
+                                            //If it is the end of the variable, we automaticly add a % at the end of the line
+
+                                            this.value = beforeRegex + value + afterCursor;
+                                            this.setSelectionRange((beforeRegex + value).length,(beforeRegex + value).length);
+
+                                            found = true;
+                                        }
+                                        tag++;
+                                    }
+                                    // We trigger input to potentially display an image if there is one
+                                    $(this).trigger("input");
+                                    // We hide the message generated by autocomplete because we don't want it
+                                    $("span[role='status']").hide();
+                                    return false;
+                                },
+                                close : function (event, ui) {
+                                    val = $(this).val();
+                                    $(this).autocomplete( "search", val ); //keep autocomplete open by
+                                    //searching the same input again
+                                    $(this).focus();
+                                    return false;
+                                }
+                            });
                     }
                 });
             }
