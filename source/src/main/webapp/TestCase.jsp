@@ -2382,11 +2382,9 @@
                          * Tags :
                          * Each object represent a category of object to show in the autocomplete
                          * @param array : List of data to display in autocomplete
-                         * @param separator : the string that will trigger the autocomplete
                          * @param regex : regex to find that string (add \ to all special char for regex)
                          * @param addBefore : string to add between the % and the selected value
                          * @param addAfter : string to add after the selected value
-                         * @param endOfVariable : if true, when select we add % at the end so it close the variable
                          */
                         var Tags = [
                             {

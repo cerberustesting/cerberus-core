@@ -436,7 +436,19 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
 
 function loadTestCaseInfo(info) {
     $(".testTestCase #test").text(info.test);
-    $(".testTestCase #testCase").text(info.testCase);
+    $.ajax({
+        url: "ReadTestCase?system=" + getUser().defaultSystem + "&test=" + info.test,
+        async: true,
+        success: function (data) {
+            for(var i = 0; i<data.contentTable.length; i++){
+                $(".testTestCase #testCase").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+            }
+            $(".testTestCase #testCase option[value='" + info.testCase + "']").prop('selected', true);
+            $(".testTestCase #testCase").bind("change",function(event){
+                window.location.href = "./TestCaseScript.jsp?test=" + info.test + "&testcase=" + $(this).val();
+            })
+        }
+    });
     $(".testTestCase #description").text(info.shortDescription);
 }
 
@@ -1138,9 +1150,10 @@ function Control(json, parentAction) {
         this.control = json.control;
         this.sort = json.sort;
         this.description = json.description;
-        this.type = json.type;
-        this.controlValue = json.controlValue;
-        this.controlProperty = json.controlProperty;
+        this.objType = json.objType;
+        this.controlSequence = json.controlSequence;
+        this.value1 = json.value1;
+        this.value2 = json.value2;
         this.fatal = json.fatal;
         this.screenshotFileName = "";
     } else {
@@ -1149,9 +1162,9 @@ function Control(json, parentAction) {
         this.step = parentAction.step;
         this.sequence = parentAction.sequence;
         this.description = "";
-        this.type = "Unknown";
-        this.controlValue = "";
-        this.controlProperty = "";
+        this.objType = "Unknown";
+        this.value1 = "";
+        this.value2 = "";
         this.fatal = "Y";
         this.screenshotFileName = "";
     }
@@ -1239,20 +1252,20 @@ Control.prototype.generateContent = function () {
     });
 
     controlList = getSelectInvariant("CONTROL", false);
-    controlList.val(this.type);
+    controlList.val(this.control);
     controlList.on("change", function () {
-        obj.type = controlList.val();
+        obj.control = controlList.val();
         setPlaceholderControl();
     });
 
-    controlValueField.val(this.controlValue);
+    controlValueField.val(this.value1);
     controlValueField.on("change", function () {
-        obj.controlValue = controlValueField.val();
+        obj.value1 = controlValueField.val();
     });
 
-    controlPropertyField.val(this.controlProperty);
+    controlPropertyField.val(this.value2);
     controlPropertyField.on("change", function () {
-        obj.controlProperty = controlPropertyField.val();
+        obj.value2 = controlPropertyField.val();
     });
 
     fatalList = getSelectInvariant("CTRLFATAL", false);
@@ -1292,9 +1305,10 @@ Control.prototype.getJsonData = function () {
     json.control = this.control;
     json.sort = this.sort;
     json.description = this.description;
-    json.type = this.type;
-    json.controlValue = this.controlValue;
-    json.controlProperty = this.controlProperty;
+    json.objType = this.objType;
+    json.controlSequence = this.controlSequence;
+    json.value1 = this.value1;
+    json.value2 = this.value2;
     json.fatal = this.fatal;
     json.screenshotFileName = this.screenshotFileName;
 
