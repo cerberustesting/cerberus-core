@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.sikuli.impl;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +34,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -50,7 +54,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SikuliService implements ISikuliService {
 
-    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException {
+    private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
         String picture;
         /**
@@ -58,8 +62,20 @@ public class SikuliService implements ISikuliService {
          */
         URL url = new URL(locator);
         URLConnection connection = url.openConnection();
-        InputStream istream = connection.getInputStream();
-        String mimeType = locator.split("\\.")[(locator.split("\\.").length) - 1];
+        
+        InputStream istream = new BufferedInputStream(connection.getInputStream());
+        
+        /**
+         * Get the MimeType and the extension
+         */
+        String mimeType = URLConnection.guessContentTypeFromStream(istream);
+        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+        MimeType mt = allTypes.forName(mimeType);
+        String extension = mt.getExtension(); 
+  
+        /**
+         * Encode in Base64
+         */
         byte[] bytes = IOUtils.toByteArray(istream);
         picture = Base64.encodeBase64URLSafeString(bytes);
 
@@ -73,7 +89,7 @@ public class SikuliService implements ISikuliService {
         result.put("picture", picture);
         result.put("text", text);
         result.put("defaultWait", defaultWait);
-        result.put("pictureExtension", mimeType);
+        result.put("pictureExtension", extension);
         return result;
     }
 
@@ -148,6 +164,9 @@ public class SikuliService implements ISikuliService {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } catch (JSONException ex) {
+            Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED);
+        } catch (MimeTypeException ex) {
             Logger.getLogger(SikuliService.class.getName()).log(Level.FATAL, ex);
             return new MessageEvent(MessageEventEnum.ACTION_FAILED);
         } finally {
