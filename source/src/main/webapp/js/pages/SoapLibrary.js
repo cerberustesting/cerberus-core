@@ -177,11 +177,16 @@ function editEntryModalSaveHandler() {
             Envelope: data.envelope
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editSoapLibraryModal');
-            var oTable = $("#soapLibrarysTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editSoapLibraryModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#soapLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editSoapLibraryModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editSoapLibraryModal'));
+            }
         },
         error: showUnexpectedError
     });
@@ -253,11 +258,16 @@ function addEntryModalSaveHandler() {
             Envelope: data.envelope
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#addSoapLibraryModal');
-            var oTable = $("#soapLibrarysTable").dataTable();
-            oTable.fnDraw(true);
-            $('#addSoapLibraryModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#soapLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#addSoapLibraryModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#addSoapLibraryModal'));
+            }
         },
         error: showUnexpectedError
     });

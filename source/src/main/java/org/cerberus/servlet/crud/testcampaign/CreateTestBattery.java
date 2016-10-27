@@ -32,6 +32,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,39 +81,47 @@ public class CreateTestBattery extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(URLDecoder.decode(request.getParameter("description"), "UTF-8"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String batteryContent = ParameterParserUtil.parseStringParam(request.getParameter("batteryContent"), null);
+        Answer finalAnswer = new Answer();
+        if (StringUtil.isNullOrEmpty(testbattery)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Battery")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Battery name is missing!"));
+            finalAnswer.setResultMessage(msg);
+        } else {
+            ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
+            IFactoryTestBattery factoryTestBattery = appContext.getBean(IFactoryTestBattery.class);
 
-        ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
-        IFactoryTestBattery factoryTestBattery = appContext.getBean(IFactoryTestBattery.class);
+            TestBattery te = factoryTestBattery.create(0, testbattery, description);
+            finalAnswer = testBatteryService.create(te);
 
-        TestBattery te = factoryTestBattery.create(0, testbattery, description);
-        Answer finalAnswer = testBatteryService.create(te);
+            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
 
-        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateTestBattery", "CREATE", "Create Test Battery : " + testbattery, request);
 
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/CreateTestBattery", "CREATE", "Create Test Battery : " + testbattery, request);
+                if (batteryContent != null) {
 
-            if (batteryContent != null) {
+                    JSONArray batteriesContent = new JSONArray(batteryContent);
+                    ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
+                    IFactoryTestBatteryContent factoryTestBatteryContent = appContext.getBean(IFactoryTestBatteryContent.class);
+                    ArrayList<TestBatteryContent> arr = new ArrayList<>();
+                    for (int i = 0; i < batteriesContent.length(); i++) {
+                        JSONObject bat = batteriesContent.getJSONObject(i);
+                        TestBatteryContent co = factoryTestBatteryContent.create(0, bat.getString("test"), bat.getString("testCase"), testbattery);
+                        arr.add(co);
+                    }
 
-                JSONArray batteriesContent = new JSONArray(batteryContent);
-                ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
-                IFactoryTestBatteryContent factoryTestBatteryContent = appContext.getBean(IFactoryTestBatteryContent.class);
-                ArrayList<TestBatteryContent> arr = new ArrayList<>();
-                for (int i = 0; i < batteriesContent.length(); i++) {
-                    JSONObject bat = batteriesContent.getJSONObject(i);
-                    TestBatteryContent co = factoryTestBatteryContent.create(0, bat.getString("test"), bat.getString("testCase"), testbattery);
-                    arr.add(co);
-                }
-
-                finalAnswer = testBatteryContentService.compareListAndUpdateInsertDeleteElements(te.getTestbattery(), arr);
-                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    logEventService.createPrivateCalls("/CreateTestBattery", "Create", "Create Test battery : " + te.getTestbattery(), request);
+                    finalAnswer = testBatteryContentService.compareListAndUpdateInsertDeleteElements(te.getTestbattery(), arr);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        logEventService.createPrivateCalls("/CreateTestBattery", "Create", "Create Test battery : " + te.getTestbattery(), request);
+                    }
                 }
             }
         }

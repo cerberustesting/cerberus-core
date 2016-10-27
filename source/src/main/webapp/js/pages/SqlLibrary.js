@@ -167,11 +167,16 @@ function editEntryModalSaveHandler() {
             description: data.description
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editSqlLibraryModal');
-            var oTable = $("#sqlLibrarysTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editSqlLibraryModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#sqlLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editSqlLibraryModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editSqlLibraryModal'));
+            }
         },
         error: showUnexpectedError
     });
@@ -243,11 +248,16 @@ function addEntryModalSaveHandler() {
             description: data.description
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#addSqlLibraryModal');
-            var oTable = $("#sqlLibrarysTable").dataTable();
-            oTable.fnDraw(true);
-            $('#addSqlLibraryModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#sqlLibrarysTable").dataTable();
+                oTable.fnDraw(true);
+                $('#addSqlLibraryModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#addSqlLibraryModal'));
+            }
         },
         error: showUnexpectedError
     });

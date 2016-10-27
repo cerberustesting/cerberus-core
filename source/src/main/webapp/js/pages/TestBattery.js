@@ -245,11 +245,16 @@ function editEntryModalSaveHandler() {
                 batteryContent: JSON.stringify(batteries),
             },
             success: function (data) {
+                data = JSON.parse(data);
                 hideLoaderInModal('#editTestbatteryModal');
-                var oTable = $("#testbatterysTable").dataTable();
-                oTable.fnDraw(true);
-                $('#editTestbatteryModal').modal('hide');
-                showMessage(data);
+                if (getAlertType(data.messageType) === 'success') {
+                    var oTable = $("#testbatterysTable").dataTable();
+                    oTable.fnDraw(true);
+                    $('#editTestbatteryModal').modal('hide');
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#editTestbatteryModal'));
+                }
             },
             error: showUnexpectedError
         });
@@ -265,11 +270,16 @@ function editEntryModalSaveHandler() {
                 batteryContent: JSON.stringify(batteries),
             },
             success: function (data) {
+                data = JSON.parse(data);
                 hideLoaderInModal('#editTestbatteryModal');
-                var oTable = $("#testbatterysTable").dataTable();
-                oTable.fnDraw(true);
-                $('#editTestbatteryModal').modal('hide');
-                showMessage(data);
+                if (getAlertType(data.messageType) === 'success') {
+                    var oTable = $("#testbatterysTable").dataTable();
+                    oTable.fnDraw(true);
+                    $('#editTestbatteryModal').modal('hide');
+                    showMessage(data);
+                } else {
+                    showMessage(data, $('#editTestbatteryModal'));
+                }
             },
             error: showUnexpectedError
         });

@@ -240,11 +240,16 @@ function editEntryModalSaveHandler() {
             gp3: data.gp3
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editInvariantModal');
-            var oTable = $("#invariantsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editInvariantModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#invariantsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editInvariantModal').modal('hide');
+                showMessage(data);
+            }else{
+                showMessage(data, $('#editInvariantModal'));
+            }
         },
         error: showUnexpectedError
     });
@@ -277,11 +282,16 @@ function addEntryModalSaveHandler() {
             gp3: data.gp3
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#addInvariantModal');
-            var oTable = $("#invariantsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#addInvariantModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#invariantsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#addInvariantModal').modal('hide');
+                showMessage(data);
+            }else{
+                showMessage(data, $('#addInvariantModal'));
+            }
         },
         error: showUnexpectedError
     });

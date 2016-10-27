@@ -115,6 +115,12 @@ public class UpdateUser2 extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "User name is missing!"));
             finalAnswer.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(login)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "User")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "User name is missing!"));
+            finalAnswer.setResultMessage(msg);
         } else if (!userHasPermissions) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "User")

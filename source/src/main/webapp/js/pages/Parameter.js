@@ -111,11 +111,16 @@ function editEntryModalSaveHandler() {
             system1Value: data.systemValue,
             system1: getSys()},
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editParameterModal');
-            var oTable = $("#parametersTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editParameterModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#parametersTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editParameterModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editParameterModal'));
+            }
         },
         error: showUnexpectedError
     });

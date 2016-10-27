@@ -27,6 +27,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
@@ -83,47 +84,56 @@ public class UpdateTestBattery2 extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String batteryContent = ParameterParserUtil.parseStringParam(request.getParameter("batteryContent"), null);
 
-        ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
-
-        AnswerItem resp = testBatteryService.readByKey(testBattery);
-        if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
-            /**
-             * Object could not be found. We stop here and report the error.
-             */
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+        if (StringUtil.isNullOrEmpty(testBattery)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "Campaign name is missing!"));
+            finalAnswer.setResultMessage(msg);
         } else {
-            TestBattery test = (TestBattery) resp.getItem();
-            if (!desc.equals(test.getDescription())) {
-                test.setDescription(desc);
-                finalAnswer = testBatteryService.update(test);
-                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test Battery : " + testBattery, request);
-                }
-            }
+            ITestBatteryService testBatteryService = appContext.getBean(ITestBatteryService.class);
 
-            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && batteryContent != null) {
-                JSONArray batteriesContent = new JSONArray(batteryContent);
-                ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
-                IFactoryTestBatteryContent factoryTestBatteryContent = appContext.getBean(IFactoryTestBatteryContent.class);
-                ArrayList<TestBatteryContent> arr = new ArrayList<>();
-                for(int i = 0; i<batteriesContent.length(); i++){
-                    JSONObject bat = batteriesContent.getJSONObject(i);
-                    TestBatteryContent co = factoryTestBatteryContent.create(0, bat.getString("test"), bat.getString("testCase"),  testBattery);
-                    arr.add(co);
+            AnswerItem resp = testBatteryService.readByKey(testBattery);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
+                /**
+                 * Object could not be found. We stop here and report the error.
+                 */
+                finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
+            } else {
+                TestBattery test = (TestBattery) resp.getItem();
+                if (!desc.equals(test.getDescription())) {
+                    test.setDescription(desc);
+                    finalAnswer = testBatteryService.update(test);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test Battery : " + testBattery, request);
+                    }
                 }
 
-                finalAnswer = testBatteryContentService.compareListAndUpdateInsertDeleteElements(test.getTestbattery(), arr);
-                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test battery : " + test.getTestbattery(), request);
+                if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && batteryContent != null) {
+                    JSONArray batteriesContent = new JSONArray(batteryContent);
+                    ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
+                    IFactoryTestBatteryContent factoryTestBatteryContent = appContext.getBean(IFactoryTestBatteryContent.class);
+                    ArrayList<TestBatteryContent> arr = new ArrayList<>();
+                    for (int i = 0; i < batteriesContent.length(); i++) {
+                        JSONObject bat = batteriesContent.getJSONObject(i);
+                        TestBatteryContent co = factoryTestBatteryContent.create(0, bat.getString("test"), bat.getString("testCase"), testBattery);
+                        arr.add(co);
+                    }
+
+                    finalAnswer = testBatteryContentService.compareListAndUpdateInsertDeleteElements(test.getTestbattery(), arr);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test battery : " + test.getTestbattery(), request);
+                    }
                 }
+
             }
 
         }

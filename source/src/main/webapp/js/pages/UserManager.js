@@ -291,11 +291,16 @@ function editEntryModalSaveHandler() {
         method: "POST",
         data: data,
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editUserModal');
-            $('#editUserModal').modal('hide');
-            var oTable = $("#usersTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                $('#editUserModal').modal('hide');
+                var oTable = $("#usersTable").dataTable();
+                oTable.fnDraw(true);
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editUserModal'));
+            }
         },
         error: showUnexpectedError
     });
@@ -385,11 +390,16 @@ function addEntryModalSaveHandler() {
         method: "POST",
         data: data,
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#addUserModal');
-            $('#addUserModal').modal('hide');
-            var oTable = $("#usersTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                $('#addUserModal').modal('hide');
+                var oTable = $("#usersTable").dataTable();
+                oTable.fnDraw(true);
+                showMessage(data);
+            } else {
+                showMessage(data, $('#addUserModal'));
+            }
         },
         error: showUnexpectedError
     });
