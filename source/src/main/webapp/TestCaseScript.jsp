@@ -42,22 +42,22 @@
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
                 <div class="panel-heading" id="testCaseTitle">
-                    <h4 class="testTestCase"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / <select id="testCase"></select> - <span id="description"></span></h4>
+                    <h4 class="testTestCase"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / <select id="testCase"></select></h4>
                 </div>
                 <div class="panel-body">
                     <div>
-                        <button class="btn btn-default pull-right" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-                        <button class="btn btn-default pull-right" id="manageProp"><span class="glyphicon glyphicon-cog"></span> Properties</button>
-                        <button class="btn btn-default pull-right" id="saveScript"><span class="glyphicon glyphicon-save"></span> Save</button>
-                        <button class="btn btn-default pull-right" id="runTestCase"><span class="glyphicon glyphicon-play"></span> Run</button>
-                        <button class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" title="Last Execution was <a style='color : green'>OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a>"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
+                        <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                        <button class="btn btn-default pull-right" id="manageProp" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-cog"></span> Properties</button>
+                        <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                        <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
+                        <button class="btn btn-default pull-right"  style="margin-left: 2px; margin-right: 2px;" id="runTestCase" data-toggle="tooltip" title="Last Execution was <a style='color : green'>OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a>"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
                         <div class="side-item pull-right"></div>
 
                     </div>
                     <div class="col-xs-3" id="list-wrapper">
-                        <div class="separator-left">
+                        <div>
                             <h3>Steps</h3>
-                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: scroll"></ul>
+                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
                             <button class="btn btn-primary btn-block" id="addStep">Add step</button>
                         </div>
 
@@ -66,7 +66,7 @@
                         <div class="step-header clearfix">
                             <div id="stepInfo"  style="display: none;">
                                 <div class="row">
-                                    <div id="stepDescription" class="col-xs-9"></div>
+                                    <div id="stepDescription" class="col-xs-9" style="margin-top:6px; margin-bottom:6px;"></div>
                                     <div class="col-xs-3" id="editBtnArea">
                                         <div class="btn-group pull-right">
                                             <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>

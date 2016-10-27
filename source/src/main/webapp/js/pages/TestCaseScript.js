@@ -71,14 +71,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var json;
         var testcaseinfo;
+        var Tags;
         $.ajax({
             url: "ReadTestCase",
             data: {test: test, testCase: testcase, withStep: true},
             dataType: "json",
             success: function (data) {
+
                 testcaseinfo = data.info;
                 loadTestCaseInfo(data.info);
-                loadProperties(test, testcase, data.info);
                 json = data.stepList;
                 sortData(json);
                 createStepList(json, stepList);
@@ -86,7 +87,48 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 listenEnterKeypressWhenFocusingOnDescription();
                 setPlaceholderAction();
                 setPlaceholderControl();
-                loadApplicationObject(data);
+
+                var availableProperties = loadProperties(test, testcase, data.info);
+                var availableObjects = loadApplicationObject(data);
+                var availableObjectProperties = [
+                    "value",
+                    "picturePath",
+                    "pictureUrl"
+                ]
+                var availableTags = [
+                    "property",
+                    "object"
+                ];
+
+                Tags = [
+                    {
+                        array : availableObjectProperties,
+                        regex : "%object\.[^\.]*\.",
+                        addBefore : "",
+                        addAfter : "%"
+                    },
+                    {
+                        array : availableObjects,
+                        regex : "%object\.",
+                        addBefore : "",
+                        addAfter : "."
+                    },
+                    {
+                        array : availableProperties,
+                        regex : "%property\.",
+                        addBefore : "",
+                        addAfter : "%"
+                    },
+                    {
+                        array : availableTags,
+                        regex : "%",
+                        addBefore : "",
+                        addAfter : "."
+                    }
+                ];
+
+
+                autocompleteAllFields(Tags);
 
                 // Building full list of country from testcase.
                 var myCountry = [];
@@ -139,6 +181,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $.when(addAction()).then(function (action) {
                 listenEnterKeypressWhenFocusingOnDescription();
                 $($(action.html[0]).find(".description")[0]).focus();
+                autocompleteAllFields();
             });
         });
         $("#saveScript").click(saveScript);
@@ -368,6 +411,7 @@ function drawInheritedProperty(propList) {
 }
 
 function loadProperties(test, testcase, testcaseinfo) {
+    var array = [];
     $.ajax({
         url: "GetPropertiesForTestCase",
         data: {test: test, testcase: testcase},
@@ -376,7 +420,7 @@ function loadProperties(test, testcase, testcaseinfo) {
 
             for (var index = 0; index < data.length; index++) {
                 var property = data[index];
-
+                array.push(data[index].property);
                 property.toDelete = false;
                 drawProperty(property, testcaseinfo);
             }
@@ -384,6 +428,7 @@ function loadProperties(test, testcase, testcaseinfo) {
         },
         error: showUnexpectedError
     });
+    return array;
 }
 
 function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
@@ -440,13 +485,24 @@ function loadTestCaseInfo(info) {
         url: "ReadTestCase?system=" + getUser().defaultSystem + "&test=" + info.test,
         async: true,
         success: function (data) {
+            data.contentTable.sort(function (a, b){
+                var aa = a.testCase.toLowerCase();
+                var bb = b.testCase.toLowerCase();
+                if(aa > bb) {
+                    return 1;
+                } else if (aa < bb) {
+                    return -1;
+                }
+                return 0;
+            });
             for(var i = 0; i<data.contentTable.length; i++){
                 $(".testTestCase #testCase").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
             }
             $(".testTestCase #testCase option[value='" + info.testCase + "']").prop('selected', true);
             $(".testTestCase #testCase").bind("change",function(event){
                 window.location.href = "./TestCaseScript.jsp?test=" + info.test + "&testcase=" + $(this).val();
-            })
+            });
+            $(".testTestCase #testCase").select2();
         }
     });
     $(".testTestCase #description").text(info.shortDescription);
@@ -599,17 +655,18 @@ function loadLibraryStep() {
     });
 }
 
-function loadApplicationObject(data){
+function loadApplicationObject(dataInit){
+    var array = [];
     $.ajax({
-        url: "ReadApplicationObject?application="+data.info.application,
+        url: "ReadApplicationObject?application="+dataInit.info.application,
         dataType: "json",
         success: function(data) {
-            for(var i = 0; i<data.contentTable.length; i++){
-                $("datalist#objects").append("<option value='object=" + data.contentTable[i].object + "'></option>");
-                $("datalist#objects").append("<option value='picture=" + data.contentTable[i].object + "'></option>");
+            for(var i = 0; i<data.contentTable.length; i++) {
+                array.push(data.contentTable[i].object);
             }
         }
     });
+    return array;
 }
 
 
@@ -902,7 +959,6 @@ Step.prototype.getJsonData = function () {
 };
 
 function Action(json, parentStep) {
-    console.log(json);
     this.html = $("<div></div>").addClass("action-group");
     this.parentStep = parentStep;
 
@@ -950,9 +1006,10 @@ Action.prototype.draw = function () {
     var row = $("<div></div>").addClass("step-action row").addClass("action");
     var type = $("<div></div>").addClass("type");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
+    var plusBtn = $("<button></button>").addClass("btn btn-default btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("btn-group").append(addBtn).append(supprBtn);
+    var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(addBtn).append(supprBtn);
 
     if (this.parentStep.useStep === "N") {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -964,10 +1021,25 @@ Action.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }
 
+    plusBtn.click(function(){
+        var container = $(this).parent().parent();
+        if(container.height() == 78){
+            container.height(118);
+            container.find(".row:eq(2)").show();
+            $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        }else{
+            container.height(78);
+            container.find(".row:eq(2)").hide();
+            $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+        }
+    });
+
     addBtn.click(function () {
         var control = new Control(null, action);
 
         action.setControl(control);
+
+        autocompleteAllFields();
     });
 
     supprBtn.click(function () {
@@ -1027,7 +1099,8 @@ Action.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("rowAction form-inline");
+    var secondRow = $("<div style='margin-top:5px;'></div>").addClass("row form-inline");
+    var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm no-border");
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
@@ -1099,10 +1172,10 @@ Action.prototype.generateContent = function () {
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditiononper));
     secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditionparam));
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionList));
+    secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
     secondRow.append($("<span></span>").addClass("col-lg-2").append(objectField));
     secondRow.append($("<span></span>").addClass("col-lg-2").append(propertyField));
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(forceExeStatusList));
+    thirdRow.append($("<span></span>").addClass("col-lg-2").append(forceExeStatusList));
 
     actionconditiononper.trigger("change");
 
@@ -1112,10 +1185,13 @@ Action.prototype.generateContent = function () {
         propertyField.prop("readonly", true);
         actionList.prop("disabled", "disabled");
         forceExeStatusList.prop("disabled", "disabled");
+        actionconditiononper.prop("disabled", "disabled");
+        actionconditionparam.prop("readonly", true);
     }
 
     content.append(firstRow);
     content.append(secondRow);
+    content.append(thirdRow);
 
     return content;
 };
@@ -1182,8 +1258,9 @@ Control.prototype.draw = function () {
     var control = this;
     var type = $("<div></div>").addClass("type");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
+    var plusBtn = $("<button></button>").addClass("btn btn-default btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("btn-group").append(supprBtn);
+    var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(supprBtn);
     var content = this.generateContent();
 
     if (this.parentAction.parentStep.useStep === "N") {
@@ -1203,6 +1280,19 @@ Control.prototype.draw = function () {
             control.html.addClass("toDelete");
         } else {
             control.html.removeClass("toDelete");
+        }
+    });
+
+    plusBtn.click(function(){
+        var container = $(this).parent().parent();
+        if(container.height() == 78){
+            container.height(118);
+            container.find(".row:eq(2)").show();
+            $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        }else{
+            container.height(78);
+            container.find(".row:eq(2)").hide();
+            $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
         }
     });
 
@@ -1238,7 +1328,8 @@ Control.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-10");
     var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("rowControl form-inline");
+    var secondRow = $("<div></div>").addClass("row form-inline");
+    var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm no-border");
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Description");
@@ -1278,7 +1369,7 @@ Control.prototype.generateContent = function () {
     secondRow.append($("<span></span>").addClass("col-md-4").append(controlList));
     secondRow.append($("<span></span>").addClass("col-md-3").append(controlValueField));
     secondRow.append($("<span></span>").addClass("col-md-4").append(controlPropertyField));
-    secondRow.append($("<span></span>").addClass("col-md-1").append(fatalList));
+    thirdRow.append($("<span></span>").addClass("col-md-1").append(fatalList));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1290,6 +1381,7 @@ Control.prototype.generateContent = function () {
 
     content.append(firstRow);
     content.append(secondRow);
+    content.append(thirdRow);
 
     return content;
 };
@@ -1456,6 +1548,19 @@ function setPlaceholderAction() {
         }
     });
 }
+
+var autocompleteAllFields;
+(function() {
+    //var accessible only in closure
+    var TagsToUse = [];
+    //function accessible everywhere that has access to TagsToUse
+    autocompleteAllFields = function(Tags) {
+        if(Tags != undefined){
+            TagsToUse = Tags;
+        }
+        autocompleteVariable("div.step-action .content div.row.form-inline span:nth-child(n+3) input", TagsToUse);
+    };
+})();
 
 function setPlaceholderControl() {
     /**

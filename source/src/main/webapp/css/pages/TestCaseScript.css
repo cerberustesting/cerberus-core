@@ -54,13 +54,17 @@
 }
 
 .step-list li:hover {
-    background-color: #3071A9;
+    background-color: #337ab7;
     color: #FFFFFF;
+    border-color: #337ab7;
+    z-index: 2;
 }
 
 .step-list li .active {
-    background-color: #3071A9;
+    background-color: #337ab7;
     color: #FFFFFF;
+    border-color: #337ab7;
+    z-index: 2;
 }
 
 .step-list li {
@@ -70,8 +74,7 @@
 
 .step-header {
     padding-bottom: 5px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #eee;
+    margin-bottom: 15px;
 }
 
 .step-header #stepDescription {

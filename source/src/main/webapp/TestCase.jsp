@@ -68,7 +68,6 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <!--<script type='text/javascript' src='js/Form_1.js'></script>-->
         <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-ui-1.10.2.js"></script>
         <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elrte.min.js"></script>
         <script type="text/javascript" src="dependencies/zz_OldDependencies/js/i18n/elrte.en.js"></script>
         <script type="text/javascript" src="dependencies/zz_OldDependencies/js/elfinder.min.js"></script>

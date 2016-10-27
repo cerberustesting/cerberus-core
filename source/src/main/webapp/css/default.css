@@ -617,3 +617,11 @@ img.selectedPicture{
     max-width: 1000px;
     overflow-wrap: break-word; 
 }
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+    background: #ff8a00;
+    border: none;
+    color:#000;
+    border-radius:0;
+    font-weight: normal;
+}
