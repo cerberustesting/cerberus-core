@@ -32,6 +32,7 @@ import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
@@ -83,54 +84,62 @@ public class CreateCampaign extends HttpServlet {
         String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
         String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
 
-        ICampaignService campaignService = appContext.getBean(ICampaignService.class);
-        IFactoryCampaign factoryCampaign = appContext.getBean(IFactoryCampaign.class);
+        if (StringUtil.isNullOrEmpty(name)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Campaign")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "Campaign name is missing!"));
+            finalAnswer.setResultMessage(msg);
+        } else {
+            ICampaignService campaignService = appContext.getBean(ICampaignService.class);
+            IFactoryCampaign factoryCampaign = appContext.getBean(IFactoryCampaign.class);
 
-        Campaign camp = factoryCampaign.create(0, name, desc);
-        finalAnswer = campaignService.create(camp);
-        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            /**
-             * Adding Log entry.
-             */
-            ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
+            Campaign camp = factoryCampaign.create(0, name, desc);
+            finalAnswer = campaignService.create(camp);
+            if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
 
-            if (battery != null) {
-                JSONArray batteries = new JSONArray(battery);
-                ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
-                IFactoryCampaignContent factoryCampaignContent = appContext.getBean(IFactoryCampaignContent.class);
-                finalAnswer = campaignContentService.deleteByCampaign(name);
-                int i = 0;
-                while (i < batteries.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    JSONArray bat = batteries.getJSONArray(i);
-                    CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
-                    finalAnswer = campaignContentService.create(co);
-                    i++;
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
+                if (battery != null) {
+                    JSONArray batteries = new JSONArray(battery);
+                    ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
+                    IFactoryCampaignContent factoryCampaignContent = appContext.getBean(IFactoryCampaignContent.class);
+                    finalAnswer = campaignContentService.deleteByCampaign(name);
+                    int i = 0;
+                    while (i < batteries.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        JSONArray bat = batteries.getJSONArray(i);
+                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
+                        finalAnswer = campaignContentService.create(co);
+                        i++;
+                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Adding Log entry.
+                             */
+                            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
+                        }
                     }
                 }
-            }
 
-            if (parameter != null) {
-                JSONArray parameters = new JSONArray(parameter);
-                ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
-                IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
-                finalAnswer = campaignParameterService.deleteByCampaign(name);
-                int i = 0;
-                while (i < parameters.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    JSONArray bat = parameters.getJSONArray(i);
-                    CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
-                    finalAnswer = campaignParameterService.create(co);
-                    i++;
-                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Adding Log entry.
-                         */
-                        logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
+                if (parameter != null) {
+                    JSONArray parameters = new JSONArray(parameter);
+                    ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
+                    IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
+                    finalAnswer = campaignParameterService.deleteByCampaign(name);
+                    int i = 0;
+                    while (i < parameters.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        JSONArray bat = parameters.getJSONArray(i);
+                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
+                        finalAnswer = campaignParameterService.create(co);
+                        i++;
+                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                            /**
+                             * Adding Log entry.
+                             */
+                            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
+                        }
                     }
                 }
             }

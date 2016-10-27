@@ -309,11 +309,16 @@ function editEntryModalSaveHandler() {
             Parameters: JSON.stringify(parameters)
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#editTestcampaignModal');
-            var oTable = $("#testcampaignsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#editTestcampaignModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#testcampaignsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#editTestcampaignModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#editTestcampaignModal'));
+            }
         },
         error: showUnexpectedError
     });
@@ -396,11 +401,16 @@ function addEntryModalSaveHandler() {
             Parameters: JSON.stringify(parameters)
         },
         success: function (data) {
+            data = JSON.parse(data);
             hideLoaderInModal('#addTestcampaignModal');
-            var oTable = $("#testcampaignsTable").dataTable();
-            oTable.fnDraw(true);
-            $('#addTestcampaignModal').modal('hide');
-            showMessage(data);
+            if (getAlertType(data.messageType) === 'success') {
+                var oTable = $("#testcampaignsTable").dataTable();
+                oTable.fnDraw(true);
+                $('#addTestcampaignModal').modal('hide');
+                showMessage(data);
+            } else {
+                showMessage(data, $('#addTestcampaignModal'));
+            }
         },
         error: showUnexpectedError
     });
