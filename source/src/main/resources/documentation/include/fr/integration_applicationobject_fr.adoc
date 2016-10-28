@@ -1,0 +1,21 @@
+Dans cette section, vous allez trouver des informations à propos des objets d'application
+
+image:applicationobject.png[ApplicationPage]
+
+=== Attibuts des objects d'application
+|===
+
+| *Champ* | *Description*
+
+| Application | L'application liée à l'objet
+
+| Object | Le nom de l'objet
+
+| Value | La valeur de l'objet
+
+| File Name | L'Image chargée qui représente l'objet
+
+|===
+
+
+

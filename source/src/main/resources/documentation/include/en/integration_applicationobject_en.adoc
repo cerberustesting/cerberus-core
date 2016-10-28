@@ -1,0 +1,21 @@
+In this section, you will find information on application object in Cerberus.
+
+image:applicationobject.png[ApplicationPage]
+
+=== Application object attributes
+|=== 
+
+| *Field* | *Description*  
+
+| Application | The application linked to the object
+
+| Object | The name of the object
+
+| Value | The value of the object
+
+| File Name | The preview of the picture of the object
+
+|===
+
+
+
