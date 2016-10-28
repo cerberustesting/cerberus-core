@@ -113,7 +113,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null) {
                     ApplicationObject ao = (ApplicationObject) ans.getItem();
                     String val = null;
-                    if ("picturePath".equals(valueA[2])) {
+                    if ("picturepath".equals(valueA[2])) {
                         AnswerItem an = parameterService.readByKey("", "cerberus_applicationobject_path");
                         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                             Parameter url = (Parameter) an.getItem();
@@ -123,7 +123,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                                 LOG.debug("Cannot find the parameter that point the Application Object image folder");
                             }
                         }
-                    } else if ("pictureUrl".equals(valueA[2])) {
+                    } else if ("pictureurl".equals(valueA[2])) {
                         AnswerItem an = parameterService.readByKey("", "cerberus_url");
                         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                             Parameter url = (Parameter) an.getItem();

@@ -92,8 +92,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 var availableObjects = loadApplicationObject(data);
                 var availableObjectProperties = [
                     "value",
-                    "picturePath",
-                    "pictureUrl"
+                    "picturepath",
+                    "pictureurl"
                 ]
                 var availableTags = [
                     "property",
