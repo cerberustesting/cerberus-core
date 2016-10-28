@@ -92,8 +92,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 var availableObjects = loadApplicationObject(data);
                 var availableObjectProperties = [
                     "value",
-                    "picturePath",
-                    "pictureUrl"
+                    "picturepath",
+                    "pictureurl"
                 ]
                 var availableTags = [
                     "property",
@@ -1149,25 +1149,17 @@ Action.prototype.generateContent = function () {
     });
     actionconditiononper.val(this.conditionOper).trigger("change");
 
-    function displayApplicationObject(){
-        if ($(this).val().startsWith("object=") || $(this).val().startsWith("picture=")) {
-            $(this).attr("list", "objects");
-        } else {
-            $(this).removeAttr("list");
-        }
-    }
-
     objectField.val(this.value1);
     objectField.css("width","100%");
     objectField.on("change", function () {
         obj.value1 = objectField.val();
-    }).bind('input', displayApplicationObject);
+    });
 
     propertyField.val(this.value2);
     propertyField.css("width","100%");
     propertyField.on("change", function () {
         obj.value2 = propertyField.val();
-    }).bind('input', displayApplicationObject);
+    });
 
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditiononper));

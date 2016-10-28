@@ -2360,8 +2360,8 @@
                         }
                         var availableObjectProperties = [
                             "value",
-                            "picturePath",
-                            "pictureUrl"
+                            "picturepath",
+                            "pictureurl"
                         ]
                         var availableTags = [
                             "property",

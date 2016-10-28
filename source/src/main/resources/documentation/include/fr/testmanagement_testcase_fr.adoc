@@ -55,4 +55,18 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Property
 
+==== Variables
+
+You can use variables in the action and control's values.
+These variable are define in cerberus and you can have access to them with the right syntax.
+
+A variable is defined between %
+
+These syntax are available:
+
+. %property.myproperty% : Get the property myproperty
+. %object.myobject.value% : Get the application object myobject's value
+. %object.myobject.picturepath% : Get the application object myobject's picture path
+. %object.myobject.pictureurl% : Get the application object myobject's picure url
+
 

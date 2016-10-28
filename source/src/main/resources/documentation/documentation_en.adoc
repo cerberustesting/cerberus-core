@@ -130,6 +130,12 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
+== Application Object
+:file-to-include: integration_applicationobject_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
 == Deploy type
 :file-to-include: integration_deploytype_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
