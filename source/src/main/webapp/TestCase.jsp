@@ -2349,11 +2349,12 @@
             });</script>
             <%}%>
         <script>
-            function loadAutoComplete(){
-                return $.ajax({
-                    url: "ReadApplicationObject?application=<%=tcaseapplication%>",
-                    dataType: "json",
-                    success: function(data) {
+            var loadAutoComplete;
+            var loadingAC = $.ajax({
+                url: "ReadApplicationObject?application=<%=tcaseapplication%>",
+                dataType: "json",
+                success: function(data) {
+                    loadAutoComplete = function(){
                         var availableObjects = [];
                         for(var i = 0; i<data.contentTable.length; i++){
                             availableObjects.push(data.contentTable[i].object);
@@ -2513,10 +2514,11 @@
                                     return false;
                                 }
                             });
+                        }
                     }
-                });
-            }
-            $(document).ready(function() {
+            });
+
+            loadingAC.then(function(){
                 loadAutoComplete();
             });
         </script>
@@ -2633,7 +2635,9 @@
                         $("img[data-id=" + $(this).attr("data-id") + "]").removeAttr("src");
                     }
                 }).trigger("input");
-                loadAutoComplete();
+                loadingAC.then(function(){
+                    loadAutoComplete();
+                });
             }</script>
        
     <script>
