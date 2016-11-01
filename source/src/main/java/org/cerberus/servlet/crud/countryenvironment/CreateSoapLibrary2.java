@@ -75,7 +75,7 @@ public class CreateSoapLibrary2 extends HttpServlet {
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("Envelope"), null);
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
 
         /**
          * Checking all constrains before calling the services.

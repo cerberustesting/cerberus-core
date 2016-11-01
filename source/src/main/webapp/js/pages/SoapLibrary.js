@@ -148,20 +148,11 @@ function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSoapLibraryModal'));
     var formEdit = $('#editSoapLibraryModal #editSoapLibraryModalForm');
 
-    var sa = formEdit.serializeArray();
-    //Add envelope to the form
-    var envelope = {
-        name: "envelope",
-        value: $("#envelope").text()
-    };
-    sa.push(envelope);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    //Add envelope, not in the form
+    data.envelope = encodeURI($("#editSoapLibraryModal #envelope").text());
+    
     showLoaderInModal('#editSoapLibraryModal');
     $.ajax({
         url: "UpdateSoapLibrary2",
@@ -228,21 +219,11 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addSoapLibraryModal'));
     var formEdit = $('#addSoapLibraryModal #addSoapLibraryModalForm');
 
-    var sa = formEdit.serializeArray();
-    
-    //Add envelope to the form
-    var envelope = {
-        name: "envelope",
-        value: $("#addSoapLibraryModalForm #envelope").text()
-    };
-    sa.push(envelope);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    //Add envelope, not in the form
+    data.envelope = encodeURI($("#addSoapLibraryModalForm #envelope").text());
+    
     showLoaderInModal('#addSoapLibraryModal');
     $.ajax({
         url: "CreateSoapLibrary2",

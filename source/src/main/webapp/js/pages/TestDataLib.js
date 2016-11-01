@@ -339,26 +339,10 @@ function addTestDataLibModalSaveHandler() {
     }
 
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formAdd.serialize());
-    var sa = formAdd.serializeArray();
-    
-    //Add envelope to the form
-    var envelope = {
-        name: "envelope",
-        value: $("#addTestDataLibModalForm #envelope").text()
-    };
-    sa.push(envelope);
-    //Add script to the form
-    var script = {
-        name: "script",
-        value: $("#addTestDataLibModalForm #script").text()
-    };
-    sa.push(script);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
+    var data = convertSerialToJSONObject(formAdd.serialize());
+    //Add envelope and script, not in the form
+    data.envelope = encodeURI($("#addTestDataLibModalForm #envelope").text());
+    data.script = encodeURI($("#addTestDataLibModalForm #script").text());
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -474,27 +458,11 @@ function duplicateTestDataLibModalSaveHandler() {
     }
 
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formAdd.serialize());
-    var sa = formAdd.serializeArray();
+    var data = convertSerialToJSONObject(formAdd.serialize());
+    //Add envelope and script, not in the form
+    data.envelope = encodeURI($("#duplicateTestDataLibModal #envelope").text());
+    data.script = encodeURI($("#duplicateTestDataLibModal #script").text());
     
-    //Add envelope to the form
-    var envelope = {
-        name: "envelope",
-        value: $("#duplicateTestDataLibModal #envelope").text()
-    };
-    sa.push(envelope);
-    //Add script to the form
-    var script = {
-        name: "script",
-        value: $("#duplicateTestDataLibModal #script").text()
-    };
-    sa.push(script);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
-
     $.ajax({
         url: "CreateTestDataLib",
         async: true,
@@ -641,26 +609,12 @@ function editTestDataLibModalSaveHandler() {
         table_subdata.push($(table1[i]).data("subdata"));
     }
 
-    var sa = formEdit.serializeArray();
-    //Add envelope to the form
-    var envelope = {
-        name: "envelope",
-        value: $("form#editTestLibData #envelope").text()
-    };
-    sa.push(envelope);
-    var script = {
-        name: "script",
-        value: $("form#editTestLibData #script").text()
-    };
-    sa.push(script);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
-
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    //Add envelope and script, not in the form
+    data.envelope = encodeURI($("form#editTestLibData #envelope").text());
+    data.script = encodeURI($("form#editTestLibData #script").text());
+    
     $.ajax({
         url: "UpdateTestDataLib",
         async: true,
