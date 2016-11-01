@@ -140,20 +140,11 @@ function editEntryModalSaveHandler() {
     clearResponseMessage($('#editSqlLibraryModal'));
     var formEdit = $('#editSqlLibraryModal #editSqlLibraryModalForm');
 
-    var sa = formEdit.serializeArray();
-    //Add script to the form
-    var script = {
-        name: "script",
-        value: $("#script").text()
-    };
-    sa.push(script);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    //Add envelope and script, not in the form
+    data.script = encodeURI($("#editSqlLibraryModalForm #script").text());
+    
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
         url: "UpdateSqlLibrary2",
@@ -220,21 +211,11 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addSqlLibraryModal'));
     var formEdit = $('#addSqlLibraryModal #addSqlLibraryModalForm');
 
-    var sa = formEdit.serializeArray();
-
-    //Add envelope to the form
-    var script = {
-        name: "script",
-        value: $("#addSqlLibraryModal #script").text()
-    };
-    sa.push(script);
-
-    var data = {}
-    for (var i in sa) {
-        data[sa[i].name] = sa[i].value;
-    }
     // Get the header data from the form.
-    //var data = convertSerialToJSONObject(formEdit.serialize());
+    var data = convertSerialToJSONObject(formEdit.serialize());
+    //Add envelope and script, not in the form
+    data.script = encodeURI($("#addSqlLibraryModalForm #script").text());
+    
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
         url: "CreateSqlLibrary2",

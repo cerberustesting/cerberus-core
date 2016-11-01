@@ -72,14 +72,13 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         // Parameter that needs to be secured --> We SECURE+DECODE them
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String envelope = ParameterParserUtil.parseStringParam(request.getParameter("Envelope"), null);
-        //String envelopeBDD = HtmlUtils.htmlEscape(envelope);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
-        String servicePath = ParameterParserUtil.parseStringParam(request.getParameter("ServicePath"), null);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
-        String method = ParameterParserUtil.parseStringParam(request.getParameter("Method"), null);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-
+        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
+        
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);

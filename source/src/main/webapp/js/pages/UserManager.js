@@ -35,6 +35,19 @@ function initPage() {
     $('#editUserModal').on('hidden.bs.modal', editEntryModalCloseHandler);
     $('#addUserModal').on('hidden.bs.modal', addEntryModalCloseHandler);
 
+    $('#addcheckall').click(function (e) {
+        $("#addUserModal").find("#systems option").prop('selected', true)
+    });
+    $('#adduncheckall').click(function (e) {
+        $("#addUserModal").find("#systems option").prop('selected', false)
+    });
+    $('#editcheckall').click(function (e) {
+        $("#editUserModal").find("#systems option").prop('selected', true)
+    });
+    $('#edituncheckall').click(function (e) {
+        $("#editUserModal").find("#systems option").prop('selected', false)
+    });
+
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&groups=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList");
@@ -121,6 +134,9 @@ function editEntryClick(param) {
         }
 
         // SYSTEMS
+        // System size will take the full size of total systems.
+        var nbsystem = formEdit.find("#systems option").size();
+        formEdit.find("#systems").prop('size', nbsystem);
         // Selecting the values from the current user loaded.
         formEdit.find("#systems option").each(function (i, e) {
             for (var i = 0; i < obj.systems.length; i++) {
@@ -330,12 +346,22 @@ function addEntryClick() {
     displayInvariantList("groups", "USERGROUP", false, undefined, undefined, false);
     displayInvariantList("team", "TEAM", false, "", "", false);
 
+    // System size will take the full size of total systems.
+    var nbsystem = $("#addUserModal").find("#systems option").size();
+    $("#addUserModal").find("#systems").prop('size', nbsystem);
     $("#addUserModal").find('#systems option').mousedown(function (e) {
         e.preventDefault();
-        $(this).prop('selected', !$(this).prop('selected'));
-        return false;
+        var select = this;
+        var scroll = select.scrollTop;
+        e.target.selected = !e.target.selected;
+        setTimeout(function () {
+            select.scrollTop = scroll;
+        }, 0);
+        $(select).focus();
+    }).mousemove(function (e) {
+        e.preventDefault()
     });
-    
+
     $("#addUserModal").find('#groups option').mousedown(function (e) {
         e.preventDefault();
         $(this).prop('selected', !$(this).prop('selected'));
