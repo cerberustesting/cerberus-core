@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.crud.dao.ITestCaseStepActionControlExecutionDAO;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +38,19 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
 
     @Autowired
     private ITestCaseStepActionControlExecutionDAO testCaseStepActionControlExecutionDao;
+    @Autowired
+    TestCaseExecutionService testCaseExecutionService;
     
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
+        testCaseExecutionService.sendObjectByWebSocket(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
     }
     
     @Override
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
+        testCaseExecutionService.sendObjectByWebSocket(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
     }
     
     @Override

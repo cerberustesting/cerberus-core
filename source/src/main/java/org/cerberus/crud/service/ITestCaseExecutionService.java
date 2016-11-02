@@ -181,5 +181,6 @@ public interface ITestCaseExecutionService {
      */
     void convert(Answer answer) throws CerberusException;
 
+    void sendObjectByWebSocket(TestCaseExecution testCaseExecution);
 
 }
