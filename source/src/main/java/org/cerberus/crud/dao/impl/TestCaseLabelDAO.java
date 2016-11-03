@@ -342,7 +342,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tel.test = ?");
         }
-        if (!Strings.isNullOrEmpty(testCase)) {
+        if (testCase != null) {
             query.append(" AND tel.testcase = ?");
         }
         // Debug message on SQL.
@@ -355,7 +355,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 if (!Strings.isNullOrEmpty(test)) {
                     preStat.setString(i++, test);
                 }
-                if (!Strings.isNullOrEmpty(testCase)) {
+                if (testCase != null) {
                     preStat.setString(i++, testCase);
                 }
             

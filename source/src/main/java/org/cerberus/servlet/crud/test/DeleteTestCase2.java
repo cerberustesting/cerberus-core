@@ -83,12 +83,12 @@ public class DeleteTestCase2 extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
-        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), "");
+        String testCase = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("testCase"), null);
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(test) || StringUtil.isNullOrEmpty(testCase)) {
+        if (StringUtil.isNullOrEmpty(test) || testCase == null) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                     .replace("%OPERATION%", "Delete")

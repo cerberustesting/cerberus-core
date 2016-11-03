@@ -81,7 +81,7 @@ public class DeleteTestCaseCountry extends HttpServlet {
          * Parsing and securing all required parameters.
          */
         String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset);
-        String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), "", charset);
+        String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testCase"), null, charset);
         String country = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("country"), "", charset);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -89,7 +89,7 @@ public class DeleteTestCaseCountry extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if ((StringUtil.isNullOrEmpty(testcase)) || (StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(country))) {
+        if (testcase == null || (StringUtil.isNullOrEmpty(test)) || (StringUtil.isNullOrEmpty(country))) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseCountry")
                     .replace("%OPERATION%", "Delete")
