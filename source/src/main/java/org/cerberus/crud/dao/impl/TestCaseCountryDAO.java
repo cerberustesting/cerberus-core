@@ -320,7 +320,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
         if (!Strings.isNullOrEmpty(test)) {
             query.append(" AND tcc.test = ?");
         }
-        if (!Strings.isNullOrEmpty(testCase)) {
+        if (testCase != null) {
             query.append(" AND tcc.testcase = ?");
         }
 
@@ -336,7 +336,7 @@ public class TestCaseCountryDAO implements ITestCaseCountryDAO {
                 if (!Strings.isNullOrEmpty(test)) {
                     preStat.setString(i++, test);
                 }
-                if (!Strings.isNullOrEmpty(testCase)) {
+                if (testCase != null) {
                     preStat.setString(i++, testCase);
                 }
                 ResultSet resultSet = preStat.executeQuery();
