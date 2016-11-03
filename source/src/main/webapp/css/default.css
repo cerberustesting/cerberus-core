@@ -625,3 +625,9 @@ img.selectedPicture{
     border-radius:0;
     font-weight: normal;
 }
+
+@media (max-width: 1200px) {
+    .affix {
+         position: static;
+    }
+}

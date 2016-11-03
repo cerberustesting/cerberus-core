@@ -36,12 +36,151 @@
             <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
             <%@ include file="include/messagesArea.html"%>
 
-            <div class="row">
-                <div class="col">
-
+            <div class="panel panel-default" id="testCaseConfig">
+                <div class="panel-heading">
+                    <div class="pull-left">
+                        <div class="">
+                            <span id="test"></span>
+                            <span> - </span>
+                            <span id="testcase"></span>
+                            <span> - </span>
+                            <span id="controlstatus"></span>
+                        </div>
+                    </div>
+                    <div class="pull-right" id="moredetails">
+                        <a>
+                            More details <span class="caret"></span>
+                        </a>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body" id="testCaseDetails" style="display:none;">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="application">Application</label>
+                                <input type="text" class="form-control" id="application" placeholder="Application" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="browser">Browser</label>
+                                <input type="text" class="form-control" id="browser" placeholder="Browser" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="browserfull">Browser Full Version</label>
+                                <input type="text" class="form-control" id="browserfull" placeholder="Browser Full Version" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="country">Country</label>
+                                <input type="text" class="form-control" id="country" placeholder="Country" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="environment">Environment</label>
+                                <input type="text" class="form-control" id="environment" placeholder="Environment" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="status">Status</label>
+                                <input type="text" class="form-control" id="status" placeholder="Status" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="controlstatus2">Control Status</label>
+                                <input type="text" class="form-control" id="controlstatus2" placeholder="Control Status" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label for="controlmessage">Control Message</label>
+                                <input type="text" class="form-control" id="controlmessage" placeholder="Control Message" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="ip">IP</label>
+                                <input type="text" class="form-control" id="ip" placeholder="IP" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="port">Port</label>
+                                <input type="text" class="form-control" id="port" placeholder="Port" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="platform">Platform</label>
+                                <input type="text" class="form-control" id="platform" placeholder="Platform" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="cerberusversion">Cerberus Version</label>
+                                <input type="text" class="form-control" id="cerberusversion" placeholder="Cerberus Version" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="executor">Executor</label>
+                                <input type="text" class="form-control" id="executor" placeholder="Executor" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="url">URL</label>
+                                <input type="text" class="form-control" id="url" placeholder="URL" readonly>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
+            <div class="row" style="margin: 0px; margin-top: 10px;">
+                <div class="col-lg-3" id="list-wrapper" data-spy="affix" data-offset-top="200">
+                    <div>
+                        <h3>Steps</h3>
+                        <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
+                    </div>
+                    <div>
+                        <div>
+                            <h3> Actions </h3>
+                            <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
+                            <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
+                            <button class="btn btn-block btn-primary side-item" id="runTestCase">See last executions</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                </div>
+                <div class="col-lg-9" id="stepContent" style="max-height: 200px;">
+                    <div class="step-header clearfix">
+                        <div id="stepInfo"  style="display: none;">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="stepDescription"</div>
+                                    <div class="col lib-info" id="libInfo"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="actionContainer"></div>
+                </div>
             </div>
             <footer class="footer">
                 <div id="footer" style="display: inline-block"></div>

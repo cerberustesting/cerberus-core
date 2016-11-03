@@ -20,6 +20,8 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
+        var stepList = [];
+        initPage();
         var executionId = GetURLParameter("executionId");
         var socket = new WebSocket("ws://localhost:8080/Cerberus/execution/"+executionId);
 
@@ -30,6 +32,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             console.log("message reçu");
             var data = JSON.parse(e.data);
             console.log(data);
+            updatePage(data, stepList);
         } /*on récupère les messages provenant du serveur websocket */
         socket.onclose = function(e){
             console.log("connexion fermée");
@@ -39,6 +42,36 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         } /*on traite les cas d'erreur*/
     });
 });
+
+function initPage() {
+    $("#testCaseConfig #testCaseDetails").hide();
+    $("#testCaseConfig #moredetails").click(function(e){
+        $("#testCaseConfig #testCaseDetails").toggle();
+    });
+}
+
+function updatePage(data, stepList){
+    var configPanel = $("#testCaseConfig");
+    configPanel.find("#test").text(data.test);
+    configPanel.find("#testcase").text(data.testcase);
+    configPanel.find("#controlstatus").text(data.controlStatus);
+    configPanel.find("input#application").val(data.application);
+    configPanel.find("input#browser").val(data.browser);
+    configPanel.find("input#browserfull").val(data.browserFullVersion);
+    configPanel.find("input#country").val(data.country);
+    configPanel.find("input#environment").val(data.environment);
+    configPanel.find("input#status").val(data.status);
+    configPanel.find("input#controlstatus2").val(data.controlStatus);
+    configPanel.find("input#controlmessage").val(data.controlMessage);
+    configPanel.find("input#ip").val(data.ip);
+    configPanel.find("input#port").val(data.port);
+    configPanel.find("input#platform").val(data.platform);
+    configPanel.find("input#cerberusversion").val(data.crbVersion);
+    configPanel.find("input#executor").val(data.executor);
+    configPanel.find("input#url").val(data.url);
+
+    createStepList(data.testCaseStepExecutionList,stepList)
+}
 
 /** DATA AGREGATION **/
 
@@ -68,10 +101,25 @@ function sortData(agreg) {
     });
 }
 
+function createStepList(data, stepList) {
+    $("#actionContainer").empty();
+
+    for (var i = 0; i < data.length; i++) {
+        var step = data[i];
+        var stepObj = new Step(step, stepList);
+
+        stepObj.draw();
+        stepList.push(stepObj);
+    }
+    if (stepList.length > 0) {
+        $(stepList[0].html[0]).click();
+    }
+}
+
 /** JAVASCRIPT OBJECT **/
 
 function Step(json, stepList) {
-    this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
+    this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
 
     this.test = json.test;
     this.testcase = json.testCase;
@@ -91,7 +139,7 @@ function Step(json, stepList) {
     this.toDelete = false;
 
     this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description")
+    this.textArea = $("<div></div>").addClass("col-lg-10")
             .text("[" + this.step + "]  " + this.description + "  (" + this.timeElapsed + ")");
 
 }
@@ -132,10 +180,10 @@ Step.prototype.show = function () {
 
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<span>").addClass("glyphicon glyphicon-ok pull-left").attr("style", "font-size:3em"));
-        $("#stepContent").addClass("col-lg-8 list-group-item-success");
+        $("#stepContent").addClass("col-lg-9 list-group-item-success");
     } else {
         $("#stepInfo").prepend($("<span>").addClass("glyphicon glyphicon-remove pull-left").attr("style", "font-size:3em"));
-        $("#stepContent").addClass("col-lg-8 list-group-item-danger");
+        $("#stepContent").addClass("col-lg-9 list-group-item-danger");
     }
 
     if (object.useStep === "Y") {
@@ -230,7 +278,7 @@ function Action(json, parentStep) {
 Action.prototype.draw = function () {
     var htmlElement = this.html;
     var action = this;
-    var row = $("<div></div>").addClass("col-lg-11");
+    var row = $("<div></div>").addClass("col-sm-11");
     var type = $("<div></div>").addClass("type");
 
 
@@ -240,11 +288,11 @@ Action.prototype.draw = function () {
 
 
     if (action.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-lg-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("list-group-item-success");
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-success");
     } else {
-        htmlElement.prepend($("<div>").addClass("col-lg-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("list-group-item-danger");
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-danger");
     }
 
     this.parentStep.stepActionContainer.append(htmlElement);
@@ -278,17 +326,17 @@ Action.prototype.setSequence = function (sequence) {
 
 Action.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-10").attr("style", "height:80px");
-    var firstRow = $("<div></div>").addClass("row");
+    var content = $("<div></div>").addClass("content");
+    var firstRow = $("<div></div>").addClass("list-group-item-heading");
     var secondRow = $("<div></div>").addClass("row form-inline");
     var thirdRow = $("<div></div>").addClass("row form-inline");
 
-    var actionList = $("<text>");
-    var descField = $("<text>");
-    var objectField = $("<text>");
-    var propertyField = $("<text>");
-    var returnMessageField = $("<text>").addClass("description");
-    var returnCodeField = $("<text>");
+    var actionList = $("<span>");
+    var descField = $("<span>");
+    var objectField = $("<span>");
+    var propertyField = $("<span>");
+    var returnMessageField = $("<h4>").attr("style", "height:30px; font-size:15px;");
+    var returnCodeField = $("<span>");
 
     descField.text(this.sequence + " - " + this.description);
     actionList.text(this.action);

@@ -21,14 +21,20 @@ package org.cerberus.websocket;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseStepExecutionService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.websocket.config.ServletAwareConfig;
 import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
 import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -40,20 +46,18 @@ import java.util.Set;
     @ServerEndpoint(
             value = "/execution/{execution-id}",
             decoders = {TestCaseExecutionDecoder.class},
-            encoders = {TestCaseExecutionEncoder.class}
+            encoders = {TestCaseExecutionEncoder.class},
+            configurator = ServletAwareConfig.class
     )
     public class TestCaseExecutionEndPoint {
         private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
+
+        private ApplicationContext appContext;
 
         /**
          * All open WebSocket sessions
          */
         static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
-
-        @Autowired
-        TestCaseExecutionService testCaseExecutionService;
-        @Autowired
-        TestCaseStepExecutionService testCaseStepExecutionService;
 
         /**
          * Send Live message for all peers connected to this execution
@@ -80,16 +84,25 @@ import java.util.Set;
         }
 
         @OnOpen
-        public void openConnection(Session session, @PathParam("execution-id") int executionId) {
+        public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
 
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);
 
-            AnswerItem ai = testCaseExecutionService.readByKey(executionId);
-            if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
-                TestCaseExecution exec = (TestCaseExecution) ai.getItem();
-                testCaseExecutionService.sendObjectByWebSocket(exec);
+
+            HttpSession httpSession = (HttpSession) config.getUserProperties().get("httpSession");
+            ServletContext servletContext = httpSession.getServletContext();
+            appContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+
+            ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
+
+            AnswerItem ans = testCaseExecutionService.readByKey(executionId);
+
+            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null){
+                TestCaseExecution tce = (TestCaseExecution) ans.getItem();
+                testCaseExecutionService.sendObjectByWebSocket(tce);
             }
+
         }
 
         @OnClose
