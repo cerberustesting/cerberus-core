@@ -872,8 +872,10 @@ Step.prototype.show = function () {
 
     if (object.useStep === "Y") {
         $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + ")");
+        $("#addAction").prop("disabled",true);
     } else {
         $("#libInfo").text("");
+        $("#addAction").prop("disabled",false);
     }
 
     object.stepActionContainer.show();
@@ -1019,6 +1021,9 @@ Action.prototype.draw = function () {
         drag.on("dragleave", handleDragLeave);
         drag.on("drop", handleDrop);
         drag.on("dragend", handleDragEnd);
+    }else{
+        addBtn.prop("disabled",true);
+        supprBtn.prop("disabled",true);
     }
 
     plusBtn.click(function(){
