@@ -32,9 +32,15 @@
     </head>
     <body>
         <%@ include file="include/header.html"%>
-        <div id="page-layout" class="container-fluid center">
+        <div id="page-layout" class="container container-fluid center">
             <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
             <%@ include file="include/messagesArea.html"%>
+
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <span class="sr-only"></span>
+                </div>
+            </div>
 
             <div class="panel panel-default" id="testCaseConfig">
                 <div class="panel-heading">
@@ -151,32 +157,27 @@
                     </div>
                 </div>
             </div>
-            <div class="row" style="margin: 0px; margin-top: 10px;">
-                <div class="col-lg-3" id="list-wrapper" data-spy="affix" data-offset-top="200">
-                    <div>
-                        <h3>Steps</h3>
-                        <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
-                    </div>
-                    <div>
+            <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
+                <nav class="col-lg-3" id="nav-execution">
+                    <div id="list-wrapper">
                         <div>
-                            <h3> Actions </h3>
-                            <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
-                            <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
-                            <button class="btn btn-block btn-primary side-item" id="runTestCase">See last executions</button>
+                            <h3>Steps</h3>
+                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
+                        </div>
+                        <div>
+                            <div>
+                                <h3> Actions </h3>
+                                <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
+                                <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
+                                <button class="btn btn-block btn-primary side-item" id="lastExecution">See last executions</button>
+                                <button class="btn btn-block btn-primary side-item" id="runOld">Old Page</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-3">
-                </div>
-                <div class="col-lg-9" id="stepContent" style="max-height: 200px;">
-                    <div class="step-header clearfix">
-                        <div id="stepInfo"  style="display: none;">
-                            <div class="row">
-                                <div class="col">
-                                    <div id="stepDescription"</div>
-                                    <div class="col lib-info" id="libInfo"></div>
-                                </div>
-                            </div>
+                </nav>
+                <div class="col-lg-9" id="stepContent">
+                    <div>
+                        <div id="stepInfo" class="row" style="display: none;">
                         </div>
                     </div>
                     <div id="actionContainer"></div>

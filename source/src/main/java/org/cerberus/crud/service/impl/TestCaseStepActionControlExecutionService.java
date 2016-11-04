@@ -44,13 +44,11 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-        testCaseExecutionService.sendObjectByWebSocket(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
     }
     
     @Override
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
-        testCaseExecutionService.sendObjectByWebSocket(testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution());
     }
     
     @Override

@@ -237,12 +237,4 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
 
-    @Override
-    public void sendObjectByWebSocket(TestCaseExecution testCaseExecution) {
-        //Send live result for this match
-        AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(testCaseExecution.getId(), testCaseExecution.getTest(), testCaseExecution.getTestCase());
-        testCaseExecution.setTestCaseStepExecutionList(steps);
-        TestCaseExecutionEndPoint.send(testCaseExecution);
-    }
-
 }

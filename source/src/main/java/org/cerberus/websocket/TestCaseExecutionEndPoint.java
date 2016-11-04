@@ -96,11 +96,11 @@ import java.util.Set;
 
             ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
 
-            AnswerItem ans = testCaseExecutionService.readByKey(executionId);
+            AnswerItem ans = testCaseExecutionService.readByKeyWithDependency(executionId);
 
             if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null){
                 TestCaseExecution tce = (TestCaseExecution) ans.getItem();
-                testCaseExecutionService.sendObjectByWebSocket(tce);
+                TestCaseExecutionEndPoint.send(tce);
             }
 
         }

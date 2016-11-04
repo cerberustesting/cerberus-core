@@ -63,7 +63,6 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     @Override
     public void updateTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
         this.testCaseStepActionExecutionDao.updateTestCaseStepActionExecution(testCaseStepActionExecution);
-        this.testCaseExecutionService.sendObjectByWebSocket(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution());
     }
 
     @Override

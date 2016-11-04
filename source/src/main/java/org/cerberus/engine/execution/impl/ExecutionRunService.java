@@ -22,6 +22,7 @@ package org.cerberus.engine.execution.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.apache.log4j.Level;
@@ -68,6 +69,8 @@ import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerList;
+import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -301,7 +304,28 @@ public class ExecutionRunService implements IExecutionRunService {
                  * Execute Step
                  */
                 LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - " + testCaseStepExecution.getStep());
-                testCaseStepExecution = this.executeStep(testCaseStepExecution);
+
+                /**
+                 * We populate the TestCase Step List
+                 */
+
+                AnswerList<TestCaseStepExecution> ai = tCExecution.getTestCaseStepExecutionAnswerList();
+                if(ai == null){
+                    ai = new AnswerList<>();
+                }
+                List<TestCaseStepExecution> tcsExecutionList = ai.getDataList();
+                if(tcsExecutionList == null){
+                    tcsExecutionList = new LinkedList<>();
+                }
+                tcsExecutionList.add(testCaseStepExecution);
+                ai.setDataList(tcsExecutionList);
+                tCExecution.setTestCaseStepExecutionList(ai);
+
+                /**
+                 * We execute the step
+                 */
+
+                testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
 
                 /**
                  * Updating Execution Result Message only if execution result
@@ -423,11 +447,12 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception updating Execution :" + tCExecution.getId() + " Exception:" + ex.toString());
         }
+        TestCaseExecutionEndPoint.send(tCExecution);
 
         return tCExecution;
     }
 
-    private TestCaseStepExecution executeStep(TestCaseStepExecution testCaseStepExecution) {
+    private TestCaseStepExecution executeStep(TestCaseStepExecution testCaseStepExecution, TestCaseExecution tcExecution) {
 
         long runID = testCaseStepExecution.getId();
         String logPrefix = runID + " - ";
@@ -531,7 +556,28 @@ public class ExecutionRunService implements IExecutionRunService {
             // Execute or not the action here.
             if (execute_Action) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
-                testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution);
+
+                /**
+                 * We populate the TestCase Action List
+                 */
+
+                AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
+                if(ai == null){
+                    ai = new AnswerList<>();
+                }
+                List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
+                if(tcsaExecution == null){
+                    tcsaExecution = new LinkedList<>();
+                }
+                tcsaExecution.add(testCaseStepActionExecution);
+                ai.setDataList(tcsaExecution);
+                testCaseStepExecution.setTestCaseStepActionExecution(ai);
+
+                /**
+                 * We execute the Action
+                 */
+
+                testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution, tcExecution);
 
                 /**
                  * If Action or property reported to stop the testcase, we stop
@@ -563,11 +609,11 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         testCaseStepExecution.setEnd(new Date().getTime());
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-
+        TestCaseExecutionEndPoint.send(tcExecution);
         return testCaseStepExecution;
     }
 
-    private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution testCaseStepActionExecution) {
+    private TestCaseStepActionExecution executeAction(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseExecution tcExecution) {
 
         testCaseStepActionExecution = this.actionService.doAction(testCaseStepActionExecution);
 
@@ -626,7 +672,28 @@ public class ExecutionRunService implements IExecutionRunService {
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControlSequence() + " type : " + testCaseStepActionControlExecution.getControl());
-            testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution);
+
+            /**
+             * We populate the TestCase Control List
+             */
+
+            AnswerList<TestCaseStepActionControlExecution> ai = testCaseStepActionExecution.getTestCaseStepActionControlExecutionList();
+            if(ai == null){
+                ai = new AnswerList<>();
+            }
+            List<TestCaseStepActionControlExecution> tcsaExecution = ai.getDataList();
+            if(tcsaExecution == null){
+                tcsaExecution = new LinkedList<>();
+            }
+            tcsaExecution.add(testCaseStepActionControlExecution);
+            ai.setDataList(tcsaExecution);
+            testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(ai);
+
+            /**
+             * We execute the control
+             */
+
+            testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution, tcExecution);
 
             /**
              * We update the Action with the execution message and stop flag
@@ -655,11 +722,13 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
 
+        TestCaseExecutionEndPoint.send(tcExecution);
+
         return testCaseStepActionExecution;
 
     }
 
-    private TestCaseStepActionControlExecution executeControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+    private TestCaseStepActionControlExecution executeControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution, TestCaseExecution tcExecution) {
 
         testCaseStepActionControlExecution = this.controlService.doControl(testCaseStepActionControlExecution);
 
@@ -675,6 +744,7 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
+        TestCaseExecutionEndPoint.send(tcExecution);
         return testCaseStepActionControlExecution;
     }
 
@@ -694,6 +764,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
         }
+        TestCaseExecutionEndPoint.send(tCExecution);
         return tCExecution;
     }
 

@@ -626,8 +626,24 @@ img.selectedPicture{
     font-weight: normal;
 }
 
+#nav-execution .affix-top {
+    width: 100%;
+}
+
+#nav-execution .affix-bottom {
+    width: 100%;
+    position: absolute;
+}
+
 @media (max-width: 1200px) {
-    .affix {
-         position: static;
+    #nav-execution .affix {
+        position: static;
+        width: 100%;
+    }
+}
+@media (min-width: 1200px) {
+    #nav-execution .affix {
+        top: 0;
+        width: 255px;
     }
 }

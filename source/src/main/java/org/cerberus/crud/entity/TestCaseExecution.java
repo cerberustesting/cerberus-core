@@ -637,7 +637,7 @@ public class TestCaseExecution {
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
             JSONArray array = new JSONArray();
-            if(this.getTestCaseStepExecutionAnswerList() != null) {
+            if(this.getTestCaseStepExecutionAnswerList() != null && this.getTestCaseStepExecutionAnswerList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
                     array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
                 }

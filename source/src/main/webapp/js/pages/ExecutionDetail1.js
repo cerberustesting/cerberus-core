@@ -21,8 +21,9 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
-        initPage();
         var executionId = GetURLParameter("executionId");
+        initPage(executionId);
+
         var socket = new WebSocket("ws://localhost:8080/Cerberus/execution/"+executionId);
 
         socket.onopen = function(e){
@@ -31,7 +32,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         socket.onmessage = function(e){
             console.log("message reçu");
             var data = JSON.parse(e.data);
-            console.log(data);
             updatePage(data, stepList);
         } /*on récupère les messages provenant du serveur websocket */
         socket.onclose = function(e){
@@ -43,14 +43,44 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
-function initPage() {
+function initPage(id) {
+    var doc = new Doc();
     $("#testCaseConfig #testCaseDetails").hide();
     $("#testCaseConfig #moredetails").click(function(e){
         $("#testCaseConfig #testCaseDetails").toggle();
+        $('#list-wrapper').data('bs.affix').options.offset.top = $("#handler").outerHeight(true) - 100 ;
     });
+
+    $('#list-wrapper').affix({offset: {top: $("#handler").outerHeight(true) - 100} });
+
+    $("#editTcInfo").prop("disabled",true);
+    $("#runTestCase").prop("disabled",true);
+    $("#lastExecution").prop("disabled",true);
+
+    $("#runOld").click(function () {
+        window.location = "ExecutionDetail.jsp?id_tc="+id;
+    });
+
+    displayHeaderLabel(doc);
+    displayFooter(doc);
 }
 
 function updatePage(data, stepList){
+
+    $("#editTcInfo").prop("disabled",false);
+    $("#runTestCase").prop("disabled",false);
+    $("#lastExecution").prop("disabled",false);
+
+    $("#editTcInfo").click(function () {
+        window.location = "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase;
+    });
+    $("#runTestCase").click(function () {
+        window.location = "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag;
+    });
+    $("#lastExecution").click(function () {
+        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase;
+    });
+
     var configPanel = $("#testCaseConfig");
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
@@ -70,7 +100,40 @@ function updatePage(data, stepList){
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#url").val(data.url);
 
-    createStepList(data.testCaseStepExecutionList,stepList)
+    createStepList(data.testCaseStepExecutionList,stepList);
+    updateLoadBar(data);
+}
+
+function updateLoadBar(data){
+    var total = 0;
+    var ended = 0;
+    for (var i = 0; i < data.testCaseStepExecutionList.length; i++) {
+        var step = data.testCaseStepExecutionList[i];
+        if (step.returnCode != "PE") {
+            ended += 1;
+        }
+        total += 1;
+        for (var j = 0; j < step.testCaseStepActionExecutionList.length; j++) {
+            var action = step.testCaseStepActionExecutionList[j];
+            if (action.returnCode != "PE") {
+                ended += 1;
+            }
+            total += 1;
+            for (var k = 0; k < action.testCaseStepActionControlExecutionList.length; k++) {
+                var control = action.testCaseStepActionControlExecutionList[k];
+                if (control.returnCode != "PE") {
+                    ended += 1;
+                }
+                total += 1;
+            }
+        }
+    }
+
+    var progress = ended / total * 100;
+    $("#progress-bar").css("width",progress + "%").attr("aria-valuenow",progress);
+    if(progress == 100 && data.controlStatus != "PE"){
+        $("#progress-bar").addClass("progress-bar-success");
+    }
 }
 
 /** DATA AGREGATION **/
@@ -103,6 +166,7 @@ function sortData(agreg) {
 
 function createStepList(data, stepList) {
     $("#actionContainer").empty();
+    $("#stepList").empty();
 
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
@@ -112,7 +176,7 @@ function createStepList(data, stepList) {
         stepList.push(stepObj);
     }
     if (stepList.length > 0) {
-        $(stepList[0].html[0]).click();
+        $("#stepList a:first-child").trigger("click");
     }
 }
 
@@ -138,7 +202,7 @@ function Step(json, stepList) {
     this.stepList = stepList;
     this.toDelete = false;
 
-    this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
+    this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10")
             .text("[" + this.step + "]  " + this.description + "  (" + this.timeElapsed + ")");
 
@@ -165,6 +229,7 @@ Step.prototype.draw = function () {
 
 Step.prototype.show = function () {
     var object = $(this).data("item");
+    var stepDesc = $("<div>").addClass("col-sm-11");
 
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
@@ -172,27 +237,28 @@ Step.prototype.show = function () {
         step.stepActionContainer.hide();
         step.html.removeClass("active");
     }
-    $("#stepInfo > span").remove();
+    $("#stepInfo").empty();
     $("#stepContent").removeClass();
     $(this).addClass("active");
 
 
 
     if (object.returnCode === "OK") {
-        $("#stepInfo").prepend($("<span>").addClass("glyphicon glyphicon-ok pull-left").attr("style", "font-size:3em"));
-        $("#stepContent").addClass("col-lg-9 list-group-item-success");
+        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
+        $("#stepContent").addClass("col-lg-9");
     } else {
-        $("#stepInfo").prepend($("<span>").addClass("glyphicon glyphicon-remove pull-left").attr("style", "font-size:3em"));
-        $("#stepContent").addClass("col-lg-9 list-group-item-danger");
+        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
+        $("#stepContent").addClass("col-lg-9");
     }
 
+    stepDesc.append($("<h2 id='stepDescription'>").text(object.description));
     if (object.useStep === "Y") {
-        $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )");
+        stepDesc.append($("<div id='libInfo'>").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
-        $("#libInfo").text("");
+        stepDesc.append($("<div id='libInfo'>").text(""));
     }
+    $("#stepInfo").append(stepDesc);
     object.stepActionContainer.show();
-    $("#stepDescription").text(object.description);
     $("#stepInfo").show();
 };
 
@@ -204,12 +270,9 @@ Step.prototype.setActionList = function (actionList) {
 
 Step.prototype.setAction = function (action) {
     if (action instanceof Action) {
-        action.draw();
         this.actionList.push(action);
     } else {
         var actionObj = new Action(action, this);
-
-        actionObj.draw();
         this.actionList.push(actionObj);
     }
 };
@@ -242,7 +305,7 @@ Step.prototype.getJsonData = function () {
 };
 
 function Action(json, parentStep) {
-    this.html = $("<div></div>").addClass("action-group");
+    this.html = $("<a href='#'></a>").addClass("action-group");
     this.parentStep = parentStep;
 
     if (json !== null) {
@@ -258,7 +321,6 @@ function Action(json, parentStep) {
         this.property = json.property;
         this.screenshotFileName = json.screenshotFileName;
         this.controlList = [];
-        this.setControlList(json.testCaseStepActionControlExecutionList);
     } else {
         this.test = "";
         this.testcase = "";
@@ -272,30 +334,46 @@ function Action(json, parentStep) {
         this.controlList = [];
     }
 
+    this.draw();
+
+    if(json !== null){
+        this.setControlList(json.testCaseStepActionControlExecutionList);
+    }
+
     this.toDelete = false;
 }
 
 Action.prototype.draw = function () {
     var htmlElement = this.html;
     var action = this;
-    var row = $("<div></div>").addClass("col-sm-11");
+    var row = $("<div></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
 
-
-    row.append(this.generateContent());
+    row.append(this.generateHeader());
     row.data("item", this);
+
+    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+
+    htmlElement.prepend(button);
     htmlElement.prepend(row);
 
+    var content = this.generateContent();
 
     if (action.returnCode === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
+        content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-danger");
+        content.show();
     }
 
     this.parentStep.stepActionContainer.append(htmlElement);
+    this.parentStep.stepActionContainer.append(content);
+    htmlElement.click(function(){
+       content.toggle();
+    });
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -324,39 +402,65 @@ Action.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.generateContent = function () {
-    var obj = this;
+Action.prototype.generateHeader = function () {
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("list-group-item-heading");
-    var secondRow = $("<div></div>").addClass("row form-inline");
-    var thirdRow = $("<div></div>").addClass("row form-inline");
+    var returnMessageField = $("<h4>").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    var actionList = $("<span>");
-    var descField = $("<span>");
-    var objectField = $("<span>");
-    var propertyField = $("<span>");
-    var returnMessageField = $("<h4>").attr("style", "height:30px; font-size:15px;");
-    var returnCodeField = $("<span>");
 
-    descField.text(this.sequence + " - " + this.description);
-    actionList.text(this.action);
-    objectField.text(this.object);
-    propertyField.text(this.property);
-    
     returnMessageField.text(this.returnMessage);
-    
+
     firstRow.append(returnMessageField);
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
-    thirdRow.append($("<span></span>").addClass("col-lg-4").append(returnCodeField));
-    thirdRow.append($("<span></span>").addClass("col-lg-4").append(descField));
 
     content.append(firstRow);
-    content.append(secondRow);
-    content.append(thirdRow);
 
     return content;
+};
+
+Action.prototype.generateContent = function () {
+    var obj = this;
+
+    var secondRow = $("<div></div>").addClass("row");
+    var thirdRow = $("<div></div>").addClass("row");
+    var fourthRow = $("<div></div>").addClass("row");
+    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
+
+    var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly",true);
+    var descField = $("<input type='text' class='form-control' id='description'>").prop("readonly",true);
+    var objectField = $("<input type='text' class='form-control' id='object'>").prop("readonly",true);
+    var propertyField = $("<input type='text' class='form-control' id='property'>").prop("readonly",true);
+    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly",true);
+    var returnMessageField = $("<textarea class='form-control' id='returnmessage'>").prop("readonly",true);
+
+    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>Action</label>")).append(actionList);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>Description</label>")).append(descField);
+    var objectGroup = $("<div class='form-group'></div>").append($("<label for='object'>Object</label>")).append(objectField);
+    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='property'>Property</label>")).append(propertyField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>Return Code</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>Return Message</label>")).append(returnMessageField);
+
+
+
+    descField.val(this.sequence + " - " + this.description);
+    actionList.val(this.action);
+    objectField.val(this.object);
+    propertyField.val(this.property);
+    returnCodeField.val(this.returnCode);
+    returnMessageField.val(this.returnMessage);
+
+    secondRow.append($("<div></div>").addClass("col-sm-4").append(actionGroup));
+    secondRow.append($("<div></div>").addClass("col-sm-4").append(descGroup));
+    secondRow.append($("<div></div>").addClass("col-sm-4").append(objectGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4").append(returncodeGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4").append(propertyGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4"));
+    fourthRow.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+
+    container.append(secondRow);
+    container.append(thirdRow);
+    container.append(fourthRow);
+
+    return container;
 };
 
 Action.prototype.getJsonData = function () {
@@ -384,10 +488,12 @@ function Control(json, parentAction) {
         this.sequence = json.sequence;
         this.control = json.control;
         this.description = json.description;
-        this.type = json.type;
+        this.controlType = json.controlType;
         this.controlValue = json.controlValue;
         this.controlProperty = json.controlProperty;
         this.fatal = json.fatal;
+        this.returnCode = json.returnCode;
+        this.returnMessage = json.returnMessage;
         this.screenshotFileName = "";
     } else {
         this.test = "";
@@ -396,7 +502,7 @@ function Control(json, parentAction) {
         this.sequence = parentAction.sequence;
         this.control = "";
         this.description = "";
-        this.type = "Unknown";
+        this.controlType = "Unknown";
         this.controlValue = "";
         this.controlProperty = "";
         this.fatal = "Y";
@@ -408,22 +514,40 @@ function Control(json, parentAction) {
 
     this.toDelete = false;
 
-    this.html = $("<div></div>").addClass("step-action row").addClass("control");
+    this.html = $("<a href='#'></a>").addClass("action-group").css("margin-left","25px");
 }
 
 Control.prototype.draw = function () {
     var htmlElement = this.html;
-    var control = this;
+    var row = $("<div></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
+
+    row.append(this.generateHeader());
+    row.data("item", this);
+
+    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+
+    htmlElement.prepend(button);
+    htmlElement.prepend(row);
+
     var content = this.generateContent();
 
-    htmlElement.append(content);
-    htmlElement.data("item", this);
+    if (this.returnCode === "OK") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-success");
+        content.hide();
+    } else {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-danger");
+        content.show();
+    }
 
-    htmlElement.prepend($("<div>").addClass("col-lg-2").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-    htmlElement.addClass("list-group-item-success");
+    this.parentStep.stepActionContainer.append(htmlElement);
+    this.parentStep.stepActionContainer.append(content);
+    htmlElement.click(function(){
+        content.toggle();
+    });
 
-    this.parentAction.html.append(htmlElement);
 };
 
 Control.prototype.setStep = function (step) {
@@ -438,35 +562,64 @@ Control.prototype.setControl = function (control) {
     this.control = control;
 };
 
-Control.prototype.generateContent = function () {
-    var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-10").attr("style", "height:80px");
-    var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row form-inline");
-    var thirdRow = $("<div></div>").addClass("row form-inline");
-    
-    var controlList = $("<text>");
-    var descField = $("<text>").addClass("description");
-    var objectField = $("<text>");
-    var propertyField = $("<text>");
-    var fatalField = $("<text>");
+Control.prototype.generateHeader = function () {
+    var content = $("<div></div>").addClass("content");
+    var firstRow = $("<div></div>").addClass("list-group-item-heading");
+    var returnMessageField = $("<h4>").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    descField.text(this.description);
-    controlList.text(this.type);
-    objectField.text(this.object);
-    propertyField.text(this.property);
-    fatalField.text(this.fatal);
 
-    firstRow.append(descField);
-    secondRow.append($("<span></span>").addClass("col-lg-3").append(controlList));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(propertyField));
-    secondRow.append($("<span></span>").addClass("col-lg-1").append(fatalField));
+    returnMessageField.text(this.returnMessage);
+
+    firstRow.append(returnMessageField);
 
     content.append(firstRow);
-    content.append(secondRow);
 
     return content;
+};
+
+Control.prototype.generateContent = function () {
+    var obj = this;
+
+    var secondRow = $("<div></div>").addClass("row");
+    var thirdRow = $("<div></div>").addClass("row");
+    var fourthRow = $("<div></div>").addClass("row");
+    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left","25px");
+
+    var descField = $("<input type='text' class='form-control' id='description'>").prop("readonly",true);
+    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly",true);
+    var controlTypeField = $("<input type='text' class='form-control' id='controltype'>").prop("readonly",true);
+    var controlValueField = $("<input type='text' class='form-control' id='controlvalue'>").prop("readonly",true);
+    var controlPropertyField = $("<input type='text' class='form-control' id='controlproperty'>").prop("readonly",true);
+    var returnMessageField = $("<textarea class='form-control' id='returnmessage'>").prop("readonly",true);
+
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>Description</label>")).append(descField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>Return Code</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>Return Message</label>")).append(returnMessageField);
+    var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>Control Type</label>")).append(controlTypeField);
+    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>Control Value</label>")).append(controlValueField);
+    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>Control Property</label>")).append(controlPropertyField);
+
+
+
+    descField.val(this.sequence + " - " + this.description);
+    returnCodeField.val(this.returnCode);
+    returnMessageField.val(this.returnMessage);
+    controlTypeField.val(this.controlType);
+    controlValueField.val(this.controlValue);
+    controlPropertyField.val(this.controlProperty);
+
+    secondRow.append($("<div></div>").addClass("col-sm-4").append(returncodeGroup));
+    secondRow.append($("<div></div>").addClass("col-sm-4").append(descGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4").append(controlTypeGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4").append(controlValueGroup));
+    thirdRow.append($("<div></div>").addClass("col-sm-4").append(controlPropertyGroup));
+    fourthRow.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+
+    container.append(secondRow);
+    container.append(thirdRow);
+    container.append(fourthRow);
+
+    return container;
 };
 
 Control.prototype.getJsonData = function () {
