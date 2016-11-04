@@ -44,8 +44,8 @@ function initPage() {
  * After table feeds, 
  * @returns {undefined}
  */
-function afterTableLoad(){
-    $.each($("code[name='envelopeField']"), function(i,e){
+function afterTableLoad() {
+    $.each($("code[name='envelopeField']"), function (i, e) {
         Prism.highlightElement($(e).get(0));
     });
 }
@@ -129,9 +129,31 @@ function editEntryClick(name) {
                  * syntax coloration in real time, then set the caret position.
                  */
                 $('#editSoapLibraryModal #envelope').on("keyup", function (e) {
+                    //Get the position of the carret
                     var pos = $(this).caret('pos');
+
+                    //On Firefox only, when pressing enter, it create a <br> tag.
+                    //So, if the <br> tag is present, replace it with <span>&#13;</span>
+                    if ($("#editSoapLibraryModal #envelope br").length !== 0) {
+                        $("#editSoapLibraryModal #envelope br").replaceWith("<span>&#13;</span>");
+                        pos++;
+                    }
+                    //Apply syntax coloration
                     Prism.highlightElement($("#editSoapLibraryModal #envelope")[0]);
+                    //Set the caret position to the initia one.
                     $(this).caret('pos', pos);
+                });
+
+                //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+                //Add class on container to highlight field
+                $('#editSoapLibraryModal #envelopeContainer').on("click", function (e) {
+                    $('#editSoapLibraryModal #envelopeContainer').addClass('highlightedContainer');
+                    $('#editSoapLibraryModal #envelope').focus();
+                });
+
+                //Remove class to stop highlight envelop field
+                $('#editSoapLibraryModal #envelope').on('blur', function () {
+                    $('#editSoapLibraryModal #envelopeContainer').removeClass('highlightedContainer');
                 });
 
 
@@ -152,7 +174,7 @@ function editEntryModalSaveHandler() {
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope, not in the form
     data.envelope = encodeURI($("#editSoapLibraryModal #envelope").text());
-    
+
     showLoaderInModal('#editSoapLibraryModal');
     $.ajax({
         url: "UpdateSoapLibrary2",
@@ -204,13 +226,33 @@ function addEntryClick() {
      * On edition, get the caret position, refresh the envelope to have 
      * syntax coloration in real time, then set the caret position.
      */
-    
     $('#addSoapLibraryModal #envelope').on("keyup", function (e) {
+        //Get the position of the carret
         var pos = $(this).caret('pos');
+
+        //On Firefox only, when pressing enter, it create a <br> tag.
+        //So, if the <br> tag is present, replace it with <span>&#13;</span>
+        if ($("#addSoapLibraryModal #envelope br").length !== 0) {
+            $("#addSoapLibraryModal #envelope br").replaceWith("<span>&#13;</span>");
+            pos++;
+        }
+        //Apply syntax coloration
         Prism.highlightElement($("#addSoapLibraryModal #envelope")[0]);
+        //Set the caret position to the initia one.
         $(this).caret('pos', pos);
     });
 
+    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+    //Add class on container to highlight field
+    $('#addSoapLibraryModal #envelopeContainer').on("click", function (e) {
+        $('#addSoapLibraryModal #envelopeContainer').addClass('highlightedContainer');
+        $('#addSoapLibraryModal #envelope').focus();
+    });
+
+    //Remove class to stop highlight envelop field
+    $('#addSoapLibraryModal #envelope').on('blur', function () {
+        $('#addSoapLibraryModal #envelopeContainer').removeClass('highlightedContainer');
+    });
 
     $('#addSoapLibraryModal').modal('show');
 }
@@ -223,7 +265,7 @@ function addEntryModalSaveHandler() {
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope, not in the form
     data.envelope = encodeURI($("#addSoapLibraryModalForm #envelope").text());
-    
+
     showLoaderInModal('#addSoapLibraryModal');
     $.ajax({
         url: "CreateSoapLibrary2",
@@ -321,7 +363,7 @@ function aoColumnsFunc(tableId) {
         {"data": "name", "sName": "Name", "title": doc.getDocLabel("page_soapLibrary", "soapLibrary_col")},
         {"data": "type", "sName": "Type", "title": doc.getDocLabel("page_soapLibrary", "type_col")},
         {
-            "data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"),"sWidth": "350px",
+            "data": "envelope", "sName": "Envelope", "title": doc.getDocLabel("page_soapLibrary", "envelope_col"), "sWidth": "350px",
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['envelope']))).html();
                 //return $("<pre><code class='language-markup'>"+obj['envelope']+"</code></pre>").text();
