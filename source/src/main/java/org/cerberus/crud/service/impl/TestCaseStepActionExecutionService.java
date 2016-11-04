@@ -27,12 +27,10 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
-import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +49,6 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     ITestCaseExecutionDAO testCaseExecutionDao;
     @Autowired
     ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
-    @Autowired
-    TestCaseExecutionService testCaseExecutionService;
 
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
