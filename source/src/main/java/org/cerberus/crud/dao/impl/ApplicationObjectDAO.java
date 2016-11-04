@@ -260,7 +260,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             File appDir = new File(uploadPath + "/" + id);
             if(!appDir.exists()){
                 try{
-                    appDir.mkdir();
+                    appDir.mkdirs();
                 }
                 catch(SecurityException se){
                     LOG.warn("Unable to create application dir: " + se.getMessage());

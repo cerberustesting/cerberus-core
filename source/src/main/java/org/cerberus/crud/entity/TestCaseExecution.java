@@ -637,8 +637,10 @@ public class TestCaseExecution {
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
             JSONArray array = new JSONArray();
-            for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
-                array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
+            if(this.getTestCaseStepExecutionAnswerList() != null && this.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+                for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
+                    array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
+                }
             }
             result.put("testCaseStepExecutionList", array);
         } catch (JSONException ex) {

@@ -323,8 +323,10 @@ public class TestCaseStepActionExecution {
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
             JSONArray array = new JSONArray();
-            for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
-                array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson());
+            if(this.getTestCaseStepActionControlExecutionList() != null && this.getTestCaseStepActionControlExecutionList().getDataList() != null) {
+                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
+                    array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson());
+                }
             }
             result.put("testCaseStepActionControlExecutionList", array);
         } catch (JSONException ex) {
