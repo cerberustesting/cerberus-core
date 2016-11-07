@@ -565,14 +565,14 @@ div.ImportedStepAction{
     border-width:thin ;
     border-color:#CCCCCC;
 }
- 
+
 
 input.readonlyaction_seq, input.readonlyactioncontrol_seq{
     width: 40px; 
     font-weight: bold; 
     background-color: transparent; 
     height:100%; color:grey;
-    
+
 }
 
 div.StepUseStepLinkDiv{
@@ -625,3 +625,34 @@ img.selectedPicture{
     border-radius:0;
     font-weight: normal;
 }
+
+#nav-execution .affix-top {
+    width: 100%;
+}
+
+#nav-execution .affix-bottom {
+    width: 100%;
+    position: absolute;
+}
+
+@media (max-width: 1200px) {
+    #nav-execution .affix {
+        position: static;
+        width: 100%;
+    }
+}
+@media (min-width: 1200px) {
+    #nav-execution .affix {
+        top: 0;
+        width: 255px;
+    }
+}
+
+#envelope:focus { outline: 0px solid transparent; }
+
+.highlightedContainer {
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+    outline: 0 none;
+}
+

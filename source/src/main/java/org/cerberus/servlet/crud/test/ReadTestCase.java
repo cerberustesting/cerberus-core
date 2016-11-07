@@ -116,7 +116,7 @@ public class ReadTestCase extends HttpServlet {
          */
         String test = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("test"), "");
         String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), "");
-        String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), "");
+        String testCase = ParameterParserUtil.parseStringParam(request.getParameter("testCase"), null);
         String campaign = ParameterParserUtil.parseStringParam(request.getParameter("campaign"), "");
         boolean getMaxTC = ParameterParserUtil.parseBooleanParam(request.getParameter("getMaxTC"), false);
         boolean filter = ParameterParserUtil.parseBooleanParam(request.getParameter("filter"), false);
@@ -131,10 +131,10 @@ public class ReadTestCase extends HttpServlet {
 
         try {
             JSONObject jsonResponse = new JSONObject();
-            if (!Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && !withStep) {
+            if (!Strings.isNullOrEmpty(test) && testCase != null && !withStep) {
                 answer = findTestCaseByTestTestCase(test, testCase, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (!Strings.isNullOrEmpty(test) && !Strings.isNullOrEmpty(testCase) && withStep) {
+            } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) {
                 answer = findTestCaseWithStep(appContext, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {

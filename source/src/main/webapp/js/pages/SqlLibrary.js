@@ -122,9 +122,31 @@ function editEntryClick(name) {
                  * syntax coloration in real time, then set the caret position.
                  */
                 $('#editSqlLibraryModal #script').on("keyup", function (e) {
+                    //Get the position of the carret
                     var pos = $(this).caret('pos');
+
+                    //On Firefox only, when pressing enter, it create a <br> tag.
+                    //So, if the <br> tag is present, replace it with <span>&#13;</span>
+                    if ($("#editSqlLibraryModal #script br").length !== 0) {
+                        $("#editSqlLibraryModal #script br").replaceWith("<span>&#13;</span>");
+                        pos++;
+                    }
+                    //Apply syntax coloration
                     Prism.highlightElement($("#editSqlLibraryModal #script")[0]);
+                    //Set the caret position to the initia one.
                     $(this).caret('pos', pos);
+                });
+
+                //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+                //Add class on container to highlight field
+                $('#editSqlLibraryModal #scriptContainer').on("click", function (e) {
+                    $('#editSqlLibraryModal #scriptContainer').addClass('highlightedContainer');
+                    $('#editSqlLibraryModal #script').focus();
+                });
+
+                //Remove class to stop highlight envelop field
+                $('#editSqlLibraryModal #script').on('blur', function () {
+                    $('#editSqlLibraryModal #scriptContainer').removeClass('highlightedContainer');
                 });
 
                 formEdit.modal('show');
@@ -144,7 +166,7 @@ function editEntryModalSaveHandler() {
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope and script, not in the form
     data.script = encodeURI($("#editSqlLibraryModalForm #script").text());
-    
+
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
         url: "UpdateSqlLibrary2",
@@ -198,9 +220,31 @@ function addEntryClick() {
      */
 
     $('#addSqlLibraryModal #script').on("keyup", function (e) {
+        //Get the position of the carret
         var pos = $(this).caret('pos');
+
+        //On Firefox only, when pressing enter, it create a <br> tag.
+        //So, if the <br> tag is present, replace it with <span>&#13;</span>
+        if ($("#addSqlLibraryModal #script br").length !== 0) {
+            $("#addSqlLibraryModal #script br").replaceWith("<span>&#13;</span>");
+            pos++;
+        }
+        //Apply syntax coloration
         Prism.highlightElement($("#addSqlLibraryModal #script")[0]);
+        //Set the caret position to the initia one.
         $(this).caret('pos', pos);
+    });
+
+    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+    //Add class on container to highlight field
+    $('#addSqlLibraryModal #scriptContainer').on("click", function (e) {
+        $('#addSqlLibraryModal #scriptContainer').addClass('highlightedContainer');
+        $('#addSqlLibraryModal #script').focus();
+    });
+
+    //Remove class to stop highlight envelop field
+    $('#addSqlLibraryModal #script').on('blur', function () {
+        $('#addSqlLibraryModal #scriptContainer').removeClass('highlightedContainer');
     });
 
 
@@ -215,7 +259,7 @@ function addEntryModalSaveHandler() {
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope and script, not in the form
     data.script = encodeURI($("#addSqlLibraryModalForm #script").text());
-    
+
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
         url: "CreateSqlLibrary2",

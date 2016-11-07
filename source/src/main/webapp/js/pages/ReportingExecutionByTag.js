@@ -710,8 +710,8 @@ function generateTooltip(data) {
             '<div><span class=\'bold\'>Country : </span>' + data.Country + '</div>' +
             '<div><span class=\'bold\'>Environment : </span>' + data.Environment + '</div>' +
             '<div><span class=\'bold\'>Browser : </span>' + data.Browser + '</div>' +
-            '<div><span class=\'bold\'>Start : </span>' + data.Start + '</div>' +
-            '<div><span class=\'bold\'>End : </span>' + data.End + '</div>' +
+            '<div><span class=\'bold\'>Start : </span>' + new Date(data.Start) + '</div>' +
+            '<div><span class=\'bold\'>End : </span>' + new Date(data.End) + '</div>' +
             '<div>' + data.ControlMessage + '</div>';
 
     return htmlRes;
