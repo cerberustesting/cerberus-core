@@ -23,7 +23,7 @@
                         $("#ActiveUsers").append("<li>"+ v + "</li>");
                     });
                     $.each(data.simultaneous_execution_list, function (a, v){
-                        $("#ExecutionList").append("<li>[<a href='./ExecutionDetail.jsp?id_tc="+ v.id + "'>"+ v.id + "</a>] : " + v.test + " " +v.testcase + "</li>");
+                        $("#ExecutionList").append("<li>[<a href='./ExecutionDetail2.jsp?executionId="+ v.id + "'>"+ v.id + "</a>] : " + v.test + " " +v.testcase + "</li>");
                     });
                     
                 });

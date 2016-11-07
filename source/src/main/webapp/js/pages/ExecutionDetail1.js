@@ -67,6 +67,8 @@ function initPage(id) {
 
 function updatePage(data, stepList){
 
+    sortData(data.testCaseStepExecutionList);
+
     $("#editTcInfo").prop("disabled",false);
     $("#runTestCase").prop("disabled",false);
     $("#lastExecution").prop("disabled",false);
@@ -139,16 +141,17 @@ function updateLoadBar(data){
 /** DATA AGREGATION **/
 
 function sortStep(step) {
-    for (var j = 0; j < step.actionList.length; j++) {
-        var action = step.actionList[j];
 
-        action.controlList.sort(function (a, b) {
-            return a.control - b.control;
+    for (var j = 0; j < step.testCaseStepActionExecutionList.length; j++) {
+        var action = step.testCaseStepActionExecutionList[j];
+
+        action.testCaseStepActionControlExecutionList.sort(function (a, b) {
+            return a.sort - b.sort;
         });
     }
 
-    step.actionList.sort(function (a, b) {
-        return a.sequence - b.sequence;
+    step.testCaseStepActionExecutionList.sort(function (a, b) {
+        return a.sort - b.sort;
     });
 }
 
@@ -160,7 +163,7 @@ function sortData(agreg) {
     }
 
     agreg.sort(function (a, b) {
-        return a.step - b.step;
+        return a.sort - b.sort;
     });
 }
 
@@ -176,7 +179,7 @@ function createStepList(data, stepList) {
         stepList.push(stepObj);
     }
     if (stepList.length > 0) {
-        $("#stepList a:first-child").trigger("click");
+        $("#stepList a:last-child").trigger("click");
     }
 }
 
@@ -188,6 +191,7 @@ function Step(json, stepList) {
     this.test = json.test;
     this.testcase = json.testCase;
     this.step = json.step;
+    this.sort = json.sort;
     this.description = json.description;
     this.timeElapsed = json.timeElapsed;
     this.useStep = json.useStep;
@@ -204,7 +208,7 @@ function Step(json, stepList) {
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10")
-            .text("[" + this.step + "]  " + this.description + "  (" + this.timeElapsed + ")");
+            .text("[" + this.sort + "]  " + this.description + "  (" + this.timeElapsed + ")");
 
 }
 
@@ -218,6 +222,12 @@ Step.prototype.draw = function () {
     if (object.returnCode === "OK") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-ok pull-left"));
         object.html.addClass("list-group-item-success");
+    } else if (object.returnCode === "PE") {
+        htmlElement.append($("<span>").addClass("glyphicon glyphicon-refresh spin pull-left"));
+        object.html.addClass("list-group-item-info");
+    } else if (object.returnCode === "FA") {
+        htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
+        object.html.addClass("list-group-item-warning");
     } else {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-remove pull-left"));
         object.html.addClass("list-group-item-danger");
@@ -245,6 +255,12 @@ Step.prototype.show = function () {
 
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
+        $("#stepContent").addClass("col-lg-9");
+    } else if (object.returnCode === "PE") {
+        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
+        $("#stepContent").addClass("col-lg-9");
+    } else if (object.returnCode === "FA") {
+        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
         $("#stepContent").addClass("col-lg-9");
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
@@ -362,6 +378,14 @@ Action.prototype.draw = function () {
     if (action.returnCode === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
+        content.hide();
+    } else if (action.returnCode === "PE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
+    } else if (action.returnCode === "FA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-warning");
         content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
@@ -535,6 +559,14 @@ Control.prototype.draw = function () {
     if (this.returnCode === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
+        content.hide();
+    } else if (this.returnCode === "PE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
+    } else if (this.returnCode === "FA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-warning");
         content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));

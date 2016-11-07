@@ -19,7 +19,10 @@
  *//* 
     Created on : May 18, 2015, 2:18:04 PM
     Author     : FNogueira
-*/ 
+*/
+body{
+    -webkit-transform: translate3d(0, 0, 0);
+}
 .separator {
     border-top: 1px solid #E3E3E3;
     margin-top:20px;  
@@ -565,14 +568,14 @@ div.ImportedStepAction{
     border-width:thin ;
     border-color:#CCCCCC;
 }
- 
+
 
 input.readonlyaction_seq, input.readonlyactioncontrol_seq{
     width: 40px; 
     font-weight: bold; 
     background-color: transparent; 
     height:100%; color:grey;
-    
+
 }
 
 div.StepUseStepLinkDiv{
@@ -647,3 +650,36 @@ img.selectedPicture{
         width: 255px;
     }
 }
+
+.spin {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+}
+@-webkit-keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+#envelope:focus { outline: 0px solid transparent; }
+
+.highlightedContainer {
+    border-color: #66afe9;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(102, 175, 233, 0.6);
+    outline: 0 none;
+}
+

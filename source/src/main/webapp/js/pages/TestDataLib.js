@@ -404,17 +404,64 @@ function addTestDataLibClick() {
         toDelete: false
     };
     appendSubDataRow(newSubData, "subdataTableBody");
-    
+
     $('#addTestDataLibModal #envelope').on("keyup", function (e) {
+        //Get the position of the carret
         var pos = $(this).caret('pos');
+
+        //On Firefox only, when pressing enter, it create a <br> tag.
+        //So, if the <br> tag is present, replace it with <span>&#13;</span>
+        if ($("#addTestDataLibModal #envelope br").length !== 0) {
+            $("#addTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
+            pos++;
+        }
+        //Apply syntax coloration
         Prism.highlightElement($("#addTestDataLibModal #envelope")[0]);
+        //Set the caret position to the initia one.
         $(this).caret('pos', pos);
     });
+
+    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+    //Add class on container to highlight field
+    $('#addTestDataLibModal #envelopeContainer').on("click", function (e) {
+        $('#addTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
+        $('#addTestDataLibModal #envelope').focus();
+    });
+
+    //Remove class to stop highlight envelop field
+    $('#addTestDataLibModal #envelope').on('blur', function () {
+        $('#addTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
+    });
+
+
     $('#addTestDataLibModal #script').on("keyup", function (e) {
+        //Get the position of the carret
         var pos = $(this).caret('pos');
+
+        //On Firefox only, when pressing enter, it create a <br> tag.
+        //So, if the <br> tag is present, replace it with <span>&#13;</span>
+        if ($("#addTestDataLibModal #script br").length !== 0) {
+            $("#addTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
+            pos++;
+        }
+        //Apply syntax coloration
         Prism.highlightElement($("#addTestDataLibModal #script")[0]);
+        //Set the caret position to the initia one.
         $(this).caret('pos', pos);
     });
+
+    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+    //Add class on container to highlight field
+    $('#addTestDataLibModal #scriptContainer').on("click", function (e) {
+        $('#addTestDataLibModal #scriptContainer').addClass('highlightedContainer');
+        $('#addTestDataLibModal #script').focus();
+    });
+
+    //Remove class to stop highlight envelop field
+    $('#addTestDataLibModal #script').on('blur', function () {
+        $('#addTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+    });
+
 
     $('#addTestDataLibModal').modal('show');
 }
@@ -462,7 +509,7 @@ function duplicateTestDataLibModalSaveHandler() {
     //Add envelope and script, not in the form
     data.envelope = encodeURI($("#duplicateTestDataLibModal #envelope").text());
     data.script = encodeURI($("#duplicateTestDataLibModal #script").text());
-    
+
     $.ajax({
         url: "CreateTestDataLib",
         async: true,
@@ -532,7 +579,7 @@ function duplicateTestDataLibClick(testDataLibID) {
         //load TYPE
         $('#duplicateTestDataLibModal #libdescription').prop("value", obj.description);
         $('#duplicateTestDataLibModal #group').prop("value", obj.group);
-        
+
         if (obj.type === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
             $("#panelSOAPDuplicate").collapse("hide");
@@ -577,15 +624,62 @@ function duplicateTestDataLibClick(testDataLibID) {
          * syntax coloration in real time, then set the caret position.
          */
         $('#duplicateTestDataLibModal #envelope').on("keyup", function (e) {
+            //Get the position of the carret
             var pos = $(this).caret('pos');
+
+            //On Firefox only, when pressing enter, it create a <br> tag.
+            //So, if the <br> tag is present, replace it with <span>&#13;</span>
+            if ($("#duplicateTestDataLibModal #envelope br").length !== 0) {
+                $("#duplicateTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
+                pos++;
+            }
+            //Apply syntax coloration
             Prism.highlightElement($("#duplicateTestDataLibModal #envelope")[0]);
+            //Set the caret position to the initia one.
             $(this).caret('pos', pos);
         });
+
+        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+        //Add class on container to highlight field
+        $('#duplicateTestDataLibModal #envelopeContainer').on("click", function (e) {
+            $('#duplicateTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
+            $('#duplicateTestDataLibModal #envelope').focus();
+        });
+
+        //Remove class to stop highlight envelop field
+        $('#duplicateTestDataLibModal #envelope').on('blur', function () {
+            $('#duplicateTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
+        });
+
+
         $('#duplicateTestDataLibModal #script').on("keyup", function (e) {
+            //Get the position of the carret
             var pos = $(this).caret('pos');
+
+            //On Firefox only, when pressing enter, it create a <br> tag.
+            //So, if the <br> tag is present, replace it with <span>&#13;</span>
+            if ($("#duplicateTestDataLibModal #script br").length !== 0) {
+                $("#duplicateTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
+                pos++;
+            }
+            //Apply syntax coloration
             Prism.highlightElement($("#duplicateTestDataLibModal #script")[0]);
+            //Set the caret position to the initia one.
             $(this).caret('pos', pos);
         });
+
+        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+        //Add class on container to highlight field
+        $('#duplicateTestDataLibModal #scriptContainer').on("click", function (e) {
+            $('#duplicateTestDataLibModal #scriptContainer').addClass('highlightedContainer');
+            $('#duplicateTestDataLibModal #script').focus();
+        });
+
+        //Remove class to stop highlight envelop field
+        $('#duplicateTestDataLibModal #script').on('blur', function () {
+            $('#duplicateTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+        });
+
         //after everything. then shows the modal
         $("#duplicateTestDataLibModal").modal("show");
 
@@ -614,7 +708,7 @@ function editTestDataLibModalSaveHandler() {
     //Add envelope and script, not in the form
     data.envelope = encodeURI($("form#editTestLibData #envelope").text());
     data.script = encodeURI($("form#editTestLibData #script").text());
-    
+
     $.ajax({
         url: "UpdateTestDataLib",
         async: true,
@@ -742,15 +836,62 @@ function editTestDataLibClick(testDataLibID) {
          * syntax coloration in real time, then set the caret position.
          */
         $('#editTestDataLibModal #envelope').on("keyup", function (e) {
+            //Get the position of the carret
             var pos = $(this).caret('pos');
+
+            //On Firefox only, when pressing enter, it create a <br> tag.
+            //So, if the <br> tag is present, replace it with <span>&#13;</span>
+            if ($("#editTestDataLibModal #envelope br").length !== 0) {
+                $("#editTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
+                pos++;
+            }
+            //Apply syntax coloration
             Prism.highlightElement($("#editTestDataLibModal #envelope")[0]);
+            //Set the caret position to the initia one.
             $(this).caret('pos', pos);
         });
+
+        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+        //Add class on container to highlight field
+        $('#editTestDataLibModal #envelopeContainer').on("click", function (e) {
+            $('#editTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
+            $('#editTestDataLibModal #envelope').focus();
+        });
+
+        //Remove class to stop highlight envelop field
+        $('#editTestDataLibModal #envelope').on('blur', function () {
+            $('#editTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
+        });
+
+
         $('#editTestDataLibModal #script').on("keyup", function (e) {
+            //Get the position of the carret
             var pos = $(this).caret('pos');
+
+            //On Firefox only, when pressing enter, it create a <br> tag.
+            //So, if the <br> tag is present, replace it with <span>&#13;</span>
+            if ($("#editTestDataLibModal #script br").length !== 0) {
+                $("#editTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
+                pos++;
+            }
+            //Apply syntax coloration
             Prism.highlightElement($("#editTestDataLibModal #script")[0]);
+            //Set the caret position to the initia one.
             $(this).caret('pos', pos);
         });
+
+        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
+        //Add class on container to highlight field
+        $('#editTestDataLibModal #scriptContainer').on("click", function (e) {
+            $('#editTestDataLibModal #scriptContainer').addClass('highlightedContainer');
+            $('#editTestDataLibModal #script').focus();
+        });
+
+        //Remove class to stop highlight envelop field
+        $('#editTestDataLibModal #script').on('blur', function () {
+            $('#editTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+        });
+
         //after everything. then shows the modal
         $('#editTestDataLibModal').modal('show');
 
@@ -1122,7 +1263,7 @@ function aoColumnsFuncTestDataLib(tableId) {
             "title": doc.getDocOnline("testdatalib", "method")
         },
         {
-            "data": "envelope", "sName": "tdl.envelope", "title": doc.getDocLabel("testdatalib", "envelope"),"sWidth": "350px",
+            "data": "envelope", "sName": "tdl.envelope", "title": doc.getDocLabel("testdatalib", "envelope"), "sWidth": "350px",
             "mRender": function (data, type, obj) {
                 return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['envelope']))).html();
             }

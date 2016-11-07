@@ -2449,7 +2449,7 @@ function openChangeTagPopin(value) {
                     var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
 
                     deferred.success(function () {
-                        $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
+                        $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
                     });
 
 //

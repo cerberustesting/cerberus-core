@@ -804,7 +804,7 @@
                             String LastExeMessage;
                             LastExeMessage = "<i>Never Executed</i>";
                             if (tce != null) {
-                                LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail.jsp?id_tc=" + tce.getId() + "\">Execution</a> was ";
+                                LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail2.jsp?executionId=" + tce.getId() + "\">Execution</a> was ";
                                 if (tce.getControlStatus().compareToIgnoreCase("OK") == 0) {
                                     LastExeMessage = LastExeMessage + "<a style=\"color : green\">" + tce.getControlStatus() + "</a>";
                                 } else {
