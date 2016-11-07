@@ -32,8 +32,11 @@
     </head>
     <body>
         <%@ include file="include/header.html"%>
-        <div id="page-layout" class="container container-fluid center">
-            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
+        <div id="page-layout" class="container-fluid center">
+            <div class="alert alert-warning">
+                <strong>BETA</strong> This page is in beta, some features may not be available or fully functional.
+                <button class="btn btn-warning side-item" id="runOld">Old Page</button>
+            </div>
             <%@ include file="include/messagesArea.html"%>
 
             <div class="progress">
@@ -170,7 +173,6 @@
                                 <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
                                 <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
                                 <button class="btn btn-block btn-primary side-item" id="lastExecution">See last executions</button>
-                                <button class="btn btn-block btn-primary side-item" id="runOld">Old Page</button>
                             </div>
                         </div>
                     </div>

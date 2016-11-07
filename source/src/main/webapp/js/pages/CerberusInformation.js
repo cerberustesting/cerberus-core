@@ -167,7 +167,7 @@ function FormatedExeId(id) {
     if (id === 0) {
         return id
     } else {
-        return "<a href='ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
+        return "<a href='ExecutionDetail2.jsp?executionId=" + id + "'>" + id + "</a>";
     }
 }
 

@@ -19,7 +19,10 @@
  *//* 
     Created on : May 18, 2015, 2:18:04 PM
     Author     : FNogueira
-*/ 
+*/
+body{
+    -webkit-transform: translate3d(0, 0, 0);
+}
 .separator {
     border-top: 1px solid #E3E3E3;
     margin-top:20px;  
@@ -648,6 +651,30 @@ img.selectedPicture{
     }
 }
 
+.spin {
+    -webkit-animation: fa-spin 2s infinite linear;
+    animation: fa-spin 2s infinite linear;
+}
+@-webkit-keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
 #envelope:focus { outline: 0px solid transparent; }
 
 .highlightedContainer {

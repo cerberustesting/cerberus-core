@@ -2011,7 +2011,7 @@ function generateExecutionLink(status, id) {
     if (status === "NE") {
         result = "./RunTests.jsp?queuedExecution=" + id;
     } else {
-        result = "./ExecutionDetail.jsp?id_tc=" + id;
+        result = "./ExecutionDetail2.jsp?executionId=" + id;
     }
     return result;
 }
