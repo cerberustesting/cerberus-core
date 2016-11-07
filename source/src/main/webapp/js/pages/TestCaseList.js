@@ -53,16 +53,9 @@ function initPage() {
 
     loadTable();
 
-    // handle the click for specific action buttons
-    $("#addEntryButton").click(addEntryModalSaveHandler);
-    $("#duplicateEntryButton").click(duplicateEntryModalSaveHandler);
     //PREPARE MASS ACTION
     //$("#massActionBrpButton").click(massActionModalSaveHandler);
 
-    $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, modalFormCleaner);
-    $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
-    $('#duplicateEntryModal').on('hidden.bs.modal', {extra: "#duplicateEntryModal"}, modalFormCleaner);
-    $('#manageLabelModal').on('hidden.bs.modal', {extra: "#manageLabelModal"}, modalFormCleaner);
     //PREPARE MASS ACTION
     //$('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
     $('[data-toggle="tooltip"]').tooltip();

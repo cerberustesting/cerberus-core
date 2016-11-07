@@ -81,19 +81,19 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
          * Changes the property nature when we change the property type. If we select the get from datalib, two options are hidden and therefore another should
          * be selected.
          * */
-        $("div[id*='propertyRow'] select[id*='properties_nature_']").each(function() {
-            var parents = $(this).parents("div[id*='propertyRow']");
-            var natureElement = parents.find("select[id*='properties_type_']");
-            var propertyType = $(natureElement).find("option:selected").prop("value");
-            if (propertyType === "getFromDataLib") {
-//                $(this).find("option:first").prop("selected", true);
-//                $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
-//                $(this).find("option[value='NOTINUSE']").addClass("hideElement");
-            } else {
-                $(this).find("option[value='RANDOMNEW']").removeClass("hideElement");
-                $(this).find("option[value='NOTINUSE']").removeClass("hideElement");
-            }
-        });
+//        $("div[id*='propertyRow'] select[id*='properties_nature_']").each(function() {
+//            var parents = $(this).parents("div[id*='propertyRow']");
+//            var natureElement = parents.find("select[id*='properties_type_']");
+//            var propertyType = $(natureElement).find("option:selected").prop("value");
+//            if (propertyType === "getFromDataLib") {
+////                $(this).find("option:first").prop("selected", true);
+////                $(this).find("option[value='RANDOMNEW']").addClass("hideElement");
+////                $(this).find("option[value='NOTINUSE']").addClass("hideElement");
+//            } else {
+//                $(this).find("option[value='RANDOMNEW']").removeClass("hideElement");
+//                $(this).find("option[value='NOTINUSE']").removeClass("hideElement");
+//            }
+//        });
 
 
         //TODO: this needs to be redefined when the refactor of this page is performed
