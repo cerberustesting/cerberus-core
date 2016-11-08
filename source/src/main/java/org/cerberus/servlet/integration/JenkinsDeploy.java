@@ -29,6 +29,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.service.ILogEventService;
 
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.ParameterService;
@@ -47,9 +48,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class JenkinsDeploy extends HttpServlet {
 
     /**
-     * Processes requests for both HTTP
-     * <code>GET</code> and
-     * <code>POST</code> methods.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -62,8 +62,7 @@ public class JenkinsDeploy extends HttpServlet {
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP
-     * <code>GET</code> method.
+     * Handles the HTTP <code>GET</code> method.
      *
      * @param request servlet request
      * @param response servlet response
@@ -81,14 +80,13 @@ public class JenkinsDeploy extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-            String user = parameterService.findParameterByKey("jenkins_admin_user","").getValue();
-            String pass = parameterService.findParameterByKey("jenkins_admin_password","").getValue();
-
+            String user = parameterService.findParameterByKey("jenkins_admin_user", "").getValue();
+            String pass = parameterService.findParameterByKey("jenkins_admin_password", "").getValue();
 
             HTTPSession session = new HTTPSession();
             session.startSession(user, pass);
 
-            String url = parameterService.findParameterByKey("jenkins_deploy_url","").getValue();
+            String url = parameterService.findParameterByKey("jenkins_deploy_url", "").getValue();
             String final_url;
             final_url = url.replace("%APPLI%", request.getParameter("application"));
             final_url = final_url.replace("%JENKINSBUILDID%", request.getParameter("jenkinsbuildid"));
@@ -103,6 +101,11 @@ public class JenkinsDeploy extends HttpServlet {
             if ((responseCode != 200) && (responseCode != 201)) {
                 out.print("ERROR Contacting Jenkins HTTP Response " + responseCode);
             } else {
+                /**
+                 * Jenkins was called successfuly. Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(ILogEventService.class);
+                logEventService.createPrivateCalls("/JenkinsDeploy", "DEPLOY", "JenkinsDeploy Triggered : ['" + final_url + "']", request);
                 out.print("Sent request : " + url);
             }
 
@@ -114,8 +117,7 @@ public class JenkinsDeploy extends HttpServlet {
     }
 
     /**
-     * Handles the HTTP
-     * <code>POST</code> method.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
