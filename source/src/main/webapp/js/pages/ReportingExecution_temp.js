@@ -991,7 +991,7 @@ function loadTests(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-test',
+        selectAllValue: 'multiselect-all-test'
     });
 }
 function loadSystems(data) {
@@ -1003,7 +1003,7 @@ function loadSystems(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-system',
+        selectAllValue: 'multiselect-all-system'
     });
 }
 
@@ -1016,7 +1016,7 @@ function loadCreators(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-creator',
+        selectAllValue: 'multiselect-all-creator'
     });
 }
 
@@ -1029,7 +1029,7 @@ function loadImplementers(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-implementer',
+        selectAllValue: 'multiselect-all-implementer'
     });
 }
 
@@ -1042,7 +1042,7 @@ function loadEnvironments(data, environmentsToSelect) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-environment',
+        selectAllValue: 'multiselect-all-environment'
     });
     loadMultiselectOptions("environment", environmentsToSelect);
 }
@@ -1056,7 +1056,7 @@ function loadBuilds(data) {
             includeSelectAllOption: true,
             enableFiltering: true,
             enableCaseInsensitiveFiltering: true,
-            selectAllValue: 'multiselect-all-build',
+            selectAllValue: 'multiselect-all-build'
         });
 }
 
@@ -1069,7 +1069,7 @@ function loadRevisions(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-revision',
+        selectAllValue: 'multiselect-all-revision'
     });
 }
 
@@ -1082,7 +1082,7 @@ function loadRevisions(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-revision',
+        selectAllValue: 'multiselect-all-revision'
     });
 }
 
@@ -1100,7 +1100,7 @@ function loadApplications(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-application',
+        selectAllValue: 'multiselect-all-application'
     });
 }
 
@@ -1118,7 +1118,7 @@ function loadProjects(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-project',
+        selectAllValue: 'multiselect-all-project'
     });
 }
 function loadTargetSprint(data) {
@@ -1130,7 +1130,7 @@ function loadTargetSprint(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-targetsprint',
+        selectAllValue: 'multiselect-all-targetsprint'
     });
 }
 function loadTargetRevision(data) {
@@ -1142,7 +1142,7 @@ function loadTargetRevision(data) {
         includeSelectAllOption: true,
         enableFiltering: true,
         enableCaseInsensitiveFiltering: true,
-        selectAllValue: 'multiselect-all-targetrevision',
+        selectAllValue: 'multiselect-all-targetrevision'
     });
 }
 
