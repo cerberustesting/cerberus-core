@@ -44,7 +44,6 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
@@ -319,7 +318,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
                 tcsExecutionList.add(testCaseStepExecution);
                 ai.setDataList(tcsExecutionList);
-                tCExecution.setTestCaseStepExecutionList(ai);
+                tCExecution.setTestCaseStepExecutionAnswerList(ai);
 
                 /**
                  * We execute the step

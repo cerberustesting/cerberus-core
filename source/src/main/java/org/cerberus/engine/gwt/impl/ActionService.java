@@ -19,8 +19,6 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import org.apache.commons.lang3.StringUtils;
-import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
 import org.apache.log4j.Level;
@@ -28,7 +26,6 @@ import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.SoapLibrary;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -36,7 +33,6 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.gwt.IVariableService;
@@ -61,7 +57,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import static org.apache.commons.lang3.StringUtils.split;
 
 /**
  *

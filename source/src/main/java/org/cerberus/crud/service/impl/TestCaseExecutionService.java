@@ -204,7 +204,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerItem tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
-        testCaseExecution.setTestCaseStepExecutionList(steps);
+        testCaseExecution.setTestCaseStepExecutionAnswerList(steps);
         AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());
         return response;
     }

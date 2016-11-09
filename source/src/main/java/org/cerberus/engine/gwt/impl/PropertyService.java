@@ -374,7 +374,7 @@ public class PropertyService implements IPropertyService {
 
     private String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution) {
         /**
-         * Trying to replace by system environment variables .
+         * Trying to replace by system environment variables from Execution.
          */
         stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplicationObj().getSystem());
         stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplicationObj().getApplication());
@@ -397,6 +397,22 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
         stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
         stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+        
+        /**
+         * Trying to replace by system environment variables from Step Execution .
+         */
+        if (stringToDecode.contains("%SYS_STEP.")) {
+            if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
+                if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+                    String syntaxToReplace = "";
+                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
+                        TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
+                        syntaxToReplace = "%SYS_STEP." + tcse.getSort() + ".RETURNCODE%";
+                        stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
+                    }
+                }
+            }
+        }
 
         /**
          * Trying to replace date variables .
@@ -513,7 +529,7 @@ public class PropertyService implements IPropertyService {
             // Removes the first and last '%' character to only get the property name
             rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
             // Replace Property. if it exist and is in start
-            rawProperty = rawProperty.replaceFirst("^property\\.","");
+            rawProperty = rawProperty.replaceFirst("^property\\.", "");
             // Removes the variable part of the property eg : (subdata)
             String[] ramProp1 = rawProperty.split("\\(");
             // Removes the variable part of the property eg : .subdata
