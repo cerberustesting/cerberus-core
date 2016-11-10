@@ -23,9 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.crud.dao.ITestCaseStepExecutionDAO;
+import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.util.answer.AnswerList;
 import org.openqa.selenium.remote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,8 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
 
     @Autowired
     ITestCaseStepExecutionDAO testCaseStepExecutionDao;
+    @Autowired
+    ITestCaseStepService testCaseStepService;
     @Autowired
     ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
 

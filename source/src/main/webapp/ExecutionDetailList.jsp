@@ -488,7 +488,7 @@
                         } else {
                             title += " - Pending...";
                         }%>
-                        <a href="ExecutionDetail.jsp?id_tc=<%= rs_inf.getString("id")%>" title="<%= title%>"><%= rs_inf.getString("Start")%></a> <b><span class="<%= rs_inf.getString("ControlStatus")%>F"><%= rs_inf.getString("ControlStatus")%></span></b> [<%= rs_inf.getString("application")%>]<br><%
+                        <a href="ExecutionDetail2.jsp?executionId=<%= rs_inf.getString("id")%>" title="<%= title%>"><%= rs_inf.getString("Start")%></a> <b><span class="<%= rs_inf.getString("ControlStatus")%>F"><%= rs_inf.getString("ControlStatus")%></span></b> [<%= rs_inf.getString("application")%>]<br><%
                                 j++;
                                 cal_exestart.set(Integer.valueOf(rs_inf.getString("Start").substring(0, 4)), Integer.valueOf(rs_inf.getString("Start").substring(5, 7)), Integer.valueOf(rs_inf.getString("Start").substring(8, 10)), Integer.valueOf(rs_inf.getString("Start").substring(11, 13)), Integer.valueOf(rs_inf.getString("Start").substring(14, 16)), Integer.valueOf(rs_inf.getString("Start").substring(17, 19)));
 
@@ -778,7 +778,7 @@
 
                 $('#chart').bind('jqplotDataClick',
                         function(ev, seriesIndex, pointIndex, datas) {
-                            window.location.href = 'ExecutionDetail.jsp?id_tc=' + datas[2];
+                            window.location.href = 'ExecutionDetail2.jsp?executionId=' + datas[2];
                         });
             });
         </script>

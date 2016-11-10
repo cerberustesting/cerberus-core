@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -373,10 +374,11 @@ public class PropertyService implements IPropertyService {
 
     private String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution) {
         /**
-         * Trying to replace by system environment variables .
+         * Trying to replace by system environment variables from Execution.
          */
         stringToDecode = stringToDecode.replace("%SYS_SYSTEM%", tCExecution.getApplicationObj().getSystem());
         stringToDecode = stringToDecode.replace("%SYS_APPLI%", tCExecution.getApplicationObj().getApplication());
+        stringToDecode = stringToDecode.replace("%SYS_BROWSER%", tCExecution.getBrowser());
         stringToDecode = stringToDecode.replace("%SYS_APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
         stringToDecode = stringToDecode.replace("%SYS_APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
         stringToDecode = stringToDecode.replace("%SYS_APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
@@ -387,12 +389,30 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRY%", tCExecution.getCountry());
         stringToDecode = stringToDecode.replace("%SYS_COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
+        stringToDecode = stringToDecode.replace("%SYS_TEST%", tCExecution.getTest());
         stringToDecode = stringToDecode.replace("%SYS_TESTCASE%", tCExecution.getTestCase());
         stringToDecode = stringToDecode.replace("%SYS_SSIP%", tCExecution.getSeleniumIP());
         stringToDecode = stringToDecode.replace("%SYS_SSPORT%", tCExecution.getSeleniumPort());
         stringToDecode = stringToDecode.replace("%SYS_TAG%", tCExecution.getTag());
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
+        stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
         stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+        
+        /**
+         * Trying to replace by system environment variables from Step Execution .
+         */
+        if (stringToDecode.contains("%SYS_STEP.")) {
+            if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
+                if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+                    String syntaxToReplace = "";
+                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
+                        TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
+                        syntaxToReplace = "%SYS_STEP." + tcse.getSort() + ".RETURNCODE%";
+                        stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
+                    }
+                }
+            }
+        }
 
         /**
          * Trying to replace date variables .
@@ -509,7 +529,7 @@ public class PropertyService implements IPropertyService {
             // Removes the first and last '%' character to only get the property name
             rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
             // Replace Property. if it exist and is in start
-            rawProperty = rawProperty.replaceFirst("^property\\.","");
+            rawProperty = rawProperty.replaceFirst("^property\\.", "");
             // Removes the variable part of the property eg : (subdata)
             String[] ramProp1 = rawProperty.split("\\(");
             // Removes the variable part of the property eg : .subdata

@@ -582,12 +582,12 @@ public class TestCaseExecution {
         this.screenSize = screenSize;
     }
 
-    public void setTestCaseStepExecutionList(AnswerList testCaseStepExecutionAnswerList) {
-        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
-    }
-
     public AnswerList getTestCaseStepExecutionAnswerList() {
         return testCaseStepExecutionAnswerList;
+    }
+
+    public void setTestCaseStepExecutionAnswerList(AnswerList testCaseStepExecutionAnswerList) {
+        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
     }
 
     public AnswerItem getLastSOAPCalled() {

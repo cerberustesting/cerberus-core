@@ -32,8 +32,12 @@
     </head>
     <body>
         <%@ include file="include/header.html"%>
-        <div id="page-layout" class="container container-fluid center">
-            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
+        <%@ include file="include/testcase/showPicture.html"%>
+        <div id="page-layout" class="container-fluid center">
+            <div class="alert alert-warning">
+                <strong>BETA</strong> This page is in beta, some features may not be available or fully functional.
+                <button class="btn btn-warning side-item" id="runOld">Old Page</button>
+            </div>
             <%@ include file="include/messagesArea.html"%>
 
             <div class="progress">
@@ -43,22 +47,26 @@
             </div>
 
             <div class="panel panel-default" id="testCaseConfig">
-                <div class="panel-heading">
-                    <div class="pull-left">
-                        <div class="">
-                            <span id="test"></span>
-                            <span> - </span>
-                            <span id="testcase"></span>
-                            <span> - </span>
-                            <span id="controlstatus"></span>
+                <div class="panel-heading" style="cursor:pointer;">
+                        <div class="pull-left">
+                            <div class="">
+                                <span id="idlabel"></span>
+                                <span> - </span>
+                                <span id="test"></span>
+                                <span> - </span>
+                                <span id="testcase"></span>
+                                <span> - </span>
+                                <span id="controlstatus"></span>
+                                <span> - </span>
+                                <a target="_blank" href="#" id="ExecutionByTag">See Execution By Tag</a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="pull-right" id="moredetails">
-                        <a>
-                            More details <span class="caret"></span>
-                        </a>
-                    </div>
-                    <div class="clearfix"></div>
+                        <div class="pull-right" id="moredetails">
+                            <a>
+                                More details <span class="caret"></span>
+                            </a>
+                        </div>
+                        <div class="clearfix"></div>
                 </div>
                 <div class="panel-body" id="testCaseDetails" style="display:none;">
                     <div class="row">
@@ -155,6 +163,80 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="start">Start</label>
+                                <input type="text" class="form-control" id="start" placeholder="Start" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="end">End</label>
+                                <input type="text" class="form-control" id="end" placeholder="End" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="finished">Finished</label>
+                                <input type="text" class="form-control" id="finished" placeholder="Finished" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="id">ID</label>
+                                <input type="text" class="form-control" id="id" placeholder="ID" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="revision">Revision</label>
+                                <input type="text" class="form-control" id="revision" placeholder="Revision" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="cerberusversion">Cerberus Version</label>
+                                <input type="text" class="form-control" id="cerberusversion" placeholder="Cerberus Version" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="screenSize">Screen Size</label>
+                                <input type="text" class="form-control" id="screenSize" placeholder="Screen Size" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group">
+                                <label for="tag">Tag</label>
+                                <input type="text" class="form-control" id="tag" placeholder="Tag" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="verbose">Verbose</label>
+                                <input type="text" class="form-control" id="verbose" placeholder="Verbose" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="build">Build</label>
+                                <input type="text" class="form-control" id="build" placeholder="Build" readonly>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label for="version">Version</label>
+                                <input type="text" class="form-control" id="version" placeholder="Version" readonly>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
@@ -170,7 +252,6 @@
                                 <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
                                 <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
                                 <button class="btn btn-block btn-primary side-item" id="lastExecution">See last executions</button>
-                                <button class="btn btn-block btn-primary side-item" id="runOld">Old Page</button>
                             </div>
                         </div>
                     </div>

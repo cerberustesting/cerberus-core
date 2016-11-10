@@ -2294,9 +2294,9 @@ function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
             
             //temporary fix. TODO:FN this should be refactored in the future after the update of the list of nature types
             //var natureElement = $("#" + fieldValue2Id).parents("div[id*='propertyRow']").find("select[id*='properties_nature_']");                         
-            var natureElement = $(parents).find("select[id*='properties_nature_']");                         
-            $(natureElement).find("option[value='RANDOMNEW']").addClass("hideElement");
-            $(natureElement).find("option[value='NOTINUSE']").addClass("hideElement");
+//            var natureElement = $(parents).find("select[id*='properties_nature_']");
+//            $(natureElement).find("option[value='RANDOMNEW']").addClass("hideElement");
+//            $(natureElement).find("option[value='NOTINUSE']").addClass("hideElement");
             //var valueElement = $("#" + fieldValue2Id).parents("div[id*='propertyRow']").find("div[id*='selectEntry_']");
             var valueElement = $(parents).find("div[id*='selectEntry_']");
             $(valueElement).removeClass("hideElement");
@@ -2321,9 +2321,9 @@ function newActivateValue2(value, fieldValue1Id, fieldValue2Id, size) {
             
     }else{ 
         //var natureElement = $("#" + fieldValue1Id).parents("div[id*='propertyRow']").find("select[id*='properties_nature_']");                         
-        var natureElement = $(parents).find("select[id*='properties_nature_']");                         
-        $(natureElement).find("option[value='RANDOMNEW']").removeClass("hideElement");
-        $(natureElement).find("option[value='NOTINUSE']").removeClass("hideElement");
+//        var natureElement = $(parents).find("select[id*='properties_nature_']");
+//        $(natureElement).find("option[value='RANDOMNEW']").removeClass("hideElement");
+//        $(natureElement).find("option[value='NOTINUSE']").removeClass("hideElement");
         //var valueElement = $("#" + fieldValue1Id).parents("div[id*='propertyRow']").find("div[id*='selectEntry_']");
         var valueElement = $(parents).find("div[id*='selectEntry_']");
         $(valueElement).removeClass("showElementInline");
@@ -2449,7 +2449,7 @@ function openChangeTagPopin(value) {
                     var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
 
                     deferred.success(function () {
-                        $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
+                        $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
                     });
 
 //

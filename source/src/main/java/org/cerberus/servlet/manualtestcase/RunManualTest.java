@@ -170,7 +170,7 @@ public class RunManualTest extends HttpServlet {
 //            }
             }
 
-            resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
+            resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
 
         } catch (CerberusException e) {
             MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());

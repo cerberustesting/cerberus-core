@@ -79,10 +79,26 @@ import java.util.Set;
             }
         }
 
+        /**
+         * Behavior of the Endpoint when the client send him a message
+         *
+         * @param session
+         * @param msg
+         * @param executionId
+         */
         @OnMessage
         public void message(final Session session, TestCaseExecution msg, @PathParam("execution-id") int executionId) {
         }
 
+        /**
+         * Behaviour of the endpoint when a client connect to him
+         * Here we save the session of the client in a Array so it is subscribed to the TestCaseExecution
+         * And we send to the client the actual state of the TestCaseExecution thanks to a Read
+         *
+         * @param session
+         * @param config
+         * @param executionId
+         */
         @OnOpen
         public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
 
@@ -105,12 +121,25 @@ import java.util.Set;
 
         }
 
+        /**
+         * Behaviour of the EndPoint When the client closes his connexion
+         * We remove the client from the array of Sessions
+         *
+         * @param session
+         * @param executionId
+         */
         @OnClose
         public void closedConnection(Session session, @PathParam("execution-id") int executionId) {
             session.getUserProperties().put(String.valueOf(executionId), false);
             peers.remove(session);
         }
 
+        /**
+         * Behaviour of the endpoint when there is an error
+         *
+         * @param session
+         * @param t
+         */
         @OnError
         public void error(Session session, Throwable t) {
 

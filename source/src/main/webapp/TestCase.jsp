@@ -442,7 +442,7 @@
                             <option style="width: 200px" value="All">-- Choose Test --
                             </option>
                             <%  }
-
+                                boolean find = false;
                                 //            for (UserSystem us : userSystemService.findUserSystemByUser(request.getUserPrincipal().getName())){
                                 //systems.add(us.getSystem());
                                 //}
@@ -451,7 +451,19 @@
                             %>
                             <option style="width: 200px;" class="font_weight_bold_<%=tst.getActive()%>" value="<%=tst.getTest()%>" <%=test.compareTo(tst.getTest()) == 0 ? " SELECTED " : ""%>><%=tst.getTest()%>
                             </option>
-                            <% }
+                            <%
+                                    if(test != null && test.equals(tst.getTest())){
+                                        find = true;
+                                    }
+                                }
+
+                                if(test != null && !test.equals("") && !find){
+                            %>
+                            <option style="width: 200px;" class="font_weight_bold_Y" value="<%=test%>" selected><%=test%>
+                            </option>
+                            <%
+                                }
+
                             %>
                         </select>
                     </div>
@@ -459,7 +471,9 @@
                     </div>
                     <div style="float:left">
                         <select id="filtertestcase" name="TestCase" style="width: 750px" OnChange="document.selectTestCase.submit()">
-                            <% if (test.compareTo("") == 0) { %>
+                            <%
+                                boolean find2 = false;
+                                if (test.compareTo("") == 0) { %>
                             <option style="width: 750px" value="All">-- Choose Test First --
                             </option>
                             <%  } else {
@@ -467,8 +481,19 @@
                                 for (TestCase tc : tcList) {%>
                             <option style="width: 750px;" class="font_weight_bold_<%=tc.getTcActive()%>" value="<%=tc.getTestCase()%>" <%=testcase.compareTo(tc.getTestCase()) == 0 ? " SELECTED " : ""%>><%=tc.getTestCase()%>  [<%=tc.getApplication()%>]  : <%=tc.getDescription()%>
                             </option>
-                            <%  }
-                                } %>
+                            <%
+                                        if(testcase != null && testcase.equals(tc.getTestCase())){
+                                            find2 = true;
+                                        }
+                                }
+                                }
+                                if(test != null && !test.equals("") && !find){
+                            %>
+                            <option style="width: 200px;" class="font_weight_bold_Y" value="<%=testcase%>" selected><%=testcase%>
+                            </option>
+                            <%
+                                }
+                            %>
                         </select>
                     </div>
                     <div style="float:left">
@@ -489,48 +514,12 @@
                         //First Check if testcase can be edited (good system selected)
                         User MyUserobj = userService.findUserByKeyWithDependencies(request.getUserPrincipal().getName());
 
-                        // Change system if requested inURL
-                        String setSystem = getRequestParameterWildcardIfEmpty(request, "SetSystem");
-                        if (!setSystem.equals("")) {
-                            MyUserobj.setDefaultSystem(setSystem);
-                            userService.updateUser(MyUserobj);
-                            MySystem = setSystem;
-            %>
-            <script>
-                $(document).ready(function() {
-                    $("#MySystem option:selected").attr('selected', false);
-                    $("#MySystem option[value='<%=setSystem%>']").attr("selected", true);
-                });
-            </script>
-            <%
-                }
-
                 List<UserSystem> systemList = userSystemService.findUserSystemByUser(request.getUserPrincipal().getName());
                 List<String> usList = new ArrayList();
                 for (UserSystem us : systemList) {
                     usList.add(us.getSystem());
                 }
                 String applicationSystem = myApplicationService.convert(myApplicationService.readByKey(tcase.getApplication())).getSystem();
-                if (!MySystem.equals(applicationSystem)) {%>
-            <script>
-                <%
-                    //if system selected is not the one of the application but is one of the authorized system, propose to switch
-                    if (usList.contains(applicationSystem)) {
-                %>
-                var sys = '<%=applicationSystem%>';
-                if (confirm('This Testcase is only accessible with another system selection\nSwitch to system ' + sys + '?')) {
-                    window.location = "./TestCase.jsp?Test=<%=test%>&TestCase=<%=testcase%>&SetSystem=<%=applicationSystem%>";
-                } else {
-                    window.location = "./Homepage.jsp";
-                }
-                <%
-                } else {%>
-                alert("You are not allowed to access to this system\nPlease contact your Cerberus Administrator to modify your account");
-                window.location = "./Homepage.jsp";
-                <%}%>
-            </script>
-            <%
-                }
 
                 Test testObject = testService.findTestByKey(test);
                 AnswerList answerCountry = invariantService.readByIdname("COUNTRY");
@@ -804,7 +793,7 @@
                             String LastExeMessage;
                             LastExeMessage = "<i>Never Executed</i>";
                             if (tce != null) {
-                                LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail.jsp?id_tc=" + tce.getId() + "\">Execution</a> was ";
+                                LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail2.jsp?executionId=" + tce.getId() + "\">Execution</a> was ";
                                 if (tce.getControlStatus().compareToIgnoreCase("OK") == 0) {
                                     LastExeMessage = LastExeMessage + "<a style=\"color : green\">" + tce.getControlStatus() + "</a>";
                                 } else {

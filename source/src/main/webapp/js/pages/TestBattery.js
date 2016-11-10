@@ -242,7 +242,7 @@ function editEntryModalSaveHandler() {
                 testBattery: data.battery,
                 testbatteryID: data.id,
                 description: data.description,
-                batteryContent: JSON.stringify(batteries),
+                batteryContent: JSON.stringify(batteries)
             },
             success: function (data) {
                 data = JSON.parse(data);
@@ -267,7 +267,7 @@ function editEntryModalSaveHandler() {
                 testBattery: data.battery,
                 testbatteryID: data.id,
                 description: data.description,
-                batteryContent: JSON.stringify(batteries),
+                batteryContent: JSON.stringify(batteries)
             },
             success: function (data) {
                 data = JSON.parse(data);

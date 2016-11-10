@@ -726,40 +726,57 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, String individualSearch) throws CerberusException {
-        boolean throwEx = false;
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
-        StringBuilder gSearch = new StringBuilder();
-        final StringBuilder query = new StringBuilder("select * from ( select exq.* ")
-                .append("from testcaseexecutionqueue exq ")
-                .append("where exq.tag = ? ")
-                .append(" order by exq.test, exq.testcase, exq.ID desc) as exq ")
-                .append("LEFT JOIN testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ")
-                .append("LEFT JOIN application app ON tec.application = app.application ")
-                .append("where 1=1 ");
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+        
+        final StringBuilder query = new StringBuilder();
+        
+        query.append("SELECT * FROM testcaseexecutionqueue exq ");
+        query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
+        query.append("left join application app on tec.application = app.application ");
+        query.append("where exq.ID IN ");
+        query.append("(select MAX(exq.ID) from testcaseexecutionqueue exq ");
 
-        gSearch.append("and (tec.`test` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tec.`testCase` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tec.`application` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or tec.`description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("")) {
-            query.append(gSearch.toString());
+        query.append("where 1=1 ");
+        if (!StringUtil.isNullOrEmpty(tag)) {
+            query.append("and exq.tag = ? ");
         }
-        query.append(" GROUP BY exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country ");
-        query.append(" order by ");
-        query.append(column);
-        query.append(" ");
-        query.append(dir);
+        
+        query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country) ");
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            query.append("and (exq.`test` like ? ");
+            query.append(" or exq.`testCase` like ? ");
+            query.append(" or exq.`application` like ? ");
+            query.append(" or tec.`bugid` like ? ");
+            query.append(" or tec.`priority` like ? ");
+            query.append(" or tec.`description` like ? )");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            query.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                query.append(" and ");
+                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            query.append(" ) ");
+        }
+
+        if (!StringUtil.isNullOrEmpty(sort)) {
+            query.append(" order by ").append(sort);
+        }
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
 
         List<TestCaseExecutionInQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionInQueue>();
         Connection connection = this.databaseSpring.connect();

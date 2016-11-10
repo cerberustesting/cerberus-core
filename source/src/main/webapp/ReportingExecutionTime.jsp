@@ -746,7 +746,7 @@
 
                                 %> 
                                 <td class="INF"> 
-                                    <a href="ExecutionDetail.jsp?id_tc=<%=ID%>" title="Last Execution.">
+                                    <a href="ExecutionDetail2.jsp?executionId=<%=ID%>" title="Last Execution.">
                                         <img src="images/<%=cssTIME%>.png" border="0"/></a>
                                 </td>
                                 <td class="INF" style="font-size : x-small"><%

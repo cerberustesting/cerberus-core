@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 
@@ -61,6 +62,8 @@ public interface ITestCaseStepActionExecutionService {
     JSONArray lastActionExecutionDuration(String test, String testcase, String country);
 
     public AnswerList readByVarious1(long executionId, String test, String testcase, int step);
-    
+
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence);
+
     public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step);
 }

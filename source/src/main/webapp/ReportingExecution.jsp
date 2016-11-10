@@ -185,7 +185,7 @@
                                 if (data.result === "NotExecuted"){
                                     return "<a target='_blank' class='" + data.result + "F' href='RunTests.jsp?Test="+full[0]+"&TestCase="+full[1]+"&Country="+data.country+"'>"+data.country+"</a>";
                                 } else {
-                                    return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                    return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail2.jsp?executionId=" + data.execID + "'>" + data.result + "</a>";
                                 }
                             } else{
                                 return "";

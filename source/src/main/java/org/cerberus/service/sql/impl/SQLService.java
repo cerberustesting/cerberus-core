@@ -150,7 +150,6 @@ public class SQLService implements ISQLService {
         return testCaseExecutionData;
     }
 
-
     private String getRandomStringFromList(List<String> list) {
         Random random = new Random();
         if (!list.isEmpty()) {
@@ -263,7 +262,7 @@ public class SQLService implements ISQLService {
         }
         return list;
     }
-    
+
     @Override
     public MessageEvent executeUpdate(String system, String country, String environment, String database, String sql) {
         String connectionName;
@@ -279,7 +278,7 @@ public class SQLService implements ISQLService {
                 msg.setDescription(msg.getDescription().replace("%JDBC%", "jdbc/" + connectionName));
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
-                    if (connectionName.equals("cerberus"+ System.getProperty("org.cerberus.environment"))) {
+                    if (connectionName.equals("cerberus" + System.getProperty("org.cerberus.environment"))) {
                         return new MessageEvent(MessageEventEnum.ACTION_FAILED_SQL_AGAINST_CERBERUS);
                     } else {
 
@@ -480,6 +479,9 @@ public class SQLService implements ISQLService {
                             String name = entry.getValue();
                             try {
                                 String valueSQL = resultSet.getString(column);
+                                if (valueSQL == null) { // If data is null from the database, we convert it to the static string <NULL>. 
+                                    valueSQL = "<NULL>";
+                                }
                                 row.put(name, valueSQL); // We put the result of the subData.
                                 nbColMatch++;
                             } catch (SQLException exception) {
