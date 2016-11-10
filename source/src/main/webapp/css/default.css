@@ -20,9 +20,6 @@
     Created on : May 18, 2015, 2:18:04 PM
     Author     : FNogueira
 */
-body{
-    -webkit-transform: translate3d(0, 0, 0);
-}
 .separator {
     border-top: 1px solid #E3E3E3;
     margin-top:20px;  
@@ -602,7 +599,7 @@ div.ActionControlOfUseStepTemp  {
 
 img.selectedPicture{
     max-height: 400px; 
-    max-width: 600px;
+    max-width: 800px;
 }
 
 .filterReportingExecution{

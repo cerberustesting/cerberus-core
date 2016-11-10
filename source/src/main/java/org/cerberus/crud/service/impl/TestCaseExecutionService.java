@@ -19,19 +19,22 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.*;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.util.ParameterParserUtil;
@@ -51,6 +54,15 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionDAO testCaseExecutionDao;
     @Autowired
     ITestCaseStepExecutionService testCaseStepExecutionService;
+    @Autowired
+    IParameterService parameterService;
+    @Autowired
+    ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
+    @Autowired
+    ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
+
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
+
 
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {

@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.crud.dao.ITestCaseStepActionControlExecutionDAO;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,5 +57,10 @@ public class TestCaseStepActionControlExecutionService implements ITestCaseStepA
     @Override
     public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int sequence) {
         return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, step, sequence);
+    }
+
+    @Override
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence, int controlSequence) {
+        return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, step, sequence, controlSequence);
     }
 }

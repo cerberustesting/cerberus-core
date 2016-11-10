@@ -18,6 +18,10 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,6 +38,8 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -50,6 +56,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.imageio.ImageIO;
 
 /**
  * {Insert class description here}
@@ -72,6 +80,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private IApplicationDAO applicationDAO;
     @Autowired
     private ITestCaseDAO testCaseDAO;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionDAO.class);
 

@@ -2241,3 +2241,28 @@ $.extend({
     }
 });
 
+/**
+ * Auxiliary function that opens the modal that allows user to view/remove the picture associated with an action/control.
+ * @param {type} pictureUrl
+ * @param {type} step
+ * @param {type} action
+ * @param {type} control
+ * @returns {undefined}
+ */
+function showPicture(pictureUrl, step, action, control) {
+    var doc = new Doc();
+    $('#attachNewScreenshot').attr("pictureUrl", "");
+    $('#showPictureModalTitle').text(doc.getDocLabel("page_testcase_m_showPicture", "title"));
+    $('#removePictureButton').text(doc.getDocLabel("page_testcase_m_showPicture", "btn_remove"));
+    $('#closeShowPictureButton').text(doc.getDocLabel("page_global", "buttonClose"));
+
+    //set the translations
+    $('#selectedPicture').attr("src", pictureUrl);
+    $('#showPictureModal #step').attr("value", step);
+    $('#showPictureModal #action').attr("value", action);
+    if (control !== null) {
+        $('#showPictureModal #control').attr("value", control);
+    }
+    $('#showPictureModal').modal('show');
+    $('#removePictureButton').hide();
+}

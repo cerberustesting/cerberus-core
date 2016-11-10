@@ -282,6 +282,10 @@ public class TestCaseStepExecution {
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
             result.put("description", this.getDescription());
+            result.put("useStep", this.getUseStep());
+            result.put("useStepTest", this.getUseStepTest());
+            result.put("useStepTestCase", this.getUseStepTestCase());
+            result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
             JSONArray array = new JSONArray();
             if(this.getTestCaseStepActionExecutionList() != null && this.getTestCaseStepActionExecutionList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {

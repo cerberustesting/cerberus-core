@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -42,6 +43,8 @@ public interface ITestCaseStepActionExecutionDAO {
     List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step);
 
     public AnswerList readByVarious1(long executionId, String test, String testcase, int step);
-    
+
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence);
+
     public TestCaseStepActionExecution loadFromResultset(ResultSet resultSet) throws SQLException;
 }
