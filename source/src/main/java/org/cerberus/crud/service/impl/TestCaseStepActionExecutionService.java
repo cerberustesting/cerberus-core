@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,11 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     @Override
     public AnswerList readByVarious1(long executionId, String test, String testcase, int step) {
         return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step);
+    }
+
+    @Override
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence) {
+        return testCaseStepActionExecutionDao.readByKey(executionId, test, testcase, step, sequence);
     }
 
     @Override

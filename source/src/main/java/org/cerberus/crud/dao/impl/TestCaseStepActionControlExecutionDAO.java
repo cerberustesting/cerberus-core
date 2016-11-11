@@ -39,6 +39,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -302,6 +303,76 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
 
         answer.setTotalRows(list.size());
         answer.setDataList(list);
+        answer.setResultMessage(msg);
+        return answer;
+    }
+
+    @Override
+    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int sequence, int controlSequence) {
+        MessageEvent msg;
+        AnswerItem answer = new AnswerItem();
+        TestCaseStepActionControlExecution tcsa = null;
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT * FROM testcasestepactioncontrolexecution a ");
+        query.append("where id = ? and test = ? and testcase = ? and step = ? and controlSequence = ?");
+        query.append("and sequence = ?");
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            try {
+                preStat.setLong(1, executionId);
+                preStat.setString(2, test);
+                preStat.setString(3, testCase);
+                preStat.setInt(4, step);
+                preStat.setInt(5, sequence);
+                preStat.setInt(5, controlSequence);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        tcsa = this.loadFromResultset(resultSet);
+                    }
+                    if (tcsa == null) {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    if (resultSet != null) {
+                        resultSet.close();
+                    }
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                if (preStat != null) {
+                    preStat.close();
+                }
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        answer.setItem(tcsa);
         answer.setResultMessage(msg);
         return answer;
     }

@@ -22,6 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -54,4 +55,16 @@ public interface ITestCaseStepActionControlExecutionService {
      * @return List of testcasestepactioncontrol object
      */
     public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int sequence);
+
+    /**
+     * Return the testcasestepactioncontrolexecution list of an execution, step, action
+     * @param executionId : ID of the execution
+     * @param test : test
+     * @param testcase : testcase
+     * @param step : ID of the step
+     * @param sequence : ID of the action
+     * @param controlSequence : ID of the control
+     * @return List of testcasestepactioncontrol object
+     */
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence, int controlSequence);
 }

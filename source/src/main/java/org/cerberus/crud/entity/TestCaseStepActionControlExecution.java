@@ -268,9 +268,9 @@ public class TestCaseStepActionControlExecution {
             result.put("controlValue", this.getValue2());
             result.put("fatal", this.getFatal());
             result.put("start", this.getStart());
-            result.put("end", this.getEndLong());
+            result.put("end", this.getEnd());
             result.put("startlong", this.getStartLong());
-            result.put("endlong", this.getEnd());
+            result.put("endlong", this.getEndLong());
             result.put("description", this.getDescription());
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());

@@ -85,7 +85,7 @@ public class GetReportData extends HttpServlet {
         /**
          * Get list of execution by tag, env, country, browser
          */
-        AnswerList<TestCaseExecution> listOfExecution = testCaseExecutionService.readByTagByCriteria(tag, 0, 0, null, null, null, null);
+        AnswerList<TestCaseExecution> listOfExecution = testCaseExecutionService.readByTagByCriteria(tag, 0, 0, null, null, null);
         List<TestCaseExecution> testCaseExecutions = listOfExecution.getDataList();
 
         /**
@@ -262,7 +262,7 @@ public class GetReportData extends HttpServlet {
                     + testCaseExecution.getTest() + "_"
                     + testCaseExecution.getTestCase();
             if ((testCaseExecutionsList.containsKey(key)
-                    && formater.parse(String.valueOf(testCaseExecutionsList.get(key).getStart())).before(formater.parse(String.valueOf(testCaseExecution.getStart()))))
+                    && testCaseExecutionsList.get(key).getStart() < testCaseExecution.getStart())
                     || !testCaseExecutionsList.containsKey(key)) {
                 testCaseExecutionsList.put(key, testCaseExecution);
             }

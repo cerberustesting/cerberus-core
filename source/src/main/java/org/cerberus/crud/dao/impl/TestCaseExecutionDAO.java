@@ -18,6 +18,10 @@
 package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,6 +38,8 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -50,6 +56,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import javax.imageio.ImageIO;
 
 /**
  * {Insert class description here}
@@ -72,6 +80,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     private IApplicationDAO applicationDAO;
     @Autowired
     private ITestCaseDAO testCaseDAO;
+    @Autowired
+    private IParameterService parameterService;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionDAO.class);
 
@@ -908,28 +918,25 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     }
 
     @Override
-    public AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+    public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuffer query = new StringBuffer();
 
-        query.append("SELECT * FROM ");
-        query.append("( select exe.* ");
-        query.append("from testcaseexecution exe ");
+        query.append("SELECT * FROM testcaseexecution exe ");
+        query.append("left join testcase tec on exe.Test = tec.Test and exe.TestCase = tec.TestCase ");
+        query.append("left join application app on tec.application = app.application ");
+        query.append("where exe.ID IN ");
+        query.append("(select MAX(exe.ID) from testcaseexecution exe ");
 
-        query.append(" where 1=1 ");
-
+        query.append("where 1=1 ");
         if (!StringUtil.isNullOrEmpty(tag)) {
             query.append("and exe.tag = ? ");
         }
 
-        query.append(" order by exe.test, exe.testcase, exe.ID desc) as exe ");
-        query.append("left join testcase tec on exe.Test = tec.Test ");
-        query.append("and exe.TestCase = tec.TestCase ");
-        query.append("left join application app on tec.application = app.application ");
-        query.append(" where 1=1 ");
+        query.append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country) ");
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`test` like ? ");
             query.append(" or exe.`testCase` like ? ");
@@ -948,10 +955,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" ) ");
         }
 
-        query.append("group by exe.test, exe.testcase, exe.Environment, exe.Browser, exe.Country ");
-
-        if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by ").append(column).append(" ").append(dir);
+        if (!StringUtil.isNullOrEmpty(sort)) {
+            query.append(" order by ").append(sort);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {

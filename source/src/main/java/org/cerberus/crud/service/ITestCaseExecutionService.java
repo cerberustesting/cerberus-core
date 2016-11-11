@@ -129,7 +129,7 @@ public interface ITestCaseExecutionService {
 
     AnswerList findTagList(int tagnumber) throws CerberusException;
 
-    AnswerList readByTagByCriteria(String tag, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 
