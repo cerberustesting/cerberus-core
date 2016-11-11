@@ -39,11 +39,20 @@ public interface ITestCaseExecutionFileService {
      * @param id
      * @return
      */
-    public AnswerItem<TestCaseExecutionFile> readByKey(long id);
-    
+    AnswerItem<TestCaseExecutionFile> readByKey(long id);
+
     /**
      *
-     * @param id
+     * @param exeId
+     * @param level
+     * @param fileDesc
+     * @return
+     */
+    AnswerItem<TestCaseExecutionFile> readByKey(long exeId, String level, String fileDesc);
+
+    /**
+     *
+     * @param exeId
      * @param level
      * @param start
      * @param amount
@@ -53,19 +62,19 @@ public interface ITestCaseExecutionFileService {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long id, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long exeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
-     * @param id
+     * @param exeId
      * @param level
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVarious(long id, String level);
-    
+    AnswerList<List<TestCaseExecutionFile>> readByVarious(long exeId, String level);
+
     /**
      *
-     * @param exeid
+     * @param exeId
      * @param level
      * @param fileDesc
      * @param fileName
@@ -73,8 +82,8 @@ public interface ITestCaseExecutionFileService {
      * @param usrCreated
      * @return
      */
-    Answer create(long exeid, String level, String fileDesc, String fileName, String fileType, String usrCreated);
-    
+    Answer save(long exeId, String level, String fileDesc, String fileName, String fileType, String usrCreated);
+
     /**
      *
      * @param id
@@ -82,6 +91,15 @@ public interface ITestCaseExecutionFileService {
      * in database.
      */
     boolean exist(long id);
+
+    /**
+     *
+     * @param exeId
+     * @param level
+     * @param fileDesc
+     * @return
+     */
+    boolean exist(long exeId, String level, String fileDesc);
 
     /**
      *
@@ -104,6 +122,13 @@ public interface ITestCaseExecutionFileService {
      */
     Answer update(TestCaseExecutionFile object);
 
+    /**
+     *
+     * @param object
+     * @return
+     */
+    Answer save(TestCaseExecutionFile object);    
+    
     /**
      *
      * @param answerItem

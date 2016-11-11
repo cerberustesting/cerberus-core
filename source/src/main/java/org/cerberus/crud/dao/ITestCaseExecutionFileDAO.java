@@ -46,7 +46,16 @@ public interface ITestCaseExecutionFileDAO {
 
     /**
      *
-     * @param id
+     * @param exeId
+     * @param fileDesc
+     * @param level
+     * @return
+     */
+    AnswerItem<TestCaseExecutionFile> readByKey(long exeId, String level, String fileDesc);
+
+    /**
+     *
+     * @param ExeId
      * @param level
      * @param start
      * @param amount
@@ -56,7 +65,7 @@ public interface ITestCaseExecutionFileDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long id, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
+    AnswerList<List<TestCaseExecutionFile>> readByVariousByCriteria(long ExeId, String level, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     /**
      *
