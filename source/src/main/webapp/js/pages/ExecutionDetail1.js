@@ -24,7 +24,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
 
-        var socket = new WebSocket("ws://localhost:8080/Cerberus/execution/"+executionId);
+        var loc = window.location, new_uri;
+        if (loc.protocol === "https:") {
+            new_uri = "wss:";
+        } else {
+            new_uri = "ws:";
+        }
+        new_uri += "//" + loc.host;
+        new_uri += "/" + "Cerberus/execution/" + executionId;
+
+        var socket = new WebSocket(new_uri);
 
         socket.onopen = function(e){
         } /*on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite */
