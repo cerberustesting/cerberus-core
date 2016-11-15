@@ -862,7 +862,13 @@ function generateExecutionLink(status, id) {
     if (status === "NE") {
         result = "./RunTests.jsp?queuedExecution=" + id;
     } else {
-        result = "./ExecutionDetail2.jsp?executionId=" + id;
+        getParameter("cerberus_executiondetail_use").then(function(data){
+            if(data.value == "N"){
+                result = "./ExecutionDetail.jsp?id_tc=" + id;
+            }else{
+                result = "./ExecutionDetail2.jsp?executionId=" + id;
+            }
+        });
     }
     return result;
 }

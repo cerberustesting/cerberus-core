@@ -185,7 +185,13 @@
                                 if (data.result === "NotExecuted"){
                                     return "<a target='_blank' class='" + data.result + "F' href='RunTests.jsp?Test="+full[0]+"&TestCase="+full[1]+"&Country="+data.country+"'>"+data.country+"</a>";
                                 } else {
-                                    return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail2.jsp?executionId=" + data.execID + "'>" + data.result + "</a>";
+                                    getParameter("cerberus_executiondetail_use").then(function(data){
+                                        if(data.value == "N"){
+                                            return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                        }else{
+                                            return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail2.jsp?executionId=" + data.execID + "'>" + data.result + "</a>";
+                                        }
+                                    });
                                 }
                             } else{
                                 return "";
@@ -375,6 +381,25 @@
 
         new FixedHeader(oTable, {
             zTop: 98
+        });
+    }
+
+    function getParameter(param,sys,forceReload){
+        var cacheEntryName = "PARAMETER_"+param;
+        if (forceReload) {
+            sessionStorage.removeItem(cacheEntryName);
+        }
+        var system = sys!=undefined?"&system="+sys:"";
+        return new Promise(function(resolve, reject){
+            var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
+            if(parameter === null){
+                $.get("ReadParameter?param="+param+system, function(data){
+                    sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
+                    resolve(data.contentTable);
+                });
+            }else{
+                resolve(parameter);
+            }
         });
     }
 

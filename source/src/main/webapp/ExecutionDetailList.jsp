@@ -24,8 +24,6 @@
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="org.apache.log4j.Level"%>
-<%@page import="org.cerberus.crud.entity.BuildRevisionInvariant"%>
-<%@page import="org.cerberus.crud.entity.Application"%>
 <%@page import="org.cerberus.crud.service.impl.BuildRevisionInvariantService"%>
 <%@page import="org.cerberus.crud.service.IBuildRevisionInvariantService"%>
 <%@page import="org.cerberus.crud.service.impl.ApplicationService"%>
@@ -33,6 +31,7 @@
 <%@page import="org.cerberus.crud.service.IParameterService"%>
 <%@page import="org.cerberus.log.MyLogger"%>
 <%@page import="org.cerberus.util.SqlUtil"%>
+<%@ page import="org.cerberus.crud.entity.*" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -71,6 +70,7 @@
         <div id="body">
             <%
                 Connection conn = null;
+                String redirecturl = "";
                 try {
                     conn = db.connect();
 
@@ -483,12 +483,25 @@
                         title += " " + rs_inf.getString("description");
                         title += " - " + rs_inf.getString("country");
                         title += " - " + rs_inf.getString("environment");
+
+                        AnswerItem a = myParameterService.readByKey("","cerberus_executiondetail_use");
+                        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                            Parameter p = (Parameter)a.getItem();
+                            if(!p.getValue().equals("N")) {
+                                redirecturl = "ExecutionDetail2.jsp?executionId=";
+                            }else{
+                                redirecturl = "ExecutionDetail.jsp?id_tc=";
+                            }
+                        }else{
+                            redirecturl = "ExecutionDetail.jsp?id_tc=";
+                        }
+
                         if (!("PE".equalsIgnoreCase(rs_inf.getString("ControlStatus")))) {
                             title += " - " + rs_inf.getString("time_elapsed") + "s";
                         } else {
                             title += " - Pending...";
                         }%>
-                        <a href="ExecutionDetail2.jsp?executionId=<%= rs_inf.getString("id")%>" title="<%= title%>"><%= rs_inf.getString("Start")%></a> <b><span class="<%= rs_inf.getString("ControlStatus")%>F"><%= rs_inf.getString("ControlStatus")%></span></b> [<%= rs_inf.getString("application")%>]<br><%
+                        <a href="<%=redirecturl%><%= rs_inf.getString("id")%>" title="<%= title%>"><%= rs_inf.getString("Start")%></a> <b><span class="<%= rs_inf.getString("ControlStatus")%>F"><%= rs_inf.getString("ControlStatus")%></span></b> [<%= rs_inf.getString("application")%>]<br><%
                                 j++;
                                 cal_exestart.set(Integer.valueOf(rs_inf.getString("Start").substring(0, 4)), Integer.valueOf(rs_inf.getString("Start").substring(5, 7)), Integer.valueOf(rs_inf.getString("Start").substring(8, 10)), Integer.valueOf(rs_inf.getString("Start").substring(11, 13)), Integer.valueOf(rs_inf.getString("Start").substring(14, 16)), Integer.valueOf(rs_inf.getString("Start").substring(17, 19)));
 
@@ -778,7 +791,7 @@
 
                 $('#chart').bind('jqplotDataClick',
                         function(ev, seriesIndex, pointIndex, datas) {
-                            window.location.href = 'ExecutionDetail2.jsp?executionId=' + datas[2];
+                            window.location.href = '<%=redirecturl%>' + datas[2];
                         });
             });
         </script>

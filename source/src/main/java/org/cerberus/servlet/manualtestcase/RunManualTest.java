@@ -30,21 +30,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
-import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
-import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.crud.service.*;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -71,6 +66,7 @@ public class RunManualTest extends HttpServlet {
         String cancelExecution = req.getParameter("isCancelExecution") == null ? "" : req.getParameter("isCancelExecution");
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IParameterService parameterService = appContext.getBean(IParameterService.class);
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
         ITestCaseStepExecutionService testCaseStepExecutionService = appContext.getBean(ITestCaseStepExecutionService.class);
         ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(ITestCaseStepActionExecutionService.class);
@@ -170,7 +166,17 @@ public class RunManualTest extends HttpServlet {
 //            }
             }
 
-            resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
+            AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
+            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                Parameter p = (Parameter)a.getItem();
+                if(!p.getValue().equals("N")) {
+                    resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
+                }else{
+                    resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
+                }
+            }else{
+                resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
+            }
 
         } catch (CerberusException e) {
             MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());

@@ -19,11 +19,6 @@
  */
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
-    getParameter("cerberus_executiondetail_use").then(function(data){
-        if(data.value == "N"){
-            window.location = "ExecutionDetail.jsp?id_tc="+GetURLParameter("executionId");
-        }
-    });
     $(document).ready(function () {
         var stepList = [];
         var executionId = GetURLParameter("executionId");

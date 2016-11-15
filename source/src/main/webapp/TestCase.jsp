@@ -57,6 +57,7 @@
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="org.cerberus.util.answer.AnswerList"%>
 <%@ page import="java.util.*" %>
+<%@ page import="org.cerberus.util.answer.AnswerItem" %>
 <% Date DatePageStart = new Date();%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
@@ -791,9 +792,21 @@
                         </tr>
                         <%  // We are getting here the last execution that was done on the testcase with its associated status.
                             String LastExeMessage;
+                            String redirecturl
+                            AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
+                            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                                Parameter p = (Parameter)a.getItem();
+                                if(!p.getValue().equals("N")) {
+                                    redirecturl = "ExecutionDetail2.jsp?executionId=";
+                                }else{
+                                    redirecturl = "ExecutionDetail.jsp?id_tc=";
+                                }
+                            }else{
+                                redirecturl = "ExecutionDetail.jsp?id_tc=";
+                            }
                             LastExeMessage = "<i>Never Executed</i>";
                             if (tce != null) {
-                                LastExeMessage = "Last <a width : 390px ; href=\"ExecutionDetail2.jsp?executionId=" + tce.getId() + "\">Execution</a> was ";
+                                LastExeMessage = "Last <a width : 390px ; href=\"" + redirecturl + tce.getId() + "\">Execution</a> was ";
                                 if (tce.getControlStatus().compareToIgnoreCase("OK") == 0) {
                                     LastExeMessage = LastExeMessage + "<a style=\"color : green\">" + tce.getControlStatus() + "</a>";
                                 } else {

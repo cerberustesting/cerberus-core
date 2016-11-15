@@ -34,21 +34,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.Robot;
-import org.cerberus.crud.entity.RobotCapability;
-import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestCaseCountry;
-import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRunTestCaseService;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
@@ -389,7 +387,17 @@ public class RunTestCase extends HttpServlet {
                 long runID = tCExecution.getId();
                 if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
                     if (runID > 0) { // Execution has been created.
-                        response.sendRedirect("./ExecutionDetail2.jsp?executionId=" + runID);
+                        AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
+                        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                            Parameter p = (Parameter)a.getItem();
+                            if(!p.getValue().equals("N")) {
+                                response.sendRedirect("ExecutionDetail2.jsp?executionId=" + runID);
+                            }else{
+                                response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
+                            }
+                        }else{
+                            response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
+                        }
                     } else { // Execution was not even created.
                         response.setContentType("text/html");
                         out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");
