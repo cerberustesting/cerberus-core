@@ -99,7 +99,7 @@
 
 
         <div id="body">
-            <div style="margin: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; border-radius: 4px; border: 1px solid transparent; margin-bottom: 20px; padding: 15px; border-color: #ebccd1; background-color: #f2dede; color:#a94442;">
+            <div id="warningOldPage" style="margin: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; border-radius: 4px; border: 1px solid transparent; margin-bottom: 20px; padding: 15px; border-color: #ebccd1; background-color: #f2dede; color:#a94442;">
                 <strong>DEPRECATED</strong> This Page is now deprecated. Follow this link to get the new Page. <button style="color: #fff;background-color: #337ab7;border-color:#2e6da4;display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action:manipulation;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius:4px" onclick="window.location='ExecutionDetail2.jsp?executionId=<%=ParameterParserUtil.parseLongParam(request.getParameter("id_tc"), 0)%>'">Execution Detail</button>
             </div>
         <%
@@ -807,6 +807,32 @@
                         $('#dialogTheDiff').empty().html(dmp.diff_prettyHtml(d))
                         $('#dialogTheDiff').dialog();
                     }
+                </script>
+                <script>
+                    function getParameter(param,sys,forceReload){
+                        var cacheEntryName = "PARAMETER_"+param;
+                        if (forceReload) {
+                            sessionStorage.removeItem(cacheEntryName);
+                        }
+                        var system = sys!=undefined?"&system="+sys:"";
+                        return new Promise(function(resolve, reject){
+                            var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
+                            if(parameter === null){
+                                $.get("ReadParameter?param="+param+system, function(data){
+                                    sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
+                                    resolve(data.contentTable);
+                                });
+                            }else{
+                                resolve(parameter);
+                            }
+                        });
+                    }
+
+                    getParameter("cerberus_executiondetail_use").then(function(data){
+                        if(data.value == "N"){
+                            $("#warningOldPage").hide();
+                        }
+                    });
                 </script>
                 <br><%=display_footer(DatePageStart)%>
                 <div id="dialogTheDiff"></div>

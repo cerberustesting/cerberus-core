@@ -543,6 +543,30 @@ function getSelectDeployType(forceReload) {
 }
 
 
+
+/**
+ *
+ */
+function getParameter(param,sys,forceReload){
+    var cacheEntryName = "PARAMETER_"+param;
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var system = sys!=undefined?"&system="+sys:"";
+    return new Promise(function(resolve, reject){
+        var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
+        if(parameter === null){
+            $.get("ReadParameter?param="+param+system, function(data){
+                sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
+                resolve(data.contentTable);
+            });
+        }else{
+            resolve(parameter);
+        }
+    });
+}
+
+
 /***********************************************Messages/ALERT***************************************/
 
 /**

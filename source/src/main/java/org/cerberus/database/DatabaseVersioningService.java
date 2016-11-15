@@ -7350,6 +7350,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>verifyRegexInElement</code> will return true if a regex match the content of a field.<br><br>Usage :<br><doc class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Field name</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Regex</td></tr></table></doc><br><br>Examples :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>xpath=.//*[@class=\\'breadcrumbs\\']</td><td class=\\'ex\\'>.*becoming seller.*</td><td class=\\'ex\\'>true if the data inside the field contains \\'becoming seller\\'.</td></tr></table></doc><br>NB : Standard Java regex can be used. Further details <a href=\\\"https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html\\\">here</a>.' WHERE `DocTable`='testcasestepactioncontrol' and`DocField`='Control' and`DocValue`='verifyRegexInElement' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
 
+        // PArameter new ExecutionDetail Page
+        //-- ------------------------ 961-962
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
