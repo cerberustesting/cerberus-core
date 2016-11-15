@@ -309,15 +309,10 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList, index) {
-    var scope = this;
-    index = (index==undefined)?0:index;
-    this.setAction(actionList[index]).then(function(){
-        index++;
-        if(index < actionList.length){
-            scope.setActionList(actionList, index);
-        }
-    })
+Step.prototype.setActionList = function (actionList) {
+    for(var i = 0; i < actionList.length; i++) {
+        this.setAction(actionList[i]);
+    }
 };
 
 Step.prototype.setAction = function (action) {
@@ -330,9 +325,9 @@ Step.prototype.setAction = function (action) {
 
     this.actionList.push(actionObj);
 
-    return actionObj.draw().then(function(){
-        actionObj.setControlList(actionObj.controlListJson);
-    });
+    actionObj.draw();
+
+    actionObj.setControlList(actionObj.controlListJson);
 };
 
 Step.prototype.setDescription = function (description) {
@@ -414,49 +409,67 @@ function Action(json, parentStep) {
 }
 
 Action.prototype.draw = function () {
-    var scope = this;
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
 
-    return this.generateHeader().then(function(data){
+    var header = this.generateHeader();
 
-        row.append(data);
-        row.data("item", scope);
+    row.append(header);
+    row.data("item", this);
 
-        var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
-        htmlElement.prepend(button);
-        htmlElement.prepend(row);
+    htmlElement.prepend(button);
+    htmlElement.prepend(row);
 
-        var content = scope.generateContent();
+    var content = this.generateContent();
 
-        if (action.returnCode === "OK") {
-            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-            htmlElement.addClass("row list-group-item list-group-item-success");
-            content.hide();
-        } else if (action.returnCode === "PE") {
-            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
-            htmlElement.addClass("row list-group-item list-group-item-info");
-            content.hide();
-        } else if (action.returnCode === "FA") {
-            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-            htmlElement.addClass("row list-group-item list-group-item-warning");
-            content.hide();
-        } else {
-            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-            htmlElement.addClass("row list-group-item list-group-item-danger");
-            content.show();
+    if (action.returnCode === "OK") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-success");
+        content.hide();
+    } else if (action.returnCode === "PE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
+    } else if (action.returnCode === "FA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-warning");
+        content.hide();
+    } else {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-danger");
+        content.show();
+    }
+
+    this.parentStep.stepActionContainer.append(htmlElement);
+    this.parentStep.stepActionContainer.append(content);
+    htmlElement.click(function(){
+        content.toggle();
+        return false;
+    });
+
+    var f = new File();
+    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&sequence=" + this.sequence).then(function(data){
+
+        var headerToAdd = data[0];
+        var bodyToAdd = data[1];
+
+        if(headerToAdd != undefined) {
+            var cnt = headerToAdd.contents();
+            $(header).find("h4").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
+            $(header).find(".row").append(cnt);
         }
 
-        scope.parentStep.stepActionContainer.append(htmlElement);
-        scope.parentStep.stepActionContainer.append(content);
-        htmlElement.click(function(){
-            content.toggle();
-            return false;
-        });
+        if(bodyToAdd != undefined) {
+            var cnt = bodyToAdd.contents();
+            $(content).append(cnt);
+        }
 
+    },function(e){
+        // No File Found
     });
 
 };
@@ -494,25 +507,17 @@ Action.prototype.generateHeader = function () {
     var over = false;
     var it = 0;
 
-    return new Promise(function(resolve, reject){
-        var f = new File();
-        f.getFiles(scope,"ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence).then(function(data){
-            var returnMessageField = $("<h4>").addClass("col-sm-" + (12 - (f.getIt()))).attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-            returnMessageField.text(scope.returnMessage);
+    var returnMessageField = $("<h4>").addClass("col-sm-12").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-            var cnt = data.contents();
+    returnMessageField.text(scope.returnMessage);
 
-            firstRow.prepend(cnt);
-            firstRow.prepend(returnMessageField);
+    firstRow.prepend(returnMessageField);
 
-            content.append(firstRow);
 
-            resolve(content);
-        }).catch(function(e){
-            console.log("error");
-        });
-    });
+    content.append(firstRow);
+
+    return content;
 
 };
 
@@ -808,7 +813,6 @@ var File = function(){
         return new Promise(function(resolve, reject){
             // Check if Picture
 
-
             var xhr = new XMLHttpRequest();
             xhr.open('GET', src + id, true);
             xhr.responseType = 'blob';
@@ -818,7 +822,7 @@ var File = function(){
                     // get binary data as a response
                     var blob = this.response;
 
-                    // We want to know the type of the File
+                    // We want to know the type of the File (The type of the blob is trustfully, always xml)
                     var fileReader = new FileReader();
                     fileReader.onloadend = function(e) {
                         var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
@@ -858,7 +862,7 @@ var File = function(){
                             var imageUrl = urlCreator.createObjectURL(blob);
                             fileHeader = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", imageUrl).css("height","30px"));
                         }else if(type == "text/plain"){
-
+                            fileBody = $("<div>").addClass("row").append($("<div>").addClass("col").append($("<div class='form-group'></div>").append($("<label for='action'>File " + it + "</label>")).append($("<textarea class='form-control' id='textResponse"+it+"'>").prop("readonly",true).val())))
                         }
 
                         //Then we add it in the container and we increment the iterator
@@ -893,6 +897,7 @@ var File = function(){
         it++;
         return new Promise(function(resolve, reject) {
             scope.checkFile(data, src, it).then(function () {
+                console.log("then foundFile");
                 if(fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
@@ -900,7 +905,8 @@ var File = function(){
                     containerBody.append(fileBody);
                 }
                 resolve([containerHeader, containerBody]);
-            }).catch(function () {
+            },function (e) {
+                console.log("catch foundFile");
                 if(fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
@@ -912,43 +918,4 @@ var File = function(){
         });
     };
 
-};
-
-/**
- * Picture Utility
- */
-var Picture = function () {
-    this.checkPicture = function(data, imageSrc, picid) {
-        var scope = this;
-        return new Promise(function(resolve, reject){
-            var img = new Image();
-
-            img.onload = function(){
-                var image = scope.successPicture(data, picid);
-                resolve(image);
-            };
-            img.onerror =function(e){
-                scope.errorPicture(e);
-                reject(e);
-            };
-            img.src = imageSrc + picid;
-        });
-    };
-
-    this.successPicture = function(scope,it){
-
-        var image = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", "ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&iterator=" + it).css("height", "30px"));
-
-        image.click(function () {
-            showPicture("ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&iterator=" + it + "&h=400&w=800", scope.step, scope.sequence);
-            return false;
-        });
-
-        return image;
-
-    };
-
-    this.errorPicture = function(){
-
-    };
 };
