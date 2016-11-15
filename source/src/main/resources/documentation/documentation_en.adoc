@@ -203,7 +203,7 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Cerberus Monitoring
+== Cerberus Monitoring 
 :file-to-include: administration_cerberusmonitoring_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
