@@ -224,6 +224,7 @@
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <version>${websocket.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
