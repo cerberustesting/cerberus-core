@@ -92,11 +92,8 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         int step = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("step"), 0, charset);
         int sequence = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequence"), 0, charset);
         int sequenceControl = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequenceControl"), 0, charset);
+        int iterator = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("iterator"), 0, charset);
         long id = ParameterParserUtil.parseLongParamAndDecode(request.getParameter("id"), 0, charset);
-
-
-        int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : 150;
-        int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : 100;
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
@@ -105,54 +102,111 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         ITestCaseExecutionFileService testCaseExecutionFileService = appContext.getBean(TestCaseExecutionFileService.class);
         IParameterService parameterService = appContext.getBean(ParameterService.class);
 
-        BufferedImage b ;
-        // create a buffered image
-        ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
-        b = ImageIO.read(bis);
-        bis.close();
+        BufferedImage b = null;
 
         AnswerItem a = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList al = new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+
         String levelFile = "";
         if(type.equals("action")){
             levelFile =  test + "-" + testcase + "-" + step + "-" + sequence;
         }else if(type.equals("control")){
             levelFile =  test + "-" + testcase + "-" + step + "-" + sequence  + "-" + sequenceControl;
         }
-        AnswerList al = new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         al = testCaseExecutionFileService.readByVarious(id,levelFile);
-        BufferedImage image = null;
-
+        TestCaseExecutionFile tceFile = null;
+        Parameter path = null;
         if(al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !al.getDataList().isEmpty()){
             Iterator i = al.getDataList().iterator();
-            while(i.hasNext()){
-                TestCaseExecutionFile tc = (TestCaseExecutionFile)i.next();
-                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                        "cerberus_mediastorage_path Parameter not found");
-                a = parameterService.readByKey("","cerberus_mediastorage_path");
-                if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
-                    Parameter p = (Parameter) a.getItem();
-                    String uploadPath = p.getValue();
-                    uploadPath = StringUtil.addSuffixIfNotAlready(uploadPath, "/");
-                    File picture = new File(uploadPath + tc.getFileName());
-                    try {
-                        image = ImageIO.read(picture);
-                    } catch (IOException e) {
-
+            a = parameterService.readByKey("","cerberus_mediastorage_path");
+            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                int index = -1;
+                while(i.hasNext() && index != iterator){
+                    index++;
+                    TestCaseExecutionFile tctemp = (TestCaseExecutionFile) i.next();
+                    if(index == iterator) {
+                        tceFile = tctemp;
+                        path = (Parameter) a.getItem();
                     }
                 }
-                String file = tc.getFileName();
-                ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
-                rop.setNumberOfThreads(4);
-                b = rop.filter(image, null);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(b, "png", baos);
-                //        byte[] bytesOut = baos.toByteArray();
             }
         }
+        if(tceFile != null && path != null){
+            if(isFileAnImage(tceFile)){
+                returnImage(request, response, tceFile, path);
+            }else if(isFileAXML(tceFile)){
+                returnXML(request, response, tceFile, path);
+            }else if(isFileAText(tceFile)){
+                returnText(request, response, tceFile, path);
+            }else{
+                returnNotSupported(request, response, tceFile, path);
+            }
+        }
+    }
+
+    private boolean isFileAnImage(TestCaseExecutionFile tc){
+        String extension = tc.getFileType();
+        return "JPG".equals(extension) || "PNG".equals(extension) || "GIF".equals(extension) || "JPEG".equals(extension);
+    }
+
+    private boolean isFileAXML(TestCaseExecutionFile tc){
+        String extension = tc.getFileType();
+        return "HTML".equals(extension) || "XML".equals(extension);
+    }
+
+    private boolean isFileAText(TestCaseExecutionFile tc){
+        String extension = tc.getFileType();
+        return "TEXT".equals(extension);
+    }
+
+    private void returnImage(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p) throws IOException {
+
+        int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : 150;
+        int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : 100;
+
+        BufferedImage image = null;
+        BufferedImage b = null;
+        String uploadPath = p.getValue();
+        uploadPath = StringUtil.addSuffixIfNotAlready(uploadPath, "/");
+
+        File picture = new File(uploadPath + tc.getFileName());
+        try {
+            image = ImageIO.read(picture);
+
+            ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
+            rop.setNumberOfThreads(4);
+            b = rop.filter(image, null);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(b, "png", baos);
+        } catch (IOException e) {
+
+        }
+
         response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Type", "PNG");
 
         ImageIO.write(b, "png", response.getOutputStream());
+    }
+
+    private void returnXML(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){
+
+
+        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Type", tc.getFileType());
+    }
+
+    private void returnText(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){
+        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Type", tc.getFileType());
+    }
+
+    private void returnNotSupported(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){
+        response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
+        response.setHeader("Type", tc.getFileType());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

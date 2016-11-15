@@ -309,19 +309,30 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList) {
-    for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i]);
-    }
+Step.prototype.setActionList = function (actionList, index) {
+    var scope = this;
+    index = (index==undefined)?0:index;
+    this.setAction(actionList[index]).then(function(){
+        index++;
+        if(index < actionList.length){
+            scope.setActionList(actionList, index);
+        }
+    })
 };
 
 Step.prototype.setAction = function (action) {
+    var actionObj;
     if (action instanceof Action) {
-        this.actionList.push(action);
+        actionObj = action;
     } else {
-        var actionObj = new Action(action, this);
-        this.actionList.push(actionObj);
+        actionObj = new Action(action, this);
     }
+
+    this.actionList.push(actionObj);
+
+    return actionObj.draw().then(function(){
+        actionObj.setControlList(actionObj.controlListJson);
+    });
 };
 
 Step.prototype.setDescription = function (description) {
@@ -374,6 +385,7 @@ function Action(json, parentStep) {
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.screenshotFileName = json.screenshotFileName;
+        this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
     } else {
         this.action = "Unknown";
@@ -394,58 +406,59 @@ function Action(json, parentStep) {
         this.value1 = "";
         this.value2 = "";
         this.screenshotFileName = "";
+        this.controlListJson = "";
         this.controlList = [];
-    }
-
-    this.draw();
-
-    if(json !== null){
-        this.setControlList(json.testCaseStepActionControlExecutionList);
     }
 
     this.toDelete = false;
 }
 
 Action.prototype.draw = function () {
+    var scope = this;
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
 
-    row.append(this.generateHeader());
-    row.data("item", this);
+    return this.generateHeader().then(function(data){
 
-    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+        row.append(data);
+        row.data("item", scope);
 
-    htmlElement.prepend(button);
-    htmlElement.prepend(row);
+        var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
-    var content = this.generateContent();
+        htmlElement.prepend(button);
+        htmlElement.prepend(row);
 
-    if (action.returnCode === "OK") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-success");
-        content.hide();
-    } else if (action.returnCode === "PE") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-info");
-        content.hide();
-    } else if (action.returnCode === "FA") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.hide();
-    } else {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
-        htmlElement.addClass("row list-group-item list-group-item-danger");
-        content.show();
-    }
+        var content = scope.generateContent();
 
-    this.parentStep.stepActionContainer.append(htmlElement);
-    this.parentStep.stepActionContainer.append(content);
-    htmlElement.click(function(){
-       content.toggle();
-        return false;
+        if (action.returnCode === "OK") {
+            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+            htmlElement.addClass("row list-group-item list-group-item-success");
+            content.hide();
+        } else if (action.returnCode === "PE") {
+            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+            htmlElement.addClass("row list-group-item list-group-item-info");
+            content.hide();
+        } else if (action.returnCode === "FA") {
+            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+            htmlElement.addClass("row list-group-item list-group-item-warning");
+            content.hide();
+        } else {
+            htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+            htmlElement.addClass("row list-group-item list-group-item-danger");
+            content.show();
+        }
+
+        scope.parentStep.stepActionContainer.append(htmlElement);
+        scope.parentStep.stepActionContainer.append(content);
+        htmlElement.click(function(){
+            content.toggle();
+            return false;
+        });
+
     });
+
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -478,22 +491,29 @@ Action.prototype.generateHeader = function () {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row list-group-item-heading");
-    var returnMessageField = $("<h4>").addClass("col-sm-10").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var image = $("<div>").addClass("col-sm-2").append($("<img>").css("float","right").attr("src","ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&sequence=" + this.sequence ).css("height","30px"));
+    var over = false;
+    var it = 0;
 
-    returnMessageField.text(this.returnMessage);
+    return new Promise(function(resolve, reject){
+        var f = new File();
+        f.getFiles(scope,"ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence).then(function(data){
+            var returnMessageField = $("<h4>").addClass("col-sm-" + (12 - (f.getIt()))).attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    image.click(function(){
-        showPicture("ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&h=400&w=800", scope.step, scope.sequence);
-        return false;
+            returnMessageField.text(scope.returnMessage);
+
+            var cnt = data.contents();
+
+            firstRow.prepend(cnt);
+            firstRow.prepend(returnMessageField);
+
+            content.append(firstRow);
+
+            resolve(content);
+        }).catch(function(e){
+            console.log("error");
+        });
     });
 
-    firstRow.append(returnMessageField);
-    firstRow.append(image);
-
-    content.append(firstRow);
-
-    return content;
 };
 
 Action.prototype.generateContent = function () {
@@ -773,3 +793,162 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
+/**
+ * File Utilities
+ */
+
+var File = function(){
+    var scope = this;
+    var it = 0;
+    // A div to store what to add in the header (Only the content of the div will be add)
+    var containerHeader = $("<div>");
+    // A div to store what to add in the body
+    var containerBody = $("<div>");
+    this.checkFile = function(data, src, id){
+        return new Promise(function(resolve, reject){
+            // Check if Picture
+
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', src + id, true);
+            xhr.responseType = 'blob';
+
+            xhr.onload = function(e) {
+                if (this.status == 200 && this.response != undefined && this.response.size > 0) {
+                    // get binary data as a response
+                    var blob = this.response;
+
+                    // We want to know the type of the File
+                    var fileReader = new FileReader();
+                    fileReader.onloadend = function(e) {
+                        var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
+                        var header = "";
+                        for(var i = 0; i < arr.length; i++) {
+                            header += arr[i].toString(16);
+                        }
+
+                        // Check the file signature against known types
+                        var type;
+                        switch (header) {
+                            case "89504e47":
+                                type = "image/png";
+                                break;
+                            case "47494638":
+                                type = "image/gif";
+                                break;
+                            case "ffd8ffd8":
+                            case "ffd8ffe0":
+                            case "ffd8ffe1":
+                            case "ffd8ffe2":
+                                type = "image/jpeg";
+                                break;
+                            case "25504446":
+                                type = "application/pdf";
+                                break;
+                            default:
+                                type = "text/plain";
+                                break;
+                        }
+
+                        // We create the view depending the type
+                        var fileHeader;
+                        var fileBody;
+                        if(type == "image/png" || type == "image/gif" || type == "image/jpeg") {
+                            var urlCreator = window.URL || window.webkitURL;
+                            var imageUrl = urlCreator.createObjectURL(blob);
+                            fileHeader = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", imageUrl).css("height","30px"));
+                        }else if(type == "text/plain"){
+
+                        }
+
+                        //Then we add it in the container and we increment the iterator
+                        if(fileHeader != undefined || fileBody != undefined) {
+                            scope.foundFile(data, src, fileHeader, fileBody).then(function () {
+                                resolve([containerHeader,containerBody]);
+                            });
+                        }else{
+                            reject(e);
+                        }
+                    };
+                    fileReader.readAsArrayBuffer(blob);
+                }else{
+                    reject(e);
+                }
+            };
+
+            xhr.send();
+        });
+    };
+
+    this.getFiles = function(data, src){
+        return this.checkFile(data,src + "&iterator=", it);
+    };
+
+    this.getIt = function(){
+        return it;
+    };
+
+    this.foundFile = function(data, src, fileHeader, fileBody){
+        var scope = this;
+        it++;
+        return new Promise(function(resolve, reject) {
+            scope.checkFile(data, src, it).then(function () {
+                if(fileHeader != undefined) {
+                    containerHeader.append(fileHeader);
+                }
+                if(fileBody != undefined){
+                    containerBody.append(fileBody);
+                }
+                resolve([containerHeader, containerBody]);
+            }).catch(function () {
+                if(fileHeader != undefined) {
+                    containerHeader.append(fileHeader);
+                }
+                if(fileBody != undefined){
+                    containerBody.append(fileBody);
+                }
+                resolve([containerHeader, containerBody]);
+            });
+        });
+    };
+
+};
+
+/**
+ * Picture Utility
+ */
+var Picture = function () {
+    this.checkPicture = function(data, imageSrc, picid) {
+        var scope = this;
+        return new Promise(function(resolve, reject){
+            var img = new Image();
+
+            img.onload = function(){
+                var image = scope.successPicture(data, picid);
+                resolve(image);
+            };
+            img.onerror =function(e){
+                scope.errorPicture(e);
+                reject(e);
+            };
+            img.src = imageSrc + picid;
+        });
+    };
+
+    this.successPicture = function(scope,it){
+
+        var image = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", "ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&iterator=" + it).css("height", "30px"));
+
+        image.click(function () {
+            showPicture("ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&iterator=" + it + "&h=400&w=800", scope.step, scope.sequence);
+            return false;
+        });
+
+        return image;
+
+    };
+
+    this.errorPicture = function(){
+
+    };
+};

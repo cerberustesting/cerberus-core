@@ -482,7 +482,7 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
 function loadTestCaseInfo(info) {
     $(".testTestCase #test").text(info.test);
     $.ajax({
-        url: "ReadTestCase?system=" + getUser().defaultSystem + "&test=" + info.test,
+        url: "ReadTestCase?test=" + info.test,
         async: true,
         success: function (data) {
             data.contentTable.sort(function (a, b){
