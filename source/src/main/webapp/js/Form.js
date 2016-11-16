@@ -2449,13 +2449,12 @@ function openChangeTagPopin(value) {
                     var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
 
                     deferred.success(function () {
-                        getParameter("cerberus_executiondetail_use").then(function(data){
-                            if(data.value == "N"){
-                                $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
-                            }else{
-                                $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
-                            }
-                        });
+                        var data = getParameter("cerberus_executiondetail_use");
+                        if(data.value == "N"){
+                            $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
+                        }else{
+                            $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
+                        }
                     });
 
 //
@@ -2468,22 +2467,27 @@ function openChangeTagPopin(value) {
 }
 
 function getParameter(param,sys,forceReload){
+    var result;
     var cacheEntryName = "PARAMETER_"+param;
     if (forceReload) {
         sessionStorage.removeItem(cacheEntryName);
     }
     var system = sys!=undefined?"&system="+sys:"";
-    return new Promise(function(resolve, reject){
-        var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
-        if(parameter === null){
-            $.get("ReadParameter?param="+param+system, function(data){
+    var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
+    if(parameter === null){
+        $.ajax({
+            url: "ReadParameter?param="+param+system,
+            data: {},
+            async: false,
+            success: function (data) {
                 sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
-                resolve(data.contentTable);
-            });
-        }else{
-            resolve(parameter);
-        }
-    });
+                result = data.contentTable;
+            }
+        });
+    }else{
+        result = parameter;
+    }
+    return result;
 }
 
 function loadChangeTagPopin(value) {

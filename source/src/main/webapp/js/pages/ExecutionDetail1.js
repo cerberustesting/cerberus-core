@@ -24,14 +24,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
 
-        var loc = window.location, new_uri;
-        if (loc.protocol === "https:") {
-            new_uri = "wss:";
-        } else {
-            new_uri = "ws:";
-        }
-        new_uri += "//" + loc.host;
-        new_uri += "/" + "Cerberus/execution/" + executionId;
+        var cerberusUrl = getParameter("cerberus_url").value;
+        cerberusUrl = cerberusUrl.indexOf("/", cerberusUrl.length - "/".length) !== -1?cerberusUrl:cerberusUrl+"/";
+
+        var parser = document.createElement('a');
+        parser.href = cerberusUrl;
+        var new_uri = "ws:" + parser.host + parser.pathname + "execution/" + executionId;
 
         var socket = new WebSocket(new_uri);
 
@@ -459,7 +457,7 @@ Action.prototype.draw = function () {
 
         if(headerToAdd != undefined) {
             var cnt = headerToAdd.contents();
-            $(header).find("h4").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
+            $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
             $(header).find(".row").append(cnt);
         }
 
@@ -503,17 +501,18 @@ Action.prototype.setSequence = function (sequence) {
 Action.prototype.generateHeader = function () {
     var scope = this;
     var content = $("<div></div>").addClass("content");
-    var firstRow = $("<div></div>").addClass("row list-group-item-heading");
-    var over = false;
-    var it = 0;
+    var firstRow = $("<div></div>").addClass("row ");
+    var contentField = $("<div></div>").addClass("col-sm-12").attr("id","contentField");
+    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
+    returnMessageField.text(this.returnMessage);
+    descriptionField.text(this.description);
 
-    var returnMessageField = $("<h4>").addClass("col-sm-12").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    contentField.append(descriptionField);
+    contentField.append(returnMessageField);
 
-    returnMessageField.text(scope.returnMessage);
-
-    firstRow.prepend(returnMessageField);
-
+    firstRow.append(contentField);
 
     content.append(firstRow);
 
@@ -649,7 +648,9 @@ Control.prototype.draw = function () {
     var row = $("<div></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
 
-    row.append(this.generateHeader());
+    var header = this.generateHeader();
+
+    row.append(header);
     row.data("item", this);
 
     var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
@@ -684,6 +685,27 @@ Control.prototype.draw = function () {
         return false;
     });
 
+    var f = new File();
+    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&sequence=" + this.sequence).then(function(data){
+
+        var headerToAdd = data[0];
+        var bodyToAdd = data[1];
+
+        if(headerToAdd != undefined) {
+            var cnt = headerToAdd.contents();
+            $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
+            $(header).find(".row").append(cnt);
+        }
+
+        if(bodyToAdd != undefined) {
+            var cnt = bodyToAdd.contents();
+            $(content).append(cnt);
+        }
+
+    },function(e){
+        // No File Found
+    });
+
 };
 
 Control.prototype.setStep = function (step) {
@@ -701,19 +723,18 @@ Control.prototype.setControl = function (control) {
 Control.prototype.generateHeader = function () {
     var scope = this;
     var content = $("<div></div>").addClass("content");
-    var firstRow = $("<div></div>").addClass("row list-group-item-heading");
-    var returnMessageField = $("<h4>").addClass("col-sm-10").attr("style", "font-size:1.5em;margin:0px;line-height:1.3;height:1.5em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-    var image = $("<div>").addClass("col-sm-2").append($("<img>").css("float","right").attr("src","ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).css("height","30px"));
-
-    image.click(function(){
-        showPicture("ReadTestCaseExecutionImage?id=" + scope.id + "&test=" + scope.test + "&testcase=" + scope.testcase + "&type=action&step=" + scope.step + "&sequence=" + scope.sequence + "&sequenceControl=" + scope.control + "&h=400&w=800", scope.step, scope.sequence, scope.control);
-        return false;
-    });
+    var firstRow = $("<div></div>").addClass("row ");
+    var contentField = $("<div></div>").addClass("col-sm-12").attr("id","contentField");
+    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
     returnMessageField.text(this.returnMessage);
+    descriptionField.text(this.description);
 
-    firstRow.append(returnMessageField);
-    firstRow.append(image);
+    contentField.append(descriptionField);
+    contentField.append(returnMessageField);
+
+    firstRow.append(contentField);
 
     content.append(firstRow);
 
@@ -862,7 +883,7 @@ var File = function(){
                         if(type == "image/png" || type == "image/gif" || type == "image/jpeg") {
                             var urlCreator = window.URL || window.webkitURL;
                             var imageUrl = urlCreator.createObjectURL(blob);
-                            fileHeader = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", imageUrl).css("height","30px").click(function(e){
+                            fileHeader = $("<div>").addClass("col-sm-1").css("padding","0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height","30px").click(function(e){
                                 showPicture(description, src + id + "&h=400&w=800");
                                 return false;
                             }));
@@ -881,12 +902,34 @@ var File = function(){
                             fileReader2.onloadend = function(evt){
                                 // file is loaded
                                 var result = evt.target.result;
-                                fileBody = $("<div>").addClass("row").append($("<div>").addClass("col-sm-12").append($("<div class='form-group'></div>").append($("<label for='action'>" + description + "</label>")).append($("<textarea class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result))));
-                                fileHeader =  $("<div>").addClass("col-sm-1").append($("<button type='button'>").addClass("btn btn-outline-primary").css("height","30px").css("padding","0px 10px 0px 10px").html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span>').click(function(e){
-                                    showTextArea(description,result);
-                                    return false;
-                                }));
-
+                                //We create the view, what to add in the header and the body
+                                fileBody = $("<div>").addClass("row").append(
+                                    $("<div>").addClass("col-sm-12").append(
+                                        $("<div class='form-group'></div>")
+                                            .append($("<label for='action'>" + description + "</label>"))
+                                            .append($("<textarea class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result)
+                                        )
+                                    )
+                                );
+                                fileHeader =  $("<div>").addClass("col-sm-2").css("padding","0px 7px 0px 7px").append(
+                                    $("<button type='button'>")
+                                        .addClass("btn btn-outline-primary")
+                                        .css("height","30px")
+                                        .css("width","100%")
+                                        .css("max-width","100%")
+                                        .css("display","inline-block")
+                                        .css("overflow","hidden")
+                                        .css("text-overflow","ellipsis")
+                                        .css("white-space","nowrap")
+                                        .css("font-size","small")
+                                        .html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span><span class="text-muted">'+ description +'</span>')
+                                        .click(function(e){
+                                            showTextArea(description,result);
+                                            return false;
+                                        })
+                                );
+                                //We take one more col
+                                it++;
                                 //Then we add it in the container and we increment the iterator
                                 if(fileHeader != undefined || fileBody != undefined) {
                                     scope.foundFile(data, src, fileHeader, fileBody).then(function () {

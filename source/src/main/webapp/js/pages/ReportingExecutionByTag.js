@@ -862,14 +862,12 @@ function generateExecutionLink(status, id) {
     if (status === "NE") {
         result = "./RunTests.jsp?queuedExecution=" + id;
     } else {
-        $.when(getParameter("cerberus_executiondetail_use")).then(function(data){
-            if(sessionStorage.getItem("PARAMETER_cerberus_executiondetail_use") !== null &&
-                    JSON.parse(sessionStorage.getItem("PARAMETER_cerberus_executiondetail_use")).value !== "N"){
-                result = "./ExecutionDetail2.jsp?executionId=" + id;
-            }else{
-                result = "./ExecutionDetail.jsp?id_tc=" + id;
-            }
-        });
+        var data =getParameter("cerberus_executiondetail_use");
+        if(data.value !== "N"){
+            result = "./ExecutionDetail2.jsp?executionId=" + id;
+        }else{
+            result = "./ExecutionDetail.jsp?id_tc=" + id;
+        }
     }
     return result;
 }

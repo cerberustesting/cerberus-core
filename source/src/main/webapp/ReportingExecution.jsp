@@ -185,13 +185,12 @@
                                 if (data.result === "NotExecuted"){
                                     return "<a target='_blank' class='" + data.result + "F' href='RunTests.jsp?Test="+full[0]+"&TestCase="+full[1]+"&Country="+data.country+"'>"+data.country+"</a>";
                                 } else {
-                                    getParameter("cerberus_executiondetail_use").then(function(data){
-                                        if(data.value == "N"){
-                                            return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
-                                        }else{
-                                            return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail2.jsp?executionId=" + data.execID + "'>" + data.result + "</a>";
-                                        }
-                                    });
+                                    var data = getParameter("cerberus_executiondetail_use");
+                                    if(data.value == "N"){
+                                        return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail.jsp?id_tc=" + data.execID + "'>" + data.result + "</a>";
+                                    }else{
+                                        return "<a target='_blank' class='" + data.result + "F' href='ExecutionDetail2.jsp?executionId=" + data.execID + "'>" + data.result + "</a>";
+                                    }
                                 }
                             } else{
                                 return "";
@@ -384,24 +383,29 @@
         });
     }
 
-    function getParameter(param,sys,forceReload){
-        var cacheEntryName = "PARAMETER_"+param;
-        if (forceReload) {
-            sessionStorage.removeItem(cacheEntryName);
-        }
-        var system = sys!=undefined?"&system="+sys:"";
-        return new Promise(function(resolve, reject){
+        function getParameter(param,sys,forceReload){
+            var result;
+            var cacheEntryName = "PARAMETER_"+param;
+            if (forceReload) {
+                sessionStorage.removeItem(cacheEntryName);
+            }
+            var system = sys!=undefined?"&system="+sys:"";
             var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
             if(parameter === null){
-                $.get("ReadParameter?param="+param+system, function(data){
-                    sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
-                    resolve(data.contentTable);
+                $.ajax({
+                    url: "ReadParameter?param="+param+system,
+                    data: {},
+                    async: false,
+                    success: function (data) {
+                        sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
+                        result = data.contentTable;
+                    }
                 });
             }else{
-                resolve(parameter);
+                result = parameter;
             }
-        });
-    }
+            return result;
+        }
 
     function compareArrays(arr1, arr2) {
         return $(arr1).not(arr2).length == 0 && $(arr2).not(arr1).length == 0
