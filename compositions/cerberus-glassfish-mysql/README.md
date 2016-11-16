@@ -72,12 +72,15 @@ The Selenium Grid Console can be reached from `<docker_host>:14444/grid/console`
 The Selenium Grid is using the _debug_ version of the associated nodes.
 This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_Network_Computing) that can be reached through a VNC client.
 
-Assume you already installed your own VNC client, then viewing running test on browser can be simply done by connecting your VNC client to:
+Assume you already installed your own VNC client, then viewing running test on browser can be done by: 
 
-- `vnc://<docker_host>:15900`, for the Mozilla Firefox Selenium node 
-- `vnc://<docker_host>:25900`, for the Google Chrome Selenium node
-    
-Where `<docker_host>` is your Docker host, and `secret` as prompted password.
+1. Getting URL of the needed node by:
+  1. Browse to the Selenium hub's console at `<docker_host>:14444/grid/console`, where `<docker_host>` is your Docker host 
+  2. Select the associated node and click on the _Configuration_ tab
+  3. Read the URL's host
+2. Connect your VNC client by:
+  1. Using the read URL's host as target host
+  2. Using `secret` as prompted password
 
 _Note: This configuration could not be efficient in production environment. You may want to remove the -debug suffix from Selenium node image names to get production ready Selenium nodes._
 
@@ -101,8 +104,6 @@ Port             | Description
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
 `14444`          | the Selenium Grid access port
-`15900`          | the VNC server access to the Mozilla Firefox Selenium node
-`25900`          | the VNC server access to the Google Chrome Selenium node
 
 ### Mapped volumes
 
