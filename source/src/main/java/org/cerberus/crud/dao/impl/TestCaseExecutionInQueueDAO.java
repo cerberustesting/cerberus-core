@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -783,7 +784,21 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
-            preStat.setString(1, tag);
+            int i = 1;
+            if (!StringUtil.isNullOrEmpty(tag)) {
+                preStat.setString(i++, tag);
+            }
+            if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
 
             try {
                 ResultSet resultSet = preStat.executeQuery();
