@@ -83,7 +83,7 @@ public class CreateUser2 extends HttpServlet {
         String newPassword = ParameterParserUtil.parseStringParam(request.getParameter("newPassword"), "Y");
 
         String login = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("login"), "", charset);
-        String email = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("email"), "", charset);
+        String email = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("email"), "", charset);
         String defaultSystem = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("defaultSystem"), "", charset);
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset);
         String team = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("team"), "", charset);
