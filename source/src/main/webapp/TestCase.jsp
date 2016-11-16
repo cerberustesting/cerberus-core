@@ -488,7 +488,7 @@
                                         }
                                 }
                                 }
-                                if(test != null && !test.equals("") && !find){
+                                if(testcase != null && !testcase.equals("") && !find2){
                             %>
                             <option style="width: 200px;" class="font_weight_bold_Y" value="<%=testcase%>" selected><%=testcase%>
                             </option>
@@ -527,7 +527,6 @@
                 List<Invariant> countryListInvariant = (List<Invariant>)answerCountry.getDataList();
                 List<String> countryListTestcase = testCaseCountryService.findListOfCountryByTestTestCase(test, testcase);
                 TestCaseExecution tce = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testcase);
-                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
                 List<TestCaseCountryProperties> tccpList = tccpService.findDistinctPropertiesOfTestCase(test, testcase);
 
                 group = tcase.getGroup();
@@ -548,6 +547,9 @@
                     appSystem = "";
                     SitdmossBugtrackingURL = "";
                 }
+
+                List<BuildRevisionInvariant> listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 1));
+
 
                 /**
                  * We can edit the testcase only if User role is TestAdmin or if
@@ -719,8 +721,8 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="wob"><select id="editApplication" name="editApplication" style="width: 140px"><%
-                                                        for (Application app : myApplicationService.convert(myApplicationService.readBySystem(MySystem))) {
-                                                            %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
+                                                            for (Application app : myApplicationService.convert(myApplicationService.readBySystem(appSystem))) {
+                                                                %><option value="<%=app.getApplication()%>"<%=tcase.getApplication().compareTo(app.getApplication()) == 0 ? " SELECTED " : ""%>><%=app.getApplication()%></option>
                                                             <% }%>
                                                         </select></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editRunQA", "width: 75px", "editRunQA", "runqa", "RUNQA", tcase.getActiveQA(), "", null)%></td>
@@ -729,10 +731,10 @@
                                                     <td class="wob"><%=ComboInvariant(appContext, "editPriority", "width: 75px", "editPriority", "priority", "PRIORITY", String.valueOf(tcase.getPriority()), "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editGroup", "width: 140px", "editGroup", "editgroup", "GROUP", group, "", null)%></td>
                                                     <td class="wob"><%=ComboInvariant(appContext, "editStatus", "width: 140px", "editStatus", "editStatus", "TCSTATUS", status, "", null)%></td>
-                                                    <%  for (Invariant countryL : countryListInvariant) {%>
+                                                        <%  for (Invariant countryL : countryListInvariant) {%>
                                                     <td class="wob" style="width:1px"><input value="<%=countryL.getValue()%>" type="checkbox" <% if (countryListTestcase.contains(countryL.getValue())) {%>  CHECKED  <% }%>
                                                                                              name="editTestCaseCountry" onclick="javascript:checkDeletePropertiesUncheckingCountry(this.value)"></td> 
-                                                        <%} %>
+                                                            <%}%>
                                                 </tr>
                                             </table>
                                         </td>
@@ -864,7 +866,7 @@
                                             <select id="editFromRev" name="editFromRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=fromRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=fromRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -874,7 +876,7 @@
                                             <select id="editToBuild" name="editToBuild" class="active" style="width: 70px" >
                                                 <option style="width: 100px" value="" <%=toBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 1));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -884,7 +886,7 @@
                                             <select id="editToRev" name="editToRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=toRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=toRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }
@@ -897,7 +899,7 @@
                                             <select id="editTargetBuild" name="editTargetBuild" class="active" style="width: 70px" >
                                                 <option style="width: 100px" value="" <%=targetBuild.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 1));
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 1));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetBuild.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% }%>
@@ -907,7 +909,7 @@
                                             <select id="editTargetRev" name="editTargetRev" class="active" style="width: 50px" >
                                                 <option style="width: 100px" value="" <%=targetRev.compareTo("") == 0 ? " SELECTED " : ""%>>----</option>
                                                 <%
-                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(MySystem, 2));
+                                                    listBuildRev = buildRevisionInvariantService.convert(buildRevisionInvariantService.readBySystemLevel(appSystem, 2));
                                                     for (BuildRevisionInvariant myBR : listBuildRev) {
                                                 %><option style="width: 100px" value="<%= myBR.getVersionName()%>" <%=targetRev.compareTo(myBR.getVersionName()) == 0 ? " SELECTED " : ""%>><%= myBR.getVersionName()%></option>
                                                 <% } %>
@@ -992,7 +994,7 @@
                                 <div id="StepLibDiv" style="margin-top:10px; background-color:white; width:0%; float:left; display:none; ">
                                     <div style="width:13%;position:fixed;background-color:white;height:500px; overflow: auto">    
                                         <%
-                                            List<TestCaseStep> tcsListOfUseStep = tcsService.getStepLibraryBySystem(MySystem);
+                                            List<TestCaseStep> tcsListOfUseStep = tcsService.getStepLibraryBySystem(appSystem);
                                             String testOfLib = "";
                                             for (TestCaseStep tcs : tcsListOfUseStep) {
                                                 if (!tcs.getTest().equals(testOfLib)) {
@@ -1025,7 +1027,7 @@
                                     </div>
                                     <div id="StepNumberDiv0" style="float:left;">
                                     </div>
-                                    <input style="display:none" value="<%=MySystem%>">
+                                    <input style="display:none" value="<%=appSystem%>">
                                     <%=ComboInvariant(appContext, "action_action_temp", "width: 136px; display:none", "action_action_temp", "wob", "ACTION", null, "", null)%>
                                     <%=ComboInvariant(appContext, "actions_action_", "width: 150px;visibility:hidden", "actions_action_", "actions_action_", "ACTION", "", "", null)%>
 
@@ -1150,13 +1152,13 @@
                                             </div>
                                             <div id="StepUseStepTestDiv<%=incrementStep%>" style="float:left; width:10%">
                                                 <select id="step_useStepTest_<%=incrementStep%>" name="step_useStepTest_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
-                                                        OnChange="findStepBySystemTest(this, '<%=MySystem%>', $('#step_useStepTestCase_<%=incrementStep%>'), 
+                                                        OnChange="findStepBySystemTest(this, '<%=appSystem%>', $('#step_useStepTestCase_<%=incrementStep%>'),
                                                                     $('#load_step_inLibrary_<%=incrementStep%>'), '')">
                                                     <%  if (tcs.getUseStepTest() == null || tcs.getUseStepTest().equals("")) { %>
                                                     <option style="width: 200px" value="">-- Choose Test --
                                                     </option>
                                                     <%  }
-                                                        List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
+                                                        List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(appSystem);
                                                         Set<String> tList = new HashSet();
                                                         HashMap tcListByTc = new HashMap();
                                                         List<String> tcList = new ArrayList();
@@ -1188,7 +1190,7 @@
 
                                             <div id="StepUseStepTestCaseDiv<%=incrementStep%>" style="float:left;width:10%">
                                                 <select name="step_useStepTestCase_<%=incrementStep%>" style="width: 100%;margin-top:7.5px;font-weight: bold;" 
-                                                        OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=MySystem%>', 
+                                                        OnChange="findStepBySystemTestTestCase($('#step_useStepTest_<%=incrementStep%>'), this, '<%=appSystem%>',
                                                                     $('#step_useStepStep_<%=incrementStep%>'), $('#load_step_inLibrary_<%=incrementStep%>'), '', false)"
                                                         id="step_useStepTestCase_<%=incrementStep%>">
                                                     <%  if (tcs.getUseStepTestCase().equals("")) { %>
@@ -2191,7 +2193,7 @@
                     <div id="StepUseStepTestDiv" style="float:left">
                         <select data-id="step_useStepTest_template" style="width: 150px;margin-top:12.5px;font-weight: bold;">
                             <option style="width: 400px" value="">Choose Test</option>                            
-                            <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(MySystem);
+                            <% List<TestCaseStep> tcsLib = tcsService.getStepLibraryBySystem(appSystem);
                                 Set<String> tList = new HashSet();
                                 HashMap tcListByTc = new HashMap();
                                 List<String> tcList = new ArrayList();
