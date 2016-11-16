@@ -2273,27 +2273,36 @@ $.extend({
 });
 
 /**
- * Auxiliary function that opens the modal that allows user to view/remove the picture associated with an action/control.
+ * Auxiliary function that opens the modal that allows user to view a picture.
+ * @param {type} title
  * @param {type} pictureUrl
- * @param {type} step
- * @param {type} action
- * @param {type} control
  * @returns {undefined}
  */
-function showPicture(pictureUrl, step, action, control) {
+function showPicture(title, pictureUrl) {
     var doc = new Doc();
-    $('#attachNewScreenshot').attr("pictureUrl", "");
-    $('#showPictureModalTitle').text(doc.getDocLabel("page_testcase_m_showPicture", "title"));
-    $('#removePictureButton').text(doc.getDocLabel("page_testcase_m_showPicture", "btn_remove"));
-    $('#closeShowPictureButton').text(doc.getDocLabel("page_global", "buttonClose"));
+    $('#showGenericModalTitle').text(title);
+    $('#closeShowGenericButton').text(doc.getDocLabel("page_global", "buttonClose"));
 
+    $('#modalContent').empty();
     //set the translations
-    $('#selectedPicture').attr("src", pictureUrl);
-    $('#showPictureModal #step').attr("value", step);
-    $('#showPictureModal #action').attr("value", action);
-    if (control !== null) {
-        $('#showPictureModal #control').attr("value", control);
-    }
-    $('#showPictureModal').modal('show');
-    $('#removePictureButton').hide();
+    $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl));
+
+    $('#showGenericModal').modal('show');
+}
+/**
+ * Auxiliary function that opens the modal that allows user to view a textarea.
+ * @param {type} title
+ * @param {type} text
+ * @returns {undefined}
+ */
+function showTextArea(title, text) {
+    var doc = new Doc();
+    $('#showGenericModalTitle').text(title);
+    $('#closeShowGenericButton').text(doc.getDocLabel("page_global", "buttonClose"));
+
+    $('#modalContent').empty();
+    //set the translations
+    $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows","10").val(text)));
+
+    $('#showGenericModal').modal('show');
 }

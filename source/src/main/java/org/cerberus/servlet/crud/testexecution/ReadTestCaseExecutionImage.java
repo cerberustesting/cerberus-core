@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.mortennobel.imagescaling.DimensionConstrain;
 import com.mortennobel.imagescaling.ResampleOp;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -30,6 +31,7 @@ import org.cerberus.crud.entity.*;
 import org.cerberus.crud.service.*;
 import org.cerberus.crud.service.impl.*;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.Session;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.crud.test.PictureConnector;
@@ -185,22 +187,38 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Type", "PNG");
+        response.setHeader("Description", tc.getFileDesc());
 
         ImageIO.write(b, "png", response.getOutputStream());
     }
 
     private void returnXML(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){
 
+        String everything = "";
+        String uploadPath = p.getValue();
+        uploadPath = StringUtil.addSuffixIfNotAlready(uploadPath, "/");
+
+        try(FileInputStream inputStream = new FileInputStream(uploadPath + tc.getFileName())) {
+            everything = IOUtils.toString(inputStream);
+            response.getWriter().print(everything);
+        }catch(FileNotFoundException e){
+
+        }catch(IOException e){
+
+        }
+
 
         response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Type", tc.getFileType());
+        response.setHeader("Description", tc.getFileDesc());
     }
 
     private void returnText(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){
         response.setHeader("Last-Modified", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Expires", DateUtils.addDays(Calendar.getInstance().getTime(), 2 * 360).toGMTString());
         response.setHeader("Type", tc.getFileType());
+        response.setHeader("Description", tc.getFileDesc());
     }
 
     private void returnNotSupported(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, Parameter p){

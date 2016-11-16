@@ -818,6 +818,7 @@ var File = function(){
             xhr.responseType = 'blob';
 
             xhr.onload = function(e) {
+                var description = this.getResponseHeader("Description");
                 if (this.status == 200 && this.response != undefined && this.response.size > 0) {
                     // get binary data as a response
                     var blob = this.response;
@@ -857,21 +858,45 @@ var File = function(){
                         // We create the view depending the type
                         var fileHeader;
                         var fileBody;
+                        var nowit = it;
                         if(type == "image/png" || type == "image/gif" || type == "image/jpeg") {
                             var urlCreator = window.URL || window.webkitURL;
                             var imageUrl = urlCreator.createObjectURL(blob);
-                            fileHeader = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", imageUrl).css("height","30px"));
-                        }else if(type == "text/plain"){
-                            fileBody = $("<div>").addClass("row").append($("<div>").addClass("col").append($("<div class='form-group'></div>").append($("<label for='action'>File " + it + "</label>")).append($("<textarea class='form-control' id='textResponse"+it+"'>").prop("readonly",true).val())))
-                        }
+                            fileHeader = $("<div>").addClass("col-sm-1").append($("<img>").attr("src", imageUrl).css("height","30px").click(function(e){
+                                showPicture(description, src + id + "&h=400&w=800");
+                                return false;
+                            }));
 
-                        //Then we add it in the container and we increment the iterator
-                        if(fileHeader != undefined || fileBody != undefined) {
-                            scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                resolve([containerHeader,containerBody]);
-                            });
-                        }else{
-                            reject(e);
+                            //Then we add it in the container and we increment the iterator
+                            if(fileHeader != undefined || fileBody != undefined) {
+                                scope.foundFile(data, src, fileHeader, fileBody).then(function () {
+                                    resolve([containerHeader,containerBody]);
+                                });
+                            }else{
+                                reject(e);
+                            }
+
+                        }else if(type == "text/plain"){
+                            var fileReader2 = new FileReader();
+                            fileReader2.onloadend = function(evt){
+                                // file is loaded
+                                var result = evt.target.result;
+                                fileBody = $("<div>").addClass("row").append($("<div>").addClass("col-sm-12").append($("<div class='form-group'></div>").append($("<label for='action'>" + description + "</label>")).append($("<textarea class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result))));
+                                fileHeader =  $("<div>").addClass("col-sm-1").append($("<button type='button'>").addClass("btn btn-outline-primary").css("height","30px").css("padding","0px 10px 0px 10px").html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span>').click(function(e){
+                                    showTextArea(description,result);
+                                    return false;
+                                }));
+
+                                //Then we add it in the container and we increment the iterator
+                                if(fileHeader != undefined || fileBody != undefined) {
+                                    scope.foundFile(data, src, fileHeader, fileBody).then(function () {
+                                        resolve([containerHeader,containerBody]);
+                                    });
+                                }else{
+                                    reject(e);
+                                }
+                            };
+                            fileReader2.readAsText(blob);
                         }
                     };
                     fileReader.readAsArrayBuffer(blob);
@@ -897,7 +922,6 @@ var File = function(){
         it++;
         return new Promise(function(resolve, reject) {
             scope.checkFile(data, src, it).then(function () {
-                console.log("then foundFile");
                 if(fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
@@ -906,7 +930,6 @@ var File = function(){
                 }
                 resolve([containerHeader, containerBody]);
             },function (e) {
-                console.log("catch foundFile");
                 if(fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
