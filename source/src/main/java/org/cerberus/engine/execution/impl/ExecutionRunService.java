@@ -69,7 +69,7 @@ import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
-import org.cerberus.websocket.TestCaseExecutionEndPoint;
+//import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -446,7 +446,7 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception updating Execution :" + tCExecution.getId() + " Exception:" + ex.toString());
         }
-        TestCaseExecutionEndPoint.send(tCExecution);
+        //TestCaseExecutionEndPoint.send(tCExecution);
 
         return tCExecution;
     }
@@ -608,7 +608,7 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         testCaseStepExecution.setEnd(new Date().getTime());
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-        TestCaseExecutionEndPoint.send(tcExecution);
+        //TestCaseExecutionEndPoint.send(tcExecution);
         return testCaseStepExecution;
     }
 
@@ -721,7 +721,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         }
 
-        TestCaseExecutionEndPoint.send(tcExecution);
+        //TestCaseExecutionEndPoint.send(tcExecution);
 
         return testCaseStepActionExecution;
 
@@ -743,7 +743,7 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
-        TestCaseExecutionEndPoint.send(tcExecution);
+        //TestCaseExecutionEndPoint.send(tcExecution);
         return testCaseStepActionControlExecution;
     }
 
@@ -763,7 +763,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
         }
-        TestCaseExecutionEndPoint.send(tCExecution);
+        //TestCaseExecutionEndPoint.send(tCExecution);
         return tCExecution;
     }
 

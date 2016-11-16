@@ -792,7 +792,7 @@
                         </tr>
                         <%  // We are getting here the last execution that was done on the testcase with its associated status.
                             String LastExeMessage;
-                            String redirecturl
+                            String redirecturl;
                             AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
                             if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
                                 Parameter p = (Parameter)a.getItem();
