@@ -31,13 +31,13 @@ See the `DATABASE_*` environment variables on the Dockerfile for more informatio
 
 This image can simply be run by using the following command:
 
-    docker run -d -P cerberus/cerberus-as-glassfish:latest
+docker run -d -P cerberus/cerberus-as-glassfish:latest
 
 Note the use of the `-d` and `-P` arguments to let image be run as deamon and open ports outside container which is the common use.
 
 To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for database type, name, username, and password):
 
-    docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberus/cerberus-as-glassfish:latest
+docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberus/cerberus-as-glassfish:latest
 
 ### Configure the running Cerberus instance
 
@@ -80,17 +80,17 @@ Exposed port            | Definition
 
 Assume you want to reach to the Cerberus instance, then you would run:
 
-    docker run -d -p 18080:8080 -p 14848:4848 cerberus/cerberus-as-glassfish:latest
+docker run -d -p 18080:8080 -p 14848:4848 cerberus/cerberus-as-glassfish:latest
 
 And you could access to the Cerberus instance by reaching the following URL:
 
-    <docker_host>:18080/Cerberus
+<docker_host>:18080/Cerberus
 
 Where `<docker_host>` is your Docker host URL.
 
 With this example, you could access to the Glassfish administration console by reaching the following URL:
 
-    <docker_host>:14848
+<docker_host>:14848
 
 ## Volumes
 
@@ -98,8 +98,8 @@ With this example, you could access to the Glassfish administration console by r
 
 Cerberus server logs can be persisted by using the following command:
 
-    docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
-    
+docker run [...] -v /your/local/cerberus/server/logs/directory:/usr/local/glassfish4/glassfish/domains/domain1/logs cerberus/cerberus-as-glassfish:latest
+
 Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
 ### Cerberus screenshots
@@ -107,7 +107,7 @@ Where `/your/local/cerberus/screenshots/directory` is the directory to store the
 From the [1.1.5](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.5/Dockerfile) version, the new `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures` directory is created to store Cerberus execution screenshots.
 Don't forget to map it to an existing folder out of your Docker host in order to make them persistent. Example:
 
-    docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
+docker run [...] -v /your/local/cerberus/screenshots/directory:/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures cerberus/cerberus-as-glassfish:latest
 
 Where `/your/local/cerberus/screenshots/directory` is the directory to store the Cerberus execution screenshots out of your Docker host.
 
