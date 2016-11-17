@@ -496,13 +496,13 @@ function loadTestCaseInfo(info) {
                 return 0;
             });
             for(var i = 0; i<data.contentTable.length; i++){
-                $(".testTestCase #testCase").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
             }
-            $(".testTestCase #testCase option[value='" + info.testCase + "']").prop('selected', true);
-            $(".testTestCase #testCase").bind("change",function(event){
+            $("#testCaseSelect option[value='" + info.testCase + "']").prop('selected', true);
+            $("#testCaseSelect").bind("change",function(event){
                 window.location.href = "./TestCaseScript.jsp?test=" + info.test + "&testcase=" + $(this).val();
             });
-            $(".testTestCase #testCase").select2();
+            $("#testCaseSelect").select2({ width: '100%' });
         }
     });
     $(".testTestCase #description").text(info.shortDescription);
