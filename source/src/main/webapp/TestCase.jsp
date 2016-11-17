@@ -747,7 +747,7 @@
                                     } else {
                                         howTo = howTo.replace(">", "&gt;");
                                     }
-                                    String behavior = tcase.getDescription();
+                                    String behavior = tcase.getBehaviorOrValueExpected();
                                     if (behavior == null || behavior.compareTo("null") == 0) {
                                         behavior = new String(" ");
                                     } else {
