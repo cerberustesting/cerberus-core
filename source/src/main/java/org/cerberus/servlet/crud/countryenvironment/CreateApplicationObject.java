@@ -108,7 +108,7 @@ public class CreateApplicationObject extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecodeAndSanitize(fileItem.getString(), null, charset));
+                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString(), null, charset));
                 } else {
                     file = fileItem;
                 }
