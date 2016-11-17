@@ -1526,8 +1526,7 @@ function setPlaceholderAction() {
 
 //    console.debug("-- Action");
 
-    $('div[class="rowAction form-inline"] option:selected').each(function (i, e) {
-
+    $('div[class="row form-inline"] option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
 //            console.debug(placeHolders[i].type + " - " + e.value);
             if (placeHolders[i].type === e.value) {

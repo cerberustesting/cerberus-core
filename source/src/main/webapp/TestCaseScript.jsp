@@ -43,10 +43,10 @@
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
                 <div class="panel-heading" id="testCaseTitle">
-                        <div style="width:100%">
-                            <span class="testTestCase" style="width: 200px"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / </span>
-                            <select id="testCaseSelect"></select>
-                        </div>
+                    <div style="width:100%">
+                        <span class="testTestCase"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / </span>
+                        <select id="testCaseSelect"></select>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <div>
