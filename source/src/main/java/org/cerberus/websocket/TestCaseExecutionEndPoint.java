@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
@@ -50,6 +51,7 @@ import java.util.Set;
             configurator = ServletAwareConfig.class
     )
     public class TestCaseExecutionEndPoint {
+
         private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
 
         private ApplicationContext appContext;
@@ -105,11 +107,17 @@ import java.util.Set;
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);
 
-
             HttpSession httpSession = (HttpSession) config.getUserProperties().get("httpSession");
             ServletContext servletContext = httpSession.getServletContext();
             appContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
 
+            String test = servletContext.getContextPath();
+
+            try{
+                session.getBasicRemote().sendText(test);
+            }catch (IOException e){
+
+            }
             ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
 
             AnswerItem ans = testCaseExecutionService.readByKeyWithDependency(executionId);
@@ -142,7 +150,11 @@ import java.util.Set;
          */
         @OnError
         public void error(Session session, Throwable t) {
+            try{
+                session.getBasicRemote().sendText(t.toString());
+            }catch (IOException e){
 
+            }
         }
     }
 
