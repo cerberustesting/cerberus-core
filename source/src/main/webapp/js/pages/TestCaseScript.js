@@ -24,13 +24,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var stepList = [];
 
         // Load invariant list into local storage.
-        getSelectInvariant("ACTION", false);
-        getSelectInvariant("CONTROL", false);
-        getSelectInvariant("CTRLFATAL", false);
-        getSelectInvariant("PROPERTYTYPE", false);
-        getSelectInvariant("PROPERTYDATABASE", false);
-        getSelectInvariant("PROPERTYNATURE", false);
-        getSelectInvariant("ACTIONFORCEEXESTATUS", false);
+        getSelectInvariant("ACTION", false, true);
+        getSelectInvariant("CONTROL", false, true);
+        getSelectInvariant("CTRLFATAL", false, true);
+        getSelectInvariant("PROPERTYTYPE", false, true);
+        getSelectInvariant("PROPERTYDATABASE", false, true);
+        getSelectInvariant("PROPERTYNATURE", false, true);
+        getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
 
         loadLibraryStep();
         bindToggleCollapse();
@@ -42,15 +42,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayGlobalLabel(doc);
         displayFooter(doc);
         
-        displayInvariantList("group", "GROUP", false);
-        displayInvariantList("status", "TCSTATUS", false);
-        displayInvariantList("priority", "PRIORITY", false);
+        displayInvariantList("group", "GROUP", false, true);
+        displayInvariantList("status", "TCSTATUS", false, true);
+        displayInvariantList("priority", "PRIORITY", false, true);
         $('[name="origin"]').append('<option value="All">All</option>');
-        displayInvariantList("origin", "ORIGIN", false);
-        displayInvariantList("active", "TCACTIVE", false);
-        displayInvariantList("activeQA", "TCACTIVE", false);
-        displayInvariantList("activeUAT", "TCACTIVE", false);
-        displayInvariantList("activeProd", "TCACTIVE", false);
+        displayInvariantList("origin", "ORIGIN", false, true);
+        displayInvariantList("active", "TCACTIVE", false, true);
+        displayInvariantList("activeQA", "TCACTIVE", false, true);
+        displayInvariantList("activeUAT", "TCACTIVE", false, true);
+        displayInvariantList("activeProd", "TCACTIVE", false, true);
         displayApplicationList("application", getUser().defaultSystem);
         displayProjectList("project");
         tinymce.init({
@@ -279,9 +279,9 @@ function saveScript() {
 }
 
 function drawProperty(property, testcaseinfo) {
-    var selectType = getSelectInvariant("PROPERTYTYPE", false);
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
     var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
 
     var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-check"));
@@ -370,9 +370,9 @@ function drawProperty(property, testcaseinfo) {
 }
 
 function drawInheritedProperty(propList) {
-    var selectType = getSelectInvariant("PROPERTYTYPE", false);
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
     var table = $("#inheritedPropTable");
 
     for (var index = 0; index < propList.length; index++) {
@@ -496,13 +496,13 @@ function loadTestCaseInfo(info) {
                 return 0;
             });
             for(var i = 0; i<data.contentTable.length; i++){
-                $(".testTestCase #testCase").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
             }
-            $(".testTestCase #testCase option[value='" + info.testCase + "']").prop('selected', true);
-            $(".testTestCase #testCase").bind("change",function(event){
+            $("#testCaseSelect option[value='" + info.testCase + "']").prop('selected', true);
+            $("#testCaseSelect").bind("change",function(event){
                 window.location.href = "./TestCaseScript.jsp?test=" + info.test + "&testcase=" + $(this).val();
             });
-            $(".testTestCase #testCase").select2();
+            $("#testCaseSelect").select2({ width: '100%' });
         }
     });
     $(".testTestCase #description").text(info.shortDescription);
@@ -1128,21 +1128,21 @@ Action.prototype.generateContent = function () {
     });
     actionconditionparam.val(this.conditionVal);
 
-    actionList = getSelectInvariant("ACTION", false).css("width","100%");
+    actionList = getSelectInvariant("ACTION", false, true).css("width","100%");
     actionList.val(this.action);
     actionList.on("change", function () {
         obj.action = actionList.val();
         setPlaceholderAction();
     });
 
-    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false).css("width","100%");
+    forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width","100%");
     forceExeStatusList.val(this.forceExeStatus);
     forceExeStatusList.on("change", function () {
         obj.forceExeStatus = forceExeStatusList.val();
 //        setPlaceholderAction();
     });
 
-    actionconditiononper = getSelectInvariant("ACTIONCONDITIONOPER", false).css("width","100%");
+    actionconditiononper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width","100%");
     actionconditiononper.on("change", function () {
         obj.conditionOper = actionconditiononper.val();
         if(obj.conditionOper != "ifPropertyExist"){
@@ -1194,6 +1194,7 @@ Action.prototype.generateContent = function () {
 };
 
 Action.prototype.getJsonData = function () {
+
     var json = {};
 
     json.toDelete = this.toDelete;
@@ -1234,6 +1235,7 @@ function Control(json, parentAction) {
         this.testcase = "";
         this.step = parentAction.step;
         this.sequence = parentAction.sequence;
+        this.control = "Unknown";
         this.description = "";
         this.objType = "Unknown";
         this.value1 = "";
@@ -1339,7 +1341,7 @@ Control.prototype.generateContent = function () {
         obj.description = descField.val();
     });
 
-    controlList = getSelectInvariant("CONTROL", false);
+    controlList = getSelectInvariant("CONTROL", false, true);
     controlList.val(this.control);
     controlList.on("change", function () {
         obj.control = controlList.val();
@@ -1356,7 +1358,7 @@ Control.prototype.generateContent = function () {
         obj.value2 = controlPropertyField.val();
     });
 
-    fatalList = getSelectInvariant("CTRLFATAL", false);
+    fatalList = getSelectInvariant("CTRLFATAL", false, true);
     fatalList.val(this.fatal);
     fatalList.on("change", function () {
         obj.fatal = fatalList.val();
@@ -1524,8 +1526,7 @@ function setPlaceholderAction() {
 
 //    console.debug("-- Action");
 
-    $('div[class="rowAction form-inline"] option:selected').each(function (i, e) {
-
+    $('div[class="row form-inline"] option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
 //            console.debug(placeHolders[i].type + " - " + e.value);
             if (placeHolders[i].type === e.value) {
