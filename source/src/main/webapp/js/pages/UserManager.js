@@ -217,14 +217,14 @@ function clickGroup(groupClicked, selected, formEdit) {
                 break;
             case "IntegratorNewChain":
                 formEdit.find("#groups option").each(function (i, e) {
-                    if (("IntegratorRO" === $(e).val()) || ("Integrator" === $(e).val())) {
+                    if (("IntegratorRO" === $(e).val())) {
                         $(e).prop('selected', 'selected');
                     }
                 });
                 break;
             case "IntegratorDeploy":
                 formEdit.find("#groups option").each(function (i, e) {
-                    if (("IntegratorRO" === $(e).val()) || ("Integrator" === $(e).val())) {
+                    if (("IntegratorRO" === $(e).val())) {
                         $(e).prop('selected', 'selected');
                     }
                 });
@@ -256,11 +256,6 @@ function clickGroup(groupClicked, selected, formEdit) {
                 });
                 break;
             case "Integrator":
-                formEdit.find("#groups option").each(function (i, e) {
-                    if (("IntegratorNewChain" === $(e).val()) || ("IntegratorDeploy" === $(e).val())) {
-                        $(e).prop('selected', '');
-                    }
-                });
                 break;
             case "IntegratorNewChain":
                 break;
