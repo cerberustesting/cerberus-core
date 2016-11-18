@@ -22,38 +22,33 @@ package org.cerberus.websocket;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionService;
-import org.cerberus.crud.service.impl.TestCaseExecutionService;
-import org.cerberus.crud.service.impl.TestCaseStepExecutionService;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.websocket.config.ServletAwareConfig;
 import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
 import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+    @WebListener
     @ServerEndpoint(
             value = "/execution/{execution-id}",
             decoders = {TestCaseExecutionDecoder.class},
-            encoders = {TestCaseExecutionEncoder.class},
-            configurator = ServletAwareConfig.class
+            encoders = {TestCaseExecutionEncoder.class}
     )
-    public class TestCaseExecutionEndPoint {
+    public class TestCaseExecutionEndPoint implements ServletContextListener {
 
         private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
 
@@ -87,8 +82,16 @@ import java.util.Set;
             }
         }
 
-        @PostConstruct
-        public void postConstruct(){
+        @Override
+        public void contextInitialized(ServletContextEvent servletContextEvent) {
+            final ServerContainer serverContainer = (ServerContainer) servletContextEvent.getServletContext()
+                    .getAttribute("javax.websocket.server.ServerContainer");
+
+            try {
+                serverContainer.addEndpoint(TestCaseExecutionEndPoint.class);
+            } catch (DeploymentException e) {
+                e.printStackTrace();
+            }
         }
 
         /**
@@ -154,6 +157,10 @@ import java.util.Set;
             }catch (IOException e){
 
             }
+        }
+
+        @Override
+        public void contextDestroyed(ServletContextEvent servletContextEvent) {
         }
     }
 
