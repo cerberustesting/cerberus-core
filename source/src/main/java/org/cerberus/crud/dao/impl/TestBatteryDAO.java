@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestBatteryDAO;
@@ -734,38 +735,32 @@ public class TestBatteryDAO implements ITestBatteryDAO {
 
     @Override
     public AnswerItem readByKey(String key) {
-        AnswerItem a = new AnswerItem();
+        AnswerItem<TestBattery> ans = new AnswerItem<>();
+        MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        TestBattery c = new TestBattery();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         query.append("SELECT * FROM testbattery tba WHERE testbattery = ?");
 
-        // Debug message on SQL.
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("SQL : " + query);
-            LOG.debug("SQL.key : " + key);
-        }
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
+        try (Connection connection = databaseSpring.connect();
+             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            // Prepare and execute query
             preStat.setString(1, key);
             ResultSet resultSet = preStat.executeQuery();
-            //gets the data
+
             while (resultSet.next()) {
-                c = this.loadFromResultSet(resultSet);
+                ans.setItem(loadFromResultSet(resultSet));
             }
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        } catch (SQLException e) {
-            LOG.error("Unable to execute query : " + e.toString());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                    .resolveDescription("OPERATION", "SELECT");
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            ans.setResultMessage(msg);
         }
-        a.setResultMessage(msg);
-        a.setItem(c);
-        return a;
+
+        return ans;
     }
 
     @Override

@@ -100,7 +100,6 @@ function renderOptionsForCampaign(data) {
 function renderOptionsForCampaign2(id) {
     var doc = new Doc();
     var data = getSelectTestBattery(false, true);
-    console.log(data.find("option"));
     $("#" + id + "_wrapper #addBatteryTestcampaign").remove();
     var contentToAdd =
         "<div class='marginBottom10 form-inline' id='addBatteryTestcampaign'>" +
@@ -228,9 +227,7 @@ function editEntryClick(param) {
 
         $.each(obj.battery, function (e) {
             array.push(
-                $.map(obj.battery[e], function (value, index) {
-                    return [value];
-                })
+                [obj.battery[e].testbattery,obj.battery[e].campaign,obj.battery[e].campaigncontentID]
             );
         });
 
@@ -249,11 +246,7 @@ function editEntryClick(param) {
         var array = [];
 
         $.each(obj.parameter, function (e) {
-            array.push(
-                $.map(obj.parameter[e], function (value, index) {
-                    return [value];
-                })
-            );
+            array.push([obj.parameter[e].campaignparameterID,obj.parameter[e].parameter,obj.parameter[e].campaign,obj.parameter[e].value])
         });
 
         if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
@@ -489,7 +482,6 @@ function getSys() {
 function updateSelectParameter(id) {
     var val = $("#" + id + '_wrapper #parameterTestSelect').find(":selected").val();
     var data = getSelectInvariant(val, false, true);
-    console.log(data);
     $("#" + id + "_wrapper #parameterTestSelect2").empty();
     var optionList = "";
     for (var i = 0; i < data.find("option").length; i++) {

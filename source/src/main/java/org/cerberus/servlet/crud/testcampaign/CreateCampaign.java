@@ -67,11 +67,10 @@ public class CreateCampaign extends HttpServlet {
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        Answer ans = new Answer();
+        Answer ans = null;
         Answer finalAnswer = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        ans.setResultMessage(msg);
 
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
@@ -107,14 +106,14 @@ public class CreateCampaign extends HttpServlet {
                     JSONArray batteries = new JSONArray(battery);
                     ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
                     IFactoryCampaignContent factoryCampaignContent = appContext.getBean(IFactoryCampaignContent.class);
-                    finalAnswer = campaignContentService.deleteByCampaign(name);
+                    ans = campaignContentService.deleteByCampaign(name);
                     int i = 0;
-                    while (i < batteries.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    while (i < batteries.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         JSONArray bat = batteries.getJSONArray(i);
                         CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
-                        finalAnswer = campaignContentService.create(co);
+                        ans = campaignContentService.create(co);
                         i++;
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
                              * Adding Log entry.
                              */
@@ -127,20 +126,24 @@ public class CreateCampaign extends HttpServlet {
                     JSONArray parameters = new JSONArray(parameter);
                     ICampaignParameterService campaignParameterService = appContext.getBean(ICampaignParameterService.class);
                     IFactoryCampaignParameter factoryCampaignParameter = appContext.getBean(IFactoryCampaignParameter.class);
-                    finalAnswer = campaignParameterService.deleteByCampaign(name);
+                    ans = campaignParameterService.deleteByCampaign(name);
                     int i = 0;
-                    while (i < parameters.length() && finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    while (i < parameters.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         JSONArray bat = parameters.getJSONArray(i);
                         CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
-                        finalAnswer = campaignParameterService.create(co);
+                        ans = campaignParameterService.create(co);
                         i++;
-                        if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                             /**
                              * Adding Log entry.
                              */
                             logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
                         }
                     }
+                }
+
+                if(ans != null && !ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    finalAnswer = ans;
                 }
             }
         }
