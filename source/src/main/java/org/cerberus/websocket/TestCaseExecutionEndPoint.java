@@ -31,8 +31,11 @@ import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
@@ -55,6 +58,9 @@ import java.util.Set;
         private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
 
         private ApplicationContext appContext;
+
+        @Autowired
+        ITestCaseExecutionService testCaseExecutionService;
 
         /**
          * All open WebSocket sessions
@@ -81,6 +87,10 @@ import java.util.Set;
             }
         }
 
+        @PostConstruct
+        public void postConstruct(){
+        }
+
         /**
          * Behavior of the Endpoint when the client send him a message
          *
@@ -104,21 +114,10 @@ import java.util.Set;
         @OnOpen
         public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
 
+            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);
-
-            HttpSession httpSession = (HttpSession) config.getUserProperties().get("httpSession");
-            ServletContext servletContext = httpSession.getServletContext();
-            appContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-
-            String test = servletContext.getContextPath();
-
-            try{
-                session.getBasicRemote().sendText(test);
-            }catch (IOException e){
-
-            }
-            ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
 
             AnswerItem ans = testCaseExecutionService.readByKeyWithDependency(executionId);
 
