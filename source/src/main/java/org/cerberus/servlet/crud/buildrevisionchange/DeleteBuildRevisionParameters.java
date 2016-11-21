@@ -63,6 +63,8 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
         JSONObject jsonResponse = new JSONObject();
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        ILogEventService logEventService = appContext.getBean(LogEventService.class);
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -73,64 +75,102 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
 
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
-        
-        /**
-         * Parsing and securing all required parameters.
-         */
+
         Integer brpid = 0;
-        boolean brpid_error = true;
-        try {
-            if (request.getParameter("id") != null && !request.getParameter("id").equals("")) {
-                brpid = Integer.valueOf(policy.sanitize(request.getParameter("id")));
-                brpid_error = false;
-            }
-        } catch (Exception ex) {
-            brpid_error = true;
-        }
 
-        /**
-         * Checking all constrains before calling the services.
-         */
-        if (brpid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "BuildRevisionParameters ID (id) is missing."));
-            ans.setResultMessage(msg);
-        } else {
+        String[] myId = request.getParameterValues("id");
+        StringBuilder output_message = new StringBuilder();
+        MessageEvent final_msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        int massErrorCounter = 0;
+        for (String myId1 : myId) {
+
             /**
-             * All data seems cleans so we can call the services.
+             * Parsing and securing all required parameters.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
+            brpid = 0;
+            boolean brpid_error = true;
+            try {
+                if (myId1 != null && !myId1.equals("")) {
+                    brpid = Integer.valueOf(policy.sanitize(myId1));
+                    brpid_error = false;
+                }
+            } catch (Exception ex) {
+                brpid_error = true;
+            }
 
-            AnswerItem resp = brpService.readByKeyTech(brpid);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
+            /**
+             * Checking all constrains before calling the services.
+             */
+            if (brpid_error) {
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                 msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
                         .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "BuildRevisionParameter does not exist."));
+                        .replace("%REASON%", "BuildRevisionParameters ID (id) : Could not manage to convert id to an integer value or id is missing."));
                 ans.setResultMessage(msg);
-
+                massErrorCounter++;
+                output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
             } else {
                 /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can delete it.
+                 * All data seems cleans so we can call the services.
                  */
-                BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
-                ans = brpService.delete(brpData);
+                IBuildRevisionParametersService brpService = appContext.getBean(IBuildRevisionParametersService.class);
 
-                if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                AnswerItem resp = brpService.readByKeyTech(brpid);
+                if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                     /**
-                     * Delete was successful. Adding Log entry.
+                     * Object could not be found. We stop here and report the
+                     * error.
                      */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease() + "']", request);
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                            .replace("%OPERATION%", "Delete")
+                            .replace("%REASON%", "BuildRevisionParameter does not exist."));
+                    ans.setResultMessage(msg);
+                    massErrorCounter++;
+                    output_message.append("<br>id : ").append(myId1).append(" - ").append(msg.getDescription());
+
+                } else {
+                    /**
+                     * The service was able to perform the query and confirm the
+                     * object exist, then we can delete it.
+                     */
+                    BuildRevisionParameters brpData = (BuildRevisionParameters) resp.getItem();
+                    ans = brpService.delete(brpData);
+
+                    if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Delete was successful. Adding Log entry.
+                         */
+                        logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease() + "']", request);
+                    } else {
+                        massErrorCounter++;
+                        output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());
+                    }
                 }
             }
+
+        }
+
+        if (myId.length > 1) {
+            if (massErrorCounter == myId.length) { // All updates are in ERROR.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update")
+                        .replace("%REASON%", massErrorCounter + " objects(s) out of " + myId.length + " failed to update due to an issue.<br>") + output_message.toString());
+                ans.setResultMessage(msg);
+            } else if (massErrorCounter > 0) { // At least 1 update in error
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update")
+                        .replace("%REASON%", massErrorCounter + " objects(s) out of " + myId.length + " failed to update due to an issue.<br>") + output_message.toString());
+                ans.setResultMessage(msg);
+            } else { // No error detected.
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME)
+                        .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");
+                ans.setResultMessage(msg);
+            }
+            logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
         }
 
         /**

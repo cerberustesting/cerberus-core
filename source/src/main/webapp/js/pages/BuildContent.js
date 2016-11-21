@@ -55,7 +55,7 @@ function initPage() {
     var select = $('#selectApplication');
     select.append($('<option></option>').text("-- ALL --").val("ALL"));
     displayApplicationList("application", getUser().defaultSystem, urlApplication);
-    
+
     displayProjectList("project");
     displayUserList("releaseowner");
 
@@ -64,7 +64,8 @@ function initPage() {
     // handle the click for specific action buttons
     $("#addBrpButton").click(addEntryModalSaveHandler);
     $("#editBrpButton").click(editEntryModalSaveHandler);
-    $("#massActionBrpButton").click(massActionModalSaveHandler);
+    $("#massActionBrpButtonChangeBuildRevision").click(massActionModalSaveHandler_changeBuildRev);
+    $("#massActionBrpButtonDelete").click(massActionModalSaveHandler_delete);
 
     //clear the modals fields when closed
     $('#addBrpModal').on('hidden.bs.modal', addEntryModalCloseHandler);
@@ -575,13 +576,14 @@ function appendNewInstallRow(build, revision, application, release, link, versio
 }
 
 function selectAll() {
-    if ($(this).prop("checked"))
+    if ($(this).prop("checked")) {
         $("[data-line='select']").prop("checked", true);
-    else
-        $("[data-line='select']").removeProp("checked");
+    } else {
+        $("[data-line='select']").prop("checked", false);
+    }
 }
 
-function massActionModalSaveHandler() {
+function massActionModalSaveHandler_changeBuildRev() {
     clearResponseMessage($('#massActionBrpModal'));
 
     var formNewValues = $('#massActionBrpModal #massActionBrpModalForm');
@@ -604,6 +606,30 @@ function massActionModalSaveHandler() {
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
+
+function massActionModalSaveHandler_delete() {
+    clearResponseMessage($('#massActionBrpModal'));
+
+    var formList = $('#massActionForm');
+    var paramSerialized = formList.serialize().replace(/=on/g, '').replace(/id-/g, 'id=');
+
+    showLoaderInModal('#massActionBrpModal');
+
+    var jqxhr = $.post("DeleteBuildRevisionParameters", paramSerialized, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionBrpModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            var oTable = $("#buildrevisionparametersTable").dataTable();
+            oTable.fnDraw(true);
+            $('#massActionBrpModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionBrpModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
 
 function massActionModalCloseHandler() {
     // reset form values
