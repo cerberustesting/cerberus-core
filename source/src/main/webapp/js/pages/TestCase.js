@@ -334,7 +334,6 @@ function useStepChangeHandler() {
     var idlinkEditUsedStep = "linkEditUsedStep" + stepNumber;
 
     if ($(this).attr("checked")) {
-        console.log("checjed ");
         //sets the value to Y
         $(this).attr("value", "Y");
         $("#isToCopySteps_" + stepNumber).attr("value", "N");//if is checked then is not to copy steps
@@ -353,7 +352,6 @@ function useStepChangeHandler() {
         }
 
     } else {
-        console.log("sqqq");
         $(this).attr("value", "N");
         var stepChanged = $("#step_useStepChanged_" + stepNumber).attr("value");
         var isToHidde = false;
@@ -505,7 +503,7 @@ function generateHTMLStepDiv(stepNumber) {
 function dragAndDroploadTestCaseAndStepComponents(testCaseElement, testStepElement, system, refreshButton,
         testSelectedOption, testCaseSelectedOption, testStepSelectedOption) {
 
-    var url = 'GetStepInLibrary?system=' + system + '&test=' + testSelectedOption;
+    var url = 'GetStepInLibrary?test=' + testSelectedOption;
     $.get(url, function(data) {
         $(testCaseElement).empty();
 
@@ -526,7 +524,7 @@ function dragAndDroploadTestCaseAndStepComponents(testCaseElement, testStepEleme
 
 
         var url;
-        url = 'GetStepInLibrary?system=' + system + '&test=' + testSelectedOption + '&testCase=' + testCaseSelectedOption;
+        url = 'GetStepInLibrary?test=' + testSelectedOption + '&testCase=' + testCaseSelectedOption;
         $.get(url, function(data) {
             $(testStepElement).empty();
             $(testStepElement).append($("<option></option>")
@@ -1747,7 +1745,7 @@ function loadTestCaseAndStepComponents(testElement, testCaseElement, testStepEle
     //sets the test value
     $(testElement).attr("value", testSelectedOption);
 
-    var url = 'GetStepInLibrary?system=' + system + '&test=' + testSelectedOption;
+    var url = 'GetStepInLibrary?test=' + testSelectedOption;
     $.get(url, function(data) {
         $(testCaseElement).empty();
         $(testCaseElement).append($("<option></option>")
@@ -1782,7 +1780,7 @@ function findStepBySystemTest(testElement, system, testCaseElement, refreshEleme
     $(refreshElement).attr("disabled", "disabled");
 
 
-    url = 'GetStepInLibrary?system=' + system + '&test=' + test;
+    url = 'GetStepInLibrary?test=' + test;
     $.get(url, function(data) {
         $(testCaseElement).empty();
         $(testCaseElement).append($("<option></option>")
@@ -1828,7 +1826,7 @@ function findStepBySystemTestTestCase(testElement, testCaseElement, system, test
     //disables the button to load the actions and controls
     $(refreshButton).attr("disabled", "disabled");
     var url;
-    url = 'GetStepInLibrary?system=' + system + '&test=' + test + '&testCase=' + testCase;
+    url = 'GetStepInLibrary?test=' + test + '&testCase=' + testCase;
     $.get(url, function(data) {
         $(testStepElement).empty();
         $(testStepElement).append($("<option></option>")

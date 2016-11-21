@@ -7356,6 +7356,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
         SQLInstruction.add(SQLS.toString());
 
+        // Add tracability fields in testcasestep table.
+        //-- ------------------------ 963
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("DROP COLUMN `last_modified`,");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `inlibrary`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean Steps that use steps that also use step (we remove the link).
+        //-- ------------------------ 964
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV964', useStep='N', UseStepTest='', UseStepTestCase='', UseStepStep=-1 where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcsa.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.useStep='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean Steps that are used but not flagged as inLibrary (we flag them as can be used inLibrary='Y').
+        //-- ------------------------ 965
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV965', inLibrary='Y' where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcs1.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.inLibrary!='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -1213,7 +1213,7 @@
                                                     <%  } else {
                                                         List<TestCaseStep> tcstepList = tcsService.getListOfSteps(tcs.getUseStepTest(), tcs.getUseStepTestCase());
                                                         for (TestCaseStep tcstep : tcstepList) {
-                                                            if(tcstep.getInLibrary().equalsIgnoreCase("Y")){
+                                                            if ((tcstep.getInLibrary().equalsIgnoreCase("Y")) || (tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0)){
                                                         %>
 
                                                     <option style="width: 400px;" value="<%=tcstep.getStep()%>" <%=tcs.getUseStepStep().compareTo(tcstep.getStep()) == 0 ? " SELECTED " : ""%>><%=tcstep.getSort()%> : <%=tcstep.getDescription()%>

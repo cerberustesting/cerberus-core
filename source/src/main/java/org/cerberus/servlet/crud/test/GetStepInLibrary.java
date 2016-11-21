@@ -32,6 +32,7 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
+import org.cerberus.util.ParameterParserUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +60,8 @@ public class GetStepInLibrary extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        String system = policy.sanitize(request.getParameter("system"));
+//        String system = policy.sanitize(request.getParameter("system"));
+        String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), null);
         String test = policy.sanitize(request.getParameter("test"));
         String testCase = policy.sanitize(request.getParameter("testCase"));
 

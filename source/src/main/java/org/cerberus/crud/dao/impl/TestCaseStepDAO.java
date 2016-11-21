@@ -565,15 +565,33 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description, tc.description as tcdesc, tc.application as tcapp FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
-        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? ");
+        query.append("where tcs.inlibrary = 'Y' ");
+        if (system != null) {
+            query.append("and app.system = ? ");
+        }
+        if (test != null) {
+            query.append("and tcs.test = ? ");
+        }
         query.append("order by tcs.test, tcs.testcase, tcs.sort");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.test : " + test);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
-                preStat.setString(2, test);
+                int i = 1;
+                if (system != null) {
+                    preStat.setString(i++, system);
+                }
+                if (test != null) {
+                    preStat.setString(i++, test);
+                }
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseStep>();
@@ -622,16 +640,40 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
         query.append("SELECT tcs.test, tcs.testcase,tcs.step, tcs.sort, tcs.description FROM testcasestep tcs ");
         query.append("join testcase tc on tc.test=tcs.test and tc.testcase=tcs.testcase ");
         query.append("join application app  on tc.application=app.application ");
-        query.append("where tcs.inlibrary = 'Y' and app.system = ? and tcs.test = ? and tcs.testcase = ? ");
+        query.append("where tcs.inlibrary = 'Y' ");
+        if (system != null) {
+            query.append("and app.system = ? ");
+        }
+        if (test != null) {
+            query.append("and tcs.test = ? ");
+        }
+        if (testCase != null) {
+            query.append("and tcs.testcase = ? ");
+        }
         query.append("order by tcs.test, tcs.testcase, tcs.sort");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.system : " + system);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testCase);
+        }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, system);
-                preStat.setString(2, test);
-                preStat.setString(3, testCase);
+                int i = 1;
+                if (system != null) {
+                    preStat.setString(i++, system);
+                }
+                if (test != null) {
+                    preStat.setString(i++, test);
+                }
+                if (testCase != null) {
+                    preStat.setString(i++, testCase);
+                }
 
                 ResultSet resultSet = preStat.executeQuery();
                 list = new ArrayList<TestCaseStep>();
