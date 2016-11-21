@@ -54,11 +54,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadInvariantMultiSelect("priority", "PRIORITY"),
                 loadInvariantMultiSelect("group", "GROUP"),
                 loadInvariantMultiSelect("status", "TCSTATUS"),
-                loadHardDefinedSingleSelect("length", [{ label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+                loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
                 )
-            .then(function () {
-                typeSelectHandler(test, testcase, environment, country);
-        });
+                .then(function () {
+                    typeSelectHandler(test, testcase, environment, country);
+                });
 
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
@@ -140,12 +140,11 @@ function typeSelectHandler(test, testcase, environment, country) {
     if (value === "filters") {
 
         $("#envSettingsAuto select").prop("disabled", false).val("");
-
+        var mysize = $("#countryList input.countrycb").length;
         $("#countryList input.countrycb").each(function () {
-            console.log($(this).attr("name"));
-            if($(this).attr("name") == country){
+            if (($(this).attr("name") == country) || (mysize <= 1)) { // We select the the country if it is the one from the URL or if there is only 1 country.
                 $(this).prop("disabled", false).prop("checked", true);
-            }else {
+            } else {
                 $(this).prop("disabled", false).prop("checked", false);
             }
         });
@@ -153,10 +152,10 @@ function typeSelectHandler(test, testcase, environment, country) {
         $("#testCaseList").prop("disabled", false);
         $("input[name='envSettings']").prop("disabled", false);
         $("#envSettingsAuto select").empty();
-        if(environment != undefined && environment != null){
+        if (environment !== undefined && environment !== null) {
             $("[name='environment']").append($('<option></option>').text(environment).val(environment));
             $("[name='environment']").val(environment);
-        }else {
+        } else {
             displayUniqueEnvList("environment", getUser().defaultSystem, environment);
         }
         $("#campaignSelection").hide();
@@ -201,23 +200,23 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
             var testCaseList = $("#testCaseList");
 
             testCaseList.empty();
-            if(data.contentTable.length > 0) {
+            if (data.contentTable.length > 0) {
                 for (var i = 0; i < data.contentTable.length; i++) {
 
                     var text = data.contentTable[i].test + " - " + data.contentTable[i].testCase + " [" + data.contentTable[i].application + "]: " + data.contentTable[i].description;
 
                     testCaseList.append($("<option></option>")
-                        .text(text)
-                        .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
-                        .data("item", data.contentTable[i]));
+                            .text(text)
+                            .val(data.contentTable[i].test + "-" + data.contentTable[i].testCase)
+                            .data("item", data.contentTable[i]));
                 }
-            }else{
+            } else {
                 var text = data.contentTable.test + " - " + data.contentTable.testCase + " [" + data.contentTable.application + "]: " + data.contentTable.description;
 
                 testCaseList.append($("<option></option>")
-                    .text(text)
-                    .val(data.contentTable.test + "-" + data.contentTable.testCase)
-                    .data("item", data.contentTable));
+                        .text(text)
+                        .val(data.contentTable.test + "-" + data.contentTable.testCase)
+                        .data("item", data.contentTable));
             }
             hideLoader("#chooseTest");
             if ((defTest !== null) && (defTest !== undefined)) { // if test is defined we select the value in the select list.
@@ -235,8 +234,7 @@ function appendCountryList(defCountry) {
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
-
-            if (country === defCountry)
+            if ((country === defCountry) || (data.length <= 1)) // We select the the country if it is the one from the URL or if there is only 1 country.
             {
                 myChecked = 'checked="" ';
 
@@ -644,9 +642,9 @@ function loadMultiSelect(url, urlParams, selectName, textItem, valueItem) {
 
             select.multiselect(new multiSelectConf(selectName));
 
-            if(selectName == "test"){
+            if (selectName == "test") {
                 var test = GetURLParameter("test");
-                if(test != undefined && test != null && test != "") {
+                if (test != undefined && test != null && test != "") {
                     $("#filters").find("select[id='testFilter'] option[value='" + test + "']").attr("selected", "selected");
                     select.multiselect("rebuild");
                 }
@@ -687,9 +685,9 @@ function loadHardDefinedSingleSelect(selectName, values, initialSelectionIndex) 
     for (var index in values) {
         // Define the option to append 
         var option = $("<option></option>")
-            .text(values[index].label)
-            .val(values[index].value)
-            .data("item", values[index]);
+                .text(values[index].label)
+                .val(values[index].value)
+                .data("item", values[index]);
 
         // Check if this option has to be initially selected 
         if (initialSelectionIndex !== undefined && index == initialSelectionIndex) {
