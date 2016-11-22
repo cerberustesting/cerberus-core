@@ -74,15 +74,6 @@ import java.util.Set;
                     if (Boolean.TRUE.equals(session.getUserProperties().get(String.valueOf(msg.getId())))) {
                         if (session.isOpen()) {
                             session.getBasicRemote().sendObject(msg);
-                            if(!msg.getControlStatus().equals("PE")){
-                                session.getUserProperties().put(String.valueOf(msg.getId()), false);
-                                peers.remove(session);
-                                try {
-                                    session.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
                         }
                     }
                 }
@@ -138,15 +129,6 @@ import java.util.Set;
             if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null){
                 TestCaseExecution tce = (TestCaseExecution) ans.getItem();
                 TestCaseExecutionEndPoint.send(tce);
-                if(!tce.getControlStatus().equals("PE")){
-                    session.getUserProperties().put(String.valueOf(executionId), false);
-                    peers.remove(session);
-                    try {
-                        session.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
 
         }
