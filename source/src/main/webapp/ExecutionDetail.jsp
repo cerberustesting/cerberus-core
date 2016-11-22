@@ -597,7 +597,7 @@
                                         <td title="Control Value2"><table><tr><td title="Control Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2Init())%></code></td></tr><tr><td title="Control Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2())%></code></td></tr></table></td>
                                                     <td title="Fatal"><%=myControlData.getFatal()%></td>
                                                     <td title="Control Files"><table><%
-                                                        levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence() + "-" + myControlData.getControl();
+                                                        levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence() + "-" + myControlData.getControlSequence();
                                                         myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
                                                         myFiles = (List<TestCaseExecutionFile>) myFilesAnswer.getDataList();
                                                         for (TestCaseExecutionFile myFile : myFiles) {
