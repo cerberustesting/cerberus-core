@@ -153,3 +153,22 @@ select DocValue, DocLabel, DocDesc, inv.value, inv.sort, inv.description from do
 left outer join invariant inv on doc.Docvalue = inv.value and inv.idname='PROPERTYTYPE'
 where Lang='en' and DocValue <>'' and DocTable='testcasecountryproperties' and DocField='Type'
 order by inv.sort;
+
+
+-- Check Step consistency.
+-----------------------------------------
+
+-- Steps that uses other steps that uses other steps.
+select * 
+from testcasestep tcs 
+ join testcasestep tcs1 on tcs1.test=tcs.useSteptest and tcs1.testcase=tcs.useSteptestcase and tcs1.step=tcs.useStepstep  
+  where tcs.useStep = 'Y' and tcs1.useStep='Y'
+  order by tcs1.test, tcs1.testcase, tcs1.step;
+
+-- Steps that uses other steps even if they are not flagged as inLibrary
+select * from testcasestep tcs 
+ join testcasestep tcs1 on tcs1.test=tcs.useSteptest and tcs1.testcase=tcs.useSteptestcase and tcs1.step=tcs.useStepstep  
+  where tcs.useStep = 'Y' and tcs1.inLibrary!='Y'
+  order by tcs1.test, tcs1.testcase, tcs1.step;
+
+  
