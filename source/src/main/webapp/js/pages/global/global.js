@@ -2291,8 +2291,13 @@ function showPicture(title, pictureUrl) {
 
     $('#modalContent').empty();
     //set the translations
-    $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl));
-
+    $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
+    if($("#btnFullPicture").length > 0){
+        $("#btnFullPicture").remove();
+    }
+    $('#modal-footer').prepend($('<button>').attr("id","btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function(){
+        window.open(pictureUrl + "&r=true","_blank");
+    }));
     $('#showGenericModal').modal('show');
 }
 /**

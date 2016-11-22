@@ -141,10 +141,10 @@ function renderOptionsForBattery3(id) {
         $("#batteryTestcases2Table_paginate").parent().css("clear", "both");
         $("#batteryTestcases2Table_wrapper div#batteryTestcases2Table_paginate").parent().after(contentToAdd);
         $("#uncheckall").click(function () {
-            $("#editTestbatteryModal input[type='checkbox']").prop("checked", false);
+            $("#editTestbatteryModal input[type='checkbox']").prop("checked", false).trigger("change");
         });
         $("#checkall").click(function () {
-            $("#editTestbatteryModal input[type='checkbox']").prop("checked", true);
+            $("#editTestbatteryModal input[type='checkbox']").prop("checked", true).trigger("change");
         });
         $("#editTestbatteryModal #addBatteryContentButton").click(addTestCaseEntryClick);
     }
@@ -159,6 +159,8 @@ function editEntryClick(param) {
     $("#batteryKey").val(param);
 
     var formEdit = $('#editTestbatteryModal');
+
+    resetBatteries();
 
     if (param != undefined) {
         $("[name='editTestbatteryField']").html(doc.getDocLabel("page_testbattery", "edittestbattery_field"));
@@ -329,11 +331,11 @@ function removeTestCaseEntryClick(tableId, key, key2) {
 }
 
 function addTestCaseEntryClick() {
-    var checked = $("#editTestbatteryModal input[type='checkbox']:checked");
+    var checked = getBatteries();
     var rows = [];
     for (var i = 0; i < checked.length; i++) {
-        var test = $(checked[i]).attr("data-test");
-        var testcase = $(checked[i]).attr("data-testcase");
+        var test = checked[i].test;
+        var testcase = checked[i].testCase;
         if (!$("#editTestbatteryModal #batteryTestcasesTable").DataTable().data().toArray().some(function (e) {
                 return e.test == test && e.testCase == testcase
             })) {
@@ -342,6 +344,7 @@ function addTestCaseEntryClick() {
     }
     $("#editTestbatteryModal #batteryTestcasesTable").DataTable().rows.add(rows);
     $('#editTestbatteryModal .nav-tabs a[href="#tabsCreate-2"]').tab('show');
+    resetBatteries();
 }
 
 function aoColumnsFunc(tableId) {
@@ -410,138 +413,165 @@ function aoColumnsFunc2(tableId) {
     return aoColumns;
 }
 
-function aoColumnsFunc3(tableId) {
-    var doc = new Doc();
-    var aoColumns = [
-        {
-            "data": null,
-            "bSortable": false,
-            "bSearchable": false,
-            "title": doc.getDocOnline("page_global", "columnAction"),
-            "sDefaultContent": "",
-            "sWidth": "50px",
-            "mRender": function (data, type, obj) {
-                var hasPermissions = $("#" + tableId).attr("hasPermissions");
+//Public functions
+var aoColumnsFunc3, updateBatteries, resetBatteries, getBatteries;
 
-                var check = '<input type="checkbox" value="" data-test="' + obj["test"] + '" data-testcase="' + obj["testCase"] + '">';
+(function() {
+    //Private field
+    var batteries = [];
 
-                return '<div class="center btn-group width150">' + check + '</div>';
-
+    updateBatteries = function(scope, test, testcase){
+        if ($(scope).is(":checked")){
+            batteries.push({test : test, testCase : testcase})
+        }else{
+            var index = batteries.map(function(e) { return e.test == test && e.testCase == testcase; }).indexOf(true);
+            if (index > -1) {
+                batteries.splice(index, 1);
             }
-        },
-        {
-            "data": "test",
-            "sName": "tec.test",
-            "title": doc.getDocOnline("test", "Test"),
-            "sWidth": "120px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "testCase",
-            "sName": "tec.testCase",
-            "title": doc.getDocOnline("testcase", "TestCase"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "labels",
-            "sName": "lab.label",
-            "title": doc.getDocOnline("label", "label"),
-            "sWidth": "170px",
-            "sDefaultContent": "",
-            "render": function (data, type, full, meta) {
-                var labelValue = '';
-                $.each(data, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
-                });
-                return labelValue;
-            }
-        },
-        {
-            "data": "application",
-            "sName": "tec.application",
-            "title": doc.getDocOnline("application", "Application"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "project",
-            "sName": "tec.project",
-            "title": doc.getDocOnline("project", "idproject"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "usrCreated",
-            "sName": "tec.usrCreated",
-            "title": doc.getDocOnline("testcase", "Creator"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "usrModif",
-            "sName": "tec.usrModif",
-            "title": doc.getDocOnline("testcase", "LastModifier"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "tcActive",
-            "sName": "tec.tcactive",
-            "title": doc.getDocOnline("testcase", "TcActive"),
-            "sDefaultContent": "",
-            "sWidth": "70px"
-        },
-        {
-            "data": "status",
-            "sName": "tec.status",
-            "title": doc.getDocOnline("testcase", "Status"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "priority",
-            "sName": "tec.priority",
-            "title": doc.getDocOnline("invariant", "PRIORITY"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "origine",
-            "sName": "tec.origine",
-            "title": doc.getDocOnline("testcase", "Origine"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "refOrigine",
-            "sName": "tec.refOrigine",
-            "title": doc.getDocOnline("testcase", "RefOrigine"),
-            "sWidth": "80px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "group",
-            "sName": "tec.group",
-            "title": doc.getDocOnline("invariant", "GROUP"),
-            "sWidth": "100px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "description",
-            "sName": "tec.description",
-            "title": doc.getDocOnline("testcase", "Description"),
-            "sWidth": "300px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "dateCreated",
-            "sName": "tec.dateCreated",
-            "title": doc.getDocOnline("testcase", "TCDateCrea"),
-            "sWidth": "150px",
-            "sDefaultContent": ""
         }
-    ];
-    return aoColumns;
-}
+        console.log(batteries);
+    };
 
+    resetBatteries = function(){
+        batteries = [];
+    };
+
+    getBatteries = function(){
+        return batteries;
+    };
+
+    aoColumnsFunc3 = function(tableId) {
+        var doc = new Doc();
+        var aoColumns = [
+            {
+                "data": null,
+                "bSortable": false,
+                "bSearchable": false,
+                "title": doc.getDocOnline("page_global", "columnAction"),
+                "sDefaultContent": "",
+                "sWidth": "50px",
+                "mRender": function (data, type, obj) {
+                    var hasPermissions = $("#" + tableId).attr("hasPermissions");
+
+                    var check = '<input type="checkbox" value="" data-test="' + obj["test"] + '" data-testcase="' + obj["testCase"] + '" onchange="updateBatteries(this, \'' + obj["test"] + '\', \'' + obj["testCase"] + '\')">';
+
+                    return '<div class="center btn-group width150">' + check + '</div>';
+
+                }
+            },
+            {
+                "data": "test",
+                "sName": "tec.test",
+                "title": doc.getDocOnline("test", "Test"),
+                "sWidth": "120px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "testCase",
+                "sName": "tec.testCase",
+                "title": doc.getDocOnline("testcase", "TestCase"),
+                "sWidth": "70px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "labels",
+                "sName": "lab.label",
+                "title": doc.getDocOnline("label", "label"),
+                "sWidth": "170px",
+                "sDefaultContent": "",
+                "render": function (data, type, full, meta) {
+                    var labelValue = '';
+                    $.each(data, function (i, e) {
+                        labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
+                    });
+                    return labelValue;
+                }
+            },
+            {
+                "data": "application",
+                "sName": "tec.application",
+                "title": doc.getDocOnline("application", "Application"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "project",
+                "sName": "tec.project",
+                "title": doc.getDocOnline("project", "idproject"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "usrCreated",
+                "sName": "tec.usrCreated",
+                "title": doc.getDocOnline("testcase", "Creator"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "usrModif",
+                "sName": "tec.usrModif",
+                "title": doc.getDocOnline("testcase", "LastModifier"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "tcActive",
+                "sName": "tec.tcactive",
+                "title": doc.getDocOnline("testcase", "TcActive"),
+                "sDefaultContent": "",
+                "sWidth": "70px"
+            },
+            {
+                "data": "status",
+                "sName": "tec.status",
+                "title": doc.getDocOnline("testcase", "Status"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "priority",
+                "sName": "tec.priority",
+                "title": doc.getDocOnline("invariant", "PRIORITY"),
+                "sWidth": "70px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "origine",
+                "sName": "tec.origine",
+                "title": doc.getDocOnline("testcase", "Origine"),
+                "sWidth": "70px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "refOrigine",
+                "sName": "tec.refOrigine",
+                "title": doc.getDocOnline("testcase", "RefOrigine"),
+                "sWidth": "80px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "group",
+                "sName": "tec.group",
+                "title": doc.getDocOnline("invariant", "GROUP"),
+                "sWidth": "100px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "description",
+                "sName": "tec.description",
+                "title": doc.getDocOnline("testcase", "Description"),
+                "sWidth": "300px",
+                "sDefaultContent": ""
+            },
+            {
+                "data": "dateCreated",
+                "sName": "tec.dateCreated",
+                "title": doc.getDocOnline("testcase", "TCDateCrea"),
+                "sWidth": "150px",
+                "sDefaultContent": ""
+            }
+        ];
+        return aoColumns;
+    };
+})();

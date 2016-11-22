@@ -166,6 +166,8 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : 150;
         int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : 100;
 
+        Boolean real = request.getParameter("r") != null;
+
         BufferedImage image = null;
         BufferedImage b = null;
         String uploadPath = p.getValue();
@@ -173,13 +175,18 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
 
         File picture = new File(uploadPath + tc.getFileName());
         try {
-            image = ImageIO.read(picture);
+            if (real) {
+                b = ImageIO.read(picture);
+                ImageIO.write(b, "png", response.getOutputStream());
+            }else {
+                image = ImageIO.read(picture);
 
-            ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
-            rop.setNumberOfThreads(4);
-            b = rop.filter(image, null);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(b, "png", baos);
+                ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
+                rop.setNumberOfThreads(4);
+                b = rop.filter(image, null);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(b, "png", baos);
+            }
         } catch (IOException e) {
 
         }

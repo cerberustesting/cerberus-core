@@ -2609,7 +2609,7 @@
                             str = picture.pop();
                         }
                     }
-                    if (str != undefined && str.indexOf("object.") == 0 && (str.indexOf(".picture") == str.length - 8 || str.indexOf(".value") == str.length - 6)) {
+                    if (str != undefined && str.indexOf("object.") == 0 && (str.indexOf(".picturepath") == str.length - 12 || str.indexOf(".pictureurl") == str.length - 11 || str.indexOf(".value") == str.length - 6)) {
                         var pic = str.split(".");
                         if(pic.length >= 3) {
                             pic.pop();

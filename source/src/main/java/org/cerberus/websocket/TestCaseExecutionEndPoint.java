@@ -117,7 +117,9 @@ import java.util.Set;
         @OnOpen
         public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
 
-            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            if(testCaseExecutionService == null) {
+                SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            }
 
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);
