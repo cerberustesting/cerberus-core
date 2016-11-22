@@ -7379,6 +7379,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV965', inLibrary='Y' where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcs1.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.inLibrary!='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
         SQLInstruction.add(SQLS.toString());
 
+        // Documentation typo.
+        //-- ------------------------ 966
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocLabel`='JDBC Resource', `DocDesc`='This is the name of the JDBC Resource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Resource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Resource</th><th class=\\'ex\\'>Application server Resource name</th><tr>\\n<td class=\\'ex\\'>MyConnection</td>\\n<td class=\\'ex\\'>jdbc/MyConnection</td>\\n</tr></table>\\n</doc>' WHERE `DocTable`='countryenvironmentdatabase' and`DocField`='ConnectionPoolName' and`DocValue`='' and`Lang`='en';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
