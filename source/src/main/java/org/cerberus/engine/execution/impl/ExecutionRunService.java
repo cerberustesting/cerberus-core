@@ -61,15 +61,15 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.engine.execution.IConditionService;
 import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
-import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
-//import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +93,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IPropertyService propertyService;
     @Autowired
     private IControlService controlService;
+    @Autowired
+    private IConditionService conditionService;
     @Autowired
     private ITestCaseService testCaseService;
     @Autowired
@@ -307,13 +309,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * We populate the TestCase Step List
                  */
-
                 AnswerList<TestCaseStepExecution> ai = tCExecution.getTestCaseStepExecutionAnswerList();
-                if(ai == null){
+                if (ai == null) {
                     ai = new AnswerList<>();
                 }
                 List<TestCaseStepExecution> tcsExecutionList = ai.getDataList();
-                if(tcsExecutionList == null){
+                if (tcsExecutionList == null) {
                     tcsExecutionList = new LinkedList<>();
                 }
                 tcsExecutionList.add(testCaseStepExecution);
@@ -323,7 +324,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * We execute the step
                  */
-
                 testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
 
                 /**
@@ -496,61 +496,14 @@ public class ExecutionRunService implements IExecutionRunService {
             myActionDataList.addAll(testCaseStepExecution.getTestCaseExecutionDataList());
             testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
 
-            /**
-             * CONDITION Management on Action is treated here. Checking is the
-             * action can be execued here depending on the condition operator
-             * and value.
-             */
-            boolean execute_Action = true;
-            LOG.debug(logPrefix + "Starting checking the action execution condition : " + testCaseStepAction.getConditionOper());
-            MessageEvent mes;
-            switch (testCaseStepAction.getConditionOper()) {
-                case TestCaseStepAction.CONDITIONOPER_ALWAYS:
-                    execute_Action = true;
-                    break;
-
-                case TestCaseStepAction.CONDITIONOPER_IFPROPERTYEXIST:
-                    if (StringUtil.isNullOrEmpty(testCaseStepAction.getConditionVal1())) {
-                        mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER);
-                        mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
-                        testCaseStepActionExecution.setActionResultMessage(mes);
-                        execute_Action = false;
-
-                    } else {
-                        String myCountry = testCaseStepExecution.gettCExecution().getCountry();
-                        String myProperty = testCaseStepAction.getConditionVal1();
-                        execute_Action = false;
-                        for (TestCaseCountryProperties prop : testCaseStepExecution.gettCExecution().getTestCaseCountryPropertyList()) {
-                            LOG.debug(prop.getCountry() + " - " + myCountry + " - " + prop.getProperty() + " - " + myProperty);
-                            if ((prop.getCountry().equals(myCountry)) && (prop.getProperty().equals(myProperty))) {
-                                execute_Action = true;
-                            }
-                        }
-                        if (execute_Action == false) {
-                            mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_IFPROPERTYEXIST_NOTEXIST);
-                            mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
-                            mes.setDescription(mes.getDescription().replace("%PROP%", testCaseStepAction.getConditionVal1()));
-                            mes.setDescription(mes.getDescription().replace("%COUNTRY%", testCaseStepExecution.gettCExecution().getCountry()));
-                            testCaseStepActionExecution.setActionResultMessage(mes);
-
-                        }
-                    }
-                    break;
-
-                case TestCaseStepAction.CONDITIONOPER_NEVER:
-                    mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_NEVER);
-                    mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
-                    testCaseStepActionExecution.setActionResultMessage(mes);
-                    execute_Action = false;
-                    break;
-
-                default:
-                    mes = new MessageEvent(MessageEventEnum.ACTION_CONDITION_UNKNOWN);
-                    mes.setDescription(mes.getDescription().replace("%COND%", testCaseStepAction.getConditionOper()));
-                    testCaseStepActionExecution.setActionResultMessage(mes);
-                    execute_Action = false;
+            // Evaluate the condition at the action level.
+            AnswerItem<Boolean> conditionAnswer;
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), null, tcExecution);
+            boolean execute_Action = (boolean) conditionAnswer.getItem();
+            // We change the Action message only if the action is not executed due to condition.
+            if (!(execute_Action)) {
+                testCaseStepActionExecution.setActionResultMessage(conditionAnswer.getResultMessage());
             }
-            LOG.debug(logPrefix + "Finished to evaluate the execution condition : " + execute_Action);
 
             // Execute or not the action here.
             if (execute_Action) {
@@ -559,13 +512,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * We populate the TestCase Action List
                  */
-
                 AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
-                if(ai == null){
+                if (ai == null) {
                     ai = new AnswerList<>();
                 }
                 List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
-                if(tcsaExecution == null){
+                if (tcsaExecution == null) {
                     tcsaExecution = new LinkedList<>();
                 }
                 tcsaExecution.add(testCaseStepActionExecution);
@@ -575,7 +527,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * We execute the Action
                  */
-
                 testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution, tcExecution);
 
                 /**
@@ -666,7 +617,7 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
                             testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
-                            null, null, testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
+                            null, null, testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
                             testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
@@ -675,13 +626,12 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We populate the TestCase Control List
              */
-
             AnswerList<TestCaseStepActionControlExecution> ai = testCaseStepActionExecution.getTestCaseStepActionControlExecutionList();
-            if(ai == null){
+            if (ai == null) {
                 ai = new AnswerList<>();
             }
             List<TestCaseStepActionControlExecution> tcsaExecution = ai.getDataList();
-            if(tcsaExecution == null){
+            if (tcsaExecution == null) {
                 tcsaExecution = new LinkedList<>();
             }
             tcsaExecution.add(testCaseStepActionControlExecution);
@@ -691,7 +641,6 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We execute the control
              */
-
             testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution, tcExecution);
 
             /**
@@ -722,7 +671,6 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         //TestCaseExecutionEndPoint.send(tcExecution);
-
         return testCaseStepActionExecution;
 
     }

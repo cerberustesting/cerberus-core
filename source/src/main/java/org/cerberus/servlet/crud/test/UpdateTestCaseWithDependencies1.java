@@ -139,7 +139,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+            {
+                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -225,6 +226,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     }
 
                 }
+            }
         }
 
         /**
@@ -489,6 +491,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
             int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
+            String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
+            String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
             String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
@@ -497,7 +501,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, controlValue, value1, value2 , fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, controlValue, value1, value2, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;
@@ -542,7 +546,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         } catch (JSONException ex) {
             Logger.getLogger(UpdateTestCaseWithDependencies1.class.getName()).log(Level.SEVERE, null, ex);
         }
-        }
+    }
 
     /**
      * Returns a short description of the servlet.

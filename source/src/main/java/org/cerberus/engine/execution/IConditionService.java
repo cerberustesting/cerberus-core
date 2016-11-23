@@ -19,22 +19,15 @@
  */
 package org.cerberus.engine.execution;
 
-import org.cerberus.engine.entity.Identifier;
-import org.cerberus.exception.CerberusEventException;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
+ * {Insert class description here}
  *
- * @author bcivel
+ * @author vertigo17
  */
-public interface IIdentifierService {
+public interface IConditionService {
 
-    Identifier convertStringToIdentifier(String input);
-
-    Identifier convertStringToSelectIdentifier(String input);
-
-    void checkSelectOptionsIdentifier(String identifier) throws CerberusEventException;
-
-    void checkWebElementIdentifier(String identifier) throws CerberusEventException;
-
-    void checkSQLIdentifier(String identifier) throws CerberusEventException;
+    AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution);
 }
