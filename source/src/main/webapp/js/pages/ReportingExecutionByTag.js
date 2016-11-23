@@ -697,7 +697,7 @@ function createShortDescRow(row, data, index) {
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
     var labelValue = '';
                 $.each(data.labels, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
                 });
     $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
