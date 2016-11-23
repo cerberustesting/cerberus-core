@@ -453,7 +453,13 @@ var aoColumnsFunc3, updateBatteries, resetBatteries, getBatteries;
                 "mRender": function (data, type, obj) {
                     var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                    var check = '<input type="checkbox" value="" data-test="' + obj["test"] + '" data-testcase="' + obj["testCase"] + '" onchange="updateBatteries(this, \'' + obj["test"] + '\', \'' + obj["testCase"] + '\')">';
+
+                    var checked = "";
+                    var index = batteries.map(function(e) { return e.test == obj["test"] && e.testCase == obj["testCase"]; }).indexOf(true);
+                    if (index > -1) {
+                        checked = "checked";
+                    }
+                    var check = '<input type="checkbox" value="" data-test="' + obj["test"] + '" data-testcase="' + obj["testCase"] + '" onchange="updateBatteries(this, \'' + obj["test"] + '\', \'' + obj["testCase"] + '\')" ' + checked + '>';
 
                     return '<div class="center btn-group width150">' + check + '</div>';
 
