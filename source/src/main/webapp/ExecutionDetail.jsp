@@ -522,8 +522,8 @@
                                         <td title="Action Sort" style="width:5%"><%=myActionData.getSort()%></td>
                                         <td title="Action Description" style="width:20%"><%=myActionData.getDescription()%></td>
                                         <td title="Action" style="width:20%"><b><%=myActionData.getAction()%></b></td>
-                                        <td title="Action Value1" style="width:20%"><table><tr><td title="Action Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1Init())%></code></td></tr><tr><td title="Action Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1())%></code></td></tr></table></td>
-                                        <td title="Action Value2" style="width:20%"><table><tr><td title="Action Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2Init())%></code></td></tr><tr><td title="Action Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2())%></code></td></tr></table></td>
+                                        <td title="Action Value1" style="width:20%"><table><tr><td title="Action Value1 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1Init()))%></code></td></tr><tr><td title="Action Value1"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue1()))%></code></td></tr></table></td>
+                                        <td title="Action Value2" style="width:20%"><table><tr><td title="Action Value2 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2Init()))%></code></td></tr><tr><td title="Action Value2"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myActionData.getValue2()))%></code></td></tr></table></td>
                                         <td title="Action Files" style="width:4%"><table><%
                                             levelFile = myActionData.getTest() + "-" + myActionData.getTestCase() + "-" + myActionData.getStep() + "-" + myActionData.getSequence();
                                             myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
@@ -566,7 +566,7 @@
                                                     }
                                                 }
                                             %>
-                                            <code><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceUrlByLinkInString(returnMessage)%></span>
+                                            <code><i><span id="ACTMES-<%=myStep + "-" + myActionData.getSequence()%>"><%=StringUtil.replaceInvisibleCharbyString(StringUtil.replaceUrlByLinkInString(returnMessage))%></span>
                                                 </i></code></td>
                                     </tr>
 
@@ -593,8 +593,8 @@
                                                     <td title="Control Sort" data-id="<%=myAction + "-" + myControlData.getControlSequence()%>" class="control <%=myControlData.getControlSequence()%>"><%=myControlData.getSort()%></td>
                                                     <td title="Control Description"><%=myControlData.getDescription()%></td>
                                                     <td title="Control Function"><b><%=myControlData.getControl()%></b></td>
-                                        <td title="Control Value1"><table><tr><td title="Control Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1Init())%></code></td></tr><tr><td title="Control Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1())%></code></td></tr></table></td>
-                                        <td title="Control Value2"><table><tr><td title="Control Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2Init())%></code></td></tr><tr><td title="Control Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2())%></code></td></tr></table></td>
+                                        <td title="Control Value1"><table><tr><td title="Control Value1 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1Init()))%></code></td></tr><tr><td title="Control Value1"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue1()))%></code></td></tr></table></td>
+                                        <td title="Control Value2"><table><tr><td title="Control Value2 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2Init()))%></code></td></tr><tr><td title="Control Value2"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myControlData.getValue2()))%></code></td></tr></table></td>
                                                     <td title="Fatal"><%=myControlData.getFatal()%></td>
                                                     <td title="Control Files"><table><%
                                                         levelFile = myControlData.getTest() + "-" + myControlData.getTestCase() + "-" + myControlData.getStep() + "-" + myControlData.getSequence() + "-" + myControlData.getControlSequence();
@@ -611,7 +611,7 @@
                                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                     <td title="Control Return Code" style="width:20px" class="<%=myControlData.getReturnCode()%>">>></td>
                                                     <td title="Control Return Message" colspan="9" class="<%=myControlData.getReturnCode()%>F">
-                                                        <code><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage())%>
+                                                        <code><i><span id="CTLMES-<%=myAction + "-" + myControlData.getControl()%>"><%=StringUtil.replaceInvisibleCharbyString(StringUtil.replaceUrlByLinkInString(myControlData.getReturnMessage()))%>
                                                                 </span></i></code></td>
                                                 </tr>
                                                 <tr></tr>
@@ -644,10 +644,10 @@
                             <td title="Elapsed Time"><%=DateUtil.getFormatedElapsed(myData.getStartLong(), myData.getEndLong())%></td>
                             <td title="Property name"><b><span id="PROP-<%=myData.getProperty()%>"><%=myData.getProperty()%></span></b></td>
                             <td title="Description"><span id="DESCRIPTION-<%=myData.getProperty()%>"><%= myData.getDescription() == null || myData.getDescription().isEmpty() ? "<i>No description defined.</i>" : myData.getDescription()%></span></td>
-                            <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue())%></span></i></b></code></td>
+                            <td title="Value"><code><b><i><span id="PROPVAL-<%=myData.getProperty()%>"><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue()))%></span></i></b></code></td>
                             <td title="Type" style="font-size: x-small"><%=myData.getType()%></td>
-                            <td title="Property Value1" style="font-size: x-small"><table><tr><td title="Property Value1 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1Init())%></code></td></tr><tr><td title="Property Value1"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1())%></code></td></tr></table></td>
-                            <td title="Property Value2" style="font-size: x-small"><table><tr><td title="Property Value2 before Decode"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2Init())%></code></td></tr><tr><td title="Property Value2"><code><%=StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2())%></code></td></tr></table></td>
+                            <td title="Property Value1" style="font-size: x-small"><table><tr><td title="Property Value1 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1Init()))%></code></td></tr><tr><td title="Property Value1"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue1()))%></code></td></tr></table></td>
+                            <td title="Property Value2" style="font-size: x-small"><table><tr><td title="Property Value2 before Decode"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2Init()))%></code></td></tr><tr><td title="Property Value2"><code><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(myData.getValue2()))%></code></td></tr></table></td>
                             <%
                                 String propMessage = myData.getrMessage();
                                 //TODO this should handled differently, in the servlet or javascript file
@@ -661,7 +661,7 @@
                                     }
                                 }
                             %>
-                            <td title="Message" ><code><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.textToHtmlConvertingURLsToLinks(propMessage)%></span></code></td>
+                            <td title="Message" ><code><span id="PROPMES-<%=myData.getProperty()%>"><%=StringUtil.replaceInvisibleCharbyString(StringUtil.textToHtmlConvertingURLsToLinks(propMessage))%></span></code></td>
                             <td title="Media Files" ><table><%
                                 levelFile = myData.getProperty() + "-" + myData.getIndex();
                                 myFilesAnswer = myExeFileService.readByVarious(testCaseExecution.getId(), levelFile);
