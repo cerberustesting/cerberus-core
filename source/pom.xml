@@ -19,7 +19,7 @@
         <javax.persistence.version>2.0.5</javax.persistence.version>
         <org.eclipse.persistence.jpa.modelgen.processor.version>2.3.2</org.eclipse.persistence.jpa.modelgen.processor.version>
         <commons-email.version>1.2</commons-email.version>
-        <javaee-web-api>6.0</javaee-web-api>
+        <javaee-web-api>7.0</javaee-web-api>
         <junit.version>4.9</junit.version>
         <mysql-connector-java.version>5.1.20</mysql-connector-java.version>
         <json.version>20080701</json.version>
@@ -39,7 +39,7 @@
         <guava.version>17.0</guava.version>
         <xmlunit.version>1.5</xmlunit.version>
         <elfinder-servlet.version>1.2.0</elfinder-servlet.version>
-        <websocket.version>1.0</websocket.version>
+        <websocket.version>1.1</websocket.version>
         <gson.version>2.3.1</gson.version>
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
@@ -59,7 +59,7 @@
         <maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
         <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>2.4.1</maven-assembly-plugin.version>
-        <javaee-endorsed-api.version>6.0</javaee-endorsed-api.version>
+        <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <jsch.version>0.1.42</jsch.version>
         <ant-jsch.version>1.8.2</ant-jsch.version>
 

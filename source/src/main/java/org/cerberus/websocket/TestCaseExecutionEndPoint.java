@@ -68,6 +68,9 @@ import java.util.Set;
          * @param msg
          */
         public static void send(TestCaseExecution msg) {
+
+            LOG.warn("TestCaseExecutionEndPoint : Send Message");
+
             try {
             /* Send updates to all open WebSocket sessions for this match */
                 for (Session session : peers) {
@@ -116,6 +119,8 @@ import java.util.Set;
          */
         @OnOpen
         public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
+
+            LOG.warn("TestCaseExecutionEndPoint : Client Open");
 
             if(testCaseExecutionService == null) {
                 SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
