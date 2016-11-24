@@ -91,9 +91,15 @@ import java.util.Set;
                     .getAttribute("javax.websocket.server.ServerContainer");
 
             try {
+                LOG.info("TestCaseExecutionEndPoint : Adding EndPoint");
                 serverContainer.addEndpoint(TestCaseExecutionEndPoint.class);
+                LOG.info("TestCaseExecutionEndPoint : Added EndPoint");
             } catch (DeploymentException e) {
-                e.printStackTrace();
+                LOG.warn(e.getMessage());
+            } catch (IllegalStateException e) {
+                LOG.warn(e.getMessage());
+            } catch (IllegalArgumentException e) {
+                LOG.warn(e.getMessage());
             }
         }
 
