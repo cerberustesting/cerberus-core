@@ -144,7 +144,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
                      * TestcaseCountryProperties Update.
                      */
                     List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-                    tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
+                    ans = tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
 
                     /**
                      * Adding Log entry.

@@ -1634,6 +1634,7 @@ function editPropertiesModalSaveHandler(){
         success: function (data) {
             hideLoaderInModal('#propertiesModal');
             if (getAlertType(data.messageType) === 'success') {
+                $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
                 showMessage(data);
                 $('#propertiesModal').modal('hide');
             } else {
@@ -1687,7 +1688,6 @@ function addApplicationObjectModalSaveHandler() {
 }
 
 function addApplicationObjectModalCloseHandler() {
-    console.log("?");
     // reset form values
     $('#addApplicationObjectModal #addApplicationObjectModalForm')[0].reset();
     // remove all errors on the form fields
