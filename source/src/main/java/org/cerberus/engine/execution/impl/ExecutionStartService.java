@@ -443,6 +443,19 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
+        
+        /**
+         * Feature Flipping. Should be removed when websocket push is fully working
+         */
+        boolean websocketPush = true;
+        try{
+        AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
+        websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
+        } catch (Exception ex){
+            LOG.warn(ex.toString());
+        }
+        tCExecution.setFeatureFlippingActivateWebsocketPush(websocketPush);
+                
 
         return tCExecution;
     }

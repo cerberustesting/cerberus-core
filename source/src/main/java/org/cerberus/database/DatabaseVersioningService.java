@@ -7431,6 +7431,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add path to picture for appliation object in paramaters
+        //-- ------------------------ 978
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append("('','cerberus_featureflipping_activatewebsocketpush','Y','Boolean that enable/disable the websocket push.');");
+        SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
     }
