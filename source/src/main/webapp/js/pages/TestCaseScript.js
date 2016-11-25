@@ -62,12 +62,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             editTestCaseClick(test, testcase);
         });
 
-        $("#manageProp").click(function () {
-            $("#propertiesModal").modal('show');
-        });
-
         $("#saveStep").click(saveStep);
         $("#cancelEdit").click(cancelEdit);
+
+        // handle the click for specific action buttons
+        $("#addApplicationObjectButton").click(addApplicationObjectModalSaveHandler);
+
+        //clear the modals fields when closed
+        $('#addApplicationObjectModal').on('hidden.bs.modal', addApplicationObjectModalCloseHandler);
 
         var json;
         var testcaseinfo;
@@ -127,8 +129,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     }
                 ];
 
-
-                autocompleteAllFields(Tags);
+                autocompleteAllFields(Tags, data.info, test, testcase);
 
                 // Building full list of country from testcase.
                 var myCountry = [];
@@ -161,6 +162,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             error: showUnexpectedError
         });
 
+
+        $("#manageProp").click(function(){
+            editPropertiesModalClick(test,testcase,testcaseinfo);
+        });
+
+        $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
+
         $("#addStep").click({stepList: stepList}, addStep);
         $('#addStepModal').on('hidden.bs.modal', function () {
             $("#importInfo").removeData("stepInfo");
@@ -188,7 +196,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#runTestCase").click(function () {
             runTestCase(test, testcase);
         });
-
+        $.ajax({
+            url: "ReadTestCaseExecution",
+            data: {test: test, testCase: testcase},
+            dataType: "json",
+            success: function (data) {
+                $("#rerunTestCase").click(function () {
+                    rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
+                });
+                $("#rerunTestCase").attr("title","Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+            },
+            error: showUnexpectedError
+        });
     });
 });
 
@@ -201,6 +220,9 @@ function addAction() {
 
 function runTestCase(test, testcase) {
     window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase;
+}
+function rerunTestCase(test, testcase, country, environment) {
+    window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + country + "&environment=" + environment;
 }
 
 function saveScript() {
@@ -296,6 +318,7 @@ function drawProperty(property, testcaseinfo) {
 
     var row1 = $("<tr name='masterProp'></tr>");
     var row2 = $("<tr></tr>");
+    var row3 = $("<tr></tr>");
     var btnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
     var propertyName = $("<td></td>").append(propertyInput);
     var description = $("<td></td>").append(descriptionInput);
@@ -1012,6 +1035,7 @@ Action.prototype.draw = function () {
     var addBtn = $("<button></button>").addClass("btn btn-success btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(addBtn).append(supprBtn);
+    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     if (this.parentStep.useStep === "N") {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -1059,6 +1083,7 @@ Action.prototype.draw = function () {
 
     row.append(drag);
     row.append(this.generateContent());
+    row.append(imgGrp);
     row.append(btnGrp);
     row.data("item", this);
     htmlElement.prepend(row);
@@ -1102,15 +1127,15 @@ Action.prototype.setSort = function (sort) {
 
 Action.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-10");
+    var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div style='margin-top:5px;'></div>").addClass("row form-inline");
     var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm no-border");
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
-    var propertyField = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
+    var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm no-border");
+    var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm no-border");
     var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
 
     var actionconditiononper = $("<select></select>").addClass("form-control input-sm no-border");
@@ -1260,6 +1285,8 @@ Control.prototype.draw = function () {
     var plusBtn = $("<button></button>").addClass("btn btn-default btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(supprBtn);
+    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
+
     var content = this.generateContent();
 
     if (this.parentAction.parentStep.useStep === "N") {
@@ -1298,6 +1325,7 @@ Control.prototype.draw = function () {
     htmlElement.append(drag);
     htmlElement.append(content);
     htmlElement.append(btnGrp);
+    htmlElement.append(imgGrp);
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
@@ -1325,15 +1353,15 @@ Control.prototype.setSort = function (sort) {
 
 Control.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-10");
+    var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div></div>").addClass("row");
     var secondRow = $("<div></div>").addClass("row form-inline");
     var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
 
-    var controlList = $("<select></select>").addClass("form-control input-sm no-border");
+    var controlList = $("<select></select>").addClass("form-control input-sm no-border").css("width", "100%");
     var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Description");
-    var controlValueField = $("<input>").addClass("form-control input-sm no-border");
-    var controlPropertyField = $("<input>").addClass("form-control input-sm no-border");
+    var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm no-border").css("width", "100%");
+    var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm no-border").css("width", "100%");
     var fatalList = $("<select></select>").addClass("form-control input-sm no-border");
 
     descField.val(this.description);
@@ -1366,7 +1394,7 @@ Control.prototype.generateContent = function () {
 
     firstRow.append(descField);
     secondRow.append($("<span></span>").addClass("col-md-4").append(controlList));
-    secondRow.append($("<span></span>").addClass("col-md-3").append(controlValueField));
+    secondRow.append($("<span></span>").addClass("col-md-4").append(controlValueField));
     secondRow.append($("<span></span>").addClass("col-md-4").append(controlPropertyField));
     thirdRow.append($("<span></span>").addClass("col-md-1").append(fatalList));
 
@@ -1452,73 +1480,300 @@ function addControl(action) {
     return control;
 }
 
+var autocompleteAllFields;
+(function() {
+    //var accessible only in closure
+    var TagsToUse = [];
+    var tcInfo;
+    var test;
+    var testcase;
+    //function accessible everywhere that has access to TagsToUse
+    autocompleteAllFields = function(Tags, info, thistest, thistestcase) {
+        if(Tags != undefined){
+            TagsToUse = Tags;
+        }
+        if(info != undefined){
+            tcInfo = info;
+        }
+        if(thistest != undefined){
+            test = thistest;
+        }
+        if(thistestcase != undefined){
+            testcase = thistestcase;
+        }
+
+        autocompleteVariable("div.step-action .content div.row.form-inline span:nth-child(n+2) input", TagsToUse);
+
+        $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").each(function(i,e){
+            $(e).on("input change",function(ev){
+                var name = undefined;
+                var nameNotExist = undefined;
+                var objectNotExist = false;
+                var typeNotExist = undefined;
+                var checkObject = [];
+                var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
+                if(betweenPercent != null && betweenPercent.length > 0){
+                    var i = betweenPercent.length - 1;
+                    while(i>=0){
+                        var findname = betweenPercent[i].match(/\.[^\.]*(\.|.$)/g);
+                        if(betweenPercent[i].startsWith("%object.") && findname != null && findname.length > 0) {
+                            name = findname[0];
+                            name = name.slice( 1, name.length - 1 );
+
+                            checkObject.push($.ajax({
+                                url: "ReadApplicationObject",
+                                data: {application: tcInfo.application, object: name},
+                                dataType: "json",
+                                success: function (data) {
+                                    if(data.contentTable == undefined){
+                                        objectNotExist = true;
+                                        nameNotExist = name;
+                                        typeNotExist = "applicationobject";
+                                    }
+                                },
+                                error: showUnexpectedError
+                            }));
+                        } else if(betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
+                            name = findname[0];
+                            name = name.slice( 1, name.length - 1);
+
+                            checkObject.push($.ajax({
+                                url: "GetPropertiesForTestCase",
+                                data: {test: test, testcase: testcase, property: name},
+                                dataType: "json",
+                                success: function (data) {
+                                    if(data == undefined || data.length <= 0){
+                                        objectNotExist = true;
+                                        nameNotExist = name;
+                                        typeNotExist = "property";
+                                    }
+                                },
+                                error: showUnexpectedError
+                            }));
+                        }
+                        i--;
+                    }
+                }
+                if(name != undefined && typeNotExist == "applicationobject"){
+                    $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
+                }
+                Promise.all(checkObject).then(function(data){
+                    if(objectNotExist){
+                        if(typeNotExist == "applicationobject") {
+                            var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(\"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
+                            if (newTitle != $(e).attr('data-original-title')) {
+                                $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                            }
+                        }else if(typeNotExist == "property"){
+                            //TODO ADD property in array
+                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
+                            if (newTitle != $(e).attr('data-original-title')) {
+                                $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                            }
+                        }
+                    }else{
+                        $(e).tooltip('destroy');
+                    }
+                });
+            });
+        }).trigger("change");
+    };
+})();
+
+editPropertiesModalClick = function(test, testcase, info, propertyToAdd) {
+    if (info == undefined) {
+        info = previousInfo;
+    }
+    $("#propTable").empty();
+    loadProperties(test, testcase, info);
+    if (propertyToAdd != undefined) {
+        // Building full list of country from testcase.
+        var myCountry = [];
+        $.each(info.countryList, function (index) {
+            myCountry.push(index);
+        });
+
+        var newProperty = {
+            property: propertyToAdd,
+            description: "",
+            country: myCountry,
+            type: "text",
+            database: "",
+            value1: "",
+            value2: "",
+            length: 0,
+            rowLimit: 0,
+            nature: "STATIC",
+            toDelete: false
+        };
+
+        drawProperty(newProperty, info);
+    }
+    $("#propertiesModal").modal('show');
+}
+
+function editPropertiesModalSaveHandler(){
+    clearResponseMessage($('#propertiesModal'));
+    showLoaderInModal('#propertiesModal');
+
+    var properties = $("[name='masterProp']");
+    var propArr = [];
+    for (var i = 0; i < properties.length; i++) {
+        propArr.push($(properties[i]).data("property"));
+    }
+
+    $.ajax({
+        url: "UpdateTestCaseProperties1",
+        async: true,
+        method: "POST",
+        data: {informationInitialTest: GetURLParameter("test"),
+            informationInitialTestCase: GetURLParameter("testcase"),
+            informationTest: GetURLParameter("test"),
+            informationTestCase: GetURLParameter("testcase"),
+            propArr: JSON.stringify(propArr)},
+        success: function (data) {
+            hideLoaderInModal('#propertiesModal');
+            if (getAlertType(data.messageType) === 'success') {
+                $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
+                showMessage(data);
+                $('#propertiesModal').modal('hide');
+            } else {
+                showMessage(data, $('#propertiesModal'));
+            }
+        },
+        error: showUnexpectedError
+    });
+}
+
+function addApplicationObjectModalSaveHandler() {
+    clearResponseMessage($('#addApplicationObjectModal'));
+    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm :input");
+    var file = $("#addApplicationObjectModal input[type=file]");
+    // Get the header data from the form
+    var sa = formAdd.serializeArray();
+    var formData = new FormData();
+    var data = {}
+    for (var i in sa) {
+        formData.append(sa[i].name, sa[i].value);
+    }
+
+    formData.append("file",file.prop("files")[0]);
+    showLoaderInModal('#addApplicationObjectModal');
+    var jqxhr = $.ajax({
+        type: "POST",
+        url: "CreateApplicationObject",
+        data: formData,
+        processData: false,
+        contentType: false
+    });
+    $.when(jqxhr).then(function (data) {
+        hideLoaderInModal('#addApplicationObjectModal');
+//        console.log(data.messageType);
+        if (getAlertType(data.messageType) === 'success') {
+            //Update Inputs warning messages
+            $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
+            //Update Images
+            $('#actionContainer img').each(function () {
+                var src = $(this).attr('src');
+                if(src != undefined) {
+                    $(this).attr('src', src + "&time=" + new Date().getTime());
+                }
+            });
+            showMessage(data);
+            $('#addApplicationObjectModal').modal('hide');
+        } else {
+            showMessage(data, $('#addApplicationObjectModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function addApplicationObjectModalCloseHandler() {
+    // reset form values
+    $('#addApplicationObjectModal #addApplicationObjectModalForm')[0].reset();
+    // remove all errors on the form fields
+    $(this).find('div.has-error').removeClass("has-error");
+    // clear the response messages of the modal
+    clearResponseMessage($('#addApplicationObjectModal'));
+}
+
+function addApplicationObjectModalClick(name, application) {
+    clearResponseMessageMainPage();
+
+    $('#addApplicationObjectModal #application').empty();
+    displayApplicationList("application","",application);
+
+    $('#addApplicationObjectModal #object').val(name)
+
+    $('#addApplicationObjectModal').modal('show');
+}
+
 function setPlaceholderAction() {
     /**
      * Todo : GetFromDatabase
      */
     var placeHoldersList = {"fr": [
-            {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "swipe", "object": null, "property": null},
-            {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
-            {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
-            {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
-            {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
-            {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
-            {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
-            {"type": "manageDialog", "object": "ok ou cancel", "property": null},
-            {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
-            {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
-            {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL à appeler", "property": null},
-            {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
-            {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
-            {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
-            {"type": "callSoap", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
-            {"type": "callSoapWithBase", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
-            {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
-            {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
-            {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-            {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "skipAction", "object": null, "property": null},
-            {"type": "getPageSource", "object": null, "property": null}
-        ], "en": [
-            {"type": "Unknown", "object": null, "property": null},
-            {"type": "keypress", "object": "[opt] Element path", "property": ""},
-            {"type": "hideKeyboard", "object": null, "property": null},
-            {"type": "swipe", "object": null, "property": null},
-            {"type": "click", "object": "Element path", "property": null},
-            {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
-            {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
-            {"type": "doubleClick", "object": "Element path", "property": null},
-            {"type": "rightClick", "object": "Element path", "property": null},
-            {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
-            {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Window id", "property": null},
-            {"type": "manageDialog", "object": "ok or cancel", "property": null},
-            {"type": "mouseOver", "object": "Element path", "property": null},
-            {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
-            {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
-            {"type": "openUrlLogin", "object": null, "property": null},
-            {"type": "openUrl", "object": "URL to call", "property": null},
-            {"type": "select", "object": "Element path", "property": "Option path"},
-            {"type": "type", "object": "Element path", "property": "Property Name"},
-            {"type": "wait", "object": "Time(ms) or Element", "property": null},
-            {"type": "callSoap", "object": "Soap Name (library)", "property": "Property Name"},
-            {"type": "callSoapWithBase", "object": "Soap Name (library)", "property": "Property Name"},
-            {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
-            {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
-            {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-            {"type": "calculateProperty", "object": null, "property": "Property Name"},
-            {"type": "doNothing", "object": null, "property": null},
-            {"type": "skipAction", "object": null, "property": null},
-            {"type": "getPageSource", "object": null, "property": null}
-        ]};
+        {"type": "Unknown", "object": null, "property": null},
+        {"type": "keypress", "object": "[opt] Chemin vers l'élement à cibler", "property": ""},
+        {"type": "hideKeyboard", "object": null, "property": null},
+        {"type": "swipe", "object": null, "property": null},
+        {"type": "click", "object": "Chemin vers l'élement à cliquer", "property": null},
+        {"type": "mouseLeftButtonPress", "object": "Chemin vers l'élement à cibler", "property": null},
+        {"type": "mouseLeftButtonRelease", "object": "Chemin vers l'élement", "property": null},
+        {"type": "doubleClick", "object": "Chemin vers l'élement à double-cliquer", "property": null},
+        {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
+        {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
+        {"type": "focusDefaultIframe", "object": null, "property": null},
+        {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+        {"type": "manageDialog", "object": "ok ou cancel", "property": null},
+        {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
+        {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
+        {"type": "openUrlWithBase", "object": "/URI à appeler", "property": null},
+        {"type": "openUrlLogin", "object": null, "property": null},
+        {"type": "openUrl", "object": "URL à appeler", "property": null},
+        {"type": "select", "object": "Chemin vers l'élement", "property": "Chemin vers l'option"},
+        {"type": "type", "object": "Chemin vers l'élement", "property": "Nom de propriété"},
+        {"type": "wait", "object": "Valeur(ms) ou élement", "property": null},
+        {"type": "callSoap", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+        {"type": "callSoapWithBase", "object": "Nom du Soap (librairie)", "property": "Nom de propriété"},
+        {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
+        {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
+        {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
+        {"type": "calculateProperty", "object": null, "property": "Nom d'une Proprieté"},
+        {"type": "doNothing", "object": null, "property": null},
+        {"type": "skipAction", "object": null, "property": null},
+        {"type": "getPageSource", "object": null, "property": null}
+    ], "en": [
+        {"type": "Unknown", "object": null, "property": null},
+        {"type": "keypress", "object": "[opt] Element path", "property": ""},
+        {"type": "hideKeyboard", "object": null, "property": null},
+        {"type": "swipe", "object": null, "property": null},
+        {"type": "click", "object": "Element path", "property": null},
+        {"type": "mouseLeftButtonPress", "object": "Element path", "property": null},
+        {"type": "mouseLeftButtonRelease", "object": "Element path", "property": null},
+        {"type": "doubleClick", "object": "Element path", "property": null},
+        {"type": "rightClick", "object": "Element path", "property": null},
+        {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
+        {"type": "focusDefaultIframe", "object": null, "property": null},
+        {"type": "switchToWindow", "object": "Window id", "property": null},
+        {"type": "manageDialog", "object": "ok or cancel", "property": null},
+        {"type": "mouseOver", "object": "Element path", "property": null},
+        {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
+        {"type": "openUrlWithBase", "object": "/URI to call", "property": null},
+        {"type": "openUrlLogin", "object": null, "property": null},
+        {"type": "openUrl", "object": "URL to call", "property": null},
+        {"type": "select", "object": "Element path", "property": "Option path"},
+        {"type": "type", "object": "Element path", "property": "Property Name"},
+        {"type": "wait", "object": "Time(ms) or Element", "property": null},
+        {"type": "callSoap", "object": "Soap Name (library)", "property": "Property Name"},
+        {"type": "callSoapWithBase", "object": "Soap Name (library)", "property": "Property Name"},
+        {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
+        {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
+        {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
+        {"type": "calculateProperty", "object": null, "property": "Property Name"},
+        {"type": "doNothing", "object": null, "property": null},
+        {"type": "skipAction", "object": null, "property": null},
+        {"type": "getPageSource", "object": null, "property": null}
+    ]};
 
     var user = getUser();
     user.language;
@@ -1546,19 +1801,6 @@ function setPlaceholderAction() {
         }
     });
 }
-
-var autocompleteAllFields;
-(function() {
-    //var accessible only in closure
-    var TagsToUse = [];
-    //function accessible everywhere that has access to TagsToUse
-    autocompleteAllFields = function(Tags) {
-        if(Tags != undefined){
-            TagsToUse = Tags;
-        }
-        autocompleteVariable("div.step-action .content div.row.form-inline span:nth-child(n+3) input", TagsToUse);
-    };
-})();
 
 function setPlaceholderControl() {
     /**

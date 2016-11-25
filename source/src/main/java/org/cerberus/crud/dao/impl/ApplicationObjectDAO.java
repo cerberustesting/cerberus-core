@@ -217,11 +217,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             a = readByKey(application,object);
             if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject)a.getItem();
-                File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
-                try {
-                    image = ImageIO.read(picture);
-                } catch (IOException e) {
-                    LOG.warn("Impossible to read the image");
+                if(ao != null) {
+                    File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
+                    try {
+                        image = ImageIO.read(picture);
+                    } catch (IOException e) {
+                        LOG.warn("Impossible to read the image");
+                    }
                 }
             }else{
                 LOG.warn("Application Object not found");

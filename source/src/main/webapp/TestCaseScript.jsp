@@ -39,6 +39,7 @@
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
             <%@ include file="include/testcasescript/addStep.html"%>
+            <%@ include file="include/applicationobject/addApplicationObject.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
@@ -54,7 +55,7 @@
                         <button class="btn btn-default pull-right" id="manageProp" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-cog"></span> Properties</button>
                         <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                         <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
-                        <button class="btn btn-default pull-right"  style="margin-left: 2px; margin-right: 2px;" id="runTestCase" data-toggle="tooltip" title="Last Execution was <a style='color : green'>OK</a> in PREPROD in FR on Fri Nov 13 17:43:44 CET 2015<a><i> (Run it again) </i></a>"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
+                        <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 2px; margin-right: 2px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
                         <div class="side-item pull-right"></div>
 
                     </div>
