@@ -266,8 +266,8 @@ public class ReadApplicationObject extends HttpServlet {
 
         AnswerItem resp = applicationObjectService.readByKey(application, objecta);
 
-        JSONObject jsonObject = new JSONObject();
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+        JSONObject jsonObject = null;
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null) {//the service was able to perform the query, then we should get all values
             jsonObject = convertApplicationObjectToJSONObject((ApplicationObject)resp.getItem());
         }
 
