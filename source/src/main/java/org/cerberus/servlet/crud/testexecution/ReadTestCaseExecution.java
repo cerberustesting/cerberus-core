@@ -371,10 +371,10 @@ public class ReadTestCaseExecution extends HttpServlet {
                             String key = label.getTest() + "_" + label.getTestcase();
 
                             if (testCaseWithLabel.containsKey(key)) {
-                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
                                 testCaseWithLabel.get(key).put(jo);
                             } else {
-                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor());
+                                JSONObject jo = new JSONObject().put("name", label.getLabel().getLabel()).put("color", label.getLabel().getColor()).put("description", label.getLabel().getDescription());
                                 testCaseWithLabel.put(key, new JSONArray().put(jo));
                             }
                         }

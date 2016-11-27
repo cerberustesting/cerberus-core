@@ -26,12 +26,6 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
  */
 public interface IFactoryTestCaseStepActionControl {
 
-    @Deprecated
-    TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                     int controlSequence, String control, String value1, String value2, String fatal, String description);
-    
-    TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                     int controlSequence, int sort, String control, String value1, String value2, String fatal, String description, String screenshotFilename);
-   
-    
+    TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String conditionOper, String conditionVal1, String control, String value1,
+            String value2, String fatal, String description, String screenshotFilename);
 }

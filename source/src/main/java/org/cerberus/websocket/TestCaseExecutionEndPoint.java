@@ -68,6 +68,9 @@ import java.util.Set;
          * @param msg
          */
         public static void send(TestCaseExecution msg) {
+
+            LOG.warn("TestCaseExecutionEndPoint : Send Message");
+
             try {
             /* Send updates to all open WebSocket sessions for this match */
                 for (Session session : peers) {
@@ -88,9 +91,15 @@ import java.util.Set;
                     .getAttribute("javax.websocket.server.ServerContainer");
 
             try {
+                LOG.info("TestCaseExecutionEndPoint : Adding EndPoint");
                 serverContainer.addEndpoint(TestCaseExecutionEndPoint.class);
+                LOG.info("TestCaseExecutionEndPoint : Added EndPoint");
             } catch (DeploymentException e) {
-                e.printStackTrace();
+                LOG.warn(e.getMessage());
+            } catch (IllegalStateException e) {
+                LOG.warn(e.getMessage());
+            } catch (IllegalArgumentException e) {
+                LOG.warn(e.getMessage());
             }
         }
 
@@ -117,7 +126,11 @@ import java.util.Set;
         @OnOpen
         public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
 
-            SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            LOG.warn("TestCaseExecutionEndPoint : Client Open");
+
+            if(testCaseExecutionService == null) {
+                SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+            }
 
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);

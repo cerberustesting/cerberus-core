@@ -139,7 +139,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+            {
+                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -156,11 +157,6 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 } else {
 
                     // Test Case exist and we can update it so Global update start here //
-                    /**
-                     * TestcaseCountryProperties Update.
-                     */
-                    List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
-                    tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
 
                     /*
                     * Get steps, actions and controls from page by:
@@ -225,6 +221,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     }
 
                 }
+            }
         }
 
         /**
@@ -292,117 +289,6 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             }
         }
         return nextControlNumber;
-    }
-
-    /**
-     * Create new TestCase object from the information of request form
-     *
-     * @param request information from the request page
-     * @return TestCase object
-     * @see org.cerberus.crud.entity.TestCase
-     */
-    private TestCase getTestCaseFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
-
-        IFactoryTestCase testCaseFactory = appContext.getBean(IFactoryTestCase.class);
-        String origin = request.getParameter("editOrigin");
-        String refOrigin = request.getParameter("editRefOrigin");
-        String creator = request.getParameter("editCreator");
-        String implementer = request.getParameter("editImplementer");
-        String lastModifier = request.getUserPrincipal().getName();
-        String project = request.getParameter("editProject");
-        String ticket = request.getParameter("editTicket");
-        String application = request.getParameter("editApplication");
-        String runQA = request.getParameter("editRunQA");
-        String runUAT = request.getParameter("editRunUAT");
-        String runPROD = request.getParameter("editRunPROD");
-        Integer priority = Integer.parseInt(request.getParameter("editPriority"));
-        String group = request.getParameter("editGroup");
-        String status = request.getParameter("editStatus");
-        String shortDescription = HtmlUtils.htmlEscape(request.getParameter("editDescription"));
-        String description = request.getParameter("valueDetail");
-        String howTo = request.getParameter("howtoDetail");
-        String active = request.getParameter("editTcActive");
-        String fromSprint = request.getParameter("editFromBuild");
-        String fromRevision = request.getParameter("editFromRev");
-        String toSprint = request.getParameter("editToBuild");
-        String toRevision = request.getParameter("editToRev");
-        String bugID = request.getParameter("editBugID");
-        String targetSprint = request.getParameter("editTargetBuild");
-        String targetRevision = request.getParameter("editTargetRev");
-        String comment = HtmlUtils.htmlEscape(request.getParameter("editComment"));
-        String function = request.getParameter("editFunction");
-        String userAgent = request.getParameter("editUserAgent");
-        return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
-                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
-                toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
-    }
-
-    private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {
-        IFactoryTestCaseCountry testCaseCountryFactory = appContext.getBean(IFactoryTestCaseCountry.class);
-        List<TestCaseCountry> countries = new ArrayList<TestCaseCountry>();
-        if (request.getParameterValues("editTestCaseCountry") != null) {
-            for (String country : request.getParameterValues("editTestCaseCountry")) {
-                countries.add(testCaseCountryFactory.create(test, testCase, country));
-            }
-        }
-        return countries;
-    }
-
-    /**
-     * FIXME this method do nothing more than return
-     * request.getParameter(parameter)!
-     */
-    private String getParameterIfExists(HttpServletRequest request, String parameter) {
-        String result = null;
-        if (request.getParameter(parameter) != null) {
-            result = request.getParameter(parameter);
-        }
-        return result;
-    }
-
-    /**
-     * FIXME this method do nothing more than return
-     * request.getParameterValues(parameter)!
-     */
-    private String[] getParameterValuesIfExists(HttpServletRequest request, String parameter) {
-        String[] result = null;
-        if (request.getParameterValues(parameter) != null) {
-            result = request.getParameterValues(parameter);
-        }
-        return result;
-    }
-
-    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
-        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
-//        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
-        IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
-        JSONArray properties = new JSONArray(request.getParameter("propArr"));
-
-        for (int i = 0; i < properties.length(); i++) {
-            JSONObject propJson = properties.getJSONObject(i);
-
-            boolean delete = propJson.getBoolean("toDelete");
-            String property = propJson.getString("property");
-            String description = propJson.getString("description");
-            String type = propJson.getString("type");
-            String value = propJson.getString("value1");
-            String value2 = propJson.getString("value2");
-            int length = propJson.getInt("length");
-            int rowLimit = propJson.getInt("rowLimit");
-            int retryNb = propJson.optInt("retryNb");
-            int retryPeriod = propJson.optInt("retryPeriod");
-            String nature = propJson.getString("nature");
-            String database = propJson.getString("database");
-            JSONArray countries = propJson.getJSONArray("country");
-            if (!delete && !property.equals("")) {
-                for (int j = 0; j < countries.length(); j++) {
-                    String country = countries.getString(j);
-
-                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
-                }
-            }
-        }
-        return testCaseCountryProp;
     }
 
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate) throws JSONException {
@@ -489,6 +375,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int sequence = controlJson.isNull("sequence") ? -1 : controlJson.getInt("sequence");
             int control = controlJson.isNull("controlSequence") ? -1 : controlJson.getInt("controlSequence");
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
+            String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
+            String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
             String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
@@ -497,7 +385,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, controlValue, value1, value2 , fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, controlValue, value1, value2, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;
@@ -542,7 +430,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         } catch (JSONException ex) {
             Logger.getLogger(UpdateTestCaseWithDependencies1.class.getName()).log(Level.SEVERE, null, ex);
         }
-        }
+    }
 
     /**
      * Returns a short description of the servlet.

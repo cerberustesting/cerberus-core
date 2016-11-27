@@ -499,7 +499,7 @@ function aoColumnsFunc(countries, tableId) {
             "render": function (data, type, full, meta) {
                 var labelValue = '';
                 $.each(data, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '">' + e.name + '</span></div> ';
+                    labelValue += '<div style="float:left"><span class="label label-primary" onclick="filterOnLabel(this)" style="cursor:pointer;background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
                 });
                 return labelValue;
             }

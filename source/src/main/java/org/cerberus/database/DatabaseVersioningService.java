@@ -7385,6 +7385,60 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocLabel`='JDBC Resource', `DocDesc`='This is the name of the JDBC Resource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Resource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Resource</th><th class=\\'ex\\'>Application server Resource name</th><tr>\\n<td class=\\'ex\\'>MyConnection</td>\\n<td class=\\'ex\\'>jdbc/MyConnection</td>\\n</tr></table>\\n</doc>' WHERE `DocTable`='countryenvironmentdatabase' and`DocField`='ConnectionPoolName' and`DocValue`='' and`Lang`='en';");
         SQLInstruction.add(SQLS.toString());
 
+        // New Control model with conditionOper and ConditionVal1.
+        //-- ------------------------ 967-970
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('CONTROLCONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('CONTROLCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('CONTROLCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'CONTROLCONDITIONOPER', '560', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Resize login.
+        //-- ------------------------ 971-977
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` DROP FOREIGN KEY `FK_usersystem_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` DROP FOREIGN KEY `FK_usergroup_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login`) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add path to picture for appliation object in paramaters
+        //-- ------------------------ 978
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append("('','cerberus_featureflipping_activatewebsocketpush','Y','Boolean that enable/disable the websocket push.');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -166,15 +166,15 @@ public class RunManualTest extends HttpServlet {
 //            }
             }
 
-            AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
-            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                Parameter p = (Parameter)a.getItem();
-                if(!p.getValue().equals("N")) {
+            AnswerItem a = parameterService.readByKey("", "cerberus_executiondetail_use");
+            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                Parameter p = (Parameter) a.getItem();
+                if (!p.getValue().equals("N")) {
                     resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
-                }else{
+                } else {
                     resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
                 }
-            }else{
+            } else {
                 resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
             }
 
@@ -265,7 +265,7 @@ public class RunManualTest extends HttpServlet {
                 String actionReturnMessage = getParameterIfExists(request, "actionResultMessage_" + stepSort + "_" + inc);
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, sort, actionReturnCode,
-                        actionReturnMessage,"", "", "Manual Action", "", "", "", "", "", now, now, now, now,
+                        actionReturnMessage, "", "", "Manual Action", "", "", "", "", "", now, now, now, now,
                         null, "", null, null));
             }
         }
@@ -294,7 +294,7 @@ public class RunManualTest extends HttpServlet {
                 String controlReturnMessage = getParameterIfExists(request, "controlResultMessage_" + stepSort + "_" + actionSort + "_" + inc);
 
                 result.add(testCaseStepActionExecutionFactory.create(executionId, test, testCase, step, sequence, control, sort,
-                        controlReturnCode, controlReturnMessage, "Manual Control", null, null, null, null, null, now, now,
+                        controlReturnCode, controlReturnMessage,"always", "", "Manual Control", null, null, null, null, null, now, now,
                         now, now, "", null, null));
             }
         }

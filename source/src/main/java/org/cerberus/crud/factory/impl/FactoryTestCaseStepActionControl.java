@@ -30,22 +30,20 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepActionControl {
 
     @Override
-    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence,
-                                            int controlSequence, String control, String value1, String value2, String fatal, String description) {
-        return create(test, testCase, step, sequence, controlSequence, controlSequence, control, value1, value2, fatal, description, null);
-    }
-
-    @Override
-    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String control, String value1, 
+    public TestCaseStepActionControl create(String test, String testCase, int step, int sequence, int controlSequence, int sort, String conditionOper, String conditionVal1, String control, String value1,
             String value2, String fatal, String description, String screenshotFilename) {
         TestCaseStepActionControl testCaseStepActionControl = new TestCaseStepActionControl();
         testCaseStepActionControl.setTest(test);
         testCaseStepActionControl.setTestCase(testCase);
-        testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setStep(step);
         testCaseStepActionControl.setSequence(sequence);
         testCaseStepActionControl.setControlSequence(controlSequence);
         testCaseStepActionControl.setSort(sort);
+        testCaseStepActionControl.setConditionOper("always");
+        testCaseStepActionControl.setConditionVal1("");
+//        testCaseStepActionControl.setConditionOper(conditionOper);
+//        testCaseStepActionControl.setConditionVal1(conditionVal1);
+        testCaseStepActionControl.setControl(control);
         testCaseStepActionControl.setValue1(value1);
         testCaseStepActionControl.setValue2(value2);
         testCaseStepActionControl.setFatal(fatal);
@@ -53,7 +51,6 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setScreenshotFilename(screenshotFilename);
         return testCaseStepActionControl;
     }
-    
     
 
 }

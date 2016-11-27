@@ -147,6 +147,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             LOG.debug(logPrefix + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
+            LOG.debug(logPrefix + "Set Capabilities - retreived");
 
             /**
              * SetUp Driver
@@ -252,12 +253,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport", "").getValue();
             if (StringUtil.isNullOrEmpty(firebugPath)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_firebug' not defined."));
+                mes.setDescription("Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_firebug' not defined.");
                 throw new CerberusException(mes);
             }
             if (StringUtil.isNullOrEmpty(netexportPath)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_netexport' not defined."));
+                mes.setDescription("Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_netexport' not defined.");
                 throw new CerberusException(mes);
             }
 
@@ -265,7 +266,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (!firebug.canRead()) {
                 LOG.warn("Can't read : " + firebugPath);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "File not found : '" + firebugPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_firebug"));
+                mes.setDescription("File not found : '" + firebugPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_firebug");
                 throw new CerberusException(mes);
 
             }
@@ -275,7 +276,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (IOException exception) {
                 LOG.warn(exception.toString());
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + firebugPath));
+                mes.setDescription("File not found : " + firebugPath);
                 throw new CerberusException(mes);
             }
 
@@ -283,7 +284,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (!netExport.canRead()) {
                 LOG.warn("Can't read : " + netexportPath);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + netexportPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_netexport"));
+                mes.setDescription("File not found : " + netexportPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_netexport");
                 throw new CerberusException(mes);
             }
             try {
@@ -292,14 +293,14 @@ public class SeleniumServerService implements ISeleniumServerService {
             } catch (IOException exception) {
                 LOG.warn(exception.toString());
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "File not found : " + netexportPath));
+                mes.setDescription("File not found : " + netexportPath);
                 throw new CerberusException(mes);
             }
 
             String cerberusUrl = parameterService.findParameterByKey("cerberus_url", "").getValue();
             if (StringUtil.isNullOrEmpty(cerberusUrl)) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Mandatory parameter for network traffic 'cerberus_url' not defined."));
+                mes.setDescription("Mandatory parameter for network traffic 'cerberus_url' not defined.");
                 throw new CerberusException(mes);
             }
 
@@ -441,7 +442,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription(mes.getDescription().replace("%MES%", "Failed to set capability on the browser '" + browser + "'"));
+            mes.setDescription(mes.getDescription().replace("%MES%", "Failed to set capability on the browser '" + browser + "' due to " + ex.getMessageError().getDescription()));
             throw new CerberusException(mes);
         }
         return capabilities;

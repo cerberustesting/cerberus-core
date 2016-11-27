@@ -766,6 +766,10 @@
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies1</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>UpdateTestCaseProperties1</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseProperties1</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.DeleteTestCaseFromTestPage</servlet-class>
     </servlet>
@@ -1709,6 +1713,10 @@
         <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>UpdateTestCaseProperties1</servlet-name>
+        <url-pattern>/UpdateTestCaseProperties1</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>DeleteTestCaseFromTestPage</servlet-name>
         <url-pattern>/DeleteTestCaseFromTestPage</url-pattern>
     </servlet-mapping>
@@ -2062,6 +2070,7 @@
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies1</url-pattern>
+            <url-pattern>/UpdateTestCaseProperties1</url-pattern>
             <url-pattern>/ImportTestCaseFromJson</url-pattern>
             <url-pattern>/Thumbnailer</url-pattern>
             <url-pattern>/UpdateTestCaseField</url-pattern>

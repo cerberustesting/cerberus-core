@@ -133,7 +133,7 @@ textarea{
     font-weight : lighter;
 }
 /* Fields without border (TODO Refactor)*/
-td#wob { 
+td#wob {
     border-width:0px;
 }
 select#wob { 
@@ -330,7 +330,7 @@ h4 {
     border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
 
 }*/
-td#toto { 
+td#toto {
     border-width:1px;
     border-style:groove; 
     border-color:#ffffff #cfcfcf #cfcfcf #ffffff; 
@@ -810,7 +810,7 @@ table.dataTable thead th {
   z-index: 9999;
 }
 
-.tooltip {
-    position: fixed;
+.tooltip{
+    z-index: 1049 !important;
 }
 

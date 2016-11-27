@@ -193,6 +193,13 @@ public final class StringUtil {
         }
         return text;
     }
+    
+    public static String replaceInvisibleCharbyString(String text) {
+        if (text != null && !text.isEmpty()) {
+                return text.replace("\n","\\n");
+        }
+        return text;
+    }
 
     public static String textToHtmlConvertingURLsToLinks(String text) {
         if (text == null) {

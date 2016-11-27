@@ -686,7 +686,7 @@ Control.prototype.draw = function () {
     });
 
     var f = new File();
-    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&sequence=" + this.sequence).then(function(data){
+    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function(data){
 
         var headerToAdd = data[0];
         var bodyToAdd = data[1];
@@ -884,7 +884,7 @@ var File = function(){
                             var urlCreator = window.URL || window.webkitURL;
                             var imageUrl = urlCreator.createObjectURL(blob);
                             fileHeader = $("<div>").addClass("col-sm-1").css("padding","0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height","30px").click(function(e){
-                                showPicture(description, src + id + "&h=400&w=800");
+                                showPicture(description, src + id);
                                 return false;
                             }));
 

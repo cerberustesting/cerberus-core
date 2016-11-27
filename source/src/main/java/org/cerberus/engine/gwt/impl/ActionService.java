@@ -1074,6 +1074,7 @@ public class ActionService implements IActionService {
         } catch (InterruptedException exception) {
             MyLogger.log(ActionService.class.getName(), Level.INFO, exception.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT);
+            message.setDescription(message.getDescription().replace("%TIME%", String.valueOf(timeToWaitMs)));
             return message;
         }
     }
