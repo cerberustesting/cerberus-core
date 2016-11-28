@@ -1554,7 +1554,7 @@ var autocompleteAllFields;
                         i--;
                     }
                 }
-                if(name != undefined && typeNotExist == "applicationobject"){
+                if(name != undefined && !objectNotExist){
                     $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
                 }
                 Promise.all(checkObject).then(function(data){

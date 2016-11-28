@@ -278,6 +278,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                             "Application Object file uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Object").replace("%OPERATION%", "Upload"));
                 } catch (Exception e) {
                     LOG.warn("Unable to upload application object file: " + e.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
