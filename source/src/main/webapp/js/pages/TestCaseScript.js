@@ -105,27 +105,31 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 Tags = [
                     {
                         array : availableObjectProperties,
-                        regex : "%object\.[^\.]*\.",
+                        regex : "%object\\.[^\\.]*\\.",
                         addBefore : "",
-                        addAfter : "%"
+                        addAfter : "%",
+                        isCreatable : false
                     },
                     {
                         array : availableObjects,
-                        regex : "%object\.",
+                        regex : "%object\\.",
                         addBefore : "",
-                        addAfter : "."
+                        addAfter : ".",
+                        isCreatable : true
                     },
                     {
                         array : availableProperties,
-                        regex : "%property\.",
+                        regex : "%property\\.",
                         addBefore : "",
-                        addAfter : "%"
+                        addAfter : "%",
+                        isCreatable : true
                     },
                     {
                         array : availableTags,
                         regex : "%",
                         addBefore : "",
-                        addAfter : "."
+                        addAfter : ".",
+                        isCreatable : false
                     }
                 ];
 
@@ -1520,6 +1524,8 @@ var autocompleteAllFields;
                             name = findname[0];
                             name = name.slice( 1, name.length - 1 );
 
+                            $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
+
                             checkObject.push($.ajax({
                                 url: "ReadApplicationObject",
                                 data: {application: tcInfo.application, object: name},
@@ -1554,9 +1560,6 @@ var autocompleteAllFields;
                         i--;
                     }
                 }
-                if(name != undefined && !objectNotExist){
-                    $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
-                }
                 Promise.all(checkObject).then(function(data){
                     if(objectNotExist){
                         if(typeNotExist == "applicationobject") {
@@ -1565,8 +1568,8 @@ var autocompleteAllFields;
                                 $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                             }
                         }else if(typeNotExist == "property"){
-                            //TODO ADD property in array
-                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
+                            //TODO better way to add property
+                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('tbody#propTable tr input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
                             if (newTitle != $(e).attr('data-original-title')) {
                                 $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                             }
@@ -1617,10 +1620,12 @@ function editPropertiesModalSaveHandler(){
     showLoaderInModal('#propertiesModal');
 
     var properties = $("[name='masterProp']");
+    console.log(properties);
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
     }
+    console.log(propArr);
 
     $.ajax({
         url: "UpdateTestCaseProperties1",
