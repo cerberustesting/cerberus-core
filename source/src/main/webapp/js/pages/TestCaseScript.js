@@ -23,6 +23,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var doc = new Doc();
         var stepList = [];
 
+        initPageModal("testCaseScript");
+
         // Load invariant list into local storage.
         getSelectInvariant("ACTION", false, true);
         getSelectInvariant("CONTROL", false, true);
@@ -64,12 +66,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         $("#saveStep").click(saveStep);
         $("#cancelEdit").click(cancelEdit);
-
-        // handle the click for specific action buttons
-        $("#addApplicationObjectButton").click(addApplicationObjectModalSaveHandler);
-
-        //clear the modals fields when closed
-        $('#addApplicationObjectModal').on('hidden.bs.modal', addApplicationObjectModalCloseHandler);
 
         var json;
         var testcaseinfo;
@@ -1563,7 +1559,7 @@ var autocompleteAllFields;
                 Promise.all(checkObject).then(function(data){
                     if(objectNotExist){
                         if(typeNotExist == "applicationobject") {
-                            var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(\"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
+                            var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
                             if (newTitle != $(e).attr('data-original-title')) {
                                 $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                             }
@@ -1648,68 +1644,6 @@ function editPropertiesModalSaveHandler(){
         },
         error: showUnexpectedError
     });
-}
-
-function addApplicationObjectModalSaveHandler() {
-    clearResponseMessage($('#addApplicationObjectModal'));
-    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm :input");
-    var file = $("#addApplicationObjectModal input[type=file]");
-    // Get the header data from the form
-    var sa = formAdd.serializeArray();
-    var formData = new FormData();
-    var data = {}
-    for (var i in sa) {
-        formData.append(sa[i].name, sa[i].value);
-    }
-
-    formData.append("file",file.prop("files")[0]);
-    showLoaderInModal('#addApplicationObjectModal');
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "CreateApplicationObject",
-        data: formData,
-        processData: false,
-        contentType: false
-    });
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addApplicationObjectModal');
-//        console.log(data.messageType);
-        if (getAlertType(data.messageType) === 'success') {
-            //Update Inputs warning messages
-            $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
-            //Update Images
-            $('#actionContainer img').each(function () {
-                var src = $(this).attr('src');
-                if(src != undefined) {
-                    $(this).attr('src', src + "&time=" + new Date().getTime());
-                }
-            });
-            showMessage(data);
-            $('#addApplicationObjectModal').modal('hide');
-        } else {
-            showMessage(data, $('#addApplicationObjectModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function addApplicationObjectModalCloseHandler() {
-    // reset form values
-    $('#addApplicationObjectModal #addApplicationObjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#addApplicationObjectModal'));
-}
-
-function addApplicationObjectModalClick(name, application) {
-    clearResponseMessageMainPage();
-
-    $('#addApplicationObjectModal #application').empty();
-    displayApplicationList("application","",application);
-
-    $('#addApplicationObjectModal #object').val(name)
-
-    $('#addApplicationObjectModal').modal('show');
 }
 
 function setPlaceholderAction() {

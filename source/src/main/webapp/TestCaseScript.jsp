@@ -27,6 +27,7 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <title id="pageTitle">Test Case</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
+        <script type="text/javascript" src="js/pages/transversalobject/ApplicationObject.js"></script>
         <script type="text/javascript" src="js/pages/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
@@ -39,7 +40,7 @@
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
             <%@ include file="include/testcasescript/addStep.html"%>
-            <%@ include file="include/applicationobject/addApplicationObject.html"%>
+            <%@ include file="include/transversalobject/addApplicationObject.html"%>
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
