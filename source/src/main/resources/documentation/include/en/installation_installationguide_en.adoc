@@ -22,3 +22,7 @@
 .. Open your favorite browser and go to <docker_host>:18080/Cerberus, where <docker_host> is your Docker host
 
 Further details available at https://github.com/cerberustesting/cerberus-docker/tree/master/compositions/cerberus-glassfish-mysql
+
+. *[RED]#For Mac#* :
+
+. *[RED]#For Linux#* :
