@@ -93,6 +93,18 @@
     border-radius: 3px 3px 0 0;
 }
 
+.property {
+    padding: 5px;
+    font-size: 12px;
+    border: 1px solid #e5e5e5;
+    border-left: 6px solid #f00;
+    border-radius: 3px 3px 0 0;
+}
+@media (min-width: 1200px) {
+    .propertyButtons {
+        margin-top:32px;
+    }
+}
 .control {
     height: 80px;
     margin-left: 25px;

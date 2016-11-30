@@ -304,10 +304,8 @@ function drawProperty(property, testcaseinfo) {
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
-    var deleteBtn = $("<button></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-
-    var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-check"));
-    var selectNoneBtn = $("<button disabled></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-unchecked"));
+    var deleteBtn = $("<button class='col-lg-6 btn btn-danger btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var moreBtn = $("<button class='col-lg-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
 
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' placeholder='Feed Property name'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description'>").addClass("form-control input-sm").val(property.description);
@@ -316,32 +314,49 @@ function drawProperty(property, testcaseinfo) {
     var rowLimitInput = $("<input placeholder='Row Limit'>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
 
-    var row1 = $("<tr name='masterProp'></tr>");
-    var row2 = $("<tr></tr>");
-    var row3 = $("<tr></tr>");
-    var btnRow = $("<td></td>").append(deleteBtn).append(selectAllBtn).append(selectNoneBtn);
-    var propertyName = $("<td></td>").append(propertyInput);
-    var description = $("<td></td>").append(descriptionInput);
-    var country = $("<td></td>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
-    var type = $("<td></td>").append(selectType.val(property.type));
-    var db = $("<td></td>").append(selectDB.val(property.database));
-    var value = $("<td colspan=7></td>").append(valueInput);
-    var length = $("<td></td>").append(lengthInput);
-    var rowLimit = $("<td></td>").append(rowLimitInput);
-    var nature = $("<td></td>").append(selectNature.val(property.nature));
+    var content = $("<div class='row property list-group-item'></div>");
+    var props = $("<div class='col-sm-11'></div>");
+    var right = $("<div class='col-sm-1 propertyButtons'></div>");
+
+    var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
+    var row2 = $("<div class='row' style='display:none;'></div>");
+    var row3 = $("<div class='row' style='display:none;'></div>");
+    var row4 = $("<div class='row'></div>");
+    var row5 = $("<div class='row'></div>");
+    var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
+    var description = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+    var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
+    var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.val(property.type));
+    var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.val(property.database));
+    var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text("Value: ")).append(valueInput);
+    var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
+    var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
+    var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.val(property.nature));
+
+
+    var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true).trigger("change");});
+    var selectNoneBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-unchecked")).click(function(){country.find("input[type='checkbox']").prop('checked', false).trigger("change");});
+    var btnRow = $("<div class='col-sm-2 form-group'></div>").append(selectAllBtn).append(selectNoneBtn);
 
     deleteBtn.click(function () {
         property.toDelete = (property.toDelete) ? false : true;
 
         if (property.toDelete) {
-            row1.addClass("danger");
-            row2.addClass("danger");
-            row3.addClass("danger");
+            content.addClass("list-group-item-danger");
         } else {
-            row1.removeClass("danger");
-            row2.removeClass("danger");
-            row3.removeClass("danger");
+            content.removeClass("list-group-item-danger");
         }
+    });
+
+    moreBtn.click(function(){
+        if($(this).find("span").hasClass("glyphicon-chevron-down")){
+            $(this).find("span").removeClass("glyphicon-chevron-down");
+            $(this).find("span").addClass("glyphicon-chevron-up");
+        }else{
+            $(this).find("span").removeClass("glyphicon-chevron-up");
+            $(this).find("span").addClass("glyphicon-chevron-down");
+        }
+        $(this).parent().parent().find(".row:not([name='masterProp'])").toggle();
     });
 
     propertyInput.change(function () {
@@ -378,58 +393,100 @@ function drawProperty(property, testcaseinfo) {
 
     row1.data("property", property);
     row1.append(propertyName);
-    row1.append(country);
     row1.append(type);
-    row1.append(db);
-    row1.append(length);
-    row1.append(rowLimit);
-    row1.append(nature);
-    row1.append(description);
-    table.append(row1);
+    row1.append(value);
+    props.append(row1);
 
-    row2.append(btnRow);
-    row2.append(value);
-    table.append(row2);
+    row2.append(db);
+    row2.append(length);
+    row2.append(rowLimit);
+    row2.append(nature);
+    row2.append(description);
+    props.append(row2);
+
+    row3.append(btnRow);
+    row3.append(country);
+    props.append(row3);
+
+    right.append(moreBtn).append(deleteBtn);
+
+    content.append(props).append(right);
+    table.append(content);
 }
 
 function drawInheritedProperty(propList) {
-    var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
-    var table = $("#inheritedPropTable");
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled",true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled",true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled",true);
+    var table = $("#inheritedPropPanel");
 
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
 
-        var row1 = $("<tr></tr>");
-        var row2 = $("<tr></tr>");
-        var row3 = $("<tr></tr>");
-        var btnRow = $("<td></td>");
-        var propertyName = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.property).prop("readonly", true));
-        var description = $("<td></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.description).prop("readonly", true));
-        var country = $("<td></td>").append(getTestCaseCountry(property.country, property.country, true));
-        var type = $("<td></td>").append(selectType.clone().val(property.type).prop("disabled", "disabled"));
-        var db = $("<td></td>").append(selectDB.clone().val(property.database).prop("disabled", "disabled"));
-        var value = $("<td colspan=7></td>").append($("<textarea rows='1'></textarea>").addClass("form-control input-sm").val(property.value1).prop("readonly", true));
-        var length = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.length).prop("readonly", true));
-        var rowLimit = $("<td></td>").append($("<input>").addClass("form-control input-sm").val(property.rowLimit).prop("readonly", true));
-        var nature = $("<td></td>").append(selectNature.clone().val(property.nature).prop("disabled", "disabled"));
+        var moreBtn = $("<button class='col-sm-12 btn btn-default btn-sm' style='margin-top:32px;'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+
+        var propertyInput = $("<input id='propName' placeholder='Feed Property name' disabled>").addClass("form-control input-sm").val(property.property);
+        var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description' disabled>").addClass("form-control input-sm").val(property.description);
+        var valueInput = $("<textarea rows='1' placeholder='Value' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
+        var lengthInput = $("<input placeholder='Length' disabled>").addClass("form-control input-sm").val(property.length);
+        var rowLimitInput = $("<input placeholder='Row Limit' disabled>").addClass("form-control input-sm").val(property.rowLimit);
+
+        var content = $("<div class='row property list-group-item disabled'></div>");
+        var props = $("<div class='col-sm-11'></div>");
+        var right = $("<div class='col-sm-1'></div>");
+
+        var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
+        var row2 = $("<div class='row' style='display:none;'></div>");
+        var row3 = $("<div class='row' style='display:none;'></div>");
+        var row4 = $("<div class='row'></div>");
+        var row5 = $("<div class='row'></div>");
+        var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
+        var description = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+        var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(property.country, property.country, true));
+        var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.clone().val(property.type));
+        var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.clone().val(property.database));
+        var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text("Value: ")).append(valueInput);
+        var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
+        var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
+        var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.clone().val(property.nature));
+
+
+        var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true);});
+        var selectNoneBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-unchecked")).click(function(){country.find("input[type='checkbox']").prop('checked', false);});
+        var btnRow = $("<div class='col-sm-2 form-group'></div>").append(selectAllBtn).append(selectNoneBtn);
+
+        moreBtn.click(function(){
+            if($(this).find("span").hasClass("glyphicon-chevron-down")){
+                $(this).find("span").removeClass("glyphicon-chevron-down");
+                $(this).find("span").addClass("glyphicon-chevron-up");
+            }else{
+                $(this).find("span").removeClass("glyphicon-chevron-up");
+                $(this).find("span").addClass("glyphicon-chevron-down");
+            }
+            $(this).parent().parent().find(".row:not([name='masterProp'])").toggle();
+        });
 
         row1.data("property", property);
         row1.append(propertyName);
-        row1.append(country);
         row1.append(type);
-        row1.append(db);
-        row1.append(length);
-        row1.append(rowLimit);
-        row1.append(nature);
-        row1.append(description);
-        table.append(row1);
+        row1.append(value);
+        props.append(row1);
 
-        row2.append(btnRow);
-        row2.append(value);
-        table.append(row2);
+        row2.append(db);
+        row2.append(length);
+        row2.append(rowLimit);
+        row2.append(nature);
+        row2.append(description);
+        props.append(row2);
 
+        row3.append(btnRow);
+        row3.append(country);
+        props.append(row3);
+
+        right.append(moreBtn);
+
+        content.append(props).append(right);
+        table.append(content);
     }
 }
 
@@ -448,10 +505,30 @@ function loadProperties(test, testcase, testcaseinfo) {
                 drawProperty(property, testcaseinfo);
             }
 
+            sortProperties("#propTable");
         },
         error: showUnexpectedError
     });
     return array;
+}
+
+function sortProperties(identifier){
+    var container = $(identifier);
+    var list = container.children(".property");
+    list.sort(function(a,b){
+
+        var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
+            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+
+        if(aProp > bProp) {
+            return 1;
+        }
+        if(aProp < bProp) {
+            return -1;
+        }
+        return 0;
+    });
+    container.append(list);
 }
 
 function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
@@ -1615,13 +1692,12 @@ function editPropertiesModalSaveHandler(){
     clearResponseMessage($('#propertiesModal'));
     showLoaderInModal('#propertiesModal');
 
-    var properties = $("[name='masterProp']");
+    var properties = $("#propTable [name='masterProp']");
     console.log(properties);
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
     }
-    console.log(propArr);
 
     $.ajax({
         url: "UpdateTestCaseProperties1",

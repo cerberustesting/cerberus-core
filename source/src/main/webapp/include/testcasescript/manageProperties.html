@@ -10,10 +10,10 @@
             <div class="modal-body">
                 
                 <div class="property-table">
-                    <table class="table table-bordered nomarginbottom">
-                        <tbody id="propTable">
-                        </tbody>
-                    </table>
+                    <div class="well">
+                        <div id="propTable" class="list-group">
+                        </div>
+                    </div>
                     <button class="btn btn-default" id="addProperty">Add Property</button>
                 </div>
 
@@ -22,10 +22,11 @@
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         <label>Inherited Properties</label>
                     </div>
-                    <div class="panel-body collapse in" id="inheritedPropPanel">
-                        <table class="table table-bordered table-hover nomarginbottom">
-                            <tbody id="inheritedPropTable"></tbody>
-                        </table>
+                    <div class="panel-body collapse in">
+                        <div class="well">
+                            <div id="inheritedPropPanel" class="list-group">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
