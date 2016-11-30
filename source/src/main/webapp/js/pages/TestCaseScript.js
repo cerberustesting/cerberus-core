@@ -324,7 +324,7 @@ function drawProperty(property, testcaseinfo) {
     var row4 = $("<div class='row'></div>");
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
-    var description = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+    var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
     var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.val(property.database));
@@ -441,7 +441,7 @@ function drawInheritedProperty(propList) {
         var row4 = $("<div class='row'></div>");
         var row5 = $("<div class='row'></div>");
         var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
-        var description = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+        var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
         var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.clone().val(property.type));
         var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.clone().val(property.database));
@@ -740,11 +740,20 @@ function loadLibraryStep() {
                     var listGrp = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
                     $("#lib").append(listGrp);
 
-                    test[step.test] = listGrp;
+                    test[step.test] = {content : listGrp, testCase: {}};
                 }
+                if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
+                    var listGrp = test[step.test].content;
+                    listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-testCase='" + step.testCase + "']")
+                        .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                var listGrp = test[step.test];
-                listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
+                    var listCaseGrp = $("<div></div>").addClass("list-group collapse").attr("data-testCase", step.testCase);
+                    listGrp.append(listCaseGrp);
+
+                    test[step.test].testCase[step.testCase] = listCaseGrp;
+                }
+                var listCaseGrp = test[step.test].testCase[step.testCase];
+                listCaseGrp.append($("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
             }
             $('.list-group-item').on('click', function () {
                 $('.glyphicon', this)
@@ -1106,12 +1115,11 @@ Action.prototype.draw = function () {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var type = $("<div></div>").addClass("type");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
-    var plusBtn = $("<button></button>").addClass("btn btn-default btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-    var addBtn = $("<button></button>").addClass("btn btn-success btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(addBtn).append(supprBtn);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var plusBtn = $("<button></button>").addClass("btn btn-default btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var addBtn = $("<button></button>").addClass("btn btn-success btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").css("width","53px").css("margin-left","auto").css("margin-right","auto").append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     if (this.parentStep.useStep === "N") {
@@ -1128,14 +1136,11 @@ Action.prototype.draw = function () {
     }
 
     plusBtn.click(function(){
-        var container = $(this).parent().parent();
-        if(container.height() == 78){
-            container.height(118);
-            container.find(".row:eq(2)").show();
+        var container = $(this).parent().parent().parent();
+        container.find(".fieldRow:eq(2)").toggle();
+        if($(this).find("span").hasClass("glyphicon-chevron-down")){
             $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         }else{
-            container.height(78);
-            container.find(".row:eq(2)").hide();
             $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
         }
     });
@@ -1205,18 +1210,18 @@ Action.prototype.setSort = function (sort) {
 Action.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div style='margin-top:5px;'></div>").addClass("row form-inline");
-    var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
+    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow  form-group");
+    var secondRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow");
+    var thirdRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow").hide();
 
-    var actionList = $("<select></select>").addClass("form-control input-sm no-border");
-    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm no-border");
-    var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm no-border");
-    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm no-border");
+    var actionList = $("<select></select>").addClass("form-control input-sm");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
+    var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
+    var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
+    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
 
-    var actionconditiononper = $("<select></select>").addClass("form-control input-sm no-border");
-    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm no-border");
+    var actionconditiononper = $("<select></select>").addClass("form-control input-sm");
+    var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
     descField.css("width","100%");
@@ -1268,13 +1273,13 @@ Action.prototype.generateContent = function () {
         obj.value2 = propertyField.val();
     });
 
-    firstRow.append(descField);
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditiononper));
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(actionconditionparam));
-    secondRow.append($("<span></span>").addClass("col-lg-4").append(actionList));
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(objectField));
-    secondRow.append($("<span></span>").addClass("col-lg-2").append(propertyField));
-    thirdRow.append($("<span></span>").addClass("col-lg-2").append(forceExeStatusList));
+    firstRow.append($("<label></label>").text("Description:")).append(descField);
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Action:")).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").css("padding","0px").append($("<label></label>").text("Object:")).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").css("padding","0px").append($("<label></label>").text("Property:")).append(propertyField));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").css("padding","0px").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Force Execution:")).append(forceExeStatusList));
 
     actionconditiononper.trigger("change");
 
@@ -1357,11 +1362,10 @@ function Control(json, parentAction) {
 Control.prototype.draw = function () {
     var htmlElement = this.html;
     var control = this;
-    var type = $("<div></div>").addClass("type");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append(type);
-    var plusBtn = $("<button></button>").addClass("btn btn-default btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-xs add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("btn-group").append(plusBtn).append(supprBtn);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var plusBtn = $("<button></button>").addClass("btn btn-default btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").css("width","52px").css("margin-left","auto").css("margin-right","auto").append(supprBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     var content = this.generateContent();
@@ -1387,22 +1391,19 @@ Control.prototype.draw = function () {
     });
 
     plusBtn.click(function(){
-        var container = $(this).parent().parent();
-        if(container.height() == 78){
-            container.height(118);
-            container.find(".row:eq(2)").show();
+        var container = $(this).parent().parent().parent();
+        container.find(".fieldRow:eq(2)").toggle();
+        if($(this).find("span").hasClass("glyphicon-chevron-down")){
             $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         }else{
-            container.height(78);
-            container.find(".row:eq(2)").hide();
             $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
         }
     });
 
     htmlElement.append(drag);
     htmlElement.append(content);
-    htmlElement.append(btnGrp);
     htmlElement.append(imgGrp);
+    htmlElement.append(btnGrp);
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
@@ -1430,50 +1431,55 @@ Control.prototype.setSort = function (sort) {
 
 Control.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div></div>").addClass("row");
-    var secondRow = $("<div></div>").addClass("row form-inline");
-    var thirdRow = $("<div style='margin-top:10px;'></div>").addClass("row form-inline").hide();
+    var content = $("<div'></div>").addClass("content col-lg-9");
+    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow form-group");
+    var secondRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow");
+    var thirdRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow").hide();
 
-    var controlList = $("<select></select>").addClass("form-control input-sm no-border").css("width", "100%");
-    var descField = $("<input>").addClass("description").addClass("form-control no-border").prop("placeholder", "Description");
-    var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm no-border").css("width", "100%");
-    var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm no-border").css("width", "100%");
-    var fatalList = $("<select></select>").addClass("form-control input-sm no-border");
+    var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
+    var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
+    var fatalList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
+    descField.css("width","100%");
     descField.on("change", function () {
         obj.description = descField.val();
     });
 
     controlList = getSelectInvariant("CONTROL", false, true);
     controlList.val(this.control);
+    controlList.css("width","100%");
     controlList.on("change", function () {
         obj.control = controlList.val();
         setPlaceholderControl();
     });
 
     controlValueField.val(this.value1);
+    controlValueField.css("width","100%")
     controlValueField.on("change", function () {
         obj.value1 = controlValueField.val();
     });
 
     controlPropertyField.val(this.value2);
+    controlPropertyField.css("width","100%");
     controlPropertyField.on("change", function () {
         obj.value2 = controlPropertyField.val();
     });
 
     fatalList = getSelectInvariant("CTRLFATAL", false, true);
     fatalList.val(this.fatal);
+    fatalList.css("width","100%");
     fatalList.on("change", function () {
         obj.fatal = fatalList.val();
     });
 
-    firstRow.append(descField);
-    secondRow.append($("<span></span>").addClass("col-md-4").append(controlList));
-    secondRow.append($("<span></span>").addClass("col-md-4").append(controlValueField));
-    secondRow.append($("<span></span>").addClass("col-md-4").append(controlPropertyField));
-    thirdRow.append($("<span></span>").addClass("col-md-1").append(fatalList));
+    firstRow.append($("<label></label>").text("Description:")).append(descField);
+    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Control:")).append(controlList));
+    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Value:")).append(controlValueField));
+    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Property:")).append(controlPropertyField));
+    thirdRow.append($("<span></span>").addClass("col-lg-2 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Fatal:")).append(fatalList));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1517,7 +1523,7 @@ Control.prototype.getJsonData = function () {
  * @returns {undefined}
  */
 function listenEnterKeypressWhenFocusingOnDescription() {
-    $("input[class='description form-control no-border']").each(function (index, field) {
+    $("input[class='description form-control']").each(function (index, field) {
         $(field).off('keydown');
         $(field).on('keydown', function (e) {
             if (e.which === 13) {
