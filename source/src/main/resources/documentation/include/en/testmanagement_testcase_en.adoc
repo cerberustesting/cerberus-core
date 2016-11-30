@@ -65,7 +65,7 @@ A variable is defined between %
 
 The easiest way to feed an action with a property or an object, is to use the auto-completion :
 
-. *[red]#Create#* your #property# or your #application object# *[red]#in advance#*
+. *[red]#Create#* your *property* or your *application object [red]#in advance#*
 . *[red]#Type#* "%"
 . *[red]#Select#* property or object
 . *[red]#Select#* property-name or object-name
