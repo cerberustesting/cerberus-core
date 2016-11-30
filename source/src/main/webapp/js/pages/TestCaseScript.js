@@ -1116,11 +1116,11 @@ Action.prototype.draw = function () {
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
-    var plusBtn = $("<button></button>").addClass("btn btn-default btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-    var addBtn = $("<button></button>").addClass("btn btn-success btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
-    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").css("width","53px").css("margin-left","auto").css("margin-right","auto").append(supprBtn).append(addBtn).append(plusBtn));
-    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
+    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(supprBtn).append(addBtn).append(plusBtn));
+    var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id","ApplicationObjectImg").css("width","100%")));
 
     if (this.parentStep.useStep === "N") {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -1157,9 +1157,9 @@ Action.prototype.draw = function () {
         action.toDelete = (action.toDelete) ? false : true;
 
         if (action.toDelete) {
-            action.html.addClass("toDelete");
+            action.html.find(".step-action").addClass("danger");
         } else {
-            action.html.removeClass("toDelete");
+            action.html.find(".step-action").removeClass("danger");
         }
     });
 
@@ -1273,13 +1273,13 @@ Action.prototype.generateContent = function () {
         obj.value2 = propertyField.val();
     });
 
-    firstRow.append($("<label></label>").text("Description:")).append(descField);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Action:")).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").css("padding","0px").append($("<label></label>").text("Object:")).append(objectField));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").css("padding","0px").append($("<label></label>").text("Property:")).append(propertyField));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").css("padding","0px").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").css("padding","0px").append($("<label></label>").text("Force Execution:")).append(forceExeStatusList));
+    firstRow.append(descField);
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Action:")).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text("Value 1:")).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 2:")).append(propertyField));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Force Execution:")).append(forceExeStatusList));
 
     actionconditiononper.trigger("change");
 
@@ -1363,9 +1363,9 @@ Control.prototype.draw = function () {
     var htmlElement = this.html;
     var control = this;
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
-    var plusBtn = $("<button></button>").addClass("btn btn-default btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-    var supprBtn = $("<button></button>").addClass("btn btn-danger btn-lg add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").css("width","52px").css("margin-left","auto").css("margin-right","auto").append(supprBtn).append(plusBtn));
+    var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").addClass("boutonGroup").append(supprBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     var content = this.generateContent();
@@ -1384,9 +1384,9 @@ Control.prototype.draw = function () {
         control.toDelete = (control.toDelete) ? false : true;
 
         if (control.toDelete) {
-            control.html.addClass("toDelete");
+            control.html.addClass("danger");
         } else {
-            control.html.removeClass("toDelete");
+            control.html.removeClass("danger");
         }
     });
 
@@ -1431,7 +1431,7 @@ Control.prototype.setSort = function (sort) {
 
 Control.prototype.generateContent = function () {
     var obj = this;
-    var content = $("<div'></div>").addClass("content col-lg-9");
+    var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow form-group");
     var secondRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow");
     var thirdRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow").hide();
@@ -1475,11 +1475,11 @@ Control.prototype.generateContent = function () {
         obj.fatal = fatalList.val();
     });
 
-    firstRow.append($("<label></label>").text("Description:")).append(descField);
-    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Control:")).append(controlList));
-    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Value:")).append(controlValueField));
-    secondRow.append($("<span></span>").addClass("col-lg-4 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Property:")).append(controlPropertyField));
-    thirdRow.append($("<span></span>").addClass("col-lg-2 form-group").css("padding","0px").css("padding-right","15px").append($("<label></label>").text("Fatal:")).append(fatalList));
+    firstRow.append(descField);
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Control:")).append(controlList));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 1:")).append(controlValueField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 2:")).append(controlPropertyField));
+    thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text("Fatal:")).append(fatalList));
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1585,9 +1585,9 @@ var autocompleteAllFields;
             testcase = thistestcase;
         }
 
-        autocompleteVariable("div.step-action .content div.row.form-inline span:nth-child(n+2) input", TagsToUse);
+        autocompleteVariable("div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
 
-        $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").each(function(i,e){
+        $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function(i,e){
             $(e).on("input change",function(ev){
                 var name = undefined;
                 var nameNotExist = undefined;
@@ -1717,7 +1717,7 @@ function editPropertiesModalSaveHandler(){
         success: function (data) {
             hideLoaderInModal('#propertiesModal');
             if (getAlertType(data.messageType) === 'success') {
-                $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
+                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
                 showMessage(data);
                 $('#propertiesModal').modal('hide');
             } else {
