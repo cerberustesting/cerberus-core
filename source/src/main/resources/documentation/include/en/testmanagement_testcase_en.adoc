@@ -63,6 +63,16 @@ These variable are define in cerberus and you can have access to them with the r
 
 A variable is defined between %
 
+The easiest way to feed an action with a property or an object, is to use the auto-completion :
+
+. *[red]#Create#* your #property# or your #application object *[red]in advance#*
+. *[red]#Type#* "%"
+. *[red]#Select#* property or object
+. *[red]#Select#* property-name or object-name
+. If it's an object, *[red]#select#* its value / picture path / picture url
+
+image:testcasevariables.png[testCaseVariables]
+
 These syntax are available:
 
 . %property.myproperty% : Get the property myproperty
