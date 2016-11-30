@@ -1,1 +1,71 @@
 In this section, you will find information on data library in Cerberus.
+
+
+=== Create data
+
+. Go to *[red]#Data -> Data Library#*. image:testdatapage.png[testdatapage,200,200,float="right",align="center"]
+. Click on *[red]#Create New Entry#* button.
+.. Feed the *[red]#Name#* field
+.. Select the *[red]#Type#* of the data.
+.. Select a *[green]#System#*, an *[green]#Environment#*, a *[green]#Country#* (not mandatory fields).
+.. Feed the fields of your *[red]#configurations#*.
+.. Feed the *[green]#Description#* field with a short description of the data.
+.. Go to *[red]#SubData#* tab
+.. Feed subdata information depending of your configuration. Refer to Data configurations for more information
+.. Click on *[red]#Add#*.
+
+The first sub-data does not require a name, %my_data% will return sub-data 1 and %my_data(sub-data2)% will return value of the sub-data2.
+
+If you do not select an Environment, a system and a country, your data will be available for all environments,systems and countries.
+
+=== Data configurations
+
+==== Internal configuration
+
+No specific configuration needed, just feed a static value in subdata tab. 
+
+image:testdatacreatenewsubdata.png[testdatacreatenewsubdata,200,200,float="right",align="center"]
+
+==== SOAP configuration
+
+|=== 
+
+| *Field* | *Description*  
+
+| Database | Database where the Service Path will be requested. (not mandatory)
+
+| Service Path | Location of the service. Example: http://mydomain/mywebservicelocationmywebservicelocation
+
+| Method | Method that is invoked by the SOAP request/call.
+
+| Envelope | Envelope that is sent in the SOAP request.
+
+|=== 
+
+
+==== SQL configuration
+
+|=== 
+
+| *Field* | *Description*  
+
+| Database | Database where the script attribute should be executed .
+
+| Script | Script you want to execute.
+
+|===
+
+==== CSV configuration
+
+|=== 
+
+| *Field* | *Description*  
+
+| Database | TBD
+
+| CSV URL | CSV URL specifies the URL where the CSV can be reached.
+
+| Separator | Separator used parsing a CSV.
+
+|===
+
