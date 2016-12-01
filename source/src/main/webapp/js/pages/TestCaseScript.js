@@ -39,6 +39,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
+        var step = GetURLParameter("step");
 
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
@@ -65,6 +66,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         });
 
         $("#saveStep").click(saveStep);
+        $("#isLib").click(changeLib);
         $("#cancelEdit").click(cancelEdit);
 
         var json;
@@ -80,7 +82,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 loadTestCaseInfo(data.info);
                 json = data.stepList;
                 sortData(json);
-                createStepList(json, stepList);
+                createStepList(json, stepList, step);
                 drawInheritedProperty(data.inheritedProp);
                 listenEnterKeypressWhenFocusingOnDescription();
                 setPlaceholderAction();
@@ -157,6 +159,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                 });
 
+                $('[data-toggle="tooltip"]').tooltip();
 
             },
             error: showUnexpectedError
@@ -196,6 +199,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#runTestCase").click(function () {
             runTestCase(test, testcase);
         });
+        $("#seeLastExec").click(function () {
+            seeLastExec(test, testcase);
+        });
+        $("#seeLogs").click(function () {
+            seeLogs(test, testcase);
+        });
         $.ajax({
             url: "ReadTestCaseExecution",
             data: {test: test, testCase: testcase},
@@ -208,6 +217,28 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             },
             error: showUnexpectedError
         });
+
+        var wrap = $(window);
+
+        wrap.on("scroll", function(e) {
+            var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
+            if (this.scrollY > height) {
+                $('#testCaseTitle').css("top","0").addClass("affix");
+                $('#list-wrapper').css("top","107px").addClass("affix");
+                $('#nav-execution').next().css("margin-top", ($('#testCaseTitle').outerHeight(true) + 20) + "px");
+            } else {
+                $('#testCaseTitle').css("top","").removeClass("affix");
+                $('#list-wrapper').css("top","").removeClass("affix");
+                $('#nav-execution').next().css("margin-top","20px");
+            }
+            $("#testCaseTitle").width($("#testCaseTitle").parent().width()-30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        });
+
+        wrap.resize(function(e){
+            $("#testCaseTitle").width($("#testCaseTitle").parent().width()-30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        })
     });
 });
 
@@ -220,6 +251,15 @@ function addAction() {
 
 function runTestCase(test, testcase) {
     window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase;
+}
+function getTestCase(test, testcase, step) {
+    window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
+}
+function seeLogs(test, testcase) {
+    window.location.href = "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase;
+}
+function seeLastExec(test, testcase) {
+    window.location.href = "./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase;
 }
 function rerunTestCase(test, testcase, country, environment) {
     window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + country + "&environment=" + environment;
@@ -615,6 +655,20 @@ function cancelEdit() {
     $("#stepInfo").show();
 }
 
+function changeLib() {
+    var stepHtml = $("#stepList li.active");
+    var stepData = stepHtml.data("item");
+    if(stepData.inLibrary == "Y"){
+        stepData.inLibrary = "N";
+        $(this).removeClass("btn-warning");
+        $(this).addClass("btn-default");
+    }else{
+        stepData.inLibrary = "Y";
+        $(this).removeClass("btn-default");
+        $(this).addClass("btn-warning");
+    }
+}
+
 function editStep() {
     var step = $("#stepList li.active").data("item");
 
@@ -622,12 +676,7 @@ function editStep() {
     $("#stepInfo").hide();
     $("#editStepDescription").prop("placeholder", "Description").prop("maxlength", "150").val(step.description);
     $("#editStep").show();
-    
-    if (step.useStep === "Y") {
-        $("#addInLibArea").hide();
-    } else {
-        $("#addInLibArea").show();
-    }
+
 }
 
 function saveStep() {
@@ -635,12 +684,6 @@ function saveStep() {
     var stepData = stepHtml.data("item");
 
     stepData.setDescription($("#editStepDescription").val());
-
-    if ($("#addInLib").prop("checked")) {
-        stepData.inLibrary = "Y";
-    } else {
-        stepData.inLibrary = "Y";
-    }
 
     cancelEdit();
 }
@@ -654,7 +697,7 @@ function addStep(event) {
         $('#description').focus();
     })
 
-    $(".sub-item").click(function () {
+    $(".sub-sub-item").click(function () {
         var stepInfo = $(this).data("stepInfo");
 
         $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
@@ -707,7 +750,7 @@ function addStep(event) {
     });
 }
 
-function createStepList(data, stepList) {
+function createStepList(data, stepList, stepIndex) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
         var stepObj = new Step(step, stepList);
@@ -715,7 +758,19 @@ function createStepList(data, stepList) {
         stepObj.draw();
         stepList.push(stepObj);
     }
-    if (stepList.length > 0) {
+
+    if(stepIndex != undefined){
+        var find = false;
+        for(var i = 0; i < stepList.length; i++) {
+            if(stepList[i].sort == stepIndex) {
+                find = true;
+                $(stepList[i].html[0]).click();
+            }
+        }
+        if(!find){
+            $(stepList[0].html[0]).click();
+        }
+    }else if (stepList.length > 0) {
         $(stepList[0].html[0]).click();
     }
 }
@@ -924,7 +979,7 @@ function Step(json, stepList) {
     this.stepList = stepList;
     this.toDelete = false;
 
-    this.html = $("<li></li>").addClass("list-group-item row").css("margin-left", "0px");
+    this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
 
 }
@@ -974,15 +1029,17 @@ Step.prototype.show = function () {
     }
 
     if (object.inLibrary === "Y") {
-        $("#addInLib").prop("checked", true);
-    } else {
-        $("#addInLib").prop("checked", false);
+        $("#isLib").removeClass("btn-default").addClass("btn-warning");
+    }else{
+        $("#isLib").removeClass("btn-warning").addClass("btn-default");
     }
 
     if (object.useStep === "Y") {
-        $("#libInfo").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + ")");
+        $("#isLib").attr("disabled",true);
+        $("#libInfo").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)");
         $("#addAction").prop("disabled",true);
     } else {
+        $("#isLib").attr("disabled",false);
         $("#libInfo").text("");
         $("#addAction").prop("disabled",false);
     }

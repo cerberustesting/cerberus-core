@@ -54,16 +54,16 @@
 }
 
 .step-list li:hover {
-    background-color: #337ab7;
-    color: #FFFFFF;
-    border-color: #337ab7;
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
     z-index: 2;
 }
 
 .step-list li .active {
-    background-color: #337ab7;
-    color: #FFFFFF;
-    border-color: #337ab7;
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
     z-index: 2;
 }
 
@@ -265,6 +265,30 @@ color: red !important;
 .list-group-item-danger.active {
     background-color: #e74c3c;
     color: #FFFFFF;
+}
+
+.list-group-item-warning.active {
+    background-color: #f0ad4e;
+    color: #FFFFFF;
+    border-color: #eea236;
+}
+
+.list-group-item-warning.active:hover {
+    background-color: #f0ad4e;
+    color: #FFFFFF;
+    border-color: #eea236;
+}
+
+.list-group-item-calm.active {
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
+}
+
+.list-group-item-calm.active:hover {
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
 }
 
 .add-btn {

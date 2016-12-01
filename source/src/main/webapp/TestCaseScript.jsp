@@ -44,31 +44,41 @@
 
             <h1 class="page-title-line">Test Case Script</h1>
             <div class="panel panel-default" style="margin-top: 10px;">
-                <div class="panel-heading" id="testCaseTitle">
+                <div class="panel-heading" id="testCaseTitle" style="z-index:2;">
                     <div style="width:100%">
-                        <span class="testTestCase"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / </span>
+                        <h3 class="testTestCase" style="float:left;margin-top:0px; margin-bottom: 15px;"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / </h3>
+                        <div id="TestCaseButton">
+                            <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                            <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                            <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
+                            <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 2px; margin-right: 2px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
+                            <button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
+                            <button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-book"></span> Logs</button>
+                            <div class="side-item pull-right"></div>
+
+                        </div>
+                        <div class="clearfix"></div>
                         <select id="testCaseSelect"></select>
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div>
-                        <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-                        <button class="btn btn-default pull-right" id="manageProp" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-cog"></span> Properties</button>
-                        <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
-                        <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
-                        <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 2px; margin-right: 2px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
-                        <div class="side-item pull-right"></div>
+                    <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
+                        <div id="list-wrapper">
+                            <div>
+                                <h3>Steps</h3>
+                                <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
+                                <button class="btn btn-info btn-block" id="addStep">Add Step</button>
+                                <div id="addActionContainer" style="margin-bottom: 5px; margin-top: 5px;">
+                                    <button class="btn btn-primary btn-block" id="addAction">Add Action</button>
+                                </div>
+                                <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
+                                    <button class="btn btn-danger btn-block" id="manageProp">Manage Properties</button>
+                                </div>
+                            </div>
 
-                    </div>
-                    <div class="col-xs-3" id="list-wrapper">
-                        <div>
-                            <h3>Steps</h3>
-                            <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
-                            <button class="btn btn-primary btn-block" id="addStep">Add step</button>
                         </div>
-
-                    </div>
-                    <div class="col-xs-9 well marginTop20" style="min-height: 200px;">
+                    </nav>
+                    <div class="col-lg-9 well marginTop20" style="min-height: 200px;">
                         <div class="step-header clearfix">
                             <div id="stepInfo"  style="display: none;">
                                 <div class="row">
@@ -76,6 +86,7 @@
                                     <div class="col-xs-3" id="editBtnArea">
                                         <div class="btn-group pull-right">
                                             <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
+                                            <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib"><span class="glyphicon glyphicon-book"></span></button>
                                             <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
                                         </div>
                                     </div>
@@ -93,19 +104,9 @@
                                         <button class="btn btn-default" id="cancelEdit">Cancel</button>
                                     </div>
                                 </div>
-                                <div class="row" id="addInLibArea" style="display: none;">
-                                    <div class="pull-right">
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" id="addInLib"> Library
-                                        </label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div id="actionContainer"></div>
-                        <div id="addActionContainer" style="display: none;">
-                            <button class="btn btn-primary center-block" id="addAction"><span class="glyphicon glyphicon-plus"></span></button>
-                        </div>
                     </div>
                 </div>
                 <datalist id="objects"></datalist>
