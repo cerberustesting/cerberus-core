@@ -102,7 +102,7 @@ function feedContent() {
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.test);
             row.append(cel1);
-            var cel1 = $("<td></td>").append("<a href='TestCase.jsp?Test=" + obj.test + "&TestCase=" + obj.testcase + "'>" + obj.testcase + "</a>");
+            var cel1 = $("<td></td>").append("<a href='TestCaseScript.jsp?test=" + obj.test + "&testcase=" + obj.testcase + "'>" + obj.testcase + "</a>");
             row.append(cel1);
             var cel1 = $("<td></td>").append(obj.environment);
             row.append(cel1);

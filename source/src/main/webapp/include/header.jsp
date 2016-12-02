@@ -61,8 +61,8 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp" style="width:160px">Test</a></li>
-                    <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp" style="width:130px">TestCase List</a></li>
-                    <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCase.jsp" style="width:130px">Edit TestCase</a></li>
+                    <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp" style="width:130px">TestCase</a></li>
+                    <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCaseScript.jsp" style="width:130px">Edit TestCase</a></li>
                     <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery.jsp" style="width:130px">Test Battery</a></li>
                     <li id="subactive"><a name="menu" id="menuLabel" href="Label.jsp" style="width:130px">Label</a></li>
                 </ul>

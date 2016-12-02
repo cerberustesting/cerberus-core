@@ -615,7 +615,7 @@
                             %>
                             <tr>
                                 <td class="INF" style="width: 30px"><%=rs_time.getString("tc.test")%></td>
-                                <td class="INF" style="width: 30px"><a href="TestCase.jsp?Load=Load&Test=<%=rs_time.getString("tc.test")%>&TestCase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
+                                <td class="INF" style="width: 30px"><a href="TestCaseScript.jsp?test=<%=rs_time.getString("tc.test")%>&testcase=<%=rs_time.getString("tc.testcase")%>"> <%=rs_time.getString("tc.testcase")%></a></td>
                                 <td class="INF" style="width: 30px"><%=rs_time.getString("tc.application")%></td>
                                 <td class="INF" style="width: 30px"><%=rs_time.getString("tc.description")%></td>
                                 <td class="INF" style="width: 30px"><%=rs_time.getString("tc.Priority")%></td>

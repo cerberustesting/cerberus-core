@@ -139,7 +139,7 @@ public class GetTestBattery extends HttpServlet {
         result.put(testBatteryContentWithDescription.getTestbattery());
         result.put(testBatteryContentWithDescription.getTest());
 
-        result.put("<a target=\"TestCase\" href=\"TestCase.jsp?Test=" + testBatteryContentWithDescription.getTest() + "&TestCase=" + testBatteryContentWithDescription.getTestCase() + "\">" + testBatteryContentWithDescription.getTestCase() + "</a>");
+        result.put("<a target=\"TestCase\" href=\"TestCaseScript.jsp?test=" + testBatteryContentWithDescription.getTest() + "&testcase=" + testBatteryContentWithDescription.getTestCase() + "\">" + testBatteryContentWithDescription.getTestCase() + "</a>");
         result.put(testBatteryContentWithDescription.getDescription());
 
         return result;

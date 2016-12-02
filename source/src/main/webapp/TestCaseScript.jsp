@@ -35,7 +35,10 @@
     <body>
         <%@ include file="include/header.html"%>
         <div id="page-layout" class="container-fluid center">
-            <div class="alert alert-warning"><strong>BETA</strong> This page is in beta, some features may not be available or fully functional.</div>
+            <div class="alert alert-warning">
+                <strong>BETA</strong> This page is in beta, some features may not be available or fully functional.
+                <a><button class="btn btn-warning side-item" id="runOld">Old Page</button></a>
+            </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
@@ -47,8 +50,8 @@
                 <div class="panel-default" style="height:93px;">
                     <div class="panel-heading" id="testCaseTitle" style="z-index:2; top: 0">
                         <div style="width:100%">
-                            <h3 class="testTestCase" style="float:left;margin-top:0px; margin-bottom: 15px;"><span class="glyphicon glyphicon-list"></span>  <span id="test"></span> / </h3>
-                            <div id="TestCaseButton">
+                            <h3 class="testTestCase" style="float:left;margin-top:4px; margin-bottom: 4px;"><span class="glyphicon glyphicon-list"></span>  <select id="test"></select> / </h3>
+                            <div id="TestCaseButton" style="display:none;">
                                 <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                                 <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
                                 <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
@@ -59,11 +62,11 @@
 
                             </div>
                             <div class="clearfix"></div>
-                            <select id="testCaseSelect"></select>
+                            <select id="testCaseSelect" style="display:none;"></select>
                         </div>
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" style="display:none;">
                     <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                         <div id="list-wrapper" style="top:107px;">
                             <div>

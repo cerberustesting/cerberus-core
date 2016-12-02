@@ -218,7 +218,7 @@
                     },
                     {"aTargets": ['testCaseColumn'],
                         "mRender": function (data, type, full) {
-                            return "<a href='TestCase.jsp?Load=Load&Test="+full[0]+"&TestCase="+data+"' target='_blank'>"+data+"</a>";
+                            return "<a href='TestCaseScript.jsp?test="+full[0]+"&testcase="+data+"' target='_blank'>"+data+"</a>";
                         }
                     },
                     {"aTargets": ['TCComment'],

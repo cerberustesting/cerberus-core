@@ -41,6 +41,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var testcase = GetURLParameter("testcase");
         var step = GetURLParameter("step");
 
+        $("#runOld").parent().attr("href","./TestCase.jsp?Test=" + test + "&TestCase=" + testcase + "&Load=Load");
+
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
@@ -60,184 +62,247 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             selector: ".wysiwyg"
         });
 
-        // Edit TestCase open the TestCase Modal
-        $("#editTcInfo").click(function () {
-            editTestCaseClick(test, testcase);
-        });
-
-        $("#saveStep").click(saveStep);
-        $("#isLib").click(changeLib);
-        $("#cancelEdit").click(cancelEdit);
-
-        var json;
-        var testcaseinfo;
-        var Tags;
         $.ajax({
-            url: "ReadTestCase",
-            data: {test: test, testCase: testcase, withStep: true},
-            dataType: "json",
-            success: function (data) {
-
-                testcaseinfo = data.info;
-                loadTestCaseInfo(data.info);
-                json = data.stepList;
-                sortData(json);
-                createStepList(json, stepList, step);
-                drawInheritedProperty(data.inheritedProp);
-                listenEnterKeypressWhenFocusingOnDescription();
-                setPlaceholderAction();
-                setPlaceholderControl();
-
-                var availableProperties = loadProperties(test, testcase, data.info);
-                var availableObjects = loadApplicationObject(data);
-                var availableObjectProperties = [
-                    "value",
-                    "picturepath",
-                    "pictureurl"
-                ]
-                var availableTags = [
-                    "property",
-                    "object"
-                ];
-
-                Tags = [
-                    {
-                        array : availableObjectProperties,
-                        regex : "%object\\.[^\\.]*\\.",
-                        addBefore : "",
-                        addAfter : "%",
-                        isCreatable : false
-                    },
-                    {
-                        array : availableObjects,
-                        regex : "%object\\.",
-                        addBefore : "",
-                        addAfter : ".",
-                        isCreatable : true
-                    },
-                    {
-                        array : availableProperties,
-                        regex : "%property\\.",
-                        addBefore : "",
-                        addAfter : "%",
-                        isCreatable : true
-                    },
-                    {
-                        array : availableTags,
-                        regex : "%",
-                        addBefore : "",
-                        addAfter : ".",
-                        isCreatable : false
+            url: "ReadTest",
+            async: true,
+            success: function (data){
+                data.contentTable.sort(function (a, b) {
+                    var aa = a.test.toLowerCase();
+                    var bb = b.test.toLowerCase();
+                    if (aa > bb) {
+                        return 1;
+                    } else if (aa < bb) {
+                        return -1;
                     }
-                ];
-
-                autocompleteAllFields(Tags, data.info, test, testcase);
-
-                // Building full list of country from testcase.
-                var myCountry = [];
-                $.each(testcaseinfo.countryList, function (index) {
-                    myCountry.push(index);
+                    return 0;
                 });
+                $(".testTestCase #test").prepend("<option value=''>Select your Test</option>");
+                for (var i = 0; i < data.contentTable.length; i++) {
+                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>")
+                }
 
-                // Button Add Property insert a new Property
-                $("#addProperty").click(function () {
-                    var newProperty = {
-                        property: "",
-                        description: "",
-                        country: myCountry,
-                        type: "text",
-                        database: "",
-                        value1: "",
-                        value2: "",
-                        length: 0,
-                        rowLimit: 0,
-                        nature: "STATIC",
-                        toDelete: false
-                    };
-
-                    drawProperty(newProperty, testcaseinfo);
-
+                if(test != null) {
+                    $(".testTestCase #test option[value='" + test + "']").prop('selected', true);
+                }
+                $(".testTestCase #test").bind("change", function (event) {
+                    window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
                 });
-
-                $('[data-toggle="tooltip"]').tooltip();
-
-            },
-            error: showUnexpectedError
+                $(".testTestCase #test").select2().next().css("margin-bottom","7px");
+            }
         });
 
-
-        $("#manageProp").click(function(){
-            editPropertiesModalClick(test,testcase,testcaseinfo);
-        });
-
-        $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
-
-        $("#addStep").click({stepList: stepList}, addStep);
-        $('#addStepModal').on('hidden.bs.modal', function () {
-            $("#importInfo").removeData("stepInfo");
-            $("#importInfo").empty();
-            $("#addStepModal #description").val("");
-            $("#useStep").prop("checked", false);
-            $("#importDetail").hide();
-        });
-
-        $("#deleteStep").click(function () {
-            var step = $("#stepList .active").data("item");
-
-            step.setDelete();
-        });
-
-        $("#editBtn").click(editStep);
-        $("#addAction").click(function () {
-            $.when(addAction()).then(function (action) {
-                listenEnterKeypressWhenFocusingOnDescription();
-                $($(action.html[0]).find(".description")[0]).focus();
-                autocompleteAllFields();
-                setPlaceholderAction();
+        if(test != null) {
+            $.ajax({
+                url: "ReadTestCase?test=" + test,
+                async: true,
+                success: function (data) {
+                    data.contentTable.sort(function (a, b) {
+                        var aa = a.testCase.toLowerCase();
+                        var bb = b.testCase.toLowerCase();
+                        if (aa > bb) {
+                            return 1;
+                        } else if (aa < bb) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+                    $("#testCaseSelect").prepend("<option value=''>Select your TestCase</option>");
+                    for (var i = 0; i < data.contentTable.length; i++) {
+                        $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
+                    }
+                    if(testcase != null) {
+                        $("#testCaseSelect option[value='" + testcase + "']").prop('selected', true);
+                    }
+                    $("#testCaseSelect").bind("change", function (event) {
+                        window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + $(this).val();
+                    });
+                    $("#testCaseSelect").select2({width: '100%'});
+                }
             });
-        });
-        $("#saveScript").click(saveScript);
-        $("#runTestCase").click(function () {
-            runTestCase(test, testcase);
-        });
-        $("#seeLastExec").click(function () {
-            seeLastExec(test, testcase);
-        });
-        $("#seeLogs").click(function () {
-            seeLogs(test, testcase);
-        });
-        $.ajax({
-            url: "ReadTestCaseExecution",
-            data: {test: test, testCase: testcase},
-            dataType: "json",
-            success: function (data) {
-                $("#rerunTestCase").click(function () {
-                    rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
+        }
+        if(test != null && testcase != null){
+            // Edit TestCase open the TestCase Modal
+            $("#editTcInfo").click(function () {
+                editTestCaseClick(test, testcase);
+            });
+
+            $("#TestCaseButton").show();
+            $(".panel-body").show();
+
+            $("#saveStep").click(saveStep);
+            $("#isLib").click(changeLib);
+            $("#cancelEdit").click(cancelEdit);
+
+            var json;
+            var testcaseinfo;
+            var Tags;
+            $.ajax({
+                url: "ReadTestCase",
+                data: {test: test, testCase: testcase, withStep: true},
+                dataType: "json",
+                success: function (data) {
+
+                    testcaseinfo = data.info;
+                    loadTestCaseInfo(data.info);
+                    json = data.stepList;
+                    sortData(json);
+                    createStepList(json, stepList, step);
+                    drawInheritedProperty(data.inheritedProp);
+                    listenEnterKeypressWhenFocusingOnDescription();
+                    setPlaceholderAction();
+                    setPlaceholderControl();
+
+                    var availableProperties = loadProperties(test, testcase, data.info);
+                    var availableObjects = loadApplicationObject(data);
+                    var availableObjectProperties = [
+                        "value",
+                        "picturepath",
+                        "pictureurl"
+                    ];
+                    var availableTags = [
+                        "property",
+                        "object"
+                    ];
+
+                    Tags = [
+                        {
+                            array : availableObjectProperties,
+                            regex : "%object\\.[^\\.]*\\.",
+                            addBefore : "",
+                            addAfter : "%",
+                            isCreatable : false
+                        },
+                        {
+                            array : availableObjects,
+                            regex : "%object\\.",
+                            addBefore : "",
+                            addAfter : ".",
+                            isCreatable : true
+                        },
+                        {
+                            array : availableProperties,
+                            regex : "%property\\.",
+                            addBefore : "",
+                            addAfter : "%",
+                            isCreatable : true
+                        },
+                        {
+                            array : availableTags,
+                            regex : "%",
+                            addBefore : "",
+                            addAfter : ".",
+                            isCreatable : false
+                        }
+                    ];
+
+                    autocompleteAllFields(Tags, data.info, test, testcase);
+
+                    // Building full list of country from testcase.
+                    var myCountry = [];
+                    $.each(testcaseinfo.countryList, function (index) {
+                        myCountry.push(index);
+                    });
+
+                    // Button Add Property insert a new Property
+                    $("#addProperty").click(function () {
+                        var newProperty = {
+                            property: "",
+                            description: "",
+                            country: myCountry,
+                            type: "text",
+                            database: "",
+                            value1: "",
+                            value2: "",
+                            length: 0,
+                            rowLimit: 0,
+                            nature: "STATIC",
+                            toDelete: false
+                        };
+
+                        drawProperty(newProperty, testcaseinfo);
+
+                    });
+
+                    $('[data-toggle="tooltip"]').tooltip();
+
+                },
+                error: showUnexpectedError
+            });
+
+
+            $("#manageProp").click(function(){
+                editPropertiesModalClick(test,testcase,testcaseinfo);
+            });
+
+            $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
+
+            $("#addStep").click({stepList: stepList}, addStep);
+            $('#addStepModal').on('hidden.bs.modal', function () {
+                $("#importInfo").removeData("stepInfo");
+                $("#importInfo").empty();
+                $("#addStepModal #description").val("");
+                $("#useStep").prop("checked", false);
+                $("#importDetail").hide();
+            });
+
+            $("#deleteStep").click(function () {
+                var step = $("#stepList .active").data("item");
+
+                step.setDelete();
+            });
+
+            $("#editBtn").click(editStep);
+            $("#addAction").click(function () {
+                $.when(addAction()).then(function (action) {
+                    listenEnterKeypressWhenFocusingOnDescription();
+                    $($(action.html[0]).find(".description")[0]).focus();
+                    autocompleteAllFields();
+                    setPlaceholderAction();
                 });
-                $("#rerunTestCase").attr("title","Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
-            },
-            error: showUnexpectedError
-        });
-        var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
+            });
+            $("#saveScript").click(saveScript);
+            $("#runTestCase").click(function () {
+                runTestCase(test, testcase);
+            });
+            $("#seeLastExec").click(function () {
+                seeLastExec(test, testcase);
+            });
+            $("#seeLogs").click(function () {
+                seeLogs(test, testcase);
+            });
+            $.ajax({
+                url: "ReadTestCaseExecution",
+                data: {test: test, testCase: testcase},
+                dataType: "json",
+                success: function (data) {
+                    $("#rerunTestCase").click(function () {
+                        rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
+                    });
+                    $("#rerunTestCase").attr("title","Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                },
+                error: showUnexpectedError
+            });
+            var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
-        $("#testCaseTitle").affix({offset: {top: height} });
-        $("#list-wrapper").affix({offset: {top: height} });
+            $("#testCaseTitle").affix({offset: {top: height} });
+            $("#list-wrapper").affix({offset: {top: height} });
 
-        var wrap = $(window);
+            var wrap = $(window);
 
-        wrap.on("scroll", function(e) {
-            if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
-                $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-                $("#list-wrapper").width($("#nav-execution").width());
-            }
-        });
+            wrap.on("scroll", function(e) {
+                if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
+                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+                    $("#list-wrapper").width($("#nav-execution").width());
+                }
+            });
 
-        wrap.resize(function(e){
-            if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
-                $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-                $("#list-wrapper").width($("#nav-execution").width());
-            }
-        })
+            wrap.resize(function(e){
+                if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
+                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+                    $("#list-wrapper").width($("#nav-execution").width());
+                }
+            })
+        }
     });
 });
 
@@ -619,31 +684,6 @@ function getTestCaseCountry(countryList, countryToCheck, isDisabled) {
 }
 
 function loadTestCaseInfo(info) {
-    $(".testTestCase #test").text(info.test);
-    $.ajax({
-        url: "ReadTestCase?test=" + info.test,
-        async: true,
-        success: function (data) {
-            data.contentTable.sort(function (a, b){
-                var aa = a.testCase.toLowerCase();
-                var bb = b.testCase.toLowerCase();
-                if(aa > bb) {
-                    return 1;
-                } else if (aa < bb) {
-                    return -1;
-                }
-                return 0;
-            });
-            for(var i = 0; i<data.contentTable.length; i++){
-                $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
-            }
-            $("#testCaseSelect option[value='" + info.testCase + "']").prop('selected', true);
-            $("#testCaseSelect").bind("change",function(event){
-                window.location.href = "./TestCaseScript.jsp?test=" + info.test + "&testcase=" + $(this).val();
-            });
-            $("#testCaseSelect").select2({ width: '100%' });
-        }
-    });
     $(".testTestCase #description").text(info.shortDescription);
 }
 
@@ -1457,6 +1497,10 @@ Control.prototype.draw = function () {
         }
     });
 
+    if (this.parentStep.useStep === "Y") {
+        supprBtn.attr("disabled",true);
+    }
+
     htmlElement.append(drag);
     htmlElement.append(content);
     htmlElement.append(imgGrp);
@@ -1762,7 +1806,6 @@ function editPropertiesModalSaveHandler(){
     showLoaderInModal('#propertiesModal');
 
     var properties = $("#propTable [name='masterProp']");
-    console.log(properties);
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
@@ -1862,11 +1905,8 @@ function setPlaceholderAction() {
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
 
-//    console.debug("-- Action");
-
     $('select#actionSelect option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
-            console.log(e.value + " / " + placeHolders[i].type);
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].object !== null) {
                     $(e).parent().parent().next().show();
@@ -1958,8 +1998,6 @@ function setPlaceholderControl() {
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
 
-//    console.debug("-- Control");
-
     $('select#controlSelect option:selected').each(function (i, e) {
 
         for (var i = 0; i < placeHolders.length; i++) {
@@ -1999,15 +2037,11 @@ function setPlaceholderProperty() {
         ]};
 
     var user = getUser();
-    user.language;
     var placeHolders = placeHoldersList[user.language];
 
-    console.debug("-- Property");
 
     $('div[class="rowProperty form-inline"] option:selected').each(function (i, e) {
-        console.debug(e.value);
         for (var i = 0; i < placeHolders.length; i++) {
-            console.debug(placeHolders[i].type + " - " + e.value);
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].controlValue !== null) {
                     $(e).parent().parent().next().show();

@@ -98,7 +98,7 @@
                         <tr class="testCaseExecutionResult <%=(indexColor%2 == 1) ? "even" : "odd"%>">
                         <td ><input class="selecttestcase" type="checkbox" name="testcaseselected" value="<%="Test="+URLEncoder.encode(tCase.getTest(), "UTF-8")+"&TestCase="+URLEncoder.encode(tCase.getTestCase(), "UTF-8") %>"></td>
                         <td ><%=tCase.getTest()%></td>
-                        <td ><a href="TestCase.jsp?Load=Load&Test=<%=tCase.getTest()%>&TestCase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
+                        <td ><a href="TestCaseScript.jsp?test=<%=tCase.getTest()%>&testcase=<%=tCase.getTestCase()%>"> <%=tCase.getTestCase()%></a></td>
                         <td ><%=tCase.getApplication()%></td>
                         <td ><%=tCase.getDescription()%></td>
                         <td ><%=tCase.getBehaviorOrValueExpected()%></td>
