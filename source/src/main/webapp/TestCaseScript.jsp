@@ -49,17 +49,21 @@
             <div class="panel panel-default" style="margin-top: 10px;">
                 <div class="panel-default" style="height:93px;">
                     <div class="panel-heading" id="testCaseTitle" style="z-index:2; top: 0">
-                        <div style="width:100%">
-                            <h3 class="testTestCase" style="float:left;margin-top:4px; margin-bottom: 4px;"><span class="glyphicon glyphicon-list"></span>  <select id="test"></select> / </h3>
-                            <div id="TestCaseButton" style="display:none;">
-                                <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-save"></span> Save</button>
-                                <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-                                <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-play"></span> Run</button>
-                                <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 2px; margin-right: 2px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
-                                <button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
-                                <button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 2px; margin-right: 2px;"><span class="glyphicon glyphicon-book"></span> Logs</button>
-                                <div class="side-item pull-right"></div>
+                        <div class="" style="width:100%">
+                            <div class="col-lg-5" style="padding: 0px;">
+                                <h3 class="testTestCase" style="margin-top:4px; margin-bottom: 4px;"><select id="test"></select></h3>
+                            </div>
+                            <div class="col-lg-7" style="padding: 0px;">
+                                <div id="TestCaseButton" style="display:none;">
+                                    <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                    <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                                    <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button>
+                                    <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
+                                    <button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
+                                    <button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button>
+                                    <div class="side-item pull-right"></div>
 
+                                </div>
                             </div>
                             <div class="clearfix"></div>
                             <select id="testCaseSelect" style="display:none;"></select>

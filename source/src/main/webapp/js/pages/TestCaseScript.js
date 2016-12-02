@@ -87,7 +87,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 $(".testTestCase #test").bind("change", function (event) {
                     window.location.href = "./TestCaseScript.jsp?test=" + $(this).val();
                 });
-                $(".testTestCase #test").select2().next().css("margin-bottom","7px");
+                $(".testTestCase #test").select2({width:"100%"}).next().css("margin-bottom","7px");
             }
         });
 
