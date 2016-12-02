@@ -24,12 +24,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
 
-        var cerberusUrl = getParameter("cerberus_url").value;
-        cerberusUrl = cerberusUrl.indexOf("/", cerberusUrl.length - "/".length) !== -1?cerberusUrl:cerberusUrl+"/";
-
         var parser = document.createElement('a');
-        parser.href = cerberusUrl;
-        var new_uri = "ws:" + parser.host + parser.pathname + "execution/" + executionId;
+        parser.href = window.location.href;
+
+        var protocol = "ws:";
+        if(parser.protocol == "https:"){
+            protocol = "wss:";
+        }
+        var path = parser.pathname.split("ExecutionDetail2")[0];
+        var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
         var socket = new WebSocket(new_uri);
 
