@@ -1290,7 +1290,7 @@ Action.prototype.generateContent = function () {
     });
     actionconditionparam.val(this.conditionVal);
 
-    actionList = getSelectInvariant("ACTION", false, true).css("width","100%");
+    actionList = getSelectInvariant("ACTION", false, true).css("width","100%").attr("id","actionSelect");
     actionList.val(this.action);
     actionList.on("change", function () {
         obj.action = actionList.val();
@@ -1503,7 +1503,7 @@ Control.prototype.generateContent = function () {
         obj.description = descField.val();
     });
 
-    controlList = getSelectInvariant("CONTROL", false, true);
+    controlList = getSelectInvariant("CONTROL", false, true).attr("id","controlSelect");
     controlList.val(this.control);
     controlList.css("width","100%");
     controlList.on("change", function () {
@@ -1852,24 +1852,23 @@ function setPlaceholderAction() {
     ]};
 
     var user = getUser();
-    user.language;
     var placeHolders = placeHoldersList[user.language];
 
 //    console.debug("-- Action");
 
-    $('div[class="row form-inline"] option:selected').each(function (i, e) {
+    $('select#actionSelect option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
-//            console.debug(placeHolders[i].type + " - " + e.value);
+            console.log(e.value + " / " + placeHolders[i].type);
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].object !== null) {
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].object);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].object);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
                 if (placeHolders[i].property !== null) {
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].property);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].property);
                 } else {
                     $(e).parent().parent().next().next().hide();
                 }
@@ -1949,25 +1948,23 @@ function setPlaceholderControl() {
         ]};
 
     var user = getUser();
-    user.language;
     var placeHolders = placeHoldersList[user.language];
 
 //    console.debug("-- Control");
 
-    $('div[class="rowControl form-inline"] option:selected').each(function (i, e) {
+    $('select#controlSelect option:selected').each(function (i, e) {
 
         for (var i = 0; i < placeHolders.length; i++) {
-//            console.debug(placeHolders[i].type + " - " + e.value);
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].controlValue !== null) {
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].controlValue);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].controlValue);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
                 if (placeHolders[i].controlProp !== null) {
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].controlProp);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].controlProp);
                 } else {
                     $(e).parent().parent().next().next().hide();
                 }
