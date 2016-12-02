@@ -193,6 +193,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 listenEnterKeypressWhenFocusingOnDescription();
                 $($(action.html[0]).find(".description")[0]).focus();
                 autocompleteAllFields();
+                setPlaceholderAction();
             });
         });
         $("#saveScript").click(saveScript);
@@ -1155,7 +1156,7 @@ function Action(json, parentStep) {
         this.object = "";
         this.property = "";
         this.forceExeStatus = "";
-        this.conditionOper = "";
+        this.conditionOper = "always";
         this.conditionVal = "";
         this.screenshotFileName = "";
         this.value1 = "";
@@ -1205,6 +1206,7 @@ Action.prototype.draw = function () {
 
         action.setControl(control);
 
+        setPlaceholderControl();
         autocompleteAllFields();
     });
 
@@ -1265,9 +1267,9 @@ Action.prototype.setSort = function (sort) {
 Action.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow  form-group");
-    var secondRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow");
-    var thirdRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow").hide();
+    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
+    var secondRow = $("<div></div>").addClass("fieldRow row");
+    var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
@@ -1487,9 +1489,9 @@ Control.prototype.setSort = function (sort) {
 Control.prototype.generateContent = function () {
     var obj = this;
     var content = $("<div></div>").addClass("content col-lg-9");
-    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow form-group");
-    var secondRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow");
-    var thirdRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow").hide();
+    var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
+    var secondRow = $("<div></div>").addClass("fieldRow row");
+    var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
@@ -1587,6 +1589,8 @@ function listenEnterKeypressWhenFocusingOnDescription() {
                     $.when(addAction()).then(function (action) {
                         listenEnterKeypressWhenFocusingOnDescription();
                         $($(action.html[0]).find(".description")[0]).focus();
+                        setPlaceholderAction();
+                        autocompleteAllFields();
                     });
                 } else {
                     //if description is empty, create action or control depending on field
@@ -1597,6 +1601,8 @@ function listenEnterKeypressWhenFocusingOnDescription() {
                         $.when(addControl(oldAction.data("item"))).then(function (action) {
                             listenEnterKeypressWhenFocusingOnDescription();
                             $($(action.html[0]).find(".description")[0]).focus();
+                            setPlaceholderControl();
+                            autocompleteAllFields();
                         });
                     } else {
                         var newAction = $(field).closest(".step-action");
@@ -1604,6 +1610,8 @@ function listenEnterKeypressWhenFocusingOnDescription() {
                         $.when(addAction()).then(function (action) {
                             listenEnterKeypressWhenFocusingOnDescription();
                             $($(action.html[0]).find(".description")[0]).focus();
+                            setPlaceholderAction();
+                            autocompleteAllFields();
                         });
                     }
                 }
