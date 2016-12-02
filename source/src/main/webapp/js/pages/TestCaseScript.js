@@ -217,27 +217,25 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             },
             error: showUnexpectedError
         });
+        var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
+
+        $("#testCaseTitle").affix({offset: {top: height} });
+        $("#list-wrapper").affix({offset: {top: height} });
 
         var wrap = $(window);
 
         wrap.on("scroll", function(e) {
-            var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-            if (this.scrollY > height) {
-                $('#testCaseTitle').css("top","0").addClass("affix");
-                $('#list-wrapper').css("top","107px").addClass("affix");
-                $('#nav-execution').next().css("margin-top", ($('#testCaseTitle').outerHeight(true) + 20) + "px");
-            } else {
-                $('#testCaseTitle').css("top","").removeClass("affix");
-                $('#list-wrapper').css("top","").removeClass("affix");
-                $('#nav-execution').next().css("margin-top","20px");
+            if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
+                $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+                $("#list-wrapper").width($("#nav-execution").width());
             }
-            $("#testCaseTitle").width($("#testCaseTitle").parent().width()-30);
-            $("#list-wrapper").width($("#nav-execution").width());
         });
 
         wrap.resize(function(e){
-            $("#testCaseTitle").width($("#testCaseTitle").parent().width()-30);
-            $("#list-wrapper").width($("#nav-execution").width());
+            if($("#testCaseTitle").width() != $("#testCaseTitle").parent().width()-30) {
+                $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+                $("#list-wrapper").width($("#nav-execution").width());
+            }
         })
     });
 });
