@@ -1121,9 +1121,28 @@
                                                 <input type="hidden" name="initial_step_number_<%=incrementStep%>" id="initial_step_number_<%=incrementStep%>" value="<%=tcs.getStep()%>">
                                             </div>
                                             <div id="StepDescDiv" style="width:30%;float:left;margin-top:10px">
-                                                <div><div><input maxlength="150" style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
+                                                <div>
+                                                    <div>
+                                                        <input maxlength="150" style="float:right;font-weight: bold; width: 100%;background-color:transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; color:#333333; border-color:#EEEEEE;border-style:solid; border-width:thin"
                                                                  placeholder="Description" data-fieldtype="Description" name="step_description_<%=incrementStep%>" id="step_description_<%=incrementStep%>" value="<%=tcs.getDescription().replace("\"", "&quot;")%>">
-                                                    </div></div></div>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                                    <div style="width:100%; float:bottom;">
+                                                                        <div style="float:left;width:80px;"><p name="labelTestCaseStepConditionOper" style="float:right;font-weight:bold;" link="white" >Cond.</p>
+                                                                        </div>
+                                                                        <%=ComboInvariant(appContext, "step_conditionoper_" + incrementStep, "width:50%;font-size:10px ;border: 1px solid white;" , "step_conditionoper_" + incrementStep , "technical_part", "STEPCONDITIONOPER", tcs.getConditionOper(), "", null)%>
+                                                                    </div>
+                                                                    <div class="technical_part" style="width:100%;float:bottom; ">
+                                                                        <div style="float:left;width:80px;"><p name="labelTestCaseStepConditionVal1" style="float:right;font-weight:bold;" link="white" >Val1</p>
+                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white;"
+                                                                                     value="<%=tcs.getConditionVal1().replace("\"","&quot;")%>" 
+                                                                                     id="step_conditionval1_<%=incrementStep%>"
+                                                                                     name="step_conditionval1_<%=incrementStep%>" />
+                                                                        <img style="max-height:20px; float:left;" id="step_conditionval1_<%=incrementStep%>" data-incrementStep=<%=incrementStep%> style="display:none;">
+                                                                    </div>
+                                                </div>
+                                            </div>
                                             <div id="StepUseStepDiv" style="float:left">UseStep
                                                 <input type="checkbox" id="step_useStep_<%=incrementStep%>" name="step_useStep_<%=incrementStep%>" data-step-number="<%=incrementStep%>" style="margin-top:12.5px;font-weight: bold; width:20px" 
                                                        <% if (tcs.getUseStep().equals("Y")) {%>
@@ -1509,12 +1528,31 @@
                                                             </div>
                                                             <div style="height:100%;width:80%;float:left;display:inline-block">
                                                                 <div class="functional_description" style="clear:both;width:100%;height:20px">
-                                                                    <div style="float:left; width:80%">
+                                                                    <div style="float:left; width:50%">
                                                                         <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlDescription" style="float:right;font-weight:bold;" link="white" >Description</p>
                                                                         </div>
                                                                         <input class="wob" placeholder="Description" class="functional_description" style="border-style:groove;border-width:thin;border-color:white;border: 2px solid white; color:#333333; width: 80%; font-weight:bold;font-size:12px ;font-family: Trebuchet MS; "
                                                                                data-fieldtype="Description" value="<%=tcsac.getDescription()%>" id ="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" name="control_description_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" 
                                                                                maxlength="1000"  <%if (useStep) {%>readonly<%}%> />
+                                                                    </div>
+                                                                    <div style="width:20%; float:left;">
+                                                                        <div style="float:left;width:80px; "><p name="labelTestCaseStepActionControlConditionOper" style="float:right;font-weight:bold;" link="white" >Cond.</p>
+                                                                        </div>
+                                                                        <%if (!useStep) {%>
+                                                                            <%=ComboInvariant(appContext, "control_conditionoper_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "width:50%;font-size:10px ;border: 1px solid white;color:" + actionFontColor, "control_conditionoper_" + incrementStep + "_" + incrementAction + "_" + incrementControl, "technical_part", "CONTROLCONDITIONOPER", tcsac.getConditionOper(), "", null)%>
+                                                                        <%}else{
+                                                                            String controlOper = "control_conditionoper_" + incrementStep + "_" + incrementAction + "_" + incrementControl;
+                                                                            %>    
+                                                                            <input value="<%=tcsac.getConditionOper()%>" name="<%=controlOper%>" style="width:50%;font-size:10px ;border: 1px solid white;color:grey" class="technical_part" id="<%=controlOper%>" readonly />
+                                                                        <%}%>    
+                                                                    </div>
+                                                                    <div class="technical_part" style="width:10%;float:left; ">
+                                                                        <div style="float:left;"><p name="labelTestCaseStepActionControlConditionOper" style="float:right;font-weight:bold;" link="white" >Val1</p>
+                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white; color:<%=actionFontColor%>"
+                                                                                     value="<%=tcsac.getConditionVal1().replace("\"","&quot;")%>" 
+                                                                                     id="control_conditionval1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>"
+                                                                                     name="control_conditionval1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" <%if (useStep) {%>readonly<%}%> />
+                                                                        <img style="max-height:20px; float:left;" id="control_conditionval1_<%=incrementStep%>_<%=incrementAction%>_<%=incrementControl%>" data-incrementStep=<%=incrementStep%> data-incrementAction=<%=incrementAction%> style="display:none;">
                                                                     </div>
                                                                 </div>
                                                                 <div style="clear:both;display:inline-block; width:100%; height:15px" >
@@ -2117,11 +2155,23 @@
                 <input type="hidden" data-id="control_technical_control_template">
                 <div style="height:100%;width:89%;float:left;display:inline-block">
                     <div class="functional_description_control" style="clear:both;width:100%;height:20px">
-                        <div style="float:left; width:80%">
+                        <div style="float:left; width:40%">
                             <div style="float:left;width:80px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepaction", "description", "Description", myLang));%></p>
                             </div>
                             <input class="wob" placeholder="Description" class="functional_description_control" style="border-style:groove;border-width:thin;border-color:white;border: 1px solid white; color:#333333; width: 80%; background-color: transparent; font-weight:bold;font-size:14px ;font-family: Trebuchet MS; "
                                    data-id="control_description_template" data-fieldtype="Description">
+                        </div>
+                        <div style="width:20%; float:left;">
+                            <div style="float:left;width:30px; "><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ConditionOper", "ConditionOper", myLang));%></p>
+                            </div>
+                            <%=ComboInvariant(appContext, "", "width: 70%;border: 1px solid white; background-color:transparent;", "control_conditionoper_template", "wob", "CONTROLCONDITIONOPER", "", "", null)%>
+                        </div>
+                        <div class="technical_part" style="width:10%;float:left;">
+                            <div style="float:left;"><p style="float:right;font-weight:bold;color:white;" link="white" ><%out.print(docService.findLabelHTML("testcasestepactioncontrol", "ConditionVal1", "ConditionVal1", myLang));%></p>
+                            </div>
+                            <input class="wob" style="width: 75%;border: 1px solid white; background-color:transparent; "
+                                   data-id="control_conditionval1_template">
+                            <img style="max-height:20px;" data-id="control_conditionval1_template_img" style="display:none;">
                         </div>
                     </div>
                     <div style="clear:both; width:100%; height:15px">
@@ -2180,6 +2230,21 @@
                         <input style="float:right;margin-top:10px;font-weight: bold; width: 500px;background-color:transparent; font-weight:bold;font-size:16px ;font-family: Trebuchet MS;
                                color:#333333; border-color:#EEEEEE; border-width: 1px" maxlength="150" data-id="step_description_template">
                     </div>
+                                                <div>
+                                                                    <div style="width:100%; float:bottom;">
+                                                                        <div style="float:left;width:80px;"><p name="labelTestCaseStepConditionOper" style="float:right;font-weight:bold;" link="white" >Cond.</p>
+                                                                        </div>
+                                                                        <%=ComboInvariant(appContext, "step_conditionoper_template", "width:50%;font-size:10px ;border: 1px solid white;" , "step_conditionoper_template" , "technical_part", "STEPCONDITIONOPER", "", "", null)%>
+                                                                    </div>
+                                                                    <div class="technical_part" style="width:100%;float:bottom; ">
+                                                                        <div style="float:left;width:80px;"><p name="labelTestCaseStepConditionVal1" style="float:right;font-weight:bold;" link="white" >Val1</p>
+                                                                        </div><input class="wob" style="width: 70%;border: 1px solid white;"
+                                                                                     value="" 
+                                                                                     id="step_conditionval1_template"
+                                                                                     name="step_conditionval1_template" />
+                                                                        <img style="max-height:20px; float:left;" id="step_conditionval1_template_img" style="display:none;">
+                                                                    </div>
+                                                </div>
                     <div id="StepUseStepDiv" style="float:left">UseStep
                         <input type="checkbox" data-id="step_useStep_template" style="margin-top:15px;font-weight: bold; width:20px">
                         <input type="hidden" name="step_useStepChanged_template" value="N" id="step_useStepChanged_template" />

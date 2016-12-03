@@ -143,7 +143,7 @@ public class GetReport extends HttpServlet {
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, null, null, null, creator, implementer, null, project, null, null, application, null, null, null, priority, group,
-                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, "", null, null, null, null);
+                status, null, null, null, active, null, null, null, null, null, null, null, null, targetBuild, targetRev, comment, "", null, null, null, null);
     }
 
     /**

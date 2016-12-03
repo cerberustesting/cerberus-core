@@ -38,6 +38,8 @@ public class TestCaseStepExecution {
     private String testCase;
     private int step;
     private int sort;
+    private String conditionOper;
+    private String conditionVal1;
     private String batNumExe;
     private long start;
     private long end;
@@ -225,6 +227,22 @@ public class TestCaseStepExecution {
         this.sort = sort;
     }
 
+    public String getConditionOper() {
+        return conditionOper;
+    }
+
+    public void setConditionOper(String conditionOper) {
+        this.conditionOper = conditionOper;
+    }
+
+    public String getConditionVal1() {
+        return conditionVal1;
+    }
+
+    public void setConditionVal1(String conditionVal1) {
+        this.conditionVal1 = conditionVal1;
+    }
+
     public String getTest() {
         return test;
     }
@@ -264,7 +282,7 @@ public class TestCaseStepExecution {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -287,7 +305,7 @@ public class TestCaseStepExecution {
             result.put("useStepTestCase", this.getUseStepTestCase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
             JSONArray array = new JSONArray();
-            if(this.getTestCaseStepActionExecutionList() != null && this.getTestCaseStepActionExecutionList().getDataList() != null) {
+            if (this.getTestCaseStepActionExecutionList() != null && this.getTestCaseStepActionExecutionList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
                     array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson());
                 }

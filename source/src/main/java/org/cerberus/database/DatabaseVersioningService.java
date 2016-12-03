@@ -7432,6 +7432,59 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
+        // New Step model with conditionOper and ConditionVal1.
+        //-- ------------------------ 978-981
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('STEPCONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('STEPCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('STEPCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'STEPCONDITIONOPER', '570', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New testcase model with conditionOper and ConditionVal1.
+        //-- ------------------------ 982-985
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `TcActive`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('TESTCASECONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('TESTCASECONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('TESTCASECONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'TESTCASECONDITIONOPER', '580', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepexecution SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -139,8 +139,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
              * The service was able to perform the query and confirm the object
              * exist, then we can update it.
              */
-            {
-                if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
+             if (!request.isUserInRole("Test")) { // We cannot update the testcase if the user is not at least in Test role.
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCase")
                             .replace("%OPERATION%", "Update")
@@ -226,7 +225,6 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                     }
 
                 }
-            }
         }
 
         /**
@@ -324,6 +322,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         String description = request.getParameter("valueDetail");
         String howTo = request.getParameter("howtoDetail");
         String active = request.getParameter("editTcActive");
+        String conditionOper = request.getParameter("editConditionOper");
+        String conditionVal1 = request.getParameter("editConditionVal1");
         String fromSprint = request.getParameter("editFromBuild");
         String fromRevision = request.getParameter("editFromRev");
         String toSprint = request.getParameter("editToBuild");
@@ -335,7 +335,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         String function = request.getParameter("editFunction");
         String userAgent = request.getParameter("editUserAgent");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
-                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
+                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, conditionOper, conditionVal1, fromSprint, fromRevision, toSprint,
                 toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
     }
 
@@ -419,6 +419,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             boolean delete = step.getBoolean("toDelete");
             int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
+            String conditionOper = step.getString("conditionOper");
+            String conditionVal1 = step.getString("conditionVal1");
             String description = step.getString("description");
             String useStep = step.getString("useStep");
             String useStepTest = step.getString("useStepTest");
@@ -428,7 +430,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, conditionOper, conditionVal1, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));

@@ -36,6 +36,7 @@ function initPage() {
     displayInvariantList("group", "GROUP", false);
     displayInvariantList("status", "TCSTATUS", false);
     displayInvariantList("priority", "PRIORITY", false);
+    displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
     $('[name="origin"]').append('<option value="All">All</option>');
     displayInvariantList("origin", "ORIGIN", true);
     displayInvariantList("active", "TCACTIVE", false);

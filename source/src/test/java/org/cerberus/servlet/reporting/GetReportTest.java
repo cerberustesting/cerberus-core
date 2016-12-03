@@ -90,7 +90,7 @@ public class GetReportTest {
         String comment = null;
 
         TestCase tCase = factoryTCase.create(test, null, null, null, creator, implementer, null, project, null, null, application, null, null, null, -1, group,
-                status, null, null, null, active, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null, null);
+                status, null, null, null, active, null, null, null, null, null, null, null, null, targetBuild, targetRev, comment, null, null, null, null, null);
         List<TestCase> list = new ArrayList<TestCase>();
 
         when(request.getParameter("Test[]")).thenReturn(test);

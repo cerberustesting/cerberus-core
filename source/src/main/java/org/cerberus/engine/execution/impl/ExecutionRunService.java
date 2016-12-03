@@ -295,7 +295,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  */
                 TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                         runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                        testCaseStep.getStep(), testCaseStep.getSort(), null,
+                        testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), null,
                         startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
                         testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                 testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);

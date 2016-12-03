@@ -35,6 +35,8 @@ public class TestCase {
     private int priority;
     private String status;
     private String tcActive;
+    private String conditionOper;
+    private String conditionVal1;
     private String group;
     private String origine;
     private String refOrigine;
@@ -106,6 +108,22 @@ public class TestCase {
 
     public void setTcActive(String active) {
         this.tcActive = active;
+    }
+
+    public String getConditionOper() {
+        return conditionOper;
+    }
+
+    public void setConditionOper(String conditionOper) {
+        this.conditionOper = conditionOper;
+    }
+
+    public String getConditionVal1() {
+        return conditionVal1;
+    }
+
+    public void setConditionVal1(String conditionVal1) {
+        this.conditionVal1 = conditionVal1;
     }
 
     public String getApplication() {

@@ -170,7 +170,7 @@ public class TestCaseService implements ITestCaseService {
 
     @Override
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
+            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
         return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status, length);
     }
 
@@ -187,7 +187,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
         TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, -1, null, null, null, null, null, "Y",
+                null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<String> result = new ArrayList();
@@ -207,7 +207,7 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
         TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, -1, null, null, null, null, null, "Y",
+                null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<TestCase> result = new ArrayList();

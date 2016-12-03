@@ -39,8 +39,8 @@ public class FactoryTestCaseStepActionControl implements IFactoryTestCaseStepAct
         testCaseStepActionControl.setSequence(sequence);
         testCaseStepActionControl.setControlSequence(controlSequence);
         testCaseStepActionControl.setSort(sort);
-        testCaseStepActionControl.setConditionOper("always");
-        testCaseStepActionControl.setConditionVal1("");
+        testCaseStepActionControl.setConditionOper(conditionOper);
+        testCaseStepActionControl.setConditionVal1(conditionVal1);
 //        testCaseStepActionControl.setConditionOper(conditionOper);
 //        testCaseStepActionControl.setConditionVal1(conditionVal1);
         testCaseStepActionControl.setControl(control);

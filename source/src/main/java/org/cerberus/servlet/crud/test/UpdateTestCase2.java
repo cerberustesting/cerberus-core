@@ -289,6 +289,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setToRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("toRev"), tc.getToRev()));
         tc.setTargetBuild(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetSprint"), tc.getTargetBuild()));
         tc.setTargetRev(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("targetRev"), tc.getTargetRev()));
+        tc.setConditionOper(ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("conditionOper"), tc.getConditionOper()));
         tc.setPriority(ParameterParserUtil.parseIntegerParam(request.getParameter("priority"), tc.getPriority()));
 
         // Parameter that needs to be secured --> We SECURE+DECODE them
@@ -302,6 +303,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
         tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
+        tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));

@@ -28,6 +28,8 @@ public class TestCaseStep {
     private String testCase;
     private int step;
     private int sort;
+    private String conditionOper;
+    private String conditionVal1;
     private String description;
     private String useStep;  //  Y if the step use a step from another test 
     private String useStepTest; //  The test of the used step
@@ -62,7 +64,7 @@ public class TestCaseStep {
     public void setInitialStep(int initialStep) {
         this.initialStep = initialStep;
     }
-    
+
     public boolean isIsStepInUseByOtherTestCase() {
         return isStepInUseByOtherTestCase;
     }
@@ -70,7 +72,7 @@ public class TestCaseStep {
     public void setIsStepInUseByOtherTestCase(boolean isStepInUseByOtherTestCase) {
         this.isStepInUseByOtherTestCase = isStepInUseByOtherTestCase;
     }
-    
+
     public String getUseStep() {
         return useStep;
     }
@@ -131,6 +133,22 @@ public class TestCaseStep {
         this.sort = sort;
     }
 
+    public String getConditionOper() {
+        return conditionOper;
+    }
+
+    public void setConditionOper(String conditionOper) {
+        this.conditionOper = conditionOper;
+    }
+
+    public String getConditionVal1() {
+        return conditionVal1;
+    }
+
+    public void setConditionVal1(String conditionVal1) {
+        this.conditionVal1 = conditionVal1;
+    }
+
     public void setStep(int step) {
         this.step = step;
     }
@@ -178,6 +196,8 @@ public class TestCaseStep {
         hash = 29 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 29 * hash + this.step;
         hash = 29 * hash + this.sort;
+        hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 29 * hash + (this.useStep != null ? this.useStep.hashCode() : 0);
         hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
@@ -207,6 +227,12 @@ public class TestCaseStep {
         if (this.sort != other.sort) {
             return false;
         }
+        if (this.conditionOper != other.conditionOper && (this.conditionOper == null || !this.conditionOper.equals(other.conditionOper))) {
+            return false;
+        }
+        if (this.conditionVal1 != other.conditionVal1 && (this.conditionVal1 == null || !this.conditionVal1.equals(other.conditionVal1))) {
+            return false;
+        }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
             return false;
         }
@@ -230,8 +256,7 @@ public class TestCaseStep {
 
     @Override
     public String toString() {
-        return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary +'}';
+        return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary + '}';
     }
-    
-    
+
 }

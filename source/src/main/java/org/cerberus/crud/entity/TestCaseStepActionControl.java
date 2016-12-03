@@ -224,6 +224,8 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + this.sequence;
         hash = 67 * hash + this.controlSequence;
         hash = 67 * hash + this.sort;
+        hash = 67 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
+        hash = 67 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 67 * hash + (this.control != null ? this.control.hashCode() : 0);
         hash = 67 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
         hash = 67 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
@@ -257,6 +259,12 @@ public class TestCaseStepActionControl {
             return false;
         }
         if (this.sort != other.sort) {
+            return false;
+        }
+        if ((this.conditionOper == null) ? (other.conditionOper != null) : !this.conditionOper.equals(other.conditionOper)) {
+            return false;
+        }
+        if ((this.conditionVal1 == null) ? (other.conditionVal1 != null) : !this.conditionVal1.equals(other.conditionVal1)) {
             return false;
         }
         if ((this.control == null) ? (other.control != null) : !this.control.equals(other.control)) {

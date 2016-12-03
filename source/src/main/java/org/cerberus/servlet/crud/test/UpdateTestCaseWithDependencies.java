@@ -407,6 +407,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String description = request.getParameter("valueDetail");
         String howTo = request.getParameter("howtoDetail");
         String active = request.getParameter("editTcActive");
+        String conditionOper = request.getParameter("editConditionOper");
+        String conditionVal1 = request.getParameter("editConditionVal1");
         String fromSprint = request.getParameter("editFromBuild");
         String fromRevision = request.getParameter("editFromRev");
         String toSprint = request.getParameter("editToBuild");
@@ -418,7 +420,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String function = request.getParameter("editFunction");
         String userAgent = request.getParameter("editUserAgent");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
-                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, fromSprint, fromRevision, toSprint,
+                runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, conditionOper, conditionVal1, fromSprint, fromRevision, toSprint,
                 toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
     }
 
@@ -500,6 +502,9 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
                 int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
+                String conditionOper = getParameterIfExists(request, "step_conditionoper_" + inc);
+                String conditionVal1 = getParameterIfExists(request, "step_conditionval1_" + inc);
+                
                 String desc = getParameterIfExists(request, "step_description_" + inc);
                 String useStep = getParameterIfExists(request, "step_useStep_" + inc);
                 String useStepChanged = getParameterIfExists(request, "step_useStepChanged_" + inc);
@@ -510,7 +515,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
-                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, sort, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, sort, conditionOper, conditionVal1, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null || useStep.equals("N")) {
                         String isToCopySteps = getParameterIfExists(request, "isToCopySteps_" + inc);
@@ -668,10 +673,8 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String delete = getParameterIfExists(request, "control_delete_" + stepInc + "_" + actionInc + "_" + inc);
                 int controlsequence = Integer.valueOf(getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_technical_control_" + stepInc + "_" + actionInc + "_" + inc));
                 int sort = Integer.valueOf(getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc) == null ? "0" : getParameterIfExists(request, "control_controlsequence_" + stepInc + "_" + actionInc + "_" + inc));
-//                String conditionOper = getParameterIfExists(request, "control_conditionoper_" + stepInc + "_" + actionInc + "_" + inc);
-//                String conditionVal1 = getParameterIfExists(request, "control_conditionval1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
-                String conditionOper = "always";
-                String conditionVal1 = "";
+                String conditionOper = getParameterIfExists(request, "control_conditionoper_" + stepInc + "_" + actionInc + "_" + inc);
+                String conditionVal1 = getParameterIfExists(request, "control_conditionval1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String control = getParameterIfExists(request, "control_control_" + stepInc + "_" + actionInc + "_" + inc);
                 String value1 = getParameterIfExists(request, "control_value1_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
                 String value2 = getParameterIfExists(request, "control_value2_" + stepInc + "_" + actionInc + "_" + inc).replaceAll("\"", "\\\"");
