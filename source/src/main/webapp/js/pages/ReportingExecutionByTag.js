@@ -739,7 +739,7 @@ function aoColumnsFunc(Columns) {
             "sWidth": testCaseInfoWidth + "%",
             "title": doc.getDocOnline("testcase", "TestCase"),
             "mRender": function (data, type, obj, meta) {
-                var result = "<a href='./TestCase.jsp?Test=" + encodeURIComponent(obj.test) + "&TestCase=" + encodeURIComponent(obj.testCase) + "&Load=Load'>" + obj.testCase + "</a>";
+                var result = "<a href='./TestCaseScript.jsp?test=" + encodeURIComponent(obj.test) + "&testcase=" + encodeURIComponent(obj.testCase) + "'>" + obj.testCase + "</a>";
                 return result;
             }
         },

@@ -659,7 +659,7 @@ function hideUseStepElementsPanel(stepNumber) {
  */
 function setNewHrefForEditStep(stepNumber, test, testcase, step) {
     var urlElement = $("#linkEditUsedStep" + stepNumber);
-    var url = 'TestCase.jsp?Test=' + test + '&TestCase=' + testcase + '#stepAnchor_step' + step;
+    var url = 'TestCaseScript.jsp?test=' + test + '&testcase=' + testcase + '&step=' + step;
     $(urlElement).attr("href", url);
     $(urlElement).attr("target", "_blank");
 }

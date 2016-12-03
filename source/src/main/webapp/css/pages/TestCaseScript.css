@@ -54,16 +54,16 @@
 }
 
 .step-list li:hover {
-    background-color: #337ab7;
-    color: #FFFFFF;
-    border-color: #337ab7;
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
     z-index: 2;
 }
 
 .step-list li .active {
-    background-color: #337ab7;
-    color: #FFFFFF;
-    border-color: #337ab7;
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
     z-index: 2;
 }
 
@@ -86,20 +86,38 @@
 }
 
 .action {
-    height: 80px;
     font-size: 12px;
     background-color: #fff;
     border: 1px solid #e5e5e5;
+    border-left: 6px solid #3498db;
     border-radius: 3px 3px 0 0;
 }
 
-.control {
-    height: 80px;
-    margin-left: 25px;
+.property {
+    padding: 5px;
     font-size: 12px;
-    background-color: #f8f8f8;
     border: 1px solid #e5e5e5;
+    border-left: 6px solid #f00;
+    border-radius: 3px 3px 0 0;
+}
+@media (min-width: 1200px) {
+    .propertyButtons {
+        margin-top:32px;
+    }
+}
+.control {
+    margin-left: 25px;
+    font-size: 11px;
+    background-color: #f8f8f8;
+    padding: 0px;
+    border: 1px solid #e5e5e5;
+    border-left: 6px solid #2ecc71;
     border-radius: 1px 1px 0 0;
+}
+
+.danger {
+    color: #a94442 !important;
+    background-color: #f2dede !important;
 }
 
 .no-border{
@@ -131,8 +149,14 @@
 .drag-step-action span {
     display: block;
     text-align: center;
-    margin-top: 45%;
+    margin-top: 20px;
     cursor: move;
+}
+
+@media (min-width: 1200px) {
+    .drag-step-action span {
+        margin-top: 60px;
+    }
 }
 
 .step-action .content .description {
@@ -229,6 +253,10 @@ color: red !important;
     margin-left: 15px;
 }
 
+.sub-sub-item {
+    margin-left: 30px;
+}
+
 .step-list li.list-group-item-danger:hover {
     background-color: #e74c3c;
     color: #FFFFFF;
@@ -239,8 +267,46 @@ color: red !important;
     color: #FFFFFF;
 }
 
+.list-group-item-warning.active {
+    background-color: #f0ad4e;
+    color: #FFFFFF;
+    border-color: #eea236;
+}
+
+.list-group-item-warning.active:hover {
+    background-color: #f0ad4e;
+    color: #FFFFFF;
+    border-color: #eea236;
+}
+
+.list-group-item-calm.active {
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
+}
+
+.list-group-item-calm.active:hover {
+    border-color:#46b8da;
+    background-color:#5bc0de;
+    color:#fff;
+}
+
 .add-btn {
-    margin-top: 45%;
+    margin-top: 4px;
+}
+
+.boutonGroup {
+    width: 121px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-bottom: 9px;
+}
+
+@media (min-width: 1200px) {
+    .boutonGroup {
+        width: 40px;
+        margin-top: 9px;
+    }
 }
 
 .action-group.toDelete, 

@@ -21,6 +21,7 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+        initPageModal("applicationObject");
     });
 });
 
@@ -30,12 +31,10 @@ function initPage() {
     var application = GetURLParameter("application");
 
     // handle the click for specific action buttons
-    $("#addApplicationObjectButton").click(addEntryModalSaveHandler);
-    $("#editApplicationObjectButton").click(editEntryModalSaveHandler);
+    $("#editApplicationObjectButton").click(editApplicationObjectModalSaveHandler);
 
     //clear the modals fields when closed
-    $('#addApplicationObjectModal').on('hidden.bs.modal', addEntryModalCloseHandler);
-    $('#editApplicationObjectModal').on('hidden.bs.modal', editEntryModalCloseHandler);
+    $('#editApplicationObjectModal').on('hidden.bs.modal', editApplicationObjectModalCloseHandler);
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
@@ -53,15 +52,7 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     $("#pageTitle").html(doc.getDocLabel("page_applicationObject", "title"));
     $("#title").html(doc.getDocOnline("page_applicationObject", "title"));
-    $("[name='createApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "createapplicationobjectfield"));
     $("[name='editApplicationObjectField']").html(doc.getDocLabel("page_applicationObject", "editapplicationobjectfield"));
-    $("[name='applicationField']").html(doc.getDocLabel("page_applicationObject", "applicationfield"));
-    $("[name='objectField']").html(doc.getDocLabel("page_applicationObject", "objectfield"));
-    $("[name='valueField']").html(doc.getDocLabel("page_applicationObject", "valuefield"));
-    $("[name='screenshotfilenameField']").html(doc.getDocLabel("page_applicationObject", "screenshotfilenamefield"));
-    $("[name='buttonClose']").html(doc.getDocLabel("page_applicationObject", "button_close"));
-    $("[name='buttonAdd']").html(doc.getDocLabel("page_applicationObject", "button_add"));
-
 
     displayFooter(doc);
 }
@@ -75,7 +66,7 @@ function renderOptionsForApplicationObject(data) {
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_applicationObject", "button_create") + "</button></div>";
 
             $("#applicationObjectsTable_wrapper div#applicationObjectsTable_length").before(contentToAdd);
-            $('#applicationObjectList #createApplicationObjectButton').click(addEntryClick);
+            $('#applicationObjectList #createApplicationObjectButton').click(addApplicationObjectModalClick);
         }
     }
 }
@@ -112,66 +103,8 @@ function deleteEntryClick(application, object) {
     showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_applicationObject", "button_delete"), messageComplete, application, object, "", "");
 }
 
-function addEntryModalSaveHandler() {
-    clearResponseMessage($('#addApplicationObjectModal'));
-    var formAdd = $("#addApplicationObjectModal #addApplicationObjectModalForm :input");
-    var file = $("#addApplicationObjectModal input[type=file]");
-    // Get the header data from the form
-    var sa = formAdd.serializeArray();
-    var formData = new FormData();
-    var data = {}
-    for (var i in sa) {
-        formData.append(sa[i].name, sa[i].value);
-    }
 
-    formData.append("file",file.prop("files")[0]);
-    showLoaderInModal('#addApplicationObjectModal');
-    var jqxhr = $.ajax({
-        type: "POST",
-        url: "CreateApplicationObject",
-        data: formData,
-        processData: false,
-        contentType: false
-    });
-    $.when(jqxhr).then(function (data) {
-        hideLoaderInModal('#addApplicationObjectModal');
-//        console.log(data.messageType);
-        if (getAlertType(data.messageType) === 'success') {
-            var oTable = $("#applicationObjectsTable").dataTable();
-            oTable.fnDraw(true);
-            showMessage(data);
-            $('#addApplicationObjectModal').modal('hide');
-        } else {
-            showMessage(data, $('#addApplicationObjectModal'));
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
-}
-
-function addEntryModalCloseHandler() {
-    // reset form values
-    $('#addApplicationObjectModal #addApplicationObjectModalForm')[0].reset();
-    // remove all errors on the form fields
-    $(this).find('div.has-error').removeClass("has-error");
-    // clear the response messages of the modal
-    clearResponseMessage($('#addApplicationObjectModal'));
-}
-
-function addEntryClick() {
-    clearResponseMessageMainPage();
-
-    $('#addApplicationObjectModal #application').empty();
-    displayApplicationList("application","");
-
-    // When creating a new applicationObject, System takes the default value of the 
-    // system already selected in header.
-    var formAdd = $('#addApplicationObjectModal');
-    // Default to NONE to Application.
-    formAdd.find("#type").val("NONE");
-
-    $('#addApplicationObjectModal').modal('show');
-}
-
-function editEntryModalSaveHandler() {
+function editApplicationObjectModalSaveHandler() {
     clearResponseMessage($('#editApplicationObjectModal'));
     $('#editApplicationObjectModal #editApplicationObjectModalForm select#application').attr("disabled",false);
     var formEdit = $('#editApplicationObjectModal #editApplicationObjectModalForm');
@@ -210,7 +143,7 @@ function editEntryModalSaveHandler() {
 
 }
 
-function editEntryModalCloseHandler() {
+function editApplicationObjectModalCloseHandler() {
     // reset form values
     $('#editApplicationObjectModal #editApplicationObjectModalForm')[0].reset();
     // remove all errors on the form fields
@@ -219,7 +152,7 @@ function editEntryModalCloseHandler() {
     clearResponseMessage($('#editApplicationObjectModal'));
 }
 
-function editEntryClick(application, object) {
+function editApplicationObjectClick(application, object) {
     clearResponseMessageMainPage();
     $('#editApplicationObjectModal #application').empty();
     displayApplicationList("application","",application);
@@ -261,11 +194,11 @@ function aoColumnsFunc(tableId) {
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
-                var editApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
+                var editApplicationObject = '<button id="editApplicationObject" onclick="editApplicationObjectClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-pencil"></span></button>';
-                var viewApplicationObject = '<button id="editApplicationObject" onclick="editEntryClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
+                var viewApplicationObject = '<button id="editApplicationObject" onclick="editApplicationObjectClick(\'' + obj["application"] + '\', \'' + obj["object"] + '\');"\n\
                                     class="editApplicationObject btn btn-default btn-xs margin-right5" \n\
                                     name="editApplicationObject" title="' + doc.getDocLabel("page_applicationObject", "button_edit") + '" type="button">\n\
                                     <span class="glyphicon glyphicon-eye-open"></span></button>';

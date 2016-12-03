@@ -124,11 +124,13 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (!test.equals("") && !testCase.equals("")) {
                 TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                 JSONObject result = new JSONObject();
-                result.put("id", lastExec.getId());
-                result.put("controlStatus", lastExec.getControlStatus());
-                result.put("env", lastExec.getEnvironment());
-                result.put("country", lastExec.getCountry());
-                result.put("end", new Date(lastExec.getEnd())).toString();
+                if(lastExec != null) {
+                    result.put("id", lastExec.getId());
+                    result.put("controlStatus", lastExec.getControlStatus());
+                    result.put("env", lastExec.getEnvironment());
+                    result.put("country", lastExec.getCountry());
+                    result.put("end", new Date(lastExec.getEnd())).toString();
+                }
                 jsonResponse.put("contentTable", result);
             } else if (executionId != 0 && !executionWithDependency) {
                 answer = testCaseExecutionService.readByKeyWithDependency(executionId);

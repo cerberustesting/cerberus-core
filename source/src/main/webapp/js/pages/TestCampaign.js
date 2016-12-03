@@ -615,7 +615,7 @@ function aoColumnsFunc4() {
         {
             "data": "testCase", "sName": "tbc.Testcase", "title": doc.getDocLabel("page_testcampaign", "testcase_col"),
             "mRender": function (data, type, obj) {
-                return "<a target=\"_blank\" href='TestCase.jsp?Test=" + obj["test"] + "&TestCase=" + obj["testCase"] + "'>" + obj["testCase"] + "</a>";
+                return "<a target=\"_blank\" href='TestCaseScript.jsp?test=" + obj["test"] + "&testcase=" + obj["testCase"] + "'>" + obj["testCase"] + "</a>";
             }
         }
     ];

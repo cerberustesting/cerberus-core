@@ -2174,10 +2174,10 @@ function autocompleteVariable(identifier, Tags) {
                     $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
                         var icon = "";
                         if (Tags[this.currentIndexTag].addAfter != "%") {
-                            icon = "<span class='glyphicon glyphicon-chevron-right' style='margin-top:3px; float:right'></span>";
+                            icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
                         }
                         return $("<li class='ui-menu-item'>")
-                                .append("<a class='ui-corner-all' tabindex='-1'>" + item.label + icon + "</a>")
+                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>" )
                                 .appendTo(ul);
                     };
                 },
@@ -2195,8 +2195,12 @@ function autocompleteVariable(identifier, Tags) {
                             //If We find the separator, then we filter with the already written part
                             if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
                                 this.currentIndexTag = tag;
-                                response($.ui.autocomplete.filter(
-                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex)));
+                                var arrayToDisplay = $.ui.autocomplete.filter(
+                                    Tags[tag].array, extractLast(identifier, Tags[tag].regex));
+                                if(Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != ""){
+                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
+                                }
+                                response(arrayToDisplay);
                                 found = true;
                             }
                             tag++;

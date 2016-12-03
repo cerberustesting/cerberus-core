@@ -217,11 +217,13 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
             a = readByKey(application,object);
             if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 ApplicationObject ao = (ApplicationObject)a.getItem();
-                File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
-                try {
-                    image = ImageIO.read(picture);
-                } catch (IOException e) {
-                    LOG.warn("Impossible to read the image");
+                if(ao != null) {
+                    File picture = new File(uploadPath + "/" + ao.getID() + "/" + ao.getScreenShotFileName());
+                    try {
+                        image = ImageIO.read(picture);
+                    } catch (IOException e) {
+                        LOG.warn("Impossible to read the image");
+                    }
                 }
             }else{
                 LOG.warn("Application Object not found");
@@ -276,6 +278,7 @@ public class ApplicationObjectDAO implements IApplicationObjectDAO {
                     file.write(picture);
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("DESCRIPTION",
                             "Application Object file uploaded");
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "Application Object").replace("%OPERATION%", "Upload"));
                 } catch (Exception e) {
                     LOG.warn("Unable to upload application object file: " + e.getMessage());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",

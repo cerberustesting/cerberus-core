@@ -99,7 +99,20 @@ public class TestCaseExecution {
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
     private Integer cerberus_action_wait_default;
+    
+    /**
+     * Temp attribute.
+     */
+    private boolean featureFlippingActivateWebsocketPush;
 
+    public boolean isFeatureFlippingActivateWebsocketPush() {
+        return featureFlippingActivateWebsocketPush;
+    }
+
+    public void setFeatureFlippingActivateWebsocketPush(boolean featureFlippingActivateWebsocketPush) {
+        this.featureFlippingActivateWebsocketPush = featureFlippingActivateWebsocketPush;
+    }
+    
     private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
 
     public Integer getCerberus_action_wait_default() {

@@ -662,7 +662,7 @@
                                 %>
                                 <tr style="background-color: <%=color%>">
                                     <td style="text-align: center">
-                                        <a style="font-size: xx-small;" href="TestCase.jsp?Test=<%=rs_testcase.getString("T2.Test")%>&TestCase=<%=rs_testcase.getString("t2.testcase")%>&Load=Load">edit</a></td>
+                                        <a style="font-size: xx-small;" href="TestCaseScript.jsp?test=<%=rs_testcase.getString("T2.Test")%>&testcase=<%=rs_testcase.getString("t2.testcase")%>">edit</a></td>
                                     <td valign="top">
                                         <table>
                                             <tr>

@@ -91,9 +91,9 @@ public class GetStepUsedAsLibraryInOtherTestCasePerApplication extends HttpServl
                         testLink.append("</a>");
                         row.put(testLink.toString());
                         StringBuilder testcaseLink = new StringBuilder();
-                        testcaseLink.append("<a href=\"TestCase.jsp?Test=");
+                        testcaseLink.append("<a href=\"TestCaseScript.jsp?test=");
                         testcaseLink.append(tcs.getTest());
-                        testcaseLink.append("&TestCase=");
+                        testcaseLink.append("&testcase=");
                         testcaseLink.append(tcs.getTestCase());
                         testcaseLink.append("\">");
                         testcaseLink.append(tcs.getTestCase());

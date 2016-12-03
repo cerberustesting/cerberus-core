@@ -23,6 +23,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
+        <script type="text/javascript" src="js/pages/transversalobject/ApplicationObject.js"></script>
         <script type="text/javascript" src="js/pages/ApplicationObject.js"></script>
         <title id="pageTitle">Application Object</title>
     </head>
@@ -31,7 +32,7 @@
         <div class="container-fluid center" id="page-layout">
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
-            <%@ include file="include/applicationobject/addApplicationObject.html"%>
+            <%@ include file="include/transversalobject/addApplicationObject.html"%>
             <%@ include file="include/applicationobject/editApplicationObject.html"%>
 
             <h1 class="page-title-line" id="title">Application Object</h1>

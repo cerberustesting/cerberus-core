@@ -1210,8 +1210,8 @@ function aoColumnsFuncReportExecution(tableId, countryList, browserList) {
             case 1 :
                 aoColumns.push({className: "width100", "sName": "testCase", "data": "testCase", "title": "Test Case",
                     "mRender": function (data, type, oObj) {
-                        return "<div>" + oObj.testCase + " " + drawHyperlinkExternal("TestCase.jsp?Test=" + encodeURIComponent(oObj.test) + "&TestCase=" +
-                                encodeURIComponent(oObj.testCase) + "&Load=Load", '<span title="Open Test Case" class="glyphicon glyphicon-new-window"></span>') + "</div>";
+                        return "<div>" + oObj.testCase + " " + drawHyperlinkExternal("TestCaseScript.jsp?test=" + encodeURIComponent(oObj.test) + "&testcase=" +
+                                encodeURIComponent(oObj.testCase), '<span title="Open Test Case" class="glyphicon glyphicon-new-window"></span>') + "</div>";
                     }});
                 break;
             case 2 :

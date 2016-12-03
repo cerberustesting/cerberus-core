@@ -548,7 +548,7 @@
                             do {
                             %>
                             <tr>
-                                <td valign="top"><a href="TestCase.jsp?Test=<%= rs_TCinf.getString("test")%>&TestCase=<%= rs_TCinf.getString("testcase")%>"><%= rs_TCinf.getString("test")%> <%= rs_TCinf.getString("testcase")%></a></td>
+                                <td valign="top"><a href="TestCaseScript.jsp?test=<%= rs_TCinf.getString("test")%>&testcase=<%= rs_TCinf.getString("testcase")%>"><%= rs_TCinf.getString("test")%> <%= rs_TCinf.getString("testcase")%></a></td>
                                 <td valign="top"><%= rs_TCinf.getString("c")%></td>
                             </tr><%
                                 } while (rs_TCinf.next());%>
