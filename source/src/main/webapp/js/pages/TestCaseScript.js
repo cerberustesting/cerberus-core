@@ -251,7 +251,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 step.setDelete();
             });
 
-            $("#editBtn").click(editStep);
             $("#addAction").click(function () {
                 $.when(addAction()).then(function (action) {
                     listenEnterKeypressWhenFocusingOnDescription();
@@ -275,10 +274,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 data: {test: test, testCase: testcase},
                 dataType: "json",
                 success: function (data) {
-                    $("#rerunTestCase").click(function () {
-                        rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
-                    });
-                    $("#rerunTestCase").attr("title","Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                    if(!jQuery.isEmptyObject(data.contentTable)) {
+                        $("#rerunTestCase").click(function () {
+                            rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
+                        });
+                        $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                    }else{
+                        $("#rerunTestCase").attr("disabled",true);
+                        $("#seeLastExec").attr("disabled",true);
+                    }
                 },
                 error: showUnexpectedError
             });
@@ -708,16 +712,6 @@ function changeLib() {
     }
 }
 
-function editStep() {
-    var step = $("#stepList li.active").data("item");
-
-    $("#stepDescription").hide();
-    $("#stepInfo").hide();
-    $("#editStepDescription").prop("placeholder", "Description").prop("maxlength", "150").val(step.description);
-    $("#editStep").show();
-
-}
-
 function saveStep() {
     var stepHtml = $("#stepList li.active");
     var stepData = stepHtml.data("item");
@@ -1046,6 +1040,10 @@ Step.prototype.draw = function () {
 
     htmlElement.click(this.show);
 
+    $("#stepPlus").click(function(){
+        $("#stepHiddenRow").toggle();
+    });
+
     $("#stepList").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
 };
@@ -1079,12 +1077,20 @@ Step.prototype.show = function () {
 
     if (object.useStep === "Y") {
         $("#isLib").attr("disabled",true);
-        $("#libInfo").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)");
+        $("#UseStepRow").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled",true);
     } else {
         $("#isLib").attr("disabled",false);
-        $("#libInfo").text("");
+        $("#UseStepRow").html("").hide();
+        $("#UseStepRowButton").html("").hide();
         $("#addAction").prop("disabled",false);
+    }
+
+    if(object.toDelete){
+        $("#contentWrapper").addClass("list-group-item-danger");
+    }else{
+        $("#contentWrapper").removeClass("list-group-item-danger");
     }
 
     var actionconditionparam = $("#stepConditionVal1");
@@ -1108,7 +1114,10 @@ Step.prototype.show = function () {
     actionconditiononper.val(object.conditionOper).trigger("change");
 
     object.stepActionContainer.show();
-    $("#stepDescription").text(object.description);
+    $("#stepDescription").change(function(){
+       object.description = $(this).val();
+    });
+    $("#stepDescription").val(object.description);
     $("#stepInfo").show();
     $("#addActionContainer").show();
 };
@@ -1134,11 +1143,17 @@ Step.prototype.setAction = function (action) {
 Step.prototype.setDescription = function (description) {
     this.description = description;
     this.textArea.text(description);
-    $("#stepDescription").text(description);
+    $("#stepDescription").val(description);
 };
 
 Step.prototype.setDelete = function () {
     this.toDelete = (this.toDelete) ? false : true;
+
+    if($("#contentWrapper").hasClass("list-group-item-danger")){
+        $("#contentWrapper").removeClass("list-group-item-danger");
+    }else{
+        $("#contentWrapper").removeClass("well").addClass("list-group-item-danger well")
+    }
 
     if (this.toDelete) {
         $("#deleteStep span").removeClass();
@@ -1153,7 +1168,9 @@ Step.prototype.setDelete = function () {
 
         if (step.toDelete) {
             step.html.addClass("list-group-item-danger");
+            step.html.removeClass("list-group-item-calm");
         } else {
+            step.html.addClass("list-group-item-calm");
             step.html.removeClass("list-group-item-danger");
         }
     }
@@ -1568,7 +1585,7 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this Control");
     var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
 

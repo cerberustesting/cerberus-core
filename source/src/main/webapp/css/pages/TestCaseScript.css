@@ -89,7 +89,7 @@
     font-size: 12px;
     background-color: #fff;
     border: 1px solid #e5e5e5;
-    border-left: 6px solid #3498db;
+    border-left: 8px solid #3498db;
     border-radius: 3px 3px 0 0;
 }
 
@@ -106,26 +106,30 @@
     }
 }
 .control {
-    margin-left: 25px;
+    position:relative;
     font-size: 11px;
     background-color: #f8f8f8;
     padding: 0px;
+    margin-left: -4px;
     border: 1px solid #e5e5e5;
-    border-left: 6px solid #2ecc71;
+    border-left: 8px solid #2ecc71;
     border-radius: 1px 1px 0 0;
 }
 
 .step {
     font-size: 13px;
     padding: 0px;
-    border: 1px solid #e5e5e5;
-    border-left: 6px solid #5bc0de;
-    border-radius: 1px 1px 0 0;
+    border: 0px solid #e5e5e5;
+    background-color: transparent;
 }
 
 .danger {
     color: #a94442 !important;
     background-color: #f2dede !important;
+}
+
+.well.list-group-item-danger{
+    background-color: #f2dede;
 }
 
 .no-border{

@@ -87,42 +87,46 @@
 
                         </div>
                     </nav>
-                    <div class="col-lg-9 well marginTop20" style="min-height: 200px;">
-                        <div class="step-header clearfix">
-                            <div id="stepInfo"  style="display: none;">
-                                <div class="row">
-                                    <div id="stepDescription" class="col-xs-9" style="margin-top:6px; margin-bottom:6px;"></div>
-                                    <div class="col-xs-3" id="editBtnArea">
-                                        <div class="btn-group pull-right">
-                                            <button class="btn btn-default" id="editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
-                                            <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib"><span class="glyphicon glyphicon-book"></span></button>
-                                            <button class="btn btn-default" id="deleteStep"><span class="glyphicon glyphicon-trash"></span></button>
+                    <div class="col-lg-9 well marginTop20" id="contentWrapper" style="min-height: 200px;">
+                        <div style="margin-bottom: 15px;">
+                            <div class="row step">
+                                <div class="col-lg-1">
+
+                                </div>
+                                <div class="content col-lg-9">
+                                    <div class="fieldRow row" id="UseStepRow" style="display: none;">
+
+                                    </div>
+                                    <div style="margin-top:15px;" class="fieldRow row form-group">
+                                        <input class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%;">
+                                    </div>
+                                    <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
+                                        <div class="col-lg-3 form-group">
+                                            <label>Step Condtition Operation:</label>
+                                            <select class="form-control input-sm" id="stepConditionOper"></select>
+                                        </div>
+                                        <div class="col-lg-5 form-group">
+                                            <label>Step Condtition Parameter:</label>
+                                            <input class="form-control input-sm" id="stepConditionVal1">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xs-9 lib-info" id="libInfo">
+                                <div class="col-lg-2" style="padding: 0px;">
+                                    <div class="fieldRow row" id="UseStepRowButton" style="display: none; color: transparent;">
+
+                                    </div>
+                                    <div style="margin-right: auto; margin-left: auto; margin-top: 15px; width: 130px;">
+                                        <button class="btn btn-danger" id="deleteStep">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                        <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">
+                                            <span class="glyphicon glyphicon-book"></span>
+                                        </button>
+                                        <button class="btn btn-default" id="stepPlus">
+                                            <span class="glyphicon glyphicon-chevron-down"></span>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            <div id="editStep" style="display: none;">
-                                <div class="input-group row">
-                                    <input type="text" class="form-control" id="editStepDescription">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-default" id="saveStep">Save</button>
-                                        <button class="btn btn-default" id="cancelEdit">Cancel</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="padding-top: 10px;" class="row step-action step">
-                            <div class="col-lg-3 form-group">
-                                <label>Step Condtition Operation:</label>
-                                <select class="form-control input-sm" id="stepConditionOper"></select>
-                            </div>
-                            <div class="col-lg-5 form-group">
-                                <label>Step Condtition Parameter:</label>
-                                <input class="form-control input-sm" id="stepConditionVal1">
                             </div>
                         </div>
                         <div id="actionContainer"></div>
