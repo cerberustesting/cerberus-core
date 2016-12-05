@@ -115,6 +115,16 @@
                                 </div>
                             </div>
                         </div>
+                        <div style="padding-top: 10px;" class="row step-action step">
+                            <div class="col-lg-3 form-group">
+                                <label>Step Condtition Operation:</label>
+                                <select class="form-control input-sm" id="stepConditionOper"></select>
+                            </div>
+                            <div class="col-lg-5 form-group">
+                                <label>Step Condtition Parameter:</label>
+                                <input class="form-control input-sm" id="stepConditionVal1">
+                            </div>
+                        </div>
                         <div id="actionContainer"></div>
                     </div>
                 </div>

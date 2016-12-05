@@ -115,6 +115,14 @@
     border-radius: 1px 1px 0 0;
 }
 
+.step {
+    font-size: 13px;
+    padding: 0px;
+    border: 1px solid #e5e5e5;
+    border-left: 6px solid #5bc0de;
+    border-radius: 1px 1px 0 0;
+}
+
 .danger {
     color: #a94442 !important;
     background-color: #f2dede !important;

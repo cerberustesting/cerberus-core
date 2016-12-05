@@ -754,7 +754,10 @@ function addStep(event) {
             "useStep": "N",
             "description": "",
             "useStepStep": -1,
-            "actionList": []};
+            "actionList": [],
+            "conditionOper": "always",
+            "conditionVal1": ""
+        };
 
         step.description = $("#addStepModal #description").val();
         if ($("#importInfo").data("stepInfo")) {
@@ -1011,6 +1014,8 @@ function Step(json, stepList) {
     this.useStepTestCase = json.useStepTestCase;
     this.useStepStep = json.useStepStep;
     this.useStepStepSort = json.useStepStepSort;
+    this.conditionOper = json.conditionOper;
+    this.conditionVal1 = json.conditionVal1;
     this.inLibrary = json.inLibrary;
     this.actionList = [];
     this.setActionList(json.actionList);
@@ -1047,7 +1052,6 @@ Step.prototype.draw = function () {
 
 Step.prototype.show = function () {
     var object = $(this).data("item");
-
     cancelEdit();
 
     for (var i = 0; i < object.stepList.length; i++) {
@@ -1082,6 +1086,26 @@ Step.prototype.show = function () {
         $("#libInfo").text("");
         $("#addAction").prop("disabled",false);
     }
+
+    var actionconditionparam = $("#stepConditionVal1");
+    actionconditionparam.css("width","100%");
+    actionconditionparam.on("change", function () {
+        object.conditionVal1 = actionconditionparam.val();
+    });
+    actionconditionparam.val(object.conditionVal1);
+
+    var actionconditiononper = $("#stepConditionOper");
+    actionconditiononper.replaceWith(getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width","100%").addClass("form-control input-sm").attr("id","stepConditionOper"));
+    actionconditiononper = $("#stepConditionOper");
+    actionconditiononper.on("change", function () {
+        object.conditionOper = actionconditiononper.val();
+        if(object.conditionOper != "ifPropertyExist"){
+            actionconditionparam.parent().hide();
+        }else{
+            actionconditionparam.parent().show();
+        }
+    });
+    actionconditiononper.val(object.conditionOper).trigger("change");
 
     object.stepActionContainer.show();
     $("#stepDescription").text(object.description);
@@ -1161,6 +1185,8 @@ Step.prototype.getJsonData = function () {
     json.useStepTestCase = this.useStepTestCase;
     json.useStepStep = this.useStepStep;
     json.inLibrary = this.inLibrary;
+    json.conditionOper = this.conditionOper;
+    json.conditionVal1 = this.conditionVal1;
 
     return json;
 };
@@ -1315,8 +1341,8 @@ Action.prototype.generateContent = function () {
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
     var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
     var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
-    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
 
+    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
     var actionconditiononper = $("<select></select>").addClass("form-control input-sm");
     var forceExeStatusList = $("<select></select>").addClass("form-control input-sm");
 
@@ -1433,6 +1459,8 @@ function Control(json, parentAction) {
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.fatal = json.fatal;
+        this.conditionOper = json.conditionOper;
+        this.conditionVal1 = json.conditionVal1;
         this.screenshotFileName = "";
     } else {
         this.test = "";
@@ -1445,6 +1473,8 @@ function Control(json, parentAction) {
         this.value1 = "";
         this.value2 = "";
         this.fatal = "Y";
+        this.conditionOper = "always";
+        this.conditionVal1 = "";
         this.screenshotFileName = "";
     }
 
@@ -1541,6 +1571,9 @@ Control.prototype.generateContent = function () {
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Description");
     var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
+
+    var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
+    var actionconditiononper = $("<select></select>").addClass("form-control input-sm");
     var fatalList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
@@ -1548,6 +1581,12 @@ Control.prototype.generateContent = function () {
     descField.on("change", function () {
         obj.description = descField.val();
     });
+
+    actionconditionparam.css("width","100%");
+    actionconditionparam.on("change", function () {
+        obj.conditionVal1 = actionconditionparam.val();
+    });
+    actionconditionparam.val(this.conditionVal1);
 
     controlList = getSelectInvariant("CONTROL", false, true).attr("id","controlSelect");
     controlList.val(this.control);
@@ -1580,7 +1619,24 @@ Control.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Control:")).append(controlList));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 1:")).append(controlValueField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 2:")).append(controlPropertyField));
-    thirdRow.append($("<div></div>").addClass("col-lg-2 form-group").append($("<label></label>").text("Fatal:")).append(fatalList));
+
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Fatal:")).append(fatalList));
+
+
+    actionconditiononper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width","100%");
+    actionconditiononper.on("change", function () {
+        obj.conditionOper = actionconditiononper.val();
+        if(obj.conditionOper != "ifPropertyExist"){
+            actionconditionparam.parent().hide();
+        }else{
+            actionconditionparam.parent().show();
+        }
+    });
+    actionconditiononper.val(this.conditionOper).trigger("change");
+
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
+
 
     if (this.parentStep.useStep === "Y") {
         descField.prop("readonly", true);
@@ -1613,6 +1669,8 @@ Control.prototype.getJsonData = function () {
     json.value1 = this.value1;
     json.value2 = this.value2;
     json.fatal = this.fatal;
+    json.conditionOper = this.conditionOper;
+    json.conditionVal1 = this.conditionVal1;
     json.screenshotFileName = this.screenshotFileName;
 
     return json;
