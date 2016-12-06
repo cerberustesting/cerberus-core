@@ -88,7 +88,7 @@ public class ReadRobot extends HttpServlet {
         /**
          * Parsing and securing all required parameters.
          */
-        String robot = ParameterParserUtil.parseStringParam(request.getParameter("robot"), "");
+        String robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
         Integer robotid = 0;
         boolean robotid_error = false;
         if (request.getParameter("robotid") != null) {

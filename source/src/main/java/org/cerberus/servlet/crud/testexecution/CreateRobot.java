@@ -118,32 +118,26 @@ public class CreateRobot extends HttpServlet {
         if (StringUtil.isNullOrEmpty(robot)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
+                    .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot name is missing."));
             ans.setResultMessage(msg);
         } else if (StringUtil.isNullOrEmpty(host)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
+                    .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot host is missing."));
             ans.setResultMessage(msg);
         } else if (StringUtil.isNullOrEmpty(port)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
+                    .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot port is missing."));
             ans.setResultMessage(msg);
         } else if (StringUtil.isNullOrEmpty(platform)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
+                    .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot platform is missing."));
-            ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(browser)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot browser is missing."));
             ans.setResultMessage(msg);
         } else if (robotid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

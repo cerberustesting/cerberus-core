@@ -367,13 +367,15 @@ public class ExecutionStartService implements IExecutionStartService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
 
-            try {
-                myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
-            } catch (CerberusException ex) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
-                mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
-                LOG.debug(mes.getDescription());
-                throw new CerberusException(mes);
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
+                try {
+                    myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
+                } catch (CerberusException ex) {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
+                    mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
+                    LOG.debug(mes.getDescription());
+                    throw new CerberusException(mes);
+                }
             }
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {

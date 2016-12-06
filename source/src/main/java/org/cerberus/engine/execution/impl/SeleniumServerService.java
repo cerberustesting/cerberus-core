@@ -110,8 +110,10 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
             List<SessionCapabilities> capabilities = new ArrayList();
             SessionCapabilities sc = new SessionCapabilities();
-            sc.create("browser", tCExecution.getBrowser());
-            capabilities.add(sc);
+            if (tCExecution.getBrowser() != null && !tCExecution.getBrowser().isEmpty()) {
+                sc.create("browser", tCExecution.getBrowser());
+                capabilities.add(sc);
+            }
             sc = new SessionCapabilities();
             sc.create("platform", tCExecution.getPlatform());
             capabilities.add(sc);

@@ -139,12 +139,6 @@ public class UpdateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Robot platform is missing."));
             ans.setResultMessage(msg);
-        } else if (StringUtil.isNullOrEmpty(browser)) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "Robot browser is missing."));
-            ans.setResultMessage(msg);
         } else if (robotid_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
