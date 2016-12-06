@@ -51,9 +51,11 @@ public interface ITestCaseStepActionService {
     public void deleteListTestCaseStepAction(List<TestCaseStepAction> tcsaToDelete) throws CerberusException ;
     
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStepAction> newList, List<TestCaseStepAction> oldList, boolean duplicate) throws CerberusException;
-    
+
     public AnswerList readByTestTestCase(String test, String testcase);
-    
+
+    public AnswerList readByVarious1WithDependency(String test, String testcase, int step);
+
     Answer create(TestCaseStepAction object);
     
     Answer createList(List<TestCaseStepAction> objectList);

@@ -167,6 +167,13 @@ public interface ITestCaseService {
      */
     public AnswerItem readByKey(String test, String testCase);
 
+    /**
+     * @param test
+     * @param testCase
+     * @return
+     */
+    public AnswerItem readByKeyWithDependency(String test, String testCase);
+
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
                                             String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 

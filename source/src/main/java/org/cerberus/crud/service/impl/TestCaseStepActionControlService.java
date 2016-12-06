@@ -153,6 +153,11 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
     }
 
     @Override
+    public AnswerList readByVarious1(String test, String testcase, int step, int sequence) {
+        return testCaseStepActionControlDao.readByVarious1(test, testcase, step, sequence);
+    }
+
+    @Override
     public Answer create(TestCaseStepActionControl object) {
         return testCaseStepActionControlDao.create(object);
     }

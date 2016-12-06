@@ -17,6 +17,12 @@
  */
 package org.cerberus.crud.entity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * @author bcivel
  */
@@ -293,4 +299,26 @@ public class TestCaseStepActionControl {
         return "TestCaseStepActionControl{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", control=" + controlSequence + ", type=" + control + ", controlValue=" + value1 + ", controlProperty=" + value2 + ", fatal=" + fatal + ", description=" + description + '}';
     }
 
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("sequence", this.getSequence());
+            result.put("control", this.getControlSequence());
+            result.put("sort", this.getSort());
+            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("control", this.getControl());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
+            result.put("fatal", this.getFatal());
+            result.put("description", this.getDescription());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
 }

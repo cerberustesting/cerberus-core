@@ -17,8 +17,13 @@
  */
 package org.cerberus.crud.entity;
 
+import net.minidev.json.JSONArray;
+import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -59,6 +64,8 @@ public class TestCaseExecutionData {
     private boolean stopExecution;
     private TestCaseCountryProperties testCaseCountryProperties;
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
+
+    private static final Logger LOG = Logger.getLogger(TestCaseExecutionData.class);
 
     public String getDatabase() {
         return database;
@@ -292,6 +299,37 @@ public class TestCaseExecutionData {
     @Override
     public String toString() {
         return "TestCaseExecutionData{" + "id=" + id + ", property=" + property + ", value=" + value + ", type=" + type + ", value1=" + value1 + ", value2=" + value2 + ", RC=" + RC + ", rMessage=" + rMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", propertyResultMessage=" + propertyResultMessage.toString() + ", executionResultMessage=" + executionResultMessage + ", stopExecution=" + stopExecution + '}';
+    }
+
+    public JSONObject toJson(){
+        JSONObject result = new JSONObject();
+        try {
+            result.put("id", this.getId());
+            result.put("property", this.getProperty());
+            result.put("index", this.getIndex());
+            result.put("database", this.getDatabase());
+            result.put("value", this.getValue());
+            result.put("type", this.getType());
+            result.put("value1Init", this.getValue1Init());
+            result.put("value2Init", this.getValue2Init());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
+            result.put("length", this.getLength());
+            result.put("rowLimit", this.getRowLimit());
+            result.put("nature", this.getNature());
+            result.put("retryNb", this.getRetryNb());
+            result.put("retryPeriod", this.getRetryPeriod());
+            result.put("start", this.getStart());
+            result.put("end", this.getEnd());
+            result.put("startLong", this.getStartLong());
+            result.put("endLong", this.getEndLong());
+            result.put("RC", this.getRC());
+            result.put("rMessage", this.getrMessage());
+            result.put("description", this.getDescription());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
     }
 
 }

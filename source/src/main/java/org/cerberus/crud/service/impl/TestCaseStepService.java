@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import org.apache.log4j.Level;
 import org.cerberus.crud.dao.ITestCaseStepDAO;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
@@ -32,6 +33,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +50,8 @@ public class TestCaseStepService implements ITestCaseStepService {
 
     @Autowired
     private ITestCaseStepDAO testCaseStepDAO;
+    @Autowired
+    private TestCaseStepActionService testCaseStepActionService;
 
     @Override
     public List<TestCaseStep> getListOfSteps(String test, String testcase) {
@@ -192,6 +196,21 @@ public class TestCaseStepService implements ITestCaseStepService {
     @Override
     public AnswerList readByTestTestCase(String test, String testcase) {
         return testCaseStepDAO.readByTestTestCase(test, testcase);
+    }
+
+    @Override
+    public AnswerList readByTestTestCaseWithDependency(String test, String testcase) {
+        AnswerList steps = this.readByTestTestCase(test, testcase);
+        AnswerList response = null;
+        List<TestCaseStep> tcseList = new ArrayList();
+        for (Object step : steps.getDataList()) {
+            TestCaseStep tces = (TestCaseStep) step;
+            AnswerList actions = testCaseStepActionService.readByVarious1WithDependency(test, testcase, tces.getStep());
+            tces.setTestCaseStepAction(actions.getDataList());
+            tcseList.add(tces);
+        }
+        response = new AnswerList(tcseList, steps.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        return response;
     }
 
     @Override

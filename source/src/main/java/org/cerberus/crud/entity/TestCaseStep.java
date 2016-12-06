@@ -17,7 +17,13 @@
  */
 package org.cerberus.crud.entity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author bcivel
@@ -257,6 +263,35 @@ public class TestCaseStep {
     @Override
     public String toString() {
         return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary + '}';
+    }
+
+    public JSONObject toJson(){
+        JSONObject result = new JSONObject();
+        try {
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("sort", this.getSort());
+            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("description", this.getDescription());
+            result.put("useStep", this.getUseStep());
+            result.put("useStepTest", this.getUseStepTest());
+            result.put("useStepTestCase", this.getUseStepTestCase());
+            result.put("useStepStep", this.getUseStepStep());
+            result.put("inLibrary", this.getInLibrary());
+            result.put("initialStep", this.getInitialStep());
+            JSONArray array = new JSONArray();
+            if (this.getTestCaseStepAction() != null) {
+                for (Object testCaseStepExecution : this.getTestCaseStepAction()) {
+                    array.put(((TestCaseStepAction) testCaseStepExecution).toJson());
+                }
+            }
+            result.put("testCaseStepActionList", array);
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 
 }

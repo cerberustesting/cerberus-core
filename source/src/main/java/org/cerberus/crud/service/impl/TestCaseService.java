@@ -34,6 +34,9 @@ import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageCodeEnum;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
@@ -298,6 +301,22 @@ public class TestCaseService implements ITestCaseService {
     @Override
     public AnswerItem readByKey(String test, String testCase) {
         return testCaseDao.readByKey(test, testCase);
+    }
+
+    @Override
+    public AnswerItem readByKeyWithDependency(String test, String testCase) {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerItem ai = testCaseDao.readByKey(test, testCase);
+        if(ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null){
+            TestCase tc = (TestCase) ai.getItem();
+            AnswerList al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
+            if(al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null){
+                tc.setTestCaseStep(al.getDataList());
+            }
+            answer.setResultMessage(al.getResultMessage());
+            answer.setItem(tc);
+        }
+        return answer;
     }
 
     @Override

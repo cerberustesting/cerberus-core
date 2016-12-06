@@ -46,8 +46,10 @@ public interface ITestCaseStepActionDAO {
     void delete(TestCaseStepAction tcsa) throws CerberusException ;
 
     List<TestCaseStepAction> findTestCaseStepActionbyTestTestCase(String test, String testCase) throws CerberusException ;
-    
+
     AnswerList readByTestTestCase(String test, String testcase);
-    
+
+    AnswerList readByVarious1(String test, String testcase, int step);
+
     Answer create(TestCaseStepAction testCaseStepAction);
 }

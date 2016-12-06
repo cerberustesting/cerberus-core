@@ -54,6 +54,8 @@ public interface ITestCaseStepActionControlService {
 
     public AnswerList readByTestTestCase(String test, String testcase);
 
+    public AnswerList readByVarious1(String test, String testcase, int step, int sequence);
+
     Answer create(TestCaseStepActionControl object);
     
     Answer createList(List<TestCaseStepActionControl> objectList);

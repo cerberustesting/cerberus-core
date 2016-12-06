@@ -28,6 +28,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -59,7 +60,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Autowired
     ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
     @Autowired
+    ITestCaseExecutionDataService testCaseExecutionDataService;
+    @Autowired
     ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
+    @Autowired
+    ITestCaseService testCaseService;
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
 
@@ -215,6 +220,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public AnswerItem readByKeyWithDependency(long executionId) {
         AnswerItem tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
+
+        AnswerItem ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        testCaseExecution.setTestCaseObj((TestCase) ai.getItem());
+
+        AnswerList a = testCaseExecutionDataService.readById(executionId);
+        testCaseExecution.setTestCaseExecutionDataList(a.getDataList());
+
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseStepExecutionAnswerList(steps);
         AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());

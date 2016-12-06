@@ -26,6 +26,9 @@ import java.util.logging.Logger;
 
 import org.cerberus.crud.dao.ITestCaseStepActionDAO;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.service.ITestCaseStepActionControlService;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.util.answer.Answer;
@@ -42,6 +45,8 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
 
     @Autowired
     private ITestCaseStepActionDAO testCaseStepActionDAO;
+    @Autowired
+    private ITestCaseStepActionControlService testCaseStepActionControlService;
 
     @Override
     public TestCaseStepAction findTestCaseStepActionbyKey(String test, String testCase, int step, int sequence) {
@@ -152,6 +157,22 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
     public AnswerList  readByTestTestCase(String test, String testcase) {
        return testCaseStepActionDAO.readByTestTestCase(test, testcase);
     }
+
+    @Override
+    public AnswerList readByVarious1WithDependency(String test, String testcase, int step) {
+        AnswerList actions = testCaseStepActionDAO.readByVarious1(test, testcase, step);
+        AnswerList response = null;
+        List<TestCaseStepAction> tcseList = new ArrayList();
+        for (Object action : actions.getDataList()) {
+            TestCaseStepAction tces = (TestCaseStepAction) action;
+            AnswerList controls = testCaseStepActionControlService.readByVarious1(test, testcase, step, tces.getSequence());
+            tces.setTestCaseStepActionControl(controls.getDataList());
+            tcseList.add(tces);
+        }
+        response = new AnswerList(tcseList, actions.getTotalRows(), new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        return response;
+    }
+
     
     @Override
     public Answer create(TestCaseStepAction object) {

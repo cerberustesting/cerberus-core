@@ -130,39 +130,51 @@ function updatePage(data, stepList){
     createStepList(data.testCaseStepExecutionList,stepList);
     updateLoadBar(data);
 }
-
-function updateLoadBar(data){
+function updateLoadBar(data) {
     var total = 0;
     var ended = 0;
-    for (var i = 0; i < data.testCaseStepExecutionList.length; i++) {
-        var step = data.testCaseStepExecutionList[i];
-        if (step.returnCode != "PE") {
-            ended += 1;
-        }
-        total += 1;
-        for (var j = 0; j < step.testCaseStepActionExecutionList.length; j++) {
-            var action = step.testCaseStepActionExecutionList[j];
-            if (action.returnCode != "PE") {
+    if (data.testCaseObj != undefined && data.testCaseObj.testCaseStepList != undefined) {
+        for (var i = 0; i < data.testCaseObj.testCaseStepList.length; i++) {
+            var step = data.testCaseObj.testCaseStepList[i];
+            var stepExec = data.testCaseStepExecutionList[i];
+            if (stepExec != undefined && stepExec.returnCode != "PE") {
                 ended += 1;
             }
             total += 1;
-            for (var k = 0; k < action.testCaseStepActionControlExecutionList.length; k++) {
-                var control = action.testCaseStepActionControlExecutionList[k];
-                if (control.returnCode != "PE") {
-                    ended += 1;
+            for (var j = 0; j < step.testCaseStepActionList.length; j++) {
+                var action = step.testCaseStepActionList[j];
+                if (stepExec != undefined) {
+                    var actionExec = stepExec.testCaseStepActionExecutionList[j];
+                    if (actionExec != undefined && actionExec.returnCode != "PE") {
+                        ended += 1;
+                    }
                 }
                 total += 1;
+                for (var k = 0; k < action.testCaseStepActionControlList.length; k++) {
+                    var control = action.testCaseStepActionControlList[k];
+                    if (stepExec != undefined && actionExec != undefined) {
+                        var controlExec = actionExec.testCaseStepActionControlExecutionList[k];
+                        if (controlExec != undefined && controlExec.returnCode != "PE") {
+                            ended += 1;
+                        }
+                    }
+                    total += 1;
+                }
             }
         }
     }
-
     var progress = ended / total * 100;
-    $("#progress-bar").css("width",progress + "%").attr("aria-valuenow",progress);
-    if(progress == 100 && data.controlStatus != "PE"){
-        $("#progress-bar").addClass("progress-bar-success");
+    $("#progress-bar").css("width", progress + "%").attr("aria-valuenow", progress);
+    if (progress == 100 && data.controlStatus != "PE") {
+        if (data.controlStatus === "OK") {
+            $("#progress-bar").addClass("progress-bar-success");
+        } else if (data.controlStatus === "FA") {
+            $("#progress-bar").addClass("progress-bar-warning");
+        } else {
+            $("#progress-bar").addClass("progress-bar-danger");
+        }
     }
 }
-
 /** DATA AGREGATION **/
 
 function sortStep(step) {

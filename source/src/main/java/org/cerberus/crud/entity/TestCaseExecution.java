@@ -17,6 +17,7 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.crud.dao.impl.TestCaseStepExecutionDAO;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.Selenium;
@@ -656,6 +657,17 @@ public class TestCaseExecution {
                 }
             }
             result.put("testCaseStepExecutionList", array);
+            if (this.getTestCaseObj() != null) {
+                TestCase tc = this.getTestCaseObj();
+                result.put("testCaseObj", tc.toJson());
+            }
+            array = new JSONArray();
+            if (this.getTestCaseExecutionDataList() != null) {
+                for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
+                    array.put(((TestCaseExecutionData) testCaseStepExecution).toJson());
+                }
+            }
+            result.put("testCaseExecutionDataList", array);
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

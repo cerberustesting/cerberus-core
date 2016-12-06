@@ -17,7 +17,13 @@
  */
 package org.cerberus.crud.entity;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author bcivel
@@ -307,4 +313,32 @@ public class TestCaseStepAction {
         return "TestCaseStepAction{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", sequence=" + sequence + ", action=" + action + ", object=" + value1 + ", property=" + value2 + ", description=" + description + ", testCaseStepActionControl=" + testCaseStepActionControl + '}';
     }
 
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("test", this.getTest());
+            result.put("testcase", this.getTestCase());
+            result.put("step", this.getStep());
+            result.put("sequence", this.getSequence());
+            result.put("sort", this.getSort());
+            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("action", this.getAction());
+            result.put("value1", this.getValue1());
+            result.put("value2", this.getValue2());
+            result.put("forceExeStatus", this.getForceExeStatus());
+            result.put("description", this.getDescription());
+            result.put("screenshotFilename", this.getScreenshotFilename());
+            JSONArray array = new JSONArray();
+            if(this.getTestCaseStepActionControl() != null) {
+                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControl()) {
+                    array.put(((TestCaseStepActionControl) testCaseStepActionControlExecution).toJson());
+                }
+            }
+            result.put("testCaseStepActionControlList", array);
+        } catch (JSONException ex) {
+            Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
 }
