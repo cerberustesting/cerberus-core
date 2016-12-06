@@ -783,6 +783,7 @@ function addStep(event) {
 
         stepObj.draw();
         stepList.push(stepObj);
+        stepObj.html.trigger("click");
     });
 }
 
@@ -808,6 +809,9 @@ function createStepList(data, stepList, stepIndex) {
         }
     }else if (stepList.length > 0) {
         $(stepList[0].html[0]).click();
+    }else{
+        $("#stepHeader").hide();
+        $("#addAction").attr("disabled",true);
     }
 }
 
@@ -1052,6 +1056,8 @@ Step.prototype.show = function () {
     var object = $(this).data("item");
     cancelEdit();
 
+    $("stepHeader").show();
+
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
 
@@ -1120,6 +1126,7 @@ Step.prototype.show = function () {
     $("#stepDescription").val(object.description);
     $("#stepInfo").show();
     $("#addActionContainer").show();
+    $("#stepHeader").show();
 };
 
 Step.prototype.setActionList = function (actionList) {

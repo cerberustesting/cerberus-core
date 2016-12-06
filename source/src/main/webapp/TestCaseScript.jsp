@@ -78,7 +78,7 @@
                                 <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
                                 <button class="btn btn-info btn-block" id="addStep">Add Step</button>
                                 <div id="addActionContainer" style="margin-bottom: 5px; margin-top: 5px;">
-                                    <button class="btn btn-primary btn-block" id="addAction">Add Action</button>
+                                    <button class="btn btn-primary btn-block" id="addAction" disabled>Add Action</button>
                                 </div>
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                     <button class="btn btn-danger btn-block" id="manageProp">Manage Properties</button>
@@ -88,7 +88,7 @@
                         </div>
                     </nav>
                     <div class="col-lg-9 well marginTop20" id="contentWrapper" style="min-height: 200px;">
-                        <div style="margin-bottom: 15px;">
+                        <div id="stepHeader" style="margin-bottom: 15px; display:none;">
                             <div class="row step">
                                 <div class="col-lg-1">
 
