@@ -390,7 +390,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#datemodif").prop("value", testCase.dateModif);
         formEdit.find("#actProd").prop("value", testCase.activePROD);
     } else { // DUPLICATE or ADD
-        formEdit.find("#status").prop("value", "CREATED");
         formEdit.find("#usrcreated").prop("value", "");
         formEdit.find("#datecreated").prop("value", "");
         formEdit.find("#usrmodif").prop("value", "");
@@ -408,6 +407,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
 
     }
     if (isEmpty(testCase)) {
+        formEdit.find("#status").prop("value", "STANDBY");
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
@@ -416,7 +416,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#project").prop("value", "");
         formEdit.find("#ticket").prop("value", "");
         formEdit.find("#function").prop("value", "");
-        formEdit.find("#group").prop("value", "");
+        formEdit.find("#group").prop("value", "AUTOMATED");
         formEdit.find("#priority").prop("value", "");
         formEdit.find("#actQA").prop("value", "Y");
         formEdit.find("#actUAT").prop("value", "Y");
