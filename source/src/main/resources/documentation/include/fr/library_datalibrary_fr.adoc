@@ -1,1 +1,70 @@
-In this section, you will find information on data library in Cerberus.
+Dans cette section, vous retrouverez toutes les informations sur la gestion des données via la datalibrary.
+
+=== Créer une donnée
+
+. Cliquer sur *[red]#Data -> Data Library#*. image:testdatapage.png[testdatapage,300,300,float="right",align="center"]
+. Cliquer sur *[red]#Create New Entry#* button.
+.. Indiquer le *[red]#Nom#* 
+.. Selectionner le *[red]#Type#* de la donnée.
+.. Selectionner un *[green]#Système#*, un *[green]#Environnement#*, un *[green]#Pays#* (champs non obligatoires).
+.. Remplir les champs liés à votre *[red]#configuration#*.
+.. Remplir une *[green]#Description#*.
+.. Aller dans l'onglet *[red]#SubData#*
+.. Remplir les informations de vos subdatas liées à votre configuration. Se référer à la section Configurations des données pour plus d'informations.
+.. Cliquer sur *[red]#Ajouter#*.
+
+La première subdata ne requiert pas de nom. %my_data% retournera la valeur de la subdata 1 et %my_data(sub-data2)% retournera la valeur de la subdata 2.
+
+Si aucun environnement, système ou pays n'est sélectionné, la donnée sera disponible sur tous les environnements, systèmes et pays.
+
+=== Configurations des données
+
+==== configuration Interne
+
+Pas de configuration spécifique, seule une valeur statique est requise dans l'onglet subdata. 
+
+image:testdatacreatenewsubdata.PNG[Logo]
+
+==== configuration SOAP
+
+|=== 
+
+| *Champ* | *Description*  
+
+| Base de données | Base de données ou le Database where the Service Path will be requested. (non obligatoire)
+
+| Service Path | Localisation du service. Exemple: http://mydomain/mywebservicelocationmywebservicelocation
+
+| Opération | Opérations invoquée par l'appel SOAP.
+
+| Enveloppe | Message qui sera envoyé par la requête SOAP.
+
+|=== 
+
+
+==== configuration SQL 
+
+|=== 
+
+| *Champ* | *Description*  
+
+| Base de données | Base de données où la requête doit être executer .
+
+| Requête | Requête à executer.
+
+|===
+
+==== CSV configuration
+
+|=== 
+
+| *Champ* | *Description*  
+
+| Base de données | TBD
+
+| CSV URL | CSV URL indique l'URL ou le CSV est accessible.
+
+| Séparateur | Séparateur utilisés par le CSV.
+
+|===
+
