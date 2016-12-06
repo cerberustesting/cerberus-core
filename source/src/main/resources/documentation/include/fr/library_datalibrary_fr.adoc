@@ -64,7 +64,7 @@ image:testdatacreatenewsubdata.PNG[Logo]
 
 | CSV URL | CSV URL indique l'URL ou le CSV est accessible.
 
-| Séparateur | Séparateur utilisés par le CSV.
+| Séparateur | Séparateur utilisé par le CSV.
 
 |===
 
