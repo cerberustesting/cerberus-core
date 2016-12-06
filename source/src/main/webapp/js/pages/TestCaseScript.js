@@ -1044,7 +1044,7 @@ Step.prototype.draw = function () {
 
     htmlElement.click(this.show);
 
-    $("#stepPlus").click(function(){
+    $("#stepPlus").unbind("click").click(function(){
         $("#stepHiddenRow").toggle();
     });
 
