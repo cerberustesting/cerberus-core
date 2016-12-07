@@ -1,4 +1,4 @@
-Voici une liste des différents types d'actions qui peuvent être éffectués::
+Voici une liste des différents types d'actions qui peuvent être effectués::
 * calculateProperty (*Evaluer une propriété*)
 * callSoap (*Faire un appel SOAP*)
 * callSoapWithBase (*Faire un appel SOAP avec base*)
