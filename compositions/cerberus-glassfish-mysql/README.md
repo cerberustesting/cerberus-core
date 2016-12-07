@@ -12,42 +12,24 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
 
 ### Get started
 
- 1. Clone the [Cerberus Docker files repository](https://github.com/cerberustesting/cerberus-docker):
+ 1. [Download](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/docker-compose.yml) this Docker composition
 
-    `git clone https://github.com/cerberustesting/cerberus-docker.git`
-
- 2. Go to the `compositions/cerberus-glassfish-mysql` directory
-
- 3. Execute the following command:
-
-	To run the docker-compose normally
+ 2. Execute at the root path
 	
-    `docker-compose up`
-	
-	To run the docker-compose asynchronously
-	
-	`docker-compose up -d`
-	
-	To run the docker-compose and remove already existing images
-	
-	`docker-compose up -d --remove-orphans`
-	
-	[Optional] Adding more nodes to your Selenium Grid:
+        docker-compose up
 
-	`docker-compose scale selenium-node-firefox=3 selenium-node-chrome=3`
+ 3. Wait for the images to startup
 
- 4. Wait for the images to startup
+ 4. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
 
- 5. Open your favorite browser and go to `<docker_host>:18080/Cerberus`, where `<docker_host>` is your Docker host
+ 5. If this is your first time with Cerberus, the GUI will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
 
- 6. If this is your first time with Cerberus, the GUI will ask for database initialization. Please read the message on the page and click on the button `Initialize Database`, wait for all queries to execute, then scroll down and click on `Apply Next SQL`.
-
- 7. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
+ 6. Go to `<docker_host>:18080/Cerberus` again, it should ask for user credentials. Two default users are created:
 
    * User `admin`, password `admin`
    * User `cerberus`, password `cerberus`
    
- 8. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish/README.md).
+ 7. Set runtime configuration, as explained from the version-related [`cerberus-as-glassfish` README](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-as-glassfish/README.md).
 
 _Note: It is not yet possible to change a user's password, except by modifying its value directly in the database._
 
@@ -55,7 +37,7 @@ _Note: It is not yet possible to change a user's password, except by modifying i
 
 #### Configure Cerberus to access to the Selenium Grid
 
-This composition provide a ready-to-use Selenium Grid to run Web Application tests easier. To do so, simply feed the Cerberus Robot settings by the following information:
+This composition provides a ready-to-use Selenium Grid to run Web Application tests easier. To do so, simply feed the Cerberus Robot settings by the following information:
 
 - Selenium ip/host: `selenium-hub`
 - Selenium port: `4444`
@@ -65,7 +47,14 @@ _Note: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all un
 
 #### Access to the Selenium Grid Console
 
-The Selenium Grid Console can be reached from `<docker_host>:14444/grid/console`.
+The Selenium Grid Console can be reached at `<docker_host>:14444/grid/console`.
+
+By default, this Docker composition starts one [Mozilla Firefox Selenium node]((https://hub.docker.com/r/selenium/node-firefox-debug/)) and one [Google Chrome Selenium node]((https://hub.docker.com/r/selenium/node-chrome-debug/)).
+Number of Selenium nodes can be scaled. For instance, by executing:
+
+    docker-compose scale selenium-node-firefox=3 selenium-node-chrome=3
+
+Then three Mozilla Firefox Selenium nodes and three Google Chrome Selenium nodes will be available.
 
 #### View running test on browser
 
