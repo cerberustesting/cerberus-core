@@ -86,8 +86,8 @@ public class ReadApplicationObjectImage extends HttpServlet {
         String object = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("object"), "", charset);
 
 
-        int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : 150;
-        int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : 100;
+        int width = (!StringUtils.isEmpty(request.getParameter("w"))) ? Integer.valueOf(request.getParameter("w")) : -1;
+        int height = (!StringUtils.isEmpty(request.getParameter("h"))) ? Integer.valueOf(request.getParameter("h")) : -1;
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IApplicationObjectService applicationObjectService = appContext.getBean(IApplicationObjectService.class);
@@ -95,10 +95,17 @@ public class ReadApplicationObjectImage extends HttpServlet {
         BufferedImage image = applicationObjectService.readImageByKey(application,object);
         BufferedImage b;
         if(image != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            /**
+             * If width and height not defined, get image in real size
+             */
+            if (width ==-1 && height==-1) {
+                b = image;
+            } else { 
             ResampleOp rop = new ResampleOp(DimensionConstrain.createMaxDimension(width, height, true));
             rop.setNumberOfThreads(4);
             b = rop.filter(image, null);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            }
             ImageIO.write(b, "png", baos);
 //        byte[] bytesOut = baos.toByteArray();
         }else{
