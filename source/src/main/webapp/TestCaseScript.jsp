@@ -41,6 +41,7 @@
             </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/testcasescript/manageProperties.html"%>
             <%@ include file="include/testcasescript/addStep.html"%>
             <%@ include file="include/transversalobject/addApplicationObject.html"%>
@@ -115,15 +116,18 @@
                                     <div class="fieldRow row" id="UseStepRowButton" style="display: none; color: transparent;">
 
                                     </div>
-                                    <div style="margin-right: auto; margin-left: auto; margin-top: 15px; width: 130px;">
-                                        <button class="btn btn-danger" id="deleteStep">
-                                            <span class="glyphicon glyphicon-trash"></span>
+                                    <div style="margin-right: auto; margin-left: auto; margin-top: 15px; width: 130px;" id="stepButtons">
+                                        <button class="btn btn-info" title="Is Use Step" data-toggle="tooltip" id="isUseStep" style="display: none;">
+                                            <span class="glyphicon glyphicon-lock"></span>
                                         </button>
                                         <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">
                                             <span class="glyphicon glyphicon-book"></span>
                                         </button>
                                         <button class="btn btn-default" id="stepPlus">
                                             <span class="glyphicon glyphicon-chevron-down"></span>
+                                        </button>
+                                        <button class="btn btn-danger" id="deleteStep">
+                                            <span class="glyphicon glyphicon-trash"></span>
                                         </button>
                                     </div>
                                 </div>

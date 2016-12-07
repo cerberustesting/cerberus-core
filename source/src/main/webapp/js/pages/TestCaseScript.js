@@ -40,6 +40,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var test = GetURLParameter("test");
         var testcase = GetURLParameter("testcase");
         var step = GetURLParameter("step");
+        var property = GetURLParameter("property");
 
         $("#runOld").parent().attr("href","./TestCase.jsp?Test=" + test + "&TestCase=" + testcase + "&Load=Load");
 
@@ -148,11 +149,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     sortData(json);
                     createStepList(json, stepList, step);
                     drawInheritedProperty(data.inheritedProp);
+
                     listenEnterKeypressWhenFocusingOnDescription();
                     setPlaceholderAction();
                     setPlaceholderControl();
 
-                    var availableProperties = loadProperties(test, testcase, data.info);
+                    var availableProperties = loadProperties(test, testcase, data.info, property);
                     var availableObjects = loadApplicationObject(data);
                     var availableObjectProperties = [
                         "value",
@@ -531,7 +533,11 @@ function drawInheritedProperty(propList) {
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
 
-        var moreBtn = $("<button class='col-sm-12 btn btn-default btn-sm' style='margin-top:32px;'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+        var test = property.fromTest;
+        var testcase = property.fromTestCase;
+
+        var moreBtn = $("<button class='col-sm-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+        var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='col-sm-6 btn btn-primary btn-sm'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
 
         var propertyInput = $("<input id='propName' placeholder='Feed Property name' disabled>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description' disabled>").addClass("form-control input-sm").val(property.description);
@@ -541,7 +547,7 @@ function drawInheritedProperty(propList) {
 
         var content = $("<div class='row property list-group-item disabled'></div>");
         var props = $("<div class='col-sm-11'></div>");
-        var right = $("<div class='col-sm-1'></div>");
+        var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
         var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
         var row2 = $("<div class='row' style='display:none;'></div>");
@@ -592,14 +598,18 @@ function drawInheritedProperty(propList) {
         props.append(row3);
 
         right.append(moreBtn);
+        right.append(editBtn);
 
         content.append(props).append(right);
         table.append(content);
     }
+
+    sortProperties("#inheritedPropPanel");
 }
 
-function loadProperties(test, testcase, testcaseinfo) {
+function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
     var array = [];
+
     $.ajax({
         url: "GetPropertiesForTestCase",
         data: {test: test, testcase: testcase},
@@ -613,7 +623,24 @@ function loadProperties(test, testcase, testcaseinfo) {
                 drawProperty(property, testcaseinfo);
             }
 
+
             sortProperties("#propTable");
+            var scope = undefined;
+            if(propertyToFocus != undefined && propertyToFocus != null){
+                $("#propertiesModal #propTable #propName").each(function(i){
+                   if($(this).val() == propertyToFocus){
+                       scope = this;
+                       $("#propertiesModal").on("shown.bs.modal",function(e){
+                           $(scope).focus();
+                           $(scope).click();
+                       })
+                       $("#propertiesModal").modal("show");
+                   }
+                });
+            }
+
+
+
         },
         error: showUnexpectedError
     });
@@ -1027,6 +1054,7 @@ function Step(json, stepList) {
 }
 
 Step.prototype.draw = function () {
+    var scope = this;
     var htmlElement = this.html;
     var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
@@ -1046,6 +1074,11 @@ Step.prototype.draw = function () {
 
     $("#stepPlus").unbind("click").click(function(){
         $("#stepHiddenRow").toggle();
+        if($(this).find("span").hasClass("glyphicon-chevron-down")){
+            $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        }else{
+            $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+        }
     });
 
     $("#stepList").append(htmlElement);
@@ -1086,11 +1119,15 @@ Step.prototype.show = function () {
         $("#UseStepRow").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled",true);
+        $("#isUseStep").show();
+        $("#stepButtons").css("width","171px");
     } else {
         $("#isLib").attr("disabled",false);
         $("#UseStepRow").html("").hide();
         $("#UseStepRowButton").html("").hide();
         $("#addAction").prop("disabled",false);
+        $("#isUseStep").hide();
+        $("#stepButtons").css("width","130px");
     }
 
     if(object.toDelete){
@@ -1123,10 +1160,21 @@ Step.prototype.show = function () {
     $("#stepDescription").change(function(){
        object.description = $(this).val();
     });
+
+    $("#isUseStep").unbind("click").click(function(){
+        if(object.useStep === "Y"){
+            showModalConfirmation(function(){
+                object.useStep = "N";
+                saveScript();
+            }, "Unlink Use Step", "You are going to unlink this useStep of its Library.\n You can't undo this, are you sure?", "", "", "", "");
+        }
+    });
+
     $("#stepDescription").val(object.description);
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show();
+
 };
 
 Step.prototype.setActionList = function (actionList) {
@@ -1851,13 +1899,10 @@ var autocompleteAllFields;
     };
 })();
 
-editPropertiesModalClick = function(test, testcase, info, propertyToAdd) {
-    if (info == undefined) {
-        info = previousInfo;
-    }
+editPropertiesModalClick = function(test, testcase, info, propertyToAdd, propertyToFocus) {
     $("#propTable").empty();
-    loadProperties(test, testcase, info);
-    if (propertyToAdd != undefined) {
+    loadProperties(test, testcase, info, propertyToFocus);
+    if (propertyToAdd != undefined && propertyToAdd != null) {
         // Building full list of country from testcase.
         var myCountry = [];
         $.each(info.countryList, function (index) {
@@ -1880,40 +1925,57 @@ editPropertiesModalClick = function(test, testcase, info, propertyToAdd) {
 
         drawProperty(newProperty, info);
     }
+
     $("#propertiesModal").modal('show');
-}
+};
 
 function editPropertiesModalSaveHandler(){
     clearResponseMessage($('#propertiesModal'));
-    showLoaderInModal('#propertiesModal');
 
     var properties = $("#propTable [name='masterProp']");
     var propArr = [];
+    var propertyWithoutCountry = false;
     for (var i = 0; i < properties.length; i++) {
+        if($(properties[i]).data("property").country.length <= 0){
+            propertyWithoutCountry = true;
+        }
         propArr.push($(properties[i]).data("property"));
     }
+    var saveProp = function() {
+        showLoaderInModal('#propertiesModal');
+        $.ajax({
+            url: "UpdateTestCaseProperties1",
+            async: true,
+            method: "POST",
+            data: {
+                informationInitialTest: GetURLParameter("test"),
+                informationInitialTestCase: GetURLParameter("testcase"),
+                informationTest: GetURLParameter("test"),
+                informationTestCase: GetURLParameter("testcase"),
+                propArr: JSON.stringify(propArr)
+            },
+            success: function (data) {
+                hideLoaderInModal('#propertiesModal');
+                if (getAlertType(data.messageType) === 'success') {
+                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
+                    showMessage(data);
+                    $('#propertiesModal').modal('hide');
+                } else {
+                    showMessage(data, $('#propertiesModal'));
+                }
+            },
+            error: showUnexpectedError
+        });
+    };
 
-    $.ajax({
-        url: "UpdateTestCaseProperties1",
-        async: true,
-        method: "POST",
-        data: {informationInitialTest: GetURLParameter("test"),
-            informationInitialTestCase: GetURLParameter("testcase"),
-            informationTest: GetURLParameter("test"),
-            informationTestCase: GetURLParameter("testcase"),
-            propArr: JSON.stringify(propArr)},
-        success: function (data) {
-            hideLoaderInModal('#propertiesModal');
-            if (getAlertType(data.messageType) === 'success') {
-                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
-                showMessage(data);
-                $('#propertiesModal').modal('hide');
-            } else {
-                showMessage(data, $('#propertiesModal'));
-            }
-        },
-        error: showUnexpectedError
-    });
+    if(propertyWithoutCountry){
+        showModalConfirmation(function(){
+            $('#confirmationModal').modal('hide');
+            saveProp();
+        }, "Save", "Some Properties doesn't have any country, so it will be deleted. Are you sure you want to save?", "", "", "", "");
+    }else{
+        saveProp();
+    }
 }
 
 function setPlaceholderAction() {
