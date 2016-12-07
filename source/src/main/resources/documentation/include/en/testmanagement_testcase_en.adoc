@@ -55,6 +55,36 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Property
 
+When Clicking on Button image:buttonmanageproperties.png[buttonManageProperties], the Window "Manage Properties" will open.
+From there you can
+. either manage your TestCase properties
+. or see your inherited properties - coming from the step libraries of your use steps.
+
+image:windowmanageproperties.png[windowManageProperties]
+
+|=== 
+
+| *Field* | *Description*  
+
+| Property | Name of the property.
+
+| Type | The way the property is going to be calculated.
+
+| Value | Value of the property.
+
+| DB | DataBase in which the property will "executeSql".
+
+| Length | When calculating a list of values, defines the number of rows the property will return.
+
+| Row Limit | When returning a list of values, limits the number of rows the property will consider for random purposes.
+
+| Nature | Defines the unique value that will be used in the execution. By default, STATIC has no rules defined : it will take the first result it finds.
+
+| Desription | Description of the property.
+
+| Countries | Countries for which the property will be calculated (environment parameter).
+
+|=== 
 
 ==== Variables
 
