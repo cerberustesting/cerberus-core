@@ -1126,6 +1126,7 @@ Step.prototype.show = function () {
         $("#UseStepRow").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled",true);
+        $("#addActionBottomBtn").hide();
         $("#isUseStep").show();
         $("#stepButtons").css("width","171px");
     } else {
@@ -1133,6 +1134,7 @@ Step.prototype.show = function () {
         $("#UseStepRow").html("").hide();
         $("#UseStepRowButton").html("").hide();
         $("#addAction").prop("disabled",false);
+        $("#addActionBottomBtn").show();
         $("#isUseStep").hide();
         $("#stepButtons").css("width","130px");
     }
@@ -1180,8 +1182,7 @@ Step.prototype.show = function () {
     $("#stepDescription").val(object.description);
     $("#stepInfo").show();
     $("#addActionContainer").show();
-    $("#stepHeader").show();
-    $("#addActionBottomBtn").show();
+    $("#stepHeader").show()
 
     object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("change");
 
