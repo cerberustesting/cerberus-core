@@ -134,6 +134,9 @@
                             </div>
                         </div>
                         <div id="actionContainer"></div>
+                        <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
+                            <button class="btn btn-block btn-primary" onclick="addActionAndFocus()">Add Action</button>
+                        </div>
                     </div>
                 </div>
                 <datalist id="objects"></datalist>

@@ -254,12 +254,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
 
             $("#addAction").click(function () {
-                $.when(addAction()).then(function (action) {
-                    listenEnterKeypressWhenFocusingOnDescription();
-                    $($(action.html[0]).find(".description")[0]).focus();
-                    autocompleteAllFields();
-                    setPlaceholderAction();
-                });
+                addActionAndFocus()
             });
             $("#saveScript").click(saveScript);
             $("#runTestCase").click(function () {
@@ -317,6 +312,15 @@ function addAction() {
     var action = new Action(null, step);
     step.setAction(action);
     return action;
+}
+
+function addActionAndFocus() {
+    $.when(addAction()).then(function (action) {
+        listenEnterKeypressWhenFocusingOnDescription();
+        $($(action.html[0]).find(".description")[0]).focus();
+        autocompleteAllFields();
+        setPlaceholderAction();
+    });
 }
 
 function runTestCase(test, testcase) {
@@ -838,6 +842,7 @@ function createStepList(data, stepList, stepIndex) {
         $(stepList[0].html[0]).click();
     }else{
         $("#stepHeader").hide();
+        $("#addActionBottomBtn").hide();
         $("#addAction").attr("disabled",true);
     }
 }
@@ -1089,12 +1094,14 @@ Step.prototype.show = function () {
     var object = $(this).data("item");
     cancelEdit();
 
-    $("stepHeader").show();
+    $("#stepHeader").show();
+    $("#addActionBottomBtn").show();
 
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
 
         step.stepActionContainer.hide();
+        step.stepActionContainer.find("[data-toggle='tooltip']").tooltip("hide");
         step.html.removeClass("active");
     }
 
@@ -1157,7 +1164,7 @@ Step.prototype.show = function () {
     actionconditiononper.val(object.conditionOper).trigger("change");
 
     object.stepActionContainer.show();
-    $("#stepDescription").change(function(){
+    $("#stepDescription").unbind("change").change(function(){
        object.description = $(this).val();
     });
 
@@ -1174,6 +1181,9 @@ Step.prototype.show = function () {
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show();
+    $("#addActionBottomBtn").show();
+
+    object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("change");
 
 };
 
@@ -1340,12 +1350,7 @@ Action.prototype.draw = function () {
     });
 
     addBtn.click(function () {
-        var control = new Control(null, action);
-
-        action.setControl(control);
-
-        setPlaceholderControl();
-        autocompleteAllFields();
+        addControlAndFocus(row);
     });
 
     supprBtn.click(function () {
@@ -1411,8 +1416,8 @@ Action.prototype.generateContent = function () {
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
-    var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
-    var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
+    var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
+    var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
 
     var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
     var actionconditiononper = $("<select></select>").addClass("form-control input-sm");
@@ -1641,8 +1646,8 @@ Control.prototype.generateContent = function () {
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this Control");
-    var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
-    var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
+    var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
+    var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
 
     var actionconditionparam = $("<input>").attr("type","text").addClass("form-control input-sm");
     var actionconditiononper = $("<select></select>").addClass("form-control input-sm");
@@ -1760,33 +1765,18 @@ function listenEnterKeypressWhenFocusingOnDescription() {
             if (e.which === 13) {
                 //if description is not empty, create new action
                 if ($(field)[0].value.length !== 0) {
-                    $.when(addAction()).then(function (action) {
-                        listenEnterKeypressWhenFocusingOnDescription();
-                        $($(action.html[0]).find(".description")[0]).focus();
-                        setPlaceholderAction();
-                        autocompleteAllFields();
-                    });
+                    addActionAndFocus();
                 } else {
                     //if description is empty, create action or control depending on field
                     if ($(field).closest(".step-action").hasClass("action")) {
                         var newAction = $(field).closest(".action-group");
                         var oldAction = newAction.prev().find(".step-action.row.action").last();
                         newAction.remove();
-                        $.when(addControl(oldAction.data("item"))).then(function (action) {
-                            listenEnterKeypressWhenFocusingOnDescription();
-                            $($(action.html[0]).find(".description")[0]).focus();
-                            setPlaceholderControl();
-                            autocompleteAllFields();
-                        });
+                        addControlAndFocus(oldAction);
                     } else {
                         var newAction = $(field).closest(".step-action");
                         newAction.remove();
-                        $.when(addAction()).then(function (action) {
-                            listenEnterKeypressWhenFocusingOnDescription();
-                            $($(action.html[0]).find(".description")[0]).focus();
-                            setPlaceholderAction();
-                            autocompleteAllFields();
-                        });
+                        addActionAndFocus();
                     }
                 }
             }
@@ -1798,6 +1788,15 @@ function addControl(action) {
     var control = new Control(null, action);
     action.setControl(control);
     return control;
+}
+
+function addControlAndFocus(oldAction) {
+    $.when(addControl(oldAction.data("item"))).then(function (action) {
+        listenEnterKeypressWhenFocusingOnDescription();
+        $($(action.html[0]).find(".description")[0]).focus();
+        setPlaceholderControl();
+        autocompleteAllFields();
+    });
 }
 
 var autocompleteAllFields;
@@ -1825,7 +1824,7 @@ var autocompleteAllFields;
         autocompleteVariable("div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function(i,e){
-            $(e).on("input change",function(ev){
+            $(e).unbind("input change").on("input change",function(ev){
                 var name = undefined;
                 var nameNotExist = undefined;
                 var objectNotExist = false;
@@ -1882,12 +1881,16 @@ var autocompleteAllFields;
                             var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
                             if (newTitle != $(e).attr('data-original-title')) {
                                 $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                            }else {
+                                $(e).tooltip('show');
                             }
                         }else if(typeNotExist == "property"){
                             //TODO better way to add property
-                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('tbody#propTable tr input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
+                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
                             if (newTitle != $(e).attr('data-original-title')) {
                                 $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                            }else{
+                                $(e).tooltip('show');
                             }
                         }
                     }else{

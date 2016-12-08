@@ -72,7 +72,7 @@ function addApplicationObjectModalSaveHandler(page) {
                 var oTable = $("#applicationObjectsTable").dataTable();
                 oTable.fnDraw(true);
             }else if(page == "testCaseScript"){
-                $("div.step-action .content div.row.form-inline span:nth-child(n+2) input").trigger("change");
+                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
             }
             showMessage(data);
             $('#addApplicationObjectModal').modal('hide');
