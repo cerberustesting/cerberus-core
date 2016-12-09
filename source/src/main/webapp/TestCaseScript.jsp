@@ -82,7 +82,7 @@
                                     <button class="btn btn-primary btn-block" id="addAction" disabled>Add Action</button>
                                 </div>
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
-                                    <button class="btn btn-danger btn-block" id="manageProp">Manage Properties</button>
+                                    <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                 </div>
                             </div>
 

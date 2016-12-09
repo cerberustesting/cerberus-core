@@ -1122,21 +1122,19 @@ Step.prototype.show = function () {
     }
 
     if (object.useStep === "Y") {
-        $("#isLib").attr("disabled",true);
+        $("#isLib").hide();
         $("#UseStepRow").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled",true);
         $("#addActionBottomBtn").hide();
         $("#isUseStep").show();
-        $("#stepButtons").css("width","171px");
     } else {
-        $("#isLib").attr("disabled",false);
+        $("#isLib").show();
         $("#UseStepRow").html("").hide();
         $("#UseStepRowButton").html("").hide();
         $("#addAction").prop("disabled",false);
         $("#addActionBottomBtn").show();
         $("#isUseStep").hide();
-        $("#stepButtons").css("width","130px");
     }
 
     if(object.toDelete){
