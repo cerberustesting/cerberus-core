@@ -307,6 +307,12 @@ color: red !important;
     margin-top: 4px;
 }
 
+.btn-default.btn-dark {
+    border-color: #1F1F1F;
+    background-color: #1d1d1d;
+    color:#fff;
+}
+
 .boutonGroup {
     width: 121px;
     margin-right: auto;

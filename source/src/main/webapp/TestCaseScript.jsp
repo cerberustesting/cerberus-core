@@ -35,10 +35,6 @@
     <body>
         <%@ include file="include/header.html"%>
         <div id="page-layout" class="container-fluid center">
-            <div class="alert alert-warning">
-                <strong>BETA</strong> This page is in beta, some features may not be available or fully functional.
-                <a><button class="btn btn-warning side-item" id="runOld">Old Page</button></a>
-            </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
@@ -51,10 +47,10 @@
                 <div class="panel-default" style="height:93px;">
                     <div class="panel-heading" id="testCaseTitle" style="z-index:2; top: 0">
                         <div class="" style="width:100%">
-                            <div class="col-lg-5" style="padding: 0px;">
+                            <div class="col-lg-4" style="padding: 0px;">
                                 <h3 class="testTestCase" style="margin-top:4px; margin-bottom: 4px;"><select id="test"></select></h3>
                             </div>
-                            <div class="col-lg-7" style="padding: 0px;">
+                            <div class="col-lg-8" style="padding: 0px;">
                                 <div id="TestCaseButton" style="display:none;">
                                     <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                                     <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
@@ -62,6 +58,7 @@
                                     <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
                                     <button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
                                     <button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button>
+                                    <a><button class="btn btn-default pull-right" id="runOld" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-bookmark"></span> Old Page</button></a>
                                     <div class="side-item pull-right"></div>
 
                                 </div>
@@ -78,9 +75,6 @@
                                 <h3>Steps</h3>
                                 <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
                                 <button class="btn btn-info btn-block" id="addStep">Add Step</button>
-                                <div id="addActionContainer" style="margin-bottom: 5px; margin-top: 5px;">
-                                    <button class="btn btn-primary btn-block" id="addAction" disabled>Add Action</button>
-                                </div>
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                     <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                 </div>
@@ -99,7 +93,7 @@
 
                                     </div>
                                     <div style="margin-top:15px;" class="fieldRow row form-group">
-                                        <input class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%;">
+                                        <input class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                     </div>
                                     <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
                                         <div class="col-lg-3 form-group">
@@ -117,7 +111,7 @@
 
                                     </div>
                                     <div style="margin-right: auto; margin-left: auto; margin-top: 15px; width: 130px;" id="stepButtons">
-                                        <button class="btn btn-info" title="Is Use Step" data-toggle="tooltip" id="isUseStep" style="display: none;">
+                                        <button class="btn btn-default btn-dark" title="Is Use Step" data-toggle="tooltip" id="isUseStep" style="display: none;">
                                             <span class="glyphicon glyphicon-lock"></span>
                                         </button>
                                         <button class="btn btn-default" title="Is Library" data-toggle="tooltip" id="isLib">

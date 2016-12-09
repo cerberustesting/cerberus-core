@@ -424,6 +424,7 @@ function drawProperty(property, testcaseinfo) {
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' placeholder='Feed Property name'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description'>").addClass("form-control input-sm").val(property.description);
     var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var value2Input = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='Length'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='Row Limit'>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
@@ -442,7 +443,8 @@ function drawProperty(property, testcaseinfo) {
     var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.val(property.database));
-    var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text("Value: ")).append(valueInput);
+    var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 1: ")).append(valueInput);
+    var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 2: ")).append(value2Input);
     var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
     var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
     var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.val(property.nature));
@@ -493,6 +495,10 @@ function drawProperty(property, testcaseinfo) {
         property.value1 = $(this).val();
     });
 
+    value2Input.change(function () {
+        property.value2 = $(this).val();
+    });
+
     lengthInput.change(function () {
         property.length = $(this).val();
     });
@@ -509,6 +515,7 @@ function drawProperty(property, testcaseinfo) {
     row1.append(propertyName);
     row1.append(type);
     row1.append(value);
+    row1.append(value2);
     props.append(row1);
 
     row2.append(db);
@@ -546,6 +553,7 @@ function drawInheritedProperty(propList) {
         var propertyInput = $("<input id='propName' placeholder='Feed Property name' disabled>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description' disabled>").addClass("form-control input-sm").val(property.description);
         var valueInput = $("<textarea rows='1' placeholder='Value' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
+        var value2Input = $("<textarea rows='1' placeholder='Value' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
         var lengthInput = $("<input placeholder='Length' disabled>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='Row Limit' disabled>").addClass("form-control input-sm").val(property.rowLimit);
 
@@ -563,7 +571,8 @@ function drawInheritedProperty(propList) {
         var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.clone().val(property.type));
         var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.clone().val(property.database));
-        var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text("Value: ")).append(valueInput);
+        var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 1: ")).append(valueInput);
+        var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 2: ")).append(value2Input);
         var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.clone().val(property.nature));
@@ -588,6 +597,7 @@ function drawInheritedProperty(propList) {
         row1.append(propertyName);
         row1.append(type);
         row1.append(value);
+        row1.append(value2);
         props.append(row1);
 
         row2.append(db);
@@ -1034,6 +1044,7 @@ function sortData(agreg) {
 function Step(json, stepList) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
 
+    console.log(json);
     this.test = json.test;
     this.testcase = json.testCase;
     this.step = json.step;
@@ -1116,9 +1127,9 @@ Step.prototype.show = function () {
     }
 
     if (object.inLibrary === "Y") {
-        $("#isLib").removeClass("btn-default").addClass("btn-warning");
+        $("#isLib").addClass("btn-dark");
     }else{
-        $("#isLib").removeClass("btn-warning").addClass("btn-default");
+        $("#isLib").removeClass("btn-dark");
     }
 
     if (object.useStep === "Y") {
@@ -1172,6 +1183,9 @@ Step.prototype.show = function () {
         if(object.useStep === "Y"){
             showModalConfirmation(function(){
                 object.useStep = "N";
+                object.useStepStep = -1;
+                object.useStepTest = ";";
+                object.useStepTestCase = "";
                 saveScript();
             }, "Unlink Use Step", "You are going to unlink this useStep of its Library.\n You can't undo this, are you sure?", "", "", "", "");
         }
