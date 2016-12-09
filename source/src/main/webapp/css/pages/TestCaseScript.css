@@ -97,7 +97,7 @@
     padding: 5px;
     font-size: 12px;
     border: 1px solid #e5e5e5;
-    border-left: 6px solid #f00;
+    border-left: 6px solid #f0ad4e;
     border-radius: 3px 3px 0 0;
 }
 @media (min-width: 1200px) {
@@ -305,6 +305,12 @@ color: red !important;
 
 .add-btn {
     margin-top: 4px;
+}
+
+.btn-default.btn-dark {
+    border-color: #1F1F1F;
+    background-color: #1d1d1d;
+    color:#fff;
 }
 
 .boutonGroup {
