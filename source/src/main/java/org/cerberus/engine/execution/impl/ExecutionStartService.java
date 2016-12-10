@@ -319,10 +319,14 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
 
         /**
-         * Get the cerberus_action_wait_default parameter. This parameter will be used 
-         * by tha wait action if no timeout/event is defined.
+         * If Timeout is defined at the execution level, set action wait default to this value, else
+         * Get the cerberus_action_wait_default parameter. This parameter will
+         * be used by tha wait action if no timeout/event is defined.
          */
         try {
+            if (!tCExecution.getTimeout().isEmpty()){
+                tCExecution.setCerberus_action_wait_default(Integer.valueOf(tCExecution.getTimeout()));
+            } else {
             AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", "cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem());
             if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
                 if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
@@ -330,9 +334,10 @@ public class ExecutionStartService implements IExecutionStartService {
                 } else {
                     tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value()));
                 }
-            }  else {
+            } else {
                 LOG.warn("Parameter cerberus_action_wait_default not set in Parameter table, default value set to 90000 milliseconds. ");
                 tCExecution.setCerberus_action_wait_default(90000);
+            }
             }
         } catch (NumberFormatException ex) {
             LOG.warn("Parameter cerberus_action_wait_default must be an integer, default value set to 90000 milliseconds. " + ex.toString());

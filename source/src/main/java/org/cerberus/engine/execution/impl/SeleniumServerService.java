@@ -97,15 +97,24 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             LOG.debug(logPrefix + "Setting the session.");
             String system = tCExecution.getApplicationObj().getSystem();
+            
             /**
-             * Get the parameters that will be used to set the servers
-             * (selenium/appium)
+             * If timeout has been defined at the execution
+             * level, set the selenium & appium wait element with this value,
+             * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
-            Integer cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
-            Integer cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
-            Integer cerberus_selenium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_wait_element", 90000, logPrefix);
-            Integer cerberus_appium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_appium_wait_element", 90000, logPrefix);;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element;
+
+            if (!tCExecution.getTimeout().isEmpty()) {
+                cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
+                cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
+            } else {
+                cerberus_selenium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_wait_element", 90000, logPrefix);
+                cerberus_appium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_appium_wait_element", 90000, logPrefix);;
+            }
+            cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
+            cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
+            cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
 
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
             List<SessionCapabilities> capabilities = new ArrayList();
