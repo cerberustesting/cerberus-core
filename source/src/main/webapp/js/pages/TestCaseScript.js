@@ -148,56 +148,65 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     json = data.stepList;
                     sortData(json);
                     createStepList(json, stepList, step);
-                    drawInheritedProperty(data.inheritedProp);
+                    var inheritedProperties = drawInheritedProperty(data.inheritedProp);
 
                     listenEnterKeypressWhenFocusingOnDescription();
                     setPlaceholderAction();
                     setPlaceholderControl();
 
-                    var availableProperties = loadProperties(test, testcase, data.info, property);
-                    var availableObjects = loadApplicationObject(data);
-                    var availableObjectProperties = [
-                        "value",
-                        "picturepath",
-                        "pictureurl"
-                    ];
-                    var availableTags = [
-                        "property",
-                        "object"
-                    ];
+                    var propertiesPromise = loadProperties(test, testcase, data.info, property);
+                    var objectsPromise = loadApplicationObject(data);
 
-                    Tags = [
-                        {
-                            array : availableObjectProperties,
-                            regex : "%object\\.[^\\.]*\\.",
-                            addBefore : "",
-                            addAfter : "%",
-                            isCreatable : false
-                        },
-                        {
-                            array : availableObjects,
-                            regex : "%object\\.",
-                            addBefore : "",
-                            addAfter : ".",
-                            isCreatable : true
-                        },
-                        {
-                            array : availableProperties,
-                            regex : "%property\\.",
-                            addBefore : "",
-                            addAfter : "%",
-                            isCreatable : true
-                        },
-                        {
-                            array : availableTags,
-                            regex : "%",
-                            addBefore : "",
-                            addAfter : ".",
-                            isCreatable : false
-                        }
-                    ];
+                    Promise.all([propertiesPromise,objectsPromise]).then(function(data2){
+                        var properties = data2[0];
+                        var availableObjects = data2[1];
+                        var availableProperties = properties.concat(inheritedProperties.filter(function (item) {
+                            return properties.indexOf(item) < 0;
+                        }));
+                        var availableObjectProperties = [
+                            "value",
+                            "picturepath",
+                            "pictureurl"
+                        ];
+                        var availableTags = [
+                            "property",
+                            "object"
+                        ];
 
-                    autocompleteAllFields(Tags, data.info, test, testcase);
+                        Tags = [
+                            {
+                                array : availableObjectProperties,
+                                regex : "%object\\.[^\\.]*\\.",
+                                addBefore : "",
+                                addAfter : "%",
+                                isCreatable : false
+                            },
+                            {
+                                array : availableObjects,
+                                regex : "%object\\.",
+                                addBefore : "",
+                                addAfter : ".",
+                                isCreatable : true
+                            },
+                            {
+                                array : availableProperties,
+                                regex : "%property\\.",
+                                addBefore : "",
+                                addAfter : "%",
+                                isCreatable : true
+                            },
+                            {
+                                array : availableTags,
+                                regex : "%",
+                                addBefore : "",
+                                addAfter : ".",
+                                isCreatable : false
+                            }
+                        ];
+
+                        autocompleteAllFields(Tags, data.info, test, testcase);
+
+                    });
 
                     // Building full list of country from testcase.
                     var myCountry = [];
@@ -536,6 +545,8 @@ function drawProperty(property, testcaseinfo) {
 }
 
 function drawInheritedProperty(propList) {
+    var propertyArray = [];
+
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled",true);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled",true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled",true);
@@ -543,6 +554,7 @@ function drawInheritedProperty(propList) {
 
     for (var index = 0; index < propList.length; index++) {
         var property = propList[index];
+        propertyArray.push(propList[index].property);
 
         var test = property.fromTest;
         var testcase = property.fromTestCase;
@@ -619,46 +631,49 @@ function drawInheritedProperty(propList) {
     }
 
     sortProperties("#inheritedPropPanel");
+    return propertyArray;
 }
 
 function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
-    var array = [];
 
-    $.ajax({
-        url: "GetPropertiesForTestCase",
-        data: {test: test, testcase: testcase},
-        async: true,
-        success: function (data) {
+    return new Promise(function(resolve, reject) {
+        var array = [];
 
-            for (var index = 0; index < data.length; index++) {
-                var property = data[index];
-                array.push(data[index].property);
-                property.toDelete = false;
-                drawProperty(property, testcaseinfo);
-            }
+        $.ajax({
+            url: "GetPropertiesForTestCase",
+            data: {test: test, testcase: testcase},
+            async: true,
+            success: function (data) {
 
-
-            sortProperties("#propTable");
-            var scope = undefined;
-            if(propertyToFocus != undefined && propertyToFocus != null){
-                $("#propertiesModal #propTable #propName").each(function(i){
-                   if($(this).val() == propertyToFocus){
-                       scope = this;
-                       $("#propertiesModal").on("shown.bs.modal",function(e){
-                           $(scope).focus();
-                           $(scope).click();
-                       })
-                       $("#propertiesModal").modal("show");
-                   }
-                });
-            }
+                for (var index = 0; index < data.length; index++) {
+                    var property = data[index];
+                    array.push(data[index].property);
+                    property.toDelete = false;
+                    drawProperty(property, testcaseinfo);
+                }
 
 
+                sortProperties("#propTable");
+                var scope = undefined;
+                if (propertyToFocus != undefined && propertyToFocus != null) {
+                    $("#propertiesModal #propTable #propName").each(function (i) {
+                        if ($(this).val() == propertyToFocus) {
+                            scope = this;
+                            $("#propertiesModal").on("shown.bs.modal", function (e) {
+                                $(scope).focus();
+                                $(scope).click();
+                            })
+                            $("#propertiesModal").modal("show");
+                        }
+                    });
+                }
 
-        },
-        error: showUnexpectedError
+                resolve(array);
+
+            },
+            error: showUnexpectedError
+        });
     });
-    return array;
 }
 
 function sortProperties(identifier){
@@ -902,17 +917,19 @@ function loadLibraryStep() {
 }
 
 function loadApplicationObject(dataInit){
-    var array = [];
-    $.ajax({
-        url: "ReadApplicationObject?application="+dataInit.info.application,
-        dataType: "json",
-        success: function(data) {
-            for(var i = 0; i<data.contentTable.length; i++) {
-                array.push(data.contentTable[i].object);
+    return new Promise(function(resolve, reject){
+        var array = [];
+        $.ajax({
+            url: "ReadApplicationObject?application="+dataInit.info.application,
+            dataType: "json",
+            success: function(data) {
+                for(var i = 0; i<data.contentTable.length; i++) {
+                    array.push(data.contentTable[i].object);
+                }
+                resolve(array);
             }
-        }
+        });
     });
-    return array;
 }
 
 
@@ -1196,7 +1213,7 @@ Step.prototype.show = function () {
     $("#addActionContainer").show();
     $("#stepHeader").show()
 
-    object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("change");
+    object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
 
 };
 
@@ -1812,13 +1829,19 @@ function addControlAndFocus(oldAction) {
     });
 }
 
-var autocompleteAllFields;
+var autocompleteAllFields, getTags, setTags;
 (function() {
     //var accessible only in closure
     var TagsToUse = [];
     var tcInfo;
     var test;
     var testcase;
+    getTags = function(){
+        return TagsToUse;
+    };
+    setTags = function(tags){
+        TagsToUse = tags;
+    };
     //function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function(Tags, info, thistest, thistestcase) {
         if(Tags != undefined){
@@ -1837,7 +1860,7 @@ var autocompleteAllFields;
         autocompleteVariable("div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function(i,e){
-            $(e).unbind("input change").on("input change",function(ev){
+            $(e).unbind("input").on("input",function(ev){
                 var name = undefined;
                 var nameNotExist = undefined;
                 var objectNotExist = false;
@@ -1853,65 +1876,49 @@ var autocompleteAllFields;
                             name = name.slice( 1, name.length - 1 );
 
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
-
-                            checkObject.push($.ajax({
-                                url: "ReadApplicationObject",
-                                data: {application: tcInfo.application, object: name},
-                                dataType: "json",
-                                success: function (data) {
-                                    if(data.contentTable == undefined){
-                                        objectNotExist = true;
-                                        nameNotExist = name;
-                                        typeNotExist = "applicationobject";
-                                    }
-                                },
-                                error: showUnexpectedError
-                            }));
+                            
+                            if(TagsToUse[1].array.indexOf(name) < 0){
+                                console.log(TagsToUse[1].array);
+                                console.log(name);
+                                objectNotExist = true;
+                                nameNotExist = name;
+                                typeNotExist = "applicationobject";
+                            }
                         } else if(betweenPercent[i].startsWith("%property.") && findname != null && findname.length > 0) {
                             name = findname[0];
                             name = name.slice( 1, name.length - 1);
 
-                            checkObject.push($.ajax({
-                                url: "GetPropertiesForTestCase",
-                                data: {test: test, testcase: testcase, property: name},
-                                dataType: "json",
-                                success: function (data) {
-                                    if(data == undefined || data.length <= 0){
-                                        objectNotExist = true;
-                                        nameNotExist = name;
-                                        typeNotExist = "property";
-                                    }
-                                },
-                                error: showUnexpectedError
-                            }));
+                            if(TagsToUse[2].array.indexOf(name) < 0){
+                                objectNotExist = true;
+                                nameNotExist = name;
+                                typeNotExist = "property";
+                            }
                         }
                         i--;
                     }
                 }
-                Promise.all(checkObject).then(function(data){
-                    if(objectNotExist){
-                        if(typeNotExist == "applicationobject") {
-                            var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
-                            if (newTitle != $(e).attr('data-original-title')) {
-                                $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
-                            }else {
-                                $(e).tooltip('show');
-                            }
-                        }else if(typeNotExist == "property"){
-                            //TODO better way to add property
-                            var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
-                            if (newTitle != $(e).attr('data-original-title')) {
-                                $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
-                            }else{
-                                $(e).tooltip('show');
-                            }
+                if(objectNotExist){
+                    if(typeNotExist == "applicationobject") {
+                        var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
+                        if (newTitle != $(e).attr('data-original-title')) {
+                            $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                        }else {
+                            $(e).tooltip('show');
                         }
-                    }else{
-                        $(e).tooltip('destroy');
+                    }else if(typeNotExist == "property"){
+                        //TODO better way to add property
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
+                        if (newTitle != $(e).attr('data-original-title')) {
+                            $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
+                        }else{
+                            $(e).tooltip('show');
+                        }
                     }
-                });
+                }else{
+                    $(e).tooltip('destroy');
+                }
             });
-        }).trigger("change");
+        }).trigger("input");
     };
 })();
 
@@ -1971,9 +1978,23 @@ function editPropertiesModalSaveHandler(){
                 propArr: JSON.stringify(propArr)
             },
             success: function (data) {
+                var Tags = getTags();
+
+                var array = [];
+
+                for(var i = 0; i<propArr.length; i++){
+                    array.push(propArr[i].property);
+                }
+
+                for(var i = 0; i < Tags.length; i++){
+                    if(Tags[i].regex == "%property\\."){
+                        Tags[i].array = array;
+                    }
+                }
+
                 hideLoaderInModal('#propertiesModal');
                 if (getAlertType(data.messageType) === 'success') {
-                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
+                    $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
                     showMessage(data);
                     $('#propertiesModal').modal('hide');
                 } else {

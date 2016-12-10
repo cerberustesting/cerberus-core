@@ -72,7 +72,14 @@ function addApplicationObjectModalSaveHandler(page) {
                 var oTable = $("#applicationObjectsTable").dataTable();
                 oTable.fnDraw(true);
             }else if(page == "testCaseScript"){
-                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("change");
+                //TestCaseScript.js must be loaded so getTags exist
+                var Tags = getTags();
+                for(var i = 0; i < Tags.length; i++){
+                    if(Tags[i].regex == "%object\\."){
+                        Tags[i].array.push(formData.get("object"));
+                    }
+                }
+                $("div.step-action .content div.fieldRow div:nth-child(n+2) input").trigger("input");
             }
             showMessage(data);
             $('#addApplicationObjectModal').modal('hide');
