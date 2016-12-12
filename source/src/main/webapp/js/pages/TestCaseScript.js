@@ -1244,7 +1244,8 @@ Step.prototype.show = function () {
 
     object.stepActionContainer.show();
     $("#stepDescription").unbind("change").change(function(){
-       object.description = $(this).val();
+        setModif(true);
+        object.description = $(this).val();
     });
 
     $("#isUseStep").unbind("click").click(function(){
