@@ -55,6 +55,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayGlobalLabel(doc);
         displayFooter(doc);
         
+        displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
         displayInvariantList("group", "GROUP", false, true);
         displayInvariantList("status", "TCSTATUS", false, true);
         displayInvariantList("priority", "PRIORITY", false, true);
