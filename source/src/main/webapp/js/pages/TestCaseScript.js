@@ -1931,7 +1931,7 @@ var autocompleteAllFields, getTags, setTags;
                             name = findname[0];
                             name = name.slice( 1, name.length - 1 );
 
-                            $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name);
+                            $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
                             
                             if(TagsToUse[1].array.indexOf(name) < 0){
                                 console.log(TagsToUse[1].array);
