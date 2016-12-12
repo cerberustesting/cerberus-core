@@ -2236,7 +2236,7 @@ function autocompleteVariable(identifier, Tags) {
                         tag++;
                     }
                     // We trigger input to potentially display an image if there is one
-                    $(this).trigger("input");
+                    $(this).trigger("input").trigger("change");
                     return false;
                 },
                 close: function (event, ui) {

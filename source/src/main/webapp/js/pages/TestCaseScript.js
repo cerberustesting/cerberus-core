@@ -759,12 +759,10 @@ function changeLib() {
     var stepData = stepHtml.data("item");
     if(stepData.inLibrary == "Y"){
         stepData.inLibrary = "N";
-        $(this).removeClass("btn-warning");
-        $(this).addClass("btn-default");
+        $(this).removeClass("btn-dark");
     }else{
         stepData.inLibrary = "Y";
-        $(this).removeClass("btn-default");
-        $(this).addClass("btn-warning");
+        $(this).addClass("btn-dark");
     }
 }
 
