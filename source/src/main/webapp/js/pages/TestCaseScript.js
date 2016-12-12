@@ -269,24 +269,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 addActionAndFocus()
             });
             $("#saveScript").click(saveScript);
-            $("#runTestCase").click(function () {
-                runTestCase(test, testcase);
-            });
-            $("#seeLastExec").click(function () {
-                seeLastExec(test, testcase);
-            });
-            $("#seeLogs").click(function () {
-                seeLogs(test, testcase);
-            });
+
+            $("#runTestCase").parent().attr("href","./RunTests1.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLastExec").parent().attr("href","./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLogs").parent().attr("href","./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
+
             $.ajax({
                 url: "ReadTestCaseExecution",
                 data: {test: test, testCase: testcase},
                 dataType: "json",
                 success: function (data) {
                     if(!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#rerunTestCase").click(function () {
-                            rerunTestCase(test, testcase, data.contentTable.country, data.contentTable.env);
-                        });
+                        $("#rerunTestCase").parent().attr("href","./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env);
                         $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                     }else{
                         $("#rerunTestCase").attr("disabled",true);
@@ -335,20 +329,8 @@ function addActionAndFocus() {
     });
 }
 
-function runTestCase(test, testcase) {
-    window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase;
-}
 function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
-}
-function seeLogs(test, testcase) {
-    window.location.href = "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase;
-}
-function seeLastExec(test, testcase) {
-    window.location.href = "./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase;
-}
-function rerunTestCase(test, testcase, country, environment) {
-    window.location.href = "./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + country + "&environment=" + environment;
 }
 
 function saveScript() {

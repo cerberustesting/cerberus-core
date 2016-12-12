@@ -54,11 +54,11 @@
                                 <div id="TestCaseButton" style="display:none;">
                                     <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                                     <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
-                                    <button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button>
-                                    <button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button>
-                                    <button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
-                                    <button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button>
-                                    <a><button class="btn btn-default pull-right" id="runOld" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-bookmark"></span> Old Page</button></a>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button></a>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button></a>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="runOld" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-bookmark"></span> Old Page</button></a>
                                     <div class="side-item pull-right"></div>
 
                                 </div>
