@@ -2173,7 +2173,7 @@ function setPlaceholderControl() {
             {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementVisible", "controlValue": "Element ex : data-cerberus=fieldToto", "controlProp": null, "fatal": ""},
+            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
             {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
@@ -2205,7 +2205,7 @@ function setPlaceholderControl() {
             {"type": "verifyIntegerMinor", "controlValue": "Integer1 ex : 20", "controlProp": "Integer2 ex : 10", "fatal": ""},
             {"type": "verifyElementPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotPresent", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
-            {"type": "verifyElementVisible", "controlValue": "Element ex : data-cerberus=fieldToto", "controlProp": null, "fatal": ""},
+            {"type": "verifyElementVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementNotVisible", "controlValue": null, "controlProp": "Element ex : data-cerberus=fieldToto", "fatal": ""},
             {"type": "verifyElementEquals", "controlValue": "Expected element", "controlProp": "XPath of the element", "fatal": ""},
             {"type": "verifyElementDifferent", "controlValue": "Not Expected element", "controlProp": "XPath of the element", "fatal": ""},
@@ -2233,15 +2233,15 @@ function setPlaceholderControl() {
 
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-                if (placeHolders[i].controlValue !== null) {
+                if (placeHolders[i].controlProp !== null) {
                     $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('label').text(placeHolders[i].controlValue);
+                    $(e).parent().parent().next().find('label').text(placeHolders[i].controlProp);
                 } else {
                     $(e).parent().parent().next().hide();
                 }
-                if (placeHolders[i].controlProp !== null) {
+                if (placeHolders[i].controlValue !== null) {
                     $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].controlProp);
+                    $(e).parent().parent().next().next().find('label').text(placeHolders[i].controlValue);
                 } else {
                     $(e).parent().parent().next().next().hide();
                 }
