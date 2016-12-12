@@ -331,7 +331,7 @@ public class ReadTestCase extends HttpServlet {
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
         testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
 
-        //finds the project     
+        //finds the project
         AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
 
         if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -562,7 +562,6 @@ public class ReadTestCase extends HttpServlet {
                         jsonStep.getJSONArray("actionList").put(jsonAction);
                     }
                 }
-
             }
             stepList.put(jsonStep);
         }

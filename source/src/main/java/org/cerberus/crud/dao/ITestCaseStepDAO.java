@@ -56,8 +56,10 @@ public interface ITestCaseStepDAO {
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
     
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
-    
+
     AnswerList readByTestTestCase(String test, String testcase);
-    
+
+    AnswerList readByLibraryUsed(String test, String testcase, int step);
+
     Answer create(TestCaseStep testCaseStep);
 }

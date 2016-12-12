@@ -37,7 +37,9 @@ import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
 import org.cerberus.crud.service.impl.TestCaseStepActionService;
 import org.cerberus.crud.service.impl.TestCaseStepService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,40 +77,12 @@ public class ReadTestCaseStep extends HttpServlet {
             String test = request.getParameter("test");
             String testCase = request.getParameter("testcase");
             int step = Integer.parseInt(request.getParameter("step"));
+            boolean getUses = ParameterParserUtil.parseBooleanParam(request.getParameter("getUses"), false);
 
-            ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
-            ITestCaseStepActionService stepActionService = appContext.getBean(TestCaseStepActionService.class);
-            ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
-
-            TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testCase, step);
-
-            Gson gson = new Gson();
-            JSONObject result = new JSONObject(gson.toJson(testCaseStep));
-            jsonResponse.put("step", result);
-            //jsonResponse.put("step", testCaseStep);
-
-            List<TestCaseStepAction> tcsActionList = stepActionService.getListOfAction(test, testCase, step);
-
-            if (tcsActionList != null) {
-                JSONArray list = new JSONArray();
-                for (TestCaseStepAction t : tcsActionList) {
-                    JSONObject obj = new JSONObject(gson.toJson(t));
-                    obj.put("controlList", new JSONArray());
-                    obj.put("objType", "action");
-                    list.put(obj);
-                }
-                jsonResponse.put("tcsActionList", list);
-            }
-
-            List<TestCaseStepActionControl> tcsActionControlList = stepActionControlService.findControlByTestTestCaseStep(test, testCase, step);
-
-            if (tcsActionControlList != null) {
-                JSONArray list2 = new JSONArray();
-                for (TestCaseStepActionControl t : tcsActionControlList) {
-                    JSONObject obj = new JSONObject(gson.toJson(t));
-                    list2.put(obj);
-                }
-                jsonResponse.put("tcsActionControlList", list2);
+            if(getUses){
+                jsonResponse = getStepUsesByKey(test,testCase,step,appContext,response);
+            }else{
+                jsonResponse = getStepByKey(test,testCase,step,appContext,response);
             }
 
             jsonResponse.put("messageType", "OK");
@@ -122,6 +96,67 @@ public class ReadTestCaseStep extends HttpServlet {
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
 
+    }
+
+    private JSONObject getStepUsesByKey(String test, String testcase, int step, ApplicationContext appContext, HttpServletResponse response) throws JSONException{
+        JSONObject jsonResponse = new JSONObject();
+
+        ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
+
+        AnswerList answer = stepService.readByLibraryUsed(test,testcase,step);
+        JSONArray res = new JSONArray();
+
+        for(Object obj : answer.getDataList()) {
+            TestCaseStep testCaseStep = (TestCaseStep) obj;
+            Gson gson = new Gson();
+            JSONObject result = new JSONObject(gson.toJson(testCaseStep));
+            res.put(result);
+        }
+
+        jsonResponse.put("step",res);
+
+        return jsonResponse;
+    }
+
+    private JSONObject getStepByKey(String test, String testcase, int step, ApplicationContext appContext, HttpServletResponse response) throws JSONException{
+        JSONObject jsonResponse = new JSONObject();
+
+        ITestCaseStepService stepService = appContext.getBean(TestCaseStepService.class);
+        ITestCaseStepActionService stepActionService = appContext.getBean(TestCaseStepActionService.class);
+        ITestCaseStepActionControlService stepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
+
+        TestCaseStep testCaseStep = stepService.findTestCaseStep(test, testcase, step);
+
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testCaseStep));
+        jsonResponse.put("step", result);
+        //jsonResponse.put("step", testCaseStep);
+
+        List<TestCaseStepAction> tcsActionList = stepActionService.getListOfAction(test, testcase, step);
+
+        if (tcsActionList != null) {
+            JSONArray list = new JSONArray();
+            for (TestCaseStepAction t : tcsActionList) {
+                JSONObject obj = new JSONObject(gson.toJson(t));
+                obj.put("controlList", new JSONArray());
+                obj.put("objType", "action");
+                list.put(obj);
+            }
+            jsonResponse.put("tcsActionList", list);
+        }
+
+        List<TestCaseStepActionControl> tcsActionControlList = stepActionControlService.findControlByTestTestCaseStep(test, testcase, step);
+
+        if (tcsActionControlList != null) {
+            JSONArray list2 = new JSONArray();
+            for (TestCaseStepActionControl t : tcsActionControlList) {
+                JSONObject obj = new JSONObject(gson.toJson(t));
+                list2.put(obj);
+            }
+            jsonResponse.put("tcsActionControlList", list2);
+        }
+
+        return jsonResponse;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

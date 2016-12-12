@@ -131,7 +131,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $(".panel-body").show();
 
             $("#saveStep").click(saveStep);
-            $("#isLib").click(changeLib);
             $("#cancelEdit").click(cancelEdit);
 
             var json;
@@ -259,7 +258,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#deleteStep").click(function () {
                 var step = $("#stepList .active").data("item");
 
-                step.setDelete();
+                if(step.isStepInUseByOtherTestCase){
+                    showStepUsesLibraryInConfirmationModal(step);
+                }else {
+                    step.setDelete();
+                }
             });
 
             $("#addAction").click(function () {
@@ -930,6 +933,43 @@ function loadApplicationObject(dataInit){
     });
 }
 
+function showStepUsesLibraryInConfirmationModal(object){
+    $("#confirmationModal [name='buttonConfirm']").text("OK");
+    $("#confirmationModal [name='buttonDismiss']").hide();
+    $("#confirmationModal").on("hidden.bs.modal",function(){
+        $("#confirmationModal [name='buttonConfirm']").text("Yes");
+        $("#confirmationModal [name='buttonDismiss']").show();
+        $("#confirmationModal").unbind("hidden.bs.modal");
+    });
+
+    $.ajax({
+        url: "ReadTestCaseStep",
+        dataType: "json",
+        data: {
+            test: object.test,
+            testcase: object.testcase,
+            step: object.step,
+            getUses: true
+        },
+        success: function(data) {
+            var content = "";
+            for(var i = 0; i<data.step.length; i++){
+                content += "<a target='_blank' href='./TestCaseScript.jsp?test="+data.step[i].test+"&testcase="+data.step[i].testCase+"&step="+data.step[i].sort+"'>"+data.step[i].test+" - "+data.step[i].testCase+" - "+data.step[i].sort+" - "+data.step[i].description+"</a><br/>"
+            }
+            $("#confirmationModal #otherStepThatUseIt").empty().append(content);
+        }
+    });
+    showModalConfirmation(function(){
+        $('#confirmationModal').modal('hide');
+    }, "Warning",
+        "You can't detach this library because other steps use it.<br/>" +
+        "<div id='otherStepThatUseIt' style='width:100%;'>" +
+        "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
+        "<span class='glyphicon glyphicon-refresh spin'></span>" +
+        "</div>" +
+        "</div>", "", "", "", "");
+}
+
 
 /** DRAG AND DROP HANDLERS **/
 
@@ -1059,7 +1099,6 @@ function sortData(agreg) {
 function Step(json, stepList) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
 
-    console.log(json);
     this.test = json.test;
     this.testcase = json.testCase;
     this.step = json.step;
@@ -1073,6 +1112,7 @@ function Step(json, stepList) {
     this.conditionOper = json.conditionOper;
     this.conditionVal1 = json.conditionVal1;
     this.inLibrary = json.inLibrary;
+    this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
     this.actionList = [];
     this.setActionList(json.actionList);
 
@@ -1117,6 +1157,7 @@ Step.prototype.draw = function () {
 };
 
 Step.prototype.show = function () {
+    var scope = this;
     var object = $(this).data("item");
     cancelEdit();
 
@@ -1141,10 +1182,21 @@ Step.prototype.show = function () {
         $("#deleteStep span").addClass("glyphicon glyphicon-trash");
     }
 
+    $("#isLib").unbind("click");
     if (object.inLibrary === "Y") {
         $("#isLib").addClass("btn-dark");
+        if(object.isStepInUseByOtherTestCase){
+            $("#isLib").click(function(){
+
+                showStepUsesLibraryInConfirmationModal(object);
+
+            });
+        }else{
+            $("#isLib").click(changeLib);
+        }
     }else{
         $("#isLib").removeClass("btn-dark");
+        $("#isLib").click(changeLib);
     }
 
     if (object.useStep === "Y") {

@@ -794,7 +794,7 @@ function modalFormCleaner(event) {
  */
 function showModalConfirmation(handlerClickOk, title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4) {
     setDataConfirmationModal(title, message, hiddenField1, hiddenField2, hiddenField3, hiddenField4);
-    $('#confirmationModal #confirmOk').click(handlerClickOk);
+    $('#confirmationModal #confirmOk').unbind("click").click(handlerClickOk);
     clearResponseMessageMainPage();
     $('#confirmationModal').modal('show');
 }

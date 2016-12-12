@@ -199,6 +199,11 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
+    public AnswerList readByLibraryUsed(String test, String testcase, int step) {
+        return testCaseStepDAO.readByLibraryUsed(test, testcase, step);
+    }
+
+    @Override
     public AnswerList readByTestTestCaseWithDependency(String test, String testcase) {
         AnswerList steps = this.readByTestTestCase(test, testcase);
         AnswerList response = null;

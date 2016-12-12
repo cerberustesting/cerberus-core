@@ -87,6 +87,8 @@ public interface ITestCaseStepService {
 
     AnswerList readByTestTestCase(String test, String testcase);
 
+    AnswerList readByLibraryUsed(String test, String testcase, int step);
+
     AnswerList readByTestTestCaseWithDependency(String test, String testcase);
 
     Answer create(TestCaseStep object);
