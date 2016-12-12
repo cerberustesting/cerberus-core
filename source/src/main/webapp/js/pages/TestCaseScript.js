@@ -20,6 +20,13 @@
 
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
+
+        $(window).bind('beforeunload', function(){
+            if(getModif()){
+                return true; //Display alert Message that a modification has been done
+            }
+        });
+
         var doc = new Doc();
         var stepList = [];
 
@@ -130,9 +137,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#TestCaseButton").show();
             $(".panel-body").show();
 
-            $("#saveStep").click(saveStep);
-            $("#cancelEdit").click(cancelEdit);
-
             var json;
             var testcaseinfo;
             var Tags;
@@ -235,6 +239,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     $('[data-toggle="tooltip"]').tooltip();
 
+                    initModification();
+
                 },
                 error: showUnexpectedError
             });
@@ -256,11 +262,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
 
             $("#deleteStep").click(function () {
+
                 var step = $("#stepList .active").data("item");
 
                 if(step.isStepInUseByOtherTestCase){
                     showStepUsesLibraryInConfirmationModal(step);
                 }else {
+                    setModif(true);
                     step.setDelete();
                 }
             });
@@ -314,6 +322,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function addAction() {
+    setModif(true);
     var step = $("#stepList li.active").data("item");
     var action = new Action(null, step);
     step.setAction(action);
@@ -402,6 +411,7 @@ function saveScript() {
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
+            setModif(false);
             location.reload();
         },
         error: showUnexpectedError
@@ -732,14 +742,8 @@ function loadTestCaseInfo(info) {
     $(".testTestCase #description").text(info.shortDescription);
 }
 
-function cancelEdit() {
-    $("#editStep").hide();
-    $("#editStepDescription").val("");
-    $("#stepDescription").show();
-    $("#stepInfo").show();
-}
-
 function changeLib() {
+    setModif(true);
     var stepHtml = $("#stepList li.active");
     var stepData = stepHtml.data("item");
     if(stepData.inLibrary == "Y"){
@@ -749,15 +753,6 @@ function changeLib() {
         stepData.inLibrary = "Y";
         $(this).addClass("btn-dark");
     }
-}
-
-function saveStep() {
-    var stepHtml = $("#stepList li.active");
-    var stepData = stepHtml.data("item");
-
-    stepData.setDescription($("#editStepDescription").val());
-
-    cancelEdit();
 }
 
 function addStep(event) {
@@ -780,6 +775,7 @@ function addStep(event) {
     });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
+        //setModif(true);
         var step = {"inLibrary": "N",
             "objType": "step",
             "useStepTest": "",
@@ -854,6 +850,30 @@ function createStepList(data, stepList, stepIndex) {
         $("#addAction").attr("disabled",true);
     }
 }
+
+/** Modification Status **/
+
+var getModif, setModif, initModification;
+(function(){
+    var isModif = false;
+    getModif = function(){
+        return isModif;
+    };
+    setModif = function(val){
+        isModif = val;
+        if(isModif == true && $("#saveScript").hasClass("btn-default")){
+            $("#saveScript").removeClass("btn-default").addClass("btn-primary");
+        }else if(isModif == false && $("#saveScript").hasClass("btn-primary")){
+            $("#saveScript").removeClass("btn-primary").addClass("btn-default");
+        }
+
+    };
+    initModification = function(){
+        $("input, select").not("#testCaseSelect").not("#test").change(function(){
+            setModif(true);
+        })
+    };
+})();
 
 /** LIBRARY STEP UTILY FUNCTIONS **/
 
@@ -1141,7 +1161,6 @@ Step.prototype.draw = function () {
 Step.prototype.show = function () {
     var scope = this;
     var object = $(this).data("item");
-    cancelEdit();
 
     $("#stepHeader").show();
     $("#addActionBottomBtn").show();
@@ -1229,6 +1248,7 @@ Step.prototype.show = function () {
     });
 
     $("#isUseStep").unbind("click").click(function(){
+        setModif(true);
         if(object.useStep === "Y"){
             showModalConfirmation(function(){
                 object.useStep = "N";
@@ -1416,6 +1436,7 @@ Action.prototype.draw = function () {
     });
 
     supprBtn.click(function () {
+        setModif(true);
         action.toDelete = (action.toDelete) ? false : true;
 
         if (action.toDelete) {
@@ -1647,6 +1668,7 @@ Control.prototype.draw = function () {
     }
 
     supprBtn.click(function () {
+        setModif(true);
         control.toDelete = (control.toDelete) ? false : true;
 
         if (control.toDelete) {
@@ -1847,6 +1869,7 @@ function listenEnterKeypressWhenFocusingOnDescription() {
 }
 
 function addControl(action) {
+    setModif(true);
     var control = new Control(null, action);
     action.setControl(control);
     return control;

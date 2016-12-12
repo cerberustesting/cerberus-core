@@ -52,7 +52,7 @@
                             </div>
                             <div class="col-lg-8" style="padding: 0px;">
                                 <div id="TestCaseButton" style="display:none;">
-                                    <button class="btn btn-primary pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                    <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                                     <button class="btn btn-default pull-right" id="editTcInfo" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button></a>
