@@ -54,6 +54,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayHeaderLabel(doc);
         displayGlobalLabel(doc);
         displayFooter(doc);
+
+        $("#addStepModal [name='buttonAdd']").html("Add");
         
         displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
         displayInvariantList("group", "GROUP", false, true);
