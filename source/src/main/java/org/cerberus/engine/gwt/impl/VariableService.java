@@ -19,8 +19,8 @@ public class VariableService implements IVariableService {
     @Override
     public String decodeVariableWithExistingObject(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         String result = stringToDecode;
-        result = applicationObjectVariableService.decodeValueWithExistingProperties(result,testCaseStepActionExecution,forceCalculation);
         result = propertyService.decodeValueWithExistingProperties(result,testCaseStepActionExecution,forceCalculation);
+        result = applicationObjectVariableService.decodeValueWithExistingProperties(result,testCaseStepActionExecution,forceCalculation);
         return result;
     }
 }
