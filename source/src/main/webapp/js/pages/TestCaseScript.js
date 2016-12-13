@@ -421,7 +421,7 @@ function saveScript() {
             var parser = document.createElement('a');
             parser.href = window.location.href;
 
-            var new_uri = parser.pathname + "?test=" + stepData.test + "&testcase=" + stepData.testcase + "&step=" + stepData.sort;
+            var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort;
 
             setModif(false);
 
