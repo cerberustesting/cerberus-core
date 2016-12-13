@@ -412,8 +412,16 @@ function saveScript() {
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
-            setModif(false);
-            location.reload();
+
+            var stepHtml = $("#stepList li.active");
+            var stepData = stepHtml.data("item");
+
+            var parser = document.createElement('a');
+            parser.href = window.location.href;
+
+            var new_uri = parser.pathname + "?test=" + stepData.test + "&testcase=" + stepData.testcase + "&step=" + stepData.sort;
+
+            window.location.href = new_uri;
         },
         error: showUnexpectedError
     });
@@ -776,7 +784,7 @@ function addStep(event) {
     });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
-        //setModif(true);
+        setModif(true);
         var step = {"inLibrary": "N",
             "objType": "step",
             "useStepTest": "",
@@ -870,7 +878,7 @@ var getModif, setModif, initModification;
 
     };
     initModification = function(){
-        $("input, select").not("#testCaseSelect").not("#test").change(function(){
+        $(".panel-body input, .panel-body select").change(function(){
             setModif(true);
         })
     };
@@ -878,7 +886,9 @@ var getModif, setModif, initModification;
 
 /** LIBRARY STEP UTILY FUNCTIONS **/
 
-function loadLibraryStep() {
+function loadLibraryStep(search) {
+    $("#lib").empty();
+    showLoaderInModal("#addStepModal");
     $.ajax({
         url: "GetStepInLibrary",
         data: {system: getUser().defaultSystem},
@@ -889,33 +899,49 @@ function loadLibraryStep() {
             for (var index = 0; index < data.testCaseStepList.length; index++) {
                 var step = data.testCaseStepList[index];
 
-                if (!test.hasOwnProperty(step.test)) {
-                    $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                            .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                if(search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
+                    if (!test.hasOwnProperty(step.test)) {
+                        $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
+                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                    var listGrp = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
-                    $("#lib").append(listGrp);
+                        var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
+                        $("#lib").append(listGr);
 
-                    test[step.test] = {content : listGrp, testCase: {}};
+                        test[step.test] = {content : listGr, testCase: {}};
+                    }
+                    if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
+                        var listGrp = test[step.test].content;
+                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-testCase='" + step.testCase + "']")
+                            .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+
+                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-testCase", step.testCase);
+                        listGrp.append(listCaseGr);
+
+                        test[step.test].testCase[step.testCase] = {content : listCaseGr, step: {}};
+                    }
+                    var listCaseGrp = test[step.test].testCase[step.testCase].content;
+                    var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);
+                    listCaseGrp.append(listStepGrp);
+                    test[step.test].testCase[step.testCase].step[step.description] = listStepGrp;
                 }
-                if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
-                    var listGrp = test[step.test].content;
-                    listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-testCase='" + step.testCase + "']")
-                        .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
-
-                    var listCaseGrp = $("<div></div>").addClass("list-group collapse").attr("data-testCase", step.testCase);
-                    listGrp.append(listCaseGrp);
-
-                    test[step.test].testCase[step.testCase] = listCaseGrp;
-                }
-                var listCaseGrp = test[step.test].testCase[step.testCase];
-                listCaseGrp.append($("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step));
             }
-            $('.list-group-item').on('click', function () {
+
+            if(search != undefined && search != ""){
+                $('#lib').find("div").toggleClass('in');
+            }
+
+            $('.list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
                         .toggleClass('glyphicon-chevron-right')
                         .toggleClass('glyphicon-chevron-down');
             });
+
+            $("#addStepModal #search").unbind("input").on("input",function(e){
+                var search = $(this).val();
+                loadLibraryStep(search);
+            });
+
+            hideLoaderInModal("#addStepModal");
         }
     });
 }
@@ -1014,6 +1040,7 @@ function handleDragStart(event) {
 }
 
 function handleDragEnter(event) {
+    setModif(true);
     var target = this.parentNode;
     var sourceData = $(source).data("item");
     var targetData = $(target).data("item");
@@ -1041,6 +1068,7 @@ function handleDragEnter(event) {
 }
 
 function handleDragOver(event) {
+
     var e = event.originalEvent;
 
     if (e.preventDefault) {
