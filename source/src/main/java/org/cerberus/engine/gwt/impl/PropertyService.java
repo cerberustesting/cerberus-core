@@ -42,6 +42,7 @@ import org.cerberus.crud.entity.*;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.crud.service.*;
 import org.cerberus.engine.entity.SOAPExecution;
+import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
@@ -112,6 +113,8 @@ public class PropertyService implements IPropertyService {
     private IDataLibService dataLibService;
     @Autowired
     private ILogEventService logEventService;
+    @Autowired
+    private IVariableService variableService;
 
     /**
      * The property variable {@link Pattern}
@@ -1007,13 +1010,13 @@ public class PropertyService implements IPropertyService {
                 String decodedMethod = soapLib.getMethod();
 
                 if (soapLib.getEnvelope().contains("%")) {
-                    decodedEnveloppe = decodeValueWithExistingProperties(soapLib.getEnvelope(), testCaseStepActionExecution, false);
+                    decodedEnveloppe = variableService.decodeVariableWithExistingObject(soapLib.getEnvelope(), testCaseStepActionExecution, false);
                 }
                 if (soapLib.getServicePath().contains("%")) {
-                    decodedServicePath = decodeValueWithExistingProperties(soapLib.getServicePath(), testCaseStepActionExecution, false);
+                    decodedServicePath = variableService.decodeVariableWithExistingObject(soapLib.getServicePath(), testCaseStepActionExecution, false);
                 }
                 if (soapLib.getMethod().contains("%")) {
-                    decodedMethod = decodeValueWithExistingProperties(soapLib.getMethod(), testCaseStepActionExecution, false);
+                    decodedMethod = variableService.decodeVariableWithExistingObject(soapLib.getMethod(), testCaseStepActionExecution, false);
                 }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
@@ -1222,18 +1225,18 @@ public class PropertyService implements IPropertyService {
             try {
                 if (testDataLib.getType().equals(TestDataLib.TYPE_SOAP)) {
                     //check if the servicepath contains properties that neeed to be calculated
-                    String decodedServicePath = decodeValueWithExistingProperties(testDataLib.getServicePath(), testCaseStepActionExecution, false);
+                    String decodedServicePath = variableService.decodeVariableWithExistingObject(testDataLib.getServicePath(), testCaseStepActionExecution, false);
                     testDataLib.setServicePath(decodedServicePath);
                     //check if the method contains properties that neeed to be calculated
-                    String decodedMethod = decodeValueWithExistingProperties(testDataLib.getMethod(), testCaseStepActionExecution, false);
+                    String decodedMethod = variableService.decodeVariableWithExistingObject(testDataLib.getMethod(), testCaseStepActionExecution, false);
                     testDataLib.setMethod(decodedMethod);
                     //check if the envelope contains properties that neeed to be calculated
-                    String decodedEnvelope = decodeValueWithExistingProperties(testDataLib.getEnvelope(), testCaseStepActionExecution, false);
+                    String decodedEnvelope = variableService.decodeVariableWithExistingObject(testDataLib.getEnvelope(), testCaseStepActionExecution, false);
                     testDataLib.setEnvelope(decodedEnvelope);
 
                 } else if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
-                    String decodedScript = decodeValueWithExistingProperties(testDataLib.getScript(), testCaseStepActionExecution, false);
+                    String decodedScript = variableService.decodeVariableWithExistingObject(testDataLib.getScript(), testCaseStepActionExecution, false);
                     testDataLib.setScript(decodedScript);
 
                 }

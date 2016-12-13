@@ -112,7 +112,7 @@ public class ActionService implements IActionService {
                 }
                 try {
                     // We decode here the object with any potencial variables (ex : %TOTO%). If the Current action if calculateProperty, we force a new calculation of the Property.
-                    testCaseStepActionExecution.setValue1(propertyService.decodeValueWithExistingProperties(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                    testCaseStepActionExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, isCalledFromCalculateProperty));
                     //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
                     //or if the property service was unable to decode the property that is specified in the object, 
                     //then the execution of this action should not performed
@@ -884,13 +884,13 @@ public class ActionService implements IActionService {
 
             try {
                 if (soapLibrary.getEnvelope().contains("%")) {
-                    decodedEnveloppe = propertyService.decodeValueWithExistingProperties(decodedEnveloppe, testCaseStepActionExecution, false);
+                    decodedEnveloppe = variableService.decodeVariableWithExistingObject(decodedEnveloppe, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getServicePath().contains("%")) {
-                    decodedServicePath = propertyService.decodeValueWithExistingProperties(decodedServicePath, testCaseStepActionExecution, false);
+                    decodedServicePath = variableService.decodeVariableWithExistingObject(decodedServicePath, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getMethod().contains("%")) {
-                    decodedMethod = propertyService.decodeValueWithExistingProperties(decodedMethod, testCaseStepActionExecution, false);
+                    decodedMethod = variableService.decodeVariableWithExistingObject(decodedMethod, testCaseStepActionExecution, false);
                 }
 
                 //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
@@ -1009,11 +1009,11 @@ public class ActionService implements IActionService {
                 String propertyValueResult = "";
                 // if value2 is not defined, then decode the property defined in value1.
                 if (StringUtil.isNullOrEmpty(value2)) {
-                    propertyValueResult = propertyService.decodeValueWithExistingProperties("%" + value1 + "%", testCaseStepActionExecution, true);
+                    propertyValueResult = variableService.decodeVariableWithExistingObject("%" + value1 + "%", testCaseStepActionExecution, true);
                 }
                 // If not, then set value1 property to the decoded value2 property
                 else {
-                    propertyValueResult =  propertyService.decodeValueWithExistingProperties("%" + value2 + "%", testCaseStepActionExecution, true);
+                    propertyValueResult =  variableService.decodeVariableWithExistingObject("%" + value2 + "%", testCaseStepActionExecution, true);
                     TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
                     for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
                         if (value1.equals(property.getProperty())) {

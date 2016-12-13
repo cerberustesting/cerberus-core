@@ -27,6 +27,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.SOAPExecution;
@@ -73,6 +74,8 @@ public class ControlService implements IControlService {
     private ISikuliService sikuliService;
     @Autowired
     private IRecorderService recorderService;
+    @Autowired
+    private IVariableService variableService;
 
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
@@ -88,7 +91,7 @@ public class ControlService implements IControlService {
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
-                testCaseStepActionControlExecution.setValue1(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
@@ -96,7 +99,7 @@ public class ControlService implements IControlService {
             }
 
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
-                testCaseStepActionControlExecution.setValue2(propertyService.decodeValueWithExistingProperties(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setValue2(variableService.decodeVariableWithExistingObject(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;

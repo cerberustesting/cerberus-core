@@ -97,11 +97,11 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             LOG.debug(logPrefix + "Setting the session.");
             String system = tCExecution.getApplicationObj().getSystem();
-            
+
             /**
-             * If timeout has been defined at the execution
-             * level, set the selenium & appium wait element with this value,
-             * else, take the one from parameter
+             * If timeout has been defined at the execution level, set the
+             * selenium & appium wait element with this value, else, take the
+             * one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element;
 
@@ -373,7 +373,11 @@ public class SeleniumServerService implements ISeleniumServerService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             // Set the app capability with the application path
-            caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+            if (tCExecution.isManualURL()) {
+                caps.setCapability("app", tCExecution.getMyHost());
+            } else {
+                caps.setCapability("app", tCExecution.getCountryEnvironmentParameters().getIp());
+            }
         }
 
         return caps;

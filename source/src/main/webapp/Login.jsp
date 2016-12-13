@@ -80,7 +80,7 @@
                             Username:
                         </div>
                         <div class="form-group col-xs-9">
-                            <input name="j_username" class="form-login" title="Username" value="" size="30" maxlength="10">
+                            <input name="j_username" class="form-login" title="Username" value="" size="30" maxlength="10" autofocus>
                         </div>
                     </div>
                     <div class="row">
