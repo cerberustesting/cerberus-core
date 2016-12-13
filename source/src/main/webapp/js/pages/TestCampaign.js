@@ -103,8 +103,8 @@ function renderOptionsForCampaign2(id) {
     $("#" + id + "_wrapper #addBatteryTestcampaign").remove();
     var contentToAdd =
         "<div class='marginBottom10 form-inline' id='addBatteryTestcampaign'>" +
-        "<div class='form-group marginRight10'>" +
-        "<select id='batteryTestSelect' class='form-control' style='width:200px;'>";
+        "<div class='form-group marginRight10 col-sm-6' style='padding-right: 0px; padding-left: 0px;'>" +
+        "<select id='batteryTestSelect' class='form-control' style='width:100%;'>";
     for (var i = 0; i < data.find("option").length; i++) {
         if (!findValueTableDataByCol(id, 0, data.find("option")[i].value)) {
             contentToAdd +=
@@ -133,8 +133,8 @@ function renderOptionsForCampaign3(id) {
     $("#" + id + "_wrapper #addParameterTestcampaign").remove();
     var contentToAdd =
         "<div class='marginBottom10 form-inline' id='addParameterTestcampaign'>" +
-        "<div class='form-group marginRight10'>" +
-        "<select id='parameterTestSelect' class='form-control' style='width:200px;' onchange='updateSelectParameter(\"" + id + "\")'>";
+        "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+        "<select id='parameterTestSelect' class='form-control' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
             "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
@@ -142,8 +142,8 @@ function renderOptionsForCampaign3(id) {
     contentToAdd +=
         "</select>" +
         "</div>" +
-        "<div class='form-group marginRight10'>" +
-        "<select id='parameterTestSelect2' class='form-control' style='width:200px;'>" +
+        "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+        "<select id='parameterTestSelect2' class='form-control' style='width:100%;'>" +
         "</select>" +
         "</div>" +
         "<div class='form-group'>" +
