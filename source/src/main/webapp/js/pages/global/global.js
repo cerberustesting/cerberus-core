@@ -2170,6 +2170,13 @@ function autocompleteVariable(identifier, Tags) {
                     results: function () {
                     }
                 },
+                open: function(){
+                    //If autocomplete is in modal, needs to be upper the modal
+                    if($(this).closest($(".modal")).length > 0){
+                        $(this).autocomplete('widget').css('z-index', 1050);
+                    }
+                    return false;
+                },
                 create: function () {
                     $(this).data('ui-autocomplete')._renderItem = function (ul, item) {
                         var icon = "";

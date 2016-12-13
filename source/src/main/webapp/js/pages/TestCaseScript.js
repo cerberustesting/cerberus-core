@@ -237,7 +237,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                         };
 
                         drawProperty(newProperty, testcaseinfo);
-
+                        autocompleteAllFields();
                     });
 
                     $('[data-toggle="tooltip"]').tooltip();
@@ -422,6 +422,8 @@ function saveScript() {
             parser.href = window.location.href;
 
             var new_uri = parser.pathname + "?test=" + stepData.test + "&testcase=" + stepData.testcase + "&step=" + stepData.sort;
+
+            setModif(false);
 
             window.location.href = new_uri;
         },
@@ -913,10 +915,10 @@ function loadLibraryStep(search) {
                     }
                     if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
                         var listGrp = test[step.test].content;
-                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-testCase='" + step.testCase + "']")
+                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
                             .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-testCase", step.testCase);
+                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
 
                         test[step.test].testCase[step.testCase] = {content : listCaseGr, step: {}};
@@ -940,7 +942,11 @@ function loadLibraryStep(search) {
 
             $("#addStepModal #search").unbind("input").on("input",function(e){
                 var search = $(this).val();
-                loadLibraryStep(search);
+                // Clear any previously set timer before setting a fresh one
+                window.clearTimeout($(this).data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+                    loadLibraryStep(search);
+                }, 500));
             });
 
             hideLoaderInModal("#addStepModal");
@@ -1944,7 +1950,7 @@ var autocompleteAllFields, getTags, setTags;
             testcase = thistestcase;
         }
 
-        autocompleteVariable("div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
+        autocompleteVariable("#propTable .property .row:nth-child(1) textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function(i,e){
             $(e).unbind("input").on("input",function(ev){
@@ -2011,7 +2017,9 @@ var autocompleteAllFields, getTags, setTags;
 
 editPropertiesModalClick = function(test, testcase, info, propertyToAdd, propertyToFocus) {
     $("#propTable").empty();
-    loadProperties(test, testcase, info, propertyToFocus);
+    loadProperties(test, testcase, info, propertyToFocus).then(function(){
+        autocompleteAllFields();
+    });
     if (propertyToAdd != undefined && propertyToAdd != null) {
         // Building full list of country from testcase.
         var myCountry = [];
