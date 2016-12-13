@@ -80,7 +80,6 @@ public class TestCaseStepAction {
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
     public static final String ACTION_CALCULATEPROPERTY = "calculateProperty";
     public static final String ACTION_DONOTHING = "doNothing";
-    public static final String ACTION_SKIPACTION = "skipAction";
     @Deprecated
     public static final String ACTION_GETPAGESOURCE = "getPageSource";
     @Deprecated

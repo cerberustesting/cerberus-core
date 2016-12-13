@@ -210,9 +210,6 @@ public class ControlService implements IControlService {
             } else if (testCaseStepActionControlExecution.getControl().equals("getPageSource")) {
                 res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("skipControl")) {
-                res = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SKIPCONTROL);
-
             } else {
                 res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
                 res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));

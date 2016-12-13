@@ -239,9 +239,6 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_DONOTHING)) {
             res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
 
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_SKIPACTION)) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SKIPACTION);
-
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_GETPAGESOURCE)) {
             res = this.doActionGetPageSource(testCaseStepActionExecution);
             res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());

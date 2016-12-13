@@ -2105,7 +2105,6 @@ function setPlaceholderAction() {
         {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
         {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": null},
         {"type": "doNothing", "object": null, "property": null},
-        {"type": "skipAction", "object": null, "property": null},
         {"type": "getPageSource", "object": null, "property": null}
     ], "en": [
         {"type": "Unknown", "object": null, "property": null},
@@ -2136,7 +2135,6 @@ function setPlaceholderAction() {
         {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
         {"type": "calculateProperty", "object": "Property Name", "property": null},
         {"type": "doNothing", "object": null, "property": null},
-        {"type": "skipAction", "object": null, "property": null},
         {"type": "getPageSource", "object": null, "property": null}
     ]};
 
@@ -2197,8 +2195,7 @@ function setPlaceholderControl() {
             {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
             {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
             {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null},
-            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null},
-            {"type": "skipControl", "controlValue": null, "controlProp": null, "fatal": null}
+            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null}
         ], "en": [
             {"type": "Unknown", "controlValue": null, "controlProp": null, "fatal": null},
             {"type": "verifyStringEqual", "controlValue": "String1", "controlProp": "String2", "fatal": ""},
@@ -2229,8 +2226,7 @@ function setPlaceholderControl() {
             {"type": "verifyTextInDialog", "controlValue": null, "controlProp": "Text", "fatal": ""},
             {"type": "verifyXmlTreeStructure", "controlValue": "Tree", "controlProp": "XPath", "fatal": ""},
             {"type": "takeScreenshot", "controlValue": null, "controlProp": null, "fatal": null},
-            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null},
-            {"type": "skipControl", "controlValue": null, "controlProp": null, "fatal": null}
+            {"type": "getPageSource", "controlValue": null, "controlProp": null, "fatal": null}
         ]};
 
     var user = getUser();

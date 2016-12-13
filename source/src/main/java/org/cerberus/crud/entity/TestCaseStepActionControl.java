@@ -76,7 +76,6 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYXMLTREESTRUCTURE = "verifyXmlTreeStructure";
     public static final String CONTROL_TAKESCREENSHOT = "takeScreenshot";
     public static final String CONTROL_GETPAGESOURCE = "getPageSource";
-    public static final String CONTROL_SKIPCONTROL = "skipControl";
     /**
      * Invariant CONTROL TYPE String.
      */

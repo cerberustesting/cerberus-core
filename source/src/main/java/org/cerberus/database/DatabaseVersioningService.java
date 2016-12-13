@@ -7431,7 +7431,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add path to picture for appliation object in paramaters
         //-- ------------------------ 979
         SQLS = new StringBuilder();
@@ -7440,7 +7440,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New Step model with conditionOper and ConditionVal1.
-        //-- ------------------------ 978-981
+        //-- ------------------------ 980-983
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestep` ");
         SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
@@ -7463,7 +7463,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New testcase model with conditionOper and ConditionVal1.
-        //-- ------------------------ 982-985
+        //-- ------------------------ 984-990
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcase` ");
         SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `TcActive`,");
@@ -7490,6 +7490,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcasestepactioncontrol SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed skipAction and skipControl and replaced by conditionOper = never.
+        //-- ------------------------ 991-994
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname = 'ACTION' and value = 'skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname = 'CONTROL' and value = 'skipControl';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction Set ConditionOper = 'never', Action = 'Unknown' where Action = 'skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol Set ConditionOper = 'never', Control = 'Unknown' where Control = 'skipControl';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
