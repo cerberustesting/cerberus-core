@@ -120,6 +120,7 @@ public class TestCaseStepExecution {
         this.stepResultMessage = stepResultMessage;
         if (stepResultMessage != null) {
             this.setReturnCode(stepResultMessage.getCodeString());
+            this.setReturnMessage(stepResultMessage.getDescription());
         }
     }
 

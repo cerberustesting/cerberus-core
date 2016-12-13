@@ -57,6 +57,7 @@ public class ConditionService implements IConditionService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
         switch (conditionOper) {
             case TestCaseStepAction.CONDITIONOPER_ALWAYS:
+            case "": // In case condition is not defined, it is considered as always.
                 mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
                 execute_Action = true;
                 break;

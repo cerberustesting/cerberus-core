@@ -322,27 +322,52 @@ public class ExecutionRunService implements IExecutionRunService {
                 ai.setDataList(tcsExecutionList);
                 tCExecution.setTestCaseStepExecutionAnswerList(ai);
 
-                /**
-                 * We execute the step
-                 */
-                testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
+                // Evaluate the condition at the control level.
+                AnswerItem<Boolean> conditionAnswer;
+                conditionAnswer = this.conditionService.evaluateCondition(testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), null, tCExecution);
+                boolean execute_Step = (boolean) conditionAnswer.getItem();
 
-                /**
-                 * Updating Execution Result Message only if execution result
-                 * message of the step is not PE or OK.
-                 */
-                if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
-                        && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
-                    tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
-                }
-                if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
-                    testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
-                }
+                if (execute_Step) {
 
-                testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+                    /**
+                     * We execute the step
+                     */
+                    testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
 
-                if (testCaseStepExecution.isStopExecution()) {
-                    break;
+                    /**
+                     * Updating Execution Result Message only if execution
+                     * result message of the step is not PE or OK.
+                     */
+                    if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
+                            && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
+                        tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
+                    }
+                    if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
+                        testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
+                    }
+
+                    testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+
+                    if (testCaseStepExecution.isStopExecution()) {
+                        break;
+                    }
+
+                } else { // We don't execute the control and record a generic execution.
+
+                    /**
+                     * Register Step in database
+                     */
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Step : " + testCaseStepExecution.getStep());
+                    // We change the Step message only if the Step is not executed due to condition.
+                    testCaseStepExecution.setStepResultMessage(conditionAnswer.getResultMessage());
+                    testCaseStepExecution.setEnd(new Date().getTime());
+                    this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+                    MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+
+                    if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
+                        TestCaseExecutionEndPoint.send(tCExecution);
+                    }
+
                 }
 
             }
@@ -503,10 +528,6 @@ public class ExecutionRunService implements IExecutionRunService {
             AnswerItem<Boolean> conditionAnswer;
             conditionAnswer = this.conditionService.evaluateCondition(testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), null, tcExecution);
             boolean execute_Action = (boolean) conditionAnswer.getItem();
-            // We change the Action message only if the action is not executed due to condition.
-            if (!(execute_Action)) {
-                testCaseStepActionExecution.setActionResultMessage(conditionAnswer.getResultMessage());
-            }
 
             // Execute or not the action here.
             if (execute_Action) {
@@ -554,6 +575,9 @@ public class ExecutionRunService implements IExecutionRunService {
                 recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
 
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+                // We change the Action message only if the action is not executed due to condition.
+                testCaseStepActionExecution.setActionResultMessage(conditionAnswer.getResultMessage());
+                testCaseStepActionExecution.setEnd(new Date().getTime());
                 this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
 
@@ -643,34 +667,64 @@ public class ExecutionRunService implements IExecutionRunService {
             ai.setDataList(tcsaExecution);
             testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(ai);
 
-            /**
-             * We execute the control
-             */
-            testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution, tcExecution);
+            // Evaluate the condition at the control level.
+            AnswerItem<Boolean> conditionAnswer;
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), null, tcExecution);
+            boolean execute_Control = (boolean) conditionAnswer.getItem();
 
-            /**
-             * We update the Action with the execution message and stop flag
-             * from the control. We update the status only if the control is not
-             * OK. This is to prevent moving the status to OK when it should
-             * stay KO when a control failed previously.
-             */
-            testCaseStepActionExecution.setStopExecution(testCaseStepActionControlExecution.isStopExecution());
-            if (!(testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-                //NA is a special case of not having success while calculating the property; the action shouldn't be stopped
-                if (testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
-                    //restores the messages information if the property is not defined for the country
-                    testCaseStepActionExecution.setActionResultMessage(actionMessage);
-                    testCaseStepActionExecution.setExecutionResultMessage(excutionResultMessage);
-                } else {
-                    testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
-                    testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
+            if (execute_Control) {
+
+                /**
+                 * We execute the control
+                 */
+                testCaseStepActionControlExecution = executeControl(testCaseStepActionControlExecution, tcExecution);
+
+                /**
+                 * We update the Action with the execution message and stop flag
+                 * from the control. We update the status only if the control is
+                 * not OK. This is to prevent moving the status to OK when it
+                 * should stay KO when a control failed previously.
+                 */
+                testCaseStepActionExecution.setStopExecution(testCaseStepActionControlExecution.isStopExecution());
+                if (!(testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
+                    //NA is a special case of not having success while calculating the property; the action shouldn't be stopped
+                    if (testCaseStepActionControlExecution.getControlResultMessage().equals(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION))) {
+                        //restores the messages information if the property is not defined for the country
+                        testCaseStepActionExecution.setActionResultMessage(actionMessage);
+                        testCaseStepActionExecution.setExecutionResultMessage(excutionResultMessage);
+                    } else {
+                        testCaseStepActionExecution.setExecutionResultMessage(testCaseStepActionControlExecution.getExecutionResultMessage());
+                        testCaseStepActionExecution.setActionResultMessage(testCaseStepActionControlExecution.getControlResultMessage());
+                    }
                 }
-            }
-            /**
-             * If Control reported to stop the testcase, we stop it.
-             */
-            if (testCaseStepActionControlExecution.isStopExecution()) {
-                break;
+                /**
+                 * If Control reported to stop the testcase, we stop it.
+                 */
+                if (testCaseStepActionControlExecution.isStopExecution()) {
+                    break;
+                }
+
+            } else { // We don't execute the control and record a generic execution.
+
+                /**
+                 * Record Screenshot, PageSource
+                 */
+                recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+
+                /**
+                 * Register Control in database
+                 */
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
+                // We change the Control message only if the Control is not executed due to condition.
+                testCaseStepActionControlExecution.setControlResultMessage(conditionAnswer.getResultMessage());
+                testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
+                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+
+                if (tcExecution.isFeatureFlippingActivateWebsocketPush()) {
+                    TestCaseExecutionEndPoint.send(tcExecution);
+                }
+
             }
 
         }
@@ -720,7 +774,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }
         }
-        
+
         if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
             TestCaseExecutionEndPoint.send(tCExecution);
         }
