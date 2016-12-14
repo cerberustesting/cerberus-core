@@ -173,7 +173,7 @@ function editEntryModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope, not in the form
-    data.envelope = encodeURI($("#editSoapLibraryModal #envelope").text());
+    data.envelope = encodeURIComponent($("#editSoapLibraryModal #envelope").text());
 
     showLoaderInModal('#editSoapLibraryModal');
     $.ajax({
@@ -264,7 +264,7 @@ function addEntryModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope, not in the form
-    data.envelope = encodeURI($("#addSoapLibraryModalForm #envelope").text());
+    data.envelope = encodeURIComponent($("#addSoapLibraryModalForm #envelope").text());
 
     showLoaderInModal('#addSoapLibraryModal');
     $.ajax({
