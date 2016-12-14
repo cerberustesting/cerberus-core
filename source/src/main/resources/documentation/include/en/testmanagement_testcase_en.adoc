@@ -109,3 +109,48 @@ These syntax are available:
 . %object.myobject.value% : Get the application object myobject's value
 . %object.myobject.picturepath% : Get the application object myobject's picture path
 . %object.myobject.pictureurl% : Get the application object myobject's picure url
+
+Below you will find usefull properties :
+
+|=== 
+
+| *Value* | *Description*   
+| %SYS_SYSTEM% | System value 
+| %SYS_APPLI% |	Application reference
+| %SYS_APP_DOMAIN% |	Domain of the Application
+| %SYS_APP_VAR1% |	VAR1 of the application on the environment.
+| %SYS_APP_VAR2% |	VAR2 of the application on the environment.
+| %SYS_APP_VAR3% |	VAR3 of the application on the environment.
+| %SYS_APP_VAR4% |	VAR4 of the application on the environment.
+| %SYS_ENV% |	Environment value
+| %SYS_ENVGP% |	Environment group code
+| %SYS_COUNTRY% |	Country code
+| %SYS_TEST% |	Test.
+| %SYS_TESTCASE% |	TestCase
+| %SYS_COUNTRYGP1% |	Country group1 value
+| %SYS_SSIP% |	Selenium server IP
+| %SYS_SSPORT% |	Selenium server port
+| %SYS_BROWSER% |	Browser name of the current execution.
+| %SYS_TAG% |	Execution tag
+| %SYS_EXECUTIONID% |	Execution ID
+| %SYS_EXESTART% |	Start date and time of the execution with format : 2016-12-31 21:24:53.008.
+| %SYS_EXESTORAGEURL% |	Path where media are stored (based from the exeid).
+| %SYS_STEP.n.RETURNCODE% |	Return Code of the step n. n being the execution sequence of the step (sort).
+| %SYS_TODAY-yyyy% |	Year of today
+| %SYS_TODAY-MM% |	Month of today
+| %SYS_TODAY-dd% |	Day of today
+| %SYS_TODAY-doy% |	Day of today from the beginning of the year
+| %SYS_TODAY-HH% |	Hour of today
+| %SYS_TODAY-mm% |	Minute of today
+| %SYS_TODAY-ss% |	Second of today
+| %SYS_YESTERDAY-yyyy% |	Year of yesterday
+| %SYS_YESTERDAY-MM% |	Month of yesterday
+| %SYS_YESTERDAY-dd% |	Day of yesterday
+| %SYS_TODAY-doy% |	Day of yesterday from the beginning of the year
+| %SYS_YESTERDAY-HH% |	Hour of yesterday
+| %SYS_YESTERDAY-mm% |	Minute of yesterday
+| %SYS_YESTERDAY-ss% |	Second of yesterday
+| %SYS_ELAPSED-EXESTART% |	Number of milisecond since the start of the execution.
+| %SYS_ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
+
+|=== 
