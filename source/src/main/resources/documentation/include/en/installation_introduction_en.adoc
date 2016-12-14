@@ -1,1 +1,1 @@
-Installation introduction
+This section describes how to install Cerberus and its associated external tools.

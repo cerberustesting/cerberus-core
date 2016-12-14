@@ -1,0 +1,248 @@
+http://appium.io/[Appium] is an open source test automation framework for use with native, hybrid and mobile Web applications.
+It drives iOS, Android, and Windows applications using the https://www.w3.org/TR/webdriver/[WebDriver] protocol.
+
+This procedure covers installation and configuration of **Appium v.1.6.2+**.
+
+==== Table of Contents
+
+. <<installation_externaltools_appium_en_appium_server_installation, Appium server installation>>
+. <<installation_externaltools_appium_en_client_use, Client use>>
+. <<installation_externaltools_appium_en_useful_links, Useful links>>
+
+[[installation_externaltools_appium_en_appium_server_installation]]
+==== Appium server installation
+
+===== Android
+
+Install _Android SDK_ v.1.7+. See official documentation https://developer.android.com/studio/install.html[here] and https://developer.android.com/studio/intro/update.html[here] for more details.
+
+===== IOS
+
+====== Installation
+
+. Install _Xcode_ 8.1+
+. Install the _Apple Developer Tools_ via this http://railsapps.github.io/xcode-command-line-tools.html[external documentation]
+. Follow the complete procedure from this https://hasaanali.wordpress.com/2016/12/01/install-appium-v1-6-from-terminal-setup-for-ios/[external documentation] and apply the following commands and fixes:
+.. https://github.com/Carthage/Carthage\[_Carthage_] cannot be installed via _npm_ but _brew_. Thus, install _Carthage_ by executing:
++
+--------------------------------------
+brew install carthage
+--------------------------------------
++
+.. Execute the following additional commands:
++
+--------------------------------------
+npm install -g ios-deploy --unsafe-perm=true
+npm install -g deviceconsole
+brew uninstall ideviceinstaller
+brew uninstall libimobiledevice
+brew install --HEAD libimobiledevice
+brew unlink libimobiledevice && brew link libimobiledevice
+brew install ideviceinstaller
+brew unlink ideviceinstaller && brew link ideviceinstaller
+--------------------------------------
++
+
+[CAUTION]
+.Note about the current Appium version from _npm_
+=====================================================================
+At the time of writing, the installed Appium version (1.6.2) from the above procedure doesn't work properly with Cerberus. Only the 1.6.3-SNAPSHOT version was able to correctly start application.
+The following commands will help you to install the latest version of Appium (extracted from the https://github.com/appium/appium/blob/master/docs/en/contributing-to-appium/appium-from-source.md[official documentation]):
+--------------------------------------
+git clone https://github.com/appium/appium.git
+cd appium
+npm install -g mocha
+npm install -g gulp
+npm install -g gulp-cli
+npm install
+gulp transpile
+--------------------------------------
+=====================================================================
+
+[[installation_externaltools_appium_en_appium_server_installation_application_sign_configuration]]
+====== Application sign configuration
+
+The latest version of Appium uses the https://github.com/appium/appium-xcuitest-driver[appium-xcuitest-driver] which depend on the https://github.com/facebook/WebDriverAgent[Web Driver Agent] that need to be deployed on the tested device. Thus, the Appium server's host needs to be configured to be allowed to deploy application on tested device.
+
+Appium server's host must:
+
+. Have its associated Apple account registered to a https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/ManagingYourTeam/ManagingYourTeam.html[Apple Team Development]
+. Have downloaded the _iOS Development_ signing identity associated to the registered Apple Team Development
+. Have downloaded a provisioning profile associated to the registered Apple Team Development that allow:
+** **at least** the _Web Driver Agent_ application (identified by the `com.facebook.WebDriverAgentLib` bundle identifier)
+** the tested device to install the _Web Driver Agent_ application
+
+Once all of these previous prerequisities are met, then create a _appium.xcconfig_ file and fill it with the following lines (where `<Team ID>` is your Development Team identifier):
+--------------------------------------
+DEVELOPMENT_TEAM = <Team ID>
+CODE_SIGN_IDENTITY = iPhone Developer
+--------------------------------------
+
+This file will be used further by execution. Look at the <<installation_externaltools_appium_en_appium_server_installation_run, Run>> section for more details.
+
+[[installation_externaltools_appium_en_appium_server_installation_run]]
+===== Run
+
+Run Appium server can differ following the way you installed it.
+
+====== Installation from npm
+
+If Appium has been installed from _npm_, then simply starts Appium server by executing:
+
+--------------------------------------
+appium
+--------------------------------------
+
+====== Installation from Appium sources
+
+If Appium has been installed from its sources, we encourage to create an executable file to start and configure Appium server more easily. Then:
+
+. Create a _appium_ file and fill it with the following lines
++
+--------------------------------------
+#!/bin/bash
+cd /path/to/appium/sources && node . "$@"
+--------------------------------------
++
+. Make this file executable
++
+--------------------------------------
+chmod +x /path/to/the/appium/file
+--------------------------------------
++
+. Locate the root directory of this executable file and add it to your `PATH` variable by adding this line to your _~/.bash_profile_ (or any terminal session start) file:
++
+--------------------------------------
+export PATH=/path/to/the/appium/file/root/directory:$PATH
+--------------------------------------
++
+. Restart your terminal session
+. Start Appium server by executing
++
+--------------------------------------
+appium
+--------------------------------------
++
+
+
+[[installation_externaltools_appium_en_note_for_IOS_application_testing]]
+====== Note for IOS application testing
+
+As viewed from <<installation_externaltools_appium_en_appium_server_installation_application_sign_configuration, previous section>>, Appium has to deal with Apple application sign.
+This could be done by sending the `xcodeConfigFile` capability to the Appium server.
+
+But you may want to use the same value for any request, because the Apple Development Team is often unique within an organization.
+It could be the same for the `realDeviceLogger` capability because Appium can always using https://github.com/appium/deviceconsole[deviceconsole] as real device logger.
+
+This can be achieved by starting the Appium server with the `--default-capabilities` option and giving it the list of default capabilities.
+For maintenance reason, we recommend to delegate definition of the list of capabilities into a JSON file as the following:
+
+. Create a file named _common.caps_ (for instance)
+. Fill it with your default capabilities
++
+--------------------------------------
+{
+    "xcodeConfigFile": "/path/to/appium.xcconfig",
+	"realDeviceLogger": "/usr/local/lib/node_modules/deviceconsole/deviceconsole"
+}
+--------------------------------------
++
+. Then start Appium server by executing
++
+--------------------------------------
+appium --default-capabilities /path/to/common.caps
+--------------------------------------
++
+
+
+[[installation_externaltools_appium_en_client_use]]
+==== Client use
+
+The following section will show different use cases to connect to the Appium server.
+
+===== Execute mobile test case with Cerberus
+
+Once you wrote your test case, Cerberus can execute it to the desired mobile by configuring the associated Robot
+
+Inside Cerberus, open the Robot page (Run -> Robot), and, depending on the application type, fill the Robot with the following configuration:
+
+====== Android
+
+image:robotandroiddefinition.png[Robot definition]
+
+image:robotandroidcapabilities.png[Robot capabilities]
+
+[NOTE]
+Values are given as example. feel free to modify them according to your needs.
+
+====== IOS
+
+image:robotiosdefinition.png[Robot definition]
+
+image:robotioscapabilities.png[Robot capabilities]
+
+[NOTE]
+=====================================================================
+Values are given as example. feel free to modify them according to your needs.
+
+The two last capabilities `xcodeConfigFile` and `realDeviceLogger` are not necessary if given at Appium startup. See the <<installation_externaltools_appium_en_note_for_IOS_application_testing, previous section>> for more details.
+=====================================================================
+
+
+===== Inspection
+
+Inspection is used to locate application’s element by identifier, XPath, etc. Theses values can so be use inside Cebrerus to describe automated test cases.
+
+Inspection can be done by using the Appium client interface.
+
+====== Installation
+
+Install latest client from the https://bitbucket.org/appium/appium.app/downloads/[official page].
+
+====== Configuration
+
+Appium client interface **has to be configured to be only used for inspection**. to have application’s element XPath for instance):
+
+From the General settings menu:
+
+* Fill the _Server address_ input field with the Appium server address
+* Fill the _Port_ input field with the Appium server port
+* Unable the _Use Remote Server_ option
+
+image:appiumclientinterfacegeneralsettings.png[General settings]
+
+For Android case, open the Android settings menu and:
+
+* Fill the _App Path_ with the absolute path (or URL) of the application APK
+* Fill the _Platform Name_ by `Android`
+* Fill the _Automation Name_ by `Appium`
+* Fill the _Platform Version_ by your device platform version
+* Fill the _Device Name_ by your device name
+
+image:appiumclientinterfaceandroidsettings.png[Android settings]
+
+For IOS case, open the IOS settings menu and:
+
+* Fill the _App Path_ with the absolute path (or URL) of the application IPA
+* Fill the _Force device_ input filed by your device name
+* Fill the _Platform version_ input field by your platform version. It must be lower or equal than your Xcode SDK supported version (for instance, 10.1 by using Xcode 8).
+* Fill the _UDID_ input field by your device's UDID number
+
+image:appiumclientinterfaceiossettings.png[IOS settings]
+
+====== Run
+
+Once Appium client is correctly configured, simply click on the Android or IOS radio button following the application definition and then click on the Inspector button.
+
+image:appiuminspector.png[Appium Inspector]
+
+[[installation_externaltools_appium_en_useful_links]]
+==== Useful links
+
+|===
+|Title | Link
+
+|List of Appium server capabilities
+|https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/caps.md
+
+|===

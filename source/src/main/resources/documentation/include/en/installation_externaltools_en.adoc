@@ -1,0 +1,25 @@
+For each application type there is a specific engine to run tests under it. For instance, Web applications will be handled by the http://www.seleniumhq.org/[Selenium] Web browser automation tool.
+
+The main goal of Cerberus is to gather this tool ecosystem to provide a common way to describe and run tests, whatever the kind of application type.
+
+Hereafter the list of compatible application types and their associated external tool:
+
+
+.Application type and associated external tools
+|===
+|Application types |Associated external tool
+
+|Web
+|Selenium
+
+|Mobile (Android, Iphone)
+|Appium
+
+|Heavy
+|Sikuli
+
+|Web services
+|Cerberus internal implementation
+|===
+
+The following sections will cover installation and configuration procedures for each associated external tool.

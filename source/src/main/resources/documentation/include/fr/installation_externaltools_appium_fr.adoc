@@ -1,0 +1,247 @@
+http://appium.io/[Appium] est un outil libre d'automatisation d'applications native, hybride ou Web, utilisant le protocole https://www.w3.org/TR/webdriver/[WebDriver] pour le rendre compatible iOS, Android et Windows.
+
+Cette procédure couvre l'installation et la configuraiton d'**Appium v1.6.2+**.
+
+==== Sommaire
+
+. <<installation_externaltools_appium_en_appium_server_installation, Installation du serveur Appium>>
+. <<installation_externaltools_appium_en_client_use, Utilisations clientes>>
+. <<installation_externaltools_appium_en_useful_links, Liens utiles>>
+
+[[installation_externaltools_appium_en_appium_server_installation]]
+==== Installation du serveur Appium
+
+===== Android
+
+Installer le _Android SDK_ v.1.7+. Se référer à la documentation officielle https://developer.android.com/studio/install.html[ici] et https://developer.android.com/studio/intro/update.html[ici] pour plus d'informations.
+
+===== IOS
+
+====== Installation
+
+. Installer _Xcode_ 8.1+
+. Installer les _Apple Developer Tools_ via cette http://railsapps.github.io/xcode-command-line-tools.html[documentation externe (en)]
+. Suivre la procédure décrite au sein de cette https://hasaanali.wordpress.com/2016/12/01/install-appium-v1-6-from-terminal-setup-for-ios/[documentation externe (en)] et y ajouter les commandes et corrections suivantes:
+.. https://github.com/Carthage/Carthage\[_Carthage_] ne peut pas être installé via _npm_ mais via _brew_. Ainsi, pour installer _Carthage_, executer:
++
+--------------------------------------
+brew install carthage
+--------------------------------------
++
+.. Executer les commandes supplémentaires suivantes:
++
+--------------------------------------
+npm install -g ios-deploy --unsafe-perm=true
+npm install -g deviceconsole
+brew uninstall ideviceinstaller
+brew uninstall libimobiledevice
+brew install --HEAD libimobiledevice
+brew unlink libimobiledevice && brew link libimobiledevice
+brew install ideviceinstaller
+brew unlink ideviceinstaller && brew link ideviceinstaller
+--------------------------------------
++
+
+[CAUTION]
+.A propos de la version actuelle d'Appium via _npm_
+=====================================================================
+A l'heure de l'écriture de ce document, la version installée du serveur Appium via _npm_ (1.6.2) ne fonctionnait pas correctement avec Cerberus. Seule la version de développment, à savoir 1.6.3-SNAPSHOT, permettait de lancer correctement des tests mobiles.
+Ci-dessous la liste des commandes à exécuter afin d'intaller la version de développement du serveur d'Appium (extrait de la https://github.com/appium/appium/blob/master/docs/en/contributing-to-appium/appium-from-source.md[documentation officielle (en)]):
+--------------------------------------
+git clone https://github.com/appium/appium.git
+cd appium
+npm install -g mocha
+npm install -g gulp
+npm install -g gulp-cli
+npm install
+gulp transpile
+--------------------------------------
+=====================================================================
+
+[[installation_externaltools_appium_en_appium_server_installation_application_sign_configuration]]
+====== Signature des applications
+
+La dernière version d'Appium utilise https://github.com/appium/appium-xcuitest-driver[appium-xcuitest-driver], lui même dépendant de https://github.com/facebook/WebDriverAgent[Web Driver Agent] qui a besoin d'être déployé sur le mobile a tester. Ainsi, le poste hébergeant le serveur Appium a besoin d'être configuré pour être autoriser à déployer une applciation sur le mobile à tester.
+
+Le poste hébergeant le serveur Appium doit :
+
+. avoir le compte Apple associé enregistré auprès d'une https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/ManagingYourTeam/ManagingYourTeam.html[Equie de Développement Apple]
+. avoir téléchargé le certificat _iOS Development_ au niveau des _Signing identities_ Xcode associées à l'Equipe de Développement Apple
+. avoir téléchargé le profile de provisionnement associé à l'Equipe de Développement Apple qui autorise :
+** **au moins** l'appliation _Web Driver Agent_ (identifiée par le _bundle id_ `com.facebook.WebDriverAgentLib`)
+** le mobile de test à installer application _Web Driver Agent_
+
+Une fois ces prérequis réalisé, créer un fichier _appium.xcconfig_ et y renseigner (où `<Team ID>` est l'identifiant de votre Equipe de Développement Apple) :
+--------------------------------------
+DEVELOPMENT_TEAM = <Team ID>
+CODE_SIGN_IDENTITY = iPhone Developer
+--------------------------------------
+
+Ce fichier sera utilisé plus loin lors de l'exécution. Voir la section <<installation_externaltools_appium_en_appium_server_installation_run, Exécution>> pour plus de détails.
+
+[[installation_externaltools_appium_en_appium_server_installation_run]]
+===== Exécutions
+
+L'exécution du serveur Appium peut différée selon son mode d'installation:
+
+====== Installation via npm
+
+Si le serveur Appium a été installé via _npm_, exécuter simplement :
+
+--------------------------------------
+appium
+--------------------------------------
+
+====== Installation à partir du code source
+
+Si le serveur Appium a été installé à partir de son code source, nous encourageons à créer un fichier exécutable contenant les commandes à exécuter pour démarrer le serveur. De fait, la maintenance et l'utilisation en sera simplifiée. Ainsi :
+
+. Créer un fichier _appium_ file avec le contenu suivant :
++
+--------------------------------------
+#!/bin/bash
+cd /chemin/vers/le/code/source/appium && node . "$@"
+--------------------------------------
++
+. Rendre ce fichier exécutable
++
+--------------------------------------
+chmod +x /chemin/vers/le/fichier/créé
+--------------------------------------
++
+. Localiser le dossier de ce fichier et le renseigner au sein de votre variable `PATH`, en éditant votre fichier _~/.bash_profile_ (ou tout autre fichier de démarrage de session) :
++
+--------------------------------------
+export PATH=/chemin/vers/le/dossier/du/fichier/créé:$PATH
+--------------------------------------
++
+. Redémarrer la session du Terminal
+. Démarrer le serveur Appium en exécutant
++
+--------------------------------------
+appium
+--------------------------------------
++
+
+
+[[installation_externaltools_appium_en_note_for_IOS_application_testing]]
+====== Note pour le test d'applications IOS
+
+Comme vu lors de la <<installation_externaltools_appium_en_appium_server_installation_application_sign_configuration, section précédente>>, Appium doit pouvoir accéder aux informations lui permettant de signer une application.
+Ceci peut être réalisé en fournissant la capabilité `xcodeConfigFile` au démarrage du serveur Appium.
+
+Vous pourriez souhaiter (ce qui est même préférable) de fournir cette valeur à chaque requête cliente. Notamment car il s'agit souvent de la même Equipe de Développement Apple au sein d'une même organisation.
+Cette réflexion peut également être apportée pour la capabilité obligatoire `realDeviceLogger` qui sera toujours pointée vers l'installation de https://github.com/appium/deviceconsole[deviceconsole].
+
+Dans ce cas, il vous est possible d'utiliser l'option de démarrage  `--default-capabilities`, permettant de fournir les capabilités par défaut qui seront prises en compte à chauqe requête cliente.
+Pour facilité son utilisation, nous optons sur l'utilisation d'un fichier JSON dédié. Pour cela :
+
+. Créer un fichier nommé _common.caps_ (par exemple) contenant les lignes suivantes :
++
+--------------------------------------
+{
+    "xcodeConfigFile": "/chemin/vers/le/fichier/appium.xcconfig",
+	"realDeviceLogger": "/usr/local/lib/node_modules/deviceconsole/deviceconsole"
+}
+--------------------------------------
++
+. Puis démarrer le serveur Appium en lui précisant les capabilités par défaut :
++
+--------------------------------------
+appium --default-capabilities /chemin/vers/le/fichier/common.caps
+--------------------------------------
++
+
+
+[[installation_externaltools_appium_en_client_use]]
+==== Utilisations clientes
+
+La section suivante présente différents cas d'utilisation pour l'utilisation du serveur Appium.
+
+===== Exécuter un cas de test mobile avec Cerberus
+
+Une fois le cas de test écrit, Cerberus peut exécuter ce cas de test sur le mobile souhaité en configurant au préalable un Robot associé.
+
+Au sein de Cerberus, ouvrir la page des Robots (Exécuter -> Robot), et, en fonction du type d'application à tester :
+
+====== Android
+
+image:robotandroiddefinition.png[Robot definition]
+
+image:robotandroidcapabilities.png[Robot capabilities]
+
+[NOTE]
+Ces valeurs sont données à titre d'exemple. N'hésitez pas à les modifier à votre guise.
+
+====== IOS
+
+image:robotiosdefinition.png[Robot definition]
+
+image:robotioscapabilities.png[Robot capabilities]
+
+[NOTE]
+=====================================================================
+Ces valeurs sont données à titre d'exemple. N'hésitez pas à les modifier à votre guise.
+
+Les deux dernieres capabilités `xcodeConfigFile` and `realDeviceLogger` ne sont pas nécessaires si elles sont déjà déclarées au démarrage du serveur Appium. Voir <<installation_externaltools_appium_en_note_for_IOS_application_testing, la section précédente>> pour plus de détails.
+=====================================================================
+
+
+===== Inspection
+
+L'inspection est utilisée pour localiser les éléments d'une application. Elle fournit alors les identificateurs (id, XPath, etc.) permettant d'alimenter les cas de tests Cerberus pour localiser les éléments.
+
+L'inspection peut être réalisée grâce à l'application cliente Appium.
+
+====== Installation
+
+Installer la dernière version de l'application cliente Appium disponible sur la https://bitbucket.org/appium/appium.app/downloads/[page officielle].
+
+====== Configuration
+
+L'application cliente Appium **doit être configurée pour n'être utilisée que pour l'inspection**.
+Ainsi,
+
+Au sein du menu _General settings_ :
+
+* Renseigner le champ _Server address_ avec l'adresse du serveur Appium
+* Renseigner le champ _Port_ avec le numéro du port sur serveur Appium
+* Cocher la case _Use Remote Server_
+
+image:appiumclientinterfacegeneralsettings.png[General settings]
+
+Pour une inspection Android, ouvrir le menu Android et :
+
+* Renseigner _App Path_ avec le chemin absolu (ou l'URL) de l'APK de application
+* Renseigner _Platform Name_ par `Android`
+* Renseigner _Automation Name_ par `Appium`
+* Renseigner _Platform Version_ avec la version Android du mobile testé
+* Renseigner _Device Name_ avec le nom du mobile testé
+
+image:appiumclientinterfaceandroidsettings.png[Android settings]
+
+Pour une inspection IOS, ouvrir le menu IOS et :
+
+* Renseigner _App Path_ avec le chemin absolu (ou l'URL) de l'IPA de l'application
+* Renseigner _Force device_ avec le nom du mobile testé
+* Renseigner _Platform version_ avec la version IOS du mobile testé. Cette version doit être inférieure ou égale à la version disponible au sein du poste hébergeant le serveur Appium (e.g., 10.1 avec Xcode 8).
+* Renseigner _UDID_ avec l'UDID du mobilé testé
+
+image:appiumclientinterfaceiossettings.png[IOS settings]
+
+====== Exécution
+
+Une fois l'application client Appium correctement configurée, sélectionner le bouton radio correspondant au type de l'application à tester (Android ou IOS) et cliquer sur le bouton d'Inspection.
+
+image:appiuminspector.png[Appium Inspector]
+
+[[installation_externaltools_appium_en_useful_links]]
+==== Liens utiles
+
+|===
+|Titre | Lien
+
+|Liste des capabilités de serveur Appium (en)
+|https://github.com/appium/appium/blob/master/docs/en/writing-running-appium/caps.md
+
+|===
