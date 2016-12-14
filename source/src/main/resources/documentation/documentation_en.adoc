@@ -216,29 +216,47 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Technical architecture
+== Cerberus installation
+
+=== Technical architecture
 :file-to-include: installation_technicalarchitecture_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Installation guide
+=== Installation guide
 :file-to-include: installation_installationguide_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Cerberus database init
+=== Cerberus database init
 :file-to-include: installation_databaseinit_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Cerberus configuration
+=== Cerberus configuration
 :file-to-include: installation_configuration_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== External tools
+:file-to-include: installation_externaltools_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+=== Selenium
+:file-to-include: installation_externaltools_selenium_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+=== Appium
+:file-to-include: installation_externaltools_appium_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+=== Sikuli
+:file-to-include: installation_externaltools_sikuli_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
 
 = Maintenance
 :file-to-include: maintenance_introduction_{lang}.adoc

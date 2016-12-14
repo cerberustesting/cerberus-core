@@ -1,0 +1,25 @@
+L'exécution d'un test dépend du type d'application sous-jacent. En effet, pour chaque type d'application, il existe un moteur spécifique permettant l'exécution des tests. Par exemple, le test d'application Web implique l'utilisation du moteur http://www.seleniumhq.org/[Selenium].
+
+Le but de Cerberus est de réunir l'ensemble de ces moteurs, en définissant une manière commune pour l'ecriture et l'exécution des tests, quelque soit le type de l'application sous-jacente.
+
+Si-après la liste des types d'applications compatibles et leur outil externe associé:
+
+
+.Types d'applications et leur outil externe associé
+|===
+|Types d'application|Outil externe associé
+
+|Web
+|Selenium
+
+|Mobile (Android, Iphone)
+|Appium
+
+|Client lourd
+|Sikuli
+
+|Services Web
+|Implémentation interne Cerberus
+|===
+
+Les sections suivantes décrives l'installation et la configuration de chacun de ces outils externes.
