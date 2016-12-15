@@ -49,6 +49,27 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 === Implement TestCase
 
+==== Step
+
+.Click on *[red]#Add step#* to display the following window
+.Feed a *[red]#Description#* and click on *[red]#Add#* for a new step 
+.Or search for a step in library then click on *[red]#Add#*
+
+image:testcaseaddstep.png[testcaseaddstep,200,200]
+
+Your step is created. if you want to put it in library, just click on the book on the right side.
+A step in library will be available to add it in all test cases of your current system.
+
+image:testcasesteplibrary.png[testcasesteplibrary,200,200]
+
+In the following screenshot you can see a use step. This step is imported from the previous library step.
+You are not able to modify it (all fields are grey). But you can find a link at the top to open the library if you want to modify your step. All use steps from this library will be impacted by your modification.
+
+To modify only this use step, you have to click on the padlock icon but it will not be a use step anymore. (modification on library step will not affect it)
+
+image:testcaseusestep.png[testcaseusestep,200,200]
+
+
 ==== Action
 
 ==== Control
