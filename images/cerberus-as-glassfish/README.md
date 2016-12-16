@@ -10,7 +10,7 @@ Hereafter list of available tags:
 
 Tag     | Description                        | Source
 --------|------------------------------------|-------------------------------
-latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.9/Dockerfile)
+latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/latest/Dockerfile)
 1.1.9   | Use the 1.1.9   Cerberus version   | [1.1.9/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.9/Dockerfile)
 1.1.8   | Use the 1.1.8   Cerberus version   | [1.1.8/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.8/Dockerfile)
 1.1.7   | Use the 1.1.7   Cerberus version   | [1.1.7/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.7/Dockerfile)
@@ -22,9 +22,8 @@ latest  | Use the latest Cerberus version    | [latest/Dockerfile](https://githu
 
 ## Prerequisites
 
-This image needs to be linked to a Cerberus database image, e.g., `cerberus-db-mysql`.
-
-See the `DATABASE_*` environment variables on the Dockerfile for more information.
+From the [1.1.9](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/1.1.9/Dockerfile) version, the `cerberus-as-glassfish` is only compatible with the [MySQL](http://www.mysql.com/) dialect, so only usable by linking to the [`cerberus-db-mysql`](https://github.com/cerberustesting/cerberus-docker/tree/master/images/cerberus-db-mysql) Cerberus database image.
+See the `DATABASE_*` environment variables bellow for more details.
 
 ## How to run this image
 
@@ -36,7 +35,7 @@ docker run -d -P cerberus/cerberus-as-glassfish:latest
 
 Note the use of the `-d` and `-P` arguments to let image be run as deamon and open ports outside container which is the common use.
 
-To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for database type, name, username, and password):
+To run image by connecting to a MySQL Cerberus database located at `<database_host>:<database_port>` you could run (assume we are using default values for name, username, and password):
 
 docker run -d -P -e DATABASE_HOST='<database_host>' -e DATABASE_PORT='<database_port>' cerberus/cerberus-as-glassfish:latest
 
@@ -62,7 +61,6 @@ Hereafter list of environment variables that could be overridden when starting t
 
 Environment variable                    | Definition                                | Default value
 ----------------------------------------|-------------------------------------------|--------------------------
-`DATABASE_TYPE`                         | Cerberus database type                    | `mysql` or `mariadb` only
 `DATABASE_HOST`                         | Cerberus database host                    | `localhost`
 `DATABASE_PORT`                         | Cerberus database port                    | `3306`
 `DATABASE_NAME`                         | Cerberus database name                    | `cerberus`

@@ -20,7 +20,6 @@ MAINTAINER cerberustesting
 
 # Database related environment variables
 # Could be overridden by user
-ENV DATABASE_TYPE mysql
 ENV DATABASE_HOST cerberus-db-mysql
 ENV DATABASE_PORT 3306
 ENV DATABASE_NAME cerberus
@@ -36,11 +35,19 @@ ENV CERBERUS_PICTURES_PATH ${GLASSFISH_HOME}/glassfish/domains/domain1/docroot/C
 ENV CERBERUS_PACKAGE_NAME ${CERBERUS_NAME}-${CERBERUS_VERSION}
 ENV GLASSFISH_ADMIN_USER admin
 ENV GLASSFISH_DOMAIN domain1
+ENV MYSQL_JAVA_CONNECTOR_VERSION 5.1.20
+ENV MYSQL_JAVA_CONNECTOR_NAME mysql-connector-java-${MYSQL_JAVA_CONNECTOR_VERSION}
+ENV MYSQL_JAVA_CONNECTOR_LIB_PATH /tmp/${MYSQL_JAVA_CONNECTOR_NAME}/${MYSQL_JAVA_CONNECTOR_NAME}-bin.jar
 
 # Get and extract the Cerberus package
 # Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
 RUN curl -L -o /tmp/${CERBERUS_PACKAGE_NAME}.zip https://sourceforge.net/projects/cerberus-source/files/${CERBERUS_PACKAGE_NAME}.zip/download && \
     unzip -q -d /tmp /tmp/${CERBERUS_PACKAGE_NAME}.zip
+
+# Get and extract the MySQL connector library
+# Use RUN instead of ADD to avoid re-download (see https://github.com/docker/docker/issues/15717)
+RUN curl -L -o /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip https://downloads.mysql.com/archives/get/file/${MYSQL_JAVA_CONNECTOR_NAME}.zip && \
+    unzip -q -d /tmp /tmp/${MYSQL_JAVA_CONNECTOR_NAME}.zip
 
 # Create the screenshot directory
 RUN mkdir ${CERBERUS_PICTURES_PATH} && \
