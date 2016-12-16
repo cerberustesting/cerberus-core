@@ -97,7 +97,7 @@ public class AndroidAppiumService extends AppiumService {
 
         RETURN(AndroidKeyCode.ENTER),
         ENTER(AndroidKeyCode.ENTER),
-        SEARCH(AndroidKeyCode.ENTER),
+        SEARCH(AndroidKeyCode.KEYCODE_SEARCH),
         BACKSPACE(AndroidKeyCode.BACKSPACE),
         BACK(AndroidKeyCode.BACK); 
 
