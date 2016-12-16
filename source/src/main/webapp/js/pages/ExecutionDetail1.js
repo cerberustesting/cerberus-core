@@ -24,28 +24,41 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
 
-        var parser = document.createElement('a');
-        parser.href = window.location.href;
+        $.ajax({
+            url: "ReadTestCaseExecution",
+            method: "GET",
+            data: "executionId="+executionId,
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var tce = data.testCaseExecution;
+                updatePage(tce, stepList);
+                if(tce.controlStatus == "PE"){
+                    var parser = document.createElement('a');
+                    parser.href = window.location.href;
 
-        var protocol = "ws:";
-        if(parser.protocol == "https:"){
-            protocol = "wss:";
-        }
-        var path = parser.pathname.split("ExecutionDetail2")[0];
-        var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var protocol = "ws:";
+                    if(parser.protocol == "https:"){
+                        protocol = "wss:";
+                    }
+                    var path = parser.pathname.split("ExecutionDetail2")[0];
+                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
-        var socket = new WebSocket(new_uri);
+                    var socket = new WebSocket(new_uri);
 
-        socket.onopen = function(e){
-        } /*on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite */
-        socket.onmessage = function(e){
-            var data = JSON.parse(e.data);
-            updatePage(data, stepList);
-        } /*on récupère les messages provenant du serveur websocket */
-        socket.onclose = function(e){
-        } /*on est informé lors de la fermeture de la connexion vers le serveur*/
-        socket.onerror = function(e){
-        } /*on traite les cas d'erreur*/
+                    socket.onopen = function(e){
+                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                    socket.onmessage = function(e){
+                        var data = JSON.parse(e.data);
+                        updatePage(data, stepList);
+                    } //on récupère les messages provenant du serveur websocket
+                    socket.onclose = function(e){
+                    } //on est informé lors de la fermeture de la connexion vers le serveur
+                    socket.onerror = function(e){
+                    } //on traite les cas d'erreur*/
+                }
+            }
+        });
     });
 });
 

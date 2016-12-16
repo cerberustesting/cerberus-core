@@ -42,20 +42,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-    @WebListener
     @ServerEndpoint(
             value = "/execution/{execution-id}",
             decoders = {TestCaseExecutionDecoder.class},
             encoders = {TestCaseExecutionEncoder.class}
     )
-    public class TestCaseExecutionEndPoint implements ServletContextListener {
+    public class TestCaseExecutionEndPoint {
 
         private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
-
-        private ApplicationContext appContext;
-
-        @Autowired
-        ITestCaseExecutionService testCaseExecutionService;
 
         /**
          * All open WebSocket sessions
@@ -85,24 +79,6 @@ import java.util.Set;
             }
         }
 
-        @Override
-        public void contextInitialized(ServletContextEvent servletContextEvent) {
-            final ServerContainer serverContainer = (ServerContainer) servletContextEvent.getServletContext()
-                    .getAttribute("javax.websocket.server.ServerContainer");
-
-            try {
-                LOG.info("TestCaseExecutionEndPoint : Adding EndPoint");
-                serverContainer.addEndpoint(TestCaseExecutionEndPoint.class);
-                LOG.info("TestCaseExecutionEndPoint : Added EndPoint");
-            } catch (DeploymentException e) {
-                LOG.warn(e.getMessage());
-            } catch (IllegalStateException e) {
-                LOG.warn(e.getMessage());
-            } catch (IllegalArgumentException e) {
-                LOG.warn(e.getMessage());
-            }
-        }
-
         /**
          * Behavior of the Endpoint when the client send him a message
          *
@@ -128,19 +104,8 @@ import java.util.Set;
 
             LOG.warn("TestCaseExecutionEndPoint : Client Open");
 
-            if(testCaseExecutionService == null) {
-                SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-            }
-
             session.getUserProperties().put(String.valueOf(executionId), true);
             peers.add(session);
-
-            AnswerItem ans = testCaseExecutionService.readByKeyWithDependency(executionId);
-
-            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null){
-                TestCaseExecution tce = (TestCaseExecution) ans.getItem();
-                TestCaseExecutionEndPoint.send(tce);
-            }
 
         }
 
@@ -172,8 +137,5 @@ import java.util.Set;
             }
         }
 
-        @Override
-        public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        }
     }
 
