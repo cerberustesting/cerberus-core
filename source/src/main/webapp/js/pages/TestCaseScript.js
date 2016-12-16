@@ -55,13 +55,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayGlobalLabel(doc);
         displayFooter(doc);
 
-        $("#addStepModal [name='buttonAdd']").html("Add");
+        displayPageLabel(doc);
+
+        $("#addStepModal [name='buttonAdd']").html(doc.getDocLabel("page_global", "btn_add"));
         
         displayInvariantList("conditionOper", "TESTCASECONDITIONOPER", false);
         displayInvariantList("group", "GROUP", false, true);
         displayInvariantList("status", "TCSTATUS", false, true);
         displayInvariantList("priority", "PRIORITY", false, true);
-        $('[name="origin"]').append('<option value="All">All</option>');
+        $('[name="origin"]').append('<option value="All">' + doc.getDocLabel("page_global", "lbl_all") + '</option>');
         displayInvariantList("origin", "ORIGIN", false, true);
         displayInvariantList("active", "TCACTIVE", false, true);
         displayInvariantList("activeQA", "TCACTIVE", false, true);
@@ -87,7 +89,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     }
                     return 0;
                 });
-                $(".testTestCase #test").prepend("<option value=''>Select your Test</option>");
+                $(".testTestCase #test").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
                     $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>")
                 }
@@ -117,7 +119,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                         }
                         return 0;
                     });
-                    $("#testCaseSelect").prepend("<option value=''>Select your TestCase</option>");
+                    $("#testCaseSelect").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_testcase") + "</option>");
                     for (var i = 0; i < data.contentTable.length; i++) {
                         $("#testCaseSelect").append("<option value='" + data.contentTable[i].testCase + "'>" + data.contentTable[i].testCase + " - " + data.contentTable[i].description + "</option>")
                     }
@@ -324,6 +326,23 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
+function displayPageLabel(doc){
+    $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
+    $("#nav-execution #list-wrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
+    $("#saveScript").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
+    $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
+    $("#seeLastExec").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
+    $("#seeLogs").html("<span class='glyphicon glyphicon-book'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
+    $("#runOld").html("<span class='glyphicon glyphicon-bookmark'></span> " + doc.getDocLabel("page_testcasescript", "run_old"));
+    $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));
+    $("#manageProp").html(doc.getDocLabel("page_testcasescript", "manage_prop"));
+    $("#addActionBottomBtn button").html(doc.getDocLabel("page_testcasescript", "add_action"));
+    $("#stepConditionOper").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_operation"));
+    $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
+}
+
 function addAction() {
     setModif(true);
     var step = $("#stepList li.active").data("item");
@@ -432,18 +451,19 @@ function saveScript() {
 }
 
 function drawProperty(property, testcaseinfo) {
+    var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
     var deleteBtn = $("<button class='col-lg-6 btn btn-danger btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var moreBtn = $("<button class='col-lg-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
 
-    var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' placeholder='Feed Property name'>").addClass("form-control input-sm").val(property.property);
-    var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description'>").addClass("form-control input-sm").val(property.description);
-    var valueInput = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value1);
-    var value2Input = $("<textarea rows='1' placeholder='Value'></textarea>").addClass("form-control input-sm").val(property.value2);
-    var lengthInput = $("<input placeholder='Length'>").addClass("form-control input-sm").val(property.length);
-    var rowLimitInput = $("<input placeholder='Row Limit'>").addClass("form-control input-sm").val(property.rowLimit);
+    var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
+    var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
+    var valueInput = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
+    var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
+    var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
 
     var content = $("<div class='row property list-group-item'></div>");
@@ -455,16 +475,16 @@ function drawProperty(property, testcaseinfo) {
     var row3 = $("<div class='row' style='display:none;'></div>");
     var row4 = $("<div class='row'></div>");
     var row5 = $("<div class='row'></div>");
-    var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
-    var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+    var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
+    var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
     var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
-    var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.val(property.type));
-    var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.val(property.database));
-    var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 1: ")).append(valueInput);
-    var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 2: ")).append(value2Input);
-    var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
-    var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
-    var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.val(property.nature));
+    var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
+    var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
+    var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+    var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+    var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
+    var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+    var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
 
 
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true).trigger("change");});
@@ -553,6 +573,7 @@ function drawProperty(property, testcaseinfo) {
 }
 
 function drawInheritedProperty(propList) {
+    var doc = new Doc();
     var propertyArray = [];
 
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled",true);
@@ -570,12 +591,12 @@ function drawInheritedProperty(propList) {
         var moreBtn = $("<button class='col-sm-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
         var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='col-sm-6 btn btn-primary btn-sm'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
 
-        var propertyInput = $("<input id='propName' placeholder='Feed Property name' disabled>").addClass("form-control input-sm").val(property.property);
-        var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='Feed Property description' disabled>").addClass("form-control input-sm").val(property.description);
-        var valueInput = $("<textarea rows='1' placeholder='Value' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
-        var value2Input = $("<textarea rows='1' placeholder='Value' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
-        var lengthInput = $("<input placeholder='Length' disabled>").addClass("form-control input-sm").val(property.length);
-        var rowLimitInput = $("<input placeholder='Row Limit' disabled>").addClass("form-control input-sm").val(property.rowLimit);
+        var propertyInput = $("<input id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' disabled>").addClass("form-control input-sm").val(property.property);
+        var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' disabled>").addClass("form-control input-sm").val(property.description);
+        var valueInput = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
+        var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
+        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' disabled>").addClass("form-control input-sm").val(property.length);
+        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' disabled>").addClass("form-control input-sm").val(property.rowLimit);
 
         var content = $("<div class='row property list-group-item disabled'></div>");
         var props = $("<div class='col-sm-11'></div>");
@@ -586,16 +607,16 @@ function drawInheritedProperty(propList) {
         var row3 = $("<div class='row' style='display:none;'></div>");
         var row4 = $("<div class='row'></div>");
         var row5 = $("<div class='row'></div>");
-        var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Property: ")).append(propertyInput);
-        var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Description: ")).append(descriptionInput);
+        var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
+        var description = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
         var country = $("<div class='col-sm-10 form-group'></div>").append(getTestCaseCountry(property.country, property.country, true));
-        var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Type: ")).append(selectType.clone().val(property.type));
-        var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("DB: ")).append(selectDB.clone().val(property.database));
-        var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 1: ")).append(valueInput);
-        var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text("Value 2: ")).append(value2Input);
-        var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Length: ")).append(lengthInput);
-        var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Row Limit: ")).append(rowLimitInput);
-        var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text("Nature: ")).append(selectNature.clone().val(property.nature));
+        var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
+        var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.clone().val(property.database));
+        var value = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+        var value2 = $("<div class='col-sm-4 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+        var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
+        var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+        var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
 
 
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true);});
@@ -971,10 +992,11 @@ function loadApplicationObject(dataInit){
 }
 
 function showStepUsesLibraryInConfirmationModal(object){
+    var doc = new Doc();
     $("#confirmationModal [name='buttonConfirm']").text("OK");
     $("#confirmationModal [name='buttonDismiss']").hide();
     $("#confirmationModal").on("hidden.bs.modal",function(){
-        $("#confirmationModal [name='buttonConfirm']").text("Yes");
+        $("#confirmationModal [name='buttonConfirm']").text(doc.getDocLabel("page_global", "buttonConfirm"));
         $("#confirmationModal [name='buttonDismiss']").show();
         $("#confirmationModal").unbind("hidden.bs.modal");
     });
@@ -998,8 +1020,9 @@ function showStepUsesLibraryInConfirmationModal(object){
     });
     showModalConfirmation(function(){
         $('#confirmationModal').modal('hide');
-    }, "Warning",
-        "You can't detach this library because other steps use it.<br/>" +
+    }, doc.getDocLabel("page_global", "warning"),
+        doc.getDocLabel("page_testcasescript", "cant_detach_library") +
+        "<br/>" +
         "<div id='otherStepThatUseIt' style='width:100%;'>" +
         "<div style='width:30px; margin-left: auto; margin-right: auto;'>" +
         "<span class='glyphicon glyphicon-refresh spin'></span>" +
@@ -1197,6 +1220,7 @@ Step.prototype.draw = function () {
 
 Step.prototype.show = function () {
     var scope = this;
+    var doc = new Doc();
     var object = $(this).data("item");
 
     $("#stepHeader").show();
@@ -1239,7 +1263,7 @@ Step.prototype.show = function () {
 
     if (object.useStep === "Y") {
         $("#isLib").hide();
-        $("#UseStepRow").html("(Imported from <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
+        $("#UseStepRow").html("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " <a href='./TestCaseScript.jsp?test=" + object.useStepTest + "&testcase=" + object.useStepTestCase + "&step=" + object.useStepStepSort + "' >" + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStepSort + "</a>)").show();
         $("#UseStepRowButton").html("|").show();
         $("#addAction").prop("disabled",true);
         $("#addActionBottomBtn").hide();
@@ -1294,7 +1318,7 @@ Step.prototype.show = function () {
                 object.useStepTest = ";";
                 object.useStepTestCase = "";
                 saveScript();
-            }, "Unlink Use Step", "You are going to unlink this useStep of its Library.\n You can't undo this, are you sure?", "", "", "", "");
+            }, doc.getDocLabel("page_testcasescript", "unlink_useStep"), doc.getDocLabel("page_testcasescript", "unlink_useStep_warning"), "", "", "", "");
         }
     });
 
@@ -1530,13 +1554,14 @@ Action.prototype.setSort = function (sort) {
 
 Action.prototype.generateContent = function () {
     var obj = this;
+    var doc = new Doc();
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
     var secondRow = $("<div></div>").addClass("fieldRow row");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this action");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", doc.getDocLabel("page_testcasescript", "describe_action"));
     var objectField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
     var propertyField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").attr("type","text").addClass("form-control input-sm");
 
@@ -1595,12 +1620,12 @@ Action.prototype.generateContent = function () {
     });
 
     firstRow.append(descField);
-    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Action:")).append(actionList));
-    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text("Value 1:")).append(objectField));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 2:")).append(propertyField));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Force Execution:")).append(forceExeStatusList));
+    secondRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
+    secondRow.append($("<div></div>").addClass("col-lg-5 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditiononper));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionparam));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "force_execution_field"))).append(forceExeStatusList));
 
     actionconditiononper.trigger("change");
 
@@ -1761,13 +1786,14 @@ Control.prototype.setSort = function (sort) {
 
 Control.prototype.generateContent = function () {
     var obj = this;
+    var doc = new Doc();
     var content = $("<div></div>").addClass("content col-lg-9");
     var firstRow = $("<div style='margin-top:15px;'></div>").addClass("fieldRow row form-group");
     var secondRow = $("<div></div>").addClass("fieldRow row");
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", "Describe this Control");
+    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", doc.getDocLabel("page_testcasescript", "describe_control"));
     var controlValueField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle","tooltip").attr("data-animation","false").attr("data-html","true").attr("data-container","body").attr("data-placement","top").attr("data-trigger","manual").addClass("form-control input-sm").css("width", "100%");
 
@@ -1815,12 +1841,12 @@ Control.prototype.generateContent = function () {
     });
 
     firstRow.append(descField);
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Control:")).append(controlList));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 1:")).append(controlValueField));
-    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Value 2:")).append(controlPropertyField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValueField));
+    secondRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlPropertyField));
 
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text("Condition Parameter:")).append(actionconditionparam));
-    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Fatal:")).append(fatalList));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionparam));
+    thirdRow.append($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
 
     actionconditiononper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width","100%");
@@ -1834,7 +1860,7 @@ Control.prototype.generateContent = function () {
     });
     actionconditiononper.val(this.conditionOper).trigger("change");
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text("Condition Operation:")).append(actionconditiononper));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditiononper));
 
 
     if (this.parentStep.useStep === "Y") {
@@ -1958,6 +1984,7 @@ var autocompleteAllFields, getTags, setTags;
                 var nameNotExist = undefined;
                 var objectNotExist = false;
                 var typeNotExist = undefined;
+                var doc = new Doc();
                 var checkObject = [];
                 var betweenPercent = $(e).val().match(new RegExp(/%[^%]*%/g));
                 if(betweenPercent != null && betweenPercent.length > 0){
@@ -1992,7 +2019,7 @@ var autocompleteAllFields, getTags, setTags;
                 }
                 if(objectNotExist){
                     if(typeNotExist == "applicationobject") {
-                        var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not an Object of this Application</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick='addApplicationObjectModalClick(undefined, \"" + nameNotExist + "\",\"" + tcInfo.application + "\")'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>" + doc.getDocLabel("page_global", "warning") + ": " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_application_object") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         }else {
@@ -2000,7 +2027,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     }else if(typeNotExist == "property"){
                         //TODO better way to add property
-                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> Warning : " + nameNotExist + " is not a Property</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName:last-child').val('" + nameNotExist + "').trigger('change');\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         }else{
@@ -2049,6 +2076,7 @@ editPropertiesModalClick = function(test, testcase, info, propertyToAdd, propert
 
 function editPropertiesModalSaveHandler(){
     clearResponseMessage($('#propertiesModal'));
+    var doc = new Doc();
 
     var properties = $("#propTable [name='masterProp']");
     var propArr = [];
@@ -2104,7 +2132,7 @@ function editPropertiesModalSaveHandler(){
         showModalConfirmation(function(){
             $('#confirmationModal').modal('hide');
             saveProp();
-        }, "Save", "Some Properties doesn't have any country, so it will be deleted. Are you sure you want to save?", "", "", "", "");
+        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
     }else{
         saveProp();
     }

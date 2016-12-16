@@ -35,7 +35,7 @@
         <%@ include file="include/utils/modal-generic.html"%>
         <div id="page-layout" class="container-fluid center">
             <div class="alert alert-warning">
-                <strong>BETA</strong> This page is in beta, some features may not be available or fully functional.
+                <strong>BETA</strong> <span>This page is in beta, some features may not be available or fully functional.</span>
                 <button class="btn btn-warning side-item" id="runOld">Old Page</button>
             </div>
             <%@ include file="include/messagesArea.html"%>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="pull-right" id="moredetails">
                             <a>
-                                More details <span class="caret"></span>
+                                <span id="more">More details</span> <span class="caret"></span>
                             </a>
                         </div>
                         <div class="clearfix"></div>
@@ -194,12 +194,6 @@
                             <div class="form-group">
                                 <label for="revision">Revision</label>
                                 <input type="text" class="form-control" id="revision" placeholder="Revision" readonly>
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                <label for="cerberusversion">Cerberus Version</label>
-                                <input type="text" class="form-control" id="cerberusversion" placeholder="Cerberus Version" readonly>
                             </div>
                         </div>
                     </div>
