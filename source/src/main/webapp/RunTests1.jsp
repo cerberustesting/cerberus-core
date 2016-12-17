@@ -20,7 +20,7 @@
             <%@ include file="include/runtest/TestCaseNotValid.html"%>
             <h1 class="page-title-line">Run Test</h1>
             <div class="col-lg-9">
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="environmentPanel">
                     <div class="panel-heading">
                         Selection type
                     </div>
@@ -29,10 +29,10 @@
                             <div class="col-lg-4">
                                 <label class="bold">Environment :</label>
                                 <label class="radio-inline">
-                                    <input name="typeSelect" value="filters" checked type="radio">Select a list of test
+                                    <input name="typeSelect" value="filters" checked type="radio"><span>Select a list of test</span>
                                 </label>
                                 <label class="radio-inline">
-                                    <input name="typeSelect" value="campaign" type="radio">Select a campaign
+                                    <input name="typeSelect" value="campaign" type="radio"><span>Select a campaign</span>
                                 </label>
                             </div>
                             <form id="campaignSelection" style="display: none;">
@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel panel-default">
+                <div class="panel panel-default" id="TestPanel">
                     <div class="panel-heading">
                         Choose Test
                     </div>
@@ -56,7 +56,7 @@
                         <div class="panel panel-default" id="filtersPanelContainer">
                             <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel">
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                Filters
+                                <span>Filters</span>
                             </div>
                             <div class="panel-body collapse" id="filtersPanel">
                                 <form id="filters">
@@ -145,10 +145,10 @@
                             <div class="col-lg-6">
                                 <label class="bold">Environment :</label>
                                 <label class="radio-inline">
-                                    <input name="envSettings" value="auto" checked type="radio">Automatic
+                                    <input name="envSettings" value="auto" checked type="radio"><span>Automatic</span>
                                 </label>
                                 <label class="radio-inline">
-                                    <input name="envSettings" value="manual" type="radio">Manual
+                                    <input name="envSettings" value="manual" type="radio"><span>Manual</span>
                                 </label>
                                 <form id="envSettingsAuto">
                                     <select multiple class="form-control" name="environment"></select>
@@ -187,7 +187,7 @@
                         </div>
                         <li class="list-group-item list-group-item-info col-lg-offset-3 col-lg-6" id="potential" style="margin-top: 25px;">
                             <span class="badge" id="potentialNumber">0</span>
-                            Potential additions to the queue
+                            <span>Potential additions to the queue</span>
                         </li>
                         <div class="row">
                             <div class="col-lg-offset-3 col-lg-6 text-center" style="margin-top: 25px;">
@@ -200,7 +200,7 @@
 
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="RobotPanel">
                             <div class="panel-heading">
                                 Robot settings
                             </div>
@@ -256,7 +256,7 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" id="executionPanel">
                             <div class="panel-heading">
                                 Execution settings
                             </div>
@@ -367,17 +367,17 @@
             <div class="col-lg-3 pull-right">
                 <li class="list-group-item list-group-item-danger" style="display: none;" id="notValid">
                     <span class="badge" id="notValidNumber" style="cursor: pointer;"></span>
-                    Some executions couldn't be added to the queue
+                    <span>Some executions couldn't be added to the queue</span>
                 </li>
                 <li class="list-group-item list-group-item-success" id="valid">
                     <span class="badge" id="validNumber">0</span>
-                    Executions in queue
+                    <span>Executions in queue</span>
                 </li>
                 <div class="panel panel-default">
                     <div class="panel-heading card" data-toggle="collapse" data-target="#queuePanel">
                         <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         <button class="btn btn-default btn-xs pull-right" id="resetQueue">Reset Queue</button>
-                        Queue
+                        <span>Queue</span>
                     </div>
 
                     <div class="panel-body collapse in" id="queuePanel">

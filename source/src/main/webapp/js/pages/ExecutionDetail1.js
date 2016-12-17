@@ -24,28 +24,41 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
 
-        var parser = document.createElement('a');
-        parser.href = window.location.href;
+        $.ajax({
+            url: "ReadTestCaseExecution",
+            method: "GET",
+            data: "executionId="+executionId,
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var tce = data.testCaseExecution;
+                updatePage(tce, stepList);
+                if(tce.controlStatus == "PE"){
+                    var parser = document.createElement('a');
+                    parser.href = window.location.href;
 
-        var protocol = "ws:";
-        if(parser.protocol == "https:"){
-            protocol = "wss:";
-        }
-        var path = parser.pathname.split("ExecutionDetail2")[0];
-        var new_uri = protocol + parser.host + path + "execution/" + executionId;
+                    var protocol = "ws:";
+                    if(parser.protocol == "https:"){
+                        protocol = "wss:";
+                    }
+                    var path = parser.pathname.split("ExecutionDetail2")[0];
+                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
-        var socket = new WebSocket(new_uri);
+                    var socket = new WebSocket(new_uri);
 
-        socket.onopen = function(e){
-        } /*on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite */
-        socket.onmessage = function(e){
-            var data = JSON.parse(e.data);
-            updatePage(data, stepList);
-        } /*on récupère les messages provenant du serveur websocket */
-        socket.onclose = function(e){
-        } /*on est informé lors de la fermeture de la connexion vers le serveur*/
-        socket.onerror = function(e){
-        } /*on traite les cas d'erreur*/
+                    socket.onopen = function(e){
+                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                    socket.onmessage = function(e){
+                        var data = JSON.parse(e.data);
+                        updatePage(data, stepList);
+                    } //on récupère les messages provenant du serveur websocket
+                    socket.onclose = function(e){
+                    } //on est informé lors de la fermeture de la connexion vers le serveur
+                    socket.onerror = function(e){
+                    } //on traite les cas d'erreur*/
+                }
+            }
+        });
     });
 });
 
@@ -71,6 +84,44 @@ function initPage(id) {
 
     displayHeaderLabel(doc);
     displayFooter(doc);
+    displayPageLabel(doc);
+}
+
+function displayPageLabel(doc){
+    $("#pageTitle").text(doc.getDocLabel("page_executiondetail","title"));
+    $(".alert.alert-warning span").text(doc.getDocLabel("page_global","beta_message"));
+    $(".alert.alert-warning button").text(doc.getDocLabel("page_global","old_page"));
+    $("#ExecutionByTag").text(doc.getDocLabel("page_executiondetail","see_execution_tag"));
+    $("#more").text(doc.getDocLabel("page_executiondetail","more_detail"));
+    $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail","application"));
+    $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail","browser"));
+    $("#testCaseDetails label[for='browserfull']").text(doc.getDocLabel("page_executiondetail","browserfull"));
+    $("#testCaseDetails label[for='country']").text(doc.getDocLabel("page_executiondetail","country"));
+    $("#testCaseDetails label[for='environment']").text(doc.getDocLabel("page_executiondetail","environment"));
+    $("#testCaseDetails label[for='status']").text(doc.getDocLabel("page_executiondetail","status"));
+    $("#testCaseDetails label[for='controlstatus2']").text(doc.getDocLabel("page_executiondetail","controlstatus"));
+    $("#testCaseDetails label[for='controlmessage']").text(doc.getDocLabel("page_executiondetail","controlmessage"));
+    $("#testCaseDetails label[for='ip']").text(doc.getDocLabel("page_executiondetail","ip"));
+    $("#testCaseDetails label[for='port']").text(doc.getDocLabel("page_executiondetail","port"));
+    $("#testCaseDetails label[for='platform']").text(doc.getDocLabel("page_executiondetail","platform"));
+    $("#testCaseDetails label[for='cerberusversion']").text(doc.getDocLabel("page_executiondetail","cerberusversion"));
+    $("#testCaseDetails label[for='executor']").text(doc.getDocLabel("page_executiondetail","executor"));
+    $("#testCaseDetails label[for='url']").text(doc.getDocLabel("page_executiondetail","url"));
+    $("#testCaseDetails label[for='start']").text(doc.getDocLabel("page_executiondetail","start"));
+    $("#testCaseDetails label[for='end']").text(doc.getDocLabel("page_executiondetail","end"));
+    $("#testCaseDetails label[for='finished']").text(doc.getDocLabel("page_executiondetail","finished"));
+    $("#testCaseDetails label[for='id']").text(doc.getDocLabel("page_executiondetail","id"));
+    $("#testCaseDetails label[for='revision']").text(doc.getDocLabel("page_executiondetail","revision"));
+    $("#testCaseDetails label[for='screenSize']").text(doc.getDocLabel("page_executiondetail","screensize"));
+    $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail","tag"));
+    $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail","verbose"));
+    $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail","build"));
+    $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail","version"));
+    $("#handler h3").text(doc.getDocLabel("page_executiondetail","steps"));
+    $("#handler #editTcInfo").text(doc.getDocLabel("page_executiondetail","edittc"));
+    $("#handler #runTestCase").text(doc.getDocLabel("page_executiondetail","runtc"));
+    $("#handler #lastExecution").text(doc.getDocLabel("page_executiondetail","lastexecution"));
+
 }
 
 function updatePage(data, stepList){
@@ -164,8 +215,7 @@ function updateLoadBar(data) {
         }
     }
     var progress = ended / total * 100;
-    $("#progress-bar").css("width", progress + "%").attr("aria-valuenow", progress);
-    if (progress == 100 && data.controlStatus != "PE") {
+    if (data.controlStatus != "PE") {
         if (data.controlStatus === "OK") {
             $("#progress-bar").addClass("progress-bar-success");
         } else if (data.controlStatus === "FA") {
@@ -173,7 +223,9 @@ function updateLoadBar(data) {
         } else {
             $("#progress-bar").addClass("progress-bar-danger");
         }
+        progress = 100;
     }
+    $("#progress-bar").css("width", progress + "%").attr("aria-valuenow", progress);
 }
 /** DATA AGREGATION **/
 
@@ -281,6 +333,7 @@ Step.prototype.draw = function () {
 };
 
 Step.prototype.show = function () {
+    var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-sm-11");
 
@@ -312,7 +365,7 @@ Step.prototype.show = function () {
 
     stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.description));
     if (object.useStep === "Y") {
-        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(Imported from " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
+        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript","imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text(""));
     }
@@ -537,6 +590,7 @@ Action.prototype.generateHeader = function () {
 
 Action.prototype.generateContent = function () {
     var obj = this;
+    var doc = new Doc();
 
     var secondRow = $("<div></div>").addClass("row");
     var thirdRow = $("<div></div>").addClass("row");
@@ -553,14 +607,14 @@ Action.prototype.generateContent = function () {
     var returnMessageField = $("<textarea class='form-control' id='returnmessage'>").prop("readonly",true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
 
-    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>Action</label>")).append(actionList);
-    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>Description</label>")).append(descField);
-    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>Value 1</label>")).append(value1Field);
-    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>Time</label>")).append(timeField);
-    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>Value 2</label>")).append(value2Field);
-    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>Return Code</label>")).append(returnCodeField);
-    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>Return Message</label>")).append(returnMessageField);
-    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>Sort</label>")).append(sortField);
+    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail","action") + "</label>")).append(actionList);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail","description") + "</label>")).append(descField);
+    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail","value1") + "</label>")).append(value1Field);
+    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail","time") + "</label>")).append(timeField);
+    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail","value2") + "</label>")).append(value2Field);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail","return_code") + "</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail","return_message") + "</label>")).append(returnMessageField);
+    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail","sort") + "</label>")).append(sortField);
 
 
 
@@ -757,6 +811,7 @@ Control.prototype.generateHeader = function () {
 };
 
 Control.prototype.generateContent = function () {
+    var doc = new Doc();
     var obj = this;
 
     var secondRow = $("<div></div>").addClass("row");
@@ -775,15 +830,15 @@ Control.prototype.generateContent = function () {
     var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly",true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
 
-    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>Description</label>")).append(descField);
-    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>Return Code</label>")).append(returnCodeField);
-    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>Return Message</label>")).append(returnMessageField);
-    var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>Control Type</label>")).append(controlTypeField);
-    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>Value 1</label>")).append(value1Field);
-    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>Time</label>")).append(timeField);
-    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>Value 2</label>")).append(value2Field);
-    var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>Fatal</label>")).append(fatalField);
-    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>Sort</label>")).append(sortField);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail","description") + "</label>")).append(descField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail","return_code") + "</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail","return_message") + "</label>")).append(returnMessageField);
+    var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>" + doc.getDocLabel("page_executiondetail","control_type") + "</label>")).append(controlTypeField);
+    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>" + doc.getDocLabel("page_executiondetail","value1") + "</label>")).append(value1Field);
+    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail","time") + "</label>")).append(timeField);
+    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail","value2") + "</label>")).append(value2Field);
+    var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail","fatal") + "</label>")).append(fatalField);
+    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail","sort") + "</label>")).append(sortField);
 
 
 
