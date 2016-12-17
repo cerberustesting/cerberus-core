@@ -1898,7 +1898,7 @@ Control.prototype.generateContent = function () {
     });
     actionconditionoper.val(this.conditionOper).trigger("change");
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditiononper));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
 
 
     if (this.parentStep.useStep === "Y") {
