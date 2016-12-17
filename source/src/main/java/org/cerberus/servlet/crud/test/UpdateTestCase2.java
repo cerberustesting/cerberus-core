@@ -304,6 +304,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
         tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
         tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
+        tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
 
         // Parameter that we cannot secure as we need the html --> We DECODE them
         tc.setBehaviorOrValueExpected(ParameterParserUtil.parseStringParamAndDecode(request.getParameter("behaviorOrValueExpected"), tc.getBehaviorOrValueExpected(), charset));

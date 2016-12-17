@@ -97,12 +97,16 @@
                                     </div>
                                     <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
                                         <div class="col-lg-3 form-group">
-                                            <label>Step Condtition Operation:</label>
+                                            <label>Step Condition Operation:</label>
                                             <select class="form-control input-sm" id="stepConditionOper"></select>
                                         </div>
                                         <div class="col-lg-5 form-group">
-                                            <label>Step Condtition Parameter:</label>
+                                            <label>Step Condition Parameter:</label>
                                             <input class="form-control input-sm" id="stepConditionVal1">
+                                        </div>
+                                        <div class="col-lg-5 form-group">
+                                            <label>Step Condition Parameter:</label>
+                                            <input class="form-control input-sm" id="stepConditionVal2">
                                         </div>
                                     </div>
                                 </div>

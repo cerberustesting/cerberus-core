@@ -30,10 +30,11 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepAction implements IFactoryTestCaseStepAction {
 
     @Override
-    public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String conditionOper, String conditionVal1, String action, String value1, String value2, String forceExeStatus, String description, String screenshotFilename) {
+    public TestCaseStepAction create(String test, String testCase, int step, int sequence, int sort, String conditionOper, String conditionVal1, String conditionVal2, String action, String value1, String value2, String forceExeStatus, String description, String screenshotFilename) {
         TestCaseStepAction testCaseStepAction = new TestCaseStepAction();
         testCaseStepAction.setConditionOper(conditionOper);
         testCaseStepAction.setConditionVal1(conditionVal1);
+        testCaseStepAction.setConditionVal2(conditionVal2);
         testCaseStepAction.setAction(action);
         testCaseStepAction.setValue1(value1);
         testCaseStepAction.setValue2(value2);

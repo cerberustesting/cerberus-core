@@ -30,7 +30,7 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
 public interface IFactoryTestCaseStepActionExecution {
 
     TestCaseStepActionExecution create(long id, String test, String testCase, int step,
-            int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String action, String value1Init, String value2Init,
+            int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String conditionVal2, String action, String value1Init, String value2Init,
             String value1, String value2, String forceExeStatus, long start, long end, long startLong, long endLong,
             MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution);
 

@@ -67,9 +67,9 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
-        final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, controlsequence, sort, returncode, conditionOper, conditionVal1, control, "
+        final String query = "INSERT INTO testcasestepactioncontrolexecution(id, step, sequence, controlsequence, sort, returncode, conditionOper, conditionVal1, conditionVal2, control, "
                 + "value1Init, value2Init, value1, value2, fatal, start, END, startlong, endlong, returnmessage, test, testcase, description)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -84,6 +84,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionOper());
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionVal1());
+                preStat.setString(i++, testCaseStepActionControlExecution.getConditionVal2());
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getControl(), 200));
                 preStat.setString(i++, testCaseStepActionControlExecution.getValue1Init());
                 preStat.setString(i++, testCaseStepActionControlExecution.getValue2Init());
@@ -130,7 +131,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
     @Override
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
 
-        final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, conditionOper = ?, conditionVal1 = ?, control = ?, "
+        final String query = "UPDATE testcasestepactioncontrolexecution SET returncode = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ?, control = ?, "
                 + "value1Init = ?, value2Init = ?, value1 = ?, value2 = ?, fatal = ?, start = ?, END = ?, startlong = ?, endlong = ?"
                 + ", returnmessage = ?, description = ?, sort = ? "
                 + "WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? AND controlsequence = ? ";
@@ -143,6 +144,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepActionControlExecution.getReturnCode(), ""));
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionOper());
                 preStat.setString(i++, testCaseStepActionControlExecution.getConditionVal1());
+                preStat.setString(i++, testCaseStepActionControlExecution.getConditionVal2());
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionControlExecution.getControl(), 200));
                 preStat.setString(i++, testCaseStepActionControlExecution.getValue1Init());
                 preStat.setString(i++, testCaseStepActionControlExecution.getValue2Init());
@@ -394,6 +396,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         String returnMessage = resultSet.getString("returnmessage");
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
+        String conditionVal2 = resultSet.getString("conditionVal2");
         String control = resultSet.getString("control");
         String value1 = resultSet.getString("value1");
         String value2 = resultSet.getString("value2");
@@ -406,7 +409,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long endlong = resultSet.getLong("endlong");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
-                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1, control, value1Init, value2Init, value1, value2,
+                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1, conditionVal2, control, value1Init, value2Init, value1, value2,
                 fatal, start, end, startlong, endlong, description, null, null);
     }
 }

@@ -286,7 +286,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswerTc;
-            conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getTestCaseObj().getConditionOper(), tCExecution.getTestCaseObj().getConditionVal1(), null, tCExecution);
+            conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getTestCaseObj().getConditionOper(), tCExecution.getTestCaseObj().getConditionVal1(), tCExecution.getTestCaseObj().getConditionVal2(), tCExecution);
             boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
             if (execute_TestCase) {
@@ -303,7 +303,7 @@ public class ExecutionRunService implements IExecutionRunService {
                      */
                     TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                             runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                            testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), null,
+                            testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
                             startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
                             testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                     testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -331,7 +331,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     // Evaluate the condition at the control level.
                     AnswerItem<Boolean> conditionAnswer;
-                    conditionAnswer = this.conditionService.evaluateCondition(testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), null, tCExecution);
+                    conditionAnswer = this.conditionService.evaluateCondition(testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), tCExecution);
                     boolean execute_Step = (boolean) conditionAnswer.getItem();
 
                     if (execute_Step) {
@@ -526,7 +526,7 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
                     testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(),
-                    null, null, testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
+                    null, null, testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
                     testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getForceExeStatus(),
                     startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
@@ -544,7 +544,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the action level.
             AnswerItem<Boolean> conditionAnswer;
-            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), null, tcExecution);
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), tcExecution);
             boolean execute_Action = (boolean) conditionAnswer.getItem();
 
             // Execute or not the action here.
@@ -655,7 +655,7 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
                             testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
-                            null, null, testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
+                            null, null, testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
                             testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
@@ -678,7 +678,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
-            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), null, tcExecution);
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), tcExecution);
             boolean execute_Control = (boolean) conditionAnswer.getItem();
 
             if (execute_Control) {

@@ -40,6 +40,7 @@ public class TestCaseStepExecution {
     private int sort;
     private String conditionOper;
     private String conditionVal1;
+    private String conditionVal2;
     private String batNumExe;
     private long start;
     private long end;
@@ -242,6 +243,14 @@ public class TestCaseStepExecution {
 
     public void setConditionVal1(String conditionVal1) {
         this.conditionVal1 = conditionVal1;
+    }
+
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal2 = conditionVal2;
     }
 
     public String getTest() {

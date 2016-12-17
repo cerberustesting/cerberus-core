@@ -36,6 +36,7 @@ public class TestCaseStep {
     private int sort;
     private String conditionOper;
     private String conditionVal1;
+    private String conditionVal2;
     private String description;
     private String useStep;  //  Y if the step use a step from another test 
     private String useStepTest; //  The test of the used step
@@ -155,6 +156,14 @@ public class TestCaseStep {
         this.conditionVal1 = conditionVal1;
     }
 
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal2 = conditionVal2;
+    }
+
     public void setStep(int step) {
         this.step = step;
     }
@@ -204,6 +213,7 @@ public class TestCaseStep {
         hash = 29 * hash + this.sort;
         hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
+        hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 29 * hash + (this.description != null ? this.description.hashCode() : 0);
         hash = 29 * hash + (this.useStep != null ? this.useStep.hashCode() : 0);
         hash = 29 * hash + (this.useStepTest != null ? this.useStepTest.hashCode() : 0);
@@ -237,6 +247,9 @@ public class TestCaseStep {
             return false;
         }
         if (this.conditionVal1 != other.conditionVal1 && (this.conditionVal1 == null || !this.conditionVal1.equals(other.conditionVal1))) {
+            return false;
+        }
+        if (this.conditionVal2 != other.conditionVal2 && (this.conditionVal2 == null || !this.conditionVal2.equals(other.conditionVal2))) {
             return false;
         }
         if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
@@ -274,6 +287,7 @@ public class TestCaseStep {
             result.put("sort", this.getSort());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
             result.put("description", this.getDescription());
             result.put("useStep", this.getUseStep());
             result.put("useStepTest", this.getUseStepTest());

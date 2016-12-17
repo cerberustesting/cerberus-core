@@ -449,7 +449,7 @@ public class ReadTestCase extends HttpServlet {
         testCaseStepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
         ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
 
-        //finds the project     
+        //finds the testcase     
         AnswerItem answer = testCaseService.readByKey(test, testCase);
 
         AnswerList testCaseCountryList = testCaseCountryService.readByTestTestCase(null, test, testCase);

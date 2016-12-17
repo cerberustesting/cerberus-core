@@ -55,6 +55,7 @@ function displayTestCaseLabel(doc) {
     $("[name='targetRevField']").html(doc.getDocOnline("testcase", "TargetRev"));
     $("[name='conditionOperField']").html(doc.getDocOnline("testcase", "ConditionOper"));
     $("[name='conditionVal1Field']").html(doc.getDocOnline("testcase", "ConditionVal1"));
+    $("[name='conditionVal2Field']").html(doc.getDocOnline("testcase", "ConditionVal2"));
     $("[name='commentField']").html(doc.getDocOnline("testcase", "Comment"));
     $("#filters").html(doc.getDocOnline("page_testcaselist", "filters"));
     $("#testCaseListLabel").html(doc.getDocOnline("page_testcaselist", "testcaselist"));
@@ -265,6 +266,7 @@ function confirmTestCaseModalHandler(mode) {
             targetSprint: data.targetSprint,
             conditionOper: data.conditionOper,
             conditionVal1: data.conditionVal1,
+            conditionVal2: data.conditionVal2,
             ticket: data.ticket,
             toRev: data.toRev,
             toSprint: data.toSprint,
@@ -428,6 +430,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#bugId").prop("value", "");
         formEdit.find("#conditionOper").prop("value", "always");
         formEdit.find("#conditionVal1").prop("value", "");
+        formEdit.find("#conditionVal2").prop("value", "");
         formEdit.find("#comment").prop("value", "");
     } else {
         formEdit.find("#test").prop("value", testCase.test);
@@ -453,6 +456,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#bugId").prop("value", testCase.bugID);
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
+        formEdit.find("#conditionVal2").prop("value", testCase.conditionVal1);
         formEdit.find("#comment").prop("value", testCase.comment);
     }
 
@@ -492,6 +496,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#targetRev").prop("disabled", "disabled");
         formEdit.find("#conditionOper").prop("disabled", "disabled");
         formEdit.find("#conditionVal1").prop("disabled", "disabled");
+        formEdit.find("#conditionVal2").prop("disabled", "disabled");
         formEdit.find("#bugId").prop("readonly", "readonly");
         formEdit.find("#comment").prop("readonly", "readonly");
         // feed the country list.
@@ -528,6 +533,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#targetRev").removeProp("disabled");
         formEdit.find("#conditionOper").removeProp("disabled");
         formEdit.find("#conditionVal1").removeProp("disabled");
+        formEdit.find("#conditionVal2").removeProp("disabled");
         formEdit.find("#bugId").removeProp("readonly");
         formEdit.find("#comment").removeProp("readonly");
         // feed the country list.

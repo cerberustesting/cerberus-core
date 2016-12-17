@@ -94,6 +94,7 @@ public class ExportListTestCase extends HttpServlet {
         String active = this.getValue(req, "ScActive");
         String conditionOper = this.getValue(req, "ScConditionOper");
         String conditionVal1 = this.getValue(req, "ScConditionVal1");
+        String conditionVal2 = this.getValue(req, "ScConditionVal2");
         String fBuild = this.getValue(req, "ScFBuild");
         String fRev = this.getValue(req, "ScFRev");
         String tBuild = this.getValue(req, "ScTBuild");
@@ -104,7 +105,7 @@ public class ExportListTestCase extends HttpServlet {
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket,function, application, qa, uat, prod, priority, group,
-                status, null, null, null, active, conditionOper, conditionVal1, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", null, null, null, null);
+                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {

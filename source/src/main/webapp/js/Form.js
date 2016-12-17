@@ -2136,6 +2136,8 @@ function addTCSACNew(rowID, step, incrementAction, obj) {
             .attr('name', 'control_conditionoper_' + step + '_' + incrementAction + '_' + nextIncControl);
     $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_conditionval1_template"]')
             .attr('name', 'control_conditionval1_' + step + '_' + incrementAction + '_' + nextIncControl);
+    $('#StepListOfControlDiv' + step + incrementAction + nextIncControl).find('input[data-id="control_conditionval2_template"]')
+            .attr('name', 'control_conditionval2_' + step + '_' + incrementAction + '_' + nextIncControl);
 
     callEvent();
 }
@@ -2254,6 +2256,8 @@ function addTCSCNew(rowID, obj) {
             .attr('name', 'step_conditionoper_' + nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('#step_conditionval1_template')
             .attr('name', 'step_conditionval1_' + nextIncStep);
+    $('#StepFirstLineDiv' + nextIncStep).find('#step_conditionval2_template')
+            .attr('name', 'step_conditionval2_' + nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="initial_step_number_template"]')
             .attr('name', 'initial_step_number_' + nextIncStep).val(nextIncStep);
     $('#StepFirstLineDiv' + nextIncStep).find('input[data-id="step_useStep_template"]')

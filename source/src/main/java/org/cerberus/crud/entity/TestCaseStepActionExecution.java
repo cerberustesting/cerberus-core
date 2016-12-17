@@ -40,6 +40,7 @@ public class TestCaseStepActionExecution {
     private int sort;
     private String conditionOper;
     private String conditionVal1;
+    private String conditionVal2;
     private String action;
     private String value1Init;
     private String value2Init;
@@ -80,6 +81,14 @@ public class TestCaseStepActionExecution {
 
     public void setConditionVal1(String conditionVal1) {
         this.conditionVal1 = conditionVal1;
+    }
+
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal2 = conditionVal2;
     }
 
     public String getValue1Init() {

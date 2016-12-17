@@ -58,6 +58,7 @@ public interface IFactoryTestCase {
      * @param tcActive
      * @param conditionOper
      * @param conditionVal1
+     * @param conditionVal2
      * @param fromBuild
      * @param fromRev
      * @param toBuild
@@ -77,7 +78,7 @@ public interface IFactoryTestCase {
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
                  String implementer, String usrModif, String project, String ticket, String function, String application,
                  String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String fromBuild,
+                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
                  String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
                  String targetBuild, String targetRev, String comment, String userAgent, List<TestCaseCountry> testCaseCountry,
                  List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
@@ -108,6 +109,7 @@ public interface IFactoryTestCase {
      * @param tcActive
      * @param conditionOper
      * @param conditionVal1
+     * @param conditionVal2
      * @param fromBuild
      * @param fromRev
      * @param toBuild
@@ -125,7 +127,7 @@ public interface IFactoryTestCase {
     TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated,
                  String implementer, String usrModif, String project, String ticket, String function, String application,
                  String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
-                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String fromBuild,
+                 String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
                  String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
                  String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, Timestamp dateModif);
 

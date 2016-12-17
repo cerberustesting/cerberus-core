@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepActionExecution {
 
     @Override
-    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String action, String value1Init, String value2Init, String value1, String value2, String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
+    public TestCaseStepActionExecution create(long id, String test, String testCase, int step, int sequence, int sort, String returnCode, String returnMessage, String conditionOper, String conditionVal1, String conditionVal2, String action, String value1Init, String value2Init, String value1, String value2, String forceExeStatus, long start, long end, long startLong, long endLong, MessageEvent resultMessage, String description, TestCaseStepAction testCaseStepAction, TestCaseStepExecution testCaseStepExecution) {
         TestCaseStepActionExecution testCaseStepActionExecution = new TestCaseStepActionExecution();
         testCaseStepActionExecution.setAction(action);
         testCaseStepActionExecution.setEnd(end);
@@ -41,6 +41,7 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setId(id);
         testCaseStepActionExecution.setConditionOper(conditionOper);
         testCaseStepActionExecution.setConditionVal1(conditionVal1);
+        testCaseStepActionExecution.setConditionVal2(conditionVal2);
         testCaseStepActionExecution.setValue1(value1);
         testCaseStepActionExecution.setValue2(value2);
         testCaseStepActionExecution.setValue1Init(value1Init);

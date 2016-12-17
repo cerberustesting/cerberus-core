@@ -42,6 +42,7 @@ public class TestCase {
     private String tcActive;
     private String conditionOper;
     private String conditionVal1;
+    private String conditionVal2;
     private String group;
     private String origine;
     private String refOrigine;
@@ -132,6 +133,14 @@ public class TestCase {
 
     public void setConditionVal1(String conditionVal1) {
         this.conditionVal1 = conditionVal1;
+    }
+
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal1 = conditionVal2;
     }
 
     public String getApplication() {
@@ -412,7 +421,8 @@ public class TestCase {
             result.put("status", this.getStatus());
             result.put("tcActive", this.getTcActive());
             result.put("conditionOper", this.getConditionOper());
-            result.put("conditionValue", this.getConditionVal1());
+            result.put("conditionValue1", this.getConditionVal1());
+            result.put("conditionValue2", this.getConditionVal1());
             result.put("group", this.getGroup());
             result.put("origine", this.getOrigine());
             result.put("refOrigine", this.getRefOrigine());

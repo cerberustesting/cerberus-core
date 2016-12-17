@@ -547,7 +547,9 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         request);
                 String step_conditionOper[] = this.getStringTable("actions_conditionOper",
                         request);
-                String step_conditionVal[] = this.getStringTable("actions_conditionVal",
+                String step_conditionVal1[] = this.getStringTable("actions_conditionVal1",
+                        request);
+                String step_conditionVal2[] = this.getStringTable("actions_conditionVal2",
                         request);
                 String step_value1[] = this.getStringTable("actions_value1",
                         request);
@@ -569,6 +571,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                         "controls_conditionoper", request, true);
                 String controls_conditionval1[] = this.getStringTable(
                         "controls_conditionval1", request, true);
+                String controls_conditionval2[] = this.getStringTable(
+                        "controls_conditionval2", request, true);
                 String controls_control[] = this.getStringTable("controls_control",
                         request);
                 String controls_value1[] = this.getStringTable(
@@ -596,7 +600,8 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_actions_info.add(step_number_hide);
                 testcase_actions_info.add(step_sequence);
                 testcase_actions_info.add(step_conditionOper);
-                testcase_actions_info.add(step_conditionVal);
+                testcase_actions_info.add(step_conditionVal1);
+                testcase_actions_info.add(step_conditionVal2);
                 testcase_actions_info.add(step_action);
                 testcase_actions_info.add(step_value1);
                 testcase_actions_info.add(step_value2);
@@ -612,6 +617,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                 testcase_controls_info.add(controls_description);
                 testcase_controls_info.add(controls_conditionoper);
                 testcase_controls_info.add(controls_conditionval1);
+                testcase_controls_info.add(controls_conditionval2);
                 testcase_controls_info.add(controls_control);
                 testcase_controls_info.add(controls_value1);
                 testcase_controls_info.add(controls_value2);
@@ -759,7 +765,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             IFactoryTestCaseStepAction actionFactory = appContext.getBean(IFactoryTestCaseStepAction.class);
                             ITestCaseStepActionService actionService = appContext.getBean(ITestCaseStepActionService.class);
                             TestCaseStepAction tcsa = actionFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(step_number_hide[i]), Integer.parseInt(step_sequence[i]),
-                                    Integer.parseInt(step_sequence[i]), step_conditionOper[i], step_conditionVal[i], step_action[i], step_value1[i], step_value2[i], "", step_description[i], "");
+                                    Integer.parseInt(step_sequence[i]), step_conditionOper[i], step_conditionVal1[i], step_conditionVal2[i], step_action[i], step_value1[i], step_value2[i], "", step_description[i], "");
 
                             if (rs_stepaction.next()) {
                                 actionService.updateTestCaseStepAction(tcsa);
@@ -798,7 +804,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                             IFactoryTestCaseStepActionControl controlFactory = appContext.getBean(IFactoryTestCaseStepActionControl.class);
                             ITestCaseStepActionControlService controlService = appContext.getBean(ITestCaseStepActionControlService.class);
                             TestCaseStepActionControl control = controlFactory.create(test_testcase_format[0], test_testcase_format[1], Integer.parseInt(controls_step[i]),
-                                    Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_controlsequence[i]), 0, controls_conditionoper[i], controls_conditionval1[i], controls_control[i], (controls_value1[i]),
+                                    Integer.parseInt(controls_sequence[i]), Integer.parseInt(controls_controlsequence[i]), 0, controls_conditionoper[i], controls_conditionval1[i], controls_conditionval2[i], controls_control[i], (controls_value1[i]),
                                     controls_value2[i], controls_fatal[i], controls_description[i], "");
 
                             if (rs_stepactioncontrol.next()) {

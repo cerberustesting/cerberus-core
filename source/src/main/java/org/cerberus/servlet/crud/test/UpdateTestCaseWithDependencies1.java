@@ -303,6 +303,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
             String conditionOper = step.getString("conditionOper");
             String conditionVal1 = step.getString("conditionVal1");
+            String conditionVal2 = step.getString("conditionVal2");
             String description = step.getString("description");
             String useStep = step.getString("useStep");
             String useStepTest = step.getString("useStepTest");
@@ -312,7 +313,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, conditionOper, conditionVal1, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));
@@ -345,7 +346,8 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int sequence = tcsaJson.isNull("sequence") ? -1 : tcsaJson.getInt("sequence");
             int sort = tcsaJson.isNull("sort") ? -1 : tcsaJson.getInt("sort");
             String conditionOper = tcsaJson.getString("conditionOper");
-            String conditionVal = tcsaJson.getString("conditionVal");
+            String conditionVal1 = tcsaJson.getString("conditionVal1");
+            String conditionVal2 = tcsaJson.getString("conditionVal2");
             String action = tcsaJson.getString("action");
             String object = tcsaJson.getString("object");
             String property = tcsaJson.getString("property");
@@ -355,7 +357,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray controlArray = tcsaJson.getJSONArray("controlArr");
 
             if (!delete) {
-                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal, action, object, property, forceExeStatus, description, screenshot);
+                TestCaseStepAction tcsa = testCaseStepActionFactory.create(test, testCase, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, action, object, property, forceExeStatus, description, screenshot);
                 tcsa.setTestCaseStepActionControl(getTestCaseStepActionControlFromParameter(request, appContext, test, testCase, controlArray));
                 testCaseStepAction.add(tcsa);
             }
@@ -377,6 +379,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             int sort = controlJson.isNull("sort") ? -1 : controlJson.getInt("sort");
             String conditionOper = controlJson.isNull("conditionOper") ? "always" : controlJson.getString("conditionOper");
             String conditionVal1 = controlJson.isNull("conditionVal1") ? "" : controlJson.getString("conditionVal1");
+            String conditionVal2 = controlJson.isNull("conditionVal2") ? "" : controlJson.getString("conditionVal2");
             String type = controlJson.getString("objType");
             String controlValue = controlJson.getString("control");
             String value1 = controlJson.getString("value1");
@@ -385,7 +388,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             String description = controlJson.getString("description");
             String screenshot = controlJson.getString("screenshotFileName");
             if (!delete) {
-                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, controlValue, value1, value2, fatal, description, screenshot));
+                testCaseStepActionControl.add(testCaseStepActionControlFactory.create(test, testCase, step, sequence, control, sort, conditionOper, conditionVal1, conditionVal2, controlValue, value1, value2, fatal, description, screenshot));
             }
         }
         return testCaseStepActionControl;

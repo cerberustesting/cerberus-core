@@ -36,6 +36,7 @@ public class TestCaseStepActionControl {
     private int sort;
     private String conditionOper;
     private String conditionVal1;
+    private String conditionVal2;
     private String control;
     private String value1;
     private String value2;
@@ -128,6 +129,14 @@ public class TestCaseStepActionControl {
 
     public void setConditionVal1(String conditionVal1) {
         this.conditionVal1 = conditionVal1;
+    }
+
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal2 = conditionVal2;
     }
 
     public String getValue2() {
@@ -231,6 +240,7 @@ public class TestCaseStepActionControl {
         hash = 67 * hash + this.sort;
         hash = 67 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
         hash = 67 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
+        hash = 67 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
         hash = 67 * hash + (this.control != null ? this.control.hashCode() : 0);
         hash = 67 * hash + (this.value1 != null ? this.value1.hashCode() : 0);
         hash = 67 * hash + (this.value2 != null ? this.value2.hashCode() : 0);
@@ -272,6 +282,9 @@ public class TestCaseStepActionControl {
         if ((this.conditionVal1 == null) ? (other.conditionVal1 != null) : !this.conditionVal1.equals(other.conditionVal1)) {
             return false;
         }
+        if ((this.conditionVal2 == null) ? (other.conditionVal2 != null) : !this.conditionVal2.equals(other.conditionVal2)) {
+            return false;
+        }
         if ((this.control == null) ? (other.control != null) : !this.control.equals(other.control)) {
             return false;
         }
@@ -309,6 +322,8 @@ public class TestCaseStepActionControl {
             result.put("sort", this.getSort());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
+            result.put("conditionVal2AAAA", this.getConditionVal2());
             result.put("control", this.getControl());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
