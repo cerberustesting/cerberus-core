@@ -330,7 +330,7 @@ function displayPageLabel(doc){
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
     $("#nav-execution #list-wrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#saveScript").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
-    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#editTcInfo").html(doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
     $("#seeLastExec").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
