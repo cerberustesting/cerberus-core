@@ -286,7 +286,8 @@ function sortProperties(identifier){
 }
 
 function createProperties(propList){
-    console.log(propList);
+    $("#propTable").empty();
+
     var doc = new Doc();
     var propertyArray = [];
 
@@ -295,9 +296,10 @@ function createProperties(propList){
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled",true);
     var table = $("#propTable");
 
-    for (var index = 0; index < propList.length; index++) {
-        var property = propList[index];
-        propertyArray.push(propList[index].property);
+    for (var ind = 0; ind < propList.length; ind++) {
+        var property = propList[ind];
+        console.log(property);
+        propertyArray.push(propList[ind].property);
 
         var test = property.fromTest;
         var testcase = property.fromTestCase;
@@ -318,20 +320,20 @@ function createProperties(propList){
         var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.type));
         var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.rMessage));
 
-        var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' disabled>").addClass("form-control input-sm").val(property.property);
-        var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' disabled>").addClass("form-control input-sm").val(property.description);
-        var valueInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value);
-        var value1Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value1") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
-        var value1InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value1Init") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1Init);
-        var value2Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value2") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
-        var value2InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value2Init") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2Init);
-        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' disabled>").addClass("form-control input-sm").val(property.length);
-        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' disabled>").addClass("form-control input-sm").val(property.rowLimit);
+        var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "property_field") + "' disabled>").addClass("form-control input-sm").val(property.property);
+        var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "description_field") + "' disabled>").addClass("form-control input-sm").val(property.description);
+        var valueInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value);
+        var value1Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value_field") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
+        var value1InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value1init_field") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1Init);
+        var value2Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value2_field") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
+        var value2InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_testcasescript", "value2init_field") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2Init);
+        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length_field") + "' disabled>").addClass("form-control input-sm").val(property.length);
+        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "rowlimit_field") + "' disabled>").addClass("form-control input-sm").val(property.rowLimit);
         var rcInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "rc") + "' disabled>").addClass("form-control input-sm").val(property.RC);
         var timeInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "time") + "' disabled>").addClass("form-control input-sm").val(property.endLong - property.startLong);
         var idInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "id") + "' disabled>").addClass("form-control input-sm").val(property.id);
         var indexInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "index") + "' disabled>").addClass("form-control input-sm").val(property.index);
-        var rMessageInput = $("<textarea style='width:100%;' placeholder='" + doc.getDocLabel("page_testcasescript", "rmessage") + "' disabled>").addClass("form-control input-sm").val(property.rMessage);
+        var rMessageInput = $("<textarea style='width:100%;' placeholder='" + doc.getDocLabel("page_testcasescript", "rMessage") + "' disabled>").addClass("form-control input-sm").val(property.rMessage);
         var retrynbInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "retrynb") + "' disabled>").addClass("form-control input-sm").val(property.retryNb);
         var retryperiodInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "retryperiod") + "' disabled>").addClass("form-control input-sm").val(property.retryperiod);
 
