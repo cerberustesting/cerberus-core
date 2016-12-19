@@ -7866,6 +7866,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcasestepactioncontrol` SET `ConditionVal2` = '';");
         SQLInstruction.add(SQLS.toString());
 
+        //Update doc - 1010
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_testcasescript','rMessage','','en','Result Message :','')");
+        SQLS.append(",('page_testcasescript','rMessage','','fr','Message de Retour :','')");
+        SQLS.append(",('page_testcasescript','value1init_field','','en','Value 1 Initial :','')");
+        SQLS.append(",('page_testcasescript','value1init_field','','fr','Valeur 1 Initiale :','')");
+        SQLS.append(",('page_testcasescript','value2init_field','','en','Value 2 Initial :','')");
+        SQLS.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale :','')");
+        SQLS.append(",('page_testcasescript','value_field','','en','Value :','')");
+        SQLS.append(",('page_testcasescript','value_field','','fr','Valeur :','')");
+        SQLS.append(",('page_testcasescript','rc','','en','Reslut Code :','')");
+        SQLS.append(",('page_testcasescript','rc','','fr','Code de Retour :','')");
+        SQLS.append(",('page_testcasescript','retrynb','','en','Retry Number :','')");
+        SQLS.append(",('page_testcasescript','retrynb','','fr','Nombre d essais :','')");
+        SQLS.append(",('page_testcasescript','retryperiod','','en','Retry Period :','')");
+        SQLS.append(",('page_testcasescript','retryperiod','','fr','Periode d essai :','')");
+        SQLS.append(",('page_testcasescript','index','','en','Index : ','')");
+        SQLS.append(",('page_testcasescript','index','','fr','Index : ','');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

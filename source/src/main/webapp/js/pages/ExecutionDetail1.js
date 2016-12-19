@@ -57,6 +57,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     socket.onerror = function(e){
                     } //on traite les cas d'erreur*/
                 }
+                $("#seeProperties").click(function(){
+                    $("#propertiesModal").modal('show');
+                });
             }
         });
     });
@@ -85,6 +88,11 @@ function initPage(id) {
     displayHeaderLabel(doc);
     displayFooter(doc);
     displayPageLabel(doc);
+
+    $("#inheritedPropPanelWrapper").hide();
+    $("[name='buttonSave']").hide();
+    $("#addProperty").hide();
+    $("#duplicateButtons").hide();
 }
 
 function displayPageLabel(doc){
@@ -117,7 +125,8 @@ function displayPageLabel(doc){
     $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail","verbose"));
     $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail","build"));
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail","version"));
-    $("#handler h3").text(doc.getDocLabel("page_executiondetail","steps"));
+    $("#steps h3").text(doc.getDocLabel("page_executiondetail","steps"));
+    $("#actions h3").text(doc.getDocLabel("page_global","columnAction"));
     $("#handler #editTcInfo").text(doc.getDocLabel("page_executiondetail","edittc"));
     $("#handler #runTestCase").text(doc.getDocLabel("page_executiondetail","runtc"));
     $("#handler #lastExecution").text(doc.getDocLabel("page_executiondetail","lastexecution"));
@@ -179,6 +188,7 @@ function updatePage(data, stepList){
     configPanel.find("input#version").val(data.version);
 
     createStepList(data.testCaseStepExecutionList,stepList);
+    createProperties(data.testCaseExecutionDataList);
     updateLoadBar(data);
 }
 function updateLoadBar(data) {
@@ -254,6 +264,176 @@ function sortData(agreg) {
     agreg.sort(function (a, b) {
         return a.sort - b.sort;
     });
+}
+
+function sortProperties(identifier){
+    var container = $(identifier);
+    var list = container.children(".property");
+    list.sort(function(a,b){
+
+        var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
+            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+
+        if(aProp > bProp) {
+            return 1;
+        }
+        if(aProp < bProp) {
+            return -1;
+        }
+        return 0;
+    });
+    container.append(list);
+}
+
+function createProperties(propList){
+    console.log(propList);
+    var doc = new Doc();
+    var propertyArray = [];
+
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled",true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled",true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled",true);
+    var table = $("#propTable");
+
+    for (var index = 0; index < propList.length; index++) {
+        var property = propList[index];
+        propertyArray.push(propList[index].property);
+
+        var test = property.fromTest;
+        var testcase = property.fromTestCase;
+
+        var moreBtn = $("<button class='btn btn-default btn-block'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+
+        var rcDiv = $("<div>").addClass("col-sm-1");
+        if(property.RC == "OK"){
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-ok pull-left'></span>"))
+        }else if(property.RC == "FA"){
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-alert pull-left'></span>"))
+        }else if(property.RC == "PE"){
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-refresh spin pull-left'></span>"))
+        }else{
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left'></span>"))
+        }
+        var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.property));
+        var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.type));
+        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.rMessage));
+
+        var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' disabled>").addClass("form-control input-sm").val(property.property);
+        var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' disabled>").addClass("form-control input-sm").val(property.description);
+        var valueInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value);
+        var value1Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value1") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1);
+        var value1InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value1Init") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value1Init);
+        var value2Input = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value2") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
+        var value2InitInput = $("<textarea style='width:100%;' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value2Init") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2Init);
+        var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' disabled>").addClass("form-control input-sm").val(property.length);
+        var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' disabled>").addClass("form-control input-sm").val(property.rowLimit);
+        var rcInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "rc") + "' disabled>").addClass("form-control input-sm").val(property.RC);
+        var timeInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "time") + "' disabled>").addClass("form-control input-sm").val(property.endLong - property.startLong);
+        var idInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "id") + "' disabled>").addClass("form-control input-sm").val(property.id);
+        var indexInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "index") + "' disabled>").addClass("form-control input-sm").val(property.index);
+        var rMessageInput = $("<textarea style='width:100%;' placeholder='" + doc.getDocLabel("page_testcasescript", "rmessage") + "' disabled>").addClass("form-control input-sm").val(property.rMessage);
+        var retrynbInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "retrynb") + "' disabled>").addClass("form-control input-sm").val(property.retryNb);
+        var retryperiodInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "retryperiod") + "' disabled>").addClass("form-control input-sm").val(property.retryperiod);
+
+
+        var content = $("<div class='row property panel'></div>");
+        var headerDiv = $("<div class='panel-heading'></div>");
+        var header = $("<div class='col-sm-11'></div>");
+        var propsbody = $("<div class='panel-body' style='display:none;'>");
+        var props = $("<div>");
+        var right = $("<div class='col-sm-1 propertyButtons' style='padding:0px;margin-top:10px;'></div>");
+
+        var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
+        var row2 = $("<div class='row'></div>");
+        var row3 = $("<div class='row'></div>");
+        var row4 = $("<div class='row'></div>");
+        var row5 = $("<div class='row'></div>");
+        var row6 = $("<div class='row'></div>");
+        var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
+        var description = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
+        var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
+        var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.clone().val(property.database));
+        var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value_field"))).append(valueInput);
+        var value1 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(value1Input);
+        var value1Init = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1init_field"))).append(value1InitInput);
+        var value2 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+        var value2Init = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2init_field"))).append(value2InitInput);
+        var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
+        var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+        var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
+        var rc = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rc"))).append(rcInput);
+        var time = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "time"))).append(timeInput);
+        var id = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "id"))).append(idInput);
+        var index = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "index"))).append(indexInput);
+        var rMessage = $("<div class='col-sm-12 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rMessage"))).append(rMessageInput);
+        var retrynb = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retrynb"))).append(retrynbInput);
+        var retryperiod = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retryperiod"))).append(retryperiodInput);
+
+        moreBtn.click(function(){
+            if($(this).find("span").hasClass("glyphicon-chevron-down")){
+                $(this).find("span").removeClass("glyphicon-chevron-down");
+                $(this).find("span").addClass("glyphicon-chevron-up");
+            }else{
+                $(this).find("span").removeClass("glyphicon-chevron-up");
+                $(this).find("span").addClass("glyphicon-chevron-down");
+            }
+            $(this).parent().parent().parent().find(".panel-body").toggle();
+        });
+
+        row1.data("property", property);
+        row1.append(rMessage);
+        props.append(row1);
+
+        row2.append(propertyName);
+        row2.append(type);
+        row2.append(value);
+        props.append(row2);
+
+        row3.append(value1);
+        row3.append(value1Init);
+        props.append(row3);
+
+        row4.append(value2);
+        row4.append(value2Init);
+        props.append(row4);
+
+        row6.append(index);
+        row6.append(rc);
+        row6.append(description);
+        props.append(row6);
+
+        row5.append(db);
+        row5.append(length);
+        row5.append(rowLimit);
+        row5.append(nature);
+        row5.append(retrynb);
+        row5.append(retryperiod);
+        props.append(row5);
+
+        header.append(rcDiv).append(propertyDiv).append(typeDiv).append(messageDiv);
+        headerDiv.append(header).append(right).append($("<div>").addClass("clearfix"));
+
+        right.append(moreBtn);
+
+        propsbody.append(props);
+
+        content.append(headerDiv).append(propsbody);
+
+        if(property.RC == "OK"){
+            content.addClass("panel-success");
+        }else if(property.RC == "KO"){
+            content.addClass("panel-danger");
+        }else if(property.RC == "PE"){
+            content.addClass("panel-primary");
+        }else{
+            content.addClass("panel-warning");
+        }
+
+        table.append(content);
+    }
+
+    sortProperties("#inheritedPropPanel");
+    return propertyArray;
 }
 
 function createStepList(data, stepList) {
@@ -604,7 +784,7 @@ Action.prototype.generateContent = function () {
     var value2Field = $("<input type='text' class='form-control' id='value2'>").prop("readonly",true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly",true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly",true);
-    var returnMessageField = $("<textarea class='form-control' id='returnmessage'>").prop("readonly",true);
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly",true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
 
     var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail","action") + "</label>")).append(actionList);
@@ -826,7 +1006,7 @@ Control.prototype.generateContent = function () {
     var value1Field = $("<input type='text' class='form-control' id='value1'>").prop("readonly",true);
     var value2Field = $("<input type='text' class='form-control' id='value2'>").prop("readonly",true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly",true);
-    var returnMessageField = $("<textarea class='form-control' id='returnmessage'>").prop("readonly",true);
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly",true);
     var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly",true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
 
@@ -977,7 +1157,7 @@ var File = function(){
                                     $("<div>").addClass("col-sm-12").append(
                                         $("<div class='form-group'></div>")
                                             .append($("<label for='action'>" + description + "</label>"))
-                                            .append($("<textarea class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result)
+                                            .append($("<textarea style='width:100%;' class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result)
                                         )
                                     )
                                 );

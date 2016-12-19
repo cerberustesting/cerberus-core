@@ -92,8 +92,6 @@
 }
 
 .form-control{
-    border: 0px;
-    box-shadow: 0 0px 0px;
 }
 
 .action .type {
@@ -219,3 +217,5 @@ color: red !important;
 .control.toDelete select {
     background-color: #e74c3c;
 }
+
+textarea { resize:vertical ; }

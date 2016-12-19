@@ -33,6 +33,7 @@
     <body>
         <%@ include file="include/header.html"%>
         <%@ include file="include/utils/modal-generic.html"%>
+        <%@ include file="include/testcasescript/manageProperties.html"%>
         <div id="page-layout" class="container-fluid center">
             <div class="alert alert-warning">
                 <strong>BETA</strong> <span>This page is in beta, some features may not be available or fully functional.</span>
@@ -236,13 +237,14 @@
             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">
                 <nav class="col-lg-3" id="nav-execution">
                     <div id="list-wrapper">
-                        <div>
+                        <div id="steps">
                             <h3>Steps</h3>
                             <ul class="list-group step-list side-item" id="stepList" style="max-height: 500px;overflow-y: auto"></ul>
                         </div>
-                        <div>
+                        <div id="actions">
                             <div>
                                 <h3> Actions </h3>
+                                <button class="btn btn-block btn-warning side-item" id="seeProperties">See Properties</button>
                                 <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
                                 <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
                                 <button class="btn btn-block btn-primary side-item" id="lastExecution">See last executions</button>
