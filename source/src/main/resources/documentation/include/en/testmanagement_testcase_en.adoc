@@ -51,33 +51,73 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Step
 
-.Click on *[red]#Add step#* to display the following window
-.Feed a *[red]#Description#* and click on *[red]#Add#* for a new step 
-.Or search for a step in library then click on *[red]#Add#*
+. Click on *[red]#Add step#* to display the following window.
+. Feed a *[red]#Description#* and click on *[red]#Add#* for a new step. 
+. Or search for a step in library then click on *[red]#Add#*.
 
-image:testcaseaddstep.png[testcaseaddstep,200,200]
+image:testcaseaddstep.png[testcaseaddstep]
 
 Your step is created. if you want to put it in library, just click on the book on the right side.
 A step in library will be available to add it in all test cases of your current system.
 
-image:testcasesteplibrary.png[testcasesteplibrary,200,200]
+image:testcasesteplibrary.png[testcasesteplibrary]
 
 In the following screenshot you can see a use step. This step is imported from the previous library step.
 You are not able to modify it (all fields are grey). But you can find a link at the top to open the library if you want to modify your step. All use steps from this library will be impacted by your modification.
 
 To modify only this use step, you have to click on the padlock icon but it will not be a use step anymore. (modification on library step will not affect it)
 
-image:testcaseusestep.png[testcaseusestep,200,200]
+image:testcaseusestep.png[testcaseusestep]
 
+You have the possibility to switch the position of your several steps by clicking on the 3 dots.
+
+image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcaseusestep]
 
 ==== Action
+
+|=== 
+
+| *Action* | *Description*  
+| Unknown | Unknown action. Default Action when creating a new action
+| keypress | TBD
+| hidekeyboard | Hide the currently visible keyboard 
+| swipe | TBD
+| click | TBD
+| mouseButtonLeftPress |TBD 
+| mouseButtonLeftPress | TBD
+| doubleClick | TBD
+| rightClick | TBD
+| focustoIframe | TBD
+| focustoDefaultIframe | TBD
+| Switchtowindow | TBD
+| manageDialog | TBD
+| mouseOver | TBD
+| mouseOverAndWait | TBD
+| OpenUrlWithBase | TBD
+| OpenUrlLogin | TBD
+| OpenUrl | TBD
+| select | TBD
+| type | TBD
+| wait | Wait for a certain amount of time
+| CallSoapWithBase | TBD
+| CallSoap | TBD
+| removeDifference | TBD
+| executeSqlUpdate | TBD
+| executeSqlStoredProcedure | TBD
+| CalculateProperty | TBD
+| doNothing | Just perform no action. No action will be executed and engine will go to the next action or control
+| skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associeted to this will be also skipped
+| getPageSource | TBD
+
+|=== 
 
 ==== Control
 
 ==== Property
 
 When Clicking on Button image:buttonmanageproperties.png[buttonManageProperties], the Window "Manage Properties" will open.
-From there you can
+From there you can :
+
 . either manage your TestCase properties
 . or see your inherited properties - coming from the step libraries of your use steps.
 
