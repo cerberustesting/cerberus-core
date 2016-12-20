@@ -2208,7 +2208,7 @@ function setPlaceholderAction() {
         {"type": "removeDifference", "object": "Action Depreciée", "property": "Action Depreciée"},
         {"type": "executeSqlUpdate", "object": "Nom de Base de donnée", "property": "Script à executer"},
         {"type": "executeSqlStoredProcedure", "object": "Nom de Base de donnée", "property": "Procedure Stoquée à executer"},
-        {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": null},
+        {"type": "calculateProperty", "object": "Nom d'une Proprieté", "property": "[opt] Nom d'une autre propriété"},
         {"type": "doNothing", "object": null, "property": null},
         {"type": "getPageSource", "object": null, "property": null}
     ], "en": [
@@ -2238,7 +2238,7 @@ function setPlaceholderAction() {
         {"type": "removeDifference", "object": "Deprecated", "property": "Deprecated"},
         {"type": "executeSqlUpdate", "object": "Database Name", "property": "Script"},
         {"type": "executeSqlStoredProcedure", "object": "Database Name", "property": "Stored Procedure"},
-        {"type": "calculateProperty", "object": "Property Name", "property": null},
+        {"type": "calculateProperty", "object": "Property Name", "property": "[opt] Name of an other property"},
         {"type": "doNothing", "object": null, "property": null},
         {"type": "getPageSource", "object": null, "property": null}
     ]};
