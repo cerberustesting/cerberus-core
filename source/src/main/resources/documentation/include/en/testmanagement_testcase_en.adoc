@@ -79,35 +79,36 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 | *Action* | *Description*  
 | Unknown | Unknown action. Default Action when creating a new action
-| keypress | TBD
+| keypress | will allow you to press any key in the current web page. *[red]#Value1#*	: Keycode of the key to press Example : ENTER
 | hidekeyboard | Hide the currently visible keyboard 
 | swipe | TBD
-| click | TBD
+| click | will allow you to click on an element inside the current page. 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference
 | mouseButtonLeftPress |TBD 
-| mouseButtonLeftPress | TBD
-| doubleClick | TBD
-| rightClick | TBD
+| mouseButtonLeftRelease | TBD
+| doubleClick |  will allow you to double click on an element inside the current page. 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference
+| rightClick |  will allow you to right click on an element inside the current page. 
+*[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference
 | focustoIframe | TBD
 | focustoDefaultIframe | TBD
 | Switchtowindow | TBD
 | manageDialog | TBD
-| mouseOver | TBD
-| mouseOverAndWait | TBD
+| mouseOver | Mouse cursor over an object *[red]#Element path#* : the id of the element
 | OpenUrlWithBase | TBD
 | OpenUrlLogin | TBD
 | OpenUrl | TBD
 | select | TBD
-| type | TBD
+| type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. 
 | wait | Wait for a certain amount of time
 | CallSoapWithBase | TBD
-| CallSoap | TBD
+| CallSoap | To call a SOAP.  Feed one the following field *[red]#Soap Name (library)#* : Name of the SOAP stored in library  *[red]#Property Name#* : Name of the property if the SOAP is defined in property
 | removeDifference | TBD
 | executeSqlUpdate | TBD
 | executeSqlStoredProcedure | TBD
-| CalculateProperty | TBD
+| CalculateProperty | will allow you to calculate a property defined in the property section of the test case. 
 | doNothing | Just perform no action. No action will be executed and engine will go to the next action or control
 | skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associeted to this will be also skipped
-| getPageSource | TBD
 
 |=== 
 
@@ -118,8 +119,8 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 When Clicking on Button image:buttonmanageproperties.png[buttonManageProperties], the Window "Manage Properties" will open.
 From there you can :
 
-. either manage your TestCase properties
-. or see your inherited properties - coming from the step libraries of your use steps.
+* either manage your TestCase properties
+* or see your inherited properties - coming from the step libraries of your use steps.
 
 image:windowmanageproperties.png[windowManageProperties]
 
