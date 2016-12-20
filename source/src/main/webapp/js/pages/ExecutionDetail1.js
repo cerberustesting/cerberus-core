@@ -85,6 +85,26 @@ function initPage(id) {
         window.location = "ExecutionDetail.jsp?id_tc="+id;
     });
 
+    $("#editTag").click(function(){
+        $(this).hide();
+        $("#saveTag").show();
+        $("#tag").attr("readonly",false);
+    });
+
+    $("#saveTag").click(function(){
+        $("#tag").attr("readonly",true);
+        $(this).attr("disabled", true);
+        $.ajax({
+            url:"SetTagToExecution",
+            data: {"executionId" : id, newTag : $("#tag").val()},
+            success:function(data){
+                $("#saveTag").attr("disabled", false);
+                $("#saveTag").hide();
+                $("#editTag").show();
+            }
+        })
+    });
+
     displayHeaderLabel(doc);
     displayFooter(doc);
     displayPageLabel(doc);
@@ -150,6 +170,9 @@ function updatePage(data, stepList){
     $("#lastExecution").click(function () {
         window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase;
     });
+    $("#lastExecutionwithEnvCountry").click(function () {
+        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment +"&systemFlt=&application=" + data.application;
+    });
 
     var configPanel = $("#testCaseConfig");
 
@@ -186,6 +209,39 @@ function updatePage(data, stepList){
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#verbose").val(data.verbose);
     configPanel.find("input#version").val(data.version);
+
+    $.ajax({
+        url: "ReadApplication",
+        data: {application: data.application},
+        async: true,
+        success: function (dataApp) {
+            var link ;
+            if (data.testCaseObj.bugId == undefined || data.testCaseObj.bugId  == "") {
+                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                newBugURL = newBugURL.replace("%EXEID%", data.id);
+                newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
+                newBugURL = newBugURL.replace("%TEST%", data.test);
+                newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
+                newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
+                newBugURL = newBugURL.replace("%COUNTRY%", data.country);
+                newBugURL = newBugURL.replace("%ENV%", data.environment);
+                newBugURL = newBugURL.replace("%BUILD%", data.build);
+                newBugURL = newBugURL.replace("%REV%", data.revision);
+                newBugURL = newBugURL.replace("%BROWSER%", data.browser);
+                newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                link = $('<a target="_blank" id="bugID">').attr("href",newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
+            }else{
+                newBugURL = dataApp.contentTable.bugTrackerUrl;
+                if (newBugURL != undefined && newBugURL != "") {
+                    newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
+                    link = $('<a target="_blank" id="bugID">').attr("href",newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+                }else{
+                    link = $("<span>").text(data.testCaseObj.bugId);
+                }
+            }
+            $("#bugID").append(link);
+        }
+    });
 
     createStepList(data.testCaseStepExecutionList,stepList);
     createProperties(data.testCaseExecutionDataList);
@@ -606,7 +662,7 @@ Step.prototype.getJsonData = function () {
 };
 
 function Action(json, parentStep) {
-    this.html = $("<a href='#'></a>").addClass("action-group");
+    this.html = $("<a href='#'></a>").addClass("action-group action");
     this.parentStep = parentStep;
 
     if (json !== null) {
@@ -891,7 +947,7 @@ function Control(json, parentAction) {
 
     this.toDelete = false;
 
-    this.html = $("<a href='#'></a>").addClass("action-group").css("margin-left","25px");
+    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left","25px");
 }
 
 Control.prototype.draw = function () {

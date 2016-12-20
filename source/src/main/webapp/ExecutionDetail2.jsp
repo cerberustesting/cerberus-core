@@ -197,6 +197,12 @@
                                 <input type="text" class="form-control" id="revision" placeholder="Revision" readonly>
                             </div>
                         </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <label>Bug ID</label>
+                                <div id="bugID"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-4">
@@ -208,7 +214,13 @@
                         <div class="col-sm-8">
                             <div class="form-group">
                                 <label for="tag">Tag</label>
-                                <input type="text" class="form-control" id="tag" placeholder="Tag" readonly>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="tag" placeholder="Tag" readonly>
+                                    <span class="input-group-btn">
+                                        <button id="editTag" class="btn btn-default">Edit</button>
+                                        <button id="saveTag" class="btn btn-primary" style="display : none;">Save</button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -248,6 +260,7 @@
                                 <button class="btn btn-block btn-primary side-item" id="editTcInfo">Edit Test Case</button>
                                 <button class="btn btn-block btn-primary side-item" id="runTestCase">Run this Test Case Again</button>
                                 <button class="btn btn-block btn-primary side-item" id="lastExecution">See last executions</button>
+                                <button class="btn btn-block btn-primary side-item" id="lastExecutionwithEnvCountry">See last executions with environment & country</button>
                             </div>
                         </div>
                     </div>
