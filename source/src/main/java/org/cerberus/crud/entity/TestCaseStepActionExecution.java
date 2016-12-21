@@ -323,6 +323,8 @@ public class TestCaseStepActionExecution {
             result.put("action", this.getAction());
             result.put("value1", this.getValue1());
             result.put("value2", this.getValue2());
+            result.put("value1init", this.getValue1Init());
+            result.put("value2init", this.getValue2Init());
             result.put("forceExeStatus", this.getForceExeStatus());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());

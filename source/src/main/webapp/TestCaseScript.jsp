@@ -67,19 +67,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-body" style="display:none;">
+                <div class="panel-body" id="tcBody" style="display:none;">
                     <nav class="col-lg-3" id="nav-execution" style="z-index:1;">
                         <div id="list-wrapper" style="top:107px;">
-                            <div>
+                            <div id="stepListWrapper">
                                 <h3>Steps</h3>
                                 <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
+                            </div>
+                            <div id="tcButton">
+                                <h3>Actions</h3>
                                 <button class="btn btn-info btn-block" id="addStep">Add Step</button>
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                     <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                 </div>
                                 <button class="btn btn-grey btn-block" id="editTcInfo">Edit Test Case</button>
                             </div>
-
                         </div>
                     </nav>
                     <div class="col-lg-9 well marginTop20" id="contentWrapper" style="min-height: 200px;">
