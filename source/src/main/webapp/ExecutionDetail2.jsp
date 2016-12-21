@@ -57,7 +57,7 @@
                                 <span> - </span>
                                 <span id="testcase"></span>
                                 <span> - </span>
-                                <span id="controlstatus"></span>
+                                <span id="controlstatus" style="font-weight: 900"></span>
                                 <span> - </span>
                                 <a target="_blank" href="#" id="ExecutionByTag">See Execution By Tag</a>
                             </div>

@@ -7887,6 +7887,20 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','index','','fr','Index : ','');");
         SQLInstruction.add(SQLS.toString());
 
+
+        //Update doc - 1011
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` VALUES ");
+        SQLS.append("('page_testcasescript','fatal_field','','en','Fatal :','')");
+        SQLS.append(",('page_testcasescript','fatal_field','','fr','Fatal :','')");
+        SQLS.append(",('page_executiondetail','value1init','','en','Value 1 Initial','')");
+        SQLS.append(",('page_executiondetail','value1init','','fr','Valeur 1 Initiale','')");
+        SQLS.append(",('page_executiondetail','value2init','','en','Value 2 Initial','')");
+        SQLS.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','')");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','')");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

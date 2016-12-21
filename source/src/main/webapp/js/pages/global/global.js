@@ -1998,6 +1998,9 @@ function bindToggleCollapse() {
         if (localStorage.getItem(this.id) === "false") {
             $(this).removeClass('in');
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+        }else{
+            $(this).addClass('in');
+            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
         }
     });
 }

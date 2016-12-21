@@ -292,7 +292,9 @@ public class TestCaseStepActionControlExecution {
             result.put("sort", this.getSort());
             result.put("controlType", this.getControl());
             result.put("controlProperty", this.getValue1());
-            result.put("controlValue", this.getValue2());
+            result.put("controlValueInit", this.getValue2());
+            result.put("controlPropertyInit", this.getValue1Init());
+            result.put("controlValue", this.getValue2Init());
             result.put("fatal", this.getFatal());
             result.put("start", this.getStart());
             result.put("end", this.getEnd());
