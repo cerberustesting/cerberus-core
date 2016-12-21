@@ -102,7 +102,7 @@ public class GetNumberOfExecutions extends HttpServlet {
         String controlStatus = ParameterParserUtil.parseStringParam(request.getParameter("controlstatus"), "");
         int NbMinutes = ParameterParserUtil.parseIntegerParam(request.getParameter("nbminuteshistory"), 0);
 
-        String helpMessage = "\nThis servlet return the number of execution that match the following criterias :\n"
+        String helpMessage = "\nThis servlet return the number of execution performed on WORKING test cases that match the following criterias :\n"
                 + "- nbminuteshistory [mandatory] : the number of minutes in the past from the moment the servlet is called. This parameter must be > 0. [" + NbMinutes + "]\n"
                 + "- test : Executions done on the test. [" + test + "]\n"
                 + "- environment : Environment where the execution happened. Default to PROD. [" + environment + "]\n"

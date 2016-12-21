@@ -463,7 +463,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         TestCaseExecution Execution;
         boolean throwException = false;
         final String query = new StringBuffer("SELECT exe.*, tec.*, app.* FROM testcaseexecution exe ")
-                .append("LEFT JOIN testcase tec ON exe.test = exe.test AND exe.testcase = tec.testcase ")
+                .append("LEFT JOIN testcase tec ON exe.test = tec.test AND exe.testcase = tec.testcase ")
                 .append("LEFT JOIN application app ON exe.application = app.application ")
                 .append("WHERE exe.start > ? AND exe.test LIKE ? AND exe.testcase LIKE ? AND exe.environment LIKE ? ")
                 .append("AND exe.country LIKE ? AND exe.application LIKE ? AND exe.controlstatus LIKE ? ")
