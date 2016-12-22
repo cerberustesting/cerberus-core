@@ -40,7 +40,7 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 === Create TestCase 
 
-. Go to *[red]#TestCase -> TestCase List#*. image:testcasecreate.png[CreateTestCase,200,200,float="right",align="center"]
+. Go to *[red]#TestCase -> TestCase List#*. image:testcasecreate.png[CreateTestCase,250,250,float="right",align="center"]
 . Click on *[red]#Create TestCase#*.
 .. Feed the *[red]#Test#* field with the test name.
 .. Feed the *[red]#Description#* field with a short description of this test.
@@ -51,7 +51,7 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Step
 
-. Click on *[red]#Add step#* to display the following window.
+. Click on *[red]#Add step#* to display the following window.  image:testcasepage.png[TestCasePage,250,250,float="right",align="center"] 
 . Feed a *[red]#Description#* and click on *[red]#Add#* for a new step. 
 . Or search for a step in library then click on *[red]#Add#*.
 
@@ -69,7 +69,7 @@ To modify only this use step, you have to click on the padlock icon but it will 
 
 image:testcaseusestep.png[testcaseusestep]
 
-You have the possibility to switch the position of your several steps by clicking on the 3 dots.
+NOTE: You have the possibility to switch the position of your steps by clicking on the 3 dots.
 
 image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcaseusestep]
 
@@ -100,19 +100,54 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | OpenUrl | TBD
 | select | TBD
 | type | Write a data in a field. *[red]#Element path#* : the id of the field  *[red]#Property Name#* : the property containing the value to type (can be a property or text. 
-| wait | Wait for a certain amount of time
+| wait | Wait for a certain amount of time Feed a number (ms) or wait for element present feed an element (xpath)
 | CallSoapWithBase | TBD
 | CallSoap | To call a SOAP.  Feed one the following field *[red]#Soap Name (library)#* : Name of the SOAP stored in library  *[red]#Property Name#* : Name of the property if the SOAP is defined in property
 | removeDifference | TBD
-| executeSqlUpdate | TBD
-| executeSqlStoredProcedure | TBD
-| CalculateProperty | will allow you to calculate a property defined in the property section of the test case. 
+| executeSqlUpdate |  will allow you to execute SQL update (insert,delete,update). Feed the *[red]#Database Name#* and the *[red]#Script#* to execute. Database has to be declared to your system and environment.
+| executeSqlStoredProcedure | will allow you to execute SQL stored procedure. Feed the *[red]#Database Name#* and the *[red]#Stored Procedure#* to execute. Database has to be declared to your system and environment.
+| CalculateProperty | will allow you to calculate a *[red]#Property#* defined in the property section of the test case.
+[Optional] Feed *[red]#Value2#* with another property to affect to the previous *[red]#Property Name#* a new value. Useful to override the one defined from the property section during an execution. 
 | doNothing | Just perform no action. No action will be executed and engine will go to the next action or control
-| skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associeted to this will be also skipped
+| skipAction | 	Skip this action. No action will be executed and engine will go to the next action. Controls associated to this action will be skipped too.
 
 |=== 
 
 ==== Control
+
+|===
+| *Control* | *Description*  
+| Unknown | Unknown control. Default control when creating a new control
+| getPageSource | TBD
+| skipControl | 	Skip the control.
+| takeScreenshot | TBD
+| verifyElementClickable | *[green]#OK#* if *[red]#Element#* is clickable.
+| verifyElementDifferent | TBD
+| verifyElementinElement | TBD
+| verifyElementEquals | TBD
+| verifyElementNotClickable | TBD
+| verifyElementNotPresent | TBD
+| verifyElementNotVisible | TBD
+| verifyElementPresent | *[green]#OK#* if *[red]#Element#* is found on the current page.
+| verifyElementVisible | *[green]#OK#* if *[red]#Element#* is visible on the current page.
+| verifyElementDifferent | TBD
+| verifyIntegerEquals | *[green]#OK#* if the *[red]#Integer1#* is equal to the *[red]#Integer2#*.
+| verifyIntegerGreater | *[green]#OK#* if the *[red]#Integer1#* is greater than the *[red]#Integer2#*.
+| verifyIntegerMinor | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*.
+| verifyRegexInElement | TBD
+| verifyStringContains | TBD
+| verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*.
+| verifyStringGreater | TBD
+| verifyStringMinor | TBD
+| verifyTextInDialog | TBD
+| verifyTextInElement | TBD
+| verifyTextInPage | TBD
+| verifyTextNotInElement | TBD
+| verifyTextNotInPage | TBD
+| verifyTitle | TBD
+| verifyUrl | *[green]#OK#* if the *[red]#URL#* of the current page equal to the *[red]#URL#* indicated .
+| verifyXmlTreeStructure | TBD
+|===
 
 ==== Property
 

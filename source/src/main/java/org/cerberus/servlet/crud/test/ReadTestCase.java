@@ -334,7 +334,7 @@ public class ReadTestCase extends HttpServlet {
         //finds the project
         AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
 
-        if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (answerTestCase.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && answerTestCase.getItem() != null) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             TestCase tc = (TestCase) answerTestCase.getItem();
             JSONObject response = convertToJSONObject(tc);

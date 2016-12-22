@@ -91,7 +91,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 });
                 $(".testTestCase #test").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>")
+                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
                 }
 
                 if(test != null) {
@@ -137,6 +137,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             // Edit TestCase open the TestCase Modal
             $("#editTcInfo").click(function () {
                 editTestCaseClick(test, testcase);
+            });
+
+            $("#deleteTestCase").click(function(){
+                removeTestCaseClick(test, testcase);
             });
 
             $("#TestCaseButton").show();
@@ -282,6 +286,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 addActionAndFocus()
             });
             $("#saveScript").click(saveScript);
+            $("#saveScriptAs").click(function(){
+                duplicateTestCaseClick(test,testcase);
+                $('#editTestCaseModal').on("hidden.bs.modal",function(e){
+                    $('#editTestCaseModal').unbind("hidden.bs.modal");
+                    var t = $('#editTestCaseModal').find("#test option:selected");
+                    var tc = $('#editTestCaseModal').find("#testCase");
+                    if($('#editTestCaseModal').data("Saved")){
+                        $('#editTestCaseModal').data("Saved",undefined);
+                        window.location = "./TestCaseScript.jsp?test="+t.val()+"&testcase="+tc.val();
+                    }
+                });
+            });
 
             $("#runTestCase").parent().attr("href","./RunTests1.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLastExec").parent().attr("href","./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
@@ -321,6 +337,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
                     $("#list-wrapper").width($("#nav-execution").width());
                 }
+                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
             })
         }
     });
@@ -330,6 +347,8 @@ function displayPageLabel(doc){
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
     $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
+    $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
+    $("#deleteTestCase").html(doc.getDocLabel("page_testcaselist", "btn_delete"));
     $("#saveScript").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
     $("#editTcInfo").html(doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
@@ -349,6 +368,7 @@ function addAction() {
     var step = $("#stepList li.active").data("item");
     var action = new Action(null, step);
     step.setAction(action);
+    setAllSort();
     return action;
 }
 
@@ -365,7 +385,7 @@ function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
 }
 
-function saveScript() {
+function setAllSort(){
     var stepList = $("#stepList li");
     var stepArr = [];
 
@@ -417,6 +437,12 @@ function saveScript() {
         }
     }
 
+    return stepArr;
+}
+
+function saveScript() {
+    var stepArr = setAllSort();
+
     var properties = $("[name='masterProp']");
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
@@ -430,7 +456,7 @@ function saveScript() {
         data: {informationInitialTest: GetURLParameter("test"),
             informationInitialTestCase: GetURLParameter("testcase"),
             informationTest: GetURLParameter("test"),
-            informationTestCase: GetURLParameter("testcase"),
+            informationTestCase: "010B",
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
@@ -692,7 +718,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
                             $("#propertiesModal").on("shown.bs.modal", function (e) {
                                 $(scope).focus();
                                 $(scope).click();
-                            })
+                            });
                             $("#propertiesModal").modal("show");
                         }
                     });
@@ -1128,6 +1154,7 @@ function handleDrop(event) {
 
 function handleDragEnd(event) {
     this.parentNode.style.opacity = '1';
+    setAllSort();
 }
 
 /** DATA AGREGATION **/
@@ -1478,7 +1505,7 @@ Action.prototype.draw = function () {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
@@ -1531,6 +1558,7 @@ Action.prototype.draw = function () {
     htmlElement.prepend(row);
 
     this.parentStep.stepActionContainer.append(htmlElement);
+    this.refreshSort();
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -1565,6 +1593,11 @@ Action.prototype.getSequence = function () {
 
 Action.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Action.prototype.refreshSort = function(){
+    this.html.find(".action #labelDiv").empty().append($("<span>").text(this.sort).addClass("label label-primary"));
 };
 
 Action.prototype.generateContent = function () {
@@ -1741,7 +1774,7 @@ function Control(json, parentAction) {
 Control.prototype.draw = function () {
     var htmlElement = this.html;
     var control = this;
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").addClass("boutonGroup").append(supprBtn).append(plusBtn));
@@ -1791,6 +1824,7 @@ Control.prototype.draw = function () {
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
+    this.refreshSort();
 };
 
 Control.prototype.setStep = function (step) {
@@ -1811,6 +1845,11 @@ Control.prototype.setControl = function (control) {
 
 Control.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Control.prototype.refreshSort = function(){
+    this.html.find("#labelDiv").empty().append($("<span>").text(this.parentAction.sort).addClass("label label-primary")).append($("<span>").text(this.sort).addClass("label label-success"));
 };
 
 Control.prototype.generateContent = function () {
@@ -1976,6 +2015,7 @@ function addControl(action) {
     setModif(true);
     var control = new Control(null, action);
     action.setControl(control);
+    setAllSort();
     return control;
 }
 
@@ -2038,8 +2078,6 @@ var autocompleteAllFields, getTags, setTags;
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
                             
                             if(TagsToUse[1].array.indexOf(name) < 0){
-                                console.log(TagsToUse[1].array);
-                                console.log(name);
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationobject";
@@ -2075,12 +2113,40 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     }
                 }else{
-                    $(e).tooltip('destroy');
+                    $(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
                 }
             });
         }).trigger("input");
     };
 })();
+
+function removeTestCaseClick(test, testCase){
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
+    showModalConfirmation(deleteTestCaseHandlerClick, "Delete", messageComplete, test, testCase, "", "");
+}
+
+/*
+ * Function called when confirmation button pressed
+ * @returns {undefined}
+ */
+function deleteTestCaseHandlerClick() {
+    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            window.location = "./TestCaseScript.jsp?test=" + test;
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
 
 editPropertiesModalClick = function(test, testcase, info, propertyToAdd, propertyToFocus) {
     $("#propTable").empty();

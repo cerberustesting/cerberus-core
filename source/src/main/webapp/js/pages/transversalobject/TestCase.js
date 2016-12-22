@@ -278,6 +278,7 @@ function confirmTestCaseModalHandler(mode) {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
                 oTable.fnDraw(true);
+                $('#editTestCaseModal').data("Saved",true);
                 $('#editTestCaseModal').modal('hide');
                 showMessage(data);
             } else {

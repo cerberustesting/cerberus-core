@@ -52,7 +52,16 @@
                             </div>
                             <div class="col-lg-8" style="padding: 0px;">
                                 <div id="TestCaseButton" style="display:none;">
-                                    <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-default" id="saveScript" style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#" id="saveScriptAs"><span class="glyphicon glyphicon-floppy-disk"></span> Save As</a></li>
+                                        </ul>
+                                    </div>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button></a>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
@@ -80,7 +89,11 @@
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                     <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                 </div>
+                            </div>
+                            <div id="deleteButton">
+                                <h3>Actions Test Case</h3>
                                 <button class="btn btn-grey btn-block" id="editTcInfo">Edit Test Case</button>
+                                <button class="btn btn-danger btn-block" id="deleteTestCase">Delete Test Case</button>
                             </div>
                         </div>
                     </nav>
@@ -106,7 +119,7 @@
                                             <label>Step Condition Parameter:</label>
                                             <input class="form-control input-sm" id="stepConditionVal1">
                                         </div>
-                                        <div class="col-lg-5 form-group">
+                                        <div class="col-lg-4 form-group">
                                             <label>Step Condition Parameter:</label>
                                             <input class="form-control input-sm" id="stepConditionVal2">
                                         </div>
