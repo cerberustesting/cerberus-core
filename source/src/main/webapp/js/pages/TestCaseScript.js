@@ -321,6 +321,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
                     $("#list-wrapper").width($("#nav-execution").width());
                 }
+                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
             })
         }
     });
@@ -2059,8 +2060,6 @@ var autocompleteAllFields, getTags, setTags;
                             $(e).parent().parent().parent().parent().find("#ApplicationObjectImg").attr("src","ReadApplicationObjectImage?application=" + tcInfo.application + "&object=" + name + "&time=" + new Date().getTime());
                             
                             if(TagsToUse[1].array.indexOf(name) < 0){
-                                console.log(TagsToUse[1].array);
-                                console.log(name);
                                 objectNotExist = true;
                                 nameNotExist = name;
                                 typeNotExist = "applicationobject";
@@ -2096,7 +2095,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     }
                 }else{
-                    $(e).tooltip('destroy');
+                    $(e).attr('data-original-title', "").attr('title', "").tooltip('destroy');
                 }
             });
         }).trigger("input");
