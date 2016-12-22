@@ -292,17 +292,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     $('#editTestCaseModal').unbind("hidden.bs.modal");
                     var t = $('#editTestCaseModal').find("#test option:selected");
                     var tc = $('#editTestCaseModal').find("#testCase");
-                    if(tc != undefined && tc.val() != undefined && tc.val() != undefined && (t.val() != test || tc.val() != testcase)){
-                        $.ajax({
-                            url:"ReadTestCase",
-                            data: {test: t.val(), testCase: tc.val()},
-                            dataType: "json",
-                            success:function(data){
-                                if(data.contentTable != undefined) {
-                                    window.location = "./TestCaseScript.jsp?test="+t.val()+"&testcase="+tc.val();
-                                }
-                            }
-                        });
+                    if($('#editTestCaseModal').data("Saved")){
+                        $('#editTestCaseModal').data("Saved",undefined);
+                        window.location = "./TestCaseScript.jsp?test="+t.val()+"&testcase="+tc.val();
                     }
                 });
             });
