@@ -160,7 +160,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                         if (!(StringUtil.isNullOrEmpty(connectionName)) && !(StringUtil.isNullOrEmpty(policy.sanitize(property)))) {
                             ISQLService sqlService = appContext.getBean(ISQLService.class);
                             IParameterService parameterService = appContext.getBean(IParameterService.class);
-                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_propertyexternalsql_timeout", system, 60);
+                            Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
                             result = sqlService.queryDatabase(connectionName, policy.sanitize(property), 1, sqlTimeout).get(0);
                             description = sl.getDescription();
                         }

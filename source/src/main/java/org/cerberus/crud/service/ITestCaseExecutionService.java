@@ -129,11 +129,44 @@ public interface ITestCaseExecutionService {
 
     AnswerList findTagList(int tagnumber) throws CerberusException;
 
+    /**
+     *
+     * @param tag
+     * @param start
+     * @param amount
+     * @param sort
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     * @throws CerberusException
+     */
     AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
-    public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+    /**
+     *
+     * @param tag
+     * @return
+     * @throws CerberusException
+     */
+    AnswerList readByTag(String tag) throws CerberusException;
 
-    public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
+    /**
+     *
+     * @param tag
+     * @return
+     */
+    AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
+
+    /**
+     *
+     * @param tag
+     * @param env
+     * @param country
+     * @param browser
+     * @param app
+     * @return
+     */
+    AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);
 
     List<TestCaseExecution> createAllTestCaseExecution(List<TestCase> testCaseList, List<String> envList, List<String> country);
 

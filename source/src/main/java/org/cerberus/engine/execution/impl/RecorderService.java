@@ -185,7 +185,7 @@ public class RecorderService implements IRecorderService {
                     dir.mkdirs();
                 }
                 // Getting the max size of the screenshot.
-                long maxSizeParam = parameterService.getParameterByKey("cerberus_screenshot_max_size", "", 1048576);
+                long maxSizeParam = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", 1048576);
                 if (maxSizeParam < newImage.length()) {
                     LOG.warn(logPrefix + "Screen-shot size exceeds the maximum defined in configurations " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
                 }

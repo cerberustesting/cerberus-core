@@ -637,12 +637,12 @@ public class PropertyService implements IPropertyService {
         boolean forced_retry = false;
         String forced_retry_message = "";
         if (!(retries == 0)) {
-            int maxretry = parameterService.getParameterByKey("cerberus_property_maxretry", "", 50);
+            int maxretry = parameterService.getParameterIntegerByKey("cerberus_property_maxretry", "", 50);
             if (retries > maxretry) {
                 retries = maxretry;
                 forced_retry = true;
             }
-            int maxtotalduration = parameterService.getParameterByKey("cerberus_property_maxretrytotalduration", "", 1800000);
+            int maxtotalduration = parameterService.getParameterIntegerByKey("cerberus_property_maxretrytotalduration", "", 1800000);
             if (periodms > maxtotalduration) {
                 periodms = maxtotalduration;
                 forced_retry = true;

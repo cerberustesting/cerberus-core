@@ -100,7 +100,7 @@ public class SQLService implements ISQLService {
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
                     try {
-                        Integer sqlTimeout = parameterService.getParameterByKey("cerberus_externalsql_timeout", system, 60);
+                        Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_externalsql_timeout", system, 60);
                         List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit(), sqlTimeout);
 
                         if (list != null && !list.isEmpty()) {
@@ -285,7 +285,7 @@ public class SQLService implements ISQLService {
                         Connection connection = this.databaseSpring.connect(connectionName);
                         try {
                             PreparedStatement preStat = connection.prepareStatement(sql);
-                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlupdate_timeout", system, 60);
+                            Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_actionexecutesqlupdate_timeout", system, 60);
                             preStat.setQueryTimeout(sqlTimeout);
 
                             try {
@@ -371,7 +371,7 @@ public class SQLService implements ISQLService {
                         Connection connection = this.databaseSpring.connect(connectionName);
                         try {
                             CallableStatement cs = connection.prepareCall(sql);
-                            Integer sqlTimeout = parameterService.getParameterByKey("cerberus_actionexecutesqlstoredprocedure_timeout", system, 60);
+                            Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_actionexecutesqlstoredprocedure_timeout", system, 60);
                             cs.setQueryTimeout(sqlTimeout);
                             try {
                                 cs.execute();

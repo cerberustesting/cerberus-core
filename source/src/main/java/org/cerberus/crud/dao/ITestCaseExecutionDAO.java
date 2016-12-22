@@ -145,6 +145,17 @@ public interface ITestCaseExecutionDAO {
 
     AnswerList findTagList(int tagnumber) throws CerberusException;
 
+    /**
+     *
+     * @param tag
+     * @param start
+     * @param amount
+     * @param sort
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     * @throws CerberusException
+     */
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);

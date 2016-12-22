@@ -19,9 +19,6 @@ package org.cerberus.crud.dao.impl;
 
 import com.google.common.base.Strings;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -57,7 +53,6 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.imageio.ImageIO;
 
 /**
  * {Insert class description here}
@@ -968,6 +963,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.tag : " + tag);
         }
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
@@ -996,7 +992,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                         testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
-                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+//                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+                    answer.setTotalRows(testCaseExecutionList.size());
                 } catch (SQLException exception) {
                     MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -1030,6 +1027,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             }
         }
 
+        answer.setResultMessage(msg);
+        answer.setDataList(testCaseExecutionList);
         return answer;
     }
 

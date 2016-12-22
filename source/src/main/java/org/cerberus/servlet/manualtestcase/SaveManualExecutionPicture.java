@@ -49,7 +49,7 @@ public class SaveManualExecutionPicture extends HttpServlet {
         // Create a new file upload handler
         ServletFileUpload upload = new ServletFileUpload(factory);
 
-        Integer imgPathMaxSize = parameterService.getParameterByKey("cerberus_screenshot_max_size", "", UPLOAD_PICTURE_MAXSIZE);
+        Integer imgPathMaxSize = parameterService.getParameterIntegerByKey("cerberus_screenshot_max_size", "", UPLOAD_PICTURE_MAXSIZE);
         
         // Set overall request size constraint
         upload.setFileSizeMax(imgPathMaxSize);//max size for the file

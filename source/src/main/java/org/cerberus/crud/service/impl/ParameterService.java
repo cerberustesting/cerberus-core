@@ -80,12 +80,25 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
-    public Integer getParameterByKey(String key, String system, Integer defaultValue) {
+    public Integer getParameterIntegerByKey(String key, String system, Integer defaultValue) {
         Parameter myParameter;
         Integer outPutResult = defaultValue;
         try {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Integer.valueOf(myParameter.getValue());
+        } catch (CerberusException | NumberFormatException ex) {
+            LOG.error(ex);
+        }
+        return outPutResult;
+    }
+
+    @Override
+    public float getParameterFloatByKey(String key, String system, float defaultValue) {
+        Parameter myParameter;
+        float outPutResult = defaultValue;
+        try {
+            myParameter = this.findParameterByKey(key, system);
+            outPutResult = Float.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error(ex);
         }

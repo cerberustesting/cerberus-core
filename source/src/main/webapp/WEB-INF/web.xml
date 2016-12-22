@@ -85,6 +85,10 @@
         <servlet-class>org.cerberus.servlet.zzpublic.ResultCI</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ResultCIV001</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.ResultCIV001</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DuplicateTestCase</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.DuplicateTestCase</servlet-class>
     </servlet>
@@ -1011,6 +1015,10 @@
     <servlet-mapping>
         <servlet-name>ResultCI</servlet-name>
         <url-pattern>/ResultCI</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ResultCIV001</servlet-name>
+        <url-pattern>/ResultCIV001</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>TestcaseList</servlet-name>
@@ -2351,6 +2359,7 @@
             <url-pattern>/SaveStatistic</url-pattern>
             <url-pattern>/GetNumberOfExecutions</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
+            <url-pattern>/ResultCIV001</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
             <url-pattern>/SaveManualExecutionPicture</url-pattern>

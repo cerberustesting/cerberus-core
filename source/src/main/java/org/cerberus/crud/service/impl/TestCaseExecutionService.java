@@ -68,7 +68,6 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
 
-
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         return testCaseExecutionDao.insertTCExecution(tCExecution);
@@ -166,6 +165,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
+    }
+
+    @Override
+    public AnswerList readByTag(String tag) throws CerberusException {
+        return testCaseExecutionDao.readByTagByCriteria(tag, 0, 0, null, null, null);
     }
 
     @Override

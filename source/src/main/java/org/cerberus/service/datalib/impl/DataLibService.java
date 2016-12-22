@@ -691,7 +691,7 @@ public class DataLibService implements IDataLibService {
 
                             if (!(StringUtil.isNullOrEmpty(connectionName))) {
 
-                                Integer sqlTimeout = parameterService.getParameterByKey("cerberus_propertyexternalsql_timeout", system, 60);
+                                Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
                                 //performs a query that returns several rows containing n columns
                                 responseList = sqlService.queryDatabaseNColumns(connectionName, lib.getScript(), rowLimit, sqlTimeout, system, columnList);
 

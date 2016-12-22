@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.entity;
 
-import org.cerberus.crud.dao.impl.TestCaseStepExecutionDAO;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.Selenium;
@@ -33,6 +32,8 @@ import org.json.JSONObject;
  * @author bcivel
  */
 public class TestCaseExecution {
+
+    private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
 
     private long id;
     private String test;
@@ -100,12 +101,19 @@ public class TestCaseExecution {
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
     private Integer cerberus_action_wait_default;
-    
-    /**
-     * Temp attribute.
-     */
     private boolean featureFlippingActivateWebsocketPush;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String CONTROLSTATUS_OK = "OK";
+    public static final String CONTROLSTATUS_KO = "KO";
+    public static final String CONTROLSTATUS_NA = "NA";
+    public static final String CONTROLSTATUS_PE = "PE";
+    public static final String CONTROLSTATUS_CA = "CA";
+    public static final String CONTROLSTATUS_FA = "FA";
+    
+    
     public boolean isFeatureFlippingActivateWebsocketPush() {
         return featureFlippingActivateWebsocketPush;
     }
@@ -113,8 +121,6 @@ public class TestCaseExecution {
     public void setFeatureFlippingActivateWebsocketPush(boolean featureFlippingActivateWebsocketPush) {
         this.featureFlippingActivateWebsocketPush = featureFlippingActivateWebsocketPush;
     }
-    
-    private static final Logger LOG = Logger.getLogger(TestCaseExecution.class);
 
     public Integer getCerberus_action_wait_default() {
         return cerberus_action_wait_default;
