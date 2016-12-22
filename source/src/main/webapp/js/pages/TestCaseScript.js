@@ -91,7 +91,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 });
                 $(".testTestCase #test").prepend("<option value=''>" + doc.getDocLabel("page_testcasescript", "select_test") + "</option>");
                 for (var i = 0; i < data.contentTable.length; i++) {
-                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>")
+                    $(".testTestCase #test").append("<option value='" + data.contentTable[i].test + "'>" + data.contentTable[i].test + " - " + data.contentTable[i].description + "</option>");
                 }
 
                 if(test != null) {
@@ -282,6 +282,26 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 addActionAndFocus()
             });
             $("#saveScript").click(saveScript);
+            $("#saveScriptAs").click(function(){
+                duplicateTestCaseClick(test,testcase);
+                $('#editTestCaseModal').on("hidden.bs.modal",function(e){
+                    $('#editTestCaseModal').unbind("hidden.bs.modal");
+                    var t = $('#editTestCaseModal').find("#test option:selected");
+                    var tc = $('#editTestCaseModal').find("#testCase");
+                    if(tc != undefined && tc.val() != undefined && tc.val() != undefined && (t.val() != test || tc.val() != testcase)){
+                        $.ajax({
+                            url:"ReadTestCase",
+                            data: {test: t.val(), testCase: tc.val()},
+                            dataType: "json",
+                            success:function(data){
+                                if(data.contentTable != undefined) {
+                                    window.location = "./TestCaseScript.jsp?test="+t.val()+"&testcase="+tc.val();
+                                }
+                            }
+                        });
+                    }
+                });
+            });
 
             $("#runTestCase").parent().attr("href","./RunTests1.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLastExec").parent().attr("href","./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
@@ -438,7 +458,7 @@ function saveScript() {
         data: {informationInitialTest: GetURLParameter("test"),
             informationInitialTestCase: GetURLParameter("testcase"),
             informationTest: GetURLParameter("test"),
-            informationTestCase: GetURLParameter("testcase"),
+            informationTestCase: "010B",
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
@@ -700,7 +720,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
                             $("#propertiesModal").on("shown.bs.modal", function (e) {
                                 $(scope).focus();
                                 $(scope).click();
-                            })
+                            });
                             $("#propertiesModal").modal("show");
                         }
                     });

@@ -52,7 +52,16 @@
                             </div>
                             <div class="col-lg-8" style="padding: 0px;">
                                 <div id="TestCaseButton" style="display:none;">
-                                    <button class="btn btn-default pull-right" id="saveScript" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-default" id="saveScript" style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#" id="saveScriptAs"><span class="glyphicon glyphicon-floppy-disk"></span> Save As</a></li>
+                                        </ul>
+                                    </div>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 1px; margin-right: 1px;" data-toggle="tooltip"><span class="glyphicon glyphicon-forward"></span> Rerun the last configuration</button></a>
                                     <a target="_blank"><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
