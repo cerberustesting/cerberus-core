@@ -349,6 +349,7 @@ function addAction() {
     var step = $("#stepList li.active").data("item");
     var action = new Action(null, step);
     step.setAction(action);
+    setAllSort();
     return action;
 }
 
@@ -365,7 +366,7 @@ function getTestCase(test, testcase, step) {
     window.location.href = "./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&step=" + step;
 }
 
-function saveScript() {
+function setAllSort(){
     var stepList = $("#stepList li");
     var stepArr = [];
 
@@ -416,6 +417,12 @@ function saveScript() {
             stepArr.push(stepJson);
         }
     }
+
+    return stepArr;
+}
+
+function saveScript() {
+    var stepArr = setAllSort();
 
     var properties = $("[name='masterProp']");
     var propArr = [];
@@ -1128,6 +1135,7 @@ function handleDrop(event) {
 
 function handleDragEnd(event) {
     this.parentNode.style.opacity = '1';
+    setAllSort();
 }
 
 /** DATA AGREGATION **/
@@ -1478,7 +1486,7 @@ Action.prototype.draw = function () {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
@@ -1531,6 +1539,7 @@ Action.prototype.draw = function () {
     htmlElement.prepend(row);
 
     this.parentStep.stepActionContainer.append(htmlElement);
+    this.refreshSort();
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -1565,6 +1574,11 @@ Action.prototype.getSequence = function () {
 
 Action.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Action.prototype.refreshSort = function(){
+    this.html.find(".action #labelDiv").empty().append($("<span>").text(this.sort).addClass("label label-primary"));
 };
 
 Action.prototype.generateContent = function () {
@@ -1741,7 +1755,7 @@ function Control(json, parentAction) {
 Control.prototype.draw = function () {
     var htmlElement = this.html;
     var control = this;
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").addClass("boutonGroup").append(supprBtn).append(plusBtn));
@@ -1791,6 +1805,7 @@ Control.prototype.draw = function () {
     htmlElement.data("item", this);
 
     this.parentAction.html.append(htmlElement);
+    this.refreshSort();
 };
 
 Control.prototype.setStep = function (step) {
@@ -1811,6 +1826,11 @@ Control.prototype.setControl = function (control) {
 
 Control.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Control.prototype.refreshSort = function(){
+    this.html.find("#labelDiv").empty().append($("<span>").text(this.parentAction.sort).addClass("label label-primary")).append($("<span>").text(this.sort).addClass("label label-success"));
 };
 
 Control.prototype.generateContent = function () {
@@ -1976,6 +1996,7 @@ function addControl(action) {
     setModif(true);
     var control = new Control(null, action);
     action.setControl(control);
+    setAllSort();
     return control;
 }
 

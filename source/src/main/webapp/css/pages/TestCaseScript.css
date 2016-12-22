@@ -161,13 +161,37 @@
 .drag-step-action span {
     display: block;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 17px;
     cursor: move;
+}
+
+.drag-step-action #labelDiv {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: -5px;
+}
+
+.drag-step-action #labelDiv span{
+    float: left;
+    margin-top: 0px;
+    margin-left: 2px;
+    margin-right: 2px;
+    cursor: default;
+    font-size: 14px;
 }
 
 @media (min-width: 1200px) {
     .drag-step-action span {
         margin-top: 60px;
+    }
+    .drag-step-action #labelDiv {
+        margin-top: 0px;
+    }
+    .drag-step-action #labelDiv span {
+         margin-top: 5px;
     }
 }
 
