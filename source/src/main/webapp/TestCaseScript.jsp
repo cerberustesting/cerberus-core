@@ -106,7 +106,7 @@
                                             <label>Step Condition Parameter:</label>
                                             <input class="form-control input-sm" id="stepConditionVal1">
                                         </div>
-                                        <div class="col-lg-5 form-group">
+                                        <div class="col-lg-4 form-group">
                                             <label>Step Condition Parameter:</label>
                                             <input class="form-control input-sm" id="stepConditionVal2">
                                         </div>
