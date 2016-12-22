@@ -139,6 +139,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 editTestCaseClick(test, testcase);
             });
 
+            $("#deleteTestCase").click(function(){
+                removeTestCaseClick(test, testcase);
+            });
+
             $("#TestCaseButton").show();
             $("#tcBody").show();
 
@@ -351,6 +355,8 @@ function displayPageLabel(doc){
     $("h1.page-title-line").html(doc.getDocLabel("page_testcasescript", "testcasescript_title"));
     $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
+    $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
+    $("#deleteTestCase").html(doc.getDocLabel("page_testcaselist", "btn_delete"));
     $("#saveScript").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
     $("#editTcInfo").html(doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
@@ -2121,6 +2127,34 @@ var autocompleteAllFields, getTags, setTags;
         }).trigger("input");
     };
 })();
+
+function removeTestCaseClick(test, testCase){
+    clearResponseMessageMainPage();
+    var doc = new Doc();
+    var messageComplete = doc.getDocLabel("page_testcase", "message_delete");
+    messageComplete = messageComplete.replace("%ENTRY%", test + " / " + testCase);
+    showModalConfirmation(deleteTestCaseHandlerClick, "Delete", messageComplete, test, testCase, "", "");
+}
+
+/*
+ * Function called when confirmation button pressed
+ * @returns {undefined}
+ */
+function deleteTestCaseHandlerClick() {
+    var test = $('#confirmationModal').find('#hiddenField1').prop("value");
+    var testCase = $('#confirmationModal').find('#hiddenField2').prop("value");
+    var jqxhr = $.post("DeleteTestCase2", {test: test, testCase: testCase}, "json");
+    $.when(jqxhr).then(function (data) {
+        var messageType = getAlertType(data.messageType);
+        if (messageType === "success") {
+            window.location = "./TestCaseScript.jsp?test=" + test;
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        $('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
 
 editPropertiesModalClick = function(test, testcase, info, propertyToAdd, propertyToFocus) {
     $("#propTable").empty();

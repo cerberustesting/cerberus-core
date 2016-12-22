@@ -89,7 +89,11 @@
                                 <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                     <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                 </div>
+                            </div>
+                            <div id="deleteButton">
+                                <h3>Actions Test Case</h3>
                                 <button class="btn btn-grey btn-block" id="editTcInfo">Edit Test Case</button>
+                                <button class="btn btn-danger btn-block" id="deleteTestCase">Delete Test Case</button>
                             </div>
                         </div>
                     </nav>
