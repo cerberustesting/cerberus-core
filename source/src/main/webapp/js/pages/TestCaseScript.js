@@ -363,17 +363,17 @@ function displayPageLabel(doc){
     $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
 }
 
-function addAction() {
+function addAction(action) {
     setModif(true);
     var step = $("#stepList li.active").data("item");
-    var action = new Action(null, step);
-    step.setAction(action);
+    var act = new Action(null, step);
+    step.setAction(act,action);
     setAllSort();
-    return action;
+    return act;
 }
 
-function addActionAndFocus() {
-    $.when(addAction()).then(function (action) {
+function addActionAndFocus(action) {
+    $.when(addAction(action)).then(function (action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
         autocompleteAllFields();
@@ -456,7 +456,7 @@ function saveScript() {
         data: {informationInitialTest: GetURLParameter("test"),
             informationInitialTestCase: GetURLParameter("testcase"),
             informationTest: GetURLParameter("test"),
-            informationTestCase: "010B",
+            informationTestCase: GetURLParameter("testcase"),
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
@@ -1384,14 +1384,14 @@ Step.prototype.setActionList = function (actionList) {
     }
 };
 
-Step.prototype.setAction = function (action) {
+Step.prototype.setAction = function (action, afterAction) {
     if (action instanceof Action) {
-        action.draw();
+        action.draw(afterAction);
         this.actionList.push(action);
     } else {
         var actionObj = new Action(action, this);
 
-        actionObj.draw();
+        actionObj.draw(afterAction);
         this.actionList.push(actionObj);
     }
 };
@@ -1514,15 +1514,16 @@ function Action(json, parentStep) {
     this.toDelete = false;
 }
 
-Action.prototype.draw = function () {
+Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(supprBtn).append(addBtn).append(plusBtn));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id","ApplicationObjectImg").css("width","100%")));
 
     if (this.parentStep.useStep === "N") {
@@ -1535,6 +1536,7 @@ Action.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }else{
         addBtn.prop("disabled",true);
+        addABtn.prop("disabled",true);
         supprBtn.prop("disabled",true);
     }
 
@@ -1548,8 +1550,13 @@ Action.prototype.draw = function () {
         }
     });
 
+    var scope = this;
+
     addBtn.click(function () {
-        addControlAndFocus(row);
+        addControlAndFocus(scope);
+    });
+    addABtn.click(function () {
+        addActionAndFocus(scope);
     });
 
     supprBtn.click(function () {
@@ -1570,7 +1577,11 @@ Action.prototype.draw = function () {
     row.data("item", this);
     htmlElement.prepend(row);
 
-    this.parentStep.stepActionContainer.append(htmlElement);
+    if(afterAction == undefined) {
+        this.parentStep.stepActionContainer.append(htmlElement);
+    }else{
+        afterAction.html.after(htmlElement);
+    }
     this.refreshSort();
 };
 
@@ -1580,14 +1591,14 @@ Action.prototype.setControlList = function (controlList) {
     }
 };
 
-Action.prototype.setControl = function (control) {
+Action.prototype.setControl = function (control, afterControl) {
     if (control instanceof Control) {
-        control.draw();
+        control.draw(afterControl);
         this.controlList.push(control);
     } else {
         var controlObj = new Control(control, this);
 
-        controlObj.draw();
+        controlObj.draw(afterControl);
         this.controlList.push(controlObj);
     }
 };
@@ -1784,13 +1795,15 @@ function Control(json, parentAction) {
     this.html = $("<div></div>").addClass("step-action row").addClass("control");
 }
 
-Control.prototype.draw = function () {
+Control.prototype.draw = function (afterControl) {
     var htmlElement = this.html;
     var control = this;
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").addClass("boutonGroup").append(supprBtn).append(plusBtn));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     var content = this.generateContent();
@@ -1830,13 +1843,27 @@ Control.prototype.draw = function () {
         supprBtn.attr("disabled",true);
     }
 
+    var scope = this;
+
+    addABtn.click(function(){
+        addActionAndFocus(scope.parentAction);
+    });
+
+    addBtn.click(function(){
+        addControlAndFocus(scope.parentAction, scope);
+    });
+
     htmlElement.append(drag);
     htmlElement.append(content);
     htmlElement.append(imgGrp);
     htmlElement.append(btnGrp);
     htmlElement.data("item", this);
 
-    this.parentAction.html.append(htmlElement);
+    if(afterControl == undefined) {
+        this.parentAction.html.append(htmlElement);
+    }else{
+        afterControl.html.after(htmlElement);
+    }
     this.refreshSort();
 };
 
@@ -2024,16 +2051,16 @@ function listenEnterKeypressWhenFocusingOnDescription() {
     });
 }
 
-function addControl(action) {
+function addControl(action, control) {
     setModif(true);
-    var control = new Control(null, action);
-    action.setControl(control);
+    var ctrl = new Control(null, action);
+    action.setControl(ctrl,control);
     setAllSort();
-    return control;
+    return ctrl;
 }
 
-function addControlAndFocus(oldAction) {
-    $.when(addControl(oldAction.data("item"))).then(function (action) {
+function addControlAndFocus(oldAction, control) {
+    $.when(addControl(oldAction, control)).then(function (action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
         setPlaceholderControl();

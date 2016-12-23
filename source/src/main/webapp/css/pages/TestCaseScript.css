@@ -343,7 +343,7 @@ color: red !important;
 }
 
 .add-btn {
-    margin-top: 4px;
+    margin: 1px;
 }
 
 .btn-default.btn-dark {
@@ -353,16 +353,16 @@ color: red !important;
 }
 
 .boutonGroup {
-    width: 121px;
+    width:169px;
     margin-right: auto;
     margin-left: auto;
-    margin-bottom: 9px;
+    margin-bottom: 26px;
 }
 
 @media (min-width: 1200px) {
     .boutonGroup {
-        width: 40px;
-        margin-top: 9px;
+        width:85px;
+        margin-top: 26px;
     }
 }
 
