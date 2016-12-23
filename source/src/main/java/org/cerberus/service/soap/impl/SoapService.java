@@ -176,7 +176,9 @@ public class SoapService implements ISoapService {
             executionSOAP.setSOAPResponse(soapResponse);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
-            message.setDescription(message.getDescription().replace("%SOAPNAME%", method));
+            message.setDescription(message.getDescription()
+                    .replace("%SERVICEPATH%", servicePath)
+                    .replace("%SOAPMETHOD%", method));
             result.setItem(executionSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
@@ -184,7 +186,7 @@ public class SoapService implements ISoapService {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
-                    .replace("%SOAPNAME%", method)
+                    .replace("%SOAPMETHOD%", method)
                     .replace("%DESCRIPTION%", e.getMessage()));
             result.setResultMessage(message);
             return result;
