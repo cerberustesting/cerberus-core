@@ -120,7 +120,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | Unknown |  Default control when creating a new control | 
 | getPageSource | TBD | 
 | skipControl | 	Skip the control. | 
-| takeScreenshot | TBD | 
+| takeScreenshot | Take a screenshot | 
 | verifyElementClickable | *[green]#OK#* if *[red]#Element#* is clickable. | 
 | verifyElementDifferent | TBD | 
 | verifyElementinElement | TBD | 
@@ -135,7 +135,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | verifyIntegerGreater | *[green]#OK#* if the *[red]#Integer1#* is greater than the *[red]#Integer2#*. | 
 | verifyIntegerMinor | *[green]#OK#* if the *[red]#Integer1#* is lower than the *[red]#Integer2#*. | 
 | verifyRegexInElement | TBD | 
-| verifyStringContains | TBD | 
+| verifyStringContains | *[green]#OK#* if Property *[red]#String1#* contains the *[red]#String2#*. | 
 | verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*. | 
 | verifyStringGreater | TBD | 
 | verifyStringMinor | TBD | 
