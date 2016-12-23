@@ -28,11 +28,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Level;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,10 +68,12 @@ public class GetStepInLibrary extends HttpServlet {
         String system = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("system"), null);
         String test = policy.sanitize(request.getParameter("test"));
         String testCase = policy.sanitize(request.getParameter("testCase"));
+        String withTestCase = policy.sanitize(request.getParameter("withTestCase"));
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseStepService testCaseStepService = appContext.getBean(ITestCaseStepService.class);
-                 
+        ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+
         JSONArray array = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         try {

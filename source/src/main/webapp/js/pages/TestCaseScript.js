@@ -969,7 +969,7 @@ function loadLibraryStep(search) {
                     if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                            .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.testCase + " - " +step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
