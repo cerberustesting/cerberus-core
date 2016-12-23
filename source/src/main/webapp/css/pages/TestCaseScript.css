@@ -327,6 +327,21 @@ color: red !important;
     color:#fff;
 }
 
+.list-group-item:hover>.badge, .nav-pills>:hover>a>.badge {
+    color: #5bc0de;
+    background-color: #fff;
+}
+
+.list-group-item.active>.badge, .nav-pills>.active>a>.badge {
+     color: #5bc0de;
+     background-color: #fff;
+ }
+
+.list-group-item-calm>.badge {
+    color: #fff;
+    background-color: #5bc0de;
+}
+
 .add-btn {
     margin-top: 4px;
 }

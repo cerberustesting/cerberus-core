@@ -1212,14 +1212,15 @@ function Step(json, stepList) {
     this.toDelete = false;
 
     this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
+    this.textArea = $("<div></div>").addClass("col-sm-10").addClass("step-description").text(this.description);
 
 }
 
 Step.prototype.draw = function () {
     var scope = this;
     var htmlElement = this.html;
-    var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
+    var badge = $("<div id='labelDiv' class='col-sm-1 badge'>").css("float","right").css("margin-top","-2px");
+    var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left","5px").css("padding-right","5px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
     drag.on("dragstart", handleDragStart);
@@ -1229,6 +1230,7 @@ Step.prototype.draw = function () {
     drag.on("drop", handleDrop);
     drag.on("dragend", handleDragEnd);
 
+    htmlElement.append(badge);
     htmlElement.append(drag);
     htmlElement.append(this.textArea);
     htmlElement.data("item", this);
@@ -1246,6 +1248,8 @@ Step.prototype.draw = function () {
 
     $("#stepList").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
+
+    this.refreshSort();
 };
 
 Step.prototype.show = function () {
@@ -1434,6 +1438,11 @@ Step.prototype.getStep = function () {
 
 Step.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Step.prototype.refreshSort = function(){
+    this.html.find("#labelDiv").empty().text(this.sort);
 };
 
 Step.prototype.getJsonData = function () {
