@@ -363,17 +363,17 @@ function displayPageLabel(doc){
     $("#stepConditionVal1").prev().html(doc.getDocLabel("page_testcasescript", "step_condition_value1"));
 }
 
-function addAction() {
+function addAction(action) {
     setModif(true);
     var step = $("#stepList li.active").data("item");
-    var action = new Action(null, step);
-    step.setAction(action);
+    var act = new Action(null, step);
+    step.setAction(act,action);
     setAllSort();
-    return action;
+    return act;
 }
 
-function addActionAndFocus() {
-    $.when(addAction()).then(function (action) {
+function addActionAndFocus(action) {
+    $.when(addAction(action)).then(function (action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
         autocompleteAllFields();
@@ -443,7 +443,7 @@ function setAllSort(){
 function saveScript() {
     var stepArr = setAllSort();
 
-    var properties = $("[name='masterProp']");
+    var properties = $("#masterProp");
     var propArr = [];
     for (var i = 0; i < properties.length; i++) {
         propArr.push($(properties[i]).data("property"));
@@ -456,7 +456,7 @@ function saveScript() {
         data: {informationInitialTest: GetURLParameter("test"),
             informationInitialTestCase: GetURLParameter("testcase"),
             informationTest: GetURLParameter("test"),
-            informationTestCase: "010B",
+            informationTestCase: GetURLParameter("testcase"),
             stepArray: JSON.stringify(stepArr),
             propArr: JSON.stringify(propArr)},
         success: function () {
@@ -497,18 +497,18 @@ function drawProperty(property, testcaseinfo) {
     var props = $("<div class='col-sm-11'></div>");
     var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
-    var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
+    var row1 = $("<div class='row' id='masterProp' name='masterProp' style='margin-top:10px;'></div>");
     var row2 = $("<div class='row' style='display:none;'></div>");
     var row3 = $("<div class='row' style='display:none;'></div>");
-    var row4 = $("<div class='row'></div>");
+    var row4 = $("<div class='row' name='masterProp'></div>");
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
-    var description = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
-    var country = $("<div class='col-sm-10 form-group has-feedback'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
+    var description = $("<div class='col-sm-6 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
+    var country = $("<div class='col-sm-10 has-feedback'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
     var type = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
-    var value = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
-    var value2 = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+    var value = $("<div class='col-sm-8 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+    var value2 = $("<div class='col-sm-6 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
     var length = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
     var rowLimit = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
     var nature = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
@@ -516,7 +516,7 @@ function drawProperty(property, testcaseinfo) {
 
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true).trigger("change");});
     var selectNoneBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-unchecked")).click(function(){country.find("input[type='checkbox']").prop('checked', false).trigger("change");});
-    var btnRow = $("<div class='col-sm-2 form-group has-feedback'></div>").append(selectAllBtn).append(selectNoneBtn);
+    var btnRow = $("<div class='col-sm-2 has-feedback'></div>").css("margin-top","5px").css("margin-bottom","5px").append(selectAllBtn).append(selectNoneBtn);
 
     deleteBtn.click(function () {
         property.toDelete = (property.toDelete) ? false : true;
@@ -579,18 +579,20 @@ function drawProperty(property, testcaseinfo) {
     row1.append(propertyName);
     row1.append(type);
     row1.append(value);
-    row1.append(value2);
     props.append(row1);
 
-    row2.append(db);
-    row2.append(length);
-    row2.append(rowLimit);
-    row2.append(nature);
+    row4.append(btnRow);
+    row4.append(country);
+    props.append(row4);
+
     row2.append(description);
+    row2.append(value2);
     props.append(row2);
 
-    row3.append(btnRow);
-    row3.append(country);
+    row3.append(db);
+    row3.append(length);
+    row3.append(rowLimit);
+    row3.append(nature);
     props.append(row3);
 
     right.append(moreBtn).append(deleteBtn);
@@ -629,18 +631,18 @@ function drawInheritedProperty(propList) {
         var props = $("<div class='col-sm-11'></div>");
         var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
-        var row1 = $("<div class='row' name='masterProp' style='margin-top:10px;'></div>");
+        var row1 = $("<div class='row' id='masterProp' name='masterProp' style='margin-top:10px;'></div>");
         var row2 = $("<div class='row' style='display:none;'></div>");
         var row3 = $("<div class='row' style='display:none;'></div>");
-        var row4 = $("<div class='row'></div>");
+        var row4 = $("<div class='row' name='masterProp'></div>");
         var row5 = $("<div class='row'></div>");
         var propertyName = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
-        var description = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
-        var country = $("<div class='col-sm-10 form-group has-feedback'></div>").append(getTestCaseCountry(property.country, property.country, true));
+        var description = $("<div class='col-sm-6 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
+        var country = $("<div class='col-sm-10 has-feedback'></div>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
         var db = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.clone().val(property.database));
-        var value = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
-        var value2 = $("<div class='col-sm-4 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+        var value = $("<div class='col-sm-8 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+        var value2 = $("<div class='col-sm-6 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
         var length = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
@@ -648,7 +650,7 @@ function drawInheritedProperty(propList) {
 
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function(){country.find("input[type='checkbox']").prop('checked', true);});
         var selectNoneBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-unchecked")).click(function(){country.find("input[type='checkbox']").prop('checked', false);});
-        var btnRow = $("<div class='col-sm-2 form-group has-feedback'></div>").append(selectAllBtn).append(selectNoneBtn);
+        var btnRow = $("<div class='col-sm-2 has-feedback'></div>").css("margin-top","5px").css("margin-bottom","5px").append(selectAllBtn).append(selectNoneBtn);
 
         moreBtn.click(function(){
             if($(this).find("span").hasClass("glyphicon-chevron-down")){
@@ -665,18 +667,20 @@ function drawInheritedProperty(propList) {
         row1.append(propertyName);
         row1.append(type);
         row1.append(value);
-        row1.append(value2);
         props.append(row1);
 
-        row2.append(db);
-        row2.append(length);
-        row2.append(rowLimit);
-        row2.append(nature);
+        row4.append(btnRow);
+        row4.append(country);
+        props.append(row4);
+
         row2.append(description);
+        row2.append(value2);
         props.append(row2);
 
-        row3.append(btnRow);
-        row3.append(country);
+        row3.append(db);
+        row3.append(length);
+        row3.append(rowLimit);
+        row3.append(nature);
         props.append(row3);
 
         right.append(moreBtn);
@@ -737,8 +741,8 @@ function sortProperties(identifier){
     var list = container.children(".property");
     list.sort(function(a,b){
 
-        var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
-            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+        var aProp = $(a).find("#masterProp").data("property").property.toLowerCase(),
+            bProp = $(b).find("#masterProp").data("property").property.toLowerCase();
 
         if(aProp > bProp) {
             return 1;
@@ -965,7 +969,7 @@ function loadLibraryStep(search) {
                     if((!test[step.test].testCase.hasOwnProperty(step.testCase))){
                         var listGrp = test[step.test].content;
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                            .text(step.testCase).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                            .text(step.testCase + " - " +step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
                         var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
@@ -1212,14 +1216,15 @@ function Step(json, stepList) {
     this.toDelete = false;
 
     this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    this.textArea = $("<div></div>").addClass("col-lg-10").addClass("step-description").text(this.description);
+    this.textArea = $("<div></div>").addClass("col-sm-10").addClass("step-description").text(this.description);
 
 }
 
 Step.prototype.draw = function () {
     var scope = this;
     var htmlElement = this.html;
-    var drag = $("<div></div>").addClass("col-lg-2 drag-step").prop("draggable", true)
+    var badge = $("<div id='labelDiv' class='col-sm-1 badge'>").css("float","right").css("margin-top","-2px");
+    var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left","5px").css("padding-right","5px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
     drag.on("dragstart", handleDragStart);
@@ -1229,6 +1234,7 @@ Step.prototype.draw = function () {
     drag.on("drop", handleDrop);
     drag.on("dragend", handleDragEnd);
 
+    htmlElement.append(badge);
     htmlElement.append(drag);
     htmlElement.append(this.textArea);
     htmlElement.data("item", this);
@@ -1246,6 +1252,8 @@ Step.prototype.draw = function () {
 
     $("#stepList").append(htmlElement);
     $("#actionContainer").append(this.stepActionContainer);
+
+    this.refreshSort();
 };
 
 Step.prototype.show = function () {
@@ -1376,14 +1384,14 @@ Step.prototype.setActionList = function (actionList) {
     }
 };
 
-Step.prototype.setAction = function (action) {
+Step.prototype.setAction = function (action, afterAction) {
     if (action instanceof Action) {
-        action.draw();
+        action.draw(afterAction);
         this.actionList.push(action);
     } else {
         var actionObj = new Action(action, this);
 
-        actionObj.draw();
+        actionObj.draw(afterAction);
         this.actionList.push(actionObj);
     }
 };
@@ -1434,6 +1442,11 @@ Step.prototype.getStep = function () {
 
 Step.prototype.setSort = function (sort) {
     this.sort = sort;
+    this.refreshSort();
+};
+
+Step.prototype.refreshSort = function(){
+    this.html.find("#labelDiv").empty().text(this.sort);
 };
 
 Step.prototype.getJsonData = function () {
@@ -1501,15 +1514,16 @@ function Action(json, parentStep) {
     this.toDelete = false;
 }
 
-Action.prototype.draw = function () {
+Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(supprBtn).append(addBtn).append(plusBtn));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id","ApplicationObjectImg").css("width","100%")));
 
     if (this.parentStep.useStep === "N") {
@@ -1522,6 +1536,7 @@ Action.prototype.draw = function () {
         drag.on("dragend", handleDragEnd);
     }else{
         addBtn.prop("disabled",true);
+        addABtn.prop("disabled",true);
         supprBtn.prop("disabled",true);
     }
 
@@ -1535,8 +1550,13 @@ Action.prototype.draw = function () {
         }
     });
 
+    var scope = this;
+
     addBtn.click(function () {
-        addControlAndFocus(row);
+        addControlAndFocus(scope);
+    });
+    addABtn.click(function () {
+        addActionAndFocus(scope);
     });
 
     supprBtn.click(function () {
@@ -1557,7 +1577,11 @@ Action.prototype.draw = function () {
     row.data("item", this);
     htmlElement.prepend(row);
 
-    this.parentStep.stepActionContainer.append(htmlElement);
+    if(afterAction == undefined) {
+        this.parentStep.stepActionContainer.append(htmlElement);
+    }else{
+        afterAction.html.after(htmlElement);
+    }
     this.refreshSort();
 };
 
@@ -1567,14 +1591,14 @@ Action.prototype.setControlList = function (controlList) {
     }
 };
 
-Action.prototype.setControl = function (control) {
+Action.prototype.setControl = function (control, afterControl) {
     if (control instanceof Control) {
-        control.draw();
+        control.draw(afterControl);
         this.controlList.push(control);
     } else {
         var controlObj = new Control(control, this);
 
-        controlObj.draw();
+        controlObj.draw(afterControl);
         this.controlList.push(controlObj);
     }
 };
@@ -1771,13 +1795,15 @@ function Control(json, parentAction) {
     this.html = $("<div></div>").addClass("step-action row").addClass("control");
 }
 
-Control.prototype.draw = function () {
+Control.prototype.draw = function (afterControl) {
     var htmlElement = this.html;
     var control = this;
     var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id","labelDiv"));
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
+    var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var supprBtn = $("<button></button>").addClass("btn btn-danger add-btn").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var btnGrp = $("<div></div>").addClass("col-lg-1").append($("<div>").addClass("boutonGroup").append(supprBtn).append(plusBtn));
+    var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding","0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height","100%").append($("<span style='display: inline-block; height: 100%; vertical-align: middle;'></span>")).append($("<img>").attr("id","ApplicationObjectImg").css("width","100%"));
 
     var content = this.generateContent();
@@ -1817,13 +1843,27 @@ Control.prototype.draw = function () {
         supprBtn.attr("disabled",true);
     }
 
+    var scope = this;
+
+    addABtn.click(function(){
+        addActionAndFocus(scope.parentAction);
+    });
+
+    addBtn.click(function(){
+        addControlAndFocus(scope.parentAction, scope);
+    });
+
     htmlElement.append(drag);
     htmlElement.append(content);
     htmlElement.append(imgGrp);
     htmlElement.append(btnGrp);
     htmlElement.data("item", this);
 
-    this.parentAction.html.append(htmlElement);
+    if(afterControl == undefined) {
+        this.parentAction.html.append(htmlElement);
+    }else{
+        afterControl.html.after(htmlElement);
+    }
     this.refreshSort();
 };
 
@@ -2011,16 +2051,16 @@ function listenEnterKeypressWhenFocusingOnDescription() {
     });
 }
 
-function addControl(action) {
+function addControl(action, control) {
     setModif(true);
-    var control = new Control(null, action);
-    action.setControl(control);
+    var ctrl = new Control(null, action);
+    action.setControl(ctrl,control);
     setAllSort();
-    return control;
+    return ctrl;
 }
 
-function addControlAndFocus(oldAction) {
-    $.when(addControl(oldAction.data("item"))).then(function (action) {
+function addControlAndFocus(oldAction, control) {
+    $.when(addControl(oldAction, control)).then(function (action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
         setPlaceholderControl();
@@ -2184,7 +2224,7 @@ function editPropertiesModalSaveHandler(){
     clearResponseMessage($('#propertiesModal'));
     var doc = new Doc();
 
-    var properties = $("#propTable [name='masterProp']");
+    var properties = $("#propTable #masterProp");
     var propArr = [];
     var propertyWithoutCountry = false;
     for (var i = 0; i < properties.length; i++) {

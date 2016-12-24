@@ -81,7 +81,7 @@
                         <div id="list-wrapper" style="top:107px;">
                             <div id="stepListWrapper">
                                 <h3>Steps</h3>
-                                <ul class="list-group step-list side-item" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
+                                <ul class="list-group step-list side-item nav nav-pills" id="stepList" style="max-height: 600px;overflow-y: auto"></ul>
                             </div>
                             <div id="tcButton">
                                 <h3>Actions</h3>
