@@ -322,7 +322,7 @@ public class ControlService implements IControlService {
 
     private MessageEvent verifyIntegerGreater(String value1, String value2) {
         MessageEvent mes;
-        if (StringUtil.isNumeric(value1) && StringUtil.isNumeric(value2)) {
+        if (StringUtil.isInteger(value1) && StringUtil.isInteger(value2)) {
             int prop = Integer.parseInt(value1);
             int val = Integer.parseInt(value2);
             if (prop > val) {
@@ -342,7 +342,7 @@ public class ControlService implements IControlService {
 
     private MessageEvent verifyIntegerMinor(String value1, String value2) {
         MessageEvent mes;
-        if (StringUtil.isNumeric(value1) && StringUtil.isNumeric(value2)) {
+        if (StringUtil.isInteger(value1) && StringUtil.isInteger(value2)) {
             int prop = Integer.parseInt(value1);
             int val = Integer.parseInt(value2);
             if (prop < val) {
@@ -361,7 +361,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyIntegerEquals(String property, String value) {
-        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        if (StringUtil.isInteger(property) && StringUtil.isInteger(value)) {
             MessageEvent mes = Integer.parseInt(property) == Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
             mes.setDescription(mes.getDescription().replace("%STRING1%", property));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value));
@@ -371,7 +371,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyIntegerDifferent(String property, String value) {
-        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
+        if (StringUtil.isInteger(property) && StringUtil.isInteger(value)) {
             MessageEvent mes = Integer.parseInt(property) != Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
             mes.setDescription(mes.getDescription().replace("%STRING1%", property));
             mes.setDescription(mes.getDescription().replace("%STRING2%", value));

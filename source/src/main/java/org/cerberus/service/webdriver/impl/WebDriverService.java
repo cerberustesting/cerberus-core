@@ -908,7 +908,7 @@ public class WebDriverService implements IWebDriverService {
                 select.selectByValue(property.getLocator());
             } else if (property.getIdentifier().equalsIgnoreCase("label")) {
                 select.selectByVisibleText(property.getLocator());
-            } else if (property.getIdentifier().equalsIgnoreCase("index") && StringUtil.isNumeric(property.getLocator())) {
+            } else if (property.getIdentifier().equalsIgnoreCase("index") && StringUtil.isInteger(property.getLocator())) {
                 select.selectByIndex(Integer.parseInt(property.getLocator()));
             } else if (property.getIdentifier().equalsIgnoreCase("regexValue")
                     || property.getIdentifier().equalsIgnoreCase("regexIndex")
@@ -933,7 +933,7 @@ public class WebDriverService implements IWebDriverService {
                             select.selectByVisibleText(optionLabel);
                         }
                     }
-                } else if (property.getIdentifier().equalsIgnoreCase("regexIndex") && StringUtil.isNumeric(property.getLocator())) {
+                } else if (property.getIdentifier().equalsIgnoreCase("regexIndex") && StringUtil.isInteger(property.getLocator())) {
                     for (WebElement option : list) {
                         Integer id = 0;
                         Pattern pattern = Pattern.compile(property.getLocator());

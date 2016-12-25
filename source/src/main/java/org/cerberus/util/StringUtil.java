@@ -71,13 +71,20 @@ public final class StringUtil {
      * @param str
      * @return true if str is a numeric value, else false
      */
-    public static boolean isNumeric(String str) {
+    public static boolean isInteger(String str) {
         try {
             Integer.parseInt(str);
         } catch (NumberFormatException nfe) {
             return false;
         }
         return true;
+    }
+
+    public static String prepareToNumeric(String str) {
+        if (str.contains(",")) {
+            return str.replace(",", ".");
+        }
+        return str;
     }
 
     /**
@@ -179,11 +186,21 @@ public final class StringUtil {
         return textIn.replaceAll("\"", "\"\"");
     }
 
+    /**
+     *
+     * @param inputString
+     * @return
+     */
     public static String sanitize(String inputString) {
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         return policy.sanitize(inputString);
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
     public static String replaceUrlByLinkInString(String text) {
         if (text != null && !text.isEmpty()) {
             Matcher matcher = urlMatch.matcher(text);
@@ -193,14 +210,24 @@ public final class StringUtil {
         }
         return text;
     }
-    
+
+    /**
+     *
+     * @param text
+     * @return
+     */
     public static String replaceInvisibleCharbyString(String text) {
         if (text != null && !text.isEmpty()) {
-                return text.replace("\n","\\n");
+            return text.replace("\n", "\\n");
         }
         return text;
     }
 
+    /**
+     *
+     * @param text
+     * @return
+     */
     public static String textToHtmlConvertingURLsToLinks(String text) {
         if (text == null) {
             return text;
@@ -294,6 +321,12 @@ public final class StringUtil {
 
     }
 
+    /**
+     *
+     * @param text
+     * @param suffix
+     * @return
+     */
     public static String addSuffixIfNotAlready(String text, String suffix) {
         if (text.toUpperCase().endsWith(suffix.toUpperCase())) {
             return text;

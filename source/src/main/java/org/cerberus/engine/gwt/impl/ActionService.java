@@ -676,7 +676,7 @@ public class ActionService implements IActionService {
                  */
                 if (StringUtil.isNullOrEmpty(element)) {
                     timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
-                } else if (StringUtil.isNumeric(element)) {
+                } else if (StringUtil.isInteger(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 } else {
                     identifier = identifierService.convertStringToIdentifier(element);
@@ -694,7 +694,7 @@ public class ActionService implements IActionService {
                 if (StringUtil.isNullOrEmpty(element)) {
                     // Get default wait from parameter
                     timeToWaitInMs = tCExecution.getCerberus_action_wait_default();
-                } else if (StringUtil.isNumeric(element)) {
+                } else if (StringUtil.isInteger(element)) {
                     timeToWaitInMs = Long.valueOf(element);
                 }
                 return this.waitTime(timeToWaitInMs);

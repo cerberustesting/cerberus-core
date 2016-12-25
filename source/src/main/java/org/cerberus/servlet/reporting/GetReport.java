@@ -130,7 +130,7 @@ public class GetReport extends HttpServlet {
         //TODO only keep the last parameter
         int priority = -1;
         String temp = req.getParameter("Priority");
-        if (temp != null && !temp.equalsIgnoreCase("All") && StringUtil.isNumeric(temp)) {
+        if (temp != null && !temp.equalsIgnoreCase("All") && StringUtil.isInteger(temp)) {
             priority = Integer.parseInt(temp);
         }
         String status = this.getValues(req, "Status");

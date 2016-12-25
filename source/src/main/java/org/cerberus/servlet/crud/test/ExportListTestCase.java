@@ -83,7 +83,7 @@ public class ExportListTestCase extends HttpServlet {
         String creator = this.getValue(req, "ScCreator");
         String application = this.getValue(req, "ScApplication");
         int priority = -1;
-        if (req.getParameter("ScPriority") != null && !req.getParameter("ScPriority").equalsIgnoreCase("All") && StringUtil.isNumeric(req.getParameter("ScPriority"))) {
+        if (req.getParameter("ScPriority") != null && !req.getParameter("ScPriority").equalsIgnoreCase("All") && StringUtil.isInteger(req.getParameter("ScPriority"))) {
             priority = Integer.parseInt(req.getParameter("ScPriority"));
         }
         String status = this.getValue(req, "ScStatus");
