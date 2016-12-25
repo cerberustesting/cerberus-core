@@ -7519,7 +7519,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'realDeviceLogger', '10', 'Path to the logger for real IOS devices (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and  `value`='realDeviceLogger') LIMIT 1;");
         SQLInstruction.add(SQLS.toString());
 
-
         // Updated Documentation
         //-- ------------------------ 998
         SQLS = new StringBuilder();
@@ -7887,7 +7886,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcasescript','index','','fr','Index : ','');");
         SQLInstruction.add(SQLS.toString());
 
-
         //Update doc - 1011
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` VALUES ");
@@ -7899,6 +7897,65 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','')");
         SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','')");
         SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','');");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding new condition at all levels
+        // 1012-1015
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTIONCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('STEPCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('CONTROLCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('TESTCASECONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

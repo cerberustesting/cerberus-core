@@ -275,85 +275,85 @@ public class ControlService implements IControlService {
 
     }
 
-    private MessageEvent verifyStringContains(String property, String value) {
+    private MessageEvent verifyStringContains(String value1, String value2) {
         MessageEvent mes;
-        if (property.indexOf(value) >= 0) {
+        if (value1.indexOf(value2) >= 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CONTAINS);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_CONTAINS);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
         return mes;
 
     }
 
-    private MessageEvent verifyStringGreater(String property, String value) {
+    private MessageEvent verifyStringGreater(String value1, String value2) {
         MessageEvent mes;
-        if (property.compareToIgnoreCase(value) > 0) {
+        if (value1.compareToIgnoreCase(value2) > 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         }
     }
 
-    private MessageEvent verifyStringMinor(String property, String value) {
+    private MessageEvent verifyStringMinor(String value1, String value2) {
         MessageEvent mes;
-        if (property.compareToIgnoreCase(value) < 0) {
+        if (value1.compareToIgnoreCase(value2) < 0) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         } else {
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         }
     }
 
-    private MessageEvent verifyIntegerGreater(String property, String value) {
+    private MessageEvent verifyIntegerGreater(String value1, String value2) {
         MessageEvent mes;
-        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
-            int prop = Integer.parseInt(property);
-            int val = Integer.parseInt(value);
+        if (StringUtil.isNumeric(value1) && StringUtil.isNumeric(value2)) {
+            int prop = Integer.parseInt(value1);
+            int val = Integer.parseInt(value2);
             if (prop > val) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
                 return mes;
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
                 return mes;
             }
         }
         return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
     }
 
-    private MessageEvent verifyIntegerMinor(String property, String value) {
+    private MessageEvent verifyIntegerMinor(String value1, String value2) {
         MessageEvent mes;
-        if (StringUtil.isNumeric(property) && StringUtil.isNumeric(value)) {
-            int prop = Integer.parseInt(property);
-            int val = Integer.parseInt(value);
+        if (StringUtil.isNumeric(value1) && StringUtil.isNumeric(value2)) {
+            int prop = Integer.parseInt(value1);
+            int val = Integer.parseInt(value2);
             if (prop < val) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
                 return mes;
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
                 return mes;
             }
         }

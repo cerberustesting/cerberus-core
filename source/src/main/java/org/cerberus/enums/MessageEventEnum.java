@@ -337,6 +337,7 @@ public enum MessageEventEnum {
     CONDITION_NEVER(1210, "NA", "Not executed following execution condition : %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER(1220, "NA", "Not executed following execution condition : %COND%. Missing mandatory parameter for %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_IFPROPERTYEXIST_NOTEXIST(1221, "NA", "Not executed following execution condition : %COND%. Property %PROP% do not exist for country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_GENERIC_NOTEXECUTED(1222, "NA", "Not executed following execution condition : %COND%. %MESSAGE%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_UNKNOWN(1290, "NA", "Not executed because execution condition : %COND% do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),

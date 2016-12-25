@@ -68,6 +68,36 @@ public class ConditionService implements IConditionService {
                 mes = ans.getResultMessage();
                 break;
 
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGEQUAL:
+                ans = evaluateCondition_ifStringEqual(conditionOper, conditionValue1, conditionValue2);
+                execute_Action = (Boolean) ans.getItem();
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGDIFFERENT:
+                ans = evaluateCondition_ifStringDifferent(conditionOper, conditionValue1, conditionValue2);
+                execute_Action = (Boolean) ans.getItem();
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGGREATER:
+                ans = evaluateCondition_ifStringGreater(conditionOper, conditionValue1, conditionValue2);
+                execute_Action = (Boolean) ans.getItem();
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGMINOR:
+                ans = evaluateCondition_ifStringMinor(conditionOper, conditionValue1, conditionValue2);
+                execute_Action = (Boolean) ans.getItem();
+                mes = ans.getResultMessage();
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFSTRINGCONTAINS:
+                ans = evaluateCondition_ifStringContains(conditionOper, conditionValue1, conditionValue2);
+                execute_Action = (Boolean) ans.getItem();
+                mes = ans.getResultMessage();
+                break;
+
             case TestCaseStepAction.CONDITIONOPER_NEVER:
                 mes = new MessageEvent(MessageEventEnum.CONDITION_NEVER);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
@@ -121,4 +151,113 @@ public class ConditionService implements IConditionService {
         return ans;
     }
 
+    private AnswerItem<Boolean> evaluateCondition_ifStringEqual(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Equal");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+
+        boolean execute_Action = true;
+        if (conditionValue1.equals(conditionValue2)) {
+            execute_Action = true;
+        } else {
+            execute_Action = false;
+            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not equal to '" + conditionValue2 + "'"));
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringDifferent(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Different");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+
+        boolean execute_Action = true;
+        if (!(conditionValue1.equals(conditionValue2))) {
+            execute_Action = true;
+        } else {
+            execute_Action = false;
+            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is equal to '" + conditionValue2 + "'"));
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringGreater(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Greater");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+
+        boolean execute_Action = true;
+        if ((conditionValue1.compareToIgnoreCase(conditionValue2) > 0)) {
+            execute_Action = true;
+        } else {
+            execute_Action = false;
+            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not greater than '" + conditionValue2 + "'"));
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringMinor(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Minor");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+
+        boolean execute_Action = true;
+        if ((conditionValue1.compareToIgnoreCase(conditionValue2) < 0)) {
+            execute_Action = true;
+        } else {
+            execute_Action = false;
+            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not minor to '" + conditionValue2 + "'"));
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifStringContains(String conditionOper, String conditionValue1, String conditionValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if String Contains");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+
+        boolean execute_Action = true;
+        if (conditionValue1.indexOf(conditionValue2) >= 0) {
+            execute_Action = true;
+        } else {
+            execute_Action = false;
+            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' does not contain '" + conditionValue2 + "'"));
+        }
+        ans.setItem(execute_Action);
+        ans.setResultMessage(mes);
+        return ans;
+    }
 }
