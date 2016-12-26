@@ -132,7 +132,7 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringMinor")) {
                 res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-                
+
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringContains")) {
                 res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
@@ -144,7 +144,7 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerGreater")) {
                 res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-                
+
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerMinor")) {
                 res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
@@ -383,11 +383,14 @@ public class ControlService implements IControlService {
     private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String html) {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
         MessageEvent mes;
+
         if (!StringUtil.isNull(html)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(html);
+
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(html);
                     if (identifier.getIdentifier().equals("picture")) {
                         return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
@@ -414,6 +417,8 @@ public class ControlService implements IControlService {
                     mes.setDescription(mes.getDescription().replace("%STRING1%", html));
                     return mes;
                 }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "VerifyElementPresent"));

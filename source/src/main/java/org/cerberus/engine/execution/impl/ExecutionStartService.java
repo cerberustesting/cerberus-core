@@ -366,22 +366,26 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Checks performed -- > OK to continue.");
 
         /**
-         * Check if Browser is supported and if selenium server is reachable.
+         * For GUI application, check if Browser is supported.
+         */
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
+            try {
+                myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
+            } catch (CerberusException ex) {
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
+                mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
+                LOG.debug(mes.getDescription());
+                throw new CerberusException(mes);
+            }
+        }
+
+        /**
+         * Start server
          */
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
-
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
-                try {
-                    myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
-                } catch (CerberusException ex) {
-                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED);
-                    mes.setDescription(mes.getDescription().replace("%BROWSER%", tCExecution.getBrowser()));
-                    LOG.debug(mes.getDescription());
-                    throw new CerberusException(mes);
-                }
-            }
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
@@ -399,14 +403,14 @@ public class ExecutionStartService implements IExecutionStartService {
             /**
              * Start Selenium server
              */
-            LOG.debug("Starting Selenium Server.");
+            LOG.debug("Starting Server.");
             try {
                 this.serverService.startServer(tCExecution);
             } catch (CerberusException ex) {
                 LOG.debug(ex.getMessageError().getDescription());
                 throw new CerberusException(ex.getMessageError());
             }
-            LOG.debug("Selenium Server Started.");
+            LOG.debug("Server Started.");
 
         }
 
@@ -450,19 +454,23 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
-        
+
         /**
-         * Feature Flipping. Should be removed when websocket push is fully working
+         * Feature Flipping. Should be removed when websocket push is fully
+         * working
          */
         boolean websocketPush = true;
-        try{
-        AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
-        websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
-        } catch (Exception ex){
+        try {
+            AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
+            websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
+        } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
         tCExecution.setFeatureFlippingActivateWebsocketPush(websocketPush);
-                
+        /**
+         * End of Feature Flipping. Should be removed when websocket push is fully
+         * working
+         */
 
         return tCExecution;
     }
