@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt;
 
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 
@@ -31,6 +32,22 @@ import org.cerberus.exception.CerberusEventException;
  */
 public interface IPropertyService {
 
-    String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    /**
+     *
+     * @param stringToDecode
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param forceCalculation
+     * @return
+     * @throws CerberusEventException
+     */
+    String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
+    /**
+     *
+     * @param stringToDecode
+     * @param tCExecution
+     * @return
+     */
+    String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution);
 }

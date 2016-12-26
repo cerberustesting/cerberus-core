@@ -131,9 +131,15 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Loading Test Case Information. " + tCExecution.getTest() + "-" + tCExecution.getTestCase());
         // Integrate this.loadTestCaseService.loadTestCase(tCExecution); inside with Dependency.
         try {
-            TestCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
+//            TestCase tCase = testCaseService.findTestCaseByKey(tCExecution.getTest(), tCExecution.getTestCase());
+            TestCase tCase = testCaseService.convert(testCaseService.readByKey(tCExecution.getTest(), tCExecution.getTestCase()));
             if (tCase != null) {
                 tCExecution.setTestCaseObj(tCase);
+                tCExecution.setConditionOper(tCase.getConditionOper());
+                tCExecution.setConditionVal1(tCase.getConditionVal1());
+                tCExecution.setConditionVal1Init(tCase.getConditionVal1());
+                tCExecution.setConditionVal2(tCase.getConditionVal2());
+                tCExecution.setConditionVal2Init(tCase.getConditionVal2());
             } else {
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
             }
@@ -319,25 +325,26 @@ public class ExecutionStartService implements IExecutionStartService {
         LOG.debug("Country/Environment Information Loaded. " + tCExecution.getCountry() + " - " + tCExecution.getEnvironmentData());
 
         /**
-         * If Timeout is defined at the execution level, set action wait default to this value, else
-         * Get the cerberus_action_wait_default parameter. This parameter will
-         * be used by tha wait action if no timeout/event is defined.
+         * If Timeout is defined at the execution level, set action wait default
+         * to this value, else Get the cerberus_action_wait_default parameter.
+         * This parameter will be used by tha wait action if no timeout/event is
+         * defined.
          */
         try {
-            if (!tCExecution.getTimeout().isEmpty()){
+            if (!tCExecution.getTimeout().isEmpty()) {
                 tCExecution.setCerberus_action_wait_default(Integer.valueOf(tCExecution.getTimeout()));
             } else {
-            AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", "cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem());
-            if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
-                if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
-                    tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue()));
+                AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", "cerberus_action_wait_default", tCExecution.getApplicationObj().getSystem());
+                if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
+                    if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
+                        tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue()));
+                    } else {
+                        tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value()));
+                    }
                 } else {
-                    tCExecution.setCerberus_action_wait_default(Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value()));
+                    LOG.warn("Parameter cerberus_action_wait_default not set in Parameter table, default value set to 90000 milliseconds. ");
+                    tCExecution.setCerberus_action_wait_default(90000);
                 }
-            } else {
-                LOG.warn("Parameter cerberus_action_wait_default not set in Parameter table, default value set to 90000 milliseconds. ");
-                tCExecution.setCerberus_action_wait_default(90000);
-            }
             }
         } catch (NumberFormatException ex) {
             LOG.warn("Parameter cerberus_action_wait_default must be an integer, default value set to 90000 milliseconds. " + ex.toString());
@@ -450,19 +457,19 @@ public class ExecutionStartService implements IExecutionStartService {
         } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
-        
+
         /**
-         * Feature Flipping. Should be removed when websocket push is fully working
+         * Feature Flipping. Should be removed when websocket push is fully
+         * working
          */
         boolean websocketPush = true;
-        try{
-        AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
-        websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
-        } catch (Exception ex){
+        try {
+            AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
+            websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
+        } catch (Exception ex) {
             LOG.warn(ex.toString());
         }
         tCExecution.setFeatureFlippingActivateWebsocketPush(websocketPush);
-                
 
         return tCExecution;
     }

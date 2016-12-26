@@ -32,16 +32,16 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
-    
-        @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String conditionOper, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage, String description) {
-        TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, step, sort, conditionOper, conditionVal1, conditionVal2, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, null, null, null, -1, description);
+
+    @Override
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage, String description) {
+        TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, step, sort, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, null, null, null, -1, description);
         testCaseStepExecution.setReturnMessage(returnMessage);
         return testCaseStepExecution;
     }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String conditionOper, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int sort, String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -53,6 +53,8 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setStep(step);
         testCaseStepExecution.setSort(sort);
         testCaseStepExecution.setConditionOper(conditionOper);
+        testCaseStepExecution.setConditionVal1Init(conditionVal1Init);
+        testCaseStepExecution.setConditionVal2Init(conditionVal2Init);
         testCaseStepExecution.setConditionVal1(conditionVal1);
         testCaseStepExecution.setConditionVal2(conditionVal2);
         testCaseStepExecution.setTest(test);

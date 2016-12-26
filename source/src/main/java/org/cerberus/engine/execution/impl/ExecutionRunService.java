@@ -68,6 +68,8 @@ import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
+import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
@@ -130,6 +132,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private ExecutionUUID executionUUID;
     @Autowired
     private IRecorderService recorderService;
+    @Autowired
+    private IVariableService variableService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -286,7 +290,17 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswerTc;
-            conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getTestCaseObj().getConditionOper(), tCExecution.getTestCaseObj().getConditionVal1(), tCExecution.getTestCaseObj().getConditionVal2(), tCExecution);
+            try {
+                tCExecution.setConditionVal1(variableService.decodeStringCompletly(tCExecution.getConditionVal1(), tCExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            try {
+                tCExecution.setConditionVal2(variableService.decodeStringCompletly(tCExecution.getConditionVal2(), tCExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            conditionAnswerTc = this.conditionService.evaluateCondition(tCExecution.getConditionOper(), tCExecution.getConditionVal1(), tCExecution.getConditionVal2(), tCExecution);
             boolean execute_TestCase = (boolean) conditionAnswerTc.getItem();
 
             if (execute_TestCase) {
@@ -303,7 +317,7 @@ public class ExecutionRunService implements IExecutionRunService {
                      */
                     TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
                             runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                            testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
+                            testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
                             startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
                             testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                     testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -329,9 +343,20 @@ public class ExecutionRunService implements IExecutionRunService {
                     ai.setDataList(tcsExecutionList);
                     tCExecution.setTestCaseStepExecutionAnswerList(ai);
 
-                    // Evaluate the condition at the control level.
+                    // Evaluate the condition at the Step level.
                     AnswerItem<Boolean> conditionAnswer;
-                    conditionAnswer = this.conditionService.evaluateCondition(testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), tCExecution);
+                    try {
+                        testCaseStepExecution.setConditionVal1(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal1(), tCExecution, null, false));
+                    } catch (CerberusEventException cex) {
+                        LOG.warn(cex);
+                    }
+                    try {
+                        testCaseStepExecution.setConditionVal2(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false));
+                    } catch (CerberusEventException cex) {
+                        LOG.warn(cex);
+                    }
+
+                    conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), tCExecution);
                     boolean execute_Step = (boolean) conditionAnswer.getItem();
 
                     if (execute_Step) {
@@ -399,7 +424,7 @@ public class ExecutionRunService implements IExecutionRunService {
             } else { // We don't execute the testcase.
 
                 /**
-                 * Update Execution status from condition 
+                 * Update Execution status from condition
                  */
                 tCExecution.setControlMessage(conditionAnswerTc.getResultMessage().getDescription());
                 tCExecution.setControlStatus(conditionAnswerTc.getResultMessage().getCodeString());
@@ -424,7 +449,7 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (Exception ex) {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
                 //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG,
+                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
                         "[DEBUG] Exception cleaning Memory:" + ex.getMessage());
             }
 
@@ -437,7 +462,7 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         //TODO:FN debug messages to be removed
         if (tCExecution.getControlStatus().equals("PE")) {
-            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG,
+            org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
                     "[DEBUG] EXECUTION FINISHED WITH PE ? " + "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
@@ -465,7 +490,7 @@ public class ExecutionRunService implements IExecutionRunService {
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
         try {
             //TODO:FN debug messages to be removed
-            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STOP " + "__ID=" + tCExecution.getId());
+            org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STOP " + "__ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
@@ -525,10 +550,10 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
-                    testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(),
-                    null, null, testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
-                    testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getForceExeStatus(),
-                    startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
+                    testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
+                    testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(),
+                    testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
+                    testCaseStepAction.getForceExeStatus(), startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
                     testCaseStepAction.getDescription(), testCaseStepAction, testCaseStepExecution);
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
@@ -544,7 +569,17 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the action level.
             AnswerItem<Boolean> conditionAnswer;
-            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), tcExecution);
+            try {
+                testCaseStepActionExecution.setConditionVal1(variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal1(), tcExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            try {
+                testCaseStepActionExecution.setConditionVal2(variableService.decodeStringCompletly(testCaseStepActionExecution.getConditionVal2(), tcExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionExecution.getConditionOper(), testCaseStepActionExecution.getConditionVal1(), testCaseStepActionExecution.getConditionVal2(), tcExecution);
             boolean execute_Action = (boolean) conditionAnswer.getItem();
 
             // Execute or not the action here.
@@ -653,10 +688,13 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
-                    = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(),
-                            testCaseStepActionControl.getTestCase(), testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
-                            null, null, testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
-                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0, testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
+                    = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(), testCaseStepActionControl.getTestCase(),
+                            testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
+                            null, null,
+                            testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(),
+                            testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),
+                            testCaseStepActionControl.getFatal(), startControl, 0, 0, 0,
+                            testCaseStepActionControl.getDescription(), testCaseStepActionExecution, new MessageEvent(MessageEventEnum.CONTROL_PENDING));
             this.testCaseStepActionControlExecutionService.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
 
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing control : " + testCaseStepActionControlExecution.getControlSequence() + " type : " + testCaseStepActionControlExecution.getControl());
@@ -678,7 +716,17 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;
-            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), tcExecution);
+            try {
+                testCaseStepActionControlExecution.setConditionVal1(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal1(), tcExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            try {
+                testCaseStepActionControlExecution.setConditionVal2(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getConditionVal2(), tcExecution, null, false));
+            } catch (CerberusEventException cex) {
+                LOG.warn(cex);
+            }
+            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepActionControlExecution.getConditionOper(), testCaseStepActionControlExecution.getConditionVal1(), testCaseStepActionControlExecution.getConditionVal2(), tcExecution);
             boolean execute_Control = (boolean) conditionAnswer.getItem();
 
             if (execute_Control) {
@@ -774,11 +822,11 @@ public class ExecutionRunService implements IExecutionRunService {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
                 //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG,
+                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
                         "[DEBUG] STOP SERVER " + "__ID=" + tCExecution.getId());
             } catch (UnreachableBrowserException exception) {
                 //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG,
+                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
                         "[DEBUG] FAILED TO STOP " + "__ID=" + tCExecution.getId() + " " + exception.toString());
                 MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
             }

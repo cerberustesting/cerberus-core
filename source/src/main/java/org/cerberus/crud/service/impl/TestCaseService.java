@@ -20,7 +20,6 @@
 package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +34,6 @@ import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageCodeEnum;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -44,13 +42,14 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.util.SqlUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageGeneralEnum;
 
 /**
  * @author bcivel
@@ -163,9 +162,6 @@ public class TestCaseService implements ITestCaseService {
         return testCaseDao.findTestCaseByCriteria(test, application, country, "Y");
     }
 
-    /**
-     * @since 0.9.1
-     */
     @Override
     public List<TestCase> findTestCaseByAllCriteria(TestCase tCase, String text, String system) {
         return this.testCaseDao.findTestCaseByCriteria(tCase, text, system);
@@ -307,10 +303,10 @@ public class TestCaseService implements ITestCaseService {
     public AnswerItem readByKeyWithDependency(String test, String testCase) {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerItem ai = testCaseDao.readByKey(test, testCase);
-        if(ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null){
+        if (ai.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ai.getItem() != null) {
             TestCase tc = (TestCase) ai.getItem();
             AnswerList al = testCaseStepService.readByTestTestCaseWithDependency(tc.getTest(), tc.getTestCase());
-            if(al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null){
+            if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && al.getDataList() != null) {
                 tc.setTestCaseStep(al.getDataList());
             }
             answer.setResultMessage(al.getResultMessage());
@@ -338,4 +334,32 @@ public class TestCaseService implements ITestCaseService {
     public Answer delete(TestCase testCase) {
         return testCaseDao.delete(testCase);
     }
+
+    @Override
+    public TestCase convert(AnswerItem answerItem) throws CerberusException {
+        if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (TestCase) answerItem.getItem();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public List<TestCase> convert(AnswerList answerList) throws CerberusException {
+        if (answerList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return (List<TestCase>) answerList.getDataList();
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public void convert(Answer answer) throws CerberusException {
+        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            //if the service returns an OK message then we can get the item
+            return;
+        }
+        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
 }

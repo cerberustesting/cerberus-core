@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.gwt;
 
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusEventException;
 
 /**
@@ -31,6 +31,6 @@ import org.cerberus.exception.CerberusEventException;
  */
 public interface IApplicationObjectVariableService {
 
-    String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    String decodeStringWithApplicationObject(String stringToDecode, TestCaseExecution tCExecution, boolean forceCalculation) throws CerberusEventException;
 
 }

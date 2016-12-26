@@ -65,17 +65,22 @@ public class TestCaseExecution {
     /**
      * From here are data outside database model.
      */
+    private String conditionOper;
+    private String conditionVal1Init;
+    private String conditionVal2Init;
+    private String conditionVal1;
+    private String conditionVal2;
     private Application applicationObj;
-    private String environmentData;
-    private Invariant environmentDataObj;
     private Invariant CountryObj;
-    private int screenshot;
-    private String outputFormat;
     private Test testObj;
     private TestCase testCaseObj;
     private List<TestCase> PreTestCaseList;
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
+    private int screenshot;
+    private String outputFormat;
+    private String environmentData;
+    private Invariant environmentDataObj;
     private boolean manualURL;
     private String myHost;
     private String myContextRoot;
@@ -112,8 +117,47 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
-    
-    
+
+    public String getConditionOper() {
+        return conditionOper;
+    }
+
+    public void setConditionOper(String conditionOper) {
+        this.conditionOper = conditionOper;
+    }
+
+    public String getConditionVal1Init() {
+        return conditionVal1Init;
+    }
+
+    public void setConditionVal1Init(String conditionVal1Init) {
+        this.conditionVal1Init = conditionVal1Init;
+    }
+
+    public String getConditionVal2Init() {
+        return conditionVal2Init;
+    }
+
+    public void setConditionVal2Init(String conditionVal2Init) {
+        this.conditionVal2Init = conditionVal2Init;
+    }
+
+    public String getConditionVal1() {
+        return conditionVal1;
+    }
+
+    public void setConditionVal1(String conditionVal1) {
+        this.conditionVal1 = conditionVal1;
+    }
+
+    public String getConditionVal2() {
+        return conditionVal2;
+    }
+
+    public void setConditionVal2(String conditionVal2) {
+        this.conditionVal2 = conditionVal2;
+    }
+
     public boolean isFeatureFlippingActivateWebsocketPush() {
         return featureFlippingActivateWebsocketPush;
     }

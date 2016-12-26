@@ -57,14 +57,8 @@ public interface ITestCaseService {
 
     boolean createTestCase(TestCase testCase) throws CerberusException;
 
-    /**
-     * @since 0.9.1
-     */
     List<TestCase> findTestCaseByAllCriteria(TestCase tCase, String text, String system);
 
-    /**
-     * @since 0.9.1
-     */
     List<String> findUniqueDataOfColumn(String column);
 
     /**
@@ -89,9 +83,9 @@ public interface ITestCaseService {
     boolean deleteTestCase(TestCase testCase);
 
     /**
-     * @param name       Key of the table
+     * @param tc
      * @param columnName Name of the column
-     * @param value      New value of the columnName
+     * @param value New value of the columnName
      */
     void updateTestCaseField(TestCase tc, String columnName, String value);
 
@@ -111,7 +105,7 @@ public interface ITestCaseService {
     List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
-     * @param campaign  the campaign name
+     * @param campaign the campaign name
      * @param countries arrays of country
      * @return the list of TCase used in the campaign and activated for the
      * countries
@@ -138,8 +132,8 @@ public interface ITestCaseService {
      * Method that get all the testcases that use a determined testdatalib entry
      *
      * @param testDataLibId testdatalib unique identifier
-     * @param name          testdatalib name
-     * @param country       country for which testdatalib is defined
+     * @param name testdatalib name
+     * @param country country for which testdatalib is defined
      * @return an answer with the test cases and a message indicating the status
      * of the operation
      */
@@ -159,7 +153,6 @@ public interface ITestCaseService {
      */
     public AnswerList readByTestByCriteria(String system, String test, int start, int amount, String sortInformation, String searchTerm, Map<String, List<String>> individualSearch);
 
-
     /**
      * @param test
      * @param testCase
@@ -175,13 +168,52 @@ public interface ITestCaseService {
     public AnswerItem readByKeyWithDependency(String test, String testCase);
 
     public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-                                            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
+            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer update(TestCase testCase);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer create(TestCase testCase);
 
+    /**
+     *
+     * @param testCase
+     * @return
+     */
     public Answer delete(TestCase testCase);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    TestCase convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<TestCase> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
+
 }

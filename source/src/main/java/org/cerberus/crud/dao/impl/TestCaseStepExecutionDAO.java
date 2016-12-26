@@ -82,7 +82,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setLong(i++, testCaseStepExecution.getId());
                 preStat.setString(i++, testCaseStepExecution.getTest());
                 preStat.setString(i++, testCaseStepExecution.getTestCase());
@@ -132,7 +132,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 preStat.setString(i++, ParameterParserUtil.parseStringParam(testCaseStepExecution.getReturnCode(), ""));
                 preStat.setTimestamp(i++, timeStart);
@@ -293,6 +293,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2");
+        String conditionVal1Init = resultSet.getString("conditionVal1");
+        String conditionVal2Init = resultSet.getString("conditionVal2");
         String batNumExe = resultSet.getString("batnumexe");
         long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();
@@ -302,6 +304,6 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnMessage");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepExecution.create(id, test, testcase, step, sort, conditionOper, conditionVal1, conditionVal2, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
+        return factoryTestCaseStepExecution.create(id, test, testcase, step, sort, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
     }
 }

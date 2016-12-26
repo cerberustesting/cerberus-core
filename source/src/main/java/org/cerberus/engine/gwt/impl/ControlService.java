@@ -80,6 +80,7 @@ public class ControlService implements IControlService {
     @Override
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent res;
+        TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
 
         /**
          * Decode the 2 fields property and values before doing the control.
@@ -91,7 +92,8 @@ public class ControlService implements IControlService {
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
-                testCaseStepActionControlExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(),
+                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
@@ -99,7 +101,8 @@ public class ControlService implements IControlService {
             }
 
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
-                testCaseStepActionControlExecution.setValue2(variableService.decodeVariableWithExistingObject(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                testCaseStepActionControlExecution.setValue2(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
+                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
 
                 if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
                     return testCaseStepActionControlExecution;
@@ -117,8 +120,6 @@ public class ControlService implements IControlService {
          */
         testCaseStepActionControlExecution.setStart(new Date().getTime());
 
-        TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
-
         try {
             //TODO On JDK 7 implement switch with string
             if (testCaseStepActionControlExecution.getControl().equals("verifyStringEqual")) {
@@ -132,7 +133,7 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringMinor")) {
                 res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-                
+
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringContains")) {
                 res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
@@ -144,7 +145,7 @@ public class ControlService implements IControlService {
 
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerGreater")) {
                 res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-                
+
             } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerMinor")) {
                 res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 

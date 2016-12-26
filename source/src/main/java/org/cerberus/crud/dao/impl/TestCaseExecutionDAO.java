@@ -53,7 +53,6 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-
 /**
  * {Insert class description here}
  *
@@ -1619,7 +1618,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, null, null, null, null, null, executor, 0, screenSize);
+                false, null, null, null, null, null, null, null, null, executor, 0, screenSize, null);
         result.setApplication(application);
         return result;
     }
@@ -1627,8 +1626,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecution}
      *
-     * @param resultSet ResultSet relative to select from table TestCaseExecution
-     * @return object {@link TestCaseExecution} with objects {@link TestCase} and {@link Application}
+     * @param resultSet ResultSet relative to select from table
+     * TestCaseExecution
+     * @return object {@link TestCaseExecution} with objects {@link TestCase}
+     * and {@link Application}
      * @throws SQLException when trying to get value from
      * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryTestCaseExecution
@@ -1640,7 +1641,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
         return testCaseExecution;
     }
-    
+
     private TestCaseExecution loadTestCaseExecutionAndApplicationFromResultSet(ResultSet resultSet) throws SQLException {
         TestCaseExecution testCaseExecution = new TestCaseExecution();
         testCaseExecution = this.loadFromResultSet(resultSet);

@@ -140,7 +140,7 @@ public class TestCase {
     }
 
     public void setConditionVal2(String conditionVal2) {
-        this.conditionVal1 = conditionVal2;
+        this.conditionVal2 = conditionVal2;
     }
 
     public String getApplication() {

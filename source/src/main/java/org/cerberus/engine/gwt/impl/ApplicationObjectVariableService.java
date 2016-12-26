@@ -19,42 +19,22 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.*;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.crud.service.*;
-import org.cerberus.engine.entity.Identifier;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.entity.SOAPExecution;
-import org.cerberus.engine.execution.IIdentifierService;
-import org.cerberus.engine.execution.IRecorderService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.cerberus.engine.gwt.IApplicationObjectVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.service.datalib.IDataLibService;
-import org.cerberus.service.groovy.IGroovyService;
-import org.cerberus.service.json.IJsonService;
-import org.cerberus.service.soap.ISoapService;
-import org.cerberus.service.sql.ISQLService;
-import org.cerberus.service.webdriver.IWebDriverService;
-import org.cerberus.service.xmlunit.IXmlUnitService;
-import org.cerberus.util.DateUtil;
-import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.SoapUtil;
-import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
-import org.openqa.selenium.NoSuchElementException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.cerberus.crud.entity.ApplicationObject;
+import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IApplicationObjectService;
+import org.cerberus.crud.service.IParameterService;
 
 /**
  * {Insert class description here}
@@ -78,8 +58,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%object\\.[^%]+%");
 
     @Override
-    public String decodeValueWithExistingProperties(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
-        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+    public String decodeStringWithApplicationObject(String stringToDecode, TestCaseExecution tCExecution, boolean forceCalculation) throws CerberusEventException {
         String application = tCExecution.getApplicationObj().getApplication();
 
         String stringToDecodeInit = stringToDecode;
@@ -105,10 +84,10 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         }
 
         Iterator i = internalPropertiesFromStringToDecode.iterator();
-        while(i.hasNext()){
-            String value = (String)i.next();
+        while (i.hasNext()) {
+            String value = (String) i.next();
             String[] valueA = value.split("\\.");
-            if(valueA.length >= 3) {
+            if (valueA.length >= 3) {
                 AnswerItem ans = applicationObjectService.readByKey(application, valueA[1]);
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && ans.getItem() != null) {
                     ApplicationObject ao = (ApplicationObject) ans.getItem();
@@ -118,20 +97,16 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                             Parameter url = (Parameter) an.getItem();
                             val = url.getValue() + "/" + ao.getID() + "/" + ao.getScreenShotFileName();
-                        } else {
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Cannot find the parameter that point the Application Object image folder");
-                            }
+                        } else if (LOG.isDebugEnabled()) {
+                            LOG.debug("Cannot find the parameter that point the Application Object image folder");
                         }
                     } else if ("pictureurl".equals(valueA[2])) {
                         AnswerItem an = parameterService.readByKey("", "cerberus_url");
                         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                             Parameter url = (Parameter) an.getItem();
                             val = url.getValue() + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
-                        } else {
-                            if (LOG.isDebugEnabled()) {
-                                LOG.debug("Cannot find the parameter that point the Application Object image folder");
-                            }
+                        } else if (LOG.isDebugEnabled()) {
+                            LOG.debug("Cannot find the parameter that point the Application Object image folder");
                         }
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
@@ -160,7 +135,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
      * @param str the {@link String} to get all properties
      * @return a list of properties contained into the given {@link String}
      */
-    private List<String>    getPropertiesListFromString(String str) {
+    private List<String> getPropertiesListFromString(String str) {
         List<String> properties = new ArrayList<String>();
         if (str == null) {
             return properties;

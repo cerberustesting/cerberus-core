@@ -158,9 +158,7 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
          * the test. testcase.
          */
         HashMap<String, TestCaseCountryProperties> tccpMap1 = new HashMap<String, TestCaseCountryProperties>();
-        LOG.debug("Init");
         for (TestCaseCountryProperties tccp : tccpList) {
-            LOG.debug(tccp.getProperty() + " - " + tccp.getCountry() + " - " + tccp.getTest() + " - " + tccp.getTestCase());
             tccpMap1.put(tccp.getProperty(), tccp);
         }
 
@@ -177,7 +175,6 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
                         || ((tccp.getTest().equals(test)) && (tccp.getTestCase().equals(testcase)) && (toto.getTest().equals(test)) && (toto.getTestCase().equals(testcase)))
                         || ((tccp.getTest().equals(toto.getTest())) && (tccp.getTestCase().equals(toto.getTestCase()))))) {
                     result.add(tccp);
-                    LOG.debug(tccp.getProperty() + " - " + tccp.getCountry() + " - " + tccp.getTest() + " - " + tccp.getTestCase());
                 }
             }
         }

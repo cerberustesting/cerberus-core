@@ -15,9 +15,10 @@
 *
 * You should have received a copy of the GNU General Public License
 * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 package org.cerberus.engine.gwt;
 
+import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 
@@ -30,6 +31,22 @@ import org.cerberus.exception.CerberusEventException;
  */
 public interface IVariableService {
 
-    public String decodeVariableWithExistingObject(String stringToDecode, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    /**
+     * Decode the string stringToDecode with all potencial existing
+     * variables.<br>
+     * Can be decode with :<br>
+     * - System variables<br>
+     * - Application Object variables<br>
+     * - Property variables : in that case, forceCalculation will force the
+     * calculation of existing properties (even if already calculated)<br>
+     *
+     * @param stringToDecode
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param forceCalculation
+     * @return
+     * @throws CerberusEventException
+     */
+    public String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
 }

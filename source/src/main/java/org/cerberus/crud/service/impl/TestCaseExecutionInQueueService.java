@@ -203,7 +203,10 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform, browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource, seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, seleniumIP, seleniumPort, null, null, null);
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform,
+                browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
+                seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
+                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null);
         result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());

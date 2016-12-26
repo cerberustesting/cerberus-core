@@ -409,7 +409,7 @@ public class TestCaseStepActionControlExecutionDAO implements ITestCaseStepActio
         long endlong = resultSet.getLong("endlong");
         String description = resultSet.getString("description");
         return factoryTestCaseStepActionControlExecution.create(id, test, testCase, step,
-                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, conditionVal1, conditionVal2, control, value1Init, value2Init, value1, value2,
+                sequence, controlSequence, sort, returnCode, returnMessage, conditionOper, "", "", conditionVal1, conditionVal2, control, value1Init, value2Init, value1, value2,
                 fatal, start, end, startlong, endlong, description, null, null);
     }
 }

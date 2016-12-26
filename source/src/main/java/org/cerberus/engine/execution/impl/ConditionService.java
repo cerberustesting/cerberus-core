@@ -47,15 +47,17 @@ public class ConditionService implements IConditionService {
     @Override
     public AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution) {
 
+        LOG.debug("Starting Evaluation condition : " + conditionOper);
+
         AnswerItem ans = new AnswerItem();
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        boolean execute_Action = true;
+
         /**
          * CONDITION Management is treated here. Checking if the
          * action/control/step/execution can be execued here depending on the
          * condition operator and value.
          */
-        boolean execute_Action = true;
-        LOG.debug("Starting Evaluation condition : " + conditionOper);
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
         switch (conditionOper) {
             case TestCaseStepAction.CONDITIONOPER_ALWAYS:
             case "": // In case condition is not defined, it is considered as always.
@@ -259,7 +261,7 @@ public class ConditionService implements IConditionService {
         MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
 
         boolean execute_Action = true;
-        if (conditionValue1.indexOf(conditionValue2) >= 0) {
+        if (conditionValue1.contains(conditionValue2)) {
             execute_Action = true;
         } else {
             execute_Action = false;
@@ -283,7 +285,7 @@ public class ConditionService implements IConditionService {
         // We first prepare the string for nueric conversion to replace , by .
         String newConditionValue1 = StringUtil.prepareToNumeric(conditionValue1);
         String newConditionValue2 = StringUtil.prepareToNumeric(conditionValue2);
-        
+
         // We try to convert the strings value1 to numeric.
         Double value1 = 0.0;
         try {

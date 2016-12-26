@@ -335,6 +335,7 @@ public enum MessageEventEnum {
     // *********** CONDITION OPERATION ***********
     CONDITION_PENDING(1200, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_NEVER(1210, "NA", "Not executed following execution condition : %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_DECODE_GENERICERROR(1215, "FA", "Not executed following execution condition : %COND%. Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER(1220, "FA", "Not executed following execution condition : %COND%. Missing mandatory parameter for %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONDITION_IFNUMERIC_GENERICCONVERSIONERROR(1230, "FA", "Not executed following execution condition : %COND%. Cannot convert %STRINGVALUE% to numeric.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONDITION_IFPROPERTYEXIST_NOTEXIST(1240, "NA", "Not executed following execution condition : %COND%. Property %PROP% do not exist for country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

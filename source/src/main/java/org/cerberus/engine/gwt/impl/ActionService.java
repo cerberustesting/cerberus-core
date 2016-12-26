@@ -57,7 +57,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-
 /**
  *
  * @author bcivel
@@ -100,6 +99,7 @@ public class ActionService implements IActionService {
     @Override
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
+        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
 
         /**
          * Decode the object field before doing the action.
@@ -112,7 +112,8 @@ public class ActionService implements IActionService {
                 }
                 try {
                     // We decode here the object with any potencial variables (ex : %TOTO%). If the Current action if calculateProperty, we force a new calculation of the Property.
-                    testCaseStepActionExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, isCalledFromCalculateProperty));
+                    testCaseStepActionExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
+                            tCExecution, testCaseStepActionExecution, isCalledFromCalculateProperty));
                     //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
                     //or if the property service was unable to decode the property that is specified in the object, 
                     //then the execution of this action should not performed
@@ -130,14 +131,16 @@ public class ActionService implements IActionService {
         }
 
         try {
-            testCaseStepActionExecution.setValue1(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue1(), testCaseStepActionExecution, false));
+            testCaseStepActionExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
+                    tCExecution, testCaseStepActionExecution, false));
         } catch (CerberusEventException cex) {
             testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
             testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
             return testCaseStepActionExecution;
         }
         try {
-            testCaseStepActionExecution.setValue2(variableService.decodeVariableWithExistingObject(testCaseStepActionExecution.getValue2(), testCaseStepActionExecution, false));
+            testCaseStepActionExecution.setValue2(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
+                    tCExecution, testCaseStepActionExecution, false));
         } catch (CerberusEventException cex) {
             testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
             testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
@@ -155,7 +158,6 @@ public class ActionService implements IActionService {
         String propertyName = testCaseStepActionExecution.getPropertyName();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + value1 + " and property : " + value2);
 
-        TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         //TODO On JDK 7 implement switch with string [Edit @abourdon: prefer use of chain of responsibility pattern instead of a big switch]
         if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_KEYPRESS)) {
             res = this.doActionKeyPress(tCExecution, value1, value2);
@@ -884,13 +886,13 @@ public class ActionService implements IActionService {
 
             try {
                 if (soapLibrary.getEnvelope().contains("%")) {
-                    decodedEnveloppe = variableService.decodeVariableWithExistingObject(decodedEnveloppe, testCaseStepActionExecution, false);
+                    decodedEnveloppe = variableService.decodeStringCompletly(decodedEnveloppe, tCExecution, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getServicePath().contains("%")) {
-                    decodedServicePath = variableService.decodeVariableWithExistingObject(decodedServicePath, testCaseStepActionExecution, false);
+                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
                 }
                 if (soapLibrary.getMethod().contains("%")) {
-                    decodedMethod = variableService.decodeVariableWithExistingObject(decodedMethod, testCaseStepActionExecution, false);
+                    decodedMethod = variableService.decodeStringCompletly(decodedMethod, tCExecution, testCaseStepActionExecution, false);
                 }
 
                 //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
@@ -1006,15 +1008,14 @@ public class ActionService implements IActionService {
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY));
         } else {
             try {
+                TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
                 String propertyValueResult = "";
                 // if value2 is not defined, then decode the property defined in value1.
                 if (StringUtil.isNullOrEmpty(value2)) {
-                    propertyValueResult = variableService.decodeVariableWithExistingObject("%" + value1 + "%", testCaseStepActionExecution, true);
-                }
-                // If not, then set value1 property to the decoded value2 property
+                    propertyValueResult = variableService.decodeStringCompletly("%" + value1 + "%", tCExecution, testCaseStepActionExecution, true);
+                } // If not, then set value1 property to the decoded value2 property
                 else {
-                    propertyValueResult =  variableService.decodeVariableWithExistingObject("%" + value2 + "%", testCaseStepActionExecution, true);
-                    TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+                    propertyValueResult = variableService.decodeStringCompletly("%" + value2 + "%", tCExecution, testCaseStepActionExecution, true);
                     for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
                         if (value1.equals(property.getProperty())) {
                             property.setValue(propertyValueResult);
@@ -1032,8 +1033,6 @@ public class ActionService implements IActionService {
                 message = cex.getMessageError();
             }
         }
-
-//        }
         return message;
     }
 

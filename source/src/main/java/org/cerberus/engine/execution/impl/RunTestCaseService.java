@@ -52,7 +52,7 @@ public class RunTestCaseService implements IRunTestCaseService {
          *
          */
         try {
-            org.apache.log4j.Logger.getLogger(ExecutionStartService.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start Execution " + "__ID=" + tCExecution.getId());
+            org.apache.log4j.Logger.getLogger(RunTestCaseService.class.getName()).log(org.apache.log4j.Level.DEBUG, "Start Execution " + "__ID=" + tCExecution.getId());
             tCExecution = executionStartService.startExecution(tCExecution);
             LOG.info("Execution Started : UUID=" + tCExecution.getExecutionUUID() + "__ID=" + tCExecution.getId());
 
