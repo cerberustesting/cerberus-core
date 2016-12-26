@@ -56,10 +56,12 @@ public class SikuliService implements ISikuliService {
 
     private JSONObject generatePostParameters(String action, String locator, String text, long defaultWait) throws JSONException, IOException, MalformedURLException, MimeTypeException {
         JSONObject result = new JSONObject();
-        String picture;
+        String picture = "";
+        String extension = "";
         /**
          * Get Picture from URL and convert to Base64
          */
+        if (locator!=null){
         URL url = new URL(locator);
         URLConnection connection = url.openConnection();
         
@@ -71,14 +73,14 @@ public class SikuliService implements ISikuliService {
         String mimeType = URLConnection.guessContentTypeFromStream(istream);
         MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
         MimeType mt = allTypes.forName(mimeType);
-        String extension = mt.getExtension(); 
+        extension = mt.getExtension(); 
   
         /**
          * Encode in Base64
          */
         byte[] bytes = IOUtils.toByteArray(istream);
         picture = Base64.encodeBase64URLSafeString(bytes);
-
+        }
         /**
          * Build JSONObject with parameters action : Action expected to be done
          * by Sikuli picture : Picture in Base64 format text : Text to type

@@ -22,12 +22,9 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.factory.IFactoryApplication;
 import org.cerberus.crud.factory.IFactoryApplicationObject;
 import org.cerberus.crud.service.IApplicationObjectService;
-import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -59,7 +56,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.lang.System.out;
 
 /**
  *
@@ -169,7 +165,7 @@ public class CreateApplicationObject extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
 
-                if (file != null) {
+            if (file != null) {
                     AnswerItem an = applicationobjectService.readByKey(application,object);
                     if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
                         applicationData = (ApplicationObject) an.getItem();

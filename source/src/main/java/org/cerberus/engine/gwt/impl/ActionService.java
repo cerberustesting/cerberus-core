@@ -335,6 +335,8 @@ public class ActionService implements IActionService {
                 return androidAppiumService.click(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 return iosAppiumService.click(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), TestCaseStepAction.ACTION_CLICK, identifier.getLocator(), "");
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Click")
@@ -395,6 +397,8 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionRightClick(tCExecution.getSession(), identifier);
                 }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "rightClick", identifier.getLocator(), "");
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "rightClick"));
@@ -454,6 +458,8 @@ public class ActionService implements IActionService {
                 return androidAppiumService.switchToContext(tCExecution.getSession(), identifier);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 return iosAppiumService.switchToContext(tCExecution.getSession(), identifier);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "switchApp", null, identifier.getLocator());
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "SwitchToWindow")
@@ -541,6 +547,8 @@ public class ActionService implements IActionService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 return webdriverService.doSeleniumActionDoubleClick(tCExecution.getSession(), identifier, true, false);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "doubleClick", identifier.getLocator(), "");
             }
 
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -577,6 +585,8 @@ public class ActionService implements IActionService {
                 return androidAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 return iosAppiumService.type(tCExecution.getSession(), identifier, property, propertyName);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "type", identifier.getLocator(), property);
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "Type")
@@ -609,6 +619,8 @@ public class ActionService implements IActionService {
                 } else {
                     return webdriverService.doSeleniumActionMouseOver(tCExecution.getSession(), identifier);
                 }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "mouseOver", identifier.getLocator(), "");
             }
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             message.setDescription(message.getDescription().replace("%ACTION%", "mouseOver"));
@@ -670,7 +682,8 @@ public class ActionService implements IActionService {
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) { // If application are Selenium or appium based, we have a session and can use it to wait.
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) { // If application are Selenium or appium based, we have a session and can use it to wait.
 
                 /**
                  * if element is integer, set time to that value else Get
@@ -732,6 +745,8 @@ public class ActionService implements IActionService {
                 return androidAppiumService.keyPress(tCExecution.getSession(), object);
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 return iosAppiumService.keyPress(tCExecution.getSession(), object);
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                return sikuliService.doSikuliAction(tCExecution.getSession(), "keyPress", identifier.getLocator(), property);
             } else {
                 return new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION)
                         .resolveDescription("ACTION", "KeyPress")
@@ -952,6 +967,11 @@ public class ActionService implements IActionService {
                     testCaseStepActionExecution, 0);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
             return message;
+        } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+        /**
+         * TODO Implement screenshot for FAT client application
+         */
+            message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         message.setDescription(message.getDescription().replace("%ACTION%", "TakeScreenShot"));

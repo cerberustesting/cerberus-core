@@ -7958,6 +7958,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
 
+        //Adding FAT Client Application Type
+        // 1016
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('APPLITYPE', 'FAT', '60', 'FAT client application', '', '', '', '')");
+        SQLInstruction.add(SQLS.toString());
         return SQLInstruction;
     }
 

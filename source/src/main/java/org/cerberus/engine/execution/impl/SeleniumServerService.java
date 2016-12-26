@@ -50,6 +50,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.ISeleniumServerService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
@@ -80,6 +81,8 @@ public class SeleniumServerService implements ISeleniumServerService {
     private IParameterService parameterService;
     @Autowired
     private IInvariantService invariantService;
+    @Autowired
+    private ISikuliService sikuliService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SeleniumServerService.class);
 
@@ -99,9 +102,10 @@ public class SeleniumServerService implements ISeleniumServerService {
             String system = tCExecution.getApplicationObj().getSystem();
 
             /**
-             * If timeout has been defined at the execution level, set the
-             * selenium & appium wait element with this value, else, take the
-             * one from parameter
+             * Get the parameters that will be used to set the servers
+             * (selenium/appium) If timeout has been defined at the execution
+             * level, set the selenium & appium wait element with this value,
+             * else, take the one from parameter
              */
             Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element;
 
@@ -182,6 +186,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
                 appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+                sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
             }
 
             /**
