@@ -378,6 +378,28 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
         stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
         stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+        // New syntax
+        stringToDecode = stringToDecode.replace("%system.SYSTEM%", tCExecution.getApplicationObj().getSystem());
+        stringToDecode = stringToDecode.replace("%system.APPLI%", tCExecution.getApplicationObj().getApplication());
+        stringToDecode = stringToDecode.replace("%system.BROWSER%", tCExecution.getBrowser());
+        stringToDecode = stringToDecode.replace("%system.APP_DOMAIN%", tCExecution.getCountryEnvironmentParameters().getDomain());
+        stringToDecode = stringToDecode.replace("%system.APP_HOST%", tCExecution.getCountryEnvironmentParameters().getIp());
+        stringToDecode = stringToDecode.replace("%system.APP_VAR1%", tCExecution.getCountryEnvironmentParameters().getVar1());
+        stringToDecode = stringToDecode.replace("%system.APP_VAR2%", tCExecution.getCountryEnvironmentParameters().getVar2());
+        stringToDecode = stringToDecode.replace("%system.APP_VAR3%", tCExecution.getCountryEnvironmentParameters().getVar3());
+        stringToDecode = stringToDecode.replace("%system.APP_VAR4%", tCExecution.getCountryEnvironmentParameters().getVar4());
+        stringToDecode = stringToDecode.replace("%system.ENV%", tCExecution.getEnvironmentData());
+        stringToDecode = stringToDecode.replace("%system.ENVGP%", tCExecution.getEnvironmentDataObj().getGp1());
+        stringToDecode = stringToDecode.replace("%system.COUNTRY%", tCExecution.getCountry());
+        stringToDecode = stringToDecode.replace("%system.COUNTRYGP1%", tCExecution.getCountryObj().getGp1());
+        stringToDecode = stringToDecode.replace("%system.TEST%", tCExecution.getTest());
+        stringToDecode = stringToDecode.replace("%system.TESTCASE%", tCExecution.getTestCase());
+        stringToDecode = stringToDecode.replace("%system.SSIP%", tCExecution.getSeleniumIP());
+        stringToDecode = stringToDecode.replace("%system.SSPORT%", tCExecution.getSeleniumPort());
+        stringToDecode = stringToDecode.replace("%system.TAG%", tCExecution.getTag());
+        stringToDecode = stringToDecode.replace("%system.EXECUTIONID%", String.valueOf(tCExecution.getId()));
+        stringToDecode = stringToDecode.replace("%system.EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
+        stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
 
         /**
          * Trying to replace by system environment variables from Step Execution
@@ -390,6 +412,19 @@ public class PropertyService implements IPropertyService {
                     for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
                         syntaxToReplace = "%SYS_STEP." + tcse.getSort() + ".RETURNCODE%";
+                        stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
+                    }
+                }
+            }
+        }
+        // New Syntax
+        if (stringToDecode.contains("%system.STEP.")) {
+            if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
+                if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+                    String syntaxToReplace = "";
+                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
+                        TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
+                        syntaxToReplace = "%system.STEP." + tcse.getSort() + ".RETURNCODE%";
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
                     }
                 }
@@ -413,12 +448,21 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
         stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
         stringToDecode = stringToDecode.replace("%SYS_YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
-
-        /**
-         * Trying to replace timing variables .
-         */
-        stringToDecode = stringToDecode.replace("%SYS_ELAPSED-EXESTART%", "To Be Implemented");
-        stringToDecode = stringToDecode.replace("%SYS_ELAPSED-STEPSTART%", "To Be Implemented");
+        //New syntax
+        stringToDecode = stringToDecode.replace("%system.TODAY-yyyy%", DateUtil.getTodayFormat("yyyy"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-MM%", DateUtil.getTodayFormat("MM"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-dd%", DateUtil.getTodayFormat("dd"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-doy%", DateUtil.getTodayFormat("D"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-HH%", DateUtil.getTodayFormat("HH"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-mm%", DateUtil.getTodayFormat("mm"));
+        stringToDecode = stringToDecode.replace("%system.TODAY-ss%", DateUtil.getTodayFormat("ss"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-yyyy%", DateUtil.getYesterdayFormat("yyyy"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-MM%", DateUtil.getYesterdayFormat("MM"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-dd%", DateUtil.getYesterdayFormat("dd"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-doy%", DateUtil.getYesterdayFormat("D"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-HH%", DateUtil.getYesterdayFormat("HH"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-mm%", DateUtil.getYesterdayFormat("mm"));
+        stringToDecode = stringToDecode.replace("%system.YESTERDAY-ss%", DateUtil.getYesterdayFormat("ss"));
 
         return stringToDecode;
     }

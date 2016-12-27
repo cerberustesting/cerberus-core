@@ -180,9 +180,28 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             "picturepath",
                             "pictureurl"
                         ];
+                        var availableSystemValues = [
+                            "SYSTEM",
+                            "APPLI",
+                            "BROWSER",
+                            "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+                            "ENV", "ENVGP",
+                            "COUNTRY", "COUNTRYGP1",
+                            "TEST",
+                            "TESTCASE",
+                            "SSIP", "SSPORT",
+                            "TAG",
+                            "EXECUTIONID",
+                            "EXESTART",
+                            "EXESTORAGEURL",
+                            "STEP.n.RETURNCODE",
+                            "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+                            "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+                        ];
                         var availableTags = [
                             "property",
-                            "object"
+                            "object",
+                            "system"
                         ];
 
                         Tags = [
@@ -206,6 +225,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                                 addBefore: "",
                                 addAfter: "%",
                                 isCreatable: true
+                            },
+                            {
+                                array: availableSystemValues,
+                                regex: "%system\\.",
+                                addBefore: "",
+                                addAfter: "%",
+                                isCreatable: false
                             },
                             {
                                 array: availableTags,
@@ -2030,7 +2056,7 @@ Control.prototype.getJsonData = function () {
 };
 
 /**
- * Call Add Action anf focus to next description when 
+ * Call Add Action and focus to next description when 
  * focusing on description and clicking on enter
  * @returns {undefined}
  */
@@ -2105,7 +2131,7 @@ var autocompleteAllFields, getTags, setTags;
             testcase = thistestcase;
         }
 
-        autocompleteVariable("#propTable .property .row:nth-child(1) textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input", TagsToUse);
+        autocompleteVariable("#propTable .property .row:nth-child(1) textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
             $(e).unbind("input").on("input", function (ev) {
