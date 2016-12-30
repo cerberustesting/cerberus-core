@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.entity.TestCase;
@@ -360,6 +361,34 @@ public class TestCaseService implements ITestCaseService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public boolean hasPermissionsRead(TestCase testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return true;
+    }
+
+    @Override
+    public boolean hasPermissionsUpdate(TestCase testCase, HttpServletRequest request) {
+        // Access right calculation.
+        if (testCase.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
+            return request.isUserInRole("TestAdmin");
+        } else {
+            return request.isUserInRole("Test");
+        }
+    }
+
+    @Override
+    public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return request.isUserInRole("Test");
+    }
+
+    @Override
+    public boolean hasPermissionsDelete(TestCase testCase, HttpServletRequest request) {
+        // Access right calculation.
+        return request.isUserInRole("TestAdmin");
     }
 
 }

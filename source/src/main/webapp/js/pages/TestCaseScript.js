@@ -159,14 +159,14 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     loadTestCaseInfo(data.info);
                     json = data.stepList;
                     sortData(json);
-                    createStepList(json, stepList, step);
+                    createStepList(json, stepList, step, data.hasPermissionsUpdate);
                     var inheritedProperties = drawInheritedProperty(data.inheritedProp);
 
                     listenEnterKeypressWhenFocusingOnDescription();
                     setPlaceholderAction();
                     setPlaceholderControl();
 
-                    var propertiesPromise = loadProperties(test, testcase, data.info, property);
+                    var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
                     var objectsPromise = loadApplicationObject(data);
 
                     Promise.all([propertiesPromise, objectsPromise]).then(function (data2) {
@@ -246,10 +246,24 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     });
 
+                    // Manage Authoritise.
+                    $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
+                    $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#saveProperty1").attr("disabled", !data.hasPermissionsUpdate);
+                    $("#saveProperty2").attr("disabled", !data.hasPermissionsUpdate);
+
                     // Building full list of country from testcase.
                     var myCountry = [];
                     $.each(testcaseinfo.countryList, function (index) {
                         myCountry.push(index);
+                    });
+
+                    $("#manageProp").click(function () {
+                        editPropertiesModalClick(test, testcase, testcaseinfo, undefined, undefined, data.hasPermissionsUpdate);
                     });
 
                     // Button Add Property insert a new Property
@@ -268,7 +282,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
-                        drawProperty(newProperty, testcaseinfo);
+                        drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
                     });
 
@@ -281,9 +295,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
 
 
-            $("#manageProp").click(function () {
-                editPropertiesModalClick(test, testcase, testcaseinfo);
-            });
 
             $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
@@ -392,7 +403,7 @@ function displayPageLabel(doc) {
 function addAction(action) {
     setModif(true);
     var step = $("#stepList li.active").data("item");
-    var act = new Action(null, step);
+    var act = new Action(null, step, true);
     step.setAction(act, action);
     setAllSort();
     return act;
@@ -503,8 +514,9 @@ function saveScript() {
     });
 }
 
-function drawProperty(property, testcaseinfo) {
+function drawProperty(property, testcaseinfo, canUpdate) {
     var doc = new Doc();
+    console.debug(canUpdate);
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
@@ -519,6 +531,17 @@ function drawProperty(property, testcaseinfo) {
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
     var table = $("#propTable");
 
+    selectType.attr("disabled", !canUpdate);
+    selectDB.attr("disabled", !canUpdate);
+    selectNature.attr("disabled", !canUpdate);
+    deleteBtn.attr("disabled", !canUpdate);
+    propertyInput.prop("readonly", !canUpdate);
+    descriptionInput.prop("readonly", !canUpdate);
+    valueInput.prop("readonly", !canUpdate);
+    value2Input.prop("readonly", !canUpdate);
+    lengthInput.prop("readonly", !canUpdate);
+    rowLimitInput.prop("readonly", !canUpdate);
+
     var content = $("<div class='row property list-group-item'></div>");
     var props = $("<div class='col-sm-11'></div>");
     var right = $("<div class='col-sm-1 propertyButtons'></div>");
@@ -530,7 +553,7 @@ function drawProperty(property, testcaseinfo) {
     var row5 = $("<div class='row'></div>");
     var propertyName = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
     var description = $("<div class='col-sm-6 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
-    var country = $("<div class='col-sm-10 has-feedback'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country));
+    var country = $("<div class='col-sm-10 has-feedback'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, !canUpdate));
     var type = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
     var db = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
     var value = $("<div class='col-sm-8 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
@@ -543,9 +566,11 @@ function drawProperty(property, testcaseinfo) {
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
         country.find("input[type='checkbox']").prop('checked', true).trigger("change");
     });
+    selectAllBtn.attr("disabled", !canUpdate);
     var selectNoneBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-unchecked")).click(function () {
         country.find("input[type='checkbox']").prop('checked', false).trigger("change");
     });
+    selectNoneBtn.attr("disabled", !canUpdate);
     var btnRow = $("<div class='col-sm-2 has-feedback'></div>").css("margin-top", "5px").css("margin-bottom", "5px").append(selectAllBtn).append(selectNoneBtn);
 
     deleteBtn.click(function () {
@@ -728,7 +753,7 @@ function drawInheritedProperty(propList) {
     return propertyArray;
 }
 
-function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
+function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate) {
 
     return new Promise(function (resolve, reject) {
         var array = [];
@@ -743,7 +768,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus) {
                     var property = data[index];
                     array.push(data[index].property);
                     property.toDelete = false;
-                    drawProperty(property, testcaseinfo);
+                    drawProperty(property, testcaseinfo, canUpdate);
                 }
 
 
@@ -914,7 +939,7 @@ function addStep(event) {
                 step.useStepStepSort = useStep.sort;
             }
         }
-        var stepObj = new Step(step, stepList);
+        var stepObj = new Step(step, stepList, true);
 
         stepObj.draw();
         stepList.push(stepObj);
@@ -922,10 +947,10 @@ function addStep(event) {
     });
 }
 
-function createStepList(data, stepList, stepIndex) {
+function createStepList(data, stepList, stepIndex, canUpdate) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var stepObj = new Step(step, stepList);
+        var stepObj = new Step(step, stepList, canUpdate);
 
         stepObj.draw();
         stepList.push(stepObj);
@@ -1225,7 +1250,7 @@ function sortData(agreg) {
 
 /** JAVASCRIPT OBJECT **/
 
-function Step(json, stepList) {
+function Step(json, stepList, canUpdate) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
 
     this.test = json.test;
@@ -1244,10 +1269,11 @@ function Step(json, stepList) {
     this.inLibrary = json.inLibrary;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
     this.actionList = [];
-    this.setActionList(json.actionList);
+    this.setActionList(json.actionList, canUpdate);
 
     this.stepList = stepList;
     this.toDelete = false;
+    this.hasPermissionsUpdate = canUpdate;
 
     this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-sm-10").addClass("step-description").text(this.description);
@@ -1374,7 +1400,6 @@ Step.prototype.show = function () {
     conditiononper = $("#stepConditionOper");
     conditiononper.on("change", function () {
         object.conditionOper = conditiononper.val();
-        console.debug("debug");
         if ((object.conditionOper === "always") || (object.conditionOper === "never")) {
             conditionVal1.parent().hide();
             conditionVal2.parent().hide();
@@ -1409,22 +1434,30 @@ Step.prototype.show = function () {
     $("#addActionContainer").show();
     $("#stepHeader").show()
 
+    // Disable fields if Permission not allowing.
+    $("#stepDescription").attr("disabled", !object.hasPermissionsUpdate);
+    $("#isUseStep").attr("disabled", !object.hasPermissionsUpdate);
+    $("#stepConditionOper").attr("disabled", !object.hasPermissionsUpdate);
+    $("#stepConditionVal1").attr("disabled", !object.hasPermissionsUpdate);
+    $("#stepConditionVal2").attr("disabled", !object.hasPermissionsUpdate);
+    $("#isLib").attr("disabled", !object.hasPermissionsUpdate);
+
     object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
 
 };
 
-Step.prototype.setActionList = function (actionList) {
+Step.prototype.setActionList = function (actionList, canUpdate) {
     for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i]);
+        this.setAction(actionList[i], undefined, canUpdate);
     }
 };
 
-Step.prototype.setAction = function (action, afterAction) {
+Step.prototype.setAction = function (action, afterAction, canUpdate) {
     if (action instanceof Action) {
         action.draw(afterAction);
         this.actionList.push(action);
     } else {
-        var actionObj = new Action(action, this);
+        var actionObj = new Action(action, this, canUpdate);
 
         actionObj.draw(afterAction);
         this.actionList.push(actionObj);
@@ -1505,7 +1538,7 @@ Step.prototype.getJsonData = function () {
     return json;
 };
 
-function Action(json, parentStep) {
+function Action(json, parentStep, canUpdate) {
     this.html = $("<div></div>").addClass("action-group");
     this.parentStep = parentStep;
 
@@ -1527,7 +1560,7 @@ function Action(json, parentStep) {
         this.value1 = json.value1;
         this.value2 = json.value2;
         this.controlList = [];
-        this.setControlList(json.controlList);
+        this.setControlList(json.controlList, canUpdate);
     } else {
         this.test = "";
         this.testcase = "";
@@ -1547,6 +1580,7 @@ function Action(json, parentStep) {
     }
 
     this.toDelete = false;
+    this.hasPermissionsUpdate = canUpdate;
 }
 
 Action.prototype.draw = function (afterAction) {
@@ -1561,7 +1595,7 @@ Action.prototype.draw = function (afterAction) {
     var btnGrp = $("<div></div>").addClass("col-lg-1").css("padding", "0px").append($("<div>").addClass("boutonGroup").append(addABtn).append(supprBtn).append(addBtn).append(plusBtn));
     var imgGrp = $("<div></div>").addClass("col-lg-1").css("height", "100%").append($("<div style='margin-top:40px;'></div>").append($("<img>").attr("id", "ApplicationObjectImg").css("width", "100%")));
 
-    if (this.parentStep.useStep === "N") {
+    if ((this.parentStep.useStep === "N") && (action.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -1620,18 +1654,18 @@ Action.prototype.draw = function (afterAction) {
     this.refreshSort();
 };
 
-Action.prototype.setControlList = function (controlList) {
+Action.prototype.setControlList = function (controlList, canUpdate) {
     for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i]);
+        this.setControl(controlList[i], undefined, canUpdate);
     }
 };
 
-Action.prototype.setControl = function (control, afterControl) {
+Action.prototype.setControl = function (control, afterControl, canUpdate) {
     if (control instanceof Control) {
         control.draw(afterControl);
         this.controlList.push(control);
     } else {
-        var controlObj = new Control(control, this);
+        var controlObj = new Control(control, this, canUpdate);
 
         controlObj.draw(afterControl);
         this.controlList.push(controlObj);
@@ -1746,7 +1780,7 @@ Action.prototype.generateContent = function () {
 
     actionconditionoper.trigger("change");
 
-    if (this.parentStep.useStep === "Y") {
+    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descField.prop("readonly", true);
         objectField.prop("readonly", true);
         propertyField.prop("readonly", true);
@@ -1787,7 +1821,7 @@ Action.prototype.getJsonData = function () {
     return json;
 };
 
-function Control(json, parentAction) {
+function Control(json, parentAction, canUpdate) {
     if (json !== null) {
         this.test = json.test;
         this.testcase = json.testCase;
@@ -1826,6 +1860,7 @@ function Control(json, parentAction) {
     this.parentAction = parentAction;
 
     this.toDelete = false;
+    this.hasPermissionsUpdate = canUpdate;
 
     this.html = $("<div></div>").addClass("step-action row").addClass("control");
 }
@@ -1843,7 +1878,7 @@ Control.prototype.draw = function (afterControl) {
 
     var content = this.generateContent();
 
-    if (this.parentAction.parentStep.useStep === "N") {
+    if ((this.parentAction.parentStep.useStep === "N") && (control.hasPermissionsUpdate)) {
         drag.append($("<span></span>").addClass("fa fa-ellipsis-v"));
         drag.on("dragstart", handleDragStart);
         drag.on("dragenter", handleDragEnter);
@@ -1874,8 +1909,10 @@ Control.prototype.draw = function (afterControl) {
         }
     });
 
-    if (this.parentStep.useStep === "Y") {
+    if ((this.parentStep.useStep === "Y") || (!control.hasPermissionsUpdate)) {
         supprBtn.attr("disabled", true);
+        addBtn.attr("disabled", true);
+        addABtn.attr("disabled", true);
     }
 
     var scope = this;
@@ -1940,9 +1977,9 @@ Control.prototype.generateContent = function () {
     var controlValueField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
-    var actionconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
-    var actionconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
-    var actionconditionoper = $("<select></select>").addClass("form-control input-sm");
+    var controlconditionval1 = $("<input>").attr("type", "text").addClass("form-control input-sm");
+    var controlconditionval2 = $("<input>").attr("type", "text").addClass("form-control input-sm");
+    var controlconditionoper = $("<select></select>").addClass("form-control input-sm");
     var fatalList = $("<select></select>").addClass("form-control input-sm");
 
     descField.val(this.description);
@@ -1951,17 +1988,17 @@ Control.prototype.generateContent = function () {
         obj.description = descField.val();
     });
 
-    actionconditionval1.css("width", "100%");
-    actionconditionval1.on("change", function () {
-        obj.conditionVal1 = actionconditionval1.val();
+    controlconditionval1.css("width", "100%");
+    controlconditionval1.on("change", function () {
+        obj.conditionVal1 = controlconditionval1.val();
     });
-    actionconditionval1.val(this.conditionVal1);
+    controlconditionval1.val(this.conditionVal1);
 
-    actionconditionval2.css("width", "100%");
-    actionconditionval2.on("change", function () {
-        obj.conditionVal2 = actionconditionval2.val();
+    controlconditionval2.css("width", "100%");
+    controlconditionval2.on("change", function () {
+        obj.conditionVal2 = controlconditionval2.val();
     });
-    actionconditionval2.val(this.conditionVal2);
+    controlconditionval2.val(this.conditionVal2);
 
     controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
     controlList.val(this.control);
@@ -1995,33 +2032,36 @@ Control.prototype.generateContent = function () {
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValueField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlPropertyField));
 
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval1));
-    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(actionconditionval2));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval1));
+    thirdRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_parameter_field"))).append(controlconditionval2));
     thirdRow.append($("<div></div>").addClass("col-lg-3 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "fatal_field"))).append(fatalList));
 
 
-    actionconditionoper = getSelectInvariant("CONTROLCONDITIONOPER", false, true).css("width", "100%");
-    actionconditionoper.on("change", function () {
-        obj.conditionOper = actionconditionoper.val();
+    controlconditionoper = getSelectInvariant("CONTROLCONDITIONOPER", false, true).css("width", "100%");
+    controlconditionoper.on("change", function () {
+        obj.conditionOper = controlconditionoper.val();
         if ((obj.conditionOper === "always") || (obj.conditionOper === "never")) {
-            actionconditionval1.parent().hide();
-            actionconditionval2.parent().hide();
+            controlconditionval1.parent().hide();
+            controlconditionval2.parent().hide();
         } else {
-            actionconditionval1.parent().show();
-            actionconditionval2.parent().show();
+            controlconditionval1.parent().show();
+            controlconditionval2.parent().show();
         }
     });
-    actionconditionoper.val(this.conditionOper).trigger("change");
+    controlconditionoper.val(this.conditionOper).trigger("change");
 
-    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(actionconditionoper));
+    thirdRow.prepend($("<div></div>").addClass("col-lg-3 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "condition_operation_field"))).append(controlconditionoper));
 
 
-    if (this.parentStep.useStep === "Y") {
+    if ((this.parentStep.useStep === "Y") || (!obj.hasPermissionsUpdate)) {
         descField.prop("readonly", true);
         controlValueField.prop("readonly", true);
         controlPropertyField.prop("readonly", true);
         controlList.prop("disabled", "disabled");
         fatalList.prop("disabled", "disabled");
+        controlconditionoper.prop("disabled", "disabled");
+        controlconditionval1.prop("readonly", true);
+        controlconditionval2.prop("readonly", true);
     }
 
     content.append(firstRow);
@@ -2088,7 +2128,7 @@ function listenEnterKeypressWhenFocusingOnDescription() {
 
 function addControl(action, control) {
     setModif(true);
-    var ctrl = new Control(null, action);
+    var ctrl = new Control(null, action, true);
     action.setControl(ctrl, control);
     setAllSort();
     return ctrl;
@@ -2223,9 +2263,9 @@ function deleteTestCaseHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus) {
+editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
     $("#propTable").empty();
-    loadProperties(test, testcase, info, propertyToFocus).then(function () {
+    loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
     });
     if (propertyToAdd != undefined && propertyToAdd != null) {
@@ -2249,7 +2289,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
             toDelete: false
         };
 
-        drawProperty(newProperty, info);
+        drawProperty(newProperty, info, true);
     }
 
     $("#propertiesModal").modal('show');

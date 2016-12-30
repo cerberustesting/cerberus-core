@@ -21,6 +21,7 @@ package org.cerberus.crud.service;
 
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.exception.CerberusException;
@@ -215,5 +216,49 @@ public interface ITestCaseService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    /**
+     * This method returns a boolean that define if the object can be access by
+     * user authenticated by request. in case object is null it return if the
+     * user defined by request can globally access any object
+     *
+     * @param testCase
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsRead(TestCase testCase, HttpServletRequest request);
+
+    /**
+     * This method returns a boolean that define if the object can be updated by
+     * user authenticated by request. in case object is null it return if the
+     * user defined by request can globally update any object
+     *
+     * @param testCase
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsUpdate(TestCase testCase, HttpServletRequest request);
+
+    /**
+     * This method returns a boolean that define if the object can be deleted by
+     * user authenticated by request. in case object is null it return if the
+     * user defined by request can globally delete any object
+     *
+     * @param testCase
+     * @param request
+     * @return
+     */
+    boolean hasPermissionsDelete(TestCase testCase, HttpServletRequest request);
+
+    /**
+     * This method returns a boolean that define if the object can be created by
+     * user authenticated by request. in case object is null it return if the
+     * user defined by request can globally create any object
+     *
+     * @param testCase
+     * @param request
+     * @return
+     */
+    public boolean hasPermissionsCreate(TestCase testCase, HttpServletRequest request);
 
 }

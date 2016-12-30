@@ -90,10 +90,10 @@ public class ReadTestCase extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -135,7 +135,7 @@ public class ReadTestCase extends HttpServlet {
                 answer = findTestCaseByTestTestCase(test, testCase, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && testCase != null && withStep) {
-                answer = findTestCaseWithStep(appContext, test, testCase);
+                answer = findTestCaseWithStep(appContext, request, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
                 testCaseService = appContext.getBean(TestCaseService.class);
@@ -174,14 +174,13 @@ public class ReadTestCase extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -192,10 +191,10 @@ public class ReadTestCase extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -289,18 +288,12 @@ public class ReadTestCase extends HttpServlet {
         }
 
         JSONArray jsonArray = new JSONArray();
-        boolean isTest = request.isUserInRole("Test");
-        boolean isTestAdmin = request.isUserInRole("TestAdmin");
         if (testCaseList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCase testCase : (List<TestCase>) testCaseList.getDataList()) {
                 String key = testCase.getTest() + "_" + testCase.getTestCase();
                 JSONObject value = convertToJSONObject(testCase);
-                value.put("hasPermissionsDelete", isTestAdmin);
-                if (testCase.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
-                    value.put("hasPermissionsUpdate", isTestAdmin);
-                } else {
-                    value.put("hasPermissionsUpdate", isTest);
-                }
+                value.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(testCase, request));
+                value.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(testCase, request));
                 value.put("countryList", testCaseWithCountry.get(key));
                 value.put("labels", testCaseWithLabel.get(key));
 
@@ -308,9 +301,9 @@ public class ReadTestCase extends HttpServlet {
             }
         }
 
-        object.put("hasPermissions", isTest);
-        object.put("hasPermissionsCreate", isTest);
-        object.put("hasPermissionsDelete", isTestAdmin);
+//        object.put("hasPermissions", testCaseService.hasPermissions(request));
+        object.put("hasPermissionsCreate", testCaseService.hasPermissionsCreate(null, request));
+
         object.put("contentTable", jsonArray);
         object.put("iTotalRecords", testCaseList.getTotalRows());
         object.put("iTotalDisplayRecords", testCaseList.getTotalRows());
@@ -323,9 +316,6 @@ public class ReadTestCase extends HttpServlet {
     private AnswerItem findTestCaseByTestTestCase(String test, String testCase, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        boolean hasPermissionsUpdate = false;
-        boolean isTest = request.isUserInRole("Test");
-        boolean isTestAdmin = request.isUserInRole("TestAdmin");
 
         testCaseService = appContext.getBean(TestCaseService.class);
         testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
@@ -357,13 +347,7 @@ public class ReadTestCase extends HttpServlet {
 
             object.put("contentTable", response);
 
-            // Access right calculation.
-            if (tc.getStatus().equalsIgnoreCase("WORKING")) { // If testcase is WORKING only TestAdmin can update it
-                hasPermissionsUpdate = isTestAdmin;
-            } else {
-                hasPermissionsUpdate = isTest;
-            }
-            object.put("hasPermissionsUpdate", hasPermissionsUpdate);
+            object.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
 
         }
 
@@ -436,7 +420,7 @@ public class ReadTestCase extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findTestCaseWithStep(ApplicationContext appContext, String test, String testCase) throws JSONException {
+    private AnswerItem findTestCaseWithStep(ApplicationContext appContext, HttpServletRequest request, String test, String testCase) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         HashMap<String, JSONObject> hashProp = new HashMap<String, JSONObject>();
@@ -462,6 +446,8 @@ public class ReadTestCase extends HttpServlet {
             TestCase tc = (TestCase) answer.getItem();
             object = convertToJSONObject(tc);
             object.put("countryList", new JSONObject());
+            jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
+            jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
         }
 
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
