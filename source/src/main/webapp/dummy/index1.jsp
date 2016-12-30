@@ -23,12 +23,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <script type="text/javascript" src="../dependencies/jQuery-2.2.3/jquery-2.2.3.min.js"></script>
+        <%
+            String delay = request.getParameter("asyncdelay");
+            if (delay != null) {
+                out.print("<script type=\"text/javascript\" src=\"index3.jsp?delay=" + delay + "\" async>");
+            }
+        %>
     </head>
     <body>
         <h1>Hello World!</h1>
         This is a fake page required to test Cerberus Engine by Cerberus itself....
-
-
         <!-- for testing HTML property -->
         <div class="theseusTag-divMain">
             <span id="crb-serverName">172.25.71.202</span>
@@ -51,13 +56,13 @@
         </form>
         <br>
         <script>
-            function printValue(value){
-            document.selectFormulary.selectedValue.value = value.value;
+            function printValue(value) {
+                document.selectFormulary.selectedValue.value = value.value;
             }
         </script>
         <script>
-            function waitXSecondAndPrintValue(value){
-                window.setTimeout( function(){
+            function waitXSecondAndPrintValue(value) {
+                window.setTimeout(function () {
                     var i = document.createElement('input');
                     i.setAttribute('id', 'selectedTimeout');
                     i.setAttribute('name', 'selectedTimeout');
@@ -66,7 +71,7 @@
 
                     document.getElementById('selectTimeoutHide').setAttribute('value', 'Hello World!');
                     document.getElementById('selectTimeoutHide').style.display = 'inline';
-                }, value.value );
+                }, value.value);
             }
         </script>
         <script language="text/javascript" type="text/javascript">
@@ -88,19 +93,32 @@
             <input id="selectTimeoutValue" onChange="waitXSecondAndPrintValue(this)">
             <input id="selectTimeoutHide" name="selectTimeoutHide" style="display: none"/>
         </form>
-            <p>Below is part to test Attribute data-cerberus</p>
-            <input data-cerberus="index1_input" value="Test Value">
-            
-            <p>Below is part to test PropertyType getAttributeFromHtml</p>
-            <input data-cerberus="index1_input2" data-attribute="att1" value="Test Value">
-            <br>
-            <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
-			'width=500,height=400,scrollbars=yes,menubar=false,location=false');return false;">Open Popup</a>
-            <br>
-            <br>
-            <a href="#" id="alertPopup" data-cerberus="alertPopup" onclick="javascript:alert('ceci est une popup d\'alert')">Open Alert</a>
-            <br>
-            <br>
-            <a href="#" id="confirmPopup" data-cerberus="confirmPopup" onclick="javascript:confirm('ceci est une popup de confirmation')">Open Confirm</a>
+        <p>Below is part to test Attribute data-cerberus</p>
+        <input data-cerberus="index1_input" value="Test Value">
+
+        <p>Below is part to test PropertyType getAttributeFromHtml</p>
+        <input data-cerberus="index1_input2" data-attribute="att1" value="Test Value">
+        <br>
+        <br>
+        <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
+                        'width=500,height=400,scrollbars=yes,menubar=false,location=false');
+                return false;">Open Popup</a>
+        <br>
+        <br>
+        <a href="#" id="alertPopup" data-cerberus="alertPopup" onclick="javascript:alert('ceci est une popup d\'alert')">Open Alert</a>
+        <br>
+        <br>
+        <a href="#" id="confirmPopup" data-cerberus="confirmPopup" onclick="javascript:confirm('ceci est une popup de confirmation')">Open Confirm</a>
+        <br>
+        <br>
+        <form name="selectFormulary2" action="index2.jsp">
+            <p>Below is part to test Input and validate form</p>
+            <input type="text" name="selectedValue2" id="selectedValue2">
+            <input id="selectedValue2Submit" type="submit" value="Submit">
+        </form>
+
+        <p> Parameters that can be used on that page :</p>
+        'asyncdelay' : delay in ms can be used to call async ressource.
+
     </body>
 </html>

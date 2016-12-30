@@ -30,5 +30,7 @@
         <span data-cerberus="notVisibleElement" style="display: none;">Element not visible on page</span>
         <iframe src="frame.html"></iframe>
         <button data-cerberus="closePopupWindow" onclick="javascript:window.close();">Close Popup Window</button>
+        <br><br>
+        <input name="selectedValue2" id="selectedValue2" value="<%=request.getParameter("selectedValue2")%>">
     </body>
 </html>

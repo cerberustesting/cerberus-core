@@ -111,9 +111,8 @@ public abstract class AppiumService implements IAppiumService {
             LOG.debug(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             LOG.fatal(exception.toString());
-            return message;
+            return parseWebDriverException(exception);
         }
     }
 
@@ -134,13 +133,26 @@ public abstract class AppiumService implements IAppiumService {
             LOG.debug(exception.toString());
             return message;
         } catch (WebDriverException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
             LOG.fatal(exception.toString());
-            return message;
+            return parseWebDriverException(exception);
         }
 
     }
 
+    /**
+     * @author vertigo17
+     * @param exception the exception need to be parsed by Cerberus
+     * @return A new Event Message with selenium related description
+     */
+    private MessageEvent parseWebDriverException(WebDriverException exception) {
+        MessageEvent mes;
+        LOG.fatal(exception.toString());
+        mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SELENIUM_CONNECTIVITY);
+        mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
+        return mes;
+    }
+
+    
     private By getBy(Identifier identifier) {
 
         LOG.debug("Finding selenium Element : " + identifier.getLocator() + " by : " + identifier.getIdentifier());

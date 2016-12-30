@@ -38,6 +38,6 @@
             if (timeToWait>MAX_DELAY) {timeToWait=MAX_DELAY;}
             Thread.sleep(timeToWait);
         %>
-        Waited : <%=timeToWait%> ms (delay parameter MAX_DELAY=<%=MAX_DELAY%> DEFAULT_DELAY=<%=DEFAULT_DELAY%>)
+        Waited : <%=timeToWait%> ms (delay parameter=<%=request.getParameter("delay")%> | MAX_DELAY=<%=MAX_DELAY%> | DEFAULT_DELAY=<%=DEFAULT_DELAY%>)
     </body>
 </html>
