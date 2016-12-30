@@ -7964,6 +7964,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` VALUES ");
         SQLS.append("('APPLITYPE', 'FAT', '60', 'FAT client application', '', '', '', '')");
         SQLInstruction.add(SQLS.toString());
+
+        //Adding index column on execution step in order to prepare changes for looping steps
+        // 1017-1023
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactionexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution`");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`,");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD CONSTRAINT `FK_testcasestepactioncontrolexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step`, `index` ) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index` ) ON DELETE CASCADE ON UPDATE CASCADE ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step` , `index`) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
