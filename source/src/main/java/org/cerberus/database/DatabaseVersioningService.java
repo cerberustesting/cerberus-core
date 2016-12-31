@@ -7966,7 +7966,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         //Adding index column on execution step in order to prepare changes for looping steps
-        // 1017-1023
+        // 1017-1024
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
         SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
@@ -7995,7 +7995,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step` , `index`) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
-
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `Loop` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`;");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
