@@ -405,9 +405,21 @@ public class PropertyService implements IPropertyService {
          * Trying to replace by system environment variables from Step Execution
          * .
          */
-        if (stringToDecode.contains("%SYS_STEP.")) {
-            if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
-                if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+        if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
+            if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+
+                // %SYS_CURRENTSTEP_INDEX%
+                if (stringToDecode.contains("%SYS_CURRENTSTEP_INDEX%")) {
+                    TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
+                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                }
+                if (stringToDecode.contains("%system.CURRENTSTEP_INDEX%")) {
+                    TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
+                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                }
+
+                // %SYS_STEP.n.RETURNCODE%
+                if (stringToDecode.contains("%SYS_STEP.")) {
                     String syntaxToReplace = "";
                     for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
@@ -415,12 +427,7 @@ public class PropertyService implements IPropertyService {
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
                     }
                 }
-            }
-        }
-        // New Syntax
-        if (stringToDecode.contains("%system.STEP.")) {
-            if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
-                if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+                if (stringToDecode.contains("%system.STEP.")) {
                     String syntaxToReplace = "";
                     for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
@@ -428,6 +435,7 @@ public class PropertyService implements IPropertyService {
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
                     }
                 }
+
             }
         }
 

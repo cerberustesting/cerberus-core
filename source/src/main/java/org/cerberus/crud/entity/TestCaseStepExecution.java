@@ -37,7 +37,9 @@ public class TestCaseStepExecution {
     private String test;
     private String testCase;
     private int step;
+    private int index;
     private int sort;
+    private String loop;
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
@@ -66,6 +68,14 @@ public class TestCaseStepExecution {
     private String useStepTestCase;
     private int useStepTestCaseStep;
     private AnswerList testCaseStepActionExecutionList;
+
+    public String getLoop() {
+        return loop;
+    }
+
+    public void setLoop(String loop) {
+        this.loop = loop;
+    }
 
     public String getReturnMessage() {
         return returnMessage;
@@ -223,6 +233,14 @@ public class TestCaseStepExecution {
         this.step = step;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public int getSort() {
         return sort;
     }
@@ -318,6 +336,7 @@ public class TestCaseStepExecution {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
+            result.put("index", this.getIndex());
             result.put("sort", this.getSort());
             result.put("batNumExe", this.getBatNumExe());
             result.put("start", this.getStart());

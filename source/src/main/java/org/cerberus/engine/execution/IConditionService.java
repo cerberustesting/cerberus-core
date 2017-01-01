@@ -29,5 +29,13 @@ import org.cerberus.util.answer.AnswerItem;
  */
 public interface IConditionService {
 
+    /**
+     *
+     * @param conditionOper
+     * @param conditionValue1
+     * @param conditionValue2
+     * @param tCExecution
+     * @return
+     */
     AnswerItem<Boolean> evaluateCondition(String conditionOper, String conditionValue1, String conditionValue2, TestCaseExecution tCExecution);
 }

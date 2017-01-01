@@ -74,7 +74,7 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
         List<TestCaseStepExecution> tcseList = new ArrayList();
         for (Object step : steps.getDataList()) {
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
-            AnswerList actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, test, testcase, tces.getStep());
+            AnswerList actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, test, testcase, tces.getStep(), tces.getIndex());
             tces.setTestCaseStepActionExecution(actions);
             tcseList.add(tces);
         }

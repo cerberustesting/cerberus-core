@@ -548,9 +548,11 @@ function Step(json, stepList) {
     this.fullStart = json.fullStart;
     this.id = json.id;
     this.returnCode = json.returnCode;
+    this.returnMessage = json.returnMessage;
     this.sort = json.sort;
     this.start = json.start;
     this.step = json.step;
+    this.index = json.index;
     this.test = json.test;
     this.testcase = json.testCase;
     this.timeElapsed = json.timeElapsed;
@@ -568,7 +570,7 @@ function Step(json, stepList) {
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10")
-            .text("[" + this.sort + "]  " + this.description + "  (" + this.timeElapsed + ")");
+            .text("[" + this.sort + "." + + this.index + "]  " + this.description + "  (" + this.timeElapsed + ")");
 
 }
 
@@ -628,7 +630,7 @@ Step.prototype.show = function () {
         $("#stepContent").addClass("col-lg-9");
     }
 
-    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.description));
+    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.returnMessage));
     if (object.useStep === "Y") {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript","imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
@@ -678,6 +680,7 @@ Step.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
+    json.index = this.index;
     json.description = this.description;
     json.useStep = this.useStep;
     json.useStepTest = this.useStepTest;
@@ -706,6 +709,7 @@ function Action(json, parentStep) {
         this.start = json.start;
         this.startlong = json.startlong;
         this.step = json.step;
+        this.index = json.index;
         this.test = json.test;
         this.testcase = json.testcase;
         this.value1 = json.value1;
@@ -729,6 +733,7 @@ function Action(json, parentStep) {
         this.start = 0;
         this.startlong = 0;
         this.step = parentStep.step;
+        this.index = parentStep.index;
         this.test = "";
         this.testcase = "";
         this.value1 = "";
@@ -792,7 +797,7 @@ Action.prototype.draw = function () {
     });
 
     var f = new File();
-    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&sequence=" + this.sequence).then(function(data){
+    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&index=" + this.index+ "&sequence=" + this.sequence).then(function(data){
 
         var headerToAdd = data[0];
         var bodyToAdd = data[1];
@@ -940,6 +945,7 @@ Action.prototype.getJsonData = function () {
     json.test = this.test;
     json.testcase = this.testcase;
     json.step = this.step;
+    json.index = this.index;
     json.sequence = this.sequence;
     json.description = this.description;
     json.action = this.action;
@@ -971,6 +977,7 @@ function Control(json, parentAction) {
         this.start = json.start;
         this.startlong = json.startlong;
         this.step = json.step;
+        this.index = json.index;
         this.test = json.test;
         this.testcase = json.testcase;
     } else {
@@ -989,6 +996,7 @@ function Control(json, parentAction) {
         this.returnMessage = "";
         this.screenshotFileName = "";
         this.sequence = parentAction.sequence;
+        this.index = parentAction.index;
         this.sort = 0;
         this.start = 0;
         this.startlong = 0;
@@ -1053,7 +1061,7 @@ Control.prototype.draw = function () {
     });
 
     var f = new File();
-    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function(data){
+    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function(data){
 
         var headerToAdd = data[0];
         var bodyToAdd = data[1];

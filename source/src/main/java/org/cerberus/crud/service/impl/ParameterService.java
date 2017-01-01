@@ -58,7 +58,6 @@ public class ParameterService implements IParameterService {
 
     @Override
     public Parameter findParameterByKey(String key, String system) throws CerberusException {
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
         Parameter myParameter;
         /**
          * We try to get the parameter using the system parameter but if it does
@@ -66,13 +65,13 @@ public class ParameterService implements IParameterService {
          * default global Cerberus Parameter.
          */
         try {
-            LOG.debug(logPrefix + "Trying to retrieve parameter : " + key + " - [" + system + "]");
+            LOG.debug("Trying to retrieve parameter : " + key + " - [" + system + "]");
             myParameter = parameterDao.findParameterByKey(system, key);
             if (myParameter != null && myParameter.getValue().equalsIgnoreCase("")) {
                 myParameter = parameterDao.findParameterByKey("", key);
             }
         } catch (CerberusException ex) {
-            LOG.debug(logPrefix + "Trying to retrieve parameter : " + key + " - []");
+            LOG.debug("Trying to retrieve parameter (default value) : " + key + " - []");
             myParameter = parameterDao.findParameterByKey("", key);
             return myParameter;
         }
@@ -100,6 +99,19 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Float.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
+            LOG.error(ex);
+        }
+        return outPutResult;
+    }
+
+    @Override
+    public String getParameterStringByKey(String key, String system, String defaultValue) {
+        Parameter myParameter;
+        String outPutResult = defaultValue;
+        try {
+            myParameter = this.findParameterByKey(key, system);
+            outPutResult = myParameter.getValue();
+        } catch (CerberusException ex) {
             LOG.error(ex);
         }
         return outPutResult;

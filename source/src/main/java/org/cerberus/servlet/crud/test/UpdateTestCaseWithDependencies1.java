@@ -288,6 +288,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             boolean delete = step.getBoolean("toDelete");
             int stepNumber = step.isNull("step") ? -1 : step.getInt("step");
             int sort = step.isNull("sort") ? -1 : step.getInt("sort");
+            String loop = step.getString("loop");
             String conditionOper = step.getString("conditionOper");
             String conditionVal1 = step.getString("conditionVal1");
             String conditionVal2 = step.getString("conditionVal2");
@@ -300,7 +301,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
             JSONArray stepActions = step.getJSONArray("actionArr");
 
             if (!delete) {
-                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
+                TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, stepNumber, sort, loop, conditionOper, conditionVal1, conditionVal2, description, useStep, useStepTest, useStepTestCase, useStepStep, inLibrary);
 
                 if (useStep.equals("N")) {
                     tcStep.setTestCaseStepAction(getTestCaseStepActionFromParameter(request, appContext, test, testCase, stepActions));

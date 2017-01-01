@@ -503,6 +503,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 int step = Integer.valueOf(getParameterIfExists(request, "step_technical_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_technical_number_" + inc));
                 int sort = Integer.valueOf(getParameterIfExists(request, "step_number_" + inc) == null ? "0" : getParameterIfExists(request, "step_number_" + inc));
                 int initialStep = Integer.valueOf(getParameterIfExists(request, "initial_step_number_" + inc) == null ? "0" : getParameterIfExists(request, "initial_step_number_" + inc));
+                String loop = getParameterIfExists(request, "step_loop_" + inc);
                 String conditionOper = getParameterIfExists(request, "step_conditionoper_" + inc);
                 String conditionVal1 = getParameterIfExists(request, "step_conditionval1_" + inc);
                 String conditionVal2 = getParameterIfExists(request, "step_conditionval2_" + inc);
@@ -517,7 +518,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
                 String inLibrary = getParameterIfExists(request, "step_inLibrary_" + inc);
                 /* If delete, don't add it to the list of steps */
                 if (delete == null) {
-                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, sort, conditionOper, conditionVal1, conditionVal2, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
+                    TestCaseStep tcStep = testCaseStepFactory.create(test, testCase, step, sort, loop, conditionOper, conditionVal1, conditionVal2, desc, useStep == null ? "N" : useStep, useStepTest, useStepTestCase, useStepStep, inLibrary == null ? "N" : inLibrary);
                     /* Take action and control only if not use step*/
                     if (useStep == null || useStep.equals("N")) {
                         String isToCopySteps = getParameterIfExists(request, "isToCopySteps_" + inc);

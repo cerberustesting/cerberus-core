@@ -43,7 +43,7 @@ public interface ITestCaseStepActionControlExecutionService {
      */
     void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
     
-    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int sequence);
+    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence);
 
     /**
      * Return the testcasestepactioncontrolexecution list of an execution, step, action
@@ -51,10 +51,11 @@ public interface ITestCaseStepActionControlExecutionService {
      * @param test : test
      * @param testcase : testcase
      * @param step : ID of the step
+     * @param index
      * @param sequence : ID of the action
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int sequence);
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence);
 
     /**
      * Return the testcasestepactioncontrolexecution list of an execution, step, action
@@ -62,9 +63,10 @@ public interface ITestCaseStepActionControlExecutionService {
      * @param test : test
      * @param testcase : testcase
      * @param step : ID of the step
+     * @param index
      * @param sequence : ID of the action
      * @param controlSequence : ID of the control
      * @return List of testcasestepactioncontrol object
      */
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence, int controlSequence);
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence);
 }

@@ -33,6 +33,7 @@ public class TestCaseStepActionControlExecution {
     private String test;
     private String testCase;
     private int step;
+    private int index;
     private int sequence;
     private int controlSequence;
     private int sort;
@@ -262,6 +263,14 @@ public class TestCaseStepActionControlExecution {
         return test;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public void setTest(String test) {
         this.test = test;
     }
@@ -305,6 +314,7 @@ public class TestCaseStepActionControlExecution {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
+            result.put("index", this.getIndex());
             result.put("sequence", this.getSequence());
             result.put("control", this.getControlSequence());
             result.put("sort", this.getSort());

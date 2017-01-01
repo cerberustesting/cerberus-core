@@ -69,10 +69,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step) {
+    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step, int index) {
         List<TestCaseStepActionExecution> result = null;
         TestCaseStepActionExecution resultData;
-        final String query = "SELECT * FROM testcasestepactionexecution exa WHERE exa.id = ? AND exa.test = ? AND exa.testcase = ? AND exa.step = ? ORDER BY exa.sort";
+        final String query = "SELECT * FROM testcasestepactionexecution exa WHERE exa.id = ? AND exa.test = ? AND exa.testcase = ? AND exa.step = ? AND exa.index = ? ORDER BY exa.sort";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -82,6 +82,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
                 preStat.setInt(4, step);
+                preStat.setInt(5, index);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -115,13 +116,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testCase, int step) {
+    public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int index) {
         MessageEvent msg;
         AnswerList answer = new AnswerList();
         List<TestCaseStepActionExecution> list = new ArrayList<TestCaseStepActionExecution>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");
-        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? ");
+        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.index = ? ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -134,6 +135,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
                 preStat.setInt(4, step);
+                preStat.setInt(5, index);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
@@ -184,13 +186,13 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int sequence) {
+    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int index, int sequence) {
         MessageEvent msg;
         AnswerItem answer = new AnswerItem();
         TestCaseStepActionExecution tcsa = null;
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepactionexecution exa ");
-        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.sequence = .");
+        query.append("where exa.id = ? and exa.test = ? and exa.testcase = ? and exa.step = ? and exa.index = ? and exa.sequence = .");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -203,7 +205,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(2, test);
                 preStat.setString(3, testCase);
                 preStat.setInt(4, step);
-                preStat.setInt(5, sequence);
+                preStat.setInt(5, index);
+                preStat.setInt(6, sequence);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {
@@ -325,8 +328,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        final String query = "INSERT INTO testcasestepactionexecution(id, step, sequence, sort, conditionOper, conditionVal1, conditionVal2, ACTION, value1Init, value2Init, value1, value2, forceExeStatus, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepactionexecution(id, step, `index`, sequence, sort, conditionOper, conditionVal1, conditionVal2, ACTION, value1Init, value2Init, value1, value2, forceExeStatus, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -335,6 +338,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 int i=1;
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
                 preStat.setInt(i++, testCaseStepActionExecution.getStep());
+                preStat.setInt(i++, testCaseStepActionExecution.getIndex());
                 preStat.setInt(i++, testCaseStepActionExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
@@ -390,7 +394,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, value1 = ?, value2 = ?, forceExeStatus = ?, start = ?, END = ?"
                 + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, description = ?, sort = ?"
                 + ", value1Init = ?, Value2Init = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ?"
-                + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND sequence = ? ;";
+                + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ? ;";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -427,6 +431,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, testCaseStepActionExecution.getTest());
                 preStat.setString(i++, testCaseStepActionExecution.getTestCase());
                 preStat.setInt(i++, testCaseStepActionExecution.getStep());
+                preStat.setInt(i++, testCaseStepActionExecution.getIndex());
                 preStat.setInt(i++, testCaseStepActionExecution.getSequence());
 
                 preStat.executeUpdate();
@@ -455,6 +460,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String test = resultSet.getString("exa.test");
         String testCase = resultSet.getString("exa.testcase");
         int step = resultSet.getInt("exa.step");
+        int index = resultSet.getInt("exa.index");
         int seq = resultSet.getInt("exa.sequence");
         int sort = resultSet.getInt("exa.sort");
         String returnCode = resultSet.getString("exa.returncode");
@@ -473,7 +479,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         long startlong = resultSet.getLong("exa.startlong");
         long endlong = resultSet.getLong("exa.endlong");
         String description = resultSet.getString("exa.description");
-        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, seq, sort, returnCode, returnMessage, conditionOper, "", "", conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage, conditionOper, "", "", conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
 
     }
 

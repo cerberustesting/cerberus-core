@@ -194,7 +194,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             "EXECUTIONID",
                             "EXESTART",
                             "EXESTORAGEURL",
-                            "STEP.n.RETURNCODE",
+                            "STEP.n.RETURNCODE","CURRENTSTEP_INDEX",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
                         ];
@@ -908,6 +908,7 @@ function addStep(event) {
             "description": "",
             "useStepStep": -1,
             "actionList": [],
+            "loop": "onceIfConditionTrue",
             "conditionOper": "always",
             "conditionVal1": "",
             "conditionVal2": ""
@@ -1263,6 +1264,7 @@ function Step(json, stepList, canUpdate) {
     this.useStepTestCase = json.useStepTestCase;
     this.useStepStep = json.useStepStep;
     this.useStepStepSort = json.useStepStepSort;
+    this.loop = json.loop;
     this.conditionOper = json.conditionOper;
     this.conditionVal1 = json.conditionVal1;
     this.conditionVal2 = json.conditionVal2;
@@ -1380,6 +1382,14 @@ Step.prototype.show = function () {
     } else {
         $("#contentWrapper").removeClass("list-group-item-danger");
     }
+
+    var loop = $("#stepLoop");
+    loop.replaceWith(getSelectInvariant("STEPLOOP", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
+    loop = $("#stepLoop");
+    loop.on("change", function () {
+        object.loop = loop.val();
+    });
+    loop.val(object.loop).trigger("change");
 
     var conditionVal1 = $("#stepConditionVal1");
     conditionVal1.css("width", "100%");
@@ -1531,6 +1541,7 @@ Step.prototype.getJsonData = function () {
     json.useStepTestCase = this.useStepTestCase;
     json.useStepStep = this.useStepStep;
     json.inLibrary = this.inLibrary;
+    json.loop = this.loop;
     json.conditionOper = this.conditionOper;
     json.conditionVal1 = this.conditionVal1;
     json.conditionVal2 = this.conditionVal2;

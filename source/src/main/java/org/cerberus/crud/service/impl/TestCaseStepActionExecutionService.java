@@ -63,8 +63,8 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     }
 
     @Override
-    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step) {
-        return testCaseStepActionExecutionDao.findTestCaseStepActionExecutionByCriteria(id, test, testCase, step);
+    public List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step, int index) {
+        return testCaseStepActionExecutionDao.findTestCaseStepActionExecutionByCriteria(id, test, testCase, step, index);
     }
 
     @Override
@@ -118,23 +118,23 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step) {
-        return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step);
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index) {
+        return testCaseStepActionExecutionDao.readByVarious1(executionId, test, testcase, step, index);
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence) {
-        return testCaseStepActionExecutionDao.readByKey(executionId, test, testcase, step, sequence);
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence) {
+        return testCaseStepActionExecutionDao.readByKey(executionId, test, testcase, step, index, sequence);
     }
 
     @Override
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step) {
-        AnswerList actions = this.readByVarious1(executionId, test, testcase, step);
+    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index) {
+        AnswerList actions = this.readByVarious1(executionId, test, testcase, step, index);
         AnswerList response = null;
         List<TestCaseStepActionExecution> tcsaeList = new ArrayList();
         for (Object action : actions.getDataList()) {
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
-            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1(executionId, test, testcase, step, tcsae.getSequence());
+            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1(executionId, test, testcase, step, index, tcsae.getSequence());
             tcsae.setTestCaseStepActionControlExecutionList(controls);
             tcsaeList.add(tcsae);
         }

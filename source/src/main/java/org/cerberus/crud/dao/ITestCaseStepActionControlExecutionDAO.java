@@ -34,15 +34,50 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface ITestCaseStepActionControlExecutionDAO {
 
+    /**
+     *
+     * @param testCaseStepActionControlExecution
+     */
     void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
+    /**
+     *
+     * @param testCaseStepActionControlExecution
+     */
     void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
-    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int sequence);
+    /**
+     *
+     * @param id
+     * @param test
+     * @param testCase
+     * @param step
+     * @param index
+     * @param sequence
+     * @return
+     */
+    List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence);
 
-    public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int sequence);
+    public AnswerList readByVarious1(long executionId, String test, String testCase, int step, int index, int sequence);
 
-    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int sequence, int controlSequence);
+    /**
+     *
+     * @param executionId
+     * @param test
+     * @param testCase
+     * @param step
+     * @param index
+     * @param sequence
+     * @param controlSequence
+     * @return
+     */
+    public AnswerItem readByKey(long executionId, String test, String testCase, int step, int index, int sequence, int controlSequence);
 
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
     public TestCaseStepActionControlExecution loadFromResultset(ResultSet resultSet) throws SQLException; 
 }

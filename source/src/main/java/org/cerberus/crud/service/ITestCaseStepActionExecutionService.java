@@ -47,9 +47,13 @@ public interface ITestCaseStepActionExecutionService {
     /**
      *
      * @param id
+     * @param test
+     * @param testCase
+     * @param step
+     * @param index
      * @return List of testCaseStepExecution that correspond to the Id.
      */
-    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step);
+    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step, int index);
     
     
     /**
@@ -61,9 +65,37 @@ public interface ITestCaseStepActionExecutionService {
      */
     JSONArray lastActionExecutionDuration(String test, String testcase, String country);
 
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step);
+    /**
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param step
+     * @param index
+     * @return
+     */
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index);
 
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence);
+    /**
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param step
+     * @param index
+     * @param sequence
+     * @return
+     */
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence);
 
-    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step);
+    /**
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @param step
+     * @param index
+     * @return
+     */
+    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index);
 }

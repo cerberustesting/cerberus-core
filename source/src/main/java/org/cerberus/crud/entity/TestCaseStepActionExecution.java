@@ -36,6 +36,7 @@ public class TestCaseStepActionExecution {
     private String test;
     private String testCase;
     private int step;
+    private int index;
     private int sequence;
     private int sort;
     private String conditionOper;
@@ -297,6 +298,14 @@ public class TestCaseStepActionExecution {
         this.step = step;
     }
 
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
     public String getTest() {
         return test;
     }
@@ -336,6 +345,7 @@ public class TestCaseStepActionExecution {
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
             result.put("step", this.getStep());
+            result.put("index", this.getIndex());
             result.put("sequence", this.getSequence());
             result.put("sort", this.getSort());
             result.put("action", this.getAction());

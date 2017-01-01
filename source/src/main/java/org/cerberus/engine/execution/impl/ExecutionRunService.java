@@ -307,99 +307,148 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 for (TestCaseStep testCaseStep : mainExecutionTestCaseStepList) {
 
-                    /**
-                     * Start Execution of TestCaseStep
-                     */
-                    long startStep = new Date().getTime();
+                    // init the index of the step in case we loop.
+                    int step_index = 1;
+                    boolean execute_Next_Step = true;
+                    TestCaseStepExecution testCaseStepExecution;
 
-                    /**
-                     * Create and Register TestCaseStepExecution
-                     */
-                    TestCaseStepExecution testCaseStepExecution = factoryTestCaseStepExecution.create(
-                            runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                            testCaseStep.getStep(), testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
-                            startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
-                            testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
-                    testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
-                    testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
-
-                    /**
-                     * Execute Step
-                     */
-                    LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - " + testCaseStepExecution.getStep());
-
-                    /**
-                     * We populate the TestCase Step List
-                     */
-                    AnswerList<TestCaseStepExecution> ai = tCExecution.getTestCaseStepExecutionAnswerList();
-                    if (ai == null) {
-                        ai = new AnswerList<>();
-                    }
-                    List<TestCaseStepExecution> tcsExecutionList = ai.getDataList();
-                    if (tcsExecutionList == null) {
-                        tcsExecutionList = new LinkedList<>();
-                    }
-                    tcsExecutionList.add(testCaseStepExecution);
-                    ai.setDataList(tcsExecutionList);
-                    tCExecution.setTestCaseStepExecutionAnswerList(ai);
-
-                    // Evaluate the condition at the Step level.
-                    AnswerItem<Boolean> conditionAnswer;
-                    try {
-                        testCaseStepExecution.setConditionVal1(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal1(), tCExecution, null, false));
-                    } catch (CerberusEventException cex) {
-                        LOG.warn(cex);
-                    }
-                    try {
-                        testCaseStepExecution.setConditionVal2(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false));
-                    } catch (CerberusEventException cex) {
-                        LOG.warn(cex);
-                    }
-
-                    conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), tCExecution);
-                    boolean execute_Step = (boolean) conditionAnswer.getItem();
-
-                    if (execute_Step) {
+                    do {
 
                         /**
-                         * We execute the step
+                         * Start Execution of TestCaseStep
                          */
-                        testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
+                        long startStep = new Date().getTime();
 
                         /**
-                         * Updating Execution Result Message only if execution
-                         * result message of the step is not PE or OK.
+                         * Create and Register TestCaseStepExecution
                          */
-                        if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
-                                && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
-                            tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
-                        }
-                        if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
-                            testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
-                        }
-
-                        testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-
-                        if (testCaseStepExecution.isStopExecution()) {
-                            break;
-                        }
-
-                    } else { // We don't execute the control and record a generic execution.
+                        testCaseStepExecution = factoryTestCaseStepExecution.create(
+                                runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
+                                testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
+                                startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
+                                testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
+                        testCaseStepExecution.setLoop(testCaseStep.getLoop());
+                        testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
+                        testCaseStepExecution.setExecutionResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED));
 
                         /**
-                         * Register Step in database
+                         * We populate the TestCaseStep inside the execution
+                         * List
                          */
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Step : " + testCaseStepExecution.getStep());
-                        // We change the Step message only if the Step is not executed due to condition.
-                        testCaseStepExecution.setStepResultMessage(conditionAnswer.getResultMessage());
-                        testCaseStepExecution.setEnd(new Date().getTime());
-                        this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-                        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
+                        AnswerList<TestCaseStepExecution> ai = tCExecution.getTestCaseStepExecutionAnswerList();
+                        if (ai == null) {
+                            ai = new AnswerList<>();
+                        }
+                        List<TestCaseStepExecution> tcsExecutionList = ai.getDataList();
+                        if (tcsExecutionList == null) {
+                            tcsExecutionList = new LinkedList<>();
+                        }
+                        tcsExecutionList.add(testCaseStepExecution);
+                        ai.setDataList(tcsExecutionList);
+                        tCExecution.setTestCaseStepExecutionAnswerList(ai);
 
+                        // determine is step is executed and if we trigger a new step execution after
+                        boolean execute_Step = true;
+                        AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN));
+                        if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
+                                || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
+                                || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
+                                || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
+                                || step_index > 1) {
+                            // Decode Conditionvalue1 and Conditionvalue2 and Evaluate the condition at the Step level.
+                            try {
+                                testCaseStepExecution.setConditionVal1(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal1(), tCExecution, null, false));
+                            } catch (CerberusEventException cex) {
+                                LOG.warn(cex);
+                            }
+                            try {
+                                testCaseStepExecution.setConditionVal2(variableService.decodeStringCompletly(testCaseStepExecution.getConditionVal2(), tCExecution, null, false));
+                            } catch (CerberusEventException cex) {
+                                LOG.warn(cex);
+                            }
+                            conditionAnswer = this.conditionService.evaluateCondition(testCaseStepExecution.getConditionOper(), testCaseStepExecution.getConditionVal1(), testCaseStepExecution.getConditionVal2(), tCExecution);
+                            execute_Step = (boolean) conditionAnswer.getItem();
+                            switch (testCaseStepExecution.getLoop()) {
+                                case TestCaseStep.LOOP_ONCEIFCONDITIONFALSE:
+                                    execute_Step = !execute_Step;
+                                    execute_Next_Step = false;
+                                    break;
+                                case TestCaseStep.LOOP_ONCEIFCONDITIONTRUE:
+                                    execute_Next_Step = false;
+                                    break;
+                                case TestCaseStep.LOOP_WHILECONDITIONFALSEDO:
+                                case TestCaseStep.LOOP_DOWHILECONDITIONFALSE:
+                                    execute_Step = !execute_Step;
+                                    execute_Next_Step = execute_Step;
+                                    break;
+                                case TestCaseStep.LOOP_WHILECONDITIONTRUEDO:
+                                case TestCaseStep.LOOP_DOWHILECONDITIONTRUE:
+                                    execute_Next_Step = execute_Step;
+                                    break;
+                                default:
+                                    execute_Next_Step = false;
+                            }
+                        } else {
+                            // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution.
+                            execute_Step = true;
+                            conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN));
+                        }
+
+                        /**
+                         * Execute Step
+                         */
+                        LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - Step " + testCaseStepExecution.getStep()+ " - Index " + testCaseStepExecution.getStep());
+
+                        if (execute_Step) {
+
+                            /**
+                             * We execute the step
+                             */
+                            testCaseStepExecution = this.executeStep(testCaseStepExecution, tCExecution);
+
+                            /**
+                             * Updating Execution Result Message only if
+                             * execution result message of the step is not PE or
+                             * OK.
+                             */
+                            if ((!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED))))
+                                    && (!(testCaseStepExecution.getExecutionResultMessage().equals(new MessageGeneral(MessageGeneralEnum.EXECUTION_OK))))) {
+                                tCExecution.setResultMessage(testCaseStepExecution.getExecutionResultMessage());
+                            }
+                            if (testCaseStepExecution.getStepResultMessage().equals(new MessageEvent(MessageEventEnum.STEP_PENDING))) {
+                                testCaseStepExecution.setStepResultMessage(new MessageEvent(MessageEventEnum.STEP_SUCCESS));
+                            }
+
+                            testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+
+                            if (testCaseStepExecution.isStopExecution()) {
+                                break;
+                            }
+
+                        } else { // We don't execute the control and record a generic execution.
+
+                            /**
+                             * Register Step in database
+                             */
+                            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Step : " + testCaseStepExecution.getStep());
+                            // We change the Step message only if the Step is not executed due to condition.
+                            testCaseStepExecution.setStepResultMessage(conditionAnswer.getResultMessage());
+                            testCaseStepExecution.setEnd(new Date().getTime());
+                            this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
+                            MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Step");
+
+                        }
+
+                        // If feature Websocket is activated, we refresh the corresponding Detail Execution pages attached to this execution.
                         if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
                             TestCaseExecutionEndPoint.send(tCExecution);
                         }
 
+                        step_index++;
+                    } while (execute_Next_Step && step_index < 6);
+
+                    if (testCaseStepExecution.isStopExecution()) {
+                        break;
                     }
 
                 }
@@ -550,7 +599,7 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             TestCaseStepActionExecution testCaseStepActionExecution = factoryTestCaseStepActionExecution.create(
                     testCaseStepExecution.getId(), testCaseStepAction.getTest(), testCaseStepAction.getTestCase(),
-                    testCaseStepAction.getStep(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
+                    testCaseStepAction.getStep(), testCaseStepExecution.getIndex(), testCaseStepAction.getSequence(), testCaseStepAction.getSort(), null, null,
                     testCaseStepAction.getConditionOper(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(), testCaseStepAction.getConditionVal1(), testCaseStepAction.getConditionVal2(),
                     testCaseStepAction.getAction(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(), testCaseStepAction.getValue1(), testCaseStepAction.getValue2(),
                     testCaseStepAction.getForceExeStatus(), startAction, 0, startAction, 0, new MessageEvent(MessageEventEnum.ACTION_PENDING),
@@ -689,7 +738,7 @@ public class ExecutionRunService implements IExecutionRunService {
             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Creating TestCaseStepActionControlExecution");
             TestCaseStepActionControlExecution testCaseStepActionControlExecution
                     = factoryTestCaseStepActionControlExecution.create(testCaseStepActionExecution.getId(), testCaseStepActionControl.getTest(), testCaseStepActionControl.getTestCase(),
-                            testCaseStepActionControl.getStep(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
+                            testCaseStepActionControl.getStep(), testCaseStepActionExecution.getIndex(), testCaseStepActionControl.getSequence(), testCaseStepActionControl.getControlSequence(), testCaseStepActionControl.getSort(),
                             null, null,
                             testCaseStepActionControl.getConditionOper(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(), testCaseStepActionControl.getConditionVal1(), testCaseStepActionControl.getConditionVal2(),
                             testCaseStepActionControl.getControl(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(), testCaseStepActionControl.getValue1(), testCaseStepActionControl.getValue2(),

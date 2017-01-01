@@ -40,11 +40,11 @@ public interface ITestCaseStepActionExecutionDAO {
 
     List<List<String>> getListOfSequenceDuration(String idList);
 
-    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step);
+    List<TestCaseStepActionExecution> findTestCaseStepActionExecutionByCriteria(long id, String test, String testCase, int step, int index);
 
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step);
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index);
 
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence);
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence);
 
     public TestCaseStepActionExecution loadFromResultset(ResultSet resultSet) throws SQLException;
 }

@@ -34,33 +34,33 @@ import org.springframework.stereotype.Service;
  * @author bcivel
  */
 @Service
-public class TestCaseStepActionControlExecutionService implements ITestCaseStepActionControlExecutionService{
+public class TestCaseStepActionControlExecutionService implements ITestCaseStepActionControlExecutionService {
 
     @Autowired
     private ITestCaseStepActionControlExecutionDAO testCaseStepActionControlExecutionDao;
-    
+
     @Override
     public void insertTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.insertTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
     }
-    
+
     @Override
     public void updateTestCaseStepActionControlExecution(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         testCaseStepActionControlExecutionDao.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
     }
-    
+
     @Override
-    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int sequence) {
-        return testCaseStepActionControlExecutionDao.findTestCaseStepActionControlExecutionByCriteria( id,  test,  testCase,  step,  sequence);
+    public List<TestCaseStepActionControlExecution> findTestCaseStepActionControlExecutionByCriteria(long id, String test, String testCase, int step, int index, int sequence) {
+        return testCaseStepActionControlExecutionDao.findTestCaseStepActionControlExecutionByCriteria(id, test, testCase, step, index, sequence);
     }
 
     @Override
-    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int sequence) {
-        return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, step, sequence);
+    public AnswerList readByVarious1(long executionId, String test, String testcase, int step, int index, int sequence) {
+        return testCaseStepActionControlExecutionDao.readByVarious1(executionId, test, testcase, step, index, sequence);
     }
 
     @Override
-    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int sequence, int controlSequence) {
-        return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, step, sequence, controlSequence);
+    public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence) {
+        return testCaseStepActionControlExecutionDao.readByKey(executionId, test, testcase, step, index, sequence, controlSequence);
     }
 }

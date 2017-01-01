@@ -34,6 +34,7 @@ public class TestCaseStep {
     private String testCase;
     private int step;
     private int sort;
+    private String loop;
     private String conditionOper;
     private String conditionVal1;
     private String conditionVal2;
@@ -47,6 +48,16 @@ public class TestCaseStep {
     private boolean isStepInUseByOtherTestCase;
     private int initialStep;
     private TestCase testCaseObj;
+
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String LOOP_ONCEIFCONDITIONTRUE = "onceIfConditionTrue";
+    public static final String LOOP_ONCEIFCONDITIONFALSE = "onceIfConditionFalse";
+    public static final String LOOP_DOWHILECONDITIONTRUE = "doWhileConditionTrue";
+    public static final String LOOP_DOWHILECONDITIONFALSE = "doWhileConditionFalse";
+    public static final String LOOP_WHILECONDITIONTRUEDO = "whileConditionTrueDo";
+    public static final String LOOP_WHILECONDITIONFALSEDO = "whileConditionFalseDo";
 
     public TestCase getTestCaseObj() {
         return testCaseObj;
@@ -140,6 +151,14 @@ public class TestCaseStep {
         this.sort = sort;
     }
 
+    public String getLoop() {
+        return loop;
+    }
+
+    public void setLoop(String loop) {
+        this.loop = loop;
+    }
+
     public String getConditionOper() {
         return conditionOper;
     }
@@ -211,6 +230,7 @@ public class TestCaseStep {
         hash = 29 * hash + (this.testCase != null ? this.testCase.hashCode() : 0);
         hash = 29 * hash + this.step;
         hash = 29 * hash + this.sort;
+        hash = 29 * hash + (this.loop != null ? this.loop.hashCode() : 0);
         hash = 29 * hash + (this.conditionOper != null ? this.conditionOper.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal1 != null ? this.conditionVal1.hashCode() : 0);
         hash = 29 * hash + (this.conditionVal2 != null ? this.conditionVal2.hashCode() : 0);
@@ -241,6 +261,9 @@ public class TestCaseStep {
             return false;
         }
         if (this.sort != other.sort) {
+            return false;
+        }
+        if (this.loop != other.loop && (this.loop == null || !this.loop.equals(other.loop))) {
             return false;
         }
         if (this.conditionOper != other.conditionOper && (this.conditionOper == null || !this.conditionOper.equals(other.conditionOper))) {
@@ -278,7 +301,7 @@ public class TestCaseStep {
         return "TestCaseStep{" + "test=" + test + ", testCase=" + testCase + ", step=" + step + ", description=" + description + ", useStep=" + useStep + ", useStepTest=" + useStepTest + ", useStepTestCase=" + useStepTestCase + ", useStepStep=" + useStepStep + ", inLibrary=" + inLibrary + '}';
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
             result.put("test", this.getTest());
@@ -295,6 +318,7 @@ public class TestCaseStep {
             result.put("useStepStep", this.getUseStepStep());
             result.put("inLibrary", this.getInLibrary());
             result.put("initialStep", this.getInitialStep());
+            result.put("loop", this.getLoop());
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepAction() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepAction()) {

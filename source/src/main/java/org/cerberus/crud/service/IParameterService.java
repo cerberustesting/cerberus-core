@@ -50,11 +50,50 @@ public interface IParameterService {
         void parameterChanged(Parameter parameter);
     }
 
+    /**
+     * Getting the parameter from database with system (priority) rule. If
+     * parameter exist for system, we get that value. If it does not exist, we
+     * get the default value (system="") value .
+     *
+     * @param key
+     * @param system
+     * @return
+     * @throws CerberusException
+     */
     Parameter findParameterByKey(String key, String system) throws CerberusException;
 
+    /**
+     * This method can be used in order to retreive a parameter directly in
+     * integer format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
     Integer getParameterIntegerByKey(String key, String system, Integer defaultValue);
 
+    /**
+     * This method can be used in order to retreive a parameter directly in
+     * float format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
     float getParameterFloatByKey(String key, String system, float defaultValue);
+
+    /**
+     * This method can be used in order to retreive a parameter directly in
+     * String format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
+    String getParameterStringByKey(String key, String system, String defaultValue);
 
     List<Parameter> findAllParameter() throws CerberusException;
 

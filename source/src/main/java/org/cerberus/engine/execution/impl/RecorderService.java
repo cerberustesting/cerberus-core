@@ -161,6 +161,7 @@ public class RecorderService implements IRecorderService {
         String test = testCaseStepActionExecution.getTest();
         String testCase = testCaseStepActionExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
@@ -176,7 +177,7 @@ public class RecorderService implements IRecorderService {
         File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
         if (newImage != null) {
             try {
-                Recorder recorder = this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "screenshot", "jpg");
+                Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "jpg");
                 LOG.debug(logPrefix + "FullPath " + recorder.getFullPath());
 
                 File dir = new File(recorder.getFullPath());
@@ -221,11 +222,12 @@ public class RecorderService implements IRecorderService {
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
 
         try {
-            Recorder recorder = this.initFilenames(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), test, testCase, step, sequence, controlString, null, 0, "pagesource", "html");
+            Recorder recorder = this.initFilenames(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getId(), test, testCase, step, index, sequence, controlString, null, 0, "pagesource", "html");
             File dir = new File(recorder.getFullPath());
             dir.mkdirs();
 
@@ -261,6 +263,7 @@ public class RecorderService implements IRecorderService {
         String test = testCaseExecution.getTest();
         String testCase = testCaseExecution.getTestCase();
         String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String index = String.valueOf(testCaseStepActionExecution.getIndex());
         String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
@@ -268,7 +271,7 @@ public class RecorderService implements IRecorderService {
         try {
 
             // REQUEST.
-            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "request", "xml");
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "request", "xml");
             recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
 
             // Index file created to database.
@@ -276,7 +279,7 @@ public class RecorderService implements IRecorderService {
 
             // RESPONSE exists.
             if (null != se.getSOAPResponse()) {
-                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, sequence, controlString, null, 0, "response", "xml");
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "response", "xml");
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
 
                 // Index file created to database.
@@ -296,14 +299,14 @@ public class RecorderService implements IRecorderService {
         try {
 
             // REQUEST.
-            Recorder recorderRequest = this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "request", "xml");
+            Recorder recorderRequest = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "request", "xml");
             recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), SoapUtil.convertSoapMessageToString(se.getSOAPRequest()));
 
             // Index file created to database.
             testCaseExecutionFileService.save(runId, recorderRequest.getLevel(), "SOAP Request", recorderRequest.getRelativeFilenameURL(), "XML", "");
 
             // RESPONSE.
-            Recorder recorderResponse = this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "response", "xml");
+            Recorder recorderResponse = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "response", "xml");
             recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
 
             // Index file created to database.
@@ -324,7 +327,7 @@ public class RecorderService implements IRecorderService {
             jsonResult = dataLibService.convertToJSONObject(result);
 
             // RESULT.
-            Recorder recorder = this.initFilenames(runId, null, null, null, null, null, property, propertyIndex, "result", "json");
+            Recorder recorder = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "result", "json");
             recordFile(recorder.getFullPath(), recorder.getFileName(), jsonResult.toString());
 
             // Index file created to database.
@@ -346,7 +349,7 @@ public class RecorderService implements IRecorderService {
                 LOG.debug(logPrefix + "Starting to save Selenium log file.");
 
                 try {
-                    Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, 0, "selenium_log", "txt");
+                    Recorder recorder = this.initFilenames(testCaseExecution.getId(), null, null, null, null, null, null, null, 0, "selenium_log", "txt");
 
                     File dir = new File(recorder.getFullPath());
                     dir.mkdirs();
@@ -393,7 +396,7 @@ public class RecorderService implements IRecorderService {
 
         try {
             // UPLOADED File.
-            Recorder recorder = this.initFilenames(executionId, tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStep()), String.valueOf(tcsae.getSequence()), null, null, 0, "image", "jpg");
+            Recorder recorder = this.initFilenames(executionId, tcsae.getTest(), tcsae.getTestCase(), String.valueOf(tcsae.getStep()), String.valueOf(tcsae.getIndex()), String.valueOf(tcsae.getSequence()), null, null, 0, "image", "jpg");
             File storeFile = new File(recorder.getFullFilename());
             // saves the file on disk
             uploadedFile.write(storeFile);
@@ -434,7 +437,7 @@ public class RecorderService implements IRecorderService {
         }
     }
 
-    private Recorder initFilenames(long exeID, String test, String testCase, String step, String sequence, String controlString, String property, int propertyIndex, String filename, String extention) throws CerberusException {
+    private Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention) throws CerberusException {
 
         Recorder newRecorder = new Recorder();
 
@@ -476,6 +479,9 @@ public class RecorderService implements IRecorderService {
         if (!StringUtil.isNullOrEmpty(step)) {
             sbfileName.append("S").append(step).append("-");
         }
+        if (!StringUtil.isNullOrEmpty(index)) {
+            sbfileName.append("I").append(index).append("-");
+        }
         if (!StringUtil.isNullOrEmpty(sequence)) {
             sbfileName.append("A").append(sequence).append("-");
         }
@@ -504,11 +510,11 @@ public class RecorderService implements IRecorderService {
          */
         String level = "";
         if (!(StringUtil.isNullOrEmpty(controlString))) {
-            level = test + "-" + testCase + "-" + step + "-" + sequence + "-" + controlString;
+            level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence + "-" + controlString;
         } else if (!(StringUtil.isNullOrEmpty(sequence))) {
-            level = test + "-" + testCase + "-" + step + "-" + sequence;
+            level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence;
         } else if (!(StringUtil.isNullOrEmpty(step))) {
-            level = test + "-" + testCase + "-" + step;
+            level = test + "-" + testCase + "-" + step + "-" + index;
         } else if (!(StringUtil.isNullOrEmpty(property))) {
             level = property + "-" + propertyIndex;
         }

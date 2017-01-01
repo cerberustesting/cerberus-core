@@ -7966,7 +7966,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         //Adding index column on execution step in order to prepare changes for looping steps
-        // 1017-1024
+        // 1017-1027
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
         SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
@@ -7999,7 +7999,27 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasestep` ");
         SQLS.append("ADD COLUMN `Loop` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`;");
         SQLInstruction.add(SQLS.toString());
-        
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`)  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`, `ControlSequence`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('STEPLOOP', 'onceIfConditionTrue', 100, 'We execute the step once only if the condiion is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'onceIfConditionFalse', 200, 'We execute the step once only if the condiion is false.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'doWhileConditionTrue', 300, 'We execute the step and then execute it again and again as long as condition is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'doWhileConditionFalse', 400, 'We execute the step and then execute it again and again as long as condition is false.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'whileConditionTrueDo', 500, 'We execute the step as long the condition is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'whileConditionFalseDo', 600, 'We execute the step as long the condition is false.', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'STEPLOOP', '590', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

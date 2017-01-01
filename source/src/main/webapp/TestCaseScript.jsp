@@ -112,6 +112,10 @@
                                     </div>
                                     <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
                                         <div class="col-lg-3 form-group">
+                                            <label>Step Loop:</label>
+                                            <select class="form-control input-sm" id="stepLoop"></select>
+                                        </div>
+                                        <div class="col-lg-3 form-group">
                                             <label>Step Condition Operation:</label>
                                             <select class="form-control input-sm" id="stepConditionOper"></select>
                                         </div>

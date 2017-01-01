@@ -245,6 +245,8 @@ public class TestCaseExecutionFileDAO implements ITestCaseExecutionFileDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.exeid : " + exeId);
+            LOG.debug("SQL.param.level : " + level);
         }
         Connection connection = this.databaseSpring.connect();
         try {
