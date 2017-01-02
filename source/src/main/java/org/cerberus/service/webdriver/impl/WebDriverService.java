@@ -264,12 +264,12 @@ public class WebDriverService implements IWebDriverService {
     @Override
     public boolean isElementNotPresent(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
-        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element to be invisible : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element to be not present : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
             WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
-            return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+            return wait.until(ExpectedConditions.not(ExpectedConditions.presenceOfElementLocated(locator)));
         } catch (TimeoutException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element to be invisible :" + exception);
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element to be not present :" + exception);
             return false;
         }
     }
@@ -291,22 +291,15 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public boolean isElementNotVisible(Session session, Identifier identifier) {
+        By locator = this.getBy(identifier);
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element to be not visible : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, false, false);
-            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
-                WebElement webElement = (WebElement) answer.getItem();
-
-                return webElement != null && !webElement.isDisplayed();
-            } else if (answer.isCodeEquals(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT.getCode())) {
-                /**
-                 * Return true if element not found (not found >> not visible)
-                 */
-                return true;
-            }
-        } catch (NoSuchElementException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+        } catch (TimeoutException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element to be not visible :" + exception);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -418,17 +411,15 @@ public class WebDriverService implements IWebDriverService {
 
     @Override
     public boolean isElementNotClickable(Session session, Identifier identifier) {
+        By locator = this.getBy(identifier);
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element to be not clickable : " + identifier.getIdentifier() + "=" + identifier.getLocator());
         try {
-            AnswerItem answer = this.getSeleniumElement(session, identifier, true, true);
-            if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
-                WebElement webElement = (WebElement) answer.getItem();
-
-                return webElement == null;
-            }
-        } catch (NoSuchElementException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            return wait.until(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(locator)));
+        } catch (TimeoutException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element to be not clickable :" + exception);
+            return false;
         }
-        return false;
     }
 
     @Override
