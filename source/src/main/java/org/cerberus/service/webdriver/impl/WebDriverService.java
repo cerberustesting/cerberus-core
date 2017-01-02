@@ -260,6 +260,19 @@ public class WebDriverService implements IWebDriverService {
         }
         return false;
     }
+    
+    @Override
+    public boolean isElementNotPresent(Session session, Identifier identifier) {
+        By locator = this.getBy(identifier);
+        MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, "Waiting for Element to be invisible : " + identifier.getIdentifier() + "=" + identifier.getLocator());
+        try {
+            WebDriverWait wait = new WebDriverWait(session.getDriver(), TimeUnit.MILLISECONDS.toSeconds(session.getCerberus_selenium_wait_element()));
+            return wait.until(ExpectedConditions.invisibilityOfElementLocated(locator));
+        } catch (TimeoutException exception) {
+            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception waiting for element to be invisible :" + exception);
+            return false;
+        }
+    }
 
     @Override
     public boolean isElementVisible(Session session, Identifier identifier) {

@@ -472,7 +472,7 @@ public class ControlService implements IControlService {
         if (!StringUtil.isNull(html)) {
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(html);
-                if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                if (this.webdriverService.isElementNotPresent(tCExecution.getSession(), identifier)) {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
                     mes.setDescription(mes.getDescription().replace("%STRING1%", html));
                     return mes;
