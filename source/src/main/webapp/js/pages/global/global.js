@@ -591,7 +591,7 @@ function getAlertType(code) {
         return "warning";
     }
 
-    return code;
+    return "danger";
 }
 
 /**
@@ -1017,7 +1017,7 @@ function returnMessageHandler(response) {
 
 function showUnexpectedError(jqXHR, textStatus, errorThrown) {
     clearResponseMessageMainPage();
-    var type = getAlertType("KO");
+    var type = getAlertType(textStatus);
     var message = "";
     if (textStatus !== undefined && errorThrown !== undefined) {
         message = textStatus.toUpperCase() + " - " + errorThrown;

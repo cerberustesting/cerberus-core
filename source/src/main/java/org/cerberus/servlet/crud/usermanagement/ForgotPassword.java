@@ -128,7 +128,7 @@ public class ForgotPassword extends HttpServlet {
             /**
              * Build Response Message
              */
-            jsonResponse.put("messageType", "Success");
+            jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "An e-mail has been sent to the mailbox " + user.getEmail() + ".");
             response.getWriter().print(jsonResponse);
             response.getWriter().flush();
