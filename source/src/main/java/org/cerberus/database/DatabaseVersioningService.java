@@ -7966,7 +7966,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         //Adding index column on execution step in order to prepare changes for looping steps
-        // 1017-1027
+        // 1017-1028
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
         SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
@@ -8018,6 +8018,9 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('STEPLOOP', 'whileConditionTrueDo', 500, 'We execute the step as long the condition is true.', '', '', '', '')");
         SQLS.append(",('STEPLOOP', 'whileConditionFalseDo', 600, 'We execute the step as long the condition is false.', '', '', '', '')");
         SQLS.append(",('INVARIANTPRIVATE', 'STEPLOOP', '590', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` SET `Loop` = 'onceIfConditionTrue' WHERE `Loop` = '';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

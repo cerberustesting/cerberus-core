@@ -309,7 +309,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                     // init the index of the step in case we loop.
                     int step_index = 1;
-                    boolean execute_Next_Step = true;
+                    boolean execute_Next_Step = false;
                     TestCaseStepExecution testCaseStepExecution;
 
                     do {
@@ -354,6 +354,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONTRUEDO)
+                                || testCaseStepExecution.getLoop().equals("")
                                 || step_index > 1) {
                             // Decode Conditionvalue1 and Conditionvalue2 and Evaluate the condition at the Step level.
                             try {
@@ -389,16 +390,22 @@ public class ExecutionRunService implements IExecutionRunService {
                                 default:
                                     execute_Next_Step = false;
                             }
-                        } else {
-                            // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution.
+                        } else if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONFALSE)
+                                || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONTRUE)) {
+                            // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution and activate the next step execution.
+                            execute_Next_Step = true;
                             execute_Step = true;
                             conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN));
+                        } else {
+                            // First Step execution for Unknown Loop --> We force the step execution only once (default behaviour).
+                            execute_Next_Step = false;
+                            execute_Step = true;
                         }
 
                         /**
                          * Execute Step
                          */
-                        LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - Step " + testCaseStepExecution.getStep()+ " - Index " + testCaseStepExecution.getStep());
+                        LOG.debug(logPrefix + "Executing step : " + testCaseStepExecution.getTest() + " - " + testCaseStepExecution.getTestCase() + " - Step " + testCaseStepExecution.getStep() + " - Index " + testCaseStepExecution.getStep());
 
                         if (execute_Step) {
 
@@ -550,7 +557,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Collecting and calculating Statistics.
          */
         try {
-            this.collectExecutionStats(tCExecution);
+//            this.collectExecutionStats(tCExecution);
         } catch (Exception ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception collecting stats for execution " + tCExecution.getId() + " Exception:" + ex.toString());
         }
