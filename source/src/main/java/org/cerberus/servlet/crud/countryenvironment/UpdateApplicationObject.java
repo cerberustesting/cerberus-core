@@ -106,7 +106,7 @@ public class UpdateApplicationObject extends HttpServlet {
                 FileItem fileItem = it.next();
                 boolean isFormField = fileItem.isFormField();
                 if (isFormField) {
-                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString(), null, charset));
+                    fileData.put(fileItem.getFieldName(), ParameterParserUtil.parseStringParamAndDecode(fileItem.getString("UTF-8"), null, charset));
                 } else {
                     file = fileItem;
                 }

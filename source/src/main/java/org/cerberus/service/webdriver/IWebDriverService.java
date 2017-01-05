@@ -31,7 +31,7 @@ import org.cerberus.exception.CerberusEventException;
  * @author bcivel
  */
 public interface IWebDriverService {
-
+    
     String getValueFromHTMLVisible(Session session, Identifier identifier);
 
     String getValueFromHTML(Session session, Identifier identifier);
@@ -41,6 +41,8 @@ public interface IWebDriverService {
     String getValueFromJS(Session session, String script);
     
     boolean isElementPresent(Session session, Identifier identifier);
+    
+    boolean isElementNotPresent(Session session, Identifier identifier);
 
     boolean isElementVisible(Session session, Identifier identifier);
 
