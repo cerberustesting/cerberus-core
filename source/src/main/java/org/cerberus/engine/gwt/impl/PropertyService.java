@@ -378,6 +378,8 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%SYS_EXECUTIONID%", String.valueOf(tCExecution.getId()));
         stringToDecode = stringToDecode.replace("%SYS_EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
         stringToDecode = stringToDecode.replace("%SYS_EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+        long nowInMS = new Date().getTime();
+        stringToDecode = stringToDecode.replace("%SYS_EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
         // New syntax
         stringToDecode = stringToDecode.replace("%system.SYSTEM%", tCExecution.getApplicationObj().getSystem());
         stringToDecode = stringToDecode.replace("%system.APPLI%", tCExecution.getApplicationObj().getApplication());
@@ -400,6 +402,8 @@ public class PropertyService implements IPropertyService {
         stringToDecode = stringToDecode.replace("%system.EXECUTIONID%", String.valueOf(tCExecution.getId()));
         stringToDecode = stringToDecode.replace("%system.EXESTART%", String.valueOf(new Timestamp(tCExecution.getStart())));
         stringToDecode = stringToDecode.replace("%system.EXESTORAGEURL%", recorderService.getStorageSubFolderURL(tCExecution.getId()));
+        nowInMS = new Date().getTime();
+        stringToDecode = stringToDecode.replace("%system.EXEELAPSEDMS%", String.valueOf(nowInMS - tCExecution.getStart()));
 
         /**
          * Trying to replace by system environment variables from Step Execution
@@ -409,13 +413,20 @@ public class PropertyService implements IPropertyService {
             if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
 
                 // %SYS_CURRENTSTEP_INDEX%
-                if (stringToDecode.contains("%SYS_CURRENTSTEP_INDEX%")) {
+                if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
                     TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
                     stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
+                    nowInMS = new Date().getTime();
+                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
+
                 }
-                if (stringToDecode.contains("%system.CURRENTSTEP_INDEX%")) {
+                if (stringToDecode.contains("%system.CURRENTSTEP_")) {
                     TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
                     stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
+                    nowInMS = new Date().getTime();
+                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
                 }
 
                 // %SYS_STEP.n.RETURNCODE%
@@ -423,7 +434,7 @@ public class PropertyService implements IPropertyService {
                     String syntaxToReplace = "";
                     for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
-                        syntaxToReplace = "%SYS_STEP." + tcse.getSort() + ".RETURNCODE%";
+                        syntaxToReplace = "%SYS_STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
                     }
                 }
@@ -431,7 +442,7 @@ public class PropertyService implements IPropertyService {
                     String syntaxToReplace = "";
                     for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
                         TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
-                        syntaxToReplace = "%system.STEP." + tcse.getSort() + ".RETURNCODE%";
+                        syntaxToReplace = "%system.STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
                         stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
                     }
                 }

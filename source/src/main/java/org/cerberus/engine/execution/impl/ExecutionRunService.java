@@ -374,6 +374,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                     execute_Next_Step = false;
                                     break;
                                 case TestCaseStep.LOOP_ONCEIFCONDITIONTRUE:
+                                case "":
                                     execute_Next_Step = false;
                                     break;
                                 case TestCaseStep.LOOP_WHILECONDITIONFALSEDO:

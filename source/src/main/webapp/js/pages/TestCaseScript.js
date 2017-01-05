@@ -192,9 +192,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             "SSIP", "SSPORT",
                             "TAG",
                             "EXECUTIONID",
-                            "EXESTART",
+                            "EXESTART", "EXEELAPSEDMS",
                             "EXESTORAGEURL",
-                            "STEP.n.RETURNCODE","CURRENTSTEP_INDEX",
+                            "STEP.n.n.RETURNCODE","CURRENTSTEP_INDEX","CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
                         ];
