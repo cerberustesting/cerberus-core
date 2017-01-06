@@ -43,11 +43,4 @@ public interface IPropertyService {
      */
     String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
-    /**
-     *
-     * @param stringToDecode
-     * @param tCExecution
-     * @return
-     */
-    String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution);
 }

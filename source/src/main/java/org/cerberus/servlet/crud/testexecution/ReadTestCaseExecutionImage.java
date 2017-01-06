@@ -170,7 +170,6 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         BufferedImage image = null;
         BufferedImage b = null;
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
-        LOG.debug("TOTO File Path : " + filePath);
 
         File picture = new File(filePath + tc.getFileName());
         try {

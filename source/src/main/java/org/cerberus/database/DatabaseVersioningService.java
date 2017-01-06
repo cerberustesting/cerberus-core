@@ -8023,6 +8023,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcasestep` SET `Loop` = 'onceIfConditionTrue' WHERE `Loop` = '';");
         SQLInstruction.add(SQLS.toString());
 
+        // Parameter in order to limit the number of loop operation allowed in loop operation
+        //-- ------------------------ 1029
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_loopstep_max','20','Integer value that correspond to the max number of step loop authorised.<br>This parameter can be configured at the system level.')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -47,6 +47,13 @@ public interface IVariableService {
      * @return
      * @throws CerberusEventException
      */
-    public String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
+    /**
+     *
+     * @param stringToDecode
+     * @param tCExecution
+     * @return
+     */
+    String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution);
 }
