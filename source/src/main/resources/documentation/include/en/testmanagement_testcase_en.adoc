@@ -251,3 +251,10 @@ Below you will find usefull properties :
 | %SYS_ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
 
 |=== 
+
+You will find below some tricks which help you to implement specific test cases.
+
+TIP: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
+image:testcaserandomproperty.png[TestCaseRandomProperty]
+
+
