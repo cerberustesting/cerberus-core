@@ -138,7 +138,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | verifyStringContains | *[green]#OK#* if Property *[red]#String1#* contains the *[red]#String2#*. | 
 | verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*. | 
 | verifyStringGreater | *[green]#OK#* if the *[red]#String1#* is greater than to the *[red]#String2#* (After in a dictonnary) | *[red]#String1#* : ZZZ  *[red]#String2#* : AAA
-| verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (before in a dictonnary) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ | 
+| verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (before in a dictonnary) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ 
 | verifyTextInDialog | TBD | 
 | verifyTextInElement | *[green]#OK#* if the text found in *[red]#Element#* is equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : OK
 | verifyTextInPage | TBD | 
