@@ -51,7 +51,7 @@ image:testcaseshortcutduplicate.png[TestCaseDuplicate,200,200]
 
 ==== Step
 
-. Click on *[red]#Add step#* to display the following window.  image:testcasepage.png[TestCasePage,250,250,float="right",align="center"] 
+. Click on *[red]#Add step#* to display the following window.  image:testcasepage.PNG[TestCasePage,250,250,float="right",align="center"] 
 . Feed a *[red]#Description#* and click on *[red]#Add#* for a new step. 
 . Or search for a step in library then click on *[red]#Add#*.
 
@@ -137,12 +137,12 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 | verifyRegexInElement | TBD | 
 | verifyStringContains | *[green]#OK#* if Property *[red]#String1#* contains the *[red]#String2#*. | 
 | verifyStringEqual | *[green]#OK#* if the *[red]#String1#* is equal to the *[red]#String2#*. | 
-| verifyStringGreater | TBD | 
-| verifyStringMinor | TBD | 
+| verifyStringGreater | *[green]#OK#* if the *[red]#String1#* is greater than to the *[red]#String2#* (After in a dictonnary) | *[red]#String1#* : ZZZ  *[red]#String2#* : AAA
+| verifyStringMinor |  *[green]#OK#* if the *[red]#String1#* is minor than to the *[red]#String2#* (before in a dictonnary) | *[red]#String1#* : AAA  *[red]#String2#* : ZZZ 
 | verifyTextInDialog | TBD | 
-| verifyTextInElement | TBD | 
+| verifyTextInElement | *[green]#OK#* if the text found in *[red]#Element#* is equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : OK
 | verifyTextInPage | TBD | 
-| verifyTextNotInElement | TBD | 
+| verifyTextNotInElement | *[green]#OK#* if the text found in *[red]#Element#* is not equal to the *[red]#Text#* indicated | *[red]#Element#* : //StatusCode  *[red]#Text#* : KO
 | verifyTextNotInPage | TBD | 
 | verifyTitle | TBD | 
 | verifyUrl | *[green]#OK#* if the *[red]#URL#* of the current page equal to the *[red]#URL#* indicated . | 
@@ -251,3 +251,10 @@ Below you will find usefull properties :
 | %SYS_ELAPSED-STEPSTART% |	Number of milisecond since the start of the execution of the current step.
 
 |=== 
+
+You will find below some tricks which help you to implement specific test cases.
+
+NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
+image:testcaserandomproperty.PNG[TestCaseRandomProperty]
+
+

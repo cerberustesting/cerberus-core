@@ -8023,8 +8023,23 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `testcasestep` SET `Loop` = 'onceIfConditionTrue' WHERE `Loop` = '';");
         SQLInstruction.add(SQLS.toString());
 
+        //Adding Screensize to robot table
+        // 1029
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("ADD COLUMN `screensize` VARCHAR(250) NOT NULL DEFAULT '' AFTER `useragent`;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding Screensize to robot table
+        // 1030
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('robot', 'screensize', '', 'en', 'Screen Size', 'This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the invariant SCREENSIZE that can be configured on Edit Public invariant screen..<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.'),");
+        SQLS.append("('robot', 'screensize', '', 'fr', 'Taille d écran', 'Cette valeur correspond à la taille d\\'écran qui sera utilisé lors de l\\'execution.<br><br>Les valeurs sont définies dans la table d\\'invariant et peuvent être complétées si besoin via la page d\\'invariant.<br>Les valeur doivent être deux entiers séparé par une <b>*</b>.<br><i>Par Example : 1024*768</i><br><br>Pour ajouter de nouvelles valeurs, contactez votre administrateur Cerberus.');");
+        SQLInstruction.add(SQLS.toString());
+
         // Parameter in order to limit the number of loop operation allowed in loop operation
-        //-- ------------------------ 1029
+        //-- ------------------------ 1031
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_loopstep_max','20','Integer value that correspond to the max number of step loop authorised.<br>This parameter can be configured at the system level.')");
         SQLInstruction.add(SQLS.toString());

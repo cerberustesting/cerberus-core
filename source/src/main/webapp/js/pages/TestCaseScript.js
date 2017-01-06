@@ -48,6 +48,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var testcase = GetURLParameter("testcase");
         var step = GetURLParameter("step");
         var property = GetURLParameter("property");
+        var tabactive = GetURLParameter("tabactive");
 
         $("#runOld").parent().attr("href", "./TestCase.jsp?Test=" + test + "&TestCase=" + testcase + "&Load=Load");
 
@@ -194,7 +195,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             "EXECUTIONID",
                             "EXESTART", "EXEELAPSEDMS",
                             "EXESTORAGEURL",
-                            "STEP.n.n.RETURNCODE","CURRENTSTEP_INDEX","CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+                            "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
                         ];
@@ -279,6 +280,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             length: 0,
                             rowLimit: 0,
                             nature: "STATIC",
+                            retryNb: "",
+                            retryPeriod: "",
                             toDelete: false
                         };
 
@@ -288,7 +291,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     $('[data-toggle="tooltip"]').tooltip();
 
-                    initModification();
+                    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        initModification();
+                    });
+
 
                 },
                 error: showUnexpectedError
@@ -336,7 +342,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 });
             });
 
-            $("#runTestCase").parent().attr("href", "./RunTests1.jsp?test=" + test + "&testcase=" + testcase);
+            $("#runTestCase").attr("document.location.href", "'./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
             $("#seeLastExec").parent().attr("href", "./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
 
@@ -346,8 +352,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#rerunTestCase").parent().attr("href", "./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env);
-                        $("#rerunTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
+                        $("#rerunTestCase").attr("document.location.href", "'./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
+                        $("#runTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                     } else {
                         $("#rerunTestCase").attr("disabled", true);
                         $("#seeLastExec").attr("disabled", true);
@@ -358,7 +364,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
             $("#testCaseTitle").affix({offset: {top: height}});
-            $("#list-wrapper").affix({offset: {top: height}});
 
             var wrap = $(window);
 
@@ -376,6 +381,11 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 }
                 $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
             })
+            
+            if (tabactive !== null){
+                console.log("toto");
+                $("a[name='"+tabactive+"']").click();
+            }
         }
     });
 });
@@ -385,9 +395,9 @@ function displayPageLabel(doc) {
     $("#nav-execution #list-wrapper #stepListWrapper h3").html(doc.getDocLabel("page_testcasescript", "steps_title"));
     $("#nav-execution #list-wrapper #tcButton h3").html(doc.getDocLabel("page_global", "columnAction"));
     $("#nav-execution #list-wrapper #deleteButton h3").html(doc.getDocLabel("page_global", "columnAction") + " " + doc.getDocLabel("page_header", "menuTestCase"));
-    $("#deleteTestCase").html(doc.getDocLabel("page_testcaselist", "btn_delete"));
-    $("#saveScript").html("<span class='glyphicon glyphicon-save'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
-    $("#editTcInfo").html(doc.getDocLabel("page_testcasescript", "edit_testcase"));
+    $("#deleteTestCase").html("<span class='glyphicon glyphicon-trash'></span> " + doc.getDocLabel("page_testcaselist", "btn_delete"));
+    $("#saveScript").html("<span class='glyphicon glyphicon-floppy-disk'></span> " + doc.getDocLabel("page_testcasescript", "save_script"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
     $("#seeLastExec").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
@@ -500,11 +510,13 @@ function saveScript() {
 
             var stepHtml = $("#stepList li.active");
             var stepData = stepHtml.data("item");
+            
+            var tabActive = $("#tabsScriptEdit li.active a").attr("name");
 
             var parser = document.createElement('a');
             parser.href = window.location.href;
 
-            var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort;
+            var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort+ "&tabactive=" + tabActive;
 
             setModif(false);
 
@@ -529,6 +541,8 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
+    var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
+    var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "'>").addClass("form-control input-sm").val(property.retryPeriod);
     var table = $("#propTable");
 
     selectType.attr("disabled", !canUpdate);
@@ -541,6 +555,8 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     value2Input.prop("readonly", !canUpdate);
     lengthInput.prop("readonly", !canUpdate);
     rowLimitInput.prop("readonly", !canUpdate);
+    retryNbInput.prop("readonly", !canUpdate);
+    retryPeriodInput.prop("readonly", !canUpdate);
 
     var content = $("<div class='row property list-group-item'></div>");
     var props = $("<div class='col-sm-11'></div>");
@@ -561,7 +577,8 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     var length = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
     var rowLimit = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
     var nature = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
-
+    var retryNb = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
+    var retryPeriod = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
         country.find("input[type='checkbox']").prop('checked', true).trigger("change");
@@ -629,6 +646,14 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     selectNature.change(function () {
         property.nature = $(this).val();
     });
+    
+    retryNbInput.change(function () {
+        property.retryNb = $(this).val();
+    });
+    
+    retryPeriodInput.change(function () {
+        property.retryPeriod = $(this).val();
+    });
 
     row1.data("property", property);
     row1.append(propertyName);
@@ -648,6 +673,8 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     row3.append(length);
     row3.append(rowLimit);
     row3.append(nature);
+    row3.append(retryNb);
+    row3.append(retryPeriod);
     props.append(row3);
 
     right.append(moreBtn).append(deleteBtn);
@@ -681,6 +708,8 @@ function drawInheritedProperty(propList) {
         var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' disabled></textarea>").addClass("form-control input-sm").val(property.value2);
         var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' disabled>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' disabled>").addClass("form-control input-sm").val(property.rowLimit);
+        var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' disabled>").addClass("form-control input-sm").val(property.retryNb);
+        var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' disabled>").addClass("form-control input-sm").val(property.retryPeriod);
 
         var content = $("<div class='row property list-group-item disabled'></div>");
         var props = $("<div class='col-sm-11'></div>");
@@ -701,6 +730,8 @@ function drawInheritedProperty(propList) {
         var length = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
         var rowLimit = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
         var nature = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
+        var retryNb = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
+        var retryPeriod = $("<div class='col-sm-2 form-group has-feedback'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
 
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
@@ -740,6 +771,8 @@ function drawInheritedProperty(propList) {
         row3.append(length);
         row3.append(rowLimit);
         row3.append(nature);
+        row3.append(retryNb);
+        row3.append(retryPeriod);
         props.append(row3);
 
         right.append(moreBtn);
@@ -995,7 +1028,7 @@ var getModif, setModif, initModification;
 
     };
     initModification = function () {
-        $(".panel-body input, .panel-body select").change(function () {
+        $(".panel-body input, .panel-body select, .panel-body textarea").change(function () {
             setModif(true);
         })
     };
@@ -1296,7 +1329,7 @@ Step.prototype.draw = function () {
     drag.on("drop", handleDrop);
     drag.on("dragend", handleDragEnd);
 
-    htmlElement.append(badge);
+    //htmlElement.append(badge);
     htmlElement.append(drag);
     htmlElement.append(this.textArea);
     htmlElement.data("item", this);
@@ -2275,7 +2308,7 @@ function deleteTestCaseHandlerClick() {
 }
 
 editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
-    $("#propTable").empty();
+    //$("#propTable").empty();
     loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
     });
@@ -2297,13 +2330,15 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
             length: 0,
             rowLimit: 0,
             nature: "STATIC",
+            retryNb: 0,
+            retryPeriod: 0,
             toDelete: false
         };
 
         drawProperty(newProperty, info, true);
     }
 
-    $("#propertiesModal").modal('show');
+    //$("#propertiesModal").modal('show');
 };
 
 function editPropertiesModalSaveHandler() {

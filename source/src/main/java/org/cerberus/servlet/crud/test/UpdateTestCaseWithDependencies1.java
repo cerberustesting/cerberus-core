@@ -35,9 +35,11 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.factory.IFactoryTestCaseStep;
 import org.cerberus.crud.factory.IFactoryTestCaseStepAction;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControl;
+import org.cerberus.crud.factory.IFactoryTestCaseCountryProperties;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseService;
@@ -143,6 +145,11 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                 } else {
 
                     // Test Case exist and we can update it so Global update start here //
+                    /**
+                     * TestcaseCountryProperties Update.
+                     */
+                    List<TestCaseCountryProperties> tccpFromPage = getTestCaseCountryPropertiesFromParameter(request, appContext, test, testCase);
+                    tccpService.compareListAndUpdateInsertDeleteElements(initialTest, initialTestCase, tccpFromPage);
 
                     /*
                     * Get steps, actions and controls from page by:
@@ -276,6 +283,39 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
         return nextControlNumber;
     }
 
+    private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {
+        List<TestCaseCountryProperties> testCaseCountryProp = new ArrayList();
+//        String[] testcase_properties_increment = getParameterValuesIfExists(request, "property_increment");
+        IFactoryTestCaseCountryProperties testCaseCountryPropertiesFactory = appContext.getBean(IFactoryTestCaseCountryProperties.class);
+        JSONArray properties = new JSONArray(request.getParameter("propArr"));
+
+        for (int i = 0; i < properties.length(); i++) {
+            JSONObject propJson = properties.getJSONObject(i);
+
+            boolean delete = propJson.getBoolean("toDelete");
+            String property = propJson.getString("property");
+            String description = propJson.getString("description");
+            String type = propJson.getString("type");
+            String value = propJson.getString("value1");
+            String value2 = propJson.getString("value2");
+            int length = propJson.getInt("length");
+            int rowLimit = propJson.getInt("rowLimit");
+            int retryNb = propJson.optInt("retryNb");
+            int retryPeriod = propJson.optInt("retryPeriod");
+            String nature = propJson.getString("nature");
+            String database = propJson.getString("database");
+            JSONArray countries = propJson.getJSONArray("country");
+            if (!delete && !property.equals("")) {
+                for (int j = 0; j < countries.length(); j++) {
+                    String country = countries.getString(j);
+
+                    testCaseCountryProp.add(testCaseCountryPropertiesFactory.create(test, testCase, country, property, description, type, database, value, value2, length, rowLimit, nature, retryNb, retryPeriod));
+                }
+            }
+        }
+        return testCaseCountryProp;
+    }
+    
     private List<TestCaseStep> getTestCaseStepFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase, boolean duplicate) throws JSONException {
         List<TestCaseStep> testCaseStep = new ArrayList();
         ITestCaseStepService tcsService = appContext.getBean(ITestCaseStepService.class);

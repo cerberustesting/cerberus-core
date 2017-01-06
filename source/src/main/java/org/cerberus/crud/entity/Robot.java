@@ -37,11 +37,20 @@ public class Robot {
     private String active;
     private String description;
     private String userAgent;
+    private String screenSize;
     
     /**
      * From here are data outside database model.
      */
     private List<RobotCapability> capabilities;
+
+    public String getScreenSize() {
+        return screenSize;
+    }
+
+    public void setScreenSize(String screenSize) {
+        this.screenSize = screenSize;
+    }
     
     public String getUserAgent() {
         return userAgent;

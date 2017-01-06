@@ -216,23 +216,7 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
             error = true;
         }
-        //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
-        if (!"".equals(screenSize)) {
-            if (!screenSize.contains("*")) {
-                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
-                error = true;
-            } else {
-                try {
-                    String screenWidth = screenSize.split("\\*")[0];
-                    String screenLength = screenSize.split("\\*")[1];
-                    Integer.parseInt(screenWidth);
-                    Integer.parseInt(screenLength);
-                } catch (Exception e) {
-                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
-                    error = true;
-                }
-            }
-        }
+        
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
         IParameterService parameterService = appContext.getBean(IParameterService.class);
         try {
@@ -259,6 +243,7 @@ public class RunTestCase extends HttpServlet {
                 active = robObj.getActive();
                 userAgent = robObj.getUserAgent();
                 capabilities = robObj.getCapabilities();
+                screenSize = robObj.getScreenSize();
             } catch (CerberusException ex) {
                 out.println("Error - Robot [" + robot + "] does not exist.");
                 error = true;
@@ -269,6 +254,25 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Robot is not Active.");
             error = true;
         }
+        
+        //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
+        if (!"".equals(screenSize)) {
+            if (!screenSize.contains("*")) {
+                out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
+                error = true;
+            } else {
+                try {
+                    String screenWidth = screenSize.split("\\*")[0];
+                    String screenLength = screenSize.split("\\*")[1];
+                    Integer.parseInt(screenWidth);
+                    Integer.parseInt(screenLength);
+                } catch (Exception e) {
+                    out.println("Error - ScreenSize format is not Correct. It must be 2 Integer separated by a *.");
+                    error = true;
+                }
+            }
+        }
+        
 
         if (!error) {
             //check if the test case is to be executed in the specific parameters            

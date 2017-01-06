@@ -854,7 +854,7 @@ function loadRobotInfo(robot) {
                 $("#browser").val(data.contentTable.browser);
                 $("#version").val(data.contentTable.version);
                 $("#platform").val(data.contentTable.platform);
-                $("#screenSize").val("");
+                $("#screenSize").val(data.contentTable.screenSize);
             }
         });
     } else {
