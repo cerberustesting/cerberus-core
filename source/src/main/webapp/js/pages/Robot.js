@@ -25,7 +25,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function initPage() {
+    var doc = new Doc();
     displayPageLabel();
+    $("[name=screensize]").append($('<option></option>').text(doc.getDocLabel("page_runtest","default_full_screen")).val(""));
+    displayInvariantList("screensize", "SCREENSIZE", false);
     
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);
@@ -66,6 +69,7 @@ function displayPageLabel() {
     $("[name='versionField']").html(doc.getDocOnline("robot", "version"));
     $("[name='activeField']").html(doc.getDocOnline("robot", "active"));
     $("[name='useragentField']").html(doc.getDocOnline("robot", "useragent"));
+    $("[name='screensizeField']").html(doc.getDocOnline("robot", "screensize"));
     $("[name='descriptionField']").html(doc.getDocOnline("robot", "description"));
     $("[name='addCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
     $("[name='addValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
@@ -204,6 +208,7 @@ function editEntryClick(id) {
         formEdit.find("#browser").prop("value", obj["browser"]);
         formEdit.find("#version").prop("value", obj["version"]);
         formEdit.find("#useragent").prop("value", obj["userAgent"]);
+        formEdit.find("#screensize").prop("value", obj["screenSize"]);
         formEdit.find("#Description").prop("value", obj["description"]);
         
         loadCapabilitiesTable("editCapabilitiesTableBody", obj["capabilities"]);
@@ -217,6 +222,7 @@ function editEntryClick(id) {
             formEdit.find("#browser").prop("readonly", "readonly");
             formEdit.find("#version").prop("readonly", "readonly");
             formEdit.find("#useragent").prop("readonly", "readonly");
+            formEdit.find("#screensize").prop("readonly", "readonly");
             formEdit.find("#Description").prop("readonly", "readonly");
 
             $('#editEntryButton').attr('class', '');
@@ -362,6 +368,9 @@ function aoColumnsFunc(tableId) {
         {"data": "userAgent",
             "sName": "userAgent",
             "title": doc.getDocOnline("robot", "useragent")},
+        {"data": "screenSize",
+            "sName": "screenSize",
+            "title": doc.getDocOnline("robot", "screensize")},
         {"data": "description",
             "sName": "description",
             "title": doc.getDocOnline("robot", "description")}

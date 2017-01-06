@@ -207,6 +207,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `robot` like ?");
             searchSQL.append(" or `browser` like ?");
             searchSQL.append(" or `useragent` like ?");
+            searchSQL.append(" or `screensize` like ?");
             searchSQL.append(" or `version` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -240,6 +241,7 @@ public class RobotDAO implements IRobotDAO {
             try {
                 int i = 1;
                 if (!Strings.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -327,8 +329,8 @@ public class RobotDAO implements IRobotDAO {
     public Answer create(Robot robot) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO robot (`robot`, `host`, `port`, `platform`,`browser`, `version`,`active` , `description`, `useragent`, `screensize`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -347,6 +349,7 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
                 preStat.setString(9, robot.getUserAgent());
+                preStat.setString(10, robot.getScreenSize());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -427,7 +430,7 @@ public class RobotDAO implements IRobotDAO {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
         query.append("UPDATE robot SET robot= ? , host = ? , port = ? ,");
-        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ? WHERE robotID = ?");
+        query.append("platform = ?, browser = ? , version = ?, active=?, description = ?, useragent = ?, screensize = ? WHERE robotID = ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -446,7 +449,8 @@ public class RobotDAO implements IRobotDAO {
                 preStat.setString(7, robot.getActive());
                 preStat.setString(8, robot.getDescription());
                 preStat.setString(9, robot.getUserAgent());
-                preStat.setInt(10, robot.getRobotID());
+                preStat.setString(10, robot.getScreenSize());
+                preStat.setInt(11, robot.getRobotID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -486,9 +490,10 @@ public class RobotDAO implements IRobotDAO {
         String active = ParameterParserUtil.parseStringParam(rs.getString("active"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("description"), "");
         String userAgent = ParameterParserUtil.parseStringParam(rs.getString("useragent"), "");
+        String screenSize = ParameterParserUtil.parseStringParam(rs.getString("screensize"), "");
         //TODO remove when working in test with mockito and autowired
         factoryRobot = new FactoryRobot();
-        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent);
+        return factoryRobot.create(robotID, robot, host, port, platform, browser, version, active, description, userAgent, screenSize);
     }
 
     @Override
@@ -516,6 +521,7 @@ public class RobotDAO implements IRobotDAO {
             searchSQL.append(" or `robot` like ?");
             searchSQL.append(" or `browser` like ?");
             searchSQL.append(" or `useragent` like ?");
+            searchSQL.append(" or `screensize` like ?");
             searchSQL.append(" or `version` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
@@ -539,6 +545,7 @@ public class RobotDAO implements IRobotDAO {
 
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
