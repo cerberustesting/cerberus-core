@@ -53,6 +53,7 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseExecutionSysVerService;
@@ -93,8 +94,6 @@ public class ExecutionRunService implements IExecutionRunService {
     @Autowired
     private IActionService actionService;
     @Autowired
-    private IPropertyService propertyService;
-    @Autowired
     private IControlService controlService;
     @Autowired
     private IConditionService conditionService;
@@ -134,6 +133,8 @@ public class ExecutionRunService implements IExecutionRunService {
     private IRecorderService recorderService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private IParameterService parameterService;
 
     @Override
     public TestCaseExecution executeTestCase(TestCaseExecution tCExecution) throws CerberusException {
@@ -311,6 +312,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     int step_index = 1;
                     boolean execute_Next_Step = false;
                     TestCaseStepExecution testCaseStepExecution;
+                    int maxloop = parameterService.getParameterIntegerByKey("cerberus_loopstep_max", tCExecution.getApplicationObj().getSystem(), 20);
 
                     do {
 
@@ -453,7 +455,7 @@ public class ExecutionRunService implements IExecutionRunService {
                         }
 
                         step_index++;
-                    } while (execute_Next_Step && step_index < 6);
+                    } while (execute_Next_Step && step_index <= maxloop);
 
                     if (testCaseStepExecution.isStopExecution()) {
                         break;

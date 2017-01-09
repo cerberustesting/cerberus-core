@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.impl.InvariantService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;

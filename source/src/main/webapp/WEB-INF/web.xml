@@ -233,6 +233,10 @@
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecution</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadTestCaseExecutionImage</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionImage</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>ReadTag</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTag</servlet-class>
     </servlet>
@@ -441,6 +445,10 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplicationObject</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadApplicationObjectImage</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplicationObjectImage</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>NewBuildRev</servlet-name>
         <servlet-class>org.cerberus.servlet.integration.NewBuildRev</servlet-class>
     </servlet>
@@ -556,15 +564,6 @@
         <servlet-name>UpdateSqlLibrary2</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSqlLibrary2</servlet-class>
     </servlet>
-    <!-- // TODO REMOVE
-    <servlet>
-        <servlet-name>FindAllInvariantPublic</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPublic</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindAllInvariantPrivate</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.transversaltables.FindAllInvariantPrivate</servlet-class>
-    </servlet>-->
     <servlet>
         <servlet-name>CreateSoapLibrary</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
@@ -1193,6 +1192,10 @@
         <url-pattern>/ReadTestCaseExecution</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadTestCaseExecutionImage</servlet-name>
+        <url-pattern>/ReadTestCaseExecutionImage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadTag</servlet-name>
         <url-pattern>/ReadTag</url-pattern>
     </servlet-mapping>
@@ -1375,6 +1378,10 @@
     <servlet-mapping>
         <servlet-name>UpdateApplicationObject</servlet-name>
         <url-pattern>/UpdateApplicationObject</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadApplicationObjectImage</servlet-name>
+        <url-pattern>/ReadApplicationObjectImage</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadApplicationObject</servlet-name>
@@ -1983,6 +1990,7 @@
             <description>jsp</description>
             <url-pattern>/ExecutionDetail.jsp</url-pattern>
             <url-pattern>/ExecutionDetail1.jsp</url-pattern>
+            <url-pattern>/ExecutionDetail2.jsp</url-pattern>
             <url-pattern>/ExecutionDetailList.jsp</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
@@ -2133,7 +2141,6 @@
         <web-resource-collection>
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
-            <url-pattern>/RunManualTestCase.jsp</url-pattern>
             <url-pattern>/RunTests.jsp</url-pattern>
             <url-pattern>/RunTestsSearchFilters.jsp</url-pattern>
             <url-pattern>/RunTestsSearchResult.jsp</url-pattern>
@@ -2402,6 +2409,7 @@
             <url-pattern>/ReadDocumentation</url-pattern>
             <url-pattern>/ReadCerberusInformation</url-pattern>
             <url-pattern>/ReadTestCaseExecution</url-pattern>
+            <url-pattern>/ReadTestCaseExecutionImage</url-pattern>
             <url-pattern>/ReadTag</url-pattern>
             <url-pattern>/ReadParameter</url-pattern>
             <url-pattern>/SaveManualExecutionPictureTest</url-pattern>
@@ -2443,6 +2451,7 @@
             <url-pattern>/GetReportData</url-pattern>
             <url-pattern>/ReadApplication</url-pattern>
             <url-pattern>/ReadApplicationObject</url-pattern>
+            <url-pattern>/ReadApplicationObjectImage</url-pattern>
             <url-pattern>/ReadBuildRevisionInvariant</url-pattern>
             <url-pattern>/ReadProject</url-pattern>
             <url-pattern>/ReadRobot</url-pattern>
