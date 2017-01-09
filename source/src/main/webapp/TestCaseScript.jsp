@@ -90,6 +90,7 @@
                         <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
                         <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
                         <li><a data-toggle="tab" href="#tabInheritedProperties" id="editTabInheritedProperties" name="tabInheritedProperties">InheritedProperties</a></li>
+                        <li><a data-toggle="tab" href="#tabSchema" id="editTabSchema" name="tabSchema">Schema</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
@@ -102,9 +103,9 @@
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
                                         <button class="btn btn-info btn-block marginTop25" id="addStep">Add Step</button>
-<!--                                        <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
-                                            <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
-                                        </div>-->
+                                        <!--                                        <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
+                                                                                    <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
+                                                                                </div>-->
                                     </div>
                                 </div>
                             </nav>
@@ -118,7 +119,10 @@
                                             <div class="fieldRow row" id="UseStepRow" style="display: none;">
 
                                             </div>
-                                            <div style="margin-top:15px;" class="fieldRow row form-group">
+                                            <div style="margin-top:15px;" class="input-group">
+                                                <div class="input-group-btn" id="stepId">
+                                                </div>
+
                                                 <input class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                             </div>
                                             <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
@@ -182,13 +186,16 @@
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabInheritedProperties">
                             <div id="propertiesModal">
-                                <div class="panel panel-default" style="margin-top: 20px;" id="inheritedPropPanelWrapper">
+                                <div class="" id="inheritedPropPanelWrapper">
                                     <div class="panel-body collapse" id="inheritedPropertiesPanel">
                                         <div id="inheritedPropPanel" class="list-group">
-                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-</div>
+                            </div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade" id="tabSchema">
+                            <div id="schemaDiv"></div>
                         </div>
                     </div>
                 </div>

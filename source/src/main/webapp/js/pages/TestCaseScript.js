@@ -381,10 +381,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 }
                 $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
             })
-            
-            if (tabactive !== null){
+
+            if (tabactive !== null) {
                 console.log("toto");
-                $("a[name='"+tabactive+"']").click();
+                $("a[name='" + tabactive + "']").click();
             }
         }
     });
@@ -489,41 +489,63 @@ function setAllSort() {
 
 function saveScript() {
     var stepArr = setAllSort();
+    var doc = new Doc();
 
-    var properties = $("#masterProp");
+    var properties = $("#propTable #masterProp");
     var propArr = [];
+    var propertyWithoutCountry = false;
     for (var i = 0; i < properties.length; i++) {
+        if ($(properties[i]).data("property").country.length <= 0) {
+            propertyWithoutCountry = true;
+        }
         propArr.push($(properties[i]).data("property"));
     }
+    
+    var saveProp = function () {
+        showLoaderInModal('#propertiesModal');
+        $.ajax({
+            url: "UpdateTestCaseWithDependencies1",
+            async: true,
+            method: "POST",
+            contentType:'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                informationInitialTest: GetURLParameter("test"),
+                informationInitialTestCase: GetURLParameter("testcase"),
+                informationTest: GetURLParameter("test"),
+                informationTestCase: GetURLParameter("testcase"),
+                stepArray: stepArr,
+                propArr: propArr
+            }),
+            success: function () {
 
-    $.ajax({
-        url: "UpdateTestCaseWithDependencies1",
-        async: true,
-        method: "POST",
-        data: {informationInitialTest: GetURLParameter("test"),
-            informationInitialTestCase: GetURLParameter("testcase"),
-            informationTest: GetURLParameter("test"),
-            informationTestCase: GetURLParameter("testcase"),
-            stepArray: JSON.stringify(stepArr),
-            propArr: JSON.stringify(propArr)},
-        success: function () {
+                var stepHtml = $("#stepList li.active");
+                var stepData = stepHtml.data("item");
 
-            var stepHtml = $("#stepList li.active");
-            var stepData = stepHtml.data("item");
-            
-            var tabActive = $("#tabsScriptEdit li.active a").attr("name");
+                var tabActive = $("#tabsScriptEdit li.active a").attr("name");
 
-            var parser = document.createElement('a');
-            parser.href = window.location.href;
+                var parser = document.createElement('a');
+                parser.href = window.location.href;
 
-            var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort+ "&tabactive=" + tabActive;
+                var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort + "&tabactive=" + tabActive;
 
-            setModif(false);
+                setModif(false);
+                
+                window.location.href = new_uri;
+            },
+            error: showUnexpectedError
+        });
+    };
+    
+    if (propertyWithoutCountry) {
+        showModalConfirmation(function () {
+            $('#confirmationModal').modal('hide');
+            saveProp();
+        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
+    } else {
+        saveProp();
+    }
 
-            window.location.href = new_uri;
-        },
-        error: showUnexpectedError
-    });
 }
 
 function drawProperty(property, testcaseinfo, canUpdate) {
@@ -646,11 +668,11 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     selectNature.change(function () {
         property.nature = $(this).val();
     });
-    
+
     retryNbInput.change(function () {
         property.retryNb = $(this).val();
     });
-    
+
     retryPeriodInput.change(function () {
         property.retryPeriod = $(this).val();
     });
@@ -1322,6 +1344,10 @@ Step.prototype.draw = function () {
     var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "5px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
 
+
+    var schema = $("<div style='margin-left:10px' class='col-lg-2 alert alert-info'><div>" + this.sort + " - " + this.description + "</div></div>")
+    $("#schemaDiv").append(schema);
+
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
     drag.on("dragover", handleDragOver);
@@ -1473,6 +1499,7 @@ Step.prototype.show = function () {
     });
 
     $("#stepDescription").val(object.description);
+    $("#stepId").text(object.sort).addClass("label label-info");
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
@@ -2354,6 +2381,7 @@ function editPropertiesModalSaveHandler() {
         }
         propArr.push($(properties[i]).data("property"));
     }
+    //tàtà
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({
