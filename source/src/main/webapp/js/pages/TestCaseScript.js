@@ -383,7 +383,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             })
 
             if (tabactive !== null) {
-                console.log("toto");
                 $("a[name='" + tabactive + "']").click();
             }
         }
@@ -830,14 +829,13 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 sortProperties("#propTable");
                 var scope = undefined;
                 if (propertyToFocus != undefined && propertyToFocus != null) {
-                    $("#propertiesModal #propTable #propName").each(function (i) {
+                    $("#propTable #propName").each(function (i) {
                         if ($(this).val() == propertyToFocus) {
                             scope = this;
                             $("#propertiesModal").on("shown.bs.modal", function (e) {
                                 $(scope).focus();
                                 $(scope).click();
                             });
-                            $("#propertiesModal").modal("show");
                         }
                     });
                 }

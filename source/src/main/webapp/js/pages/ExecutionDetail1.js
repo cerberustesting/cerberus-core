@@ -68,14 +68,25 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage(id) {
 
     var doc = new Doc();
-    $("#testCaseConfig #testCaseDetails").hide();
-    $("#testCaseConfig .panel-heading").click(function(e){
-        $("#testCaseConfig #testCaseDetails").toggle();
-        $('#list-wrapper').data('bs.affix').options.offset.top = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $("div.progres").outerHeight(true) + $("#testCaseConfig").outerHeight(true);
-        return false;
-    });
+    var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
+    $('#executionHeader').affix({offset: {top: height} });
+    
+     var wrap = $(window);
 
-    $('#list-wrapper').affix({offset: {top: $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $("div.progres").outerHeight(true) + $("#testCaseConfig").outerHeight(true)} });
+            wrap.on("scroll", function (e) {
+                if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+                    $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+                    $("#list-wrapper").width($("#nav-execution").width());
+                }
+            });
+
+            wrap.resize(function (e) {
+                if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+                    $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+                    $("#list-wrapper").width($("#nav-execution").width());
+                }
+                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
+            })
 
     $("#editTcInfo").prop("disabled",true);
     $("#runTestCase").prop("disabled",true);
@@ -133,7 +144,7 @@ function displayPageLabel(doc){
     $("#pageTitle").text(doc.getDocLabel("page_executiondetail","title"));
     $(".alert.alert-warning span").text(doc.getDocLabel("page_global","beta_message"));
     $(".alert.alert-warning button").text(doc.getDocLabel("page_global","old_page"));
-    $("#ExecutionByTag").text(doc.getDocLabel("page_executiondetail","see_execution_tag"));
+    $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> "+ doc.getDocLabel("page_executiondetail","see_execution_tag"));
     $("#more").text(doc.getDocLabel("page_executiondetail","more_detail"));
     $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail","application"));
     $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail","browser"));
@@ -161,10 +172,10 @@ function displayPageLabel(doc){
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail","version"));
     $("#steps h3").text(doc.getDocLabel("page_executiondetail","steps"));
     $("#actions h3").text(doc.getDocLabel("page_global","columnAction"));
-    $("#handler #editTcInfo").text(doc.getDocLabel("page_executiondetail","edittc"));
-    $("#handler #runTestCase").text(doc.getDocLabel("page_executiondetail","runtc"));
-    $("#handler #lastExecution").text(doc.getDocLabel("page_executiondetail","lastexecution"));
-    $("#handler #lastExecutionwithEnvCountry").text(doc.getDocLabel("page_executiondetail","lastexecutionwithenvcountry"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> "+ doc.getDocLabel("page_executiondetail","edittc"));
+    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> "+ doc.getDocLabel("page_executiondetail","runtc"));
+    $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> "+ doc.getDocLabel("page_executiondetail","lastexecution"));
+    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> "+ doc.getDocLabel("page_executiondetail","lastexecutionwithenvcountry"));
 }
 
 function updatePage(data, stepList){
@@ -204,13 +215,13 @@ function updatePage(data, stepList){
         configPanel.find("#controlstatus").addClass("text-primary");
     } else if (data.controlStatus === "OK") {
         configPanel.find("#controlstatus").addClass("text-success");
-        $("#testCaseConfig").removeClass("panel-default").addClass("panel-success");
+        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-success");
     } else if (data.controlStatus === "KO") {
         configPanel.find("#controlstatus").addClass("text-danger");
-        $("#testCaseConfig").removeClass("panel-default").addClass("panel-danger");
+        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-danger");
     } else {
         configPanel.find("#controlstatus").addClass("text-warning");
-        $("#testCaseConfig").removeClass("panel-default").addClass("panel-warning");
+        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-warning");
     }
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
@@ -221,7 +232,7 @@ function updatePage(data, stepList){
     configPanel.find("input#status").val(data.status);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
     configPanel.find("input#controlmessage").val(data.controlMessage);
-    configPanel.find("input#end").val(data.end);
+    configPanel.find("input#end").val(new Date(data.end));
     configPanel.find("input#finished").val(data.finished);
     configPanel.find("input#id").val(data.id);
     configPanel.find("input#ip").val(data.ip);
@@ -231,7 +242,7 @@ function updatePage(data, stepList){
     configPanel.find("input#cerberusversion").val(data.crbVersion);
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#screenSize").val(data.screenSize);
-    configPanel.find("input#start").val(data.start);
+    configPanel.find("input#start").val(new Date(data.start));
     configPanel.find("input#tag").val(data.tag);
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#verbose").val(data.verbose);
@@ -618,16 +629,16 @@ Step.prototype.show = function () {
 
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
-        $("#stepContent").addClass("col-lg-9");
+       // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "PE") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
-        $("#stepContent").addClass("col-lg-9");
+       // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "KO") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
-        $("#stepContent").addClass("col-lg-9");
+       // $("#stepContent").addClass("col-lg-9");
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
-        $("#stepContent").addClass("col-lg-9");
+       // $("#stepContent").addClass("col-lg-9");
     }
 
     stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.returnMessage));
