@@ -1497,7 +1497,7 @@ Step.prototype.show = function () {
     });
 
     $("#stepDescription").val(object.description);
-    $("#stepId").text(object.sort).addClass("label label-info");
+    $("#stepId").text(object.sort).addClass("label-info");
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
