@@ -43,7 +43,7 @@
         <gson.version>2.3.1</gson.version>
         <jsonxpath.version>1.2.0</jsonxpath.version>
         <poi.version>3.13</poi.version>
-        <appium.version>3.4.1</appium.version>
+        <appium.version>4.1.2</appium.version>
         <groovy.version>2.4.7</groovy.version>
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <asciidoctor.version>1.5.4</asciidoctor.version>

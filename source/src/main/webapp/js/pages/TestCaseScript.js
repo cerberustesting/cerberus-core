@@ -342,7 +342,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 });
             });
 
-            $("#runTestCase").attr("document.location.href", "'./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
+            $("#runTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
             $("#seeLastExec").parent().attr("href", "./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
 
@@ -352,7 +352,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 dataType: "json",
                 success: function (data) {
                     if (!jQuery.isEmptyObject(data.contentTable)) {
-                        $("#rerunTestCase").attr("document.location.href", "'./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
+                        $("#rerunTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "&country=" + data.contentTable.country + "&environment=" + data.contentTable.env + "'");
                         $("#runTestCase").attr("title", "Last Execution was " + data.contentTable.controlStatus + " in " + data.contentTable.env + " in " + data.contentTable.country + " on " + data.contentTable.end)
                     } else {
                         $("#rerunTestCase").attr("disabled", true);
@@ -381,10 +381,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 }
                 $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
             })
-            
-            if (tabactive !== null){
-                console.log("toto");
-                $("a[name='"+tabactive+"']").click();
+
+            if (tabactive !== null) {
+                $("a[name='" + tabactive + "']").click();
             }
         }
     });
@@ -489,41 +488,63 @@ function setAllSort() {
 
 function saveScript() {
     var stepArr = setAllSort();
+    var doc = new Doc();
 
-    var properties = $("#masterProp");
+    var properties = $("#propTable #masterProp");
     var propArr = [];
+    var propertyWithoutCountry = false;
     for (var i = 0; i < properties.length; i++) {
+        if ($(properties[i]).data("property").country.length <= 0) {
+            propertyWithoutCountry = true;
+        }
         propArr.push($(properties[i]).data("property"));
     }
+    
+    var saveProp = function () {
+        showLoaderInModal('#propertiesModal');
+        $.ajax({
+            url: "UpdateTestCaseWithDependencies1",
+            async: true,
+            method: "POST",
+            contentType:'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({
+                informationInitialTest: GetURLParameter("test"),
+                informationInitialTestCase: GetURLParameter("testcase"),
+                informationTest: GetURLParameter("test"),
+                informationTestCase: GetURLParameter("testcase"),
+                stepArray: stepArr,
+                propArr: propArr
+            }),
+            success: function () {
 
-    $.ajax({
-        url: "UpdateTestCaseWithDependencies1",
-        async: true,
-        method: "POST",
-        data: {informationInitialTest: GetURLParameter("test"),
-            informationInitialTestCase: GetURLParameter("testcase"),
-            informationTest: GetURLParameter("test"),
-            informationTestCase: GetURLParameter("testcase"),
-            stepArray: JSON.stringify(stepArr),
-            propArr: JSON.stringify(propArr)},
-        success: function () {
+                var stepHtml = $("#stepList li.active");
+                var stepData = stepHtml.data("item");
 
-            var stepHtml = $("#stepList li.active");
-            var stepData = stepHtml.data("item");
-            
-            var tabActive = $("#tabsScriptEdit li.active a").attr("name");
+                var tabActive = $("#tabsScriptEdit li.active a").attr("name");
 
-            var parser = document.createElement('a');
-            parser.href = window.location.href;
+                var parser = document.createElement('a');
+                parser.href = window.location.href;
 
-            var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort+ "&tabactive=" + tabActive;
+                var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort + "&tabactive=" + tabActive;
 
-            setModif(false);
+                setModif(false);
+                
+                window.location.href = new_uri;
+            },
+            error: showUnexpectedError
+        });
+    };
+    
+    if (propertyWithoutCountry) {
+        showModalConfirmation(function () {
+            $('#confirmationModal').modal('hide');
+            saveProp();
+        }, doc.getDocLabel("page_global", "btn_savetableconfig"), doc.getDocLabel("page_testcasescript", "warning_no_country"), "", "", "", "");
+    } else {
+        saveProp();
+    }
 
-            window.location.href = new_uri;
-        },
-        error: showUnexpectedError
-    });
 }
 
 function drawProperty(property, testcaseinfo, canUpdate) {
@@ -646,11 +667,11 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     selectNature.change(function () {
         property.nature = $(this).val();
     });
-    
+
     retryNbInput.change(function () {
         property.retryNb = $(this).val();
     });
-    
+
     retryPeriodInput.change(function () {
         property.retryPeriod = $(this).val();
     });
@@ -808,14 +829,13 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 sortProperties("#propTable");
                 var scope = undefined;
                 if (propertyToFocus != undefined && propertyToFocus != null) {
-                    $("#propertiesModal #propTable #propName").each(function (i) {
+                    $("#propTable #propName").each(function (i) {
                         if ($(this).val() == propertyToFocus) {
                             scope = this;
                             $("#propertiesModal").on("shown.bs.modal", function (e) {
                                 $(scope).focus();
                                 $(scope).click();
                             });
-                            $("#propertiesModal").modal("show");
                         }
                     });
                 }
@@ -1316,11 +1336,13 @@ function Step(json, stepList, canUpdate) {
 }
 
 Step.prototype.draw = function () {
-    var scope = this;
     var htmlElement = this.html;
-    var badge = $("<div id='labelDiv' class='col-sm-1 badge'>").css("float", "right").css("margin-top", "-2px");
     var drag = $("<div></div>").addClass("col-sm-1 drag-step").css("padding-left", "5px").css("padding-right", "5px").prop("draggable", true)
             .append($("<span></span>").addClass("fa fa-ellipsis-v"));
+
+
+    var schema = $("<div style='margin-left:10px' class='col-lg-2 alert alert-info'><div>" + this.sort + " - " + this.description + "</div></div>")
+    $("#schemaDiv").append(schema);
 
     drag.on("dragstart", handleDragStart);
     drag.on("dragenter", handleDragEnter);
@@ -1473,6 +1495,7 @@ Step.prototype.show = function () {
     });
 
     $("#stepDescription").val(object.description);
+    $("#stepId").text(object.sort);
     $("#stepInfo").show();
     $("#addActionContainer").show();
     $("#stepHeader").show()
@@ -1631,7 +1654,7 @@ Action.prototype.draw = function (afterAction) {
     var htmlElement = this.html;
     var action = this;
     var row = $("<div></div>").addClass("step-action row").addClass("action");
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id", "labelDiv"));
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
@@ -1734,7 +1757,7 @@ Action.prototype.setSort = function (sort) {
 };
 
 Action.prototype.refreshSort = function () {
-    this.html.find(".action #labelDiv").empty().append($("<span>").text(this.sort).addClass("label label-primary"));
+    this.html.find(".action #labelDiv").text(this.sort);
 };
 
 Action.prototype.generateContent = function () {
@@ -1746,7 +1769,10 @@ Action.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", doc.getDocLabel("page_testcasescript", "describe_action"));
+    var descContainer = $("<div class='input-group'></div>");
+    var descField = $("<input class='description form-control' placeholder='"+ doc.getDocLabel("page_testcasescript", "describe_action")+"'>");
+    descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
+    descContainer.append(descField);
     var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
     var propertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
 
@@ -1813,7 +1839,7 @@ Action.prototype.generateContent = function () {
         obj.value2 = propertyField.val();
     });
 
-    firstRow.append(descField);
+    firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-3 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "action_field"))).append(actionList));
     secondRow.append($("<div></div>").addClass("col-lg-5 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(objectField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(propertyField));
@@ -1912,7 +1938,7 @@ function Control(json, parentAction, canUpdate) {
 Control.prototype.draw = function (afterControl) {
     var htmlElement = this.html;
     var control = this;
-    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true).append($("<div>").attr("id", "labelDiv"));
+    var drag = $("<div></div>").addClass("drag-step-action col-lg-1").prop("draggable", true);
     var plusBtn = $("<button></button>").addClass("btn btn-default add-btn").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
     var addBtn = $("<button></button>").addClass("btn btn-success add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
     var addABtn = $("<button></button>").addClass("btn btn-primary add-btn").append($("<span></span>").addClass("glyphicon glyphicon-plus"));
@@ -2005,7 +2031,8 @@ Control.prototype.setSort = function (sort) {
 };
 
 Control.prototype.refreshSort = function () {
-    this.html.find("#labelDiv").empty().append($("<span>").text(this.parentAction.sort).addClass("label label-primary")).append($("<span>").text(this.sort).addClass("label label-success"));
+    this.html.find("#labelDiv").text(this.parentAction.sort);
+    this.html.find("#labelControlDiv").text(this.sort);
 };
 
 Control.prototype.generateContent = function () {
@@ -2017,7 +2044,11 @@ Control.prototype.generateContent = function () {
     var thirdRow = $("<div></div>").addClass("fieldRow row").hide();
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
-    var descField = $("<input>").addClass("description").addClass("form-control").prop("placeholder", doc.getDocLabel("page_testcasescript", "describe_control"));
+    var descContainer = $("<div class='input-group'></div>");
+    var descField = $("<input class='description form-control' placeholder='"+ doc.getDocLabel("page_testcasescript", "describe_control")+"'>");
+    descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
+    descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelControlDiv'></span>"));
+    descContainer.append(descField);
     var controlValueField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
     var controlPropertyField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").addClass("form-control input-sm").css("width", "100%");
 
@@ -2071,7 +2102,7 @@ Control.prototype.generateContent = function () {
         obj.fatal = fatalList.val();
     });
 
-    firstRow.append(descField);
+    firstRow.append(descContainer);
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "control_field"))).append(controlList));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(controlValueField));
     secondRow.append($("<div></div>").addClass("col-lg-4 form-group has-feedback").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(controlPropertyField));
@@ -2354,6 +2385,7 @@ function editPropertiesModalSaveHandler() {
         }
         propArr.push($(properties[i]).data("property"));
     }
+    //tàtà
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({

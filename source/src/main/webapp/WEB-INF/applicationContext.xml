@@ -28,7 +28,7 @@
         <!--<property name="jndiName" value="jdbc/cerberusMySQL"/>-->
         <property name="resourceRef" value="true"/>
     </bean>
-
+    
     <context:annotation-config/>
 
     <context:component-scan base-package="org.cerberus.*">
