@@ -66,6 +66,13 @@ public interface ITestCaseExecutionDataService {
     /**
      *
      * @param id
+     * @return
+     */
+    public AnswerList<TestCaseExecutionData> readByIdWithDependency(long id);
+
+    /**
+     *
+     * @param id
      * @param property
      * @param index
      * @return

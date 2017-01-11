@@ -18,21 +18,12 @@
 package org.cerberus.enums;
 
 /**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 19/Dez/2012
- * @since 0.9.0
+ * Message is a generic Message that is used to feedback the result of any
+ * Cerberus execution. For every message, we have: - a number - a 2 digit code
+ * that report the status of the event. - a clear message that will be reported
+ * to the user. describing what was done or the error that occurred.
  */
 public enum MessageGeneralEnum {
-
-    /**
-     * Message is a generic Message that is used to feedback the result of any Cerberus execution.
-     * For every message, we have:
-     * - a number
-     * - a 2 digit code that report the status of the event.
-     * - a clear message that will be reported to the user. describing what was done or the error that occurred.
-     */
 
     VALIDATION_FAILED_ENVIRONMENT_NOTACTIVE(50, "", "The environment selected isn't active."),
     VALIDATION_FAILED_TESTCASE_NOTACTIVE(51, "", "The test case selected isn't active."),
@@ -72,7 +63,6 @@ public enum MessageGeneralEnum {
     VALIDATION_FAILED_TEST_NOTACTIVE(88, "", "The test '%TEST%' isn't active."),
     VALIDATION_FAILED_USERAGENTDIFFERENT(90, "", "User Agent has been specified at robot and TestCase level with different values. TestCase : '%UATESTCASE%' Robot : '%UAROBOT%'"),
     VALIDATION_SUCCEEDED(89, "", "The validation succeeded"),
-
     EXECUTION_PE_TESTSTARTED(5, "PE", "Test started..."),
     EXECUTION_PE_CHECKINGPARAMETERS(5, "PE", "Checking parameters..."),
     EXECUTION_PE_LOADINGDATA(5, "PE", "Loading data..."),
@@ -85,12 +75,13 @@ public enum MessageGeneralEnum {
     EXECUTION_KO(2, "KO", "The test case finished, but failed on validations."),
     EXECUTION_FA(3, "FA", "The test case failed to be executed. More lickely due to an error in the test or in cerberus configuration."),
     EXECUTION_FA_ACTION(4, "FA", "The test case failed to be executed because of an action."),
-    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%."),    
+    EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%."),
     EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),
     EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%."),
+    EXECUTION_FA_CONDITION(11, "FA", "The test case failed to be executed. An error occured when evaluating the condition '%COND%'. %MES%"),
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
-        
+    EXECUTION_NA_CONDITION(12, "NA", "The test case was not executed following the evaluation of the condition '%COND%'. %MES%"),
     APPLICATION_NOT_FOUND(100, "FA", "Application does not exist."),
     NOT_IMPLEMEMTED(101, "FA", "Missing data."),
     NO_DATA_FOUND(102, "FA", "Missing data."),
@@ -98,7 +89,6 @@ public enum MessageGeneralEnum {
     CANNOT_UPDATE_TABLE(104, "", "Cannot update table."),
     SOAPLIB_NOT_FOUND(105, "FA", "SOAP Library was not found"),
     SOAPLIB_MALFORMED_URL(106, "FA", "SOAP Attachment File badly configured"),
-    
     GUI_TEST_CREATION_NOT_HAVE_RIGHT(403, "", "Error : You dont have the user right to create a Test. Please contact your Cerberus Administrator."),
     GUI_TEST_DUPLICATION_NOT_EXISTING_TEST(403, "", "Error : You're trying to duplicate a test which does not exist anymore."),
     GUI_TEST_CREATION_ISSUE(403, "", "Error : A problem has been found inserting data in database. Please contact your Cerberus Administrator."),
@@ -106,7 +96,6 @@ public enum MessageGeneralEnum {
     GUI_TESTCASE_DUPLICATION_ALREADY_EXISTS(403, "", "Error : You're trying to duplicate a testcase which already exists."),
     GUI_TESTCASE_DELETE_USED_STEP(403, "", "Error : You're trying to delete a testcase which have some step used in other tests. Please remove the link before delete this testcase."),
     GUI_TESTCASE_NON_ADMIN_SAVE_WORKING_TESTCASE(403, "", "Error : You're trying to save a WORKING testcase without having the TestAdmin right to do so."),
-
     // Data operations
     DATA_OPERATION_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
     DATA_OPERATION_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),
@@ -114,7 +103,7 @@ public enum MessageGeneralEnum {
     GENERIC_SUCCESS(000, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "The requested operation was concluded with success."),
     GENERIC_WARNING(000, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "The requested operation was concluded but with warnings."),
     GENERIC_ERROR(900, MessageCodeEnum.GENERIC_CODE_ERROR.getCodeString(), "An error occurred while executing the requested operation !");
-    
+
     private final int code;
     private final String codeString;
     private final String description;
@@ -141,6 +130,5 @@ public enum MessageGeneralEnum {
     public String toString() {
         return "MessageGeneralEnum{" + "code=" + code + ", codeString=" + codeString + ", description=" + description + '}';
     }
-    
-    
+
 }

@@ -17,10 +17,12 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.List;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,9 +61,18 @@ public class TestCaseStepActionControlExecution {
      *
      */
     private TestCaseStepActionExecution testCaseStepActionExecution;
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at control level
     private MessageEvent controlResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
+
+    public List<TestCaseExecutionFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<TestCaseExecutionFile> fileList) {
+        this.fileList = fileList;
+    }
 
     public MessageEvent getControlResultMessage() {
         return controlResultMessage;
@@ -331,6 +342,15 @@ public class TestCaseStepActionControlExecution {
             result.put("description", this.getDescription());
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
+            
+            JSONArray array = new JSONArray();
+            if (this.getFileList()!= null) {
+                for (Object actionFileList : this.getFileList()) {
+                    array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                }
+            }
+            result.put("fileList", array);
+            
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

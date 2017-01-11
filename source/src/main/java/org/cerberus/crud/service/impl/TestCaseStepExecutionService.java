@@ -21,15 +21,16 @@ package org.cerberus.crud.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseStepExecutionDAO;
-import org.cerberus.crud.entity.TestCaseStep;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.crud.service.ITestCaseStepService;
 import org.cerberus.util.answer.AnswerList;
-import org.openqa.selenium.remote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,11 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
     ITestCaseStepService testCaseStepService;
     @Autowired
     ITestCaseStepActionExecutionService testCaseStepActionExecutionService;
+    @Autowired
+    ITestCaseExecutionFileService testCaseExecutionFileService;
 
+    private static final Logger LOG = Logger.getLogger(TestCaseStepExecutionService.class);
+    
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
         this.testCaseStepExecutionDao.insertTestCaseStepExecution(testCaseStepExecution);
@@ -74,8 +79,13 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
         List<TestCaseStepExecution> tcseList = new ArrayList();
         for (Object step : steps.getDataList()) {
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
+
             AnswerList actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, test, testcase, tces.getStep(), tces.getIndex());
             tces.setTestCaseStepActionExecution(actions);
+
+            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tces.getTest() + "-" + tces.getTestCase() + "-" + tces.getStep() + "-" + tces.getIndex());
+            tces.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+
             tcseList.add(tces);
         }
         response = new AnswerList(tcseList, steps.getTotalRows());

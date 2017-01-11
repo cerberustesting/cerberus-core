@@ -18,29 +18,20 @@
 package org.cerberus.enums;
 
 /**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 19/Dez/2012
- * @since 0.9.0
+ * Message is used to feedback the result of any Cerberus event. Events could by
+ * Property, Action, Control or even Step. For every event, we have: - a number
+ * - a 2 digit code that report the status of the event. - a clear message that
+ * will be reported to the user. describing what was done or the error that
+ * occured. - a boolean that define whether the complete test execution should
+ * stop or not. - a boolean that define whether a screenshot will be done in
+ * case of problem (only if screenshot option is set to 1). - the corresponding
+ * Execution message that will be updated at the execution level.
+ * <p/>
+ * Code standard is : All SUCCESS are x00 (same code for all). All FAILED are
+ * from x50 to x99 (different code for each). Pending is x99.
  */
 public enum MessageEventEnum {
 
-    /**
-     * Message is used to feedback the result of any Cerberus event. Events
-     * could by Property, Action, Control or even Step. For every event, we
-     * have: - a number - a 2 digit code that report the status of the event. -
-     * a clear message that will be reported to the user. describing what was
-     * done or the error that occured. - a boolean that define whether the
-     * complete test execution should stop or not. - a boolean that define
-     * whether a screenshot will be done in case of problem (only if screenshot
-     * option is set to 1). - the corresponding Execution message that will be
-     * updated at the execution level.
-     * <p/>
-     * Code standard is : All SUCCESS are x00 (same code for all). All FAILED
-     * are from x50 to x99 (different code for each). Pending is x99.
-     * 
-    **/
     PROPERTY_SUCCESS(100, "OK", "Property calculated successfully.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL(100, "OK", "SQL executed against database '%DATABASE%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     PROPERTY_SUCCESS_SQL_RANDOM(100, "OK", "Random result fetch from SQL executed against database '%DATABASE%' and JDBCPOOL '%JDBCPOOLNAME%'. SQL : '%SQL%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -333,14 +324,41 @@ public enum MessageEventEnum {
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********
-    CONDITION_PENDING(1200, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    CONDITION_NEVER(1210, "NA", "Not executed following execution condition : %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    CONDITION_DECODE_GENERICERROR(1215, "FA", "Not executed following execution condition : %COND%. Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
-    CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER(1220, "FA", "Not executed following execution condition : %COND%. Missing mandatory parameter for %COND%.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
-    CONDITION_IFNUMERIC_GENERICCONVERSIONERROR(1230, "FA", "Not executed following execution condition : %COND%. Cannot convert %STRINGVALUE% to numeric.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
-    CONDITION_IFPROPERTYEXIST_NOTEXIST(1240, "NA", "Not executed following execution condition : %COND%. Property %PROP% do not exist for country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    CONDITION_GENERIC_NOTEXECUTED(1280, "NA", "Not executed following execution condition : %COND%. %MESSAGE%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    CONDITION_UNKNOWN(1290, "NA", "Not executed because execution condition : %COND% do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_PENDING(1200, "PE", "Evaluating Condition...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FAILED_UNKNOWNCONDITION(1290, "FA", "condition '%COND%' do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
+    CONDITIONEVAL_FAILED_DECODE_GENERICERROR(1215, "FA", "Error when decoding '%VALUE%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
+    CONDITIONEVAL_FAILED_IFPROPERTYEXIST_MISSINGPARAMETER(1220, "FA", "Missing mandatory parameter for '%COND%'.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
+    CONDITIONEVAL_FAILED_IFNUMERIC_GENERICCONVERSIONERROR(1230, "FA", "Cannot convert %STRINGVALUE% to numeric.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
+    CONDITIONEVAL_FALSE_NEVER(1210, "NA", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_IFPROPERTYEXIST(1240, "NA", "Property %PROP% do not exist for country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_STRINGEQUAL(1210, "NA", "'%STR1%' is not equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_STRINGDIFFERENT(1210, "NA", "'%STR1%' is not different from '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_STRINGGREATER(1210, "NA", "'%STR1%' is not greater than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_STRINGMINOR(1210, "NA", "'%STR1%' is not minor to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_STRINGCONTAINS(1210, "NA", "'%STR1%' does not contain '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICEQUAL(1210, "NA", "'%STR1%' is not equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICDIFFERENT(1210, "NA", "'%STR1%' is not different from '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICGREATER(1210, "NA", "'%STR1%' is not greater than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICGREATEROREQUAL(1210, "NA", "'%STR1%' is not greater or equal than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICMINOR(1210, "NA", "'%STR1%' is not minor to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_FALSE_NUMERICMINOROREQUAL(1210, "NA", "'%STR1%' is not minor or equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_ALWAYS(1210, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_IFPROPERTYEXIST(1240, "OK", "Property %PROP% exist for country %COUNTRY%.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_STRINGEQUAL(1210, "OK", "'%STR1%' is equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_STRINGDIFFERENT(1210, "OK", "'%STR1%' is different from '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_STRINGGREATER(1210, "OK", "'%STR1%' is greater than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_STRINGMINOR(1210, "OK", "'%STR1%' is minor to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_STRINGCONTAINS(1210, "OK", "'%STR1%' does contain '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICEQUAL(1210, "OK", "'%STR1%' is equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICDIFFERENT(1210, "OK", "'%STR1%' is different from '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICGREATER(1210, "OK", "'%STR1%' is greater than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICGREATEROREQUAL(1210, "OK", "'%STR1%' is greater or equal than '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICMINOR(1210, "OK", "'%STR1%' is minor to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITIONEVAL_TRUE_NUMERICMINOROREQUAL(1210, "OK", "'%STR1%' is minor or equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASE_NOTEXECUTED(1280, "NA", "Testcase not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_FA),
+    CONDITION_TESTCASESTEP_NOTEXECUTED(1280, "NA", "Testcase Step not executed with loop '%LOOP%' following condition '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASEACTION_NOTEXECUTED(1280, "NA", "Action not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASECONTROL_NOTEXECUTED(1280, "NA", "Control not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),

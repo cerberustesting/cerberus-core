@@ -67,8 +67,17 @@ public class TestCaseStepActionExecution {
     private MessageGeneral executionResultMessage;
     private String propertyName; // Property name is stored in order to keep track of the property name. property is replaced by the value of it.
     private boolean stopExecution;
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
     private AnswerList testCaseStepActionControlExecutionList;
+
+    public List<TestCaseExecutionFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<TestCaseExecutionFile> fileList) {
+        this.fileList = fileList;
+    }
 
     public String getConditionOper() {
         return conditionOper;
@@ -361,6 +370,7 @@ public class TestCaseStepActionExecution {
             result.put("description", this.getDescription());
             result.put("returnCode", this.getReturnCode());
             result.put("returnMessage", this.getReturnMessage());
+            
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepActionControlExecutionList() != null && this.getTestCaseStepActionControlExecutionList().getDataList() != null) {
                 for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
@@ -368,6 +378,15 @@ public class TestCaseStepActionExecution {
                 }
             }
             result.put("testCaseStepActionControlExecutionList", array);
+            
+            array = new JSONArray();
+            if (this.getFileList()!= null) {
+                for (Object actionFileList : this.getFileList()) {
+                    array.put(((TestCaseExecutionFile) actionFileList).toJson());
+                }
+            }
+            result.put("fileList", array);
+            
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepActionExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

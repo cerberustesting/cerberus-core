@@ -50,8 +50,8 @@ public class ConditionService implements IConditionService {
         LOG.debug("Starting Evaluation condition : " + conditionOper);
 
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
-        boolean execute_Action = true;
+        MessageEvent mes;
+        boolean execute_Operation = true;
 
         /**
          * CONDITION Management is treated here. Checking if the
@@ -61,13 +61,11 @@ public class ConditionService implements IConditionService {
         switch (conditionOper) {
             case TestCaseStepAction.CONDITIONOPER_ALWAYS:
             case "": // In case condition is not defined, it is considered as always.
-                mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
-                execute_Action = true;
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ALWAYS);
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFPROPERTYEXIST:
                 ans = evaluateCondition_ifPropertyExist(conditionOper, conditionValue1, tCExecution);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
@@ -78,54 +76,53 @@ public class ConditionService implements IConditionService {
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICMINOR:
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICMINOROREQUAL:
                 ans = evaluateCondition_ifNumericXXX(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGEQUAL:
                 ans = evaluateCondition_ifStringEqual(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGDIFFERENT:
                 ans = evaluateCondition_ifStringDifferent(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGGREATER:
                 ans = evaluateCondition_ifStringGreater(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGMINOR:
                 ans = evaluateCondition_ifStringMinor(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFSTRINGCONTAINS:
                 ans = evaluateCondition_ifStringContains(conditionOper, conditionValue1, conditionValue2);
-                execute_Action = (Boolean) ans.getItem();
                 mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_NEVER:
-                mes = new MessageEvent(MessageEventEnum.CONDITION_NEVER);
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NEVER);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
-                execute_Action = false;
                 break;
 
             default:
-                mes = new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN);
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
-                execute_Action = false;
         }
-        LOG.debug("Finished Evaluation condition : " + execute_Action);
+        LOG.debug("Finished Evaluation condition : " + mes.getCodeString());
 
-        ans.setItem(execute_Action);
+        // the decision whether we execute the action/control/step is taken from the codeString of the message.
+        if (mes.getCodeString().equals("OK")) { // If code is OK, we execute the Operation.
+            execute_Operation = true;
+        } else { // Any other status and we don't execute anything.
+            execute_Operation = false;
+        }
+
+        ans.setItem(execute_Operation);
         ans.setResultMessage(mes);
         return ans;
     }
@@ -135,18 +132,16 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if property Exist");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
-        boolean execute_Action = true;
         if (StringUtil.isNullOrEmpty(conditionValue1)) {
-            mes = new MessageEvent(MessageEventEnum.CONDITION_IFPROPERTYEXIST_MISSINGPARAMETER);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFPROPERTYEXIST_MISSINGPARAMETER);
             mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
-            execute_Action = false;
 
         } else {
             String myCountry = tCExecution.getCountry();
             String myProperty = conditionValue1;
-            execute_Action = false;
+            boolean execute_Action = false;
             for (TestCaseCountryProperties prop : tCExecution.getTestCaseCountryPropertyList()) {
                 LOG.debug(prop.getCountry() + " - " + myCountry + " - " + prop.getProperty() + " - " + myProperty);
                 if ((prop.getCountry().equals(myCountry)) && (prop.getProperty().equals(myProperty))) {
@@ -154,13 +149,17 @@ public class ConditionService implements IConditionService {
                 }
             }
             if (execute_Action == false) {
-                mes = new MessageEvent(MessageEventEnum.CONDITION_IFPROPERTYEXIST_NOTEXIST);
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFPROPERTYEXIST);
+                mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
+                mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFPROPERTYEXIST);
                 mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
                 mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             }
         }
-        ans.setItem(execute_Action);
         ans.setResultMessage(mes);
         return ans;
     }
@@ -170,19 +169,21 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if String Equal");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
-        boolean execute_Action = true;
         if (conditionValue1.equals(conditionValue2)) {
-            execute_Action = true;
-        } else {
-            execute_Action = false;
-            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGEQUAL);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not equal to '" + conditionValue2 + "'"));
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGEQUAL);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
         }
-        ans.setItem(execute_Action);
         ans.setResultMessage(mes);
         return ans;
     }
@@ -192,17 +193,21 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if String Different");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
         boolean execute_Action = true;
         if (!(conditionValue1.equals(conditionValue2))) {
-            execute_Action = true;
-        } else {
-            execute_Action = false;
-            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGDIFFERENT);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not different to '" + conditionValue2 + "'"));
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGDIFFERENT);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
@@ -214,17 +219,21 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if String Greater");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
         boolean execute_Action = true;
         if ((conditionValue1.compareToIgnoreCase(conditionValue2) > 0)) {
-            execute_Action = true;
-        } else {
-            execute_Action = false;
-            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGGREATER);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not greater than '" + conditionValue2 + "'"));
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGGREATER);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
@@ -236,17 +245,21 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if String Minor");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
         boolean execute_Action = true;
         if ((conditionValue1.compareToIgnoreCase(conditionValue2) < 0)) {
-            execute_Action = true;
-        } else {
-            execute_Action = false;
-            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGMINOR);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' is not minor to '" + conditionValue2 + "'"));
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGMINOR);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
@@ -258,17 +271,21 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if String Contains");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes;
 
         boolean execute_Action = true;
         if (conditionValue1.contains(conditionValue2)) {
-            execute_Action = true;
-        } else {
-            execute_Action = false;
-            mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_STRINGCONTAINS);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
-                    .replace("%MESSAGE%", "String '" + conditionValue1 + "' does not contain '" + conditionValue2 + "'"));
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_STRINGCONTAINS);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", conditionOper)
+                    .replace("%STR1%", conditionValue1).replace("%STR2%", conditionValue2)
+            );
         }
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
@@ -280,7 +297,7 @@ public class ConditionService implements IConditionService {
             LOG.debug("Checking if Numeric Equals");
         }
         AnswerItem ans = new AnswerItem();
-        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITION_PENDING);
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_PENDING);
 
         // We first prepare the string for nueric conversion to replace , by .
         String newConditionValue1 = StringUtil.prepareToNumeric(conditionValue1);
@@ -291,7 +308,7 @@ public class ConditionService implements IConditionService {
         try {
             value1 = Double.valueOf(newConditionValue1);
         } catch (NumberFormatException nfe) {
-            mes = new MessageEvent(MessageEventEnum.CONDITION_IFNUMERIC_GENERICCONVERSIONERROR);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFNUMERIC_GENERICCONVERSIONERROR);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
                     .replace("%STRINGVALUE%", newConditionValue1));
@@ -305,7 +322,7 @@ public class ConditionService implements IConditionService {
         try {
             value2 = Double.valueOf(newConditionValue2);
         } catch (NumberFormatException nfe) {
-            mes = new MessageEvent(MessageEventEnum.CONDITION_IFNUMERIC_GENERICCONVERSIONERROR);
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFNUMERIC_GENERICCONVERSIONERROR);
             mes.setDescription(mes.getDescription()
                     .replace("%COND%", conditionOper)
                     .replace("%STRINGVALUE%", newConditionValue2));
@@ -320,73 +337,97 @@ public class ConditionService implements IConditionService {
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICEQUAL:
                 if (Objects.equals(value1, value2)) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICEQUAL);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not equal to '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICEQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICDIFFERENT:
                 if (!(Objects.equals(value1, value2))) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICDIFFERENT);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not different to '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICDIFFERENT);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICGREATER:
                 if (value1 > value2) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATER);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not greater than '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATER);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICGREATEROREQUAL:
                 if (value1 >= value2) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICGREATEROREQUAL);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not greater or equal than '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICGREATEROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICMINOR:
                 if (value1 < value2) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOR);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not lower than '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOR);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFNUMERICMINOROREQUAL:
                 if (value1 <= value2) {
-                    execute_Action = true;
-                } else {
-                    execute_Action = false;
-                    mes = new MessageEvent(MessageEventEnum.CONDITION_GENERIC_NOTEXECUTED);
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_NUMERICMINOROREQUAL);
                     mes.setDescription(mes.getDescription()
                             .replace("%COND%", conditionOper)
-                            .replace("%MESSAGE%", "Numeric '" + conditionValue1 + "' is not lower or equal than '" + conditionValue2 + "'"));
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_NUMERICMINOROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", conditionOper)
+                            .replace("%STR1%", value1.toString()).replace("%STR2%", value2.toString())
+                    );
                 }
                 break;
 
