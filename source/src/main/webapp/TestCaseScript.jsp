@@ -116,11 +116,11 @@
                                             <div class="fieldRow row" id="UseStepRow" style="display: none;">
 
                                             </div>
-                                            <div style="margin-top:15px;" class="input-group">
+                                            <div style="margin-top:15px;" class="input-group marginBottom20">
                                                 <span class="input-group-addon" style="font-weight: 700;" id="stepId"></span>
                                                 <input aria-describedby="stepId" class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                             </div>
-                                            <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
+                                            <div class="fieldRow row marginTop25" id="stepHiddenRow" style="display: none;">
                                                 <div class="col-lg-3 form-group">
                                                     <label>Step Loop:</label>
                                                     <select class="form-control input-sm" id="stepLoop"></select>
@@ -129,11 +129,11 @@
                                                     <label>Step Condition Operation:</label>
                                                     <select class="form-control input-sm" id="stepConditionOper"></select>
                                                 </div>
-                                                <div class="col-lg-5 form-group">
+                                                <div class="col-lg-3 form-group">
                                                     <label>Step Condition Parameter:</label>
                                                     <input class="form-control input-sm" id="stepConditionVal1">
                                                 </div>
-                                                <div class="col-lg-4 form-group">
+                                                <div class="col-lg-3 form-group">
                                                     <label>Step Condition Parameter:</label>
                                                     <input class="form-control input-sm" id="stepConditionVal2">
                                                 </div>

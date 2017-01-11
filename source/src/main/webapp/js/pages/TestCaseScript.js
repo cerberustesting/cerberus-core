@@ -40,6 +40,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         getSelectInvariant("PROPERTYDATABASE", false, true);
         getSelectInvariant("PROPERTYNATURE", false, true);
         getSelectInvariant("ACTIONFORCEEXESTATUS", false, true);
+        getSelectInvariant("STEPLOOP", false, true);
+        getSelectInvariant("STEPCONDITIONOPER", false, true);
 
         loadLibraryStep();
         bindToggleCollapse();
@@ -1374,7 +1376,6 @@ Step.prototype.draw = function () {
 };
 
 Step.prototype.show = function () {
-    var scope = this;
     var doc = new Doc();
     var object = $(this).data("item");
 
@@ -1438,33 +1439,29 @@ Step.prototype.show = function () {
         $("#contentWrapper").removeClass("list-group-item-danger");
     }
 
-    var loop = $("#stepLoop");
-    loop.replaceWith(getSelectInvariant("STEPLOOP", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
-    loop = $("#stepLoop");
-    loop.on("change", function () {
-        object.loop = loop.val();
-    });
-    loop.val(object.loop).trigger("change");
 
-    var conditionVal1 = $("#stepConditionVal1");
-    conditionVal1.css("width", "100%");
-    conditionVal1.on("change", function () {
-        object.conditionVal1 = conditionVal1.val();
+    $("#stepLoop").replaceWith(getSelectInvariant("STEPLOOP", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepLoop"));
+    $("#stepLoop").unbind("change").change(function () {
+        setModif(true);
+        object.loop = $(this).val();
     });
-    conditionVal1.val(object.conditionVal1);
-
-    var conditionVal2 = $("#stepConditionVal2");
-    conditionVal2.css("width", "100%");
-    conditionVal2.on("change", function () {
-        object.conditionVal2 = conditionVal2.val();
+    
+    
+    $("#stepConditionVal1").unbind("change").change(function () {
+        setModif(true);
+        object.conditionVal1 = $(this).val();
     });
-    conditionVal2.val(object.conditionVal2);
 
-    var conditiononper = $("#stepConditionOper");
-    conditiononper.replaceWith(getSelectInvariant("STEPCONDITIONOPER", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOper"));
-    conditiononper = $("#stepConditionOper");
-    conditiononper.on("change", function () {
-        object.conditionOper = conditiononper.val();
+    $("#stepConditionVal2").unbind("change").change(function () {
+        setModif(true);
+        object.conditionVal2 = $(this).val();
+    });
+    
+
+    $("#stepConditionOper").replaceWith(getSelectInvariant("STEPCONDITIONOPER", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOper"));
+    $("#stepConditionOper").unbind("change").change(function () {
+        setModif(true);
+        object.conditionOper = $(this).val();
         if ((object.conditionOper === "always") || (object.conditionOper === "never")) {
             conditionVal1.parent().hide();
             conditionVal2.parent().hide();
@@ -1473,8 +1470,8 @@ Step.prototype.show = function () {
             conditionVal2.parent().show();
         }
     });
-    conditiononper.val(object.conditionOper).trigger("change");
-
+    
+    
     object.stepActionContainer.show();
     $("#stepDescription").unbind("change").change(function () {
         setModif(true);
@@ -1494,6 +1491,10 @@ Step.prototype.show = function () {
         }
     });
 
+    $("#stepLoop").val(object.loop);
+    $("#stepConditionVal1").val(object.conditionVal1);
+    $("#stepConditionVal2").val(object.conditionVal2);
+    $("#stepConditionOper").val(object.conditionOper);
     $("#stepDescription").val(object.description);
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
@@ -2063,17 +2064,18 @@ Control.prototype.generateContent = function () {
         obj.description = descField.val();
     });
 
+    controlconditionval1.val(this.conditionVal1);
     controlconditionval1.css("width", "100%");
     controlconditionval1.on("change", function () {
         obj.conditionVal1 = controlconditionval1.val();
     });
-    controlconditionval1.val(this.conditionVal1);
-
+    
+    controlconditionval2.val(this.conditionVal2);
     controlconditionval2.css("width", "100%");
     controlconditionval2.on("change", function () {
         obj.conditionVal2 = controlconditionval2.val();
     });
-    controlconditionval2.val(this.conditionVal2);
+    
 
     controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
     controlList.val(this.control);
