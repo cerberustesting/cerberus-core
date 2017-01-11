@@ -33,6 +33,8 @@ import org.json.JSONObject;
  */
 public class TestCaseStepExecution {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseStepExecution.class);
+    
     private long id;
     private String test;
     private String testCase;
@@ -59,6 +61,7 @@ public class TestCaseStepExecution {
      */
     private TestCaseStep testCaseStep;
     private TestCaseExecution tCExecution;
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the list of data calculated during the step execution.
     private MessageEvent stepResultMessage;
     private MessageGeneral executionResultMessage;
@@ -68,6 +71,14 @@ public class TestCaseStepExecution {
     private String useStepTestCase;
     private int useStepTestCaseStep;
     private AnswerList testCaseStepActionExecutionList;
+
+    public List<TestCaseExecutionFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<TestCaseExecutionFile> fileList) {
+        this.fileList = fileList;
+    }
 
     public String getLoop() {
         return loop;
@@ -351,6 +362,7 @@ public class TestCaseStepExecution {
             result.put("useStepTest", this.getUseStepTest());
             result.put("useStepTestCase", this.getUseStepTestCase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
+            
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepActionExecutionList() != null && this.getTestCaseStepActionExecutionList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
@@ -358,6 +370,15 @@ public class TestCaseStepExecution {
                 }
             }
             result.put("testCaseStepActionExecutionList", array);
+            
+            array = new JSONArray();
+            if (this.getFileList()!= null) {
+                for (Object fileList : this.getFileList()) {
+                    array.put(((TestCaseExecutionFile) fileList).toJson());
+                }
+            }
+            result.put("fileList", array);
+            
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);
         }

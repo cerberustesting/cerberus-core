@@ -18,12 +18,16 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author vertigo
  */
 public class TestCaseExecutionFile {
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseExecutionFile.class);
+    
     private long id;
     private long exeId;
     private String level;
@@ -113,6 +117,20 @@ public class TestCaseExecutionFile {
 
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
+    }
+    
+    public JSONObject toJson() {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("id", this.getId());
+            result.put("level", this.getLevel());
+            result.put("fileDesc", this.getFileDesc());
+            result.put("fileName", this.getFileName());
+            result.put("fileType", this.getFileType());
+        } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        }
+        return result;
     }
 
 }

@@ -25,9 +25,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
@@ -50,7 +53,11 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
     ITestCaseExecutionDAO testCaseExecutionDao;
     @Autowired
     ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
+    @Autowired
+    ITestCaseExecutionFileService testCaseExecutionFileService;
 
+    private static final Logger LOG = Logger.getLogger(TestCaseStepActionExecutionService.class);
+    
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
         this.testCaseStepActionExecutionDao.insertTestCaseStepActionExecution(testCaseStepActionExecution);
@@ -133,9 +140,15 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
         AnswerList response = null;
         List<TestCaseStepActionExecution> tcsaeList = new ArrayList();
         for (Object action : actions.getDataList()) {
+
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
-            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1(executionId, test, testcase, step, index, tcsae.getSequence());
+
+            AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
             tcsae.setTestCaseStepActionControlExecutionList(controls);
+
+            AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
+            tcsae.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+
             tcsaeList.add(tcsae);
         }
         response = new AnswerList(tcsaeList, actions.getTotalRows());

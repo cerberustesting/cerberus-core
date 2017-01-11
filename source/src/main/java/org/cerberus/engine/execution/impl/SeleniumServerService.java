@@ -265,7 +265,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             profile.setPreference("intl.accept_languages", "en");
         }
 
-        if (tCExecution.getVerbose() > 0) {
+        if ((false) && (tCExecution.getVerbose() > 0)) {
             String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug", "").getValue();
             String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport", "").getValue();
             if (StringUtil.isNullOrEmpty(firebugPath)) {

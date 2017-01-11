@@ -69,4 +69,16 @@ public interface ITestCaseStepActionControlExecutionService {
      * @return List of testcasestepactioncontrol object
      */
     public AnswerItem readByKey(long executionId, String test, String testcase, int step, int index, int sequence, int controlSequence);
+
+    /**
+     * Return the testcasestepactioncontrolexecution list of an execution, step, action
+     * @param executionId : ID of the execution
+     * @param test : test
+     * @param testcase : testcase
+     * @param step : ID of the step
+     * @param index
+     * @param sequence : ID of the action
+     * @return List of testcasestepactioncontrol object
+     */
+    public AnswerList readByVarious1WithDependency(long executionId, String test, String testcase, int step, int index, int sequence);
 }

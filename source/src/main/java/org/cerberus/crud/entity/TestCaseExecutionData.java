@@ -17,7 +17,6 @@
  */
 package org.cerberus.crud.entity;
 
-import net.minidev.json.JSONArray;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.MessageEvent;
@@ -26,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONArray;
 
 /**
  *
@@ -58,6 +58,7 @@ public class TestCaseExecutionData {
     /**
      *
      */
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at control level
     private TestCaseExecution tCExecution;
     private MessageEvent propertyResultMessage;
     private MessageGeneral executionResultMessage;
@@ -66,6 +67,14 @@ public class TestCaseExecutionData {
     private List<HashMap<String, String>> dataLibRawData; // Have the raw data of all subdata when comming from testDataLibrary
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionData.class);
+
+    public List<TestCaseExecutionFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<TestCaseExecutionFile> fileList) {
+        this.fileList = fileList;
+    }
 
     public String getDatabase() {
         return database;
@@ -326,6 +335,16 @@ public class TestCaseExecutionData {
             result.put("RC", this.getRC());
             result.put("rMessage", this.getrMessage());
             result.put("description", this.getDescription());
+            
+            JSONArray array = new JSONArray();
+            if (this.getFileList()!= null) {
+                for (Object dataFileList : this.getFileList()) {
+                    array.put(((TestCaseExecutionFile) dataFileList).toJson());
+                }
+            }
+            result.put("fileList", array);
+            
+            
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

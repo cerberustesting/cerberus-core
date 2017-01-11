@@ -87,7 +87,9 @@ public class TestCaseExecution {
     private String myLoginRelativeURL;
     private String seleniumIP;
     private String seleniumPort;
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at execution level
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
+    private AnswerList testCaseStepExecutionAnswerList;
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
     private MessageGeneral resultMessage;
     private Selenium selenium;
@@ -102,7 +104,6 @@ public class TestCaseExecution {
     private String userAgent;
     private boolean synchroneous;
     private String timeout;
-    private AnswerList testCaseStepExecutionAnswerList;
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
     private Integer cerberus_action_wait_default;
@@ -380,6 +381,14 @@ public class TestCaseExecution {
             this.setControlMessage(resultMessage.getDescription());
             this.setControlStatus(resultMessage.getCodeString());
         }
+    }
+
+    public List<TestCaseExecutionFile> getFileList() {
+        return fileList;
+    }
+
+    public void setFileList(List<TestCaseExecutionFile> fileList) {
+        this.fileList = fileList;
     }
 
     public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
@@ -700,6 +709,7 @@ public class TestCaseExecution {
             result.put("crbVersion", this.getCrbVersion());
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
+            
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepExecutionAnswerList() != null && this.getTestCaseStepExecutionAnswerList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
@@ -707,10 +717,12 @@ public class TestCaseExecution {
                 }
             }
             result.put("testCaseStepExecutionList", array);
+            
             if (this.getTestCaseObj() != null) {
                 TestCase tc = this.getTestCaseObj();
                 result.put("testCaseObj", tc.toJson());
             }
+            
             array = new JSONArray();
             if (this.getTestCaseExecutionDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
@@ -718,6 +730,15 @@ public class TestCaseExecution {
                 }
             }
             result.put("testCaseExecutionDataList", array);
+            
+            array = new JSONArray();
+            if (this.getFileList() != null) {
+                for (Object testCaseFileExecution : this.getFileList()) {
+                    array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                }
+            }
+            result.put("fileList", array);
+            
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

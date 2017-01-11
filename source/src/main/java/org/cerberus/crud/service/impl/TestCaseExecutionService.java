@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +26,18 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
-import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.TestCaseExecutionData;
-import org.cerberus.crud.service.*;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.crud.service.ITestCaseExecutionService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
+import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
+import org.cerberus.crud.service.ITestCaseStepExecutionService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.enums.MessageEventEnum;
@@ -55,6 +59,8 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseExecutionDAO testCaseExecutionDao;
     @Autowired
     ITestCaseStepExecutionService testCaseStepExecutionService;
+    @Autowired
+    ITestCaseExecutionFileService testCaseExecutionFileService;
     @Autowired
     IParameterService parameterService;
     @Autowired
@@ -228,11 +234,15 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerItem ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseObj((TestCase) ai.getItem());
 
-        AnswerList a = testCaseExecutionDataService.readById(executionId);
+        AnswerList a = testCaseExecutionDataService.readByIdWithDependency(executionId);
         testCaseExecution.setTestCaseExecutionDataList(a.getDataList());
 
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.setTestCaseStepExecutionAnswerList(steps);
+
+        AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
+        testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
+
         AnswerItem response = new AnswerItem(testCaseExecution, tce.getResultMessage());
         return response;
     }

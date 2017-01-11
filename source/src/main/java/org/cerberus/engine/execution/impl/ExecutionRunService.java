@@ -349,9 +349,9 @@ public class ExecutionRunService implements IExecutionRunService {
                         ai.setDataList(tcsExecutionList);
                         tCExecution.setTestCaseStepExecutionAnswerList(ai);
 
-                        // determine is step is executed and if we trigger a new step execution after
+                        // determine if step is executed (execute_Step) and if we trigger a new step execution after (execute_Next_Step)
                         boolean execute_Step = true;
-                        AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN));
+                        AnswerItem<Boolean> conditionAnswer = new AnswerItem<>(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
                         if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONFALSE)
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_ONCEIFCONDITIONTRUE)
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_WHILECONDITIONFALSEDO)
@@ -395,13 +395,13 @@ public class ExecutionRunService implements IExecutionRunService {
                         } else if (testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONFALSE)
                                 || testCaseStepExecution.getLoop().equals(TestCaseStep.LOOP_DOWHILECONDITIONTRUE)) {
                             // First Step execution for LOOP_DOWHILECONDITIONTRUE and LOOP_DOWHILECONDITIONFALSE --> We force the step execution and activate the next step execution.
-                            execute_Next_Step = true;
                             execute_Step = true;
-                            conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITION_UNKNOWN));
+                            execute_Next_Step = true;
                         } else {
                             // First Step execution for Unknown Loop --> We force the step execution only once (default behaviour).
-                            execute_Next_Step = false;
                             execute_Step = true;
+                            execute_Next_Step = false;
+                            conditionAnswer.setResultMessage(new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_UNKNOWNCONDITION));
                         }
 
                         /**
@@ -435,14 +435,22 @@ public class ExecutionRunService implements IExecutionRunService {
                                 break;
                             }
 
-                        } else { // We don't execute the control and record a generic execution.
+                        } else { // We don't execute the step and record a generic execution.
 
                             /**
                              * Register Step in database
                              */
                             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Step : " + testCaseStepExecution.getStep());
+
                             // We change the Step message only if the Step is not executed due to condition.
-                            testCaseStepExecution.setStepResultMessage(conditionAnswer.getResultMessage());
+                            MessageEvent stepMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASESTEP_NOTEXECUTED);
+                            testCaseStepExecution.setStepResultMessage(stepMes);
+                            testCaseStepExecution.setReturnMessage(testCaseStepExecution.getReturnMessage()
+                                    .replace("%COND%", testCaseStepExecution.getConditionOper())
+                                    .replace("%LOOP%", testCaseStepExecution.getLoop())
+                                    .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
+                            );
+
                             testCaseStepExecution.setEnd(new Date().getTime());
                             this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
                             MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Step");
@@ -481,15 +489,21 @@ public class ExecutionRunService implements IExecutionRunService {
                 }
 
             } else { // We don't execute the testcase.
-
+                MessageGeneral mes;
                 /**
                  * Update Execution status from condition
                  */
-                tCExecution.setControlMessage(conditionAnswerTc.getResultMessage().getDescription());
-                tCExecution.setControlStatus(conditionAnswerTc.getResultMessage().getCodeString());
-
+                if (conditionAnswerTc.getResultMessage().getMessage().getCodeString().equals("PE")) {
+                    mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_NA_CONDITION);
+                } else {
+                    mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_CONDITION);
+                }
+                mes.setDescription(mes.getDescription().replace("%COND%", tCExecution.getConditionOper())
+                        .replace("%MES%", conditionAnswerTc.getResultMessage().getDescription()));
+                tCExecution.setResultMessage(mes);
             }
-
+//                tCExecution.setControlMessage("toto");
+            //                tCExecution.setControlStatus(conditionAnswerTc.getResultMessage().getCodeString());
             /**
              * We stop the server session here (selenium for ex.).
              */
@@ -687,8 +701,15 @@ public class ExecutionRunService implements IExecutionRunService {
                 recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
 
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
+
                 // We change the Action message only if the action is not executed due to condition.
-                testCaseStepActionExecution.setActionResultMessage(conditionAnswer.getResultMessage());
+                MessageEvent actionMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASEACTION_NOTEXECUTED);
+                testCaseStepActionExecution.setActionResultMessage(actionMes);
+                testCaseStepActionExecution.setReturnMessage(testCaseStepActionExecution.getReturnMessage()
+                        .replace("%COND%", testCaseStepActionExecution.getConditionOper())
+                        .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
+                );
+
                 testCaseStepActionExecution.setEnd(new Date().getTime());
                 this.testCaseStepActionExecutionService.updateTestCaseStepActionExecution(testCaseStepActionExecution);
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Action");
@@ -831,8 +852,15 @@ public class ExecutionRunService implements IExecutionRunService {
                  * Register Control in database
                  */
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Control : " + testCaseStepActionControlExecution.getControlSequence());
-                // We change the Control message only if the Control is not executed due to condition.
-                testCaseStepActionControlExecution.setControlResultMessage(conditionAnswer.getResultMessage());
+
+                // We change the Action message only if the action is not executed due to condition.
+                MessageEvent controlMes = new MessageEvent(MessageEventEnum.CONDITION_TESTCASECONTROL_NOTEXECUTED);
+                testCaseStepActionControlExecution.setControlResultMessage(controlMes);
+                testCaseStepActionControlExecution.setReturnMessage(testCaseStepActionControlExecution.getReturnMessage()
+                        .replace("%COND%", testCaseStepActionControlExecution.getConditionOper())
+                        .replace("%MESSAGE%", conditionAnswer.getResultMessage().getDescription())
+                );
+
                 testCaseStepActionControlExecution.setEnd(new Date().getTime());
                 this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
