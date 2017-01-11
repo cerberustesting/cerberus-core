@@ -898,6 +898,7 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
             preStat.setString(i++, testCaseStep.getUseStepTestCase() == null ? "" : testCaseStep.getUseStepTestCase());
             preStat.setInt(i++, testCaseStep.getUseStepStep() == null ? 0 : testCaseStep.getUseStepStep());
             preStat.setString(i++, testCaseStep.getInLibrary() == null ? "N" : testCaseStep.getInLibrary());
+            preStat.setString(i++, testCaseStep.getLoop()== null ? "" : testCaseStep.getLoop());
             preStat.setString(i++, testCaseStep.getConditionOper()== null ? "" : testCaseStep.getConditionOper());
             preStat.setString(i++, testCaseStep.getConditionVal1()== null ? "" : testCaseStep.getConditionVal1());
             preStat.setString(i++, testCaseStep.getConditionVal2()== null ? "" : testCaseStep.getConditionVal2());

@@ -112,12 +112,12 @@
                             <div class="col-lg-9 well marginTop5" id="contentWrapper" style="min-height: 200px;">
                                 <div id="stepHeader" style="margin-bottom: 15px; display:none;">
                                     <div class="row step">
-                                        <div class="content col-lg-10">
+                                        <div class="marginLeft25 content col-lg-9">
                                             <div class="fieldRow row" id="UseStepRow" style="display: none;">
 
                                             </div>
                                             <div style="margin-top:15px;" class="input-group">
-                                                <span class="input-group-addon" style="font-weight: 700; color: #fff" id="stepId"></span>
+                                                <span class="input-group-addon" style="font-weight: 700;" id="stepId"></span>
                                                 <input aria-describedby="stepId" class="description form-control" id="stepDescription" placeholder="Step" style="width: 100%; font-size: 20px; font-weight: 900;">
                                             </div>
                                             <div class="fieldRow row" id="stepHiddenRow" style="display: none;">
