@@ -8045,7 +8045,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Add poolSize attribute to CountryEnvironmentParameters
-        //-- ------------------------ 1032-?
+        //-- ------------------------ 1032-1034
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('countryenvironmentparameters', 'poolSize', '', 'fr', 'Parallelisation', 'Nombre maximal, par instances Cerberus, de tests pouvant être exécutés en parallèle');");
         SQLInstruction.add(SQLS.toString());
@@ -8057,6 +8057,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Parameter in order to limit the frequency of the websocket push
+        //-- ------------------------ 1035
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_featureflipping_websocketpushperiod','5000','Integer value that correspond to the nb of ms between every websocket push.')");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 

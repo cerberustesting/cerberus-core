@@ -27,18 +27,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $.ajax({
             url: "ReadTestCaseExecution",
             method: "GET",
-            data: "executionId="+executionId,
+            data: "executionId=" + executionId,
             datatype: "json",
             async: true,
             success: function (data) {
                 var tce = data.testCaseExecution;
                 updatePage(tce, stepList);
-                if(tce.controlStatus == "PE"){
+                if (tce.controlStatus == "PE") {
                     var parser = document.createElement('a');
                     parser.href = window.location.href;
 
                     var protocol = "ws:";
-                    if(parser.protocol == "https:"){
+                    if (parser.protocol == "https:") {
                         protocol = "wss:";
                     }
                     var path = parser.pathname.split("ExecutionDetail2")[0];
@@ -46,18 +46,18 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     var socket = new WebSocket(new_uri);
 
-                    socket.onopen = function(e){
+                    socket.onopen = function (e) {
                     } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function(e){
+                    socket.onmessage = function (e) {
                         var data = JSON.parse(e.data);
                         updatePage(data, stepList);
                     } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function(e){
+                    socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function(e){
+                    socket.onerror = function (e) {
                     } //on traite les cas d'erreur*/
                 }
-                $("#seeProperties").click(function(){
+                $("#seeProperties").click(function () {
                     $("#propertiesModal").modal('show');
                 });
             }
@@ -69,46 +69,46 @@ function initPage(id) {
 
     var doc = new Doc();
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-    $('#executionHeader').affix({offset: {top: height} });
-    
-     var wrap = $(window);
+    $('#executionHeader').affix({offset: {top: height}});
 
-            wrap.on("scroll", function (e) {
-                if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-                    $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-                    $("#list-wrapper").width($("#nav-execution").width());
-                }
-            });
+    var wrap = $(window);
 
-            wrap.resize(function (e) {
-                if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-                    $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-                    $("#list-wrapper").width($("#nav-execution").width());
-                }
-                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
-            })
+    wrap.on("scroll", function (e) {
+        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+    });
 
-    $("#editTcInfo").prop("disabled",true);
-    $("#runTestCase").prop("disabled",true);
-    $("#lastExecution").prop("disabled",true);
+    wrap.resize(function (e) {
+        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+        $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
+    })
+
+    $("#editTcInfo").prop("disabled", true);
+    $("#runTestCase").prop("disabled", true);
+    $("#lastExecution").prop("disabled", true);
 
     $("#runOld").click(function () {
-        window.location = "ExecutionDetail.jsp?id_tc="+id;
+        window.location = "ExecutionDetail.jsp?id_tc=" + id;
     });
 
-    $("#editTag").click(function(){
+    $("#editTag").click(function () {
         $(this).hide();
         $("#saveTag").show();
-        $("#tag").attr("readonly",false);
+        $("#tag").attr("readonly", false);
     });
 
-    $("#saveTag").click(function(){
-        $("#tag").attr("readonly",true);
+    $("#saveTag").click(function () {
+        $("#tag").attr("readonly", true);
         $(this).attr("disabled", true);
         $.ajax({
-            url:"SetTagToExecution",
-            data: {"executionId" : id, newTag : $("#tag").val()},
-            success:function(data){
+            url: "SetTagToExecution",
+            data: {"executionId": id, newTag: $("#tag").val()},
+            success: function (data) {
                 $("#saveTag").attr("disabled", false);
                 $("#saveTag").hide();
                 $("#editTag").show();
@@ -127,64 +127,64 @@ function initPage(id) {
 
     var wrap = $(window);
 
-    wrap.on("scroll", function(e) {
-        if($("#list-wrapper").width() != $("#nav-execution").parent().width()-30) {
+    wrap.on("scroll", function (e) {
+        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
             $("#list-wrapper").width($("#nav-execution").width());
         }
     });
 
-    wrap.resize(function(e){
-        if($("#list-wrapper").width() != $("#nav-execution").parent().width()-30) {
+    wrap.resize(function (e) {
+        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
             $("#list-wrapper").width($("#nav-execution").width());
         }
     })
 }
 
-function displayPageLabel(doc){
-    $("#pageTitle").text(doc.getDocLabel("page_executiondetail","title"));
-    $(".alert.alert-warning span").text(doc.getDocLabel("page_global","beta_message"));
-    $(".alert.alert-warning button").text(doc.getDocLabel("page_global","old_page"));
-    $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> "+ doc.getDocLabel("page_executiondetail","see_execution_tag"));
-    $("#more").text(doc.getDocLabel("page_executiondetail","more_detail"));
-    $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail","application"));
-    $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail","browser"));
-    $("#testCaseDetails label[for='browserfull']").text(doc.getDocLabel("page_executiondetail","browserfull"));
-    $("#testCaseDetails label[for='country']").text(doc.getDocLabel("page_executiondetail","country"));
-    $("#testCaseDetails label[for='environment']").text(doc.getDocLabel("page_executiondetail","environment"));
-    $("#testCaseDetails label[for='status']").text(doc.getDocLabel("page_executiondetail","status"));
-    $("#testCaseDetails label[for='controlstatus2']").text(doc.getDocLabel("page_executiondetail","controlstatus"));
-    $("#testCaseDetails label[for='controlmessage']").text(doc.getDocLabel("page_executiondetail","controlmessage"));
-    $("#testCaseDetails label[for='ip']").text(doc.getDocLabel("page_executiondetail","ip"));
-    $("#testCaseDetails label[for='port']").text(doc.getDocLabel("page_executiondetail","port"));
-    $("#testCaseDetails label[for='platform']").text(doc.getDocLabel("page_executiondetail","platform"));
-    $("#testCaseDetails label[for='cerberusversion']").text(doc.getDocLabel("page_executiondetail","cerberusversion"));
-    $("#testCaseDetails label[for='executor']").text(doc.getDocLabel("page_executiondetail","executor"));
-    $("#testCaseDetails label[for='url']").text(doc.getDocLabel("page_executiondetail","url"));
-    $("#testCaseDetails label[for='start']").text(doc.getDocLabel("page_executiondetail","start"));
-    $("#testCaseDetails label[for='end']").text(doc.getDocLabel("page_executiondetail","end"));
-    $("#testCaseDetails label[for='finished']").text(doc.getDocLabel("page_executiondetail","finished"));
-    $("#testCaseDetails label[for='id']").text(doc.getDocLabel("page_executiondetail","id"));
-    $("#testCaseDetails label[for='revision']").text(doc.getDocLabel("page_executiondetail","revision"));
-    $("#testCaseDetails label[for='screenSize']").text(doc.getDocLabel("page_executiondetail","screensize"));
-    $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail","tag"));
-    $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail","verbose"));
-    $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail","build"));
-    $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail","version"));
-    $("#steps h3").text(doc.getDocLabel("page_executiondetail","steps"));
-    $("#actions h3").text(doc.getDocLabel("page_global","columnAction"));
-    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> "+ doc.getDocLabel("page_executiondetail","edittc"));
-    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> "+ doc.getDocLabel("page_executiondetail","runtc"));
-    $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> "+ doc.getDocLabel("page_executiondetail","lastexecution"));
-    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> "+ doc.getDocLabel("page_executiondetail","lastexecutionwithenvcountry"));
+function displayPageLabel(doc) {
+    $("#pageTitle").text(doc.getDocLabel("page_executiondetail", "title"));
+    $(".alert.alert-warning span").text(doc.getDocLabel("page_global", "beta_message"));
+    $(".alert.alert-warning button").text(doc.getDocLabel("page_global", "old_page"));
+    $("#ExecutionByTag").html("<span class='glyphicon glyphicon-tag'></span> " + doc.getDocLabel("page_executiondetail", "see_execution_tag"));
+    $("#more").text(doc.getDocLabel("page_executiondetail", "more_detail"));
+    $("#testCaseDetails label[for='application']").text(doc.getDocLabel("page_executiondetail", "application"));
+    $("#testCaseDetails label[for='browser']").text(doc.getDocLabel("page_executiondetail", "browser"));
+    $("#testCaseDetails label[for='browserfull']").text(doc.getDocLabel("page_executiondetail", "browserfull"));
+    $("#testCaseDetails label[for='country']").text(doc.getDocLabel("page_executiondetail", "country"));
+    $("#testCaseDetails label[for='environment']").text(doc.getDocLabel("page_executiondetail", "environment"));
+    $("#testCaseDetails label[for='status']").text(doc.getDocLabel("page_executiondetail", "status"));
+    $("#testCaseDetails label[for='controlstatus2']").text(doc.getDocLabel("page_executiondetail", "controlstatus"));
+    $("#testCaseDetails label[for='controlmessage']").text(doc.getDocLabel("page_executiondetail", "controlmessage"));
+    $("#testCaseDetails label[for='ip']").text(doc.getDocLabel("page_executiondetail", "ip"));
+    $("#testCaseDetails label[for='port']").text(doc.getDocLabel("page_executiondetail", "port"));
+    $("#testCaseDetails label[for='platform']").text(doc.getDocLabel("page_executiondetail", "platform"));
+    $("#testCaseDetails label[for='cerberusversion']").text(doc.getDocLabel("page_executiondetail", "cerberusversion"));
+    $("#testCaseDetails label[for='executor']").text(doc.getDocLabel("page_executiondetail", "executor"));
+    $("#testCaseDetails label[for='url']").text(doc.getDocLabel("page_executiondetail", "url"));
+    $("#testCaseDetails label[for='start']").text(doc.getDocLabel("page_executiondetail", "start"));
+    $("#testCaseDetails label[for='end']").text(doc.getDocLabel("page_executiondetail", "end"));
+    $("#testCaseDetails label[for='finished']").text(doc.getDocLabel("page_executiondetail", "finished"));
+    $("#testCaseDetails label[for='id']").text(doc.getDocLabel("page_executiondetail", "id"));
+    $("#testCaseDetails label[for='revision']").text(doc.getDocLabel("page_executiondetail", "revision"));
+    $("#testCaseDetails label[for='screenSize']").text(doc.getDocLabel("page_executiondetail", "screensize"));
+    $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail", "tag"));
+    $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail", "verbose"));
+    $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail", "build"));
+    $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail", "version"));
+    $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
+    $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
+    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
+    $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
+    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
 }
 
-function updatePage(data, stepList){
+function updatePage(data, stepList) {
 
     sortData(data.testCaseStepExecutionList);
 
-    $("#editTcInfo").prop("disabled",false);
-    $("#runTestCase").prop("disabled",false);
-    $("#lastExecution").prop("disabled",false);
+    $("#editTcInfo").prop("disabled", false);
+    $("#runTestCase").prop("disabled", false);
+    $("#lastExecution").prop("disabled", false);
 
     $("#editTcInfo").click(function () {
         window.location = "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase;
@@ -196,13 +196,13 @@ function updatePage(data, stepList){
         window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase;
     });
     $("#lastExecutionwithEnvCountry").click(function () {
-        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment +"&systemFlt=&application=" + data.application;
+        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&systemFlt=&application=" + data.application;
     });
 
     var configPanel = $("#testCaseConfig");
 
-    configPanel.find("#ExecutionByTag").click(function(){
-        window.open("ReportingExecutionByTag.jsp?Tag=" + data.tag,'_blank');
+    configPanel.find("#ExecutionByTag").click(function () {
+        window.open("ReportingExecutionByTag.jsp?Tag=" + data.tag, '_blank');
         return false;
     });
 
@@ -253,8 +253,8 @@ function updatePage(data, stepList){
         data: {application: data.application},
         async: true,
         success: function (dataApp) {
-            var link ;
-            if (data.testCaseObj.bugId == undefined || data.testCaseObj.bugId  == "") {
+            var link;
+            if (data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") {
                 var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
                 newBugURL = newBugURL.replace("%EXEID%", data.id);
                 newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
@@ -267,13 +267,13 @@ function updatePage(data, stepList){
                 newBugURL = newBugURL.replace("%REV%", data.revision);
                 newBugURL = newBugURL.replace("%BROWSER%", data.browser);
                 newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
-                link = $('<a target="_blank" id="bugID">').attr("href",newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
-            }else{
+                link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
+            } else {
                 newBugURL = dataApp.contentTable.bugTrackerUrl;
                 if (newBugURL != undefined && newBugURL != "") {
                     newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
-                    link = $('<a target="_blank" id="bugID">').attr("href",newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
-                }else{
+                    link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+                } else {
                     link = $("<span>").text(data.testCaseObj.bugId);
                 }
             }
@@ -281,7 +281,7 @@ function updatePage(data, stepList){
         }
     });
 
-    createStepList(data.testCaseStepExecutionList,stepList);
+    createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
     updateLoadBar(data);
 }
@@ -361,18 +361,18 @@ function sortData(agreg) {
     });
 }
 
-function sortProperties(identifier){
+function sortProperties(identifier) {
     var container = $(identifier);
     var list = container.children(".property");
-    list.sort(function(a,b){
+    list.sort(function (a, b) {
 
         var aProp = $(a).find("[name='masterProp']").data("property").property.toLowerCase(),
-            bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
+                bProp = $(b).find("[name='masterProp']").data("property").property.toLowerCase();
 
-        if(aProp > bProp) {
+        if (aProp > bProp) {
             return 1;
         }
-        if(aProp < bProp) {
+        if (aProp < bProp) {
             return -1;
         }
         return 0;
@@ -380,15 +380,15 @@ function sortProperties(identifier){
     container.append(list);
 }
 
-function createProperties(propList){
+function createProperties(propList) {
     $("#propTable").empty();
 
     var doc = new Doc();
     var propertyArray = [];
 
-    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled",true);
-    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled",true);
-    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled",true);
+    var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
+    var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
+    var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled", true);
     var table = $("#propTable");
 
     for (var ind = 0; ind < propList.length; ind++) {
@@ -401,13 +401,13 @@ function createProperties(propList){
         var moreBtn = $("<button class='btn btn-default btn-block'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
 
         var rcDiv = $("<div>").addClass("col-sm-1");
-        if(property.RC == "OK"){
+        if (property.RC == "OK") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-ok pull-left'></span>"))
-        }else if(property.RC == "FA"){
+        } else if (property.RC == "FA") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-alert pull-left'></span>"))
-        }else if(property.RC == "PE"){
+        } else if (property.RC == "PE") {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-refresh spin pull-left'></span>"))
-        }else{
+        } else {
             rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left'></span>"))
         }
         var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.property));
@@ -465,11 +465,11 @@ function createProperties(propList){
         var retrynb = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retrynb"))).append(retrynbInput);
         var retryperiod = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retryperiod"))).append(retryperiodInput);
 
-        moreBtn.click(function(){
-            if($(this).find("span").hasClass("glyphicon-chevron-down")){
+        moreBtn.click(function () {
+            if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
                 $(this).find("span").removeClass("glyphicon-chevron-down");
                 $(this).find("span").addClass("glyphicon-chevron-up");
-            }else{
+            } else {
                 $(this).find("span").removeClass("glyphicon-chevron-up");
                 $(this).find("span").addClass("glyphicon-chevron-down");
             }
@@ -515,13 +515,13 @@ function createProperties(propList){
 
         content.append(headerDiv).append(propsbody);
 
-        if(property.RC == "OK"){
+        if (property.RC == "OK") {
             content.addClass("panel-success");
-        }else if(property.RC == "KO"){
+        } else if (property.RC == "KO") {
             content.addClass("panel-danger");
-        }else if(property.RC == "PE"){
+        } else if (property.RC == "PE") {
             content.addClass("panel-primary");
-        }else{
+        } else {
             content.addClass("panel-warning");
         }
 
@@ -581,7 +581,7 @@ function Step(json, stepList) {
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
     this.textArea = $("<div></div>").addClass("col-lg-10")
-            .text("[" + this.sort + "." + + this.index + "]  " + this.description + "  (" + this.timeElapsed + ")");
+            .text("[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")");
 
 }
 
@@ -629,21 +629,21 @@ Step.prototype.show = function () {
 
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
-       // $("#stepContent").addClass("col-lg-9");
+        // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "PE") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-refresh spin pull-left text-info").attr("style", "font-size:3em")));
-       // $("#stepContent").addClass("col-lg-9");
+        // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "KO") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
-       // $("#stepContent").addClass("col-lg-9");
+        // $("#stepContent").addClass("col-lg-9");
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
-       // $("#stepContent").addClass("col-lg-9");
+        // $("#stepContent").addClass("col-lg-9");
     }
 
     stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.returnMessage));
     if (object.useStep === "Y") {
-        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript","imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
+        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text(""));
     }
@@ -654,7 +654,7 @@ Step.prototype.show = function () {
 };
 
 Step.prototype.setActionList = function (actionList) {
-    for(var i = 0; i < actionList.length; i++) {
+    for (var i = 0; i < actionList.length; i++) {
         this.setAction(actionList[i]);
     }
 };
@@ -730,6 +730,7 @@ function Action(json, parentStep) {
         this.screenshotFileName = json.screenshotFileName;
         this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
+        this.fileList = json.fileList;
     } else {
         this.action = "Unknown";
         this.description = "";
@@ -797,37 +798,39 @@ Action.prototype.draw = function () {
 
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
-    htmlElement.click(function(){
-        if($(this).find(".glyphicon-chevron-down").length > 0){
+    htmlElement.click(function () {
+        if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
-        }else{
+        } else {
             $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         }
         content.toggle();
         return false;
     });
 
-    var f = new File();
-    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&index=" + this.index+ "&sequence=" + this.sequence).then(function(data){
+    if (this.fileList.length > 0) {
 
-        var headerToAdd = data[0];
-        var bodyToAdd = data[1];
+        var f = new File();
+        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence).then(function (data) {
 
-        if(headerToAdd != undefined) {
-            var cnt = headerToAdd.contents();
-            $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
-            $(header).find(".row").append(cnt);
-        }
+            var headerToAdd = data[0];
+            var bodyToAdd = data[1];
 
-        if(bodyToAdd != undefined) {
-            var cnt = bodyToAdd.contents();
-            $(content).append(cnt);
-        }
+            if (headerToAdd != undefined) {
+                var cnt = headerToAdd.contents();
+                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
+                $(header).find(".row").append(cnt);
+            }
 
-    },function(e){
-        // No File Found
-    });
+            if (bodyToAdd != undefined) {
+                var cnt = bodyToAdd.contents();
+                $(content).append(cnt);
+            }
 
+        }, function (e) {
+            // No File Found
+        });
+    }
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -860,7 +863,7 @@ Action.prototype.generateHeader = function () {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-sm-12").attr("id","contentField");
+    var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
@@ -889,29 +892,29 @@ Action.prototype.generateContent = function () {
     var sixthRow = $("<div></div>").addClass("row");
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
 
-    var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly",true);
-    var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly",true);
-    var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly",true);
-    var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly",true);
-    var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly",true);
-    var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly",true);
-    var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly",true);
-    var forceexecField = $("<input type='text' class='form-control' id='forceexec'>").prop("readonly",true);
-    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly",true);
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly",true);
-    var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
+    var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
+    var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
+    var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
+    var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
+    var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
+    var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
+    var forceexecField = $("<input type='text' class='form-control' id='forceexec'>").prop("readonly", true);
+    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
 
-    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail","action") + "</label>")).append(actionList);
-    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail","description") + "</label>")).append(descField);
-    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail","value1") + "</label>")).append(value1Field);
-    var objectGroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail","value1init") + "</label>")).append(value1InitField);
-    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail","time") + "</label>")).append(timeField);
-    var forceexecGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail","forceexec") + "</label>")).append(forceexecField);
-    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail","value2") + "</label>")).append(value2Field);
-    var propertyGroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail","value2init") + "</label>")).append(value2InitField);
-    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail","return_code") + "</label>")).append(returnCodeField);
-    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail","return_message") + "</label>")).append(returnMessageField);
-    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail","sort") + "</label>")).append(sortField);
+    var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
+    var objectGroup = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var objectGroupInit = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
+    var forceexecGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail", "forceexec") + "</label>")).append(forceexecField);
+    var propertyGroup = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var propertyGroupInit = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
+    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
 
 
 
@@ -991,6 +994,7 @@ function Control(json, parentAction) {
         this.index = json.index;
         this.test = json.test;
         this.testcase = json.testcase;
+        this.fileList = json.fileList;
     } else {
         this.control = "";
         this.controlType = "Unknown";
@@ -1021,7 +1025,7 @@ function Control(json, parentAction) {
 
     this.toDelete = false;
 
-    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left","25px");
+    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "25px");
 }
 
 Control.prototype.draw = function () {
@@ -1061,36 +1065,39 @@ Control.prototype.draw = function () {
 
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
-    htmlElement.click(function(){
-        if($(this).find(".glyphicon-chevron-down").length > 0){
+    htmlElement.click(function () {
+        if ($(this).find(".glyphicon-chevron-down").length > 0) {
             $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
-        }else{
+        } else {
             $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         }
         content.toggle();
         return false;
     });
 
-    var f = new File();
-    f.getFiles(this,"ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function(data){
+    if (this.fileList.length > 0) {
 
-        var headerToAdd = data[0];
-        var bodyToAdd = data[1];
+        var f = new File();
+        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function (data) {
 
-        if(headerToAdd != undefined) {
-            var cnt = headerToAdd.contents();
-            $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-"+(12-f.getIt()));
-            $(header).find(".row").append(cnt);
-        }
+            var headerToAdd = data[0];
+            var bodyToAdd = data[1];
 
-        if(bodyToAdd != undefined) {
-            var cnt = bodyToAdd.contents();
-            $(content).append(cnt);
-        }
+            if (headerToAdd != undefined) {
+                var cnt = headerToAdd.contents();
+                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
+                $(header).find(".row").append(cnt);
+            }
 
-    },function(e){
-        // No File Found
-    });
+            if (bodyToAdd != undefined) {
+                var cnt = bodyToAdd.contents();
+                $(content).append(cnt);
+            }
+
+        }, function (e) {
+            // No File Found
+        });
+    }
 
 };
 
@@ -1110,7 +1117,7 @@ Control.prototype.generateHeader = function () {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
-    var contentField = $("<div></div>").addClass("col-sm-12").attr("id","contentField");
+    var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
@@ -1136,31 +1143,31 @@ Control.prototype.generateContent = function () {
     var fourthRow = $("<div></div>").addClass("row");
     var fifthRow = $("<div></div>").addClass("row");
     var sixthRow = $("<div></div>").addClass("row");
-    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left","25px");
+    var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "25px");
 
-    var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly",true);
-    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly",true);
-    var controlTypeField = $("<input type='text' class='form-control' id='controltype'>").prop("readonly",true);
-    var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly",true);
-    var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly",true);
-    var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly",true);
-    var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly",true);
-    var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly",true);
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly",true);
-    var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly",true);
-    var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly",true);
+    var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
+    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
+    var controlTypeField = $("<input type='text' class='form-control' id='controltype'>").prop("readonly", true);
+    var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
+    var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
+    var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
+    var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly", true);
+    var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
 
-    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail","description") + "</label>")).append(descField);
-    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail","return_code") + "</label>")).append(returnCodeField);
-    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail","return_message") + "</label>")).append(returnMessageField);
-    var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>" + doc.getDocLabel("page_executiondetail","control_type") + "</label>")).append(controlTypeField);
-    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>" + doc.getDocLabel("page_executiondetail","value1") + "</label>")).append(value1Field);
-    var controlValueInitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalueinit'>" + doc.getDocLabel("page_executiondetail","value1init") + "</label>")).append(value1InitField);
-    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail","time") + "</label>")).append(timeField);
-    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail","value2") + "</label>")).append(value2Field);
-    var controlPropertyInitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail","value2init") + "</label>")).append(value2InitField);
-    var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail","fatal") + "</label>")).append(fatalField);
-    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail","sort") + "</label>")).append(sortField);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
+    var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>" + doc.getDocLabel("page_executiondetail", "control_type") + "</label>")).append(controlTypeField);
+    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var controlValueInitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalueinit'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
+    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var controlPropertyInitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail", "fatal") + "</label>")).append(fatalField);
+    var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
 
 
 
@@ -1221,22 +1228,22 @@ Control.prototype.getJsonData = function () {
  * File Utilities
  */
 
-var File = function(){
+var File = function () {
     var scope = this;
     var it = 0;
     // A div to store what to add in the header (Only the content of the div will be add)
     var containerHeader = $("<div>");
     // A div to store what to add in the body
     var containerBody = $("<div>");
-    this.checkFile = function(data, src, id){
-        return new Promise(function(resolve, reject){
+    this.checkFile = function (data, src, id) {
+        return new Promise(function (resolve, reject) {
             // Check if Picture
 
             var xhr = new XMLHttpRequest();
             xhr.open('GET', src + id, true);
             xhr.responseType = 'blob';
 
-            xhr.onload = function(e) {
+            xhr.onload = function (e) {
                 var description = this.getResponseHeader("Description");
                 if (this.status == 200 && this.response != undefined && this.response.size > 0) {
                     // get binary data as a response
@@ -1244,10 +1251,10 @@ var File = function(){
 
                     // We want to know the type of the File (The type of the blob is trustfully, always xml)
                     var fileReader = new FileReader();
-                    fileReader.onloadend = function(e) {
+                    fileReader.onloadend = function (e) {
                         var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
                         var header = "";
-                        for(var i = 0; i < arr.length; i++) {
+                        for (var i = 0; i < arr.length; i++) {
                             header += arr[i].toString(16);
                         }
 
@@ -1278,62 +1285,62 @@ var File = function(){
                         var fileHeader;
                         var fileBody;
                         var nowit = it;
-                        if(type == "image/png" || type == "image/gif" || type == "image/jpeg") {
+                        if (type == "image/png" || type == "image/gif" || type == "image/jpeg") {
                             var urlCreator = window.URL || window.webkitURL;
                             var imageUrl = urlCreator.createObjectURL(blob);
-                            fileHeader = $("<div>").addClass("col-sm-1").css("padding","0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height","30px").click(function(e){
+                            fileHeader = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height", "30px").click(function (e) {
                                 showPicture(description, src + id);
                                 return false;
                             }));
 
                             //Then we add it in the container and we increment the iterator
-                            if(fileHeader != undefined || fileBody != undefined) {
+                            if (fileHeader != undefined || fileBody != undefined) {
                                 scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                    resolve([containerHeader,containerBody]);
+                                    resolve([containerHeader, containerBody]);
                                 });
-                            }else{
+                            } else {
                                 reject(e);
                             }
 
-                        }else if(type == "text/plain"){
+                        } else if (type == "text/plain") {
                             var fileReader2 = new FileReader();
-                            fileReader2.onloadend = function(evt){
+                            fileReader2.onloadend = function (evt) {
                                 // file is loaded
                                 var result = evt.target.result;
                                 //We create the view, what to add in the header and the body
                                 fileBody = $("<div>").addClass("row").append(
-                                    $("<div>").addClass("col-sm-12").append(
+                                        $("<div>").addClass("col-sm-12").append(
                                         $("<div class='form-group'></div>")
-                                            .append($("<label for='action'>" + description + "</label>"))
-                                            .append($("<textarea style='width:100%;' class='form-control' id='textResponse"+nowit+"'>").prop("readonly",true).val(result)
+                                        .append($("<label for='action'>" + description + "</label>"))
+                                        .append($("<textarea style='width:100%;' class='form-control' id='textResponse" + nowit + "'>").prop("readonly", true).val(result)
+                                                )
                                         )
-                                    )
-                                );
-                                fileHeader =  $("<div>").addClass("col-sm-2").css("padding","0px 7px 0px 7px").append(
-                                    $("<button type='button'>")
+                                        );
+                                fileHeader = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px").append(
+                                        $("<button type='button'>")
                                         .addClass("btn btn-outline-primary")
-                                        .css("height","30px")
-                                        .css("width","100%")
-                                        .css("max-width","100%")
-                                        .css("display","inline-block")
-                                        .css("overflow","hidden")
-                                        .css("text-overflow","ellipsis")
-                                        .css("white-space","nowrap")
-                                        .css("font-size","small")
-                                        .html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span><span class="text-muted">'+ description +'</span>')
-                                        .click(function(e){
-                                            showTextArea(description,result);
+                                        .css("height", "30px")
+                                        .css("width", "100%")
+                                        .css("max-width", "100%")
+                                        .css("display", "inline-block")
+                                        .css("overflow", "hidden")
+                                        .css("text-overflow", "ellipsis")
+                                        .css("white-space", "nowrap")
+                                        .css("font-size", "small")
+                                        .html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span><span class="text-muted">' + description + '</span>')
+                                        .click(function (e) {
+                                            showTextArea(description, result);
                                             return false;
                                         })
-                                );
+                                        );
                                 //We take one more col
                                 it++;
                                 //Then we add it in the container and we increment the iterator
-                                if(fileHeader != undefined || fileBody != undefined) {
+                                if (fileHeader != undefined || fileBody != undefined) {
                                     scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                        resolve([containerHeader,containerBody]);
+                                        resolve([containerHeader, containerBody]);
                                     });
-                                }else{
+                                } else {
                                     reject(e);
                                 }
                             };
@@ -1341,7 +1348,7 @@ var File = function(){
                         }
                     };
                     fileReader.readAsArrayBuffer(blob);
-                }else{
+                } else {
                     reject(e);
                 }
             };
@@ -1350,31 +1357,31 @@ var File = function(){
         });
     };
 
-    this.getFiles = function(data, src){
-        return this.checkFile(data,src + "&iterator=", it);
+    this.getFiles = function (data, src) {
+        return this.checkFile(data, src + "&iterator=", it);
     };
 
-    this.getIt = function(){
+    this.getIt = function () {
         return it;
     };
 
-    this.foundFile = function(data, src, fileHeader, fileBody){
+    this.foundFile = function (data, src, fileHeader, fileBody) {
         var scope = this;
         it++;
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             scope.checkFile(data, src, it).then(function () {
-                if(fileHeader != undefined) {
+                if (fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
-                if(fileBody != undefined){
+                if (fileBody != undefined) {
                     containerBody.append(fileBody);
                 }
                 resolve([containerHeader, containerBody]);
-            },function (e) {
-                if(fileHeader != undefined) {
+            }, function (e) {
+                if (fileHeader != undefined) {
                     containerHeader.append(fileHeader);
                 }
-                if(fileBody != undefined){
+                if (fileBody != undefined) {
                     containerBody.append(fileBody);
                 }
                 resolve([containerHeader, containerBody]);

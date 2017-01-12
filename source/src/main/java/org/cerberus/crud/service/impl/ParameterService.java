@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.impl.tool.Extension;
 import org.cerberus.crud.dao.IParameterDAO;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
@@ -37,11 +36,11 @@ import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
-import org.cerberus.version.Infos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import org.cerberus.util.StringUtil;
 
 /**
  * @author bcivel
@@ -79,12 +78,38 @@ public class ParameterService implements IParameterService {
     }
 
     @Override
+    public boolean getParameterBooleanByKey(String key, String system, boolean defaultValue) {
+        Parameter myParameter;
+        boolean outPutResult = defaultValue;
+        try {
+            myParameter = this.findParameterByKey(key, system);
+            outPutResult = StringUtil.parseBoolean(myParameter.getValue());
+        } catch (CerberusException | NumberFormatException ex) {
+            LOG.error(ex);
+        }
+        return outPutResult;
+    }
+
+    @Override
     public Integer getParameterIntegerByKey(String key, String system, Integer defaultValue) {
         Parameter myParameter;
         Integer outPutResult = defaultValue;
         try {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Integer.valueOf(myParameter.getValue());
+        } catch (CerberusException | NumberFormatException ex) {
+            LOG.error(ex);
+        }
+        return outPutResult;
+    }
+
+    @Override
+    public long getParameterLongByKey(String key, String system, long defaultValue) {
+        Parameter myParameter;
+        long outPutResult = defaultValue;
+        try {
+            myParameter = this.findParameterByKey(key, system);
+            outPutResult = Long.parseLong(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
             LOG.error(ex);
         }
@@ -244,15 +269,13 @@ public class ParameterService implements IParameterService {
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
         } else if (resp.getItem() == null) {
             finalAnswer = create(object);
+        } else if (!((object.getValue()).equals(((Parameter) resp.getItem()).getValue()))) {
+            finalAnswer = update(object);
         } else {
-            if(!((object.getValue()).equals(((Parameter)resp.getItem()).getValue()))) {
-                finalAnswer = update(object);
-            }else{
-                /**
-                 * Nothing is done but everything went OK
-                 */
-                finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
-            }
+            /**
+             * Nothing is done but everything went OK
+             */
+            finalAnswer = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED));
         }
         return finalAnswer;
     }
