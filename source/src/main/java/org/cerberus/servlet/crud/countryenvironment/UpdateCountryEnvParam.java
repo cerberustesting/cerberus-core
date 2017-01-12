@@ -57,6 +57,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -67,7 +68,12 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateCountryEnvParam", urlPatterns = {"/UpdateCountryEnvParam"})
 public class UpdateCountryEnvParam extends HttpServlet {
 
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(UpdateCountryEnvParam.class);
+
     private final String OBJECT_NAME = "CountryEnvParam";
+
+    @Autowired
+    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -259,6 +265,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String country, String environment, JSONArray json) throws JSONException {
         List<CountryEnvironmentParameters> ceaList = new ArrayList();
+        ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters ceaFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
         for (int i = 0; i < json.length(); i++) {
@@ -274,9 +281,22 @@ public class UpdateCountryEnvParam extends HttpServlet {
             String var2 = tcsaJson.getString("var2");
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
+            String strPoolSize = tcsaJson.getString("poolSize");
+            int poolSize;
+            if (strPoolSize.isEmpty()) {
+                poolSize = ceaService.defaultPoolSize();
+            }
+            else {
+                try {
+                    poolSize = Integer.parseInt(strPoolSize);
+                } catch (NumberFormatException e) {
+                    LOGGER.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
+                    poolSize = ceaService.defaultPoolSize();
+                }
+            }
 
             if (!delete) {
-                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4);
+                CountryEnvironmentParameters cea = ceaFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize);
                 ceaList.add(cea);
             }
         }

@@ -160,4 +160,7 @@ public interface ICountryEnvironmentParametersService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    int defaultPoolSize();
+
 }

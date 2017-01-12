@@ -33,6 +33,8 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IParameterService {
 
+    String DEFAULT_SYSTEM = "";
+
     /**
      * Be aware about a changing {@link Parameter}
      *

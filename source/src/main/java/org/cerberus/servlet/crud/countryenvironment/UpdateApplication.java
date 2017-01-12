@@ -60,6 +60,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @WebServlet(name = "UpdateApplication", urlPatterns = {"/UpdateApplication"})
 public class UpdateApplication extends HttpServlet {
 
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(UpdateApplication.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -81,6 +83,7 @@ public class UpdateApplication extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
+        IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
 
         response.setContentType("application/json");
 
@@ -196,6 +199,7 @@ public class UpdateApplication extends HttpServlet {
 
     private List<CountryEnvironmentParameters> getCountryEnvironmentApplicationFromParameter(HttpServletRequest request, ApplicationContext appContext, String system, String application, JSONArray json) throws JSONException {
         List<CountryEnvironmentParameters> cedList = new ArrayList();
+        ICountryEnvironmentParametersService ceaService = appContext.getBean(ICountryEnvironmentParametersService.class);
         IFactoryCountryEnvironmentParameters cedFactory = appContext.getBean(IFactoryCountryEnvironmentParameters.class);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
@@ -217,9 +221,22 @@ public class UpdateApplication extends HttpServlet {
             String var2 = tcsaJson.getString("var2");
             String var3 = tcsaJson.getString("var3");
             String var4 = tcsaJson.getString("var4");
+            String strPoolSize = tcsaJson.getString("poolSize");
+            int poolSize;
+            if (strPoolSize.isEmpty()) {
+                poolSize = ceaService.defaultPoolSize();
+            }
+            else {
+                try {
+                    poolSize = Integer.parseInt(strPoolSize);
+                } catch (NumberFormatException e) {
+                    LOGGER.warn("Unable to parse pool size: " + strPoolSize + ". Applying default value");
+                    poolSize = ceaService.defaultPoolSize();
+                }
+            }
 
             if (!delete) {
-                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4);
+                CountryEnvironmentParameters ced = cedFactory.create(system, country, environment, application, ip, domain, url, urlLogin, var1, var2, var3, var4, poolSize);
                 cedList.add(ced);
             }
         }
