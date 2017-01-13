@@ -1,5 +1,8 @@
 package org.cerberus.util.observe;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +13,8 @@ import java.util.Set;
  *
  * @author Aurelien Bourdon
  */
+@Component
+@Scope("prototype")
 public class ObservableEngine<TOPIC, ITEM> implements Observable<TOPIC, ITEM> {
 
     private Set<Observer<TOPIC, ITEM>> fullObservers = new HashSet<>();
