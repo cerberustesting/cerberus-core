@@ -220,7 +220,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 throw new CerberusException(mes);
             } else {
                 CountryEnvironmentParameters cea;
-                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "");
+                cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", countryEnvironmentParametersService.defaultPoolSize());
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
                 tCExecution.setUrl(cea.getIp() + cea.getUrl());
@@ -466,14 +466,8 @@ public class ExecutionStartService implements IExecutionStartService {
          * Feature Flipping. Should be removed when websocket push is fully
          * working
          */
-        boolean websocketPush = true;
-        try {
-            AnswerItem<Parameter> featureFlippingActivateWebsocketPush = parameterService.readWithSystem1ByKey("", "cerberus_featureflipping_activatewebsocketpush", tCExecution.getApplicationObj().getSystem());
-            websocketPush = StringUtil.parseBoolean(((Parameter) featureFlippingActivateWebsocketPush.getItem()).getValue());
-        } catch (Exception ex) {
-            LOG.warn(ex.toString());
-        }
-        tCExecution.setFeatureFlippingActivateWebsocketPush(websocketPush);
+        tCExecution.setCerberus_featureflipping_activatewebsocketpush(parameterService.getParameterBooleanByKey("cerberus_featureflipping_activatewebsocketpush", "", false));
+        tCExecution.setCerberus_featureflipping_websocketpushperiod(parameterService.getParameterLongByKey("cerberus_featureflipping_websocketpushperiod", "", 5000));
 
         return tCExecution;
     }

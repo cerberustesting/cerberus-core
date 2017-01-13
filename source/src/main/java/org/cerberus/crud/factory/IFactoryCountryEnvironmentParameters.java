@@ -28,5 +28,5 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 public interface IFactoryCountryEnvironmentParameters {
 
     CountryEnvironmentParameters create(String system, String country, String environment, String application, String ip,
-            String Domain, String url, String urlLogin, String var1, String var2, String var3, String var4);
+            String Domain, String url, String urlLogin, String var1, String var2, String var3, String var4, int poolSize);
 }

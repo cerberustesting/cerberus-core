@@ -24,15 +24,11 @@ import com.mortennobel.imagescaling.ResampleOp;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.cerberus.crud.entity.*;
-import org.cerberus.crud.service.*;
-import org.cerberus.crud.service.impl.*;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -47,6 +43,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionFileService;
 
 /**
  *
@@ -57,7 +57,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionImage.class);
 
-    private IApplicationObjectService applicationObjectService;
+    private IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile;
 
     String data = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=";
     String base64Image = data.split(",")[1];
@@ -80,6 +80,9 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
         String test = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("test"), "", charset);
         String testcase = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("testcase"), "", charset);
+        String fileName = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filename"), "", charset);
+        String fileType = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filetype"), "", charset);
+        String fileDesc = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("filedesc"), "", charset);
         int step = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("step"), 0, charset);
         int index = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("index"), 1, charset);
         int sequence = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequence"), 0, charset);
@@ -88,42 +91,30 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         long id = ParameterParserUtil.parseLongParamAndDecode(request.getParameter("id"), 0, charset);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionService testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
-        ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService = appContext.getBean(TestCaseStepActionControlExecutionService.class);
-        ITestCaseStepActionExecutionService testCaseStepActionExecutionService = appContext.getBean(TestCaseStepActionExecutionService.class);
-        ITestCaseExecutionFileService testCaseExecutionFileService = appContext.getBean(TestCaseExecutionFileService.class);
-        IParameterService parameterService = appContext.getBean(ParameterService.class);
+        IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         BufferedImage b = null;
 
         AnswerList al = new AnswerList<>(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-        String levelFile = "";
-        if (type.equals("action")) {
-            levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence;
-        } else if (type.equals("control")) {
-            levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence + "-" + sequenceControl;
-        }
-        al = testCaseExecutionFileService.readByVarious(id, levelFile);
         TestCaseExecutionFile tceFile = null;
-        if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !al.getDataList().isEmpty()) {
-            Iterator i = al.getDataList().iterator();
-            int indexIterator = -1;
-            while (i.hasNext() && indexIterator != iterator) {
-                indexIterator++;
-                TestCaseExecutionFile tctemp = (TestCaseExecutionFile) i.next();
-                if (indexIterator == iterator) {
-                    tceFile = tctemp;
-                }
-            }
+        if (!(fileName.equals(""))) {
+
+            IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile = appContext.getBean(IFactoryTestCaseExecutionFile.class);
+            tceFile = factoryTestCaseExecutionFile.create(0, 0, "", fileDesc, fileName, fileType, "", null, "", null);
+
         } else {
-            // If previous read failed we try without index. (that can be removed few moths after step index has been introduced in Jan 2017)
+
+            ITestCaseExecutionFileService testCaseExecutionFileService = appContext.getBean(ITestCaseExecutionFileService.class);
+
+            String levelFile = "";
             if (type.equals("action")) {
-                levelFile = test + "-" + testcase + "-" + step + "-" + sequence;
+                levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence;
             } else if (type.equals("control")) {
-                levelFile = test + "-" + testcase + "-" + step + "-" + sequence + "-" + sequenceControl;
+                levelFile = test + "-" + testcase + "-" + step + "-" + index + "-" + sequence + "-" + sequenceControl;
             }
             al = testCaseExecutionFileService.readByVarious(id, levelFile);
+
             if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !al.getDataList().isEmpty()) {
                 Iterator i = al.getDataList().iterator();
                 int indexIterator = -1;
@@ -132,6 +123,25 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
                     TestCaseExecutionFile tctemp = (TestCaseExecutionFile) i.next();
                     if (indexIterator == iterator) {
                         tceFile = tctemp;
+                    }
+                }
+            } else {
+                // If previous read failed we try without index. (that can be removed few moths after step index has been introduced in Jan 2017)
+                if (type.equals("action")) {
+                    levelFile = test + "-" + testcase + "-" + step + "-" + sequence;
+                } else if (type.equals("control")) {
+                    levelFile = test + "-" + testcase + "-" + step + "-" + sequence + "-" + sequenceControl;
+                }
+                al = testCaseExecutionFileService.readByVarious(id, levelFile);
+                if (al.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && !al.getDataList().isEmpty()) {
+                    Iterator i = al.getDataList().iterator();
+                    int indexIterator = -1;
+                    while (i.hasNext() && indexIterator != iterator) {
+                        indexIterator++;
+                        TestCaseExecutionFile tctemp = (TestCaseExecutionFile) i.next();
+                        if (indexIterator == iterator) {
+                            tceFile = tctemp;
+                        }
                     }
                 }
             }
@@ -172,6 +182,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         filePath = StringUtil.addSuffixIfNotAlready(filePath, File.separator);
 
         File picture = new File(filePath + tc.getFileName());
+        LOG.debug("Accessing File : " + picture.getAbsolutePath());
         try {
             if (real) {
                 b = ImageIO.read(picture);
@@ -202,6 +213,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         String everything = "";
         filePath = StringUtil.addSuffixIfNotAlready(filePath, "/");
 
+        LOG.debug("Accessing File : " + filePath + tc.getFileName());
         try (FileInputStream inputStream = new FileInputStream(filePath + tc.getFileName())) {
             everything = IOUtils.toString(inputStream);
             response.getWriter().print(everything);

@@ -8044,6 +8044,26 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_loopstep_max','20','Integer value that correspond to the max number of step loop authorised.<br>This parameter can be configured at the system level.')");
         SQLInstruction.add(SQLS.toString());
 
+        // Add poolSize attribute to CountryEnvironmentParameters
+        //-- ------------------------ 1032-1034
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('countryenvironmentparameters', 'poolSize', '', 'fr', 'Parallelisation', 'Nombre maximal, par instances Cerberus, de tests pouvant être exécutés en parallèle');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('countryenvironmentparameters', 'poolSize', '', 'en', 'Pool size', 'Maximal number of testcases that can be executed in same time by a single Cerberus instance');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+        SQLS.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to limit the frequency of the websocket push
+        //-- ------------------------ 1035
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_featureflipping_websocketpushperiod','5000','Integer value that correspond to the nb of ms between every websocket push.')");
+        SQLInstruction.add(SQLS.toString());
+
+        
         return SQLInstruction;
     }
 

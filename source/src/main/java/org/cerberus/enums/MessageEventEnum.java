@@ -322,7 +322,7 @@ public enum MessageEventEnum {
     // *********** EXECUTION STEP ***********
     STEP_SUCCESS(400, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
-    STEP_PENDING(499, "PE", "Step running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    STEP_PENDING(499, "PE", "Step %STEP%.%STEPINDEX% running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********
     CONDITIONEVAL_PENDING(1200, "PE", "Evaluating Condition...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITIONEVAL_FAILED_UNKNOWNCONDITION(1290, "FA", "condition '%COND%' do not exist.", false, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),

@@ -42,7 +42,7 @@ public interface ICountryEnvironmentParametersDAO {
      * @param application
      * @return
      */
-    AnswerItem readByKey(String system, String country, String environment, String application);
+    AnswerItem<CountryEnvironmentParameters> readByKey(String system, String country, String environment, String application);
 
     List<String[]> getEnvironmentAvailable(String country, String application);
 
@@ -84,5 +84,7 @@ public interface ICountryEnvironmentParametersDAO {
      * @return
      */
     Answer update(CountryEnvironmentParameters object);
+
+    int getDefaultPoolSize();
 
 }

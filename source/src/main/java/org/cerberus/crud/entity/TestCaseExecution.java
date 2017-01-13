@@ -107,7 +107,9 @@ public class TestCaseExecution {
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
     private Integer cerberus_action_wait_default;
-    private boolean featureFlippingActivateWebsocketPush;
+    private boolean cerberus_featureflipping_activatewebsocketpush;
+    private long cerberus_featureflipping_websocketpushperiod;
+    private long lastWebsocketPush;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -118,6 +120,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+
+    public long getLastWebsocketPush() {
+        return lastWebsocketPush;
+    }
+
+    public void setLastWebsocketPush(long lastWebsocketPush) {
+        this.lastWebsocketPush = lastWebsocketPush;
+    }
 
     public String getConditionOper() {
         return conditionOper;
@@ -159,12 +169,20 @@ public class TestCaseExecution {
         this.conditionVal2 = conditionVal2;
     }
 
-    public boolean isFeatureFlippingActivateWebsocketPush() {
-        return featureFlippingActivateWebsocketPush;
+    public long getCerberus_featureflipping_websocketpushperiod() {
+        return cerberus_featureflipping_websocketpushperiod;
     }
 
-    public void setFeatureFlippingActivateWebsocketPush(boolean featureFlippingActivateWebsocketPush) {
-        this.featureFlippingActivateWebsocketPush = featureFlippingActivateWebsocketPush;
+    public void setCerberus_featureflipping_websocketpushperiod(long cerberus_featureflipping_websocketpushperiod) {
+        this.cerberus_featureflipping_websocketpushperiod = cerberus_featureflipping_websocketpushperiod;
+    }
+
+    public boolean isCerberus_featureflipping_activatewebsocketpush() {
+        return cerberus_featureflipping_activatewebsocketpush;
+    }
+
+    public void setCerberus_featureflipping_activatewebsocketpush(boolean cerberus_featureflipping_activatewebsocketpush) {
+        this.cerberus_featureflipping_activatewebsocketpush = cerberus_featureflipping_activatewebsocketpush;
     }
 
     public Integer getCerberus_action_wait_default() {

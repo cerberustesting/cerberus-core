@@ -93,6 +93,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setNumberOfRetries(numberOfRetries);
         newTce.setScreenSize(screenSize);
         newTce.setCapabilities(capabilities);
+        newTce.setLastWebsocketPush(0);
         return newTce;
     }
 

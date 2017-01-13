@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.cerberus.crud.dao.ICountryEnvironmentParametersDAO;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
@@ -240,6 +241,11 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public int defaultPoolSize() {
+        return countryEnvironmentParametersDao.getDefaultPoolSize();
     }
 
 }

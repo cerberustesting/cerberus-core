@@ -324,10 +324,13 @@ public class ExecutionRunService implements IExecutionRunService {
                         /**
                          * Create and Register TestCaseStepExecution
                          */
+                        MessageEvent stepMess = new MessageEvent(MessageEventEnum.STEP_PENDING)
+                                .resolveDescription("STEP", String.valueOf(testCaseStep.getSort()))
+                                .resolveDescription("STEPINDEX", String.valueOf(step_index));
                         testCaseStepExecution = factoryTestCaseStepExecution.create(
                                 runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
                                 testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
-                                startStep, 0, startStep, 0, new BigDecimal("0"), null, new MessageEvent(MessageEventEnum.STEP_PENDING), testCaseStep, tCExecution,
+                                startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                 testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                         testCaseStepExecution.setLoop(testCaseStep.getLoop());
                         testCaseStepExecutionService.insertTestCaseStepExecution(testCaseStepExecution);
@@ -457,10 +460,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         }
 
-                        // If feature Websocket is activated, we refresh the corresponding Detail Execution pages attached to this execution.
-                        if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
-                            TestCaseExecutionEndPoint.send(tCExecution);
-                        }
+                        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+                        TestCaseExecutionEndPoint.send(tCExecution, false);
 
                         step_index++;
                     } while (execute_Next_Step && step_index <= maxloop);
@@ -588,9 +589,9 @@ public class ExecutionRunService implements IExecutionRunService {
         } catch (CerberusException ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception updating Execution :" + tCExecution.getId() + " Exception:" + ex.toString());
         }
-        if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
-            TestCaseExecutionEndPoint.send(tCExecution);
-        }
+
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        TestCaseExecutionEndPoint.send(tCExecution, true);
 
         return tCExecution;
     }
@@ -719,9 +720,10 @@ public class ExecutionRunService implements IExecutionRunService {
         }
         testCaseStepExecution.setEnd(new Date().getTime());
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
-        if (tcExecution.isFeatureFlippingActivateWebsocketPush()) {
-            TestCaseExecutionEndPoint.send(tcExecution);
-        }
+
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        TestCaseExecutionEndPoint.send(tcExecution, false);
+
         return testCaseStepExecution;
     }
 
@@ -865,17 +867,16 @@ public class ExecutionRunService implements IExecutionRunService {
                 this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
-                if (tcExecution.isFeatureFlippingActivateWebsocketPush()) {
-                    TestCaseExecutionEndPoint.send(tcExecution);
-                }
+                // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+                TestCaseExecutionEndPoint.send(tcExecution, false);
 
             }
 
         }
 
-        if (tcExecution.isFeatureFlippingActivateWebsocketPush()) {
-            TestCaseExecutionEndPoint.send(tcExecution);
-        }
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        TestCaseExecutionEndPoint.send(tcExecution, false);
+
         return testCaseStepActionExecution;
 
     }
@@ -896,9 +897,9 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepActionControlExecutionService.updateTestCaseStepActionControlExecution(testCaseStepActionControlExecution);
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
-        if (tcExecution.isFeatureFlippingActivateWebsocketPush()) {
-            TestCaseExecutionEndPoint.send(tcExecution);
-        }
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        TestCaseExecutionEndPoint.send(tcExecution, false);
+
         return testCaseStepActionControlExecution;
     }
 
@@ -919,9 +920,9 @@ public class ExecutionRunService implements IExecutionRunService {
             }
         }
 
-        if (tCExecution.isFeatureFlippingActivateWebsocketPush()) {
-            TestCaseExecutionEndPoint.send(tCExecution);
-        }
+        // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+        TestCaseExecutionEndPoint.send(tCExecution, false);
+
         return tCExecution;
     }
 

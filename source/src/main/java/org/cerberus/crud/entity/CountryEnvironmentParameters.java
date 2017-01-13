@@ -35,6 +35,7 @@ public class CountryEnvironmentParameters {
     private String var2;
     private String var3;
     private String var4;
+    private int poolSize;
 
     public String getApplication() {
         return application;
@@ -132,6 +133,14 @@ public class CountryEnvironmentParameters {
         this.var4 = var4;
     }
 
+    public int getPoolSize() {
+        return poolSize;
+    }
+
+    public void setPoolSize(int poolSize) {
+        this.poolSize = poolSize;
+    }
+
     public boolean hasSameKey(CountryEnvironmentParameters obj) {
         if (obj == null) {
             return false;
@@ -170,6 +179,7 @@ public class CountryEnvironmentParameters {
         hash = 29 * hash + (this.var2 != null ? this.var2.hashCode() : 0);
         hash = 29 * hash + (this.var3 != null ? this.var3.hashCode() : 0);
         hash = 29 * hash + (this.var4 != null ? this.var4.hashCode() : 0);
+        hash = 29 * hash + this.poolSize;
         return hash;
     }
 
@@ -216,6 +226,9 @@ public class CountryEnvironmentParameters {
             return false;
         }
         if ((this.var4 == null) ? (other.var4 != null) : !this.var4.equals(other.var4)) {
+            return false;
+        }
+        if (this.poolSize != other.poolSize) {
             return false;
         }
         return true;

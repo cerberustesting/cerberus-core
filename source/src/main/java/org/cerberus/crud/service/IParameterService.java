@@ -33,6 +33,8 @@ import org.cerberus.util.answer.AnswerList;
  */
 public interface IParameterService {
 
+    String DEFAULT_SYSTEM = "";
+
     /**
      * Be aware about a changing {@link Parameter}
      *
@@ -64,6 +66,17 @@ public interface IParameterService {
 
     /**
      * This method can be used in order to retreive a parameter directly in
+     * boolean format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
+    boolean getParameterBooleanByKey(String key, String system, boolean defaultValue);
+
+    /**
+     * This method can be used in order to retreive a parameter directly in
      * integer format.
      *
      * @param key
@@ -72,6 +85,17 @@ public interface IParameterService {
      * @return
      */
     Integer getParameterIntegerByKey(String key, String system, Integer defaultValue);
+
+    /**
+     * This method can be used in order to retreive a parameter directly in long
+     * format.
+     *
+     * @param key
+     * @param system
+     * @param defaultValue
+     * @return
+     */
+    long getParameterLongByKey(String key, String system, long defaultValue);
 
     /**
      * This method can be used in order to retreive a parameter directly in
