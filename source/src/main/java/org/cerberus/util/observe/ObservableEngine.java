@@ -55,15 +55,15 @@ public class ObservableEngine<TOPIC, ITEM> implements Observable<TOPIC, ITEM> {
 
     @Override
     public boolean unregister(Observer<TOPIC, ITEM> observer) {
-        boolean success = false;
+        boolean success = true;
         synchronized (fullObservers) {
-            success |= fullObservers.remove(observer);
+            success &= fullObservers.remove(observer);
         }
         synchronized (topicObservers) {
             Set<TOPIC> topics = reverseTopicObservers.get(observer);
             if (topics != null) {
                 for (TOPIC topic : topics) {
-                    success |= topicObservers.get(topic).remove(observer);
+                    success &= topicObservers.get(topic).remove(observer);
                 }
             }
         }
