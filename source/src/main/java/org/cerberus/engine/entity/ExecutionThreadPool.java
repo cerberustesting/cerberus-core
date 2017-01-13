@@ -22,6 +22,8 @@ package org.cerberus.engine.entity;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.util.observe.ObservableEngine;
+import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  * @author abourdon
  */
 @Component
-public class ExecutionThreadPool implements IParameterService.ParameterAware {
+public class ExecutionThreadPool implements Observer<String, Parameter> {
 
     /**
      * The associated {@link Logger} to this class
@@ -136,19 +138,19 @@ public class ExecutionThreadPool implements IParameterService.ParameterAware {
         initExecutor(currentSIze);
     }
 
-    /**
-     * React to {@link Parameter} changes, especially the {@link #THREAD_POOL_SIZE_CONFIGURATION_KEY} to update the pool size
-     *
-     * @param parameter the changing {@link Parameter}
-     * @see #setSize(Integer)
-     */
     @Override
-    public void parameterChanged(Parameter parameter) {
-        try {
-            setSize(Integer.valueOf(parameter.getValue()));
-        } catch (Exception e) {
-            LOGGER.warn("Unable to set size from property change event", e);
-        }
+    public void observeCreate(String topic, Parameter parameter) {
+        sizeChanged(parameter);
+    }
+
+    @Override
+    public void observeUpdate(String topic, Parameter parameter) {
+        sizeChanged(parameter);
+    }
+
+    @Override
+    public void observeDelete(String topic, Parameter parameter) {
+        // Nothing to do
     }
 
     /**
@@ -223,6 +225,20 @@ public class ExecutionThreadPool implements IParameterService.ParameterAware {
     private void stopExecutor() {
         if (!executor.isShutdown()) {
             executor.shutdownNow();
+        }
+    }
+
+    /**
+     * React to {@link Parameter} changes, especially the {@link #THREAD_POOL_SIZE_CONFIGURATION_KEY} to update the pool size
+     *
+     * @param parameter the changing {@link Parameter}
+     * @see #setSize(Integer)
+     */
+    private void sizeChanged(Parameter parameter) {
+        try {
+            setSize(Integer.valueOf(parameter.getValue()));
+        } catch (Exception e) {
+            LOGGER.warn("Unable to set size from property change event", e);
         }
     }
 
