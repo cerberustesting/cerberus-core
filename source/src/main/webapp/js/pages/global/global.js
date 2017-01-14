@@ -1998,7 +1998,7 @@ function bindToggleCollapse() {
         if (localStorage.getItem(this.id) === "false") {
             $(this).removeClass('in');
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
-        }else{
+        } else {
             $(this).addClass('in');
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
         }
@@ -2173,9 +2173,9 @@ function autocompleteVariable(identifier, Tags) {
                     results: function () {
                     }
                 },
-                open: function(){
+                open: function () {
                     //If autocomplete is in modal, needs to be upper the modal
-                    if($(this).closest($(".modal")).length > 0){
+                    if ($(this).closest($(".modal")).length > 0) {
                         $(this).autocomplete('widget').css('z-index', 1050);
                     }
                     return false;
@@ -2187,7 +2187,7 @@ function autocompleteVariable(identifier, Tags) {
                             icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
                         }
                         return $("<li class='ui-menu-item'>")
-                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>" )
+                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
                                 .appendTo(ul);
                     };
                 },
@@ -2206,8 +2206,8 @@ function autocompleteVariable(identifier, Tags) {
                             if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
                                 this.currentIndexTag = tag;
                                 var arrayToDisplay = $.ui.autocomplete.filter(
-                                    Tags[tag].array, extractLast(identifier, Tags[tag].regex));
-                                if(Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != ""){
+                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex));
+                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
                                     arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
                                 }
                                 response(arrayToDisplay);
@@ -2306,11 +2306,11 @@ function showPicture(title, pictureUrl) {
     $('#modalContent').empty();
     //set the translations
     $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
-    if($("#btnFullPicture").length > 0){
+    if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }
-    $('#modal-footer').prepend($('<button>').attr("id","btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function(){
-        window.open(pictureUrl + "&r=true","_blank");
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function () {
+        window.open(pictureUrl + "&r=true", "_blank");
     }));
     $('#showGenericModal').modal('show');
 }
@@ -2318,16 +2318,26 @@ function showPicture(title, pictureUrl) {
  * Auxiliary function that opens the modal that allows user to view a textarea.
  * @param {type} title
  * @param {type} text
+ * @param {type} fileUrl
  * @returns {undefined}
  */
-function showTextArea(title, text) {
+function showTextArea(title, text, fileUrl) {
     var doc = new Doc();
     $('#showGenericModalTitle').text(title);
     $('#closeShowGenericButton').text(doc.getDocLabel("page_global", "buttonClose"));
 
     $('#modalContent').empty();
     //set the translations
-    $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(text)));
+
+    var jqxhr = $.get(fileUrl, "");
+    $.when(jqxhr).then(function (data) {
+        $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(data)));
+    });
+
+    $('#modal-footer #btnFullPicture').remove();
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full File").addClass("btn btn-default").click(function () {
+        window.open(fileUrl, "_blank");
+    }));
 
     $('#showGenericModal').modal('show');
 }

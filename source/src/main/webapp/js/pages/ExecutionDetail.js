@@ -796,6 +796,30 @@ Action.prototype.draw = function () {
         content.show();
     }
 
+    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
+    for (var i = 0; i < this.fileList.length; i++) {
+        if (this.fileList[i].fileType === "JPG") {
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + this.fileList[i].fileName + "&filetype=" + this.fileList[i].fileType + "&filedesc=" + this.fileList[i].fileDesc;
+            var fileDesc = this.fileList[i].fileDesc;
+            var linkBox = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px").click(function (e) {
+                showPicture(fileDesc, urlImage);
+                return false;
+            }));
+            $(header).find(".row").append(linkBox);
+        } else if ((this.fileList[i].fileType === "HTML") || (this.fileList[i].fileType === "JSON") || (this.fileList[i].fileType === "TXT")) {
+            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + this.fileList[i].fileName + "&filetype=" + this.fileList[i].fileType + "&filedesc=" + this.fileList[i].fileDesc;
+            var fileDesctxt = this.fileList[i].fileDesc;
+            var filetypetxt = this.fileList[i].fileType.toLowerCase();
+            console.debug(fileDesctxt);
+            var linkBoxtxt = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg").css("height", "30px").click(function (f) {
+                showTextArea("fileDesc", urlImagetxt);
+                return false;
+            }));
+            $(header).find(".row").append(linkBoxtxt);
+        }
+    }
+
+
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
@@ -807,30 +831,6 @@ Action.prototype.draw = function () {
         content.toggle();
         return false;
     });
-
-    if (this.fileList.length > 0) {
-
-        var f = new File();
-        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence).then(function (data) {
-
-            var headerToAdd = data[0];
-            var bodyToAdd = data[1];
-
-            if (headerToAdd != undefined) {
-                var cnt = headerToAdd.contents();
-                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
-                $(header).find(".row").append(cnt);
-            }
-
-            if (bodyToAdd != undefined) {
-                var cnt = bodyToAdd.contents();
-                $(content).append(cnt);
-            }
-
-        }, function (e) {
-            // No File Found
-        });
-    }
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -1063,6 +1063,29 @@ Control.prototype.draw = function () {
         content.show();
     }
 
+    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
+    for (var i = 0; i < this.fileList.length; i++) {
+        if (this.fileList[i].fileType === "JPG") {
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + this.fileList[i].fileName + "&filetype=" + this.fileList[i].fileType + "&filedesc=" + this.fileList[i].fileDesc;
+            var fileDesc = this.fileList[i].fileDesc;
+            var linkBox = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px").click(function (e) {
+                showPicture(fileDesc, urlImage);
+                return false;
+            }));
+            $(header).find(".row").append(linkBox);
+        } else if ((this.fileList[i].fileType === "HTML") || (this.fileList[i].fileType === "JSON") || (this.fileList[i].fileType === "TXT")) {
+            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + this.fileList[i].fileName + "&filetype=" + this.fileList[i].fileType + "&filedesc=" + this.fileList[i].fileDesc;
+            var fileDesctxt = this.fileList[i].fileDesc;
+            var filetypetxt = this.fileList[i].fileType.toLowerCase();
+            console.debug(fileDesctxt);
+            var linkBoxtxt = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg").css("height", "30px").click(function (f) {
+                showTextArea(fileDesctxt, "", urlImagetxt);
+                return false;
+            }));
+            $(header).find(".row").append(linkBoxtxt);
+        }
+    }
+
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
@@ -1074,30 +1097,6 @@ Control.prototype.draw = function () {
         content.toggle();
         return false;
     });
-
-    if (this.fileList.length > 0) {
-
-        var f = new File();
-        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function (data) {
-
-            var headerToAdd = data[0];
-            var bodyToAdd = data[1];
-
-            if (headerToAdd != undefined) {
-                var cnt = headerToAdd.contents();
-                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
-                $(header).find(".row").append(cnt);
-            }
-
-            if (bodyToAdd != undefined) {
-                var cnt = bodyToAdd.contents();
-                $(content).append(cnt);
-            }
-
-        }, function (e) {
-            // No File Found
-        });
-    }
 
 };
 
@@ -1222,171 +1221,4 @@ Control.prototype.getJsonData = function () {
     json.screenshotFileName = this.screenshotFileName;
 
     return json;
-};
-
-/**
- * File Utilities
- */
-
-var File = function () {
-    var scope = this;
-    var it = 0;
-    // A div to store what to add in the header (Only the content of the div will be add)
-    var containerHeader = $("<div>");
-    // A div to store what to add in the body
-    var containerBody = $("<div>");
-    this.checkFile = function (data, src, id) {
-        return new Promise(function (resolve, reject) {
-            // Check if Picture
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', src + id, true);
-            xhr.responseType = 'blob';
-
-            xhr.onload = function (e) {
-                var description = this.getResponseHeader("Description");
-                if (this.status == 200 && this.response != undefined && this.response.size > 0) {
-                    // get binary data as a response
-                    var blob = this.response;
-
-                    // We want to know the type of the File (The type of the blob is trustfully, always xml)
-                    var fileReader = new FileReader();
-                    fileReader.onloadend = function (e) {
-                        var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
-                        var header = "";
-                        for (var i = 0; i < arr.length; i++) {
-                            header += arr[i].toString(16);
-                        }
-
-                        // Check the file signature against known types
-                        var type;
-                        switch (header) {
-                            case "89504e47":
-                                type = "image/png";
-                                break;
-                            case "47494638":
-                                type = "image/gif";
-                                break;
-                            case "ffd8ffd8":
-                            case "ffd8ffe0":
-                            case "ffd8ffe1":
-                            case "ffd8ffe2":
-                                type = "image/jpeg";
-                                break;
-                            case "25504446":
-                                type = "application/pdf";
-                                break;
-                            default:
-                                type = "text/plain";
-                                break;
-                        }
-
-                        // We create the view depending the type
-                        var fileHeader;
-                        var fileBody;
-                        var nowit = it;
-                        if (type == "image/png" || type == "image/gif" || type == "image/jpeg") {
-                            var urlCreator = window.URL || window.webkitURL;
-                            var imageUrl = urlCreator.createObjectURL(blob);
-                            fileHeader = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height", "30px").click(function (e) {
-                                showPicture(description, src + id);
-                                return false;
-                            }));
-
-                            //Then we add it in the container and we increment the iterator
-                            if (fileHeader != undefined || fileBody != undefined) {
-                                scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                    resolve([containerHeader, containerBody]);
-                                });
-                            } else {
-                                reject(e);
-                            }
-
-                        } else if (type == "text/plain") {
-                            var fileReader2 = new FileReader();
-                            fileReader2.onloadend = function (evt) {
-                                // file is loaded
-                                var result = evt.target.result;
-                                //We create the view, what to add in the header and the body
-                                fileBody = $("<div>").addClass("row").append(
-                                        $("<div>").addClass("col-sm-12").append(
-                                        $("<div class='form-group'></div>")
-                                        .append($("<label for='action'>" + description + "</label>"))
-                                        .append($("<textarea style='width:100%;' class='form-control' id='textResponse" + nowit + "'>").prop("readonly", true).val(result)
-                                                )
-                                        )
-                                        );
-                                fileHeader = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px").append(
-                                        $("<button type='button'>")
-                                        .addClass("btn btn-outline-primary")
-                                        .css("height", "30px")
-                                        .css("width", "100%")
-                                        .css("max-width", "100%")
-                                        .css("display", "inline-block")
-                                        .css("overflow", "hidden")
-                                        .css("text-overflow", "ellipsis")
-                                        .css("white-space", "nowrap")
-                                        .css("font-size", "small")
-                                        .html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span><span class="text-muted">' + description + '</span>')
-                                        .click(function (e) {
-                                            showTextArea(description, result);
-                                            return false;
-                                        })
-                                        );
-                                //We take one more col
-                                it++;
-                                //Then we add it in the container and we increment the iterator
-                                if (fileHeader != undefined || fileBody != undefined) {
-                                    scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                        resolve([containerHeader, containerBody]);
-                                    });
-                                } else {
-                                    reject(e);
-                                }
-                            };
-                            fileReader2.readAsText(blob);
-                        }
-                    };
-                    fileReader.readAsArrayBuffer(blob);
-                } else {
-                    reject(e);
-                }
-            };
-
-            xhr.send();
-        });
-    };
-
-    this.getFiles = function (data, src) {
-        return this.checkFile(data, src + "&iterator=", it);
-    };
-
-    this.getIt = function () {
-        return it;
-    };
-
-    this.foundFile = function (data, src, fileHeader, fileBody) {
-        var scope = this;
-        it++;
-        return new Promise(function (resolve, reject) {
-            scope.checkFile(data, src, it).then(function () {
-                if (fileHeader != undefined) {
-                    containerHeader.append(fileHeader);
-                }
-                if (fileBody != undefined) {
-                    containerBody.append(fileBody);
-                }
-                resolve([containerHeader, containerBody]);
-            }, function (e) {
-                if (fileHeader != undefined) {
-                    containerHeader.append(fileHeader);
-                }
-                if (fileBody != undefined) {
-                    containerBody.append(fileBody);
-                }
-                resolve([containerHeader, containerBody]);
-            });
-        });
-    };
-
 };

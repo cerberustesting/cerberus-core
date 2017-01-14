@@ -52,10 +52,10 @@ import org.cerberus.crud.service.ITestCaseExecutionFileService;
  *
  * @author vertigo
  */
-@WebServlet(name = "ReadTestCaseExecutionImage", urlPatterns = {"/ReadTestCaseExecutionImage"})
-public class ReadTestCaseExecutionImage extends HttpServlet {
+@WebServlet(name = "ReadTestCaseExecutionMedia", urlPatterns = {"/ReadTestCaseExecutionMedia"})
+public class ReadTestCaseExecutionMedia extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionImage.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecutionMedia.class);
 
     private IFactoryTestCaseExecutionFile factoryTestCaseExecutionFile;
 
@@ -157,8 +157,15 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "HTML":
+                    returnFile(request, response, tceFile, pathString);
+                    break;
                 case "XML":
-                    returnXML(request, response, tceFile, pathString);
+                    response.setContentType("application/xml");
+                    returnFile(request, response, tceFile, pathString);
+                    break;
+                case "JSON":
+                    response.setContentType("application/json");
+                    returnFile(request, response, tceFile, pathString);
                     break;
                 case "TEXT":
                     returnText(request, response, tceFile, pathString);
@@ -208,7 +215,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         ImageIO.write(b, "png", response.getOutputStream());
     }
 
-    private void returnXML(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
+    private void returnFile(HttpServletRequest request, HttpServletResponse response, TestCaseExecutionFile tc, String filePath) {
 
         String everything = "";
         filePath = StringUtil.addSuffixIfNotAlready(filePath, "/");
@@ -257,7 +264,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionMedia.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -275,7 +282,7 @@ public class ReadTestCaseExecutionImage extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionImage.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionMedia.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
