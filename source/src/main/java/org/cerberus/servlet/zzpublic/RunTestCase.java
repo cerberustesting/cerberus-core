@@ -215,6 +215,18 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
             error = true;
         }
+
+        // If execution is in queue, then we set its state to the executing state
+        if (idFromQueue > 0) {
+            try {
+                ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+                testCaseExecutionInQueueService.toExecuting(idFromQueue);
+            } catch (CerberusException e) {
+                LOG.warn("Unable to execute execution in queue due to " + e.getMessage(), e);
+                out.println("Error - The execution in queue cannot be executed. Probably because of its incompatible state value");
+                error = true;
+            }
+        }
         
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
         IParameterService parameterService = appContext.getBean(IParameterService.class);
@@ -349,11 +361,11 @@ public class RunTestCase extends HttpServlet {
                  * information in Queue
                  */
                 try {
-                    if (tCExecution.getIdFromQueue() != 0) {
+                    if (idFromQueue != 0) {
                         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
                         if (tCExecution.getResultMessage().getCode() == mes.getCode()) { // There was an issue on the execution so we keep it in the queue and update the message.
-                            testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(), tCExecution.getResultMessage().getDescription());
+                            testCaseExecutionInQueueService.toError(idFromQueue, tCExecution.getResultMessage().getDescription());
                         } else { // Execution was fine (technically) so we remove it from the queue.
                             testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
                         }

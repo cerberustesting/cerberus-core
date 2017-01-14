@@ -179,9 +179,7 @@ public class AddToExecutionQueue extends HttpServlet {
         List<String> errorMessages = new ArrayList<String>();
         for (TestCaseExecutionInQueue toInsert : toInserts) {
             try {
-                if (inQueueService.canInsert(toInsert)) {
-                    inQueueService.insert(toInsert);
-                }
+                inQueueService.insert(toInsert);
             } catch (CerberusException e) {
                 String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
                 LOG.warn(errorMessage);

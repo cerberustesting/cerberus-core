@@ -70,7 +70,7 @@ public class FindExecutionInQueue extends HttpServlet {
                     row.put(exec.getEnvironment());
                     row.put(exec.getBrowser());
                     row.put(exec.getTag());
-                    row.put(exec.getProcessed());
+                    row.put(exec.getState().name());
                     data.put(row);
                 }
             } catch (CerberusException ex) {
