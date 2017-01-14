@@ -20,78 +20,40 @@
 package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.engine.entity.ExecutionThreadPool;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
  */
 @Service
-public class ExecutionThreadPoolService {
+public class ExecutionThreadPoolService implements Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
-    @Autowired
-    ITestCaseExecutionInQueueService tceiqService;
-    @Autowired
-    ExecutionThreadPool threadPool;
-    @Autowired
-    IParameterService parameterService;
-
-    public void putExecutionInQueue(String url, String tag) throws CerberusException {
-        ExecutionWorkerThread task = new ExecutionWorkerThread();
-        task.setExecutionUrl(url);
-        task.setTag(tag);
-        try {
-            threadPool.submit(task);
-        } catch (Exception e) {
-            String message = "Unable to submit new task " + task;
-            LOG.warn(message, e);
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR).resolveDescription("REASON", message));
-        }
-    }
-
-    public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
-
-        try {
-            /**
-             * Find all testCase in Queue not Procedeed
-             */
-            List<TestCaseExecutionInQueue> tceiqList = tceiqService.findAllNotProcedeed();
-            if (null != tceiqList && !tceiqList.isEmpty()) {
-                /**
-                 * Generate the URL for the execution
-                 */
-                String host = parameterService.findParameterByKey("cerberus_url", "").getValue();
-                host += "/RunTestCase?";
-                for (TestCaseExecutionInQueue tceiq : tceiqList) {
-                    ParamRequestMaker paramRequestMaker = makeParamRequestfromLastInQueue(tceiq);
-                    String uri = paramRequestMaker.mkString().replace(" ", "+");
-                    String query = host + uri;
-                    this.putExecutionInQueue(query, tceiq.getTag());
-                }
-            }
-
-        } catch (CerberusException ex) {
-            LOG.info(ex.toString());
-        }
-
-    }
-
-    public static ParamRequestMaker makeParamRequestfromLastInQueue(TestCaseExecutionInQueue lastInQueue) {
+    private static ParamRequestMaker makeParamRequest(TestCaseExecutionInQueue lastInQueue) {
         ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
         paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, lastInQueue.getTest());
         paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, lastInQueue.getTestCase());
@@ -115,13 +77,161 @@ public class ExecutionThreadPoolService {
         paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(lastInQueue.getScreenshot()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(lastInQueue.getVerbose()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, lastInQueue.getTimeout());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, lastInQueue.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
-                : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
+        // Always synchronous in order to respect maximum thread pool size
+        paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
         paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(lastInQueue.getPageSource()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(lastInQueue.getSeleniumLog()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
         paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(lastInQueue.getRetries()));
         return paramRequestMaker;
     }
+
+    @Autowired
+    private ITestCaseExecutionInQueueService tceiqService;
+
+    @Autowired
+    private IParameterService parameterService;
+
+    @Autowired
+    private ICountryEnvironmentParametersService countryEnvironmentParametersService;
+
+    private Map<CountryEnvironmentParameters.Key, ExecutionThreadPool> executionPools;
+
+    public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
+        List<TestCaseExecutionInQueue> executionsInQueue = tceiqService.toQueued();
+        for (TestCaseExecutionInQueue executionInQueue : executionsInQueue) {
+            try {
+                execute(executionInQueue);
+            } catch (CerberusException e) {
+                LOG.warn("Unable to execute " + executionInQueue + " due to " + e.getMessageError().getDescription(), e);
+                tceiqService.toError(executionInQueue.getId(), e.getMessageError().getDescription());
+            }
+        }
+    }
+
+    @Override
+    public void observeCreate(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
+        // Nothing to do
+    }
+
+    @Override
+    public void observeUpdate(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
+        ExecutionThreadPool associatedExecutionPool = getExecutionPool(key);
+        if (associatedExecutionPool != null) {
+            associatedExecutionPool.setSize(countryEnvironmentParameters.getPoolSize());
+        }
+    }
+
+    @Override
+    public void observeDelete(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
+        removeExecutionPool(key);
+    }
+
+    @PostConstruct
+    private void init() {
+        initExecutionPools();
+    }
+
+    @PreDestroy
+    private void stop() {
+        stopRegistration();
+        stopExecutionPools();
+    }
+
+
+    private void initExecutionPools() {
+        executionPools = new HashMap<>();
+    }
+
+    private void stopExecutionPools() {
+        if (executionPools == null) {
+            return;
+        }
+        for (ExecutionThreadPool executionPool : executionPools.values()) {
+            LOG.info("Stopping execution pool " + executionPool.getName());
+            executionPool.stop();
+        }
+    }
+
+    private void stopRegistration() {
+        countryEnvironmentParametersService.unregister(this);
+    }
+
+    private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
+        try {
+            ExecutionThreadPool executionPool = getOrCreateExecutionPool(getKey(toExecute));
+            ExecutionWorkerThread execution = new ExecutionWorkerThread(getExecutionUrl(toExecute), toExecute.getTag());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Request to execute " + execution + " from execution pool " + executionPool);
+            }
+            executionPool.submit(execution);
+        } catch (Exception e) {
+            String message = "Unable to execute " + toExecute + " due to " + e.getMessage();
+            LOG.warn(message, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR).resolveDescription("REASON", message));
+        }
+    }
+
+    private String getExecutionUrl(TestCaseExecutionInQueue toExecute) throws CerberusException{
+        ParamRequestMaker paramRequestMaker = makeParamRequest(toExecute);
+        String executionParameters = paramRequestMaker.mkString().replace(" ", "+");
+        return parameterService.findParameterByKey("cerberus_url", "").getValue() + "/RunTestCase?" + executionParameters;
+    }
+
+    private ExecutionThreadPool getOrCreateExecutionPool(CountryEnvironmentParameters.Key key) {
+        ExecutionThreadPool executionPool = executionPools.get(key);
+        if (executionPool == null) {
+            synchronized (executionPools) {
+                executionPool = executionPools.get(key);
+                if (executionPool == null) {
+                    executionPool = new ExecutionThreadPool(key, getPoolSize(key));
+                    executionPools.put(key, executionPool);
+                    registerTo(key);
+                }
+            }
+        }
+        return executionPool;
+    }
+
+    private ExecutionThreadPool getExecutionPool(CountryEnvironmentParameters.Key key) {
+        synchronized (executionPools) {
+            return executionPools.get(key);
+        }
+    }
+
+    private void removeExecutionPool(CountryEnvironmentParameters.Key key) {
+        synchronized (executionPools) {
+            ExecutionThreadPool pool = executionPools.get(key);
+            if (pool != null) {
+                pool.stop();
+                executionPools.remove(key);
+            }
+        }
+    }
+
+    private CountryEnvironmentParameters.Key getKey(TestCaseExecutionInQueue inQueue) throws CerberusException {
+        TestCaseExecutionInQueue completeInQueue = tceiqService.findByKeyWithDependencies(inQueue.getId());
+        return new CountryEnvironmentParameters.Key(
+                completeInQueue.getApplicationObj().getSystem(),
+                completeInQueue.getApplicationObj().getApplication(),
+                completeInQueue.getCountry(),
+                completeInQueue.getEnvironment()
+        );
+    }
+
+    private int getPoolSize(CountryEnvironmentParameters.Key key) {
+        AnswerItem<Integer> poolSize = countryEnvironmentParametersService.readPoolSizeByKey(key.getSystem(), key.getCountry(), key.getEnvironment(), key.getApplication());
+        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == poolSize.getResultMessage().getCode()) {
+            return poolSize.getItem();
+        } else {
+            LOG.warn("Unable to get pool size from " + key + ". Get default");
+            return countryEnvironmentParametersService.defaultPoolSize();
+        }
+    }
+
+    private void registerTo(CountryEnvironmentParameters.Key key) {
+        countryEnvironmentParametersService.register(key, this);
+    }
+
 
 }

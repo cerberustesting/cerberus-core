@@ -27,6 +27,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 /**
@@ -57,34 +58,6 @@ public interface ITestCaseExecutionInQueueService {
     void insert(TestCaseExecutionInQueue inQueue) throws CerberusException;
 
     /**
-     * Gets the next {@link TestCaseExecutionInQueue} to be executed and proceed
-     * it.
-     * <p>
-     * <p>
-     * A {@link TestCaseExecutionInQueue} is proceeded when its database
-     * Proceeded field is set to <code>true</code>
-     * </p>
-     *
-     * @return the next {@link TestCaseExecutionInQueue} to be executed and
-     * which has just been proceeded
-     * @throws CerberusException if an exception occurs
-     */
-    TestCaseExecutionInQueue getNextAndProceed() throws CerberusException;
-
-    /**
-     * Gets the list of {@link TestCaseExecutionInQueue} which have been
-     * proceeded (so which have its proceeded field marked as <code>true</code>)
-     * and which have been marked with the given tag.
-     *
-     * @param tag the tag to find proceeded {@link TestCaseExecutionInQueue}. If
-     *            <code>null</code> then every proceeded {@link TestCaseExecutionInQueue}
-     *            will be returned
-     * @return a list of {@link TestCaseExecutionInQueue}
-     * @throws CerberusException if an exception occurs
-     */
-    List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException;
-
-    /**
      * Removes a {@link TestCaseExecutionInQueue} record from the database.
      *
      * @param id the {@link TestCaseExecutionInQueue#getId()} to remove
@@ -111,14 +84,19 @@ public interface ITestCaseExecutionInQueueService {
      */
     TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
 
+    TestCaseExecutionInQueue findByKeyWithDependencies(long key) throws CerberusException;
 
-    /**
-     * Find the list of TestCaseWithExecution object with Procedeed = 0 from testcaseexecutionqueue
-     *
-     * @return
-     * @throws CerberusException
-     */
-    List<TestCaseExecutionInQueue> findAllNotProcedeed() throws CerberusException;
+    void toWaiting(long id) throws CerberusException;
+
+    List<TestCaseExecutionInQueue> toQueued() throws CerberusException;
+
+    List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException;
+
+    void toExecuting(long id) throws CerberusException;
+
+    void toError(long id, String comment) throws CerberusException;
+
+    void toCancelled(long id) throws CerberusException;
 
     /**
      * Find the list of TestCaseWithExecution object from testcaseexecutionqueue
@@ -127,10 +105,6 @@ public interface ITestCaseExecutionInQueueService {
      * @throws CerberusException
      */
     List<TestCaseExecutionInQueue> findAll() throws CerberusException;
-
-    public void setProcessedTo(Long l, String changeTo) throws CerberusException;
-
-    public void updateComment(Long queueId, String comment) throws CerberusException;
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 

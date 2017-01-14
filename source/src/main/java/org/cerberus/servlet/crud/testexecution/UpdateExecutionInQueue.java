@@ -64,14 +64,18 @@ public class UpdateExecutionInQueue extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ITestCaseExecutionInQueueService executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
         String echo = request.getParameter("sEcho");
-            /* TODO output your page here. You may use following sample code. */
             String data = policy.sanitize(request.getParameter("tableData"));
             String changeTo = policy.sanitize(request.getParameter("changeTo"));
             String[] dataL = data.split("\\n");
         for (String d : dataL){
             try {
                 Long l = Long.parseLong(d.trim());
-                executionService.setProcessedTo(l, changeTo);
+                // FIXME just for legacy purpose. Prefer use the new State values instead of deprecated Proceeded ones.
+                if ("0".equals(changeTo)) {
+                    executionService.toWaiting(l);
+                } else {
+                    executionService.toCancelled(l);
+                }
             } catch (CerberusException ex) {
                 Logger.getLogger(DeleteExecutionInQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
@@ -90,7 +94,7 @@ public class UpdateExecutionInQueue extends HttpServlet {
                     row.put(exec.getEnvironment());
                     row.put(exec.getBrowser());
                     row.put(exec.getTag());
-                    row.put(exec.getProcessed());
+                    row.put(exec.getState());
                     dataList.put(row);
                 }
             } catch (CerberusException ex) {

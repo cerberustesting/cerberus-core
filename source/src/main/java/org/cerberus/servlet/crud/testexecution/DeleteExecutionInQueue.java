@@ -88,7 +88,7 @@ public class DeleteExecutionInQueue extends HttpServlet {
                     row.put(exec.getEnvironment());
                     row.put(exec.getBrowser());
                     row.put(exec.getTag());
-                    row.put(exec.getProcessed());
+                    row.put(exec.getState().name());
                     dataList.put(row);
                 }
             } catch (CerberusException ex) {

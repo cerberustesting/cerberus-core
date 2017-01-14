@@ -22,13 +22,11 @@ package org.cerberus.engine.execution.impl;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +40,6 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.engine.entity.Session;
-import org.cerberus.engine.entity.SessionCapabilities;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.IParameterService;
@@ -121,29 +118,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
 
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
-            List<SessionCapabilities> capabilities = new ArrayList();
-            SessionCapabilities sc = new SessionCapabilities();
-            if (tCExecution.getBrowser() != null && !tCExecution.getBrowser().isEmpty()) {
-                sc.create("browser", tCExecution.getBrowser());
-                capabilities.add(sc);
-            }
-            sc = new SessionCapabilities();
-            sc.create("platform", tCExecution.getPlatform());
-            capabilities.add(sc);
-            sc = new SessionCapabilities();
-            sc.create("version", tCExecution.getVersion());
-            capabilities.add(sc);
-
-            // Add additional capabilities if necessary
-            List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
-            if (additionalCapabilities != null) {
-                for (RobotCapability additionalCapability : additionalCapabilities) {
-                    sc = new SessionCapabilities();
-                    sc.create(additionalCapability.getCapability(), additionalCapability.getValue());
-                    capabilities.add(sc);
-                }
-            }
-
+            
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
@@ -152,8 +127,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
-            session.setCapabilities(capabilities);
-
             tCExecution.setSession(session);
             LOG.debug(logPrefix + "Session is set.");
 
@@ -162,6 +135,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              */
             LOG.debug(logPrefix + "Set Capabilities");
             DesiredCapabilities caps = this.setCapabilities(tCExecution);
+            session.setDesiredCapabilities(caps);
             LOG.debug(logPrefix + "Set Capabilities - retreived");
 
             /**
@@ -246,136 +220,44 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
     }
 
-    private DesiredCapabilities setFirefoxProfile(TestCaseExecution tCExecution) throws CerberusException {
-        FirefoxProfile profile = new FirefoxProfile();
-        profile.setEnableNativeEvents(true);
-        profile.setAcceptUntrustedCertificates(true);
-        profile.setPreference("network.http.connection-timeout", "300");
-
-        try {
-            Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry());
-            if (invariant.getGp2() == null) {
-                LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
-                profile.setPreference("intl.accept_languages", "en");
-            } else {
-                profile.setPreference("intl.accept_languages", invariant.getGp2());
-            }
-        } catch (CerberusException ex) {
-            LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
-            profile.setPreference("intl.accept_languages", "en");
-        }
-
-        if ((false) && (tCExecution.getVerbose() > 0)) {
-            String firebugPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_firebug", "").getValue();
-            String netexportPath = parameterService.findParameterByKey("cerberus_selenium_firefoxextension_netexport", "").getValue();
-            if (StringUtil.isNullOrEmpty(firebugPath)) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_firebug' not defined.");
-                throw new CerberusException(mes);
-            }
-            if (StringUtil.isNullOrEmpty(netexportPath)) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("Mandatory parameter for network traffic 'cerberus_selenium_firefoxextension_netexport' not defined.");
-                throw new CerberusException(mes);
-            }
-
-            File firebug = new File(firebugPath);
-            if (!firebug.canRead()) {
-                LOG.warn("Can't read : " + firebugPath);
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("File not found : '" + firebugPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_firebug");
-                throw new CerberusException(mes);
-
-            }
-            try {
-                LOG.debug("Adding firebug extension : " + firebugPath);
-                profile.addExtension(firebug);
-            } catch (IOException exception) {
-                LOG.warn(exception.toString());
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("File not found : " + firebugPath);
-                throw new CerberusException(mes);
-            }
-
-            File netExport = new File(netexportPath);
-            if (!netExport.canRead()) {
-                LOG.warn("Can't read : " + netexportPath);
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("File not found : " + netexportPath + "' Change the Cerberus parameter : cerberus_selenium_firefoxextension_netexport");
-                throw new CerberusException(mes);
-            }
-            try {
-                LOG.debug("Adding netexport extension : " + netexportPath);
-                profile.addExtension(netExport);
-            } catch (IOException exception) {
-                LOG.warn(exception.toString());
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("File not found : " + netexportPath);
-                throw new CerberusException(mes);
-            }
-
-            String cerberusUrl = parameterService.findParameterByKey("cerberus_url", "").getValue();
-            if (StringUtil.isNullOrEmpty(cerberusUrl)) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription("Mandatory parameter for network traffic 'cerberus_url' not defined.");
-                throw new CerberusException(mes);
-            }
-
-            // Set default Firefox preferences
-            profile.setPreference("app.update.enabled", false);
-
-            // Set default Firebug preferences
-            profile.setPreference("extensions.firebug.currentVersion", "1.11.4");
-            profile.setPreference("extensions.firebug.allPagesActivation", "on");
-            profile.setPreference("extensions.firebug.defaultPanelName", "net");
-            profile.setPreference("extensions.firebug.net.enableSites", true);
-
-            // Set default NetExport preferences
-            profile.setPreference("extensions.firebug.netexport.alwaysEnableAutoExport", true);
-            // Export to Server.
-            String url = cerberusUrl + "/SaveStatistic?logId=" + tCExecution.getExecutionUUID();
-            profile.setPreference("extensions.firebug.netexport.autoExportToServer", true);
-            profile.setPreference("extensions.firebug.netexport.beaconServerURL", url);
-            LOG.debug("Selenium netexport.beaconServerURL : " + url);
-            profile.setPreference("extensions.firebug.netexport.sendToConfirmation", false);
-            profile.setPreference("extensions.firebug.netexport.showPreview", false);
-
-        }
-
-        //if userAgent
-        if (!StringUtil.isNullOrEmpty(tCExecution.getTestCaseObj().getUserAgent())) {
-            profile.setPreference("general.useragent.override", tCExecution.getTestCaseObj().getUserAgent());
-        } else if (!("").equals(tCExecution.getUserAgent())) {
-            profile.setPreference("general.useragent.override", tCExecution.getUserAgent());
-        }
-
-        DesiredCapabilities dc = DesiredCapabilities.firefox();
-        dc.setCapability(FirefoxDriver.PROFILE, profile);
-
-        return dc;
-    }
-
+    /**
+     * Set DesiredCapabilities
+     * @param tCExecution
+     * @return
+     * @throws CerberusException 
+     */
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
+        /**
+         * Instanciate DesiredCapabilities
+         */
         DesiredCapabilities caps = new DesiredCapabilities();
-
-        // First, add all capabilities from test case execution
-        for (SessionCapabilities cap : tCExecution.getSession().getCapabilities()) {
-            // Only those with valid value
-            if (StringUtil.isNullOrEmpty(cap.getValue())) {
-                continue;
-            }
-
-            // Special case if capability if the browser
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI") && cap.getCapability().equalsIgnoreCase("browser")) {
-                caps = this.setCapabilityBrowser(caps, cap.getValue(), tCExecution);
-                continue;
-            }
-
-            // Otherwise, add the capability as is
-            caps.setCapability(cap.getCapability(), cap.getValue());
+        if (!StringUtil.isNullOrEmpty(tCExecution.getBrowser())) {
+            caps = this.setCapabilityBrowser(caps, tCExecution.getBrowser(), tCExecution);
+        }
+        /**
+         * Feed DesiredCapabilities with values get from Robot
+         */
+        if (!StringUtil.isNullOrEmpty(tCExecution.getPlatform())) {
+            caps.setCapability("platform", tCExecution.getPlatform());
+        }
+        if (!StringUtil.isNullOrEmpty(tCExecution.getVersion())) {
+            caps.setCapability("version", tCExecution.getVersion());
         }
 
-        // Second, if application is a mobile one, then set the "app" capability to the application binary path
+        /**
+         * Loop on RobotCapabilities to feed DesiredCapabilities
+         */
+        List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
+        if (additionalCapabilities != null) {
+            for (RobotCapability additionalCapability : additionalCapabilities) {
+                caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
+            }
+        }
+
+        /**
+         * if application is a mobile one, then set the "app" capability to the
+         * application binary path
+         */
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             // Set the app capability with the application path
@@ -387,6 +269,65 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         return caps;
+    }
+
+    /**
+     * Instanciate DesiredCapabilities regarding the browser
+     * @param capabilities
+     * @param browser
+     * @param tCExecution
+     * @return
+     * @throws CerberusException
+     */
+    private DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
+        try {
+            if (browser.equalsIgnoreCase("firefox")) {
+                capabilities = DesiredCapabilities.firefox();
+                FirefoxProfile profile = new FirefoxProfile();
+                profile.setAcceptUntrustedCertificates(true);
+                profile.setAssumeUntrustedCertificateIssuer(true);
+                profile.setPreference("app.update.enabled", false);
+                profile.setEnableNativeEvents(true);
+                try {
+                    Invariant invariant = this.invariantService.findInvariantByIdValue("COUNTRY", tCExecution.getCountry());
+                    if (invariant.getGp2() == null) {
+                        LOG.warn("Country selected (" + tCExecution.getCountry() + ") has no value of GP2 in Invariant table, default language set to English (en)");
+                        profile.setPreference("intl.accept_languages", "en");
+                    } else {
+                        profile.setPreference("intl.accept_languages", invariant.getGp2());
+                    }
+                } catch (CerberusException ex) {
+                    LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
+                    profile.setPreference("intl.accept_languages", "en");
+                }
+                capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+            } else if (browser.equalsIgnoreCase("IE")) {
+                capabilities = DesiredCapabilities.internetExplorer();
+            } else if (browser.equalsIgnoreCase("chrome")) {
+                capabilities = DesiredCapabilities.chrome();
+            } else if (browser.contains("android")) {
+                capabilities = DesiredCapabilities.android();
+            } else if (browser.contains("ipad")) {
+                capabilities = DesiredCapabilities.ipad();
+            } else if (browser.contains("iphone")) {
+                capabilities = DesiredCapabilities.iphone();
+            } else if (browser.contains("opera")) {
+                capabilities = DesiredCapabilities.opera();
+            } else if (browser.contains("safari")) {
+                capabilities = DesiredCapabilities.safari();
+            } else {
+                LOG.warn("Not supported Browser : " + browser);
+                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+                mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
+                mes.setDescription("Not supported Browser : " + browser);
+                throw new CerberusException(mes);
+            }
+        } catch (CerberusException ex) {
+            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
+            mes.setDescription(mes.getDescription().replace("%MES%", "Failed to set capability on the browser '" + browser + "' due to " + ex.getMessageError().getDescription()));
+            throw new CerberusException(mes);
+        }
+        return capabilities;
     }
 
     @Override
@@ -434,39 +375,6 @@ public class SeleniumServerService implements ISeleniumServerService {
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }
-    }
-
-    public DesiredCapabilities setCapabilityBrowser(DesiredCapabilities capabilities, String browser, TestCaseExecution tCExecution) throws CerberusException {
-        try {
-            if (browser.equalsIgnoreCase("firefox")) {
-                capabilities = this.setFirefoxProfile(tCExecution);
-            } else if (browser.equalsIgnoreCase("IE")) {
-                capabilities = DesiredCapabilities.internetExplorer();
-            } else if (browser.equalsIgnoreCase("chrome")) {
-                capabilities = DesiredCapabilities.chrome();
-            } else if (browser.contains("android")) {
-                capabilities = DesiredCapabilities.android();
-            } else if (browser.contains("ipad")) {
-                capabilities = DesiredCapabilities.ipad();
-            } else if (browser.contains("iphone")) {
-                capabilities = DesiredCapabilities.iphone();
-            } else if (browser.contains("opera")) {
-                capabilities = DesiredCapabilities.opera();
-            } else if (browser.contains("safari")) {
-                capabilities = DesiredCapabilities.safari();
-            } else {
-                LOG.warn("Not supported Browser : " + browser);
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-                mes.setDescription(mes.getDescription().replace("%MES%", "Browser '" + browser + "' is not supported"));
-                mes.setDescription("Not supported Browser : " + browser);
-                throw new CerberusException(mes);
-            }
-        } catch (CerberusException ex) {
-            MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
-            mes.setDescription(mes.getDescription().replace("%MES%", "Failed to set capability on the browser '" + browser + "' due to " + ex.getMessageError().getDescription()));
-            throw new CerberusException(mes);
-        }
-        return capabilities;
     }
 
     @Override

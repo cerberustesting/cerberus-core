@@ -8063,6 +8063,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_featureflipping_websocketpushperiod','5000','Integer value that correspond to the nb of ms between every websocket push.')");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the State column to the TestCaseExecutionQueue table and fill it with default value
+        //-- ------------------------ 1036-1038
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` \n" +
+                "ADD COLUMN `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `manualexecution`;\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'WAITING' WHERE `Proceeded` = 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'EXECUTING' WHERE `Proceeded` = 1;");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }

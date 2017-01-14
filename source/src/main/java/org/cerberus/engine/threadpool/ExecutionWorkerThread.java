@@ -20,6 +20,10 @@
 package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.service.impl.TestCaseExecutionInQueueService;
+import org.cerberus.engine.entity.ExecutionThreadPool;
+import org.springframework.context.ApplicationContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,25 +38,25 @@ import java.net.URL;
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
     private String executionUrl;
-    private String tag;
+    private String executionInQueueId;
 
     private static final Logger LOG = Logger.getLogger(ExecutionWorkerThread.class);
 
-    public void setExecutionUrl(String url) {
-        this.executionUrl = url;
+    public ExecutionWorkerThread() {
+
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public ExecutionWorkerThread(String executionUrlUrl, String executionInQueueId) {
+        this.executionUrl = executionUrlUrl;
+        this.executionInQueueId = executionInQueueId;
     }
-
 
     @Override
     public void run() {
         try {
             processCommand(executionUrl);
         } catch (Exception ex) {
-            LOG.warn(ex.toString());
+            LOG.warn("Unable to start execution in queue " + executionInQueueId + " due to " + ex.toString(), ex);
         }
     }
 
@@ -75,7 +79,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             }
 
         } catch (SocketTimeoutException ex) {
-            LOG.error("TimeOut Exception " + ex.toString());
+            LOG.warn("Unable to process execution in queue " + executionInQueueId + " due to " + ex.toString(), ex);
         } finally {
             if (null != br) {
                 br.close();

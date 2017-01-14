@@ -1,5 +1,8 @@
 package org.cerberus.util.observe;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +13,8 @@ import java.util.Set;
  *
  * @author Aurelien Bourdon
  */
+@Component
+@Scope("prototype")
 public class ObservableEngine<TOPIC, ITEM> implements Observable<TOPIC, ITEM> {
 
     private Set<Observer<TOPIC, ITEM>> fullObservers = new HashSet<>();
@@ -55,15 +60,15 @@ public class ObservableEngine<TOPIC, ITEM> implements Observable<TOPIC, ITEM> {
 
     @Override
     public boolean unregister(Observer<TOPIC, ITEM> observer) {
-        boolean success = false;
+        boolean success = true;
         synchronized (fullObservers) {
-            success |= fullObservers.remove(observer);
+            success &= fullObservers.remove(observer);
         }
         synchronized (topicObservers) {
             Set<TOPIC> topics = reverseTopicObservers.get(observer);
             if (topics != null) {
                 for (TOPIC topic : topics) {
-                    success |= topicObservers.get(topic).remove(observer);
+                    success &= topicObservers.get(topic).remove(observer);
                 }
             }
         }

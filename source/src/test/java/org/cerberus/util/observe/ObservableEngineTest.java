@@ -1,5 +1,6 @@
 package org.cerberus.util.observe;
 
+import org.cerberus.crud.entity.Country;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -144,6 +145,41 @@ public class ObservableEngineTest {
         observableEngine.unregister(TOPIC, counter);
         observableEngine.fireUpdate(TOPIC, ITEM);
         Assert.assertEquals(2, counter.getUpdates());
+    }
+
+    @Test
+    public void testReceiveOnlyOneUpdateEvenIfRegisteredToSpecificAndAll() {
+        Counter counter = new Counter();
+        observableEngine.register(TOPIC, counter);
+        observableEngine.register(counter);
+
+        observableEngine.fireUpdate(TOPIC, ITEM);
+        Assert.assertEquals(1, counter.getUpdates());
+    }
+
+    @Test
+    public void testRegisterNonExistingObserver() {
+        Assert.assertTrue(observableEngine.register(TOPIC, new Counter()));
+        Assert.assertTrue(observableEngine.register(new Counter()));
+    }
+
+    @Test
+    public void testRegisterExistingObserver() {
+        Counter counter = new Counter();
+        observableEngine.register(counter);
+        Assert.assertFalse(observableEngine.register(counter));
+    }
+
+    @Test
+    public void testUnRegisterExistingObserver() {
+        Counter counter = new Counter();
+        observableEngine.register(counter);
+        Assert.assertTrue(observableEngine.unregister(counter));
+    }
+
+    @Test
+    public void testUnRegisterNonExistingObserver() {
+        Assert.assertFalse(observableEngine.unregister(new Counter()));
     }
 
 }

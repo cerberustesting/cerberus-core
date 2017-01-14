@@ -74,9 +74,8 @@ public class ParamRequestMaker {
 	 * {@link #PARAM_SEPARATOR}
 	 * 
 	 * @return
-	 * @throws UnsupportedEncodingException
 	 */
-	public String mkString() throws UnsupportedEncodingException {
+	public String mkString() {
 		StringBuilder builder = new StringBuilder();
 		for (Map.Entry<Object, Object> param : params.entrySet()) {
 			builder.append(param.getKey());

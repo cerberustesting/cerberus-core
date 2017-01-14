@@ -22,6 +22,7 @@ package org.cerberus.engine.entity;
 import io.appium.java_client.AppiumDriver;
 import java.util.List;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  *
@@ -39,7 +40,7 @@ public class Session {
     private Integer cerberus_selenium_wait_element;
     private Integer cerberus_appium_wait_element;
     private boolean started;
-    List<SessionCapabilities> capabilities;
+    private DesiredCapabilities desiredCapabilities;
 
     public Integer getCerberus_selenium_pageLoadTimeout() {
         return cerberus_selenium_pageLoadTimeout;
@@ -89,12 +90,12 @@ public class Session {
         this.appiumDriver = appiumDriver;
     }
 
-    public List<SessionCapabilities> getCapabilities() {
-        return capabilities;
+    public DesiredCapabilities getDesiredCapabilities() {
+        return desiredCapabilities;
     }
 
-    public void setCapabilities(List<SessionCapabilities> capabilities) {
-        this.capabilities = capabilities;
+    public void setDesiredCapabilities(DesiredCapabilities capabilities) {
+        this.desiredCapabilities = capabilities;
     }
     
     public String getHost() {
