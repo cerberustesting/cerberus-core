@@ -111,9 +111,9 @@ public class SaveManualExecution extends HttpServlet {
                 myUser = "Manual";
             }
 
-            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, country, browser, "", "", browserVersion, now, now,
+            TestCaseExecution execution = factoryTCExecution.create(0, test, testCase, build, revision, env, env, country, browser, "", "", browserVersion, now, now,
                     controlStatus, controlMessage, application, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
-                    null, null, null, false, "", "", "", "", "", "", null, null, myUser, 0, "", null);
+                    null, null, null, false, "", "", "", "", "", "", null, null, myUser, 0, "", null, "", "", "", "", "");
 
             execution.setId(testCaseExecutionService.insertTCExecution(execution));
 

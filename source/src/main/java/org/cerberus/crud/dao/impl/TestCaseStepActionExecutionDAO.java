@@ -44,19 +44,9 @@ import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-/**
- * {Insert class description here}
- *
- * @author Tiago Bernardes
- * @version 1.0, 02/01/2013
- * @since 0.9.0
- */
 @Repository
 public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecutionDAO {
 
-    /**
-     * Description of the variable here.
-     */
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -328,8 +318,10 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
     @Override
     public void insertTestCaseStepActionExecution(TestCaseStepActionExecution testCaseStepActionExecution) {
 
-        final String query = "INSERT INTO testcasestepactionexecution(id, step, `index`, sequence, sort, conditionOper, conditionVal1, conditionVal2, ACTION, value1Init, value2Init, value1, value2, forceExeStatus, start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepactionexecution(id, step, `index`, sequence, sort, "
+                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, ACTION, value1Init, value2Init, value1, value2, forceExeStatus, "
+                + "start, END, startlong, endlong, returnCode, returnMessage, test, testcase, description) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -342,6 +334,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setInt(i++, testCaseStepActionExecution.getSequence());
                 preStat.setInt(i++, testCaseStepActionExecution.getSort());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal1());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal2());
                 preStat.setString(i++, testCaseStepActionExecution.getAction());
@@ -393,7 +387,7 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
 
         final String query = "UPDATE testcasestepactionexecution SET ACTION = ?, value1 = ?, value2 = ?, forceExeStatus = ?, start = ?, END = ?"
                 + ", startlong = ?, endlong = ?, returnCode = ?, returnMessage = ?, description = ?, sort = ?"
-                + ", value1Init = ?, Value2Init = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ?"
+                + ", value1Init = ?, Value2Init = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ?, conditionVal1Init = ?, conditionVal2Init = ?"
                 + " WHERE id = ? AND test = ? AND testcase = ? AND step = ? AND `index` = ? AND sequence = ? ;";
 
         Connection connection = this.databaseSpring.connect();
@@ -425,6 +419,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
                 preStat.setString(i++, StringUtil.getLeftString(testCaseStepActionExecution.getValue1Init(), 2500));
                 preStat.setString(i++, StringUtil.getLeftString(ParameterParserUtil.securePassword(testCaseStepActionExecution.getValue2Init(), testCaseStepActionExecution.getPropertyName()), 2500));
                 preStat.setString(i++, testCaseStepActionExecution.getConditionOper());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal1Init());
+                preStat.setString(i++, testCaseStepActionExecution.getConditionVal2Init());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal1());
                 preStat.setString(i++, testCaseStepActionExecution.getConditionVal2());
                 preStat.setLong(i++, testCaseStepActionExecution.getId());
@@ -466,6 +462,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         String returnCode = resultSet.getString("exa.returncode");
         String returnMessage = resultSet.getString("exa.returnmessage");
         String conditionOper = resultSet.getString("exa.ConditionOper");
+        String conditionVal1Init = resultSet.getString("exa.ConditionVal1Init");
+        String conditionVal2Init = resultSet.getString("exa.ConditionVal2Init");
         String conditionVal1 = resultSet.getString("exa.ConditionVal1");
         String conditionVal2 = resultSet.getString("exa.ConditionVal2");
         String action = resultSet.getString("exa.action");
@@ -479,7 +477,8 @@ public class TestCaseStepActionExecutionDAO implements ITestCaseStepActionExecut
         long startlong = resultSet.getLong("exa.startlong");
         long endlong = resultSet.getLong("exa.endlong");
         String description = resultSet.getString("exa.description");
-        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage, conditionOper, "", "", conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
+        return factoryTestCaseStepActionExecution.create(id, test, testCase, step, index, seq, sort, returnCode, returnMessage
+                , conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, action, value1Init, value2Init, value1, value2, forceExeStatus, start, end, startlong, endlong, null, description, null, null);
 
     }
 

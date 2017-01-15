@@ -74,6 +74,18 @@ public class TestCaseStepActionControlExecution {
         this.fileList = fileList;
     }
 
+    public void addFileList(TestCaseExecutionFile file) {
+        this.fileList.add(file);
+    }
+
+    public void addFileList(List<TestCaseExecutionFile> fileList) {
+        if (fileList != null) {
+            for (TestCaseExecutionFile testCaseExecutionFile : fileList) {
+                this.fileList.add(testCaseExecutionFile);
+            }
+        }
+    }
+
     public MessageEvent getControlResultMessage() {
         return controlResultMessage;
     }
@@ -329,6 +341,11 @@ public class TestCaseStepActionControlExecution {
             result.put("sequence", this.getSequence());
             result.put("control", this.getControlSequence());
             result.put("sort", this.getSort());
+            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionVal1Init", this.getConditionVal1Init());
+            result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
             result.put("controlType", this.getControl());
             result.put("controlProperty", this.getValue1());
             result.put("controlValueInit", this.getValue2());

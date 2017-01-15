@@ -8066,8 +8066,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // Add the State column to the TestCaseExecutionQueue table and fill it with default value
         //-- ------------------------ 1036-1038
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` \n" +
-                "ADD COLUMN `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `manualexecution`;\n");
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("ADD COLUMN `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `manualexecution`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'WAITING' WHERE `Proceeded` = 0;");
@@ -8075,7 +8075,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'EXECUTING' WHERE `Proceeded` = 1;");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Adding ConditionInit columns in all tables.
+        //-- ------------------------ 1039-1042
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `EnvironmentData` VARCHAR(45) NULL DEFAULT ''  AFTER `Environment`,");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NULL DEFAULT ''  AFTER `screensize`,");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT NULL AFTER `ConditionVal2Init`,");
+        SQLS.append("ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

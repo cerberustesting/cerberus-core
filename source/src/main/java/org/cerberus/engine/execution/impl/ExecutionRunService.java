@@ -484,7 +484,7 @@ public class ExecutionRunService implements IExecutionRunService {
                  * We record Selenium log at the end of the execution.
                  */
                 try {
-                    recorderService.recordSeleniumLog(tCExecution);
+                    tCExecution.addFileList(recorderService.recordSeleniumLog(tCExecution));
                 } catch (Exception ex) {
                     LOG.error(logPrefix + "Exception Getting Selenium Logs " + tCExecution.getId() + " Exception :" + ex.toString());
                 }
@@ -543,14 +543,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
         }
-        //Notify it's finnished
-//        WebsocketTest wst = new WebsocketTest();
-//        try {
-//            wst.handleMessage(tCExecution.getTag());
-//        } catch (IOException ex) {
-//            Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//                    
+
         return tCExecution;
 
     }
@@ -632,6 +625,21 @@ public class ExecutionRunService implements IExecutionRunService {
             this.testCaseStepActionExecutionService.insertTestCaseStepActionExecution(testCaseStepActionExecution);
 
             /**
+             * We populate the TestCase Action List
+             */
+            AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
+            if (ai == null) {
+                ai = new AnswerList<>();
+            }
+            List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
+            if (tcsaExecution == null) {
+                tcsaExecution = new LinkedList<>();
+            }
+            tcsaExecution.add(testCaseStepActionExecution);
+            ai.setDataList(tcsaExecution);
+            testCaseStepExecution.setTestCaseStepActionExecution(ai);
+
+            /**
              * Preparing the previously calculated data coming from 1/ the other
              * steps 2/ the one current step. Attaching them to the current
              * action execution.
@@ -661,21 +669,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
 
                 /**
-                 * We populate the TestCase Action List
-                 */
-                AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
-                if (ai == null) {
-                    ai = new AnswerList<>();
-                }
-                List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
-                if (tcsaExecution == null) {
-                    tcsaExecution = new LinkedList<>();
-                }
-                tcsaExecution.add(testCaseStepActionExecution);
-                ai.setDataList(tcsaExecution);
-                testCaseStepExecution.setTestCaseStepActionExecution(ai);
-
-                /**
                  * We execute the Action
                  */
                 testCaseStepActionExecution = this.executeAction(testCaseStepActionExecution, tcExecution);
@@ -690,6 +683,7 @@ public class ExecutionRunService implements IExecutionRunService {
                     testCaseStepExecution.setExecutionResultMessage(testCaseStepActionExecution.getExecutionResultMessage());
                     testCaseStepExecution.setStepResultMessage(testCaseStepActionExecution.getActionResultMessage());
                 }
+
                 if (testCaseStepActionExecution.isStopExecution()) {
                     break;
                 }
@@ -699,7 +693,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * Record Screenshot, PageSource
                  */
-                recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+                testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
 
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registering Action : " + testCaseStepActionExecution.getAction());
 
@@ -735,7 +729,7 @@ public class ExecutionRunService implements IExecutionRunService {
          * Record Screenshot, PageSource
          */
         try {
-            recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null);
+            testCaseStepActionExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionExecution, null));
         } catch (Exception ex) {
             MyLogger.log(ExecutionRunService.class.getName(), Level.ERROR, "Unable to record Screenshot/PageSource : " + ex.toString());
         }
@@ -848,7 +842,7 @@ public class ExecutionRunService implements IExecutionRunService {
                 /**
                  * Record Screenshot, PageSource
                  */
-                recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+                testCaseStepActionControlExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution));
 
                 /**
                  * Register Control in database
@@ -888,8 +882,7 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Record Screenshot, PageSource
          */
-        recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
-
+        testCaseStepActionControlExecution.addFileList(recorderService.recordExecutionInformationAfterStepActionandControl(testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution));
         /**
          * Register Control in database
          */

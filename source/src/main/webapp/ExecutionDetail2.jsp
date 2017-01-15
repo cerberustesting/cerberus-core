@@ -60,15 +60,15 @@
                         <div id="TestCaseButton">
                             <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
                             <div class="btn-group pull-right">
-                                        <button class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="caret"></span>
-                                            <span class="sr-only">Toggle Dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
-                                        </ul>
-                                    </div>
+                                <button class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
+                                </ul>
+                            </div>
                             <button class="btn btn-default pull-right" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
                             <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
                             <div class="side-item pull-right"></div>
@@ -97,7 +97,7 @@
                                 </nav>
                                 <div class="col-lg-9 well marginTop5" id="contentWrapper" style="min-height: 200px;">
                                     <div id="stepContent">
-                                        <div>
+                                        <div  id="stepHeader" style="margin-bottom: 15px;">
                                             <div id="stepInfo" class="row" style="display: none;">
                                             </div>
                                         </div>
@@ -180,7 +180,6 @@
                                 </div>
                             </div>
                             <div class="row">
-
                                 <div class="col-sm-8">
                                     <div class="form-group">
                                         <label for="tag">Tag</label>
@@ -194,6 +193,47 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label for="conditionVal1InitTC">conditionVal1InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal1InitTC" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label for="conditionVal2InitTC">conditionVal2InitTC</label>
+                                        <input type="text" class="form-control" id="conditionVal2InitTC" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="conditionOperTC">conditionOperTC</label>
+                                        <input type="text" class="form-control" id="conditionOperTC" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label for="conditionVal1TC">conditionVal1TC</label>
+                                        <input type="text" class="form-control" id="conditionVal1TC" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <label for="conditionVal2TC">conditionVal2TC</label>
+                                        <input type="text" class="form-control" id="conditionVal1TC" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabRobot">
                             <div class="row">
@@ -248,6 +288,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-sm-12" id="tcFileContentField">
+                                </div>
+                            </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">
@@ -263,10 +307,16 @@
                                         <input type="text" class="form-control" id="country" placeholder="Country" readonly>
                                     </div>
                                 </div>
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <div class="form-group">
                                         <label for="environment">Environment</label>
                                         <input type="text" class="form-control" id="environment" placeholder="Environment" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <label for="environmentData">Environment Data</label>
+                                        <input type="text" class="form-control" id="environmentData" placeholder="Environment Data" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -294,11 +344,12 @@
 
                     </div>
 
-                    <footer class="footer">
-                        <div id="footer" style="display: inline-block"></div>
-                    </footer>
                 </div>
             </div>
+
+            <footer class="footer">
+                <div id="footer" style="display: inline-block"></div>
+            </footer>
         </div>
     </div>
 </body>

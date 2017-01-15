@@ -167,8 +167,8 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     response.setContentType("application/json");
                     returnFile(request, response, tceFile, pathString);
                     break;
-                case "TEXT":
-                    returnText(request, response, tceFile, pathString);
+                case "TXT":
+                    returnFile(request, response, tceFile, pathString);
                     break;
                 default:
                     returnNotSupported(request, response, tceFile, pathString);

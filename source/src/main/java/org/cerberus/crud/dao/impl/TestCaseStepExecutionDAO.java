@@ -75,8 +75,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
      */
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, batnumexe, returncode, start, fullstart, returnMessage, description, conditionOper, conditionVal1, conditionVal2) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, batnumexe, returncode, start, fullstart, "
+                + "returnMessage, description, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -97,6 +98,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getReturnMessage());
                 preStat.setString(i++, testCaseStepExecution.getDescription());
                 preStat.setString(i++, testCaseStepExecution.getConditionOper());
+                preStat.setString(i++, testCaseStepExecution.getConditionVal1Init());
+                preStat.setString(i++, testCaseStepExecution.getConditionVal2Init());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal1());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal2());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Insert testcasestepexecution " + testCaseStepExecution.getId() + "-"
@@ -124,7 +127,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
 
     @Override
     public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, returnmessage = ?, description = ?, sort = ?, conditionOper = ?, conditionVal1 = ?, conditionVal2 = ? WHERE id = ? AND step = ? AND `index` = ? AND test = ? AND testcase = ?";
+        final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, "
+                + "returnmessage = ?, description = ?, sort = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal1 = ?, conditionVal2 = ? "
+                + "WHERE id = ? AND step = ? AND `index` = ? AND test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -145,6 +150,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getDescription());
                 preStat.setInt(i++, testCaseStepExecution.getSort());
                 preStat.setString(i++, testCaseStepExecution.getConditionOper());
+                preStat.setString(i++, testCaseStepExecution.getConditionVal1Init());
+                preStat.setString(i++, testCaseStepExecution.getConditionVal2Init());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal1());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal2());
                 preStat.setLong(i++, testCaseStepExecution.getId());
@@ -296,8 +303,8 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2");
-        String conditionVal1Init = resultSet.getString("conditionVal1");
-        String conditionVal2Init = resultSet.getString("conditionVal2");
+        String conditionVal1Init = resultSet.getString("conditionVal1Init");
+        String conditionVal2Init = resultSet.getString("conditionVal2Init");
         String batNumExe = resultSet.getString("batnumexe");
         long start = resultSet.getTimestamp("start") == null ? 0 : resultSet.getTimestamp("start").getTime();
         long end = resultSet.getTimestamp("end") == null ? 0 : resultSet.getTimestamp("end").getTime();

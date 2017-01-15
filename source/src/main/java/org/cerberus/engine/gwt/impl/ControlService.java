@@ -19,7 +19,9 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -32,6 +34,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
@@ -980,7 +983,8 @@ public class ControlService implements IControlService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
-            recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
             return message;
         }
@@ -995,7 +999,12 @@ public class ControlService implements IControlService {
         if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
-            recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
+            if (file != null) {
+                List<TestCaseExecutionFile> fileList = new ArrayList<TestCaseExecutionFile>();
+                fileList.add(file);
+                testCaseStepActionControlExecution.setFileList(fileList);
+            }
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GETPAGESOURCE);
             return message;
         }
