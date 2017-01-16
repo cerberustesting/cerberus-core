@@ -1470,6 +1470,42 @@ function filterOnColumn(tableId, column, value) {
 }
 
 /**
+ * Function that apply filters on columns on values get from the URL
+ * @param {type} tableId > Id of the datatable
+ * @param {type} searchColums > Array of columns 
+ * @returns {undefined}
+ */
+function applyFiltersOnMultipleColumns(tableId, searchColumns) {
+
+    /**
+     * Loop on searchColumns and get Parameter values >> Build an array of object
+     */
+    var searchArray = new Array;
+    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
+        var param = GetURLParameters(searchColumns[searchColumn]);
+        var searchObject = {
+            param: searchColumns[searchColumn],
+            values: param};
+        searchArray.push(searchObject);
+    }
+    /**
+     * Apply the filter to the table
+     */
+    var oTable = $('#' + tableId).dataTable();
+    resetFilters(oTable);
+    var oSettings = oTable.fnSettings();
+    for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
+        for (sCol = 0; sCol < searchArray.length; sCol++) {
+            if (oSettings.aoColumns[iCol].data === searchArray[sCol].param) {
+                oTable.api().column(iCol).search(searchArray[sCol].values);
+            }
+        }
+
+    }
+    oTable.fnDraw();
+}
+
+/**
  * Function that allow to clear filter individually
  * @param {type} tableId >> ID of the datatable
  * @param {type} columnNumber >> Number of the column
@@ -1937,6 +1973,25 @@ function GetURLParameter(sParam, defaultValue) {
 }
 
 /**
+ * Get the parameter passed in the url Example : url?param=value
+ * @param {String} sParam parameter you want to get value from
+ * @returns {GetURLParameter.sParameterName} the value or defaultValue does not exist in URL or null if not found in URL and no default value specified.
+ */
+function GetURLParameters(sParam) {
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    var result = new Array;
+
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) {
+            result.push(sParameterName[1]);
+        }
+    }
+    return result;
+}
+
+/**
  * Add an browser history entry only if different from the current one.
  * @param {string} sUrl Url to insert in the history.
  * @returns {void}
@@ -1998,7 +2053,7 @@ function bindToggleCollapse() {
         if (localStorage.getItem(this.id) === "false") {
             $(this).removeClass('in');
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
-        }else{
+        } else {
             $(this).addClass('in');
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
         }
@@ -2173,9 +2228,9 @@ function autocompleteVariable(identifier, Tags) {
                     results: function () {
                     }
                 },
-                open: function(){
+                open: function () {
                     //If autocomplete is in modal, needs to be upper the modal
-                    if($(this).closest($(".modal")).length > 0){
+                    if ($(this).closest($(".modal")).length > 0) {
                         $(this).autocomplete('widget').css('z-index', 1050);
                     }
                     return false;
@@ -2187,7 +2242,7 @@ function autocompleteVariable(identifier, Tags) {
                             icon = "<span class='ui-corner-all glyphicon glyphicon-chevron-right' tabindex='-1' style='margin-top:3px; float:right;'></span>";
                         }
                         return $("<li class='ui-menu-item'>")
-                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>" )
+                                .append("<a class='ui-corner-all' tabindex='-1' style='height:100%'><span style='float:left;'>" + item.label + "</span>" + icon + "<span style='clear: both; display: block;'></span></a>")
                                 .appendTo(ul);
                     };
                 },
@@ -2206,8 +2261,8 @@ function autocompleteVariable(identifier, Tags) {
                             if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
                                 this.currentIndexTag = tag;
                                 var arrayToDisplay = $.ui.autocomplete.filter(
-                                    Tags[tag].array, extractLast(identifier, Tags[tag].regex));
-                                if(Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != ""){
+                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex));
+                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
                                     arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
                                 }
                                 response(arrayToDisplay);
@@ -2306,11 +2361,11 @@ function showPicture(title, pictureUrl) {
     $('#modalContent').empty();
     //set the translations
     $('#modalContent').append($('<img>').addClass("selectedPicture").attr("src", pictureUrl + "&h=400&w=800"));
-    if($("#btnFullPicture").length > 0){
+    if ($("#btnFullPicture").length > 0) {
         $("#btnFullPicture").remove();
     }
-    $('#modal-footer').prepend($('<button>').attr("id","btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function(){
-        window.open(pictureUrl + "&r=true","_blank");
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full Picture").addClass("btn btn-default").click(function () {
+        window.open(pictureUrl + "&r=true", "_blank");
     }));
     $('#showGenericModal').modal('show');
 }

@@ -300,6 +300,10 @@ public class SeleniumServerService implements ISeleniumServerService {
                     LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
                     profile.setPreference("intl.accept_languages", "en");
                 }
+                
+                capabilities.setCapability("acceptInsecureCerts", true);
+                capabilities.setCapability("acceptSslCerts", true);
+                //capabilities.setCapability("marionette", true);
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();

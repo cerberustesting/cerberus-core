@@ -172,6 +172,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
     }
+    
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+        return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch);
+    }
 
     @Override
     public AnswerList readByTag(String tag) throws CerberusException {

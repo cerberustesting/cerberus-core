@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +50,7 @@ import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -115,7 +117,7 @@ public class ReadTestCaseExecution extends HttpServlet {
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Tag.equals("") && !byColumns) {
                 //Return the list of execution for the execution table
-                answer = findExecutionList(appContext, request, Tag);
+                answer = findExecutionListByTag(appContext, request, Tag);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!system.isEmpty()) {
                 //find execution by system, the remaining parameters are parsed after avoiding the extra processing
@@ -138,6 +140,9 @@ public class ReadTestCaseExecution extends HttpServlet {
                 jsonResponse.put("testCaseExecution", tce.toJson());
             } else if (executionId != 0 && executionWithDependency) {
 
+            } else {
+                answer = findTestCaseExecutionList(appContext, true, request);
+                jsonResponse = (JSONObject) answer.getItem();
             }
 
             jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
@@ -269,7 +274,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         return answer;
     }
 
-    private AnswerItem findExecutionList(ApplicationContext appContext, HttpServletRequest request, String Tag)
+    private AnswerItem findExecutionListByTag(ApplicationContext appContext, HttpServletRequest request, String Tag)
             throws CerberusException, ParseException, JSONException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
@@ -403,7 +408,52 @@ public class ReadTestCaseExecution extends HttpServlet {
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
     }
+    
+    private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
+        AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+        AnswerList testCaseExecutionList = new AnswerList();
+        JSONObject object = new JSONObject();
 
+        testCaseExecutionService = appContext.getBean(TestCaseExecutionService.class);
+
+        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
+        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
+
+        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,description,active,automated,tdatecrea");
+        String columnToSort[] = sColumns.split(",");
+        String columnName = columnToSort[columnToSortParameter];
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        
+        Map<String, List<String>> individualSearch = new HashMap<>();
+        for (int a = 0; a < columnToSort.length; a++) {
+            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                individualSearch.put(columnToSort[a], search);
+            }
+        }
+
+        testCaseExecutionList = testCaseExecutionService.readByCriteria( startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch);
+
+        JSONArray jsonArray = new JSONArray();
+        if (testCaseExecutionList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) testCaseExecutionList.getDataList()) {
+                jsonArray.put(testCaseExecution.toJson().put("hasPermissions", userHasPermissions));
+            }
+        }
+
+        object.put("contentTable", jsonArray);
+        object.put("hasPermissions", userHasPermissions);
+        object.put("iTotalRecords", testCaseExecutionList.getTotalRows());
+        object.put("iTotalDisplayRecords", testCaseExecutionList.getTotalRows());
+
+        answer.setItem(object);
+        answer.setResultMessage(testCaseExecutionList.getResultMessage());
+        return answer;
+    }
+    
+   
     private JSONObject getStatusList(HttpServletRequest request) {
         JSONObject statusList = new JSONObject();
 

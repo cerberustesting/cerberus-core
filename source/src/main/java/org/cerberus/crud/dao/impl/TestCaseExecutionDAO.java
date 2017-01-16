@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -989,6 +991,155 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 try {
                     while (resultSet.next()) {
                         testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+//                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());
+                    answer.setTotalRows(testCaseExecutionList.size());
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(testCaseExecutionList);
+        return answer;
+    }
+    
+    @Override
+    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+
+        final StringBuffer query = new StringBuffer();
+        
+        
+        query.append("SELECT * FROM testcaseexecution exe ");
+        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        
+        if (!StringUtil.isNullOrEmpty(searchTerm)) {
+            query.append("and (exe.`id` like ? ");
+            query.append(" or exe.`test` like ? ");
+            query.append(" or exe.`testCase` like ? ");
+            query.append(" or exe.`build` like ? ");
+            query.append(" or exe.`revision` like ? ");
+            query.append(" or exe.`environment` like ? ");
+            query.append(" or exe.`country` like ? ");
+            query.append(" or exe.`browser` like ? ");
+            query.append(" or exe.`version` like ? ");
+            query.append(" or exe.`platform` like ? ");
+            query.append(" or exe.`browserfullversion` like ? ");
+            query.append(" or exe.`start` like ? ");
+            query.append(" or exe.`end` like ? ");
+            query.append(" or exe.`controlstatus` like ? ");
+            query.append(" or exe.`controlmessage` like ? ");
+            query.append(" or exe.`application` like ? ");
+            query.append(" or exe.`ip` like ? ");
+            query.append(" or exe.`url` like ? ");
+            query.append(" or exe.`port` like ? ");
+            query.append(" or exe.`tag` like ? ");
+            query.append(" or exe.`finished` like ? ");
+            query.append(" or exe.`verbose` like ? ");
+            query.append(" or exe.`status` like ? ");
+            query.append(" or exe.`crbversion` like ? ");
+            query.append(" or exe.`executor` like ? ");
+            query.append(" or exe.`screensize` like ? )");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            query.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                query.append(" and ");
+                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            query.append(" ) ");
+        }
+
+        if (!StringUtil.isNullOrEmpty(sort)) {
+            query.append(" order by ").append(sort);
+        }
+
+        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
+        } else {
+            query.append(" limit ").append(start).append(" , ").append(amount);
+        }
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            System.out.print(query.toString());
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            int i = 1;
+            if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+                preStat.setString(i++, "%" + searchTerm + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionList.add(this.loadFromResultSet(resultSet));
                     }
                     msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
 //                    answer = new AnswerList(testCaseExecutionList, testCaseExecutionList.size());

@@ -158,6 +158,18 @@ public interface ITestCaseExecutionDAO {
      */
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
+    /**
+     *
+     * @param start
+     * @param amount
+     * @param sort
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     * @throws CerberusException
+     */
+    public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);
 
     public AnswerList readDistinctColumnByTag(String tag, boolean env, boolean country, boolean browser, boolean app);

@@ -144,6 +144,18 @@ public interface ITestCaseExecutionService {
 
     /**
      *
+     * @param start
+     * @param amount
+     * @param sort
+     * @param searchTerm
+     * @param individualSearch
+     * @return
+     * @throws CerberusException
+     */
+    AnswerList readByCriteria( int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+
+    /**
+     *
      * @param tag
      * @return
      * @throws CerberusException
