@@ -20,9 +20,9 @@
 package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -98,15 +98,15 @@ public class ExecuteNextInQueue extends HttpServlet {
 	 */
 	private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// Part 1: Getting the next test case to be executed.
-		TestCaseExecutionInQueue lastInQueue = null;
+		List<TestCaseExecutionInQueue> inQueues = null;
 		try {
-			lastInQueue = inQueueService.getNextAndProceed();
+			inQueues = inQueueService.toQueued(1);
 		} catch (CerberusException ce) {
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ce.getMessage());
 			return;
 		}
 
-		if (lastInQueue == null) {
+		if (inQueues == null || inQueues.isEmpty()) {
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("No execution in queue");
 			}
@@ -114,7 +114,7 @@ public class ExecuteNextInQueue extends HttpServlet {
 		}
 
 		// Part 2: Execute it
-		executeNext(lastInQueue, req, resp);
+		executeNext(inQueues.get(0), req, resp);
 	}
 
 	/**
@@ -178,9 +178,6 @@ public class ExecuteNextInQueue extends HttpServlet {
 			// However the RunTestCase servlet does not decode parameters,
 			// then we have to mkString() without using charset
 			query = paramRequestMaker.mkString();
-		} catch (UnsupportedEncodingException uee) {
-			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, uee.getMessage());
-			return;
 		} catch (IllegalArgumentException iae) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, iae.getMessage());
 			return;

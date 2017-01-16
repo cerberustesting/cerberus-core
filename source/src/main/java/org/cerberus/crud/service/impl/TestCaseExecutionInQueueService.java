@@ -21,18 +21,17 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-
 import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,16 +72,6 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
-    public TestCaseExecutionInQueue getNextAndProceed() throws CerberusException {
-        return testCaseExecutionInQueueDAO.getNextAndProceed();
-    }
-
-    @Override
-    public List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException {
-        return testCaseExecutionInQueueDAO.getProceededByTag(tag);
-    }
-
-    @Override
     public void remove(long id) throws CerberusException {
         testCaseExecutionInQueueDAO.remove(id);
     }
@@ -98,23 +87,43 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> findAllNotProcedeed() throws CerberusException {
-        return testCaseExecutionInQueueDAO.getNotProceededAndProceed();
+    public TestCaseExecutionInQueue findByKeyWithDependencies(long key) throws CerberusException {
+        return testCaseExecutionInQueueDAO.findByKeyWithDependencies(key);
+    }
+
+    @Override
+    public void toWaiting(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.toWaiting(id);
+    }
+
+    @Override
+    public List<TestCaseExecutionInQueue> toQueued() throws CerberusException {
+        return testCaseExecutionInQueueDAO.toQueued(ITestCaseExecutionInQueueDAO.UNLIMITED_FETCH_SIZE);
+    }
+
+    @Override
+    public List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException {
+        return testCaseExecutionInQueueDAO.toQueued(maxFetchSize);
+    }
+
+    @Override
+    public void toExecuting(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.toExecuting(id);
+    }
+
+    @Override
+    public void toError(long id, String comment) throws CerberusException {
+        testCaseExecutionInQueueDAO.toError(id, comment);
+    }
+
+    @Override
+    public void toCancelled(long id) throws CerberusException {
+        testCaseExecutionInQueueDAO.toCancelled(id);
     }
 
     @Override
     public List<TestCaseExecutionInQueue> findAll() throws CerberusException {
         return testCaseExecutionInQueueDAO.findAll();
-    }
-
-    @Override
-    public void setProcessedTo(Long l, String changeTo) throws CerberusException {
-        testCaseExecutionInQueueDAO.setProcessedTo(l, changeTo);
-    }
-
-    @Override
-    public void updateComment(Long queueId, String comment) throws CerberusException {
-        testCaseExecutionInQueueDAO.updateComment(queueId, comment);
     }
 
     @Override
@@ -203,10 +212,10 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform,
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null);
+                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "");
         result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());

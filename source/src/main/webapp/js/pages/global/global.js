@@ -2373,16 +2373,26 @@ function showPicture(title, pictureUrl) {
  * Auxiliary function that opens the modal that allows user to view a textarea.
  * @param {type} title
  * @param {type} text
+ * @param {type} fileUrl
  * @returns {undefined}
  */
-function showTextArea(title, text) {
+function showTextArea(title, text, fileUrl) {
     var doc = new Doc();
     $('#showGenericModalTitle').text(title);
     $('#closeShowGenericButton').text(doc.getDocLabel("page_global", "buttonClose"));
 
     $('#modalContent').empty();
     //set the translations
-    $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(text)));
+
+    var jqxhr = $.get(fileUrl, "");
+    $.when(jqxhr).then(function (data) {
+        $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(data)));
+    });
+
+    $('#modal-footer #btnFullPicture').remove();
+    $('#modal-footer').prepend($('<button>').attr("id", "btnFullPicture").text("Full File").addClass("btn btn-default").click(function () {
+        window.open(fileUrl, "_blank");
+    }));
 
     $('#showGenericModal').modal('show');
 }

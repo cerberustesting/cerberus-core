@@ -19,28 +19,25 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IParameterDAO;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Parameter;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IParameterService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.observe.ObservableEngine;
+import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import org.cerberus.util.StringUtil;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author bcivel
@@ -51,7 +48,8 @@ public class ParameterService implements IParameterService {
     @Autowired
     private IParameterDAO parameterDao;
 
-    private Map<String, Set<ParameterAware>> propertyRegistration;
+    @Autowired
+    private ObservableEngine<String, Parameter> observableEngine;
 
     private static final Logger LOG = Logger.getLogger(ParameterService.class);
 
@@ -150,13 +148,13 @@ public class ParameterService implements IParameterService {
     @Override
     public void updateParameter(Parameter parameter) throws CerberusException {
         parameterDao.updateParameter(parameter);
-        firePropertyChange(parameter);
+        fireUpdate(parameter.getParam(), parameter);
     }
 
     @Override
     public void insertParameter(Parameter parameter) throws CerberusException {
         parameterDao.insertParameter(parameter);
-        firePropertyChange(parameter);
+        fireCreate(parameter.getParam(), parameter);
     }
 
     @Override
@@ -175,45 +173,6 @@ public class ParameterService implements IParameterService {
             insertParameter(parameter);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Parameter Inserted");
-            }
-        }
-    }
-
-    @Override
-    public void register(String key, ParameterAware parameterAware) {
-        synchronized (propertyRegistration) {
-            Set<ParameterAware> existingRegistration = propertyRegistration.get(key);
-            if (existingRegistration == null) {
-                existingRegistration = new HashSet<>();
-            }
-            existingRegistration.add(parameterAware);
-            propertyRegistration.put(key, existingRegistration);
-        }
-    }
-
-    @Override
-    public void unregister(String key, ParameterAware parameterAware) {
-        synchronized (propertyRegistration) {
-            Set<ParameterAware> existingRegistration = propertyRegistration.get(key);
-            if (existingRegistration != null) {
-                existingRegistration.remove(parameterAware);
-            }
-        }
-    }
-
-    @PostConstruct
-    private void init() {
-        propertyRegistration = new HashMap<>();
-    }
-
-    private void firePropertyChange(Parameter parameter) {
-        Set<ParameterAware> existingRegistration;
-        synchronized (propertyRegistration) {
-            existingRegistration = propertyRegistration.get(parameter.getParam());
-        }
-        if (existingRegistration != null) {
-            for (ParameterAware parameterAware : existingRegistration) {
-                parameterAware.parameterChanged(parameter);
             }
         }
     }
@@ -245,17 +204,29 @@ public class ParameterService implements IParameterService {
 
     @Override
     public Answer create(Parameter object) {
-        return parameterDao.create(object);
+        Answer answer = parameterDao.create(object);
+        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+            fireCreate(object.getParam(), object);
+        }
+        return answer;
     }
 
     @Override
     public Answer update(Parameter object) {
-        return parameterDao.update(object);
+        Answer answer = parameterDao.update(object);
+        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+            fireUpdate(object.getParam(), object);
+        }
+        return answer;
     }
 
     @Override
     public Answer delete(Parameter object) {
-        return parameterDao.delete(object);
+        Answer answer = parameterDao.delete(object);
+        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+            fireDelete(object.getParam(), object);
+        }
+        return answer;
     }
 
     @Override
@@ -279,4 +250,40 @@ public class ParameterService implements IParameterService {
         }
         return finalAnswer;
     }
+
+    @Override
+    public boolean register(Observer<String, Parameter> observer) {
+        return observableEngine.register(observer);
+    }
+
+    @Override
+    public boolean register(String topic, Observer<String, Parameter> observer) {
+        return observableEngine.register(topic, observer);
+    }
+
+    @Override
+    public boolean unregister(String topic, Observer<String, Parameter> observer) {
+        return observableEngine.unregister(topic, observer);
+    }
+
+    @Override
+    public boolean unregister(Observer<String, Parameter> observer) {
+        return observableEngine.unregister(observer);
+    }
+
+    @Override
+    public void fireCreate(String topic, Parameter parameter) {
+      observableEngine.fireCreate(topic, parameter);
+    }
+
+    @Override
+    public void fireUpdate(String topic, Parameter parameter) {
+      observableEngine.fireUpdate(topic, parameter);
+    }
+
+    @Override
+    public void fireDelete(String topic, Parameter parameter) {
+      observableEngine.fireDelete(topic, parameter);
+    }
+
 }

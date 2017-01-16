@@ -35,10 +35,12 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  */
 public interface IFactoryTestCaseExecution {
 
-    TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
+    TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String environmentData,
             String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
             Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
-            String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor, int numberOfRetries, String screenSize, List<RobotCapability> capabilities);
+            String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, 
+            String executor, int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2);
 }

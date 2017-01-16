@@ -23,6 +23,14 @@ import java.util.Date;
 
 public class TestCaseExecutionInQueue {
 
+    public enum State {
+        WAITING,
+        QUEUED,
+        EXECUTING,
+        CANCELLED,
+        ERROR
+    }
+
     private long id;
     private String test;
     private String testCase;
@@ -48,10 +56,10 @@ public class TestCaseExecutionInQueue {
     private int pageSource;
     private int seleniumLog;
     private Date requestDate;
-    private String processed;
     private String comment;
     private int retries;
     private boolean manualExecution;
+    private State state;
     
     /**
      * From here are data outside database model.
@@ -98,14 +106,6 @@ public class TestCaseExecutionInQueue {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public String getProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(String processed) {
-        this.processed = processed;
     }
 
     public long getId() {
@@ -342,6 +342,14 @@ public class TestCaseExecutionInQueue {
 
     public void setRequestDate(Date requestDate) {
         this.requestDate = requestDate;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     @Override

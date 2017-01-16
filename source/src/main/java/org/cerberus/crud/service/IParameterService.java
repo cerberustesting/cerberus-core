@@ -27,30 +27,14 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.observe.Observable;
 
 /**
  * @author bcivel
  */
-public interface IParameterService {
+public interface IParameterService extends Observable<String, Parameter> {
 
     String DEFAULT_SYSTEM = "";
-
-    /**
-     * Be aware about a changing {@link Parameter}
-     *
-     * @author abourdon
-     */
-    interface ParameterAware {
-
-        /**
-         * If this {@link ParameterAware} is registered, then this method will
-         * trigger it to alert of a {@link Parameter} change
-         *
-         * @param parameter the changing {@link Parameter}
-         * @see IParameterService#register(String, ParameterAware)
-         */
-        void parameterChanged(Parameter parameter);
-    }
 
     /**
      * Getting the parameter from database with system (priority) rule. If
@@ -126,28 +110,6 @@ public interface IParameterService {
     void insertParameter(Parameter parameter) throws CerberusException;
 
     void saveParameter(Parameter parameter) throws CerberusException;
-
-    /**
-     * Register the given {@link ParameterAware} to given {@link Parameter}'s
-     * key related changes
-     *
-     * @param key the {@link Parameter}'s key from which the given
-     * {@link ParameterAware} will be registered
-     * @param parameterAware the {@link ParameterAware} to register to the given
-     * {@link Parameter}'s key related changes
-     */
-    void register(String key, ParameterAware parameterAware);
-
-    /**
-     * Unregister the given {@link ParameterAware} from given
-     * {@link Parameter}'s key related changes
-     *
-     * @param key the {@link Parameter}'s key from which the given
-     * {@link ParameterAware} will be unregistered
-     * @param parameterAware the {@link ParameterAware} to unregister from the
-     * given {@link Parameter}'s key related changes
-     */
-    void unregister(String key, ParameterAware parameterAware);
 
     /**
      * Get the {@link Parameter} List of the given {@link System}

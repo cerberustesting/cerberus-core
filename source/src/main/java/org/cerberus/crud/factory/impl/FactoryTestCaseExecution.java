@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.cerberus.crud.entity.Application;
@@ -28,6 +29,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.springframework.stereotype.Service;
@@ -39,13 +41,14 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country,
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String environmentData, String country,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
             Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
-            int numberOfRetries, String screenSize, List<RobotCapability> capabilities) {
+            int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(application);
         newTce.setBrowser(browser);
@@ -59,6 +62,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setCrbVersion(crbVersion);
         newTce.setEnd(end);
         newTce.setEnvironment(environment);
+        newTce.setEnvironmentData(environmentData);
         newTce.setFinished(finished);
         newTce.setId(id);
         newTce.setIp(ip);
@@ -94,6 +98,14 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setScreenSize(screenSize);
         newTce.setCapabilities(capabilities);
         newTce.setLastWebsocketPush(0);
+        newTce.setConditionOper(conditionOper);
+        newTce.setConditionVal1(conditionVal1);
+        newTce.setConditionVal1Init(conditionVal1Init);
+        newTce.setConditionVal2(conditionVal2);
+        newTce.setConditionVal2Init(conditionVal2Init);
+        // List objects
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        newTce.setFileList(objectFileList);
         return newTce;
     }
 

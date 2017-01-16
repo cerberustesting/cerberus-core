@@ -19,6 +19,9 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
@@ -67,6 +70,9 @@ public class FactoryTestCaseStepActionControlExecution implements IFactoryTestCa
         testCaseStepActionControlExecution.setTestCaseStepActionExecution(testCaseStepActionExecution);
         testCaseStepActionControlExecution.setControlResultMessage(resultMessage);
         testCaseStepActionControlExecution.setDescription(description);
+        // List objects
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        testCaseStepActionControlExecution.setFileList(objectFileList);
         return testCaseStepActionControlExecution;
     }
 

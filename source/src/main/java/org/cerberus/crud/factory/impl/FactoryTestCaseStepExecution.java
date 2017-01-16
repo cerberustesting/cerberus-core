@@ -20,8 +20,11 @@
 package org.cerberus.crud.factory.impl;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
@@ -69,6 +72,9 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setUseStepTestCase(useStepTestCase);
         testCaseStepExecution.setUseStepTestCaseStep(useStepTestCaseStep);
         testCaseStepExecution.setDescription(description);
+        // List objects
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        testCaseStepExecution.setFileList(objectFileList);
         return testCaseStepExecution;
     }
 

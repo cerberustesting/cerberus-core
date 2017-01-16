@@ -61,6 +61,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionInQueueDAO.class);
 
     private static final String TABLE = "testcaseexecutionqueue";
+    private static final String TABLE_TEST_CASE = "testcase";
+    private static final String TABLE_APPLICATION = "application";
 
     private static final String COLUMN_ID = "ID";
     private static final String COLUMN_TEST = "Test";
@@ -87,26 +89,26 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String COLUMN_PAGE_SOURCE = "PageSource";
     private static final String COLUMN_SELENIUM_LOG = "SeleniumLog";
     private static final String COLUMN_REQUEST_DATE = "RequestDate";
-    private static final String COLUMN_PROCEEDED = "Proceeded";
     private static final String COLUMN_COMMENT = "Comment";
     private static final String COLUMN_RETRIES = "Retries";
     private static final String COLUMN_MANUAL_EXECUTION = "ManualExecution";
+    private static final String COLUMN_STATE = "State";
 
-    private static final String VALUE_PROCEEDED_FALSE = "0";
-    private static final String VALUE_PROCEEDED_TRUE = "1";
     private static final String VALUE_MANUAL_EXECUTION_FALSE = "N";
 
-    private static final String QUERY_INSERT = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-    private static final String QUERY_SELECT_NEXT = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC LIMIT 1";
-    private static final String QUERY_PROCEED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' WHERE `" + COLUMN_ID + "` = ?";
-    private static final String QUERY_GET_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' ORDER BY `" + COLUMN_ID + "` ASC";
-    private static final String QUERY_GET_PROCEEDED_BY_TAG = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_TRUE + "' AND `" + COLUMN_TAG + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
-    private static final String QUERY_GET_NOT_PROCEEDED = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' AND `" + COLUMN_MANUAL_EXECUTION + "` = '" + VALUE_MANUAL_EXECUTION_FALSE + "' ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_INSERT = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_STATE + "`) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
     private static final String QUERY_REMOVE = "DELETE FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_FIND_BY_KEY = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_FIND_BY_KEY_WITH_DEPENDENCIES =
+            "SELECT * FROM `" + TABLE + "` exq " +
+                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
+                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
+                    "WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_FIND_BY_STATE = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_STATE + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_FIND_BY_STATE_LIMIT = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_STATE + "` = ? ORDER BY `" + COLUMN_ID + "` ASC LIMIT ?";
     private static final String QUERY_GET_ALL = "SELECT * FROM `" + TABLE + "`;";
-    private static final String QUERY_NOT_PROCEEDED = "UPDATE `" + TABLE + "` SET `" + COLUMN_PROCEEDED + "` = '" + VALUE_PROCEEDED_FALSE + "' WHERE `" + COLUMN_ID + "` = ?";
-    private static final String QUERY_UPDATE_COMMENT = "UPDATE `" + TABLE + "` SET `" + COLUMN_COMMENT + "` = ? WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_UPDATE_STATE = "UPDATE `" + TABLE + "` SET `" + COLUMN_STATE + "` = ? WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_UPDATE_STATE_AND_COMMENT = "UPDATE `" + TABLE + "` SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT +  "` = ? WHERE `" + COLUMN_ID + "` = ?";
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -183,6 +185,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             statementInsert.setTimestamp(24, new Timestamp(inQueue.getRequestDate().getTime()));
             statementInsert.setInt(25, inQueue.getRetries());
             statementInsert.setString(26, inQueue.isManualExecution() ? "Y" : "N");
+            statementInsert.setString(27, inQueue.getState() == null ? TestCaseExecutionInQueue.State.WAITING.name() : inQueue.getState().name());
 
             statementInsert.executeUpdate();
         } catch (SQLException exception) {
@@ -194,147 +197,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     statementInsert.close();
                 } catch (SQLException e) {
                     LOG.warn("Unable to close insert statement due to " + e.getMessage());
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close connection due to " + e.getMessage());
-                }
-            }
-        }
-    }
-
-    @Override
-    public TestCaseExecutionInQueue getNextAndProceed() throws CerberusException {
-        final Connection connection = this.databaseSpring.connect();
-        if (connection == null) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-
-        PreparedStatement statementSelectNext = null;
-        PreparedStatement statementProceed = null;
-
-        TestCaseExecutionInQueue result = null;
-
-        try {
-            // Begin transaction
-            connection.setAutoCommit(false);
-
-            // Select the next record to be proceeded
-            statementSelectNext = connection.prepareStatement(QUERY_SELECT_NEXT);
-            ResultSet resultSelect = statementSelectNext.executeQuery();
-
-            // If there is no record then return null
-            if (!resultSelect.next()) {
-                return null;
-            }
-
-            // Create a TestCaseExecutionInQueue based on the fetched record
-            result = loadFromResultSet(resultSelect);
-
-            // Make the actual record as proceeded
-            statementProceed = connection.prepareStatement(QUERY_PROCEED);
-            statementProceed.setLong(1, resultSelect.getLong(COLUMN_ID));
-            statementProceed.executeUpdate();
-
-            // Commit transaction
-            connection.commit();
-            return result;
-        } catch (SQLException sqle) {
-            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } catch (FactoryCreationException fce) {
-            LOG.warn("Unable to execute query : " + fce.toString() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } finally {
-            if (statementSelectNext != null) {
-                try {
-                    statementSelectNext.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close selectNext statement due to " + e.getMessage());
-                }
-            }
-            if (statementProceed != null) {
-                try {
-                    statementProceed.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close connection due to " + e.getMessage());
-                }
-            }
-        }
-    }
-
-    @Override
-    public List<TestCaseExecutionInQueue> getProceededByTag(String tag) throws CerberusException {
-        final Connection connection = this.databaseSpring.connect();
-        if (connection == null) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-
-        PreparedStatement statement = null;
-
-        List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
-
-        try {
-            if (tag == null) {
-                statement = connection.prepareStatement(QUERY_GET_PROCEEDED);
-            } else {
-                statement = connection.prepareStatement(QUERY_GET_PROCEEDED_BY_TAG);
-                statement.setString(1, tag);
-            }
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                try {
-                    result.add(loadFromResultSet(resultSet));
-                } catch (FactoryCreationException fce) {
-                    LOG.warn("Unable to get malformed record from database", fce);
-                }
-            }
-
-            return result;
-        } catch (SQLException sqle) {
-            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close statement due to " + e.getMessage());
                 }
             }
             if (connection != null) {
@@ -493,88 +355,207 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public List<TestCaseExecutionInQueue> getNotProceededAndProceed() throws CerberusException {
-        final Connection connection = this.databaseSpring.connect();
-        if (connection == null) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+    public TestCaseExecutionInQueue findByKeyWithDependencies(long key) throws CerberusException {
+        try (
+                Connection connection = databaseSpring.connect();
+                PreparedStatement statement = connection.prepareStatement(QUERY_FIND_BY_KEY_WITH_DEPENDENCIES)
+        ) {
+            statement.setLong(1, key);
+            ResultSet result = statement.executeQuery();
+            if (result == null || !result.next()) {
+                throw new FactoryCreationException("Unknown key");
+            }
+            return loadWithDependenciesFromResultSet(result);
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to find execution in queue with key " + key, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
+    }
 
-        PreparedStatement statementSelectNext = null;
-        PreparedStatement statementProceed = null;
-        List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
+    @Override
+    public List<TestCaseExecutionInQueue> toQueued(int fetchSize) throws CerberusException {
+        try (
+                Connection connection = this.databaseSpring.connect()
+        ) {
+            List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
+            final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE : QUERY_FIND_BY_STATE_LIMIT;
 
-        try {
             // Begin transaction
             connection.setAutoCommit(false);
+            try (
+                    PreparedStatement selectWaitingsStatement = connection.prepareStatement(selectByStateQuery);
+                    PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE)
+            ) {
+                // Select all executions in queue in WAITING state
+                selectWaitingsStatement.setString(1, TestCaseExecutionInQueue.State.WAITING.name());
+                if (UNLIMITED_FETCH_SIZE != fetchSize) {
+                    selectWaitingsStatement.setInt(2, fetchSize);
+                }
+                ResultSet waitings = selectWaitingsStatement.executeQuery();
 
-            // Select the next record to be proceeded
-            statementSelectNext = connection.prepareStatement(QUERY_GET_NOT_PROCEEDED);
-            ResultSet resultSelect = statementSelectNext.executeQuery();
+                // Then set their state to QUEUED
+                while (waitings.next()) {
+                    try {
+                        TestCaseExecutionInQueue waiting = loadFromResultSet(waitings);
+                        updateStateStatement.setString(1, TestCaseExecutionInQueue.State.QUEUED.name());
+                        updateStateStatement.setLong(2, waiting.getId());
+                        updateStateStatement.addBatch();
+                        result.add(waiting);
+                    } catch (SQLException | FactoryCreationException e) {
+                        LOG.warn("Unable to forward execution id " + waitings.getLong(COLUMN_ID), e);
+                    }
+                }
+                if (!result.isEmpty()) {
+                    updateStateStatement.executeBatch();
+                }
 
-            // If there is no record then return null
-            if (!resultSelect.next()) {
-                return null;
+                // Commit transaction
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                handleRollback(connection);
+                throw e;
             }
-
-            // Create a TestCaseExecutionInQueue based on the fetched record
-            while (resultSelect.next()) {
-                result.add(loadFromResultSet(resultSelect));
-                // Make the actual record as proceeded
-                statementProceed = connection.prepareStatement(QUERY_PROCEED);
-                statementProceed.setLong(1, resultSelect.getLong(COLUMN_ID));
-                statementProceed.executeUpdate();
-            }
-
-            // Commit transaction
-            connection.commit();
-            return result;
-        } catch (SQLException sqle) {
-            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } catch (FactoryCreationException fce) {
-            LOG.warn("Unable to execute query : " + fce.toString() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } finally {
-            if (statementSelectNext != null) {
-                try {
-                    statementSelectNext.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close selectNext statement due to " + e.getMessage());
-                }
-            }
-            if (statementProceed != null) {
-                try {
-                    statementProceed.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close connection due to " + e.getMessage());
-                }
-            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to find or forward WAITING executions in queue to the QUEUED state", e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
-
     }
+
+    @Override
+    public void toExecuting(long id) throws CerberusException {
+        try (
+                Connection connection = databaseSpring.connect()
+        ) {
+            // Begin transaction
+            connection.setAutoCommit(false);
+            try (
+                    PreparedStatement findByKeyStatement = connection.prepareStatement(QUERY_FIND_BY_KEY);
+                    PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE)
+            ) {
+                // First, find the execution
+                TestCaseExecutionInQueue inqueue = findByKey(id, findByKeyStatement);
+
+                // Then, check if its current state is QUEUED
+                if (!TestCaseExecutionInQueue.State.QUEUED.equals(inqueue.getState())) {
+                    LOG.warn("Execution in queue id " + id + " is not on the QUEUED state (" + inqueue.getState().name());
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }
+
+                // Finally try to update execution
+                updateState(id, TestCaseExecutionInQueue.State.EXECUTING, updateStateStatement);
+
+                // Commit transaction
+                connection.commit();
+            } catch (SQLException | FactoryCreationException e) {
+                handleRollback(connection);
+                throw e;
+            }
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to set state to EXECUTING for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public void toWaiting(long id) throws CerberusException {
+        try (
+                Connection connection = databaseSpring.connect()
+        ) {
+            // Begin transaction
+            connection.setAutoCommit(false);
+            try (
+                    PreparedStatement findByKeyStatement = connection.prepareStatement(QUERY_FIND_BY_KEY);
+                    PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE)
+            ) {
+                // First, find the execution
+                TestCaseExecutionInQueue inqueue = findByKey(id, findByKeyStatement);
+
+                // Then, check if its current state is not EXECUTING
+                if (TestCaseExecutionInQueue.State.EXECUTING.equals(inqueue.getState())) {
+                    LOG.warn("Execution in queue id " + id + " cannot be WAITING as currently EXECUTING");
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }
+
+                // Finally, try to update its state
+                updateState(id, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
+
+                // Commit transaction
+                connection.commit();
+            } catch (SQLException | FactoryCreationException e) {
+                handleRollback(connection);
+                throw e;
+            }
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to set state to WAITING for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public void toError(long id, String comment) throws CerberusException {
+        try (
+                Connection connection = databaseSpring.connect()
+        ) {
+            // Begin transaction
+            connection.setAutoCommit(false);
+            try (
+                    PreparedStatement findByKeyStatement = connection.prepareStatement(QUERY_FIND_BY_KEY);
+                    PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(QUERY_UPDATE_STATE_AND_COMMENT)
+            ) {
+                // First, find the execution
+                findByKey(id, findByKeyStatement);
+
+                // Then try to update its state to error
+                updateStateAndComment(id, TestCaseExecutionInQueue.State.ERROR, comment, updateStateAndCommentStatement);
+
+                // Commit transaction
+                connection.commit();
+            } catch (SQLException | FactoryCreationException e) {
+                handleRollback(connection);
+                throw e;
+            }
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to set state to ERROR for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public void toCancelled(long id) throws CerberusException {
+        try (
+                Connection connection = databaseSpring.connect()
+        ) {
+            // Begin transaction
+            connection.setAutoCommit(false);
+            try (
+                    PreparedStatement findByKeyStatement = connection.prepareStatement(QUERY_FIND_BY_KEY);
+                    PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE)
+            ) {
+                // First, find the execution
+                TestCaseExecutionInQueue inqueue = findByKey(id, findByKeyStatement);
+
+                // Then, check if its current state is not EXECUTING or ERROR
+                if (TestCaseExecutionInQueue.State.EXECUTING.equals(inqueue.getState()) || TestCaseExecutionInQueue.State.ERROR.equals(inqueue.getState())) {
+                    LOG.warn("Execution in queue id " + id + " cannot be WAITING as currently EXECUTING");
+                    throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+                }
+
+                // Finally, try to update its state
+                updateState(id, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+
+                // Commit transaction
+                connection.commit();
+            } catch (SQLException | FactoryCreationException e) {
+                handleRollback(connection);
+                throw e;
+            }
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to set state to CANCELLED for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
 
     @Override
     public List<TestCaseExecutionInQueue> findAll() throws CerberusException {
@@ -630,110 +611,13 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
-    public void setProcessedTo(Long l, String changeTo) throws CerberusException {
-        final Connection connection = this.databaseSpring.connect();
-        if (connection == null) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-
-        PreparedStatement statementProceed = null;
-
-        TestCaseExecutionInQueue result = null;
-
-        try {
-            // Make the actual record as proceeded
-            if (!changeTo.equals("0")) {
-                statementProceed = connection.prepareStatement(QUERY_PROCEED);
-            } else {
-                statementProceed = connection.prepareStatement(QUERY_NOT_PROCEEDED);
-            }
-            statementProceed.setLong(1, l);
-            statementProceed.executeUpdate();
-
-        } catch (SQLException sqle) {
-            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } finally {
-            if (statementProceed != null) {
-                try {
-                    statementProceed.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close connection due to " + e.getMessage());
-                }
-            }
-        }
-    }
-
-    @Override
-    public void updateComment(Long queueId, String comment) throws CerberusException {
-        final Connection connection = this.databaseSpring.connect();
-        if (connection == null) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        }
-
-        PreparedStatement statementComment = null;
-
-        TestCaseExecutionInQueue result = null;
-
-        try {
-            // Make the actual record as proceeded
-            statementComment = connection.prepareStatement(QUERY_UPDATE_COMMENT);
-            statementComment.setString(1, comment);
-            statementComment.setLong(2, queueId);
-            statementComment.executeUpdate();
-
-        } catch (SQLException sqle) {
-            LOG.warn("Unable to execute query : " + sqle.getMessage() + ". Trying to rollback");
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e) {
-                    LOG.error("Unable to rollback due to " + e.getMessage());
-                }
-                LOG.warn("Rollback done");
-            }
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-        } finally {
-            if (statementComment != null) {
-                try {
-                    statementComment.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close proceed statement due to " + e.getMessage());
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.warn("Unable to close connection due to " + e.getMessage());
-                }
-            }
-        }
-    }
-
-    @Override
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
         List<String> individalColumnSearchValues = new ArrayList<String>();
-        
+
         final StringBuilder query = new StringBuilder();
-        
+
         query.append("SELECT * FROM testcaseexecutionqueue exq ");
         query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
         query.append("left join application app on tec.application = app.application ");
@@ -744,7 +628,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         if (!StringUtil.isNullOrEmpty(tag)) {
             query.append("and exq.tag = ? ");
         }
-        
+
         query.append("group by exq.test, exq.testcase, exq.Environment, exq.Browser, exq.Country) ");
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exq.`test` like ? ");
@@ -1701,7 +1585,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getInt(COLUMN_PAGE_SOURCE),
                 resultSet.getInt(COLUMN_SELENIUM_LOG),
                 new Date(resultSet.getTimestamp(COLUMN_REQUEST_DATE).getTime()),
-                resultSet.getString(COLUMN_PROCEEDED),
+                TestCaseExecutionInQueue.State.valueOf(resultSet.getString(COLUMN_STATE)),
                 resultSet.getString(COLUMN_COMMENT),
                 resultSet.getInt(COLUMN_RETRIES),
                 resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
@@ -1782,16 +1666,49 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         return ans;
     }
 
+    private TestCaseExecutionInQueue findByKey(long id, PreparedStatement findByKeyStatement) throws SQLException, FactoryCreationException {
+        findByKeyStatement.setLong(1, id);
+
+        ResultSet result = findByKeyStatement.executeQuery();
+        if (result == null || !result.next()) {
+            throw new SQLException("Execution queue " + id + " does not exist");
+        }
+        return loadFromResultSet(result);
+    }
+
+    private void updateState(long id, TestCaseExecutionInQueue.State state, PreparedStatement updateStateStatement) throws SQLException {
+        updateStateStatement.setString(1, state.name());
+        updateStateStatement.setLong(2, id);
+        updateStateStatement.executeUpdate();
+    }
+
+    private void updateStateAndComment(long id, TestCaseExecutionInQueue.State state, String comment, PreparedStatement updateStateAndCommentStatement) throws SQLException {
+        updateStateAndCommentStatement.setString(1, state.name());
+        updateStateAndCommentStatement.setString(2, comment);
+        updateStateAndCommentStatement.setLong(3, id);
+        updateStateAndCommentStatement.executeUpdate();
+    }
+
+    private void handleRollback(Connection connection) {
+        LOG.warn("Exception occurs, try to rollback...");
+        try {
+            connection.rollback();
+            LOG.warn("Rollback done.");
+        } catch (SQLException again) {
+            LOG.warn("Unable to rollback", again);
+        }
+    }
+
     /**
      * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
      *
      * @param resultSet ResultSet relative to select from table
      *                  TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionInQueue} with objects
-     * {@link TestCase} and {@link Application}
+     * {@link ResultSet} and {@link Application}
      * @throws SQLException when trying to get value from
      *                      {@link java.sql.ResultSet#getString(String)}
-     * @see FactoryTestCaseExecutionInQueue
+     * @see TestCaseExecutionInQueue
      */
     private TestCaseExecutionInQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {
         TestCaseExecutionInQueue testCaseExecutionInQueue = this.loadFromResultSet(resultSet);

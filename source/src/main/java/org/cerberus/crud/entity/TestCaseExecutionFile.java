@@ -27,7 +27,7 @@ import org.json.JSONObject;
 public class TestCaseExecutionFile {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(TestCaseExecutionFile.class);
-    
+
     private long id;
     private long exeId;
     private String level;
@@ -118,7 +118,7 @@ public class TestCaseExecutionFile {
     public void setDateModif(Timestamp dateModif) {
         this.dateModif = dateModif;
     }
-    
+
     public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
@@ -133,4 +133,9 @@ public class TestCaseExecutionFile {
         return result;
     }
 
+    public String toString() {
+        String result = "";
+        result = this.getFileDesc() + " - " + this.getFileType() + " - " + this.getFileName() + " - " + this.getLevel();
+        return result;
+    }
 }

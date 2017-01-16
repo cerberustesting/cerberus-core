@@ -229,6 +229,7 @@ function updatePage(data, stepList) {
     configPanel.find("input#build").val(data.build);
     configPanel.find("input#country").val(data.country);
     configPanel.find("input#environment").val(data.environment);
+    configPanel.find("input#environmentData").val(data.environmentData);
     configPanel.find("input#status").val(data.status);
     configPanel.find("input#controlstatus2").val(data.controlStatus);
     configPanel.find("input#controlmessage").val(data.controlMessage);
@@ -247,6 +248,16 @@ function updatePage(data, stepList) {
     configPanel.find("input#url").val(data.url);
     configPanel.find("input#verbose").val(data.verbose);
     configPanel.find("input#version").val(data.version);
+
+    configPanel.find("input#conditionOperTC").val(data.conditionOper);
+    configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
+    configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+    configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
+    configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+    
+    // Adding all media attached to execution.
+    var fileContainer = $("#testCaseConfig #tcFileContentField");
+    addFileLink(data.fileList, fileContainer);
 
     $.ajax({
         url: "ReadApplication",
@@ -285,6 +296,7 @@ function updatePage(data, stepList) {
     createProperties(data.testCaseExecutionDataList);
     updateLoadBar(data);
 }
+
 function updateLoadBar(data) {
     var total = 0;
     var ended = 0;
@@ -731,6 +743,11 @@ function Action(json, parentStep) {
         this.controlListJson = json.testCaseStepActionControlExecutionList;
         this.controlList = [];
         this.fileList = json.fileList;
+        this.conditionOper = json.conditionOper;
+        this.conditionVal1Init = json.conditionVal1Init;
+        this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal1 = json.conditionVal1;
+        this.conditionVal2 = json.conditionVal2;
     } else {
         this.action = "Unknown";
         this.description = "";
@@ -755,6 +772,12 @@ function Action(json, parentStep) {
         this.screenshotFileName = "";
         this.controlListJson = "";
         this.controlList = [];
+        this.fileList = [];
+        this.conditionOper = "always";
+        this.conditionVal1Init = "";
+        this.conditionVal2Init = "";
+        this.conditionVal1 = "";
+        this.conditionVal2 = "";
     }
 
     this.toDelete = false;
@@ -796,6 +819,11 @@ Action.prototype.draw = function () {
         content.show();
     }
 
+    // Starting to reduce the size of the row by the length of elements.
+    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
+    // Adding all media attached to action execution.
+    addFileLink(this.fileList, $(header).find(".row"));
+    
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
@@ -807,30 +835,6 @@ Action.prototype.draw = function () {
         content.toggle();
         return false;
     });
-
-    if (this.fileList.length > 0) {
-
-        var f = new File();
-        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=action&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence).then(function (data) {
-
-            var headerToAdd = data[0];
-            var bodyToAdd = data[1];
-
-            if (headerToAdd != undefined) {
-                var cnt = headerToAdd.contents();
-                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
-                $(header).find(".row").append(cnt);
-            }
-
-            if (bodyToAdd != undefined) {
-                var cnt = bodyToAdd.contents();
-                $(content).append(cnt);
-            }
-
-        }, function (e) {
-            // No File Found
-        });
-    }
 };
 
 Action.prototype.setControlList = function (controlList) {
@@ -885,11 +889,13 @@ Action.prototype.generateContent = function () {
     var obj = this;
     var doc = new Doc();
 
-    var secondRow = $("<div></div>").addClass("row");
-    var thirdRow = $("<div></div>").addClass("row");
-    var fourthRow = $("<div></div>").addClass("row");
-    var fifthRow = $("<div></div>").addClass("row");
-    var sixthRow = $("<div></div>").addClass("row");
+    var row1 = $("<div></div>").addClass("row");
+    var row2 = $("<div></div>").addClass("row");
+    var row3 = $("<div></div>").addClass("row");
+    var row4 = $("<div></div>").addClass("row");
+    var row5 = $("<div></div>").addClass("row");
+    var row6 = $("<div></div>").addClass("row");
+    var row7 = $("<div></div>").addClass("row");
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item");
 
     var actionList = $("<input type='text' class='form-control' id='action'>").prop("readonly", true);
@@ -903,6 +909,11 @@ Action.prototype.generateContent = function () {
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
     var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
+    var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
+    var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
+    var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
+    var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
 
     var actionGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "action") + "</label>")).append(actionList);
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
@@ -915,7 +926,11 @@ Action.prototype.generateContent = function () {
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
-
+    var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
+    var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
+    var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
+    var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
 
 
     descField.val(this.description);
@@ -929,25 +944,38 @@ Action.prototype.generateContent = function () {
     returnCodeField.val(this.returnCode);
     returnMessageField.val(this.returnMessage);
     sortField.val(this.sort);
+    conditionOperField.val(this.conditionOper);
+    conditionVal1InitField.val(this.conditionVal1Init);
+    conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal1Field.val(this.conditionVal1);
+    conditionVal2Field.val(this.conditionVal2);
 
-    secondRow.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
-    secondRow.append($("<div></div>").addClass("col-sm-10").append(descGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
-    fifthRow.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
-    fifthRow.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
-    fifthRow.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
-    thirdRow.append($("<div></div>").addClass("col-sm-2"));
-    thirdRow.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
-    thirdRow.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
-    fourthRow.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
+    row2.append($("<div></div>").addClass("col-sm-5").append(objectGroupInit));
+    row2.append($("<div></div>").addClass("col-sm-5").append(propertyGroupInit));
+    row3.append($("<div></div>").addClass("col-sm-2").append(actionGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(objectGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(propertyGroup));
+    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(forceexecGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
 
-    container.append(secondRow);
-    container.append(fifthRow);
-    container.append(thirdRow);
-    container.append(sixthRow);
-    container.append(fourthRow);
+    container.append(row1);
+    container.append(row2);
+    container.append(row3);
+    container.append(row4);
+    container.append(row5);
+    container.append(row6);
+    container.append(row7);
 
     return container;
 };
@@ -995,6 +1023,11 @@ function Control(json, parentAction) {
         this.test = json.test;
         this.testcase = json.testcase;
         this.fileList = json.fileList;
+        this.conditionOper = json.conditionOper;
+        this.conditionVal1Init = json.conditionVal1Init;
+        this.conditionVal2Init = json.conditionVal2Init;
+        this.conditionVal1 = json.conditionVal1;
+        this.conditionVal2 = json.conditionVal2;
     } else {
         this.control = "";
         this.controlType = "Unknown";
@@ -1018,6 +1051,12 @@ function Control(json, parentAction) {
         this.step = parentAction.step;
         this.test = "";
         this.testcase = "";
+        this.fileList = [];
+        this.conditionOper = "always";
+        this.conditionVal1Init = "";
+        this.conditionVal2Init = "";
+        this.conditionVal1 = "";
+        this.conditionVal2 = "";
     }
 
     this.parentStep = parentAction.parentStep;
@@ -1063,6 +1102,12 @@ Control.prototype.draw = function () {
         content.show();
     }
 
+    
+    // Starting to reduce the size of the row by the length of elements.
+    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length * 2));
+    // Adding all media attached to control execution.
+    addFileLink(this.fileList, $(header).find(".row"));
+
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
@@ -1074,30 +1119,6 @@ Control.prototype.draw = function () {
         content.toggle();
         return false;
     });
-
-    if (this.fileList.length > 0) {
-
-        var f = new File();
-        f.getFiles(this, "ReadTestCaseExecutionImage?id=" + this.id + "&test=" + this.test + "&testcase=" + this.testcase + "&type=control&step=" + this.step + "&index=" + this.index + "&sequence=" + this.sequence + "&sequenceControl=" + this.control).then(function (data) {
-
-            var headerToAdd = data[0];
-            var bodyToAdd = data[1];
-
-            if (headerToAdd != undefined) {
-                var cnt = headerToAdd.contents();
-                $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - f.getIt()));
-                $(header).find(".row").append(cnt);
-            }
-
-            if (bodyToAdd != undefined) {
-                var cnt = bodyToAdd.contents();
-                $(content).append(cnt);
-            }
-
-        }, function (e) {
-            // No File Found
-        });
-    }
 
 };
 
@@ -1138,11 +1159,13 @@ Control.prototype.generateContent = function () {
     var doc = new Doc();
     var obj = this;
 
-    var secondRow = $("<div></div>").addClass("row");
-    var thirdRow = $("<div></div>").addClass("row");
-    var fourthRow = $("<div></div>").addClass("row");
-    var fifthRow = $("<div></div>").addClass("row");
-    var sixthRow = $("<div></div>").addClass("row");
+    var row1 = $("<div></div>").addClass("row");
+    var row2 = $("<div></div>").addClass("row");
+    var row3 = $("<div></div>").addClass("row");
+    var row4 = $("<div></div>").addClass("row");
+    var row5 = $("<div></div>").addClass("row");
+    var row6 = $("<div></div>").addClass("row");
+    var row7 = $("<div></div>").addClass("row");
     var container = $("<div id='content-container'></div>").addClass("action-group row list-group-item").css("margin-left", "25px");
 
     var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
@@ -1156,18 +1179,28 @@ Control.prototype.generateContent = function () {
     var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
     var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly", true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
+    var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
+    var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
+    var conditionVal2InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2Init'>").prop("readonly", true);
+    var conditionVal1Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1'>").prop("readonly", true);
+    var conditionVal2Field = $("<textarea type='text' rows='1' class='form-control' id='conditionVal2'>").prop("readonly", true);
 
     var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
     var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
     var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
     var controlTypeGroup = $("<div class='form-group'></div>").append($("<label for='controltype'>" + doc.getDocLabel("page_executiondetail", "control_type") + "</label>")).append(controlTypeField);
-    var controlValueGroup = $("<div class='form-group'></div>").append($("<label for='controlvalue'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
-    var controlValueInitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalueinit'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var controlValue1Group = $("<div class='form-group'></div>").append($("<label for='controlvalue'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var controlValue1InitGroup = $("<div class='form-group'></div>").append($("<label for='controlvalueinit'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
     var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
-    var controlPropertyGroup = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
-    var controlPropertyInitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var controlValue2Group = $("<div class='form-group'></div>").append($("<label for='controlproperty'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var controlValue2InitGroup = $("<div class='form-group'></div>").append($("<label for='controlpropertyinit'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
     var fatalGroup = $("<div class='form-group'></div>").append($("<label for='fatal'>" + doc.getDocLabel("page_executiondetail", "fatal") + "</label>")).append(fatalField);
     var sortGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "sort") + "</label>")).append(sortField);
+    var conditionOperGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "conditionOper") + "</label>")).append(conditionOperField);
+    var conditionVal1InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal1Init") + "</label>")).append(conditionVal1InitField);
+    var conditionVal2InitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "conditionVal2Init") + "</label>")).append(conditionVal2InitField);
+    var conditionVal1Group = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "conditionVal1") + "</label>")).append(conditionVal1Field);
+    var conditionVal2Group = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "conditionVal2") + "</label>")).append(conditionVal2Field);
 
 
 
@@ -1182,25 +1215,38 @@ Control.prototype.generateContent = function () {
     value2InitField.val(this.value2init);
     fatalField.val(this.fatal);
     sortField.val(this.sort);
+    conditionOperField.val(this.conditionOper);
+    conditionVal1InitField.val(this.conditionVal1Init);
+    conditionVal2InitField.val(this.conditionVal2Init);
+    conditionVal1Field.val(this.conditionVal1);
+    conditionVal2Field.val(this.conditionVal2);
 
-    secondRow.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
-    secondRow.append($("<div></div>").addClass("col-sm-10").append(descGroup));
-    fifthRow.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
-    fifthRow.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
-    fifthRow.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
-    thirdRow.append($("<div></div>").addClass("col-sm-2"));
-    thirdRow.append($("<div></div>").addClass("col-sm-5").append(controlValueGroup));
-    thirdRow.append($("<div></div>").addClass("col-sm-5").append(controlPropertyGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-5").append(controlValueInitGroup));
-    sixthRow.append($("<div></div>").addClass("col-sm-5").append(controlPropertyInitGroup));
-    fourthRow.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
+    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue1InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-5").append(controlValue2InitGroup));
+    row3.append($("<div></div>").addClass("col-sm-2").append(controlTypeGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue1Group));
+    row3.append($("<div></div>").addClass("col-sm-5").append(controlValue2Group));
+    row4.append($("<div></div>").addClass("col-sm-2").append(sortGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(fatalGroup));
+    row4.append($("<div></div>").addClass("col-sm-5").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2"));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal1InitGroup));
+    row6.append($("<div></div>").addClass("col-sm-5").append(conditionVal2InitGroup));
+    row7.append($("<div></div>").addClass("col-sm-2").append(conditionOperGroup));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal1Group));
+    row7.append($("<div></div>").addClass("col-sm-5").append(conditionVal2Group));
 
-    container.append(secondRow);
-    container.append(sixthRow);
-    container.append(thirdRow);
-    container.append(fifthRow);
-    container.append(fourthRow);
+    container.append(row1);
+    container.append(row2);
+    container.append(row3);
+    container.append(row4);
+    container.append(row5);
+    container.append(row6);
+    container.append(row7);
 
     return container;
 };
@@ -1224,169 +1270,31 @@ Control.prototype.getJsonData = function () {
     return json;
 };
 
-/**
- * File Utilities
- */
+// Function in order to add the Media files links into TestCase, step, action and control level.
+function addFileLink(fileList, container) {
+    for (var i = 0; i < fileList.length; i++) {
+        if (fileList[i].fileType === "JPG") {
+            var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
+            var fileDesc = fileList[i].fileDesc;
+            var linkBox = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px")
+                    .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
+                    .click(function (e) {
+                showPicture(fileDesc, urlImage);
+                return false;
+            }));
+            container.append(linkBox);
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT")) {
+            var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
+            var fileDesctxt = fileList[i].fileDesc;
+            var filetypetxt = fileList[i].fileType.toLowerCase();
+            var linkBoxtxt = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px")
+                    .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                    .css("height", "30px").click(function (f) {
+                showTextArea(fileDesctxt, "", urlImagetxt);
+                return false;
+            }));
+            container.append(linkBoxtxt);
+        }
+    }
+}
 
-var File = function () {
-    var scope = this;
-    var it = 0;
-    // A div to store what to add in the header (Only the content of the div will be add)
-    var containerHeader = $("<div>");
-    // A div to store what to add in the body
-    var containerBody = $("<div>");
-    this.checkFile = function (data, src, id) {
-        return new Promise(function (resolve, reject) {
-            // Check if Picture
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', src + id, true);
-            xhr.responseType = 'blob';
-
-            xhr.onload = function (e) {
-                var description = this.getResponseHeader("Description");
-                if (this.status == 200 && this.response != undefined && this.response.size > 0) {
-                    // get binary data as a response
-                    var blob = this.response;
-
-                    // We want to know the type of the File (The type of the blob is trustfully, always xml)
-                    var fileReader = new FileReader();
-                    fileReader.onloadend = function (e) {
-                        var arr = (new Uint8Array(e.target.result)).subarray(0, 4);
-                        var header = "";
-                        for (var i = 0; i < arr.length; i++) {
-                            header += arr[i].toString(16);
-                        }
-
-                        // Check the file signature against known types
-                        var type;
-                        switch (header) {
-                            case "89504e47":
-                                type = "image/png";
-                                break;
-                            case "47494638":
-                                type = "image/gif";
-                                break;
-                            case "ffd8ffd8":
-                            case "ffd8ffe0":
-                            case "ffd8ffe1":
-                            case "ffd8ffe2":
-                                type = "image/jpeg";
-                                break;
-                            case "25504446":
-                                type = "application/pdf";
-                                break;
-                            default:
-                                type = "text/plain";
-                                break;
-                        }
-
-                        // We create the view depending the type
-                        var fileHeader;
-                        var fileBody;
-                        var nowit = it;
-                        if (type == "image/png" || type == "image/gif" || type == "image/jpeg") {
-                            var urlCreator = window.URL || window.webkitURL;
-                            var imageUrl = urlCreator.createObjectURL(blob);
-                            fileHeader = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px").append($("<img>").attr("src", imageUrl).css("height", "30px").click(function (e) {
-                                showPicture(description, src + id);
-                                return false;
-                            }));
-
-                            //Then we add it in the container and we increment the iterator
-                            if (fileHeader != undefined || fileBody != undefined) {
-                                scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                    resolve([containerHeader, containerBody]);
-                                });
-                            } else {
-                                reject(e);
-                            }
-
-                        } else if (type == "text/plain") {
-                            var fileReader2 = new FileReader();
-                            fileReader2.onloadend = function (evt) {
-                                // file is loaded
-                                var result = evt.target.result;
-                                //We create the view, what to add in the header and the body
-                                fileBody = $("<div>").addClass("row").append(
-                                        $("<div>").addClass("col-sm-12").append(
-                                        $("<div class='form-group'></div>")
-                                        .append($("<label for='action'>" + description + "</label>"))
-                                        .append($("<textarea style='width:100%;' class='form-control' id='textResponse" + nowit + "'>").prop("readonly", true).val(result)
-                                                )
-                                        )
-                                        );
-                                fileHeader = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px").append(
-                                        $("<button type='button'>")
-                                        .addClass("btn btn-outline-primary")
-                                        .css("height", "30px")
-                                        .css("width", "100%")
-                                        .css("max-width", "100%")
-                                        .css("display", "inline-block")
-                                        .css("overflow", "hidden")
-                                        .css("text-overflow", "ellipsis")
-                                        .css("white-space", "nowrap")
-                                        .css("font-size", "small")
-                                        .html('<span class="glyphicon glyphicon-file text-muted" aria-hidden="true"></span><span class="text-muted">' + description + '</span>')
-                                        .click(function (e) {
-                                            showTextArea(description, result);
-                                            return false;
-                                        })
-                                        );
-                                //We take one more col
-                                it++;
-                                //Then we add it in the container and we increment the iterator
-                                if (fileHeader != undefined || fileBody != undefined) {
-                                    scope.foundFile(data, src, fileHeader, fileBody).then(function () {
-                                        resolve([containerHeader, containerBody]);
-                                    });
-                                } else {
-                                    reject(e);
-                                }
-                            };
-                            fileReader2.readAsText(blob);
-                        }
-                    };
-                    fileReader.readAsArrayBuffer(blob);
-                } else {
-                    reject(e);
-                }
-            };
-
-            xhr.send();
-        });
-    };
-
-    this.getFiles = function (data, src) {
-        return this.checkFile(data, src + "&iterator=", it);
-    };
-
-    this.getIt = function () {
-        return it;
-    };
-
-    this.foundFile = function (data, src, fileHeader, fileBody) {
-        var scope = this;
-        it++;
-        return new Promise(function (resolve, reject) {
-            scope.checkFile(data, src, it).then(function () {
-                if (fileHeader != undefined) {
-                    containerHeader.append(fileHeader);
-                }
-                if (fileBody != undefined) {
-                    containerBody.append(fileBody);
-                }
-                resolve([containerHeader, containerBody]);
-            }, function (e) {
-                if (fileHeader != undefined) {
-                    containerHeader.append(fileHeader);
-                }
-                if (fileBody != undefined) {
-                    containerBody.append(fileBody);
-                }
-                resolve([containerHeader, containerBody]);
-            });
-        });
-    };
-
-};

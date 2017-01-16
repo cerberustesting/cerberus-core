@@ -41,6 +41,7 @@ public class TestCaseExecution {
     private String build;
     private String revision;
     private String environment;
+    private String environmentData;
     private String country;
     private String browser;
     private String version;
@@ -61,15 +62,15 @@ public class TestCaseExecution {
     private String crbVersion;
     private String executor;
     private String screenSize;
-
-    /**
-     * From here are data outside database model.
-     */
     private String conditionOper;
     private String conditionVal1Init;
     private String conditionVal2Init;
     private String conditionVal1;
     private String conditionVal2;
+
+    /**
+     * From here are data outside database model.
+     */
     private Application applicationObj;
     private Invariant CountryObj;
     private Test testObj;
@@ -79,7 +80,6 @@ public class TestCaseExecution {
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private int screenshot;
     private String outputFormat;
-    private String environmentData;
     private Invariant environmentDataObj;
     private boolean manualURL;
     private String myHost;
@@ -409,6 +409,18 @@ public class TestCaseExecution {
         this.fileList = fileList;
     }
 
+    public void addFileList(TestCaseExecutionFile file) {
+        this.fileList.add(file);
+    }
+
+    public void addFileList(List<TestCaseExecutionFile> fileList) {
+        if (fileList != null) {
+            for (TestCaseExecutionFile testCaseExecutionFile : fileList) {
+                this.fileList.add(testCaseExecutionFile);
+            }
+        }
+    }
+
     public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
         return testCaseStepExecutionList;
     }
@@ -706,6 +718,7 @@ public class TestCaseExecution {
             result.put("build", this.getBuild());
             result.put("revision", this.getRevision());
             result.put("environment", this.getEnvironment());
+            result.put("environmentData", this.getEnvironmentData());
             result.put("country", this.getCountry());
             result.put("browser", this.getBrowser());
             result.put("version", this.getVersion());
@@ -727,7 +740,13 @@ public class TestCaseExecution {
             result.put("crbVersion", this.getCrbVersion());
             result.put("executor", this.getExecutor());
             result.put("screenSize", this.getScreenSize());
-            
+            result.put("conditionOper", this.getConditionOper());
+            result.put("conditionVal1Init", this.getConditionVal1Init());
+            result.put("conditionVal2Init", this.getConditionVal2Init());
+            result.put("conditionVal1", this.getConditionVal1());
+            result.put("conditionVal2", this.getConditionVal2());
+
+            // Looping on ** Step **
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepExecutionAnswerList() != null && this.getTestCaseStepExecutionAnswerList().getDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
@@ -735,12 +754,14 @@ public class TestCaseExecution {
                 }
             }
             result.put("testCaseStepExecutionList", array);
-            
+
+            // ** TestCase **
             if (this.getTestCaseObj() != null) {
                 TestCase tc = this.getTestCaseObj();
                 result.put("testCaseObj", tc.toJson());
             }
-            
+
+            // Looping on ** Execution Data **
             array = new JSONArray();
             if (this.getTestCaseExecutionDataList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
@@ -748,7 +769,8 @@ public class TestCaseExecution {
                 }
             }
             result.put("testCaseExecutionDataList", array);
-            
+
+            // Looping on ** Media File Execution **
             array = new JSONArray();
             if (this.getFileList() != null) {
                 for (Object testCaseFileExecution : this.getFileList()) {
@@ -756,7 +778,7 @@ public class TestCaseExecution {
                 }
             }
             result.put("fileList", array);
-            
+
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

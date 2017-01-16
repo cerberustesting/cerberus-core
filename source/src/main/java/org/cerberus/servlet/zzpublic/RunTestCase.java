@@ -215,6 +215,18 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
             error = true;
         }
+
+        // If execution is in queue, then we set its state to the executing state
+        if (idFromQueue > 0) {
+            try {
+                ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+                testCaseExecutionInQueueService.toExecuting(idFromQueue);
+            } catch (CerberusException e) {
+                LOG.warn("Unable to execute execution in queue due to " + e.getMessage(), e);
+                out.println("Error - The execution in queue cannot be executed. Probably because of its incompatible state value");
+                error = true;
+            }
+        }
         
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
         IParameterService parameterService = appContext.getBean(IParameterService.class);
@@ -305,10 +317,11 @@ public class RunTestCase extends HttpServlet {
                 ITestCaseExecutionService tces = appContext.getBean(ITestCaseExecutionService.class);
                 TestCase tCase = factoryTCase.create(test, testCase);
 
-                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, country, browser, version, platform, "",
+                TestCaseExecution tCExecution = factoryTCExecution.create(0, test, testCase, null, null, environment, myEnvData, country, browser, version, platform, "",
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
-                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize, capabilities);
+                        null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize, capabilities,
+                        "", "", "", "", "");
 
                 /**
                  * Set UserAgent
@@ -349,11 +362,11 @@ public class RunTestCase extends HttpServlet {
                  * information in Queue
                  */
                 try {
-                    if (tCExecution.getIdFromQueue() != 0) {
+                    if (idFromQueue != 0) {
                         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
                         if (tCExecution.getResultMessage().getCode() == mes.getCode()) { // There was an issue on the execution so we keep it in the queue and update the message.
-                            testCaseExecutionInQueueService.updateComment(tCExecution.getIdFromQueue(), tCExecution.getResultMessage().getDescription());
+                            testCaseExecutionInQueueService.toError(idFromQueue, tCExecution.getResultMessage().getDescription());
                         } else { // Execution was fine (technically) so we remove it from the queue.
                             testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
                         }
