@@ -222,7 +222,7 @@ public class RunTestCase extends HttpServlet {
                 ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                 testCaseExecutionInQueueService.toExecuting(idFromQueue);
             } catch (CerberusException e) {
-                LOG.warn("Unable to execute execution in queue due to " + e.getMessage(), e);
+                LOG.warn("Unable to execute execution " + idFromQueue + " from queue due to " + e.getMessage(), e);
                 out.println("Error - The execution in queue cannot be executed. Probably because of its incompatible state value");
                 error = true;
             }
@@ -361,18 +361,17 @@ public class RunTestCase extends HttpServlet {
                  * If execution from queue, remove it from the queue or update
                  * information in Queue
                  */
-                try {
-                    if (idFromQueue > 0) {
-                        ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-                        MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
-                        if (mes.getSource().equals(tCExecution.getResultMessage().getSource())) { // There was an issue on the execution so we keep it in the queue and update the message.
+                if (idFromQueue > 0) {
+                    ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
+                    try {
+                        if (MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.equals(tCExecution.getResultMessage().getSource())) { // There was an issue on the execution so we keep it in the queue and update the message.
                             testCaseExecutionInQueueService.toError(idFromQueue, tCExecution.getResultMessage().getDescription());
                         } else { // Execution was fine (technically) so we remove it from the queue.
-                            testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());
+                            testCaseExecutionInQueueService.remove(idFromQueue);
                         }
+                    } catch (CerberusException e) {
+                        LOG.warn("Unable to clean execution " + idFromQueue + " from queue due to " + e.getMessage(), e);
                     }
-                } catch (CerberusException ex) {
-                    LOG.error("Error while performin testcase in queue ", ex);
                 }
 
                 /**
@@ -512,6 +511,20 @@ public class RunTestCase extends HttpServlet {
             }
 
         } else {
+            /**
+             * If execution from queue, remove it from the queue or update
+             * information in Queue
+             */
+
+            if (idFromQueue > 0) {
+                try {
+                    appContext.getBean(ITestCaseExecutionInQueueService.class).remove(idFromQueue);
+                }
+                catch(CerberusException ex){
+                    LOG.error("Error while removing execution " + idFromQueue + " from queue due to " + ex.getMessage(), ex);
+                }
+            }
+
             // In case of errors, we display the help message.
             out.println(helpMessage);
         }

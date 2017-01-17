@@ -68,9 +68,9 @@ function aoColumnsFunc(tableId) {
         {"data": "browser", "sName": "browser", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col")},
         {"data": "tag", "sName": "tag", "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col")},
         {
-            "data": "proceeded",
-            "sName": "proceeded",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "processed_col")
+            "data": "state",
+            "sName": "state",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col")
         }
     ];
     return aoColumns;

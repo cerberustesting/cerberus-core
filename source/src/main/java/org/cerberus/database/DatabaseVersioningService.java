@@ -8103,6 +8103,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the new State column header on the Execution pending page
+        //-- ------------------------ 1043
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'en', 'State', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'fr', 'Etat', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -758,7 +758,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             searchSQL.append(" or exq.Environment like ?");
             searchSQL.append(" or exq.Browser like ?");
             searchSQL.append(" or exq.Tag like ?");
-            searchSQL.append(" or exq.Processed like ?)");
+            searchSQL.append(" or exq.State like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -1479,7 +1479,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             searchSQL.append(" or exq.Environment like ?");
             searchSQL.append(" or exq.Browser like ?");
             searchSQL.append(" or exq.Tag like ?");
-            searchSQL.append(" or exq.Processed like ?)");
+            searchSQL.append(" or exq.State like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
