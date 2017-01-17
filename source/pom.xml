@@ -329,6 +329,11 @@
             <scope>system</scope>
             <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/elfinder-servlet-${elfinder-servlet.version}.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

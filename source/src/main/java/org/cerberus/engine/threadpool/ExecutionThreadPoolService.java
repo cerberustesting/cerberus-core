@@ -41,6 +41,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,53 @@ import java.util.Map;
  */
 @Service
 public class ExecutionThreadPoolService implements Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
+
+    public static class ExecutionThreadPoolStats {
+
+        private String name;
+
+        private long poolSize;
+
+        private long inExecution;
+
+        private long inQueue;
+
+        public String getName() {
+            return name;
+        }
+
+        /* default */ ExecutionThreadPoolStats setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public long getPoolSize() {
+            return poolSize;
+        }
+
+        /* default */ ExecutionThreadPoolStats setPoolSize(long poolSize) {
+            this.poolSize = poolSize;
+            return this;
+        }
+
+        public long getInExecution() {
+            return inExecution;
+        }
+
+        /* default */ ExecutionThreadPoolStats setInExecution(long inExecution) {
+            this.inExecution = inExecution;
+            return this;
+        }
+
+        public long getInQueue() {
+            return inQueue;
+        }
+
+        /* default */ ExecutionThreadPoolStats setInQueue(long inQueue) {
+            this.inQueue = inQueue;
+            return this;
+        }
+    }
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
@@ -107,6 +156,25 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
                 tceiqService.toError(executionInQueue.getId(), e.getMessageError().getDescription());
             }
         }
+    }
+
+    /**
+     * Get an quasi-accurate statistics of the current execution pools
+     *
+     * @return a collection of {@link ExecutionThreadPoolStats}
+     */
+    public Collection<ExecutionThreadPoolStats> getStats() {
+        final Collection<ExecutionThreadPoolStats> stats = new ArrayList<>();
+        for (ExecutionThreadPool pool : executionPools.values()) {
+            // Quasi-accurate statistics
+            stats.add(new ExecutionThreadPoolStats()
+                    .setName(pool.getName())
+                    .setPoolSize(pool.getInExecution())
+                    .setInQueue(pool.getInQueue())
+                    .setInExecution(pool.getInExecution())
+            );
+        }
+        return stats;
     }
 
     @Override
