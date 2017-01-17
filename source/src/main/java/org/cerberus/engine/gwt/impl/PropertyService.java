@@ -192,7 +192,7 @@ public class PropertyService implements IPropertyService {
             /*
              * If not already calculated, or calculateProperty, then calculate it and insert or update it.
              */
-            if (tecd.getPropertyResultMessage().getCode() == MessageEventEnum.PROPERTY_PENDING.getCode()) {
+            if (MessageEventEnum.PROPERTY_PENDING.equals(tecd.getPropertyResultMessage().getSource())) {
                 calculateProperty(tecd, tCExecution, testCaseStepActionExecution, eachTccp, forceCalculation);
                 //saves the result 
                 try {

@@ -205,7 +205,7 @@ public class ParameterService implements IParameterService {
     @Override
     public Answer create(Parameter object) {
         Answer answer = parameterDao.create(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
             fireCreate(object.getParam(), object);
         }
         return answer;
@@ -214,7 +214,7 @@ public class ParameterService implements IParameterService {
     @Override
     public Answer update(Parameter object) {
         Answer answer = parameterDao.update(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
             fireUpdate(object.getParam(), object);
         }
         return answer;
@@ -223,7 +223,7 @@ public class ParameterService implements IParameterService {
     @Override
     public Answer delete(Parameter object) {
         Answer answer = parameterDao.delete(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getCode())) {
             fireDelete(object.getParam(), object);
         }
         return answer;
@@ -233,7 +233,7 @@ public class ParameterService implements IParameterService {
     public Answer save(Parameter object) {
         Answer finalAnswer = new Answer();
         AnswerItem resp = readByKey(object.getSystem(), object.getParam());
-        if (!resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (!MessageEventEnum.DATA_OPERATION_OK.equals(resp.getResultMessage().getSource())) {
             /**
              * Object could not be found. We stop here and report the error.
              */
