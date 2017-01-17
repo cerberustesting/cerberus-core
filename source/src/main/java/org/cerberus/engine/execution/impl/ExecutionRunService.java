@@ -461,7 +461,9 @@ public class ExecutionRunService implements IExecutionRunService {
                         }
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+                        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
                         TestCaseExecutionEndPoint.send(tCExecution, false);
+                        }
 
                         step_index++;
                     } while (execute_Next_Step && step_index <= maxloop);
@@ -584,7 +586,9 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        TestCaseExecutionEndPoint.send(tCExecution, true);
+        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.send(tCExecution, true);
+        }
 
         return tCExecution;
     }
@@ -716,7 +720,9 @@ public class ExecutionRunService implements IExecutionRunService {
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        TestCaseExecutionEndPoint.send(tcExecution, false);
+        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.send(tcExecution, false);
+        }
 
         return testCaseStepExecution;
     }
@@ -862,14 +868,18 @@ public class ExecutionRunService implements IExecutionRunService {
                 MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-                TestCaseExecutionEndPoint.send(tcExecution, false);
+                if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+                    TestCaseExecutionEndPoint.send(tcExecution, false);
+                }
 
             }
 
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        TestCaseExecutionEndPoint.send(tcExecution, false);
+        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.send(tcExecution, false);
+        }
 
         return testCaseStepActionExecution;
 
@@ -891,7 +901,9 @@ public class ExecutionRunService implements IExecutionRunService {
         MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Registered Control");
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        TestCaseExecutionEndPoint.send(tcExecution, false);
+        if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.send(tcExecution, false);
+        }
 
         return testCaseStepActionControlExecution;
     }
@@ -914,7 +926,9 @@ public class ExecutionRunService implements IExecutionRunService {
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
-        TestCaseExecutionEndPoint.send(tCExecution, false);
+        if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+            TestCaseExecutionEndPoint.send(tCExecution, false);
+        }
 
         return tCExecution;
     }
