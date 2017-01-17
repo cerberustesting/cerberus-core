@@ -104,8 +104,7 @@
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(tceiq.getScreenshot()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(tceiq.getVerbose()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, tceiq.getTimeout());
-                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, tceiq.isSynchroneous() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE
-                                    : ParameterParserUtil.DEFAULT_BOOLEAN_FALSE_VALUE);
+                            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(tceiq.getPageSource()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(tceiq.getSeleniumLog()));
                             paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, request.getParameter("queuedExecution"));

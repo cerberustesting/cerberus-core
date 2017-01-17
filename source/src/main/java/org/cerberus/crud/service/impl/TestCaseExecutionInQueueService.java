@@ -19,9 +19,6 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.List;
-import java.util.Map;
-import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCase;
@@ -29,13 +26,14 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default {@link ITestCaseExecutionInQueueService} implementation
@@ -47,24 +45,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
 
     @Autowired
     private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
-    @Autowired
-    private ITestCaseCountryDAO testCaseCountryDAO;
+
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
-
-    @Override
-    public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
-        try {
-            testCaseCountryDAO.findTestCaseCountryByKey(inQueue.getTest(), inQueue.getTestCase(), inQueue.getCountry());
-            return true;
-        } catch (CerberusException ce) {
-            MessageGeneral messageGeneral = ce.getMessageError();
-            if (messageGeneral == null || messageGeneral.getCode() != MessageGeneralEnum.NO_DATA_FOUND.getCode()) {
-                throw ce;
-            }
-            return false;
-        }
-    }
 
     @Override
     public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
