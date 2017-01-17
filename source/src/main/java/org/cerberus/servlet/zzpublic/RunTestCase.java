@@ -365,7 +365,7 @@ public class RunTestCase extends HttpServlet {
                     if (idFromQueue != 0) {
                         ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                         MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
-                        if (tCExecution.getResultMessage().getCode() == mes.getCode()) { // There was an issue on the execution so we keep it in the queue and update the message.
+                        if (mes.getSource().equals(tCExecution.getResultMessage().getSource())) { // There was an issue on the execution so we keep it in the queue and update the message.
                             testCaseExecutionInQueueService.toError(idFromQueue, tCExecution.getResultMessage().getDescription());
                         } else { // Execution was fine (technically) so we remove it from the queue.
                             testCaseExecutionInQueueService.remove(tCExecution.getIdFromQueue());

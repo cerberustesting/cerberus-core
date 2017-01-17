@@ -52,6 +52,8 @@ public class MessageEvent {
     private boolean doScreenshot;
     private boolean getPageSource;
     private MessageGeneralEnum message;
+    
+    private MessageEventEnum source;
 
     public MessageEvent(MessageEventEnum tempMessage) {
         this.code = tempMessage.getCode();
@@ -61,6 +63,7 @@ public class MessageEvent {
         this.doScreenshot = tempMessage.isDoScreenshot();
         this.message = tempMessage.getMessage();
         this.getPageSource = tempMessage.isGetPageSource();
+        this.source = tempMessage;
     }
 
     public MessageEvent(MessageEventEnum tempMessage, boolean pageSource, boolean doScreenshot) {
@@ -71,6 +74,7 @@ public class MessageEvent {
         this.doScreenshot = doScreenshot;
         this.message = tempMessage.getMessage();
         this.getPageSource = pageSource;
+        this.source = tempMessage;
     }
 
     public int getCode() {
@@ -119,6 +123,10 @@ public class MessageEvent {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public MessageEventEnum getSource() {
+        return source;
     }
 
     @Override

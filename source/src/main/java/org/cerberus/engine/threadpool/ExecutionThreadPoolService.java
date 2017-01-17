@@ -221,7 +221,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     private int getPoolSize(CountryEnvironmentParameters.Key key) {
         AnswerItem<Integer> poolSize = countryEnvironmentParametersService.readPoolSizeByKey(key.getSystem(), key.getCountry(), key.getEnvironment(), key.getApplication());
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == poolSize.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(poolSize.getResultMessage().getSource())) {
             return poolSize.getItem();
         } else {
             LOG.warn("Unable to get pool size from " + key + ". Get default");
