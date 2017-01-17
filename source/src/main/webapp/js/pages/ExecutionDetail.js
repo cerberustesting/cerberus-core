@@ -193,10 +193,10 @@ function updatePage(data, stepList) {
         window.location = "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag;
     });
     $("#lastExecution").click(function () {
-        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase;
+        window.location = "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase;
     });
     $("#lastExecutionwithEnvCountry").click(function () {
-        window.location = "ExecutionDetailList.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&systemFlt=&application=" + data.application;
+        window.location = "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application;
     });
 
     var configPanel = $("#testCaseConfig");

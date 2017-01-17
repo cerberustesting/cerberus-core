@@ -73,7 +73,6 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp" style="width:190px">Test Data Lib</a></li>
-                    <li id="subactive"><a id="menuTestData" href="TestData.jsp" style="width:190px">Test Data<input type="button" class="btn btn-danger btn-small active" value="Deprecated" style="padding: 0px; margin-left: 5px; color: red"></a></li>
                 </ul>
             </li>
             <% }%>
@@ -92,10 +91,8 @@
             <li id="active"><a id="menuExecutionReporting" name="menu" href="#" style="width:170px">Execution Reporting
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
-                    <li id="subactive"><a name="menu" id="menuReportingExecutionDetail" href="ExecutionDetailList.jsp" style="width:200px">Execution Detail</a></li>
+                    <li id="subactive"><a name="menu" id="menuReportingExecution" href="TestCaseExecution.jsp" style="width:200px">Execution List</a></li>
                     <li id="subactive"><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp" style="width:200px">Execution Report By Tag</a></li>
-                    <li id="subactive"><a name="menu" id="menuReportingExecutionStatus" href="ReportingExecution.jsp" style="width:200px">Execution Status</a></li>
-                    <li id="subactive"><a id="menuReportingExecutionStatusBeta" href="ReportingExecution1.jsp" style="width:200px">Execution Status<input type="button" class="btn btn-danger btn-small active" value="Beta" style="padding: 0px; margin-left: 5px; color: orange"></a></li>
                     <li id="subactive"><a name="menu" id="menuExecutionPerBuildRevision" href="ExecutionPerBuildRevision" style="width:200px">Execution Per Build/Rev</a></li>
                 </ul>
             </li>

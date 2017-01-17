@@ -44,7 +44,7 @@ function initPage() {
         api.search(searchString).draw();
     }
     
-    var allowedColumns = new Array("test","testcase","application");
+    var allowedColumns = new Array("test","testcase","application","country","environment");
     applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns);
 }
 
@@ -71,24 +71,36 @@ function aoColumnsFunc() {
     var doc = new Doc();
 
     var aoColumns = [
-        {"data": null,
-            "title": doc.getDocLabel("page_global", "columnAction"),
-            "bSortable": false,
-            "bSearchable": false,
+        {
+            "data": null,
+            "sName": "exe.controlStatus",
+            "title": doc.getDocOnline("testcaseexecution", "controlStatus"),
+            "sWidth": "100px",
+            "sDefaultContent": "",
+            "sClass": "center",
             "mRender": function (data, type, obj) {
-                var editEntry = '<button id="editEntry" onclick="editEntryClick(\'' + obj["LogEventID"] + '\');"\n\
-                                class="editEntry btn btn-default btn-xs margin-right5" \n\
-                                name="editEntry" title="' + doc.getDocLabel("page_logviewer", "button_view") + '" type="button">\n\
-                                <span class="glyphicon glyphicon-eye-open"></span></button>';
-
-                return '<div class="center btn-group">' + editEntry + '</div>';
+                console.log(obj);
+                if (obj !== "") {
+                    var executionLink = "./ExecutionDetail2.jsp?executionId=" + obj.id;
+                    var glyphClass = getRowClass(obj.controlStatus);
+                    var tooltip = generateTooltip(obj);
+                    var cell = '<div class="progress-bar status' + obj.controlStatus + '" \n\
+                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
+                                data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
+                                onclick="window.open(\'' + executionLink + '\')">\n\
+                                <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
+                                 <span>' + obj.controlStatus + '<span></div>';
+                    return cell;
+                } else {
+                    return obj;
+                }
             }
         },
         {
             "data": "id",
             "sName": "exe.id",
-            "title": doc.getDocOnline("testcaseexecution", "id"),
-            "sWidth": "100px",
+            "title": doc.getDocOnline("testcaseexecution", "Id"),
+            "sWidth": "120px",
             "sDefaultContent": ""
         },
         {
@@ -183,13 +195,6 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "controlStatus",
-            "sName": "exe.controlstatus",
-            "title": doc.getDocOnline("testcaseexecution", "ControlStatus"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
             "data": "controlMessage",
             "sName": "exe.controlmessage",
             "title": doc.getDocOnline("testcaseexecution", "ControlMessage"),
@@ -270,3 +275,49 @@ function aoColumnsFunc() {
     return aoColumns;
 }
 
+
+/**
+ * Duplicated from reportbytag >> TO CLEAN
+ */
+function getRowClass(status) {
+    var rowClass = [];
+
+    rowClass["panel"] = "panel" + status;
+    if (status === "OK") {
+        rowClass["glyph"] = "glyphicon glyphicon-ok";
+    } else if (status === "KO") {
+        rowClass["glyph"] = "glyphicon glyphicon-remove";
+    } else if (status === "FA") {
+        rowClass["glyph"] = "fa fa-bug";
+    } else if (status === "CA") {
+        rowClass["glyph"] = "fa fa-life-ring";
+    } else if (status === "PE") {
+        rowClass["glyph"] = "fa fa-hourglass-half";
+    } else if (status === "NE") {
+        rowClass["glyph"] = "fa fa-clock-o";
+    } else if (status === "NA") {
+        rowClass["glyph"] = "fa fa-question";
+    } else {
+        rowClass["glyph"] = "";
+    }
+    return rowClass;
+}
+
+/**
+ * DUPLICATED FROM REPORTBYTAG >>> TO REMOVE
+ * @param {type} data
+ * @returns {String}
+ */
+function generateTooltip(data) {
+    var htmlRes;
+
+    htmlRes = '<div><span class=\'bold\'>Execution ID :</span> ' + data.id + '</div>' +
+            '<div><span class=\'bold\'>Country : </span>' + data.country + '</div>' +
+            '<div><span class=\'bold\'>Environment : </span>' + data.environment + '</div>' +
+            '<div><span class=\'bold\'>Browser : </span>' + data.browser + '</div>' +
+            '<div><span class=\'bold\'>Start : </span>' + new Date(data.start) + '</div>' +
+            '<div><span class=\'bold\'>End : </span>' + new Date(data.end) + '</div>' +
+            '<div>' + data.controlMessage + '</div>';
+
+    return htmlRes;
+}
