@@ -119,6 +119,20 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
+    /**
+     * The string format when displaying generated name.
+     * <p>
+     * Values are:
+     * <ol>
+     * <li>{@link CountryEnvironmentParameters.Key#getApplication()}</li>
+     * <li>{@link CountryEnvironmentParameters.Key#getCountry()}</li>
+     * <li>{@link CountryEnvironmentParameters.Key#getEnvironment()}</li>
+     * </ol>
+     *
+     * @see #generateName(CountryEnvironmentParameters.Key)
+     */
+    private static final String EXECUTION_POOL_NAME_FORMAT = "%s-%s-%s";
+
     private static ParamRequestMaker makeParamRequest(TestCaseExecutionInQueue lastInQueue) {
         ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
         paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, lastInQueue.getTest());
@@ -242,6 +256,10 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         countryEnvironmentParametersService.unregister(this);
     }
 
+    private String generateName(CountryEnvironmentParameters.Key key) {
+        return String.format(EXECUTION_POOL_NAME_FORMAT, key.getApplication(), key.getCountry(), key.getEnvironment());
+    }
+
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
         try {
             ExecutionThreadPool executionPool = getOrCreateExecutionPool(getKey(toExecute));
@@ -269,7 +287,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
             synchronized (executionPools) {
                 executionPool = executionPools.get(key);
                 if (executionPool == null) {
-                    executionPool = new ExecutionThreadPool(key, getPoolSize(key));
+                    executionPool = new ExecutionThreadPool(generateName(key), getPoolSize(key));
                     executionPools.put(key, executionPool);
                     registerTo(key);
                 }
