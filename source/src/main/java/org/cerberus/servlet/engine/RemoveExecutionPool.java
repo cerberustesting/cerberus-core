@@ -19,8 +19,8 @@ import java.io.IOException;
 /**
  * Created by aurel on 18/01/2017.
  */
-@WebServlet(name = "StopExecutionPool", urlPatterns = {"/StopExecutionPool"})
-public class StopExecutionPool extends HttpServlet {
+@WebServlet(name = "RemoveExecutionPool", urlPatterns = {"/RemoveExecutionPool"})
+public class RemoveExecutionPool extends HttpServlet {
 
     private static final String CONTENT_TYPE = "application/json";
     private static final String CHARACTER_ENCODING = "UTF-8";
