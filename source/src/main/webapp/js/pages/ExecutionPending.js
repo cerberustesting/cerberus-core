@@ -29,6 +29,8 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
+    
+    drawQueueInformation();
 }
 
 function displayPageLabel() {
@@ -74,4 +76,99 @@ function aoColumnsFunc(tableId) {
         }
     ];
     return aoColumns;
+}
+
+function drawQueueInformation(){
+    
+    var jqxhr = $.get("ReadExecutionPools");
+    $.when(jqxhr).then(function (data) {
+        //var messageType = getAlertType(data.messageType);
+        //if (messageType === "success") {
+            //redraw the datatable
+            for (var inc=0; inc<data.length; inc++){
+        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].inQueue);
+    }
+        //}
+        //show message in the main page
+        //showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        //$('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * Generate Pie generate a pie chart and append it to the defined element.
+ * @param {type} elementid : ID of the div where the pie will be included
+ * @param {type} name : Name of the queue
+ * @param {type} poolSize : Size of the Pool
+ * @param {type} inExecution : Number of current execution
+ * @param {type} inQueue : Number if total execution in queue
+ * @returns {undefined}
+ */
+function generatePie(elementid, name, poolSize, inExecution, inQueue) {
+
+    /**
+     * Generate data object which is an array of 2 objects that contains 
+     * attributes value and color
+     */
+    var data = [{"color": "#3498DB", "value": inExecution},
+        {"color": "#eee", "value": poolSize - inExecution}];
+
+    var margin = {top: 20, right: 25, bottom: 20, left: 50};
+    offsetW = 220;
+    offsetH = 220;
+
+
+    var width = offsetW - margin.left - margin.right;
+    var height = offsetH - margin.top - margin.bottom;
+    var radius = Math.min(width, height) / 2;
+
+    var svg = d3.select('#' + elementid)
+            .append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
+
+    var arc = d3.svg.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(radius - 20);
+
+    var pie = d3.layout.pie()
+            .value(function (d) {
+                return d.value;
+            })
+            .sort(null);
+
+    svg.append("text")
+            .attr("dy", "-0.5em")
+            .style("text-anchor", "middle")
+            .attr("class", "inside")
+            .text(function (d) {
+                return inExecution + '/' + poolSize;
+            });
+    svg.append("text")
+            .attr("dy", "0.5em")
+            .style("text-anchor", "middle")
+            .attr("class", "data")
+            .text(function (d) {
+                return name;
+            });
+    svg.append("svg:foreignObject")
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("y", "17px")
+            .attr("x", "-17px")
+            .text(inQueue + "  ")
+            .append("xhtml:span")
+            .attr("class", "control glyphicon glyphicon-list-alt")
+            ;
+    var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d, i) {
+                return d.data.color;
+            });
 }

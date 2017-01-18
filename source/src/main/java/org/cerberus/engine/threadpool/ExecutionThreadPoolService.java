@@ -169,7 +169,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
             // Quasi-accurate statistics
             stats.add(new ExecutionThreadPoolStats()
                     .setName(pool.getName())
-                    .setPoolSize(pool.getInExecution())
+                    .setPoolSize(pool.getPoolSize())
                     .setInQueue(pool.getInQueue())
                     .setInExecution(pool.getInExecution())
             );

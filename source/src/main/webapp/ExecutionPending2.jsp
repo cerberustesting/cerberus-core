@@ -24,7 +24,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/dependenciesInclusions.html" %>
     <title>Execution in Queue</title>
+    <link rel="stylesheet" type="text/css" href="css/pages/ExecutionPending.css"/>
+    <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
+    <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
     <script type="text/javascript" src="js/pages/ExecutionPending.js"></script>
+    
 </head>
 <body>
 <%@ include file="include/header.html" %>
@@ -33,6 +37,7 @@
     <%@ include file="include/utils/modal-confirmation.html"%>
 
     <h1 class="page-title-line" id="title">Execution in Queue</h1>
+    <div id="statusChart"></div>
     <div class="panel panel-default">
         <div class="panel-heading" id="executionListLabel">
             <span class="glyphicon glyphicon-list"></span>
