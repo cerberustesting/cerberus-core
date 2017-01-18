@@ -63,6 +63,8 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         private long inQueue;
 
+        private long remaining;
+
         public String getName() {
             return name;
         }
@@ -87,6 +89,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         /* default */ ExecutionThreadPoolStats setInExecution(long inExecution) {
             this.inExecution = inExecution;
+            computeRemaining();
             return this;
         }
 
@@ -96,11 +99,39 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         /* default */ ExecutionThreadPoolStats setInQueue(long inQueue) {
             this.inQueue = inQueue;
+            computeRemaining();
             return this;
         }
+
+        public long getRemaining() {
+            return remaining;
+        }
+
+        private void setRemaining(long remaining) {
+            this.remaining = remaining;
+        }
+
+        private void computeRemaining() {
+            setRemaining(getInQueue() - getInExecution());
+        }
+
     }
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
+
+    /**
+     * The string format when displaying generated name.
+     * <p>
+     * Values are:
+     * <ol>
+     * <li>{@link CountryEnvironmentParameters.Key#getApplication()}</li>
+     * <li>{@link CountryEnvironmentParameters.Key#getCountry()}</li>
+     * <li>{@link CountryEnvironmentParameters.Key#getEnvironment()}</li>
+     * </ol>
+     *
+     * @see #generateName(CountryEnvironmentParameters.Key)
+     */
+    private static final String EXECUTION_POOL_NAME_FORMAT = "%s-%s-%s";
 
     private static ParamRequestMaker makeParamRequest(TestCaseExecutionInQueue lastInQueue) {
         ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
@@ -225,6 +256,10 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         countryEnvironmentParametersService.unregister(this);
     }
 
+    private String generateName(CountryEnvironmentParameters.Key key) {
+        return String.format(EXECUTION_POOL_NAME_FORMAT, key.getApplication(), key.getCountry(), key.getEnvironment());
+    }
+
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
         try {
             ExecutionThreadPool executionPool = getOrCreateExecutionPool(getKey(toExecute));
@@ -252,7 +287,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
             synchronized (executionPools) {
                 executionPool = executionPools.get(key);
                 if (executionPool == null) {
-                    executionPool = new ExecutionThreadPool(key, getPoolSize(key));
+                    executionPool = new ExecutionThreadPool(generateName(key), getPoolSize(key));
                     executionPools.put(key, executionPool);
                     registerTo(key);
                 }
@@ -278,12 +313,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     private CountryEnvironmentParameters.Key getKey(TestCaseExecutionInQueue inQueue) throws CerberusException {
-        TestCaseExecutionInQueue completeInQueue = tceiqService.findByKeyWithDependencies(inQueue.getId());
         return new CountryEnvironmentParameters.Key(
-                completeInQueue.getApplicationObj().getSystem(),
-                completeInQueue.getApplicationObj().getApplication(),
-                completeInQueue.getCountry(),
-                completeInQueue.getEnvironment()
+                inQueue.getApplicationObj().getSystem(),
+                inQueue.getApplicationObj().getApplication(),
+                inQueue.getCountry(),
+                inQueue.getEnvironment()
         );
     }
 

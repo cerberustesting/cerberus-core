@@ -19,47 +19,21 @@
  */
 package org.cerberus.engine.entity;
 
-import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.entity.Parameter;
-import org.cerberus.util.observe.Observer;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The execution thread pool to control Test Cases executions
+ * The execution thread pool to control Test Cases executions.
+ *
+ * Internally, this execution thread pool works as a size-settable {@link ThreadPoolExecutor}
  *
  * @author bcivel
  * @author abourdon
  */
 public class ExecutionThreadPool {
-
-    /**
-     * The associated {@link Logger} to this class
-     */
-    private static final Logger LOGGER = Logger.getLogger(ExecutionThreadPool.class);
-
-    /**
-     * The string format when displaying generated name.
-     * <p>
-     * Values are:
-     * <ol>
-     * <li>{@link CountryEnvironmentParameters.Key#getSystem()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getApplication()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getCountry()}</li>
-     * <li>{@link CountryEnvironmentParameters.Key#getEnvironment()}</li>
-     * </ol>
-     *
-     * @see #getName()
-     */
-    private static final String NAME_DISPLAY_FORMAT = "%s-%s-%s-%s";
-
-    /**
-     * The associated {@link CountryEnvironmentParameters.Key} of this {@link ExecutionThreadPool}
-     */
-    private CountryEnvironmentParameters.Key key;
 
     /**
      * The associated name of this {@link ExecutionThreadPool}
@@ -77,39 +51,27 @@ public class ExecutionThreadPool {
     /**
      * Create a new {@link ExecutionThreadPool} based on the given {@link CountryEnvironmentParameters.Key} and initial pool size
      *
-     * @param key         the associated {@link CountryEnvironmentParameters.Key} to this {@link ExecutionThreadPool}
+     * @param name        the {@link ExecutionThreadPool} name
      * @param initialSize the initial pool size of this {@link ExecutionThreadPool}
      */
-    public ExecutionThreadPool(CountryEnvironmentParameters.Key key, int initialSize) {
-        this.key = key;
+    public ExecutionThreadPool(String name, int initialSize) {
+        setName(name);
         initExecutor(initialSize);
     }
 
     /**
-     * Get the {@link CountryEnvironmentParameters.Key} of this {@link ExecutionThreadPool}
-     *
-     * @return the {@link CountryEnvironmentParameters.Key} of this {@link ExecutionThreadPool}
-     */
-    public CountryEnvironmentParameters.Key getKey() {
-        return key;
-    }
-
-    /**
-     * Get the name of this {@link ExecutionThreadPool}. If not already set, then get a generated string from its {@link #getKey()}, based on the {@link #NAME_DISPLAY_FORMAT}.
+     * Get the name of this {@link ExecutionThreadPool}.
      *
      * @return the name of this {@link ExecutionThreadPool}
      */
     public String getName() {
-        return name == null
-                ? String.format(NAME_DISPLAY_FORMAT, key.getSystem(), key.getApplication(), key.getCountry(), key.getEnvironment())
-                : name;
+        return name;
     }
 
     /**
-     * Set a name for this {@link ExecutionThreadPool}. A <code>null</code> name will cause {@link #getName()} to return generated name.
+     * Set a name for this {@link ExecutionThreadPool}.
      *
-     * @param name the name of this {@link ExecutionThreadPool}, or <code>null</code> if name has to be generated
-     * @see #getName()
+     * @param name the name of this {@link ExecutionThreadPool}
      */
     public void setName(String name) {
         this.name = name;

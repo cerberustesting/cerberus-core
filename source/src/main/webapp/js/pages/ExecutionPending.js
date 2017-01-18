@@ -86,7 +86,7 @@ function drawQueueInformation(){
         //if (messageType === "success") {
             //redraw the datatable
             for (var inc=0; inc<data.length; inc++){
-        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].inQueue);
+        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
     }
         //}
         //show message in the main page
@@ -102,10 +102,10 @@ function drawQueueInformation(){
  * @param {type} name : Name of the queue
  * @param {type} poolSize : Size of the Pool
  * @param {type} inExecution : Number of current execution
- * @param {type} inQueue : Number if total execution in queue
+ * @param {type} remaining : Number remaining executions in queue
  * @returns {undefined}
  */
-function generatePie(elementid, name, poolSize, inExecution, inQueue) {
+function generatePie(elementid, name, poolSize, inExecution, remaining) {
 
     /**
      * Generate data object which is an array of 2 objects that contains 
@@ -114,25 +114,22 @@ function generatePie(elementid, name, poolSize, inExecution, inQueue) {
     var data = [{"color": "#3498DB", "value": inExecution},
         {"color": "#eee", "value": poolSize - inExecution}];
 
-    var margin = {top: 20, right: 25, bottom: 20, left: 50};
-    offsetW = 220;
-    offsetH = 220;
+    var margin = 50;
 
-
-    var width = offsetW - margin.left - margin.right;
-    var height = offsetH - margin.top - margin.bottom;
+    var width = 130;
+    var height = 130;
     var radius = Math.min(width, height) / 2;
 
     var svg = d3.select('#' + elementid)
             .append('svg')
-            .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom)
+            .attr('width', width + margin)
+            .attr('height', height + margin)
             .append('g')
-            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')')
+            .attr('transform', 'translate(' + ((width + margin) / 2) + ',' + ((height + margin) / 2) + ')')
 
     var arc = d3.svg.arc()
-            .outerRadius(radius - 10)
-            .innerRadius(radius - 20);
+            .outerRadius(radius)
+            .innerRadius(radius - 10);
 
     var pie = d3.layout.pie()
             .value(function (d) {
@@ -141,28 +138,29 @@ function generatePie(elementid, name, poolSize, inExecution, inQueue) {
             .sort(null);
 
     svg.append("text")
-            .attr("dy", "-0.5em")
+            .attr("dy", "-8em")
             .style("text-anchor", "middle")
-            .attr("class", "inside")
-            .text(function (d) {
-                return inExecution + '/' + poolSize;
-            });
-    svg.append("text")
-            .attr("dy", "0.5em")
-            .style("text-anchor", "middle")
-            .attr("class", "data")
+            .attr("class", "name")
             .text(function (d) {
                 return name;
             });
-    svg.append("svg:foreignObject")
-            .attr("width", 30)
-            .attr("height", 30)
-            .attr("y", "17px")
-            .attr("x", "-17px")
-            .text(inQueue + "  ")
-            .append("xhtml:span")
-            .attr("class", "control glyphicon glyphicon-list-alt")
-            ;
+    svg.append("text")
+            .style("text-anchor", "middle")
+            .attr("dy", "+0.2em")
+            .attr("class", "count")
+            .text(function (d) {
+                return inExecution + '/' + poolSize;
+            });
+    if (remaining > 0) {
+        svg.append("text")
+            .attr("dy", "+1.9em")
+            .style("text-anchor", "middle")
+            .attr("class", "remaining")
+            .text(function (d) {
+                return '(+ ' + remaining + ')';
+            });
+    }
+
     var path = svg.selectAll('path')
             .data(pie(data))
             .enter()
