@@ -86,7 +86,7 @@ function drawQueueInformation(){
         //if (messageType === "success") {
             //redraw the datatable
             for (var inc=0; inc<data.length; inc++){
-        generatePie("statusChart", data[inc].key, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
+        generatePie("statusChart", data[inc].id, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
     }
         //}
         //show message in the main page
@@ -105,7 +105,7 @@ function drawQueueInformation(){
  * @param {type} remaining : Number remaining executions in queue
  * @returns {undefined}
  */
-function generatePie(elementid, key, poolSize, inExecution, remaining) {
+function generatePie(elementid, id, poolSize, inExecution, remaining) {
 
     /**
      * Generate data object which is an array of 2 objects that contains 
@@ -142,14 +142,14 @@ function generatePie(elementid, key, poolSize, inExecution, remaining) {
             .style("text-anchor", "middle")
             .attr("class", "primary-name")
             .text(function (d) {
-                return key.application;
+                return id.application;
             });
     svg.append("text")
         .attr("dy", "-7.2em")
         .style("text-anchor", "middle")
         .attr("class", "secondary-name")
         .text(function (d) {
-            return '('  + key.country + ' - ' + key.environment + ')';
+            return '('  + id.country + ' - ' + id.environment + ')';
         });
     svg.append("text")
             .style("text-anchor", "middle")

@@ -21,6 +21,7 @@ package org.cerberus.crud.service.impl;
 
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;

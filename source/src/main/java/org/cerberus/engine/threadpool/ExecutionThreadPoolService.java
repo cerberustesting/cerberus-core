@@ -56,7 +56,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     public static class ExecutionThreadPoolStats {
 
-        private CountryEnvironmentParameters.Key key;
+        private CountryEnvironmentParameters.Key id;
 
         private long poolSize;
 
@@ -66,12 +66,12 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         private long remaining;
 
-        public CountryEnvironmentParameters.Key getKey() {
-            return key;
+        public CountryEnvironmentParameters.Key getId() {
+            return id;
         }
 
-        /* default */ ExecutionThreadPoolStats setKey(CountryEnvironmentParameters.Key key) {
-            this.key = key;
+        /* default */ ExecutionThreadPoolStats setId(CountryEnvironmentParameters.Key id) {
+            this.id = id;
             return this;
         }
 
@@ -201,13 +201,26 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool> pool : executionPools.entrySet()) {
             // Quasi-accurate statistics
             stats.add(new ExecutionThreadPoolStats()
-                    .setKey(pool.getKey())
+                    .setId(pool.getKey())
                     .setPoolSize(pool.getValue().getPoolSize())
                     .setInQueue(pool.getValue().getInQueue())
                     .setInExecution(pool.getValue().getInExecution())
             );
         }
         return stats;
+    }
+
+    public void stopExecutionThreadPool(CountryEnvironmentParameters.Key key) {
+        ExecutionThreadPool associatedPool = getExecutionPool(key);
+        if (associatedPool == null) {
+            return;
+        }
+
+        synchronized (executionPools) {
+            associatedPool.stop();
+            executionPools.remove(key);
+        }
+        // TODO remove executions from database
     }
 
     @Override
