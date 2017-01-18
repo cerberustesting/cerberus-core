@@ -179,7 +179,7 @@ public class RunManualTest extends HttpServlet {
             }
 
         } catch (CerberusException e) {
-            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());
+            MyLogger.log(RunManualTest.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             resp.setContentType("text/html");
             resp.getWriter().print(e.getMessageError().getDescription());

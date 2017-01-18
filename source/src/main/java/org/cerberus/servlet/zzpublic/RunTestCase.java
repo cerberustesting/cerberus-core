@@ -122,7 +122,7 @@ public class RunTestCase extends HttpServlet {
         boolean synchroneous = true;
         int getPageSource = 0;
         int getSeleniumLog = 0;
-        String manualExecution = "";
+        boolean manualExecution = false;
         List<RobotCapability> capabilities = null;
 
         //Test
@@ -149,7 +149,7 @@ public class RunTestCase extends HttpServlet {
         synchroneous = ParameterParserUtil.parseBooleanParam(request.getParameter("synchroneous"), true);
         getPageSource = ParameterParserUtil.parseIntegerParam(request.getParameter("pageSource"), 1);
         getSeleniumLog = ParameterParserUtil.parseIntegerParam(request.getParameter("seleniumLog"), 1);
-        manualExecution = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("manualExecution"), "N");
+        manualExecution = ParameterParserUtil.parseBooleanParam(request.getParameter("manualExecution"), false);
         long idFromQueue = ParameterParserUtil.parseIntegerParam(request.getParameter("IdFromQueue"), 0);
         int numberOfRetries = ParameterParserUtil.parseIntegerParam(request.getParameter("retries"), 0);
         screenSize = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("screenSize"), "");
@@ -321,8 +321,8 @@ public class RunTestCase extends HttpServlet {
                         0, 0, "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), "Selenium", numberOfRetries, screenSize, capabilities,
-                        "", "", "", "", "");
-
+                        "", "", "", "", "", manualExecution);
+                
                 /**
                  * Set UserAgent
                  */

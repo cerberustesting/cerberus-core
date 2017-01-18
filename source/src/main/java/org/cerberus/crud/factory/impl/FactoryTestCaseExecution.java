@@ -48,7 +48,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
-            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2) {
+            String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, boolean manualExecution) {
         TestCaseExecution newTce = new TestCaseExecution();
         newTce.setApplicationObj(application);
         newTce.setBrowser(browser);
@@ -103,6 +103,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setConditionVal1Init(conditionVal1Init);
         newTce.setConditionVal2(conditionVal2);
         newTce.setConditionVal2Init(conditionVal2Init);
+        newTce.setManualExecution(manualExecution);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         newTce.setFileList(objectFileList);

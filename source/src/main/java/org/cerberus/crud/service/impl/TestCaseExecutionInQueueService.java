@@ -189,6 +189,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String outputFormat = testCaseExecutionInQueue.getOutputFormat();
         TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
         boolean manualURL = testCaseExecutionInQueue.isManualURL();
+        boolean manualExecution = testCaseExecutionInQueue.isManualExecution();
         String myHost = testCaseExecutionInQueue.getManualHost();
         String myContextRoot = testCaseExecutionInQueue.getManualContextRoot();
         String myLoginRelativeURL = testCaseExecutionInQueue.getManualLoginRelativeURL();
@@ -198,7 +199,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "", manualExecution);
         result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());

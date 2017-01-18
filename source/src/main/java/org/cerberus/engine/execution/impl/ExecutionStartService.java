@@ -352,11 +352,6 @@ public class ExecutionStartService implements IExecutionStartService {
         }
 
         /**
-         * What is that for ???
-         */
-        tCExecution.setManualExecution("N");
-
-        /**
          * Check if test can be executed TODO : Replace Message with try/catch
          * cerberus exception
          */

@@ -67,6 +67,7 @@ public class TestCaseExecution {
     private String conditionVal2Init;
     private String conditionVal1;
     private String conditionVal2;
+    private boolean manualExecution;
 
     /**
      * From here are data outside database model.
@@ -97,7 +98,6 @@ public class TestCaseExecution {
     private Integer pageSource;
     private Integer seleniumLog;
     private Session session;
-    private String manualExecution;
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     private long idFromQueue;
     private Integer numberOfRetries;
@@ -237,11 +237,11 @@ public class TestCaseExecution {
         this.testCaseCountryPropertyList = testCaseCountryPropertyList;
     }
 
-    public String getManualExecution() {
+    public boolean isManualExecution() {
         return manualExecution;
     }
 
-    public void setManualExecution(String manualExecution) {
+    public void setManualExecution(boolean manualExecution) {
         this.manualExecution = manualExecution;
     }
 
