@@ -8111,7 +8111,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'fr', 'Etat', '');");
         SQLInstruction.add(SQLS.toString());
         
-        // Add the new State column header on the Execution pending page
+        // Add the new ManualExecution column header on the Execution pending page
         //-- ------------------------ 1044
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecution`"); 
