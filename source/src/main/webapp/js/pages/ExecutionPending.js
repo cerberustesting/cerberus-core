@@ -86,7 +86,7 @@ function drawQueueInformation(){
         //if (messageType === "success") {
             //redraw the datatable
             for (var inc=0; inc<data.length; inc++){
-        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].inQueue);
+        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
     }
         //}
         //show message in the main page
@@ -102,10 +102,10 @@ function drawQueueInformation(){
  * @param {type} name : Name of the queue
  * @param {type} poolSize : Size of the Pool
  * @param {type} inExecution : Number of current execution
- * @param {type} inQueue : Number if total execution in queue
+ * @param {type} remaining : Number remaining executions in queue
  * @returns {undefined}
  */
-function generatePie(elementid, name, poolSize, inExecution, inQueue) {
+function generatePie(elementid, name, poolSize, inExecution, remaining) {
 
     /**
      * Generate data object which is an array of 2 objects that contains 
@@ -143,26 +143,27 @@ function generatePie(elementid, name, poolSize, inExecution, inQueue) {
     svg.append("text")
             .attr("dy", "-0.5em")
             .style("text-anchor", "middle")
-            .attr("class", "inside")
-            .text(function (d) {
-                return inExecution + '/' + poolSize;
-            });
-    svg.append("text")
-            .attr("dy", "0.5em")
-            .style("text-anchor", "middle")
-            .attr("class", "data")
+            .attr("class", "name")
             .text(function (d) {
                 return name;
             });
-    svg.append("svg:foreignObject")
-            .attr("width", 30)
-            .attr("height", 30)
-            .attr("y", "17px")
-            .attr("x", "-17px")
-            .text(inQueue + "  ")
-            .append("xhtml:span")
-            .attr("class", "control glyphicon glyphicon-list-alt")
-            ;
+    svg.append("text")
+            .attr("dy", "+1em")
+            .style("text-anchor", "middle")
+            .attr("class", "count")
+            .text(function (d) {
+                return inExecution + '/' + poolSize;
+            });
+    if (remaining > 0) {
+        svg.append("text")
+            .attr("dy", "+3.1em")
+            .style("text-anchor", "middle")
+            .attr("class", "remaining")
+            .text(function (d) {
+                return '(+ ' + remaining + ')';
+            });
+    }
+
     var path = svg.selectAll('path')
             .data(pie(data))
             .enter()

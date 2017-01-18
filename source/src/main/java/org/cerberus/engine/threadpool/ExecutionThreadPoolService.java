@@ -63,6 +63,8 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         private long inQueue;
 
+        private long remaining;
+
         public String getName() {
             return name;
         }
@@ -87,6 +89,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         /* default */ ExecutionThreadPoolStats setInExecution(long inExecution) {
             this.inExecution = inExecution;
+            computeRemaining();
             return this;
         }
 
@@ -96,8 +99,22 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         /* default */ ExecutionThreadPoolStats setInQueue(long inQueue) {
             this.inQueue = inQueue;
+            computeRemaining();
             return this;
         }
+
+        public long getRemaining() {
+            return remaining;
+        }
+
+        private void setRemaining(long remaining) {
+            this.remaining = remaining;
+        }
+
+        private void computeRemaining() {
+            setRemaining(getInQueue() - getInExecution());
+        }
+
     }
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);

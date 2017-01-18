@@ -21,12 +21,17 @@
     Author     : cerberus
 */
 
-.inside {
+.count {
     font-family: 'Roboto Condensed', sans-serif;
     font-size:20px;
 }
 
-.data {
+.remaining {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size:10px;
+}
+
+.name {
     font-size:8px;
     color:grey;
     font-weight: bold;
@@ -35,6 +40,10 @@
 .arc {
   stroke:  #fff;
 
+}
+
+.g {
+    text-overflow: ellipsis;
 }
 
 .control.glyphicon {
