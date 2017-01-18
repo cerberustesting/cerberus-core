@@ -20,6 +20,7 @@
 package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Country;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -55,7 +56,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     public static class ExecutionThreadPoolStats {
 
-        private String name;
+        private CountryEnvironmentParameters.Key key;
 
         private long poolSize;
 
@@ -65,12 +66,12 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         private long remaining;
 
-        public String getName() {
-            return name;
+        public CountryEnvironmentParameters.Key getKey() {
+            return key;
         }
 
-        /* default */ ExecutionThreadPoolStats setName(String name) {
-            this.name = name;
+        /* default */ ExecutionThreadPoolStats setKey(CountryEnvironmentParameters.Key key) {
+            this.key = key;
             return this;
         }
 
@@ -124,6 +125,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
      * <p>
      * Values are:
      * <ol>
+     * <li>{@link CountryEnvironmentParameters.Key#getSystem()}</li>
      * <li>{@link CountryEnvironmentParameters.Key#getApplication()}</li>
      * <li>{@link CountryEnvironmentParameters.Key#getCountry()}</li>
      * <li>{@link CountryEnvironmentParameters.Key#getEnvironment()}</li>
@@ -196,13 +198,13 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
      */
     public Collection<ExecutionThreadPoolStats> getStats() {
         final Collection<ExecutionThreadPoolStats> stats = new ArrayList<>();
-        for (ExecutionThreadPool pool : executionPools.values()) {
+        for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool> pool : executionPools.entrySet()) {
             // Quasi-accurate statistics
             stats.add(new ExecutionThreadPoolStats()
-                    .setName(pool.getName())
-                    .setPoolSize(pool.getPoolSize())
-                    .setInQueue(pool.getInQueue())
-                    .setInExecution(pool.getInExecution())
+                    .setKey(pool.getKey())
+                    .setPoolSize(pool.getValue().getPoolSize())
+                    .setInQueue(pool.getValue().getInQueue())
+                    .setInExecution(pool.getValue().getInExecution())
             );
         }
         return stats;
@@ -257,7 +259,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     private String generateName(CountryEnvironmentParameters.Key key) {
-        return String.format(EXECUTION_POOL_NAME_FORMAT, key.getApplication(), key.getCountry(), key.getEnvironment());
+        return String.format(EXECUTION_POOL_NAME_FORMAT, key.getSystem(), key.getApplication(), key.getCountry(), key.getEnvironment());
     }
 
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {

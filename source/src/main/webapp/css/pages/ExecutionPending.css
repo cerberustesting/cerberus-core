@@ -31,10 +31,15 @@
     font-size:11px;
 }
 
-.name {
-    font-size:10px;
+.primary-name {
+     font-size:11.5px;
+     color:grey;
+     font-weight: bold;
+}
+
+.secondary-name {
+    font-size:9.5px;
     color:grey;
-    font-weight: bold;
 }
 
 .arc {

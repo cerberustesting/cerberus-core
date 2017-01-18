@@ -86,7 +86,7 @@ function drawQueueInformation(){
         //if (messageType === "success") {
             //redraw the datatable
             for (var inc=0; inc<data.length; inc++){
-        generatePie("statusChart", data[inc].name, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
+        generatePie("statusChart", data[inc].key, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
     }
         //}
         //show message in the main page
@@ -105,7 +105,7 @@ function drawQueueInformation(){
  * @param {type} remaining : Number remaining executions in queue
  * @returns {undefined}
  */
-function generatePie(elementid, name, poolSize, inExecution, remaining) {
+function generatePie(elementid, key, poolSize, inExecution, remaining) {
 
     /**
      * Generate data object which is an array of 2 objects that contains 
@@ -114,7 +114,7 @@ function generatePie(elementid, name, poolSize, inExecution, remaining) {
     var data = [{"color": "#3498DB", "value": inExecution},
         {"color": "#eee", "value": poolSize - inExecution}];
 
-    var margin = 50;
+    var margin = {horizontal: 50, vertical: 50};
 
     var width = 130;
     var height = 130;
@@ -122,10 +122,10 @@ function generatePie(elementid, name, poolSize, inExecution, remaining) {
 
     var svg = d3.select('#' + elementid)
             .append('svg')
-            .attr('width', width + margin)
-            .attr('height', height + margin)
+            .attr('width', width + margin.horizontal)
+            .attr('height', height + margin.vertical)
             .append('g')
-            .attr('transform', 'translate(' + ((width + margin) / 2) + ',' + ((height + margin) / 2) + ')')
+            .attr('transform', 'translate(' + ((width + margin.horizontal) / 2) + ',' + ((height + margin.vertical) / 2) + ')');
 
     var arc = d3.svg.arc()
             .outerRadius(radius)
@@ -138,12 +138,19 @@ function generatePie(elementid, name, poolSize, inExecution, remaining) {
             .sort(null);
 
     svg.append("text")
-            .attr("dy", "-8em")
+            .attr("dy", "-7.1em")
             .style("text-anchor", "middle")
-            .attr("class", "name")
+            .attr("class", "primary-name")
             .text(function (d) {
-                return name;
+                return key.application;
             });
+    svg.append("text")
+        .attr("dy", "-7.2em")
+        .style("text-anchor", "middle")
+        .attr("class", "secondary-name")
+        .text(function (d) {
+            return '('  + key.country + ' - ' + key.environment + ')';
+        });
     svg.append("text")
             .style("text-anchor", "middle")
             .attr("dy", "+0.2em")
