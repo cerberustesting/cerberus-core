@@ -295,12 +295,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     private CountryEnvironmentParameters.Key getKey(TestCaseExecutionInQueue inQueue) throws CerberusException {
-        TestCaseExecutionInQueue completeInQueue = tceiqService.findByKeyWithDependencies(inQueue.getId());
         return new CountryEnvironmentParameters.Key(
-                completeInQueue.getApplicationObj().getSystem(),
-                completeInQueue.getApplicationObj().getApplication(),
-                completeInQueue.getCountry(),
-                completeInQueue.getEnvironment()
+                inQueue.getApplicationObj().getSystem(),
+                inQueue.getApplicationObj().getApplication(),
+                inQueue.getCountry(),
+                inQueue.getEnvironment()
         );
     }
 
