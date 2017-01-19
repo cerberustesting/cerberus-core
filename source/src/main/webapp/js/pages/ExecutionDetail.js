@@ -22,29 +22,52 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
         var executionId = GetURLParameter("executionId");
+        /* global */ sockets = [];
         initPage(executionId);
-        loadExecutionInformation(executionId, stepList);
+        loadExecutionInformation(executionId, stepList, sockets);
     });
 });
 
-function loadExecutionInformation(executionId, stepList){
+function loadExecutionInformation(executionId, stepList, sockets){
+        
+        $.ajax({
+            url: "ReadTestCaseExecution",
+            method: "GET",
+            data: "executionId=" + executionId,
+            datatype: "json",
+            async: true,
+            success: function (data) {
+                var tce = data.testCaseExecution;
+                updatePage(tce, stepList);
+                if (tce.controlStatus == "PE") {
+                    var parser = document.createElement('a');
+                    parser.href = window.location.href;
 
-      $.ajax({
-        url: "ReadTestCaseExecution",
-        method: "GET",
-        data: "executionId=" + executionId,
-        datatype: "json",
-        async: true,
-        success: function (data) {
-            var tce = data.testCaseExecution;
-            updatePage(tce, stepList);
-            if (tce.controlStatus == "PE") {
-                var parser = document.createElement('a');
-                parser.href = window.location.href;
+                    var protocol = "ws:";
+                    if (parser.protocol == "https:") {
+                        protocol = "wss:";
+                    }
+                    var path = parser.pathname.split("ExecutionDetail2")[0];
+                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
 
-                var protocol = "ws:";
-                if (parser.protocol == "https:") {
-                    protocol = "wss:";
+                    var socket = new WebSocket(new_uri);
+
+                    socket.onopen = function (e) {
+                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                    socket.onmessage = function (e) {
+                        var data = JSON.parse(e.data);
+                        updatePage(data, stepList);
+                    } //on récupère les messages provenant du serveur websocket
+                    socket.onclose = function (e) {
+                    } //on est informé lors de la fermeture de la connexion vers le serveur
+                    socket.onerror = function (e) {
+                        setTimeout(function () {
+                                loadExecutionInformation(executionId, stepList);
+                            }, 5000);
+                    } //on traite les cas d'erreur*/
+
+                    // Remain in memory
+                    sockets.push(socket);
                 }
                 var path = parser.pathname.split("ExecutionDetail2")[0];
                 var new_uri = protocol + parser.host + path + "execution/" + executionId;

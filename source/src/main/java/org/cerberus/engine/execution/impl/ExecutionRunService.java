@@ -19,20 +19,9 @@
  */
 package org.cerberus.engine.execution.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Logger;
 import org.apache.log4j.Level;
 import org.cerberus.crud.entity.CountryEnvLink;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.engine.entity.ExecutionUUID;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -44,12 +33,10 @@ import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.exception.CerberusException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionSysVer;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionControlExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ICountryEnvLinkService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ILoadTestCaseService;
@@ -62,23 +49,36 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
 import org.cerberus.crud.service.ITestCaseStepExecutionService;
+import org.cerberus.engine.entity.ExecutionUUID;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IConditionService;
-import org.cerberus.engine.gwt.IActionService;
-import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.execution.IExecutionRunService;
-import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.execution.ISeleniumServerService;
+import org.cerberus.engine.gwt.IActionService;
+import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  *
@@ -286,6 +286,12 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (CerberusException ex) {
                 Logger.getLogger(ExecutionRunService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+
+            // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
+            if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
+                TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
+            }
+
             List<TestCaseExecutionData> myExecutionDataList = new ArrayList<TestCaseExecutionData>();
             tCExecution.setTestCaseExecutionDataList(myExecutionDataList);
 
@@ -462,7 +468,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                        TestCaseExecutionEndPoint.send(tCExecution, false);
+                        TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
                         }
 
                         step_index++;
@@ -587,7 +593,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.send(tCExecution, true);
+            TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
+            TestCaseExecutionEndPoint.getInstance().end(tCExecution);
         }
 
         return tCExecution;
@@ -721,7 +728,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.send(tcExecution, false);
+            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
         }
 
         return testCaseStepExecution;
@@ -869,7 +876,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                 // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                 if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                    TestCaseExecutionEndPoint.send(tcExecution, false);
+                    TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
                 }
 
             }
@@ -878,7 +885,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.send(tcExecution, false);
+            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
         }
 
         return testCaseStepActionExecution;
@@ -902,7 +909,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tcExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.send(tcExecution, false);
+            TestCaseExecutionEndPoint.getInstance().send(tcExecution, false);
         }
 
         return testCaseStepActionControlExecution;
@@ -914,20 +921,17 @@ public class ExecutionRunService implements IExecutionRunService {
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
-                //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
-                        "[DEBUG] STOP SERVER " + "__ID=" + tCExecution.getId());
-            } catch (UnreachableBrowserException exception) {
-                //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
-                        "[DEBUG] FAILED TO STOP " + "__ID=" + tCExecution.getId() + " " + exception.toString());
-                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Selenium didn't manage to close browser - " + exception.toString());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop server for execution " + tCExecution.getId());
+                }
+            } catch (WebDriverException exception) {
+                LOG.warn("Selenium didn't manage to close connection for execution " + tCExecution.getId() + " due to " + exception.toString());
             }
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
         if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-            TestCaseExecutionEndPoint.send(tCExecution, false);
+            TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
         }
 
         return tCExecution;

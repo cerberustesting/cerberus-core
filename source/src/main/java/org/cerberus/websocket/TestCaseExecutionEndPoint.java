@@ -23,28 +23,58 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
 import org.cerberus.websocket.encoders.TestCaseExecutionEncoder;
-import javax.websocket.*;
+
+import javax.websocket.EndpointConfig;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
-import java.util.Collections;
+import javax.websocket.server.ServerEndpointConfig;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @ServerEndpoint(
         value = "/execution/{execution-id}",
+        configurator = TestCaseExecutionEndPoint.Configurator.class,
         decoders = {TestCaseExecutionDecoder.class},
         encoders = {TestCaseExecutionEncoder.class}
 )
 public class TestCaseExecutionEndPoint {
 
+    public static class Configurator extends ServerEndpointConfig.Configurator {
+
+        @Override
+        public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+            if (!TestCaseExecutionEndPoint.class.equals(endpointClass)) {
+                throw new InstantiationException("No suitable instance for endpoint class " + endpointClass.getName());
+            }
+            return (T) TestCaseExecutionEndPoint.getInstance();
+        }
+
+    }
+
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
+
+    private static final TestCaseExecutionEndPoint INSTANCE = new TestCaseExecutionEndPoint();
+
+    public static TestCaseExecutionEndPoint getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * All open WebSocket sessions
      */
-    static Set<Session> peers = Collections.synchronizedSet(new HashSet<Session>());
+    private Lock lock = new ReentrantLock();
+    private Map<String, Session> sessions = new HashMap<>();
+    private Map<Long, Set<String>> executions = new HashMap<>();
 
     /**
      * Send Live message for all peers connected to this execution
@@ -52,35 +82,69 @@ public class TestCaseExecutionEndPoint {
      * @param msg
      * @param forcePush
      */
-    public static void send(TestCaseExecution msg, boolean forcePush) {
+    public void send(TestCaseExecution msg, boolean forcePush) {
+        if (!msg.isCerberus_featureflipping_activatewebsocketpush()) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Push is disabled. Ignore sending of execution " + msg.getId());
+            }
+            return;
+        }
 
-        // We check if feature is activated
-        if (msg.isCerberus_featureflipping_activatewebsocketpush()) {
+        long nbmssincelastpush = new Date().getTime() - msg.getLastWebsocketPush();
+        if ((nbmssincelastpush < msg.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Not enough elapsed time since the last push for execution " + msg.getId() + " (" + nbmssincelastpush + " < " + msg.getCerberus_featureflipping_websocketpushperiod());
+            }
+            return;
+        }
 
-            long nbmssincelastpush = new Date().getTime() - msg.getLastWebsocketPush();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Trying to send execution " + msg.getId() + " to sessions");
+        }
 
-            // We check if the last send is not done too close to the current request
-            if ((nbmssincelastpush >= msg.getCerberus_featureflipping_websocketpushperiod()) || (forcePush)) {
+        lock.lock();
+        Set<String> registeredSessions = executions.get(msg.getId());
+        if (registeredSessions == null) {
+            lock.unlock();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No registered session for execution " + msg.getId());
+            }
+            msg.setLastWebsocketPush(new Date().getTime());
+            return;
+        }
 
-                msg.setLastWebsocketPush(new Date().getTime());
-                LOG.debug("TestCaseExecutionEndPoint : Send Message " + nbmssincelastpush + " since last send.");
-                try {
-                    /* Send updates to all open WebSocket sessions for this match */
-                    for (Session session : peers) {
-                        if (Boolean.TRUE.equals(session.getUserProperties().get(String.valueOf(msg.getId())))) {
-                            if (session.isOpen()) {
-                                session.getBasicRemote().sendObject(msg);
-                            }
-                        }
-                    }
-                } catch (IOException | EncodeException e) {
-
+        for (String registeredSession : registeredSessions) {
+            Session session = sessions.get(registeredSession);
+            try {
+                session.getBasicRemote().sendObject(msg);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Execution " + msg.getId() + " sent to session " + session.getId());
                 }
-            } else {
-                LOG.debug("TestCaseExecutionEndPoint : Not Sending message : " + nbmssincelastpush + " since last send.");
-
+            } catch (Exception e) {
+                LOG.warn("Unable to send execution " + msg.getId() + " to session " + session.getId() + " due to " + e.getMessage());
             }
         }
+        lock.unlock();
+        msg.setLastWebsocketPush(new Date().getTime());
+    }
+
+    public void end(TestCaseExecution execution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Clean execution " + execution.getId());
+        }
+        lock.lock();
+        Set<String> registeredSessions = executions.remove(execution.getId());
+        if (registeredSessions != null) {
+            for (String registeredSession : registeredSessions) {
+                Session session = sessions.remove(registeredSession);
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    LOG.warn("Unable to close session " + session.getId() + " for execution " + execution.getId() + " due to " + e.getMessage());
+                }
+            }
+        }
+        lock.unlock();
     }
 
     /**
@@ -105,13 +169,19 @@ public class TestCaseExecutionEndPoint {
      * @param executionId
      */
     @OnOpen
-    public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") int executionId) {
-
-        LOG.warn("TestCaseExecutionEndPoint : Client Open");
-
-        session.getUserProperties().put(String.valueOf(executionId), true);
-        peers.add(session);
-
+    public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") long executionId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Session " + session.getId() + " opened connection to execution " + executionId);
+        }
+        lock.lock();
+        sessions.put(session.getId(), session);
+        Set<String> registeredSessions = executions.get(executionId);
+        if (registeredSessions == null) {
+            registeredSessions = new HashSet<>();
+        }
+        registeredSessions.add(session.getId());
+        executions.put(executionId, registeredSessions);
+        lock.unlock();
     }
 
     /**
@@ -122,9 +192,17 @@ public class TestCaseExecutionEndPoint {
      * @param executionId
      */
     @OnClose
-    public void closedConnection(Session session, @PathParam("execution-id") int executionId) {
-        session.getUserProperties().put(String.valueOf(executionId), false);
-        peers.remove(session);
+    public void closedConnection(Session session, @PathParam("execution-id") long executionId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Session " + session.getId() + " closed connection to execution " + executionId);
+        }
+        lock.lock();
+        sessions.remove(session.getId());
+        Set<String> registeredSessions = executions.get(executionId);
+        if (registeredSessions != null) {
+            registeredSessions.remove(session.getId());
+        }
+        lock.unlock();
     }
 
     /**
@@ -135,10 +213,11 @@ public class TestCaseExecutionEndPoint {
      */
     @OnError
     public void error(Session session, Throwable t) {
+        LOG.warn("An error occurred during websocket communication with session " + session.getId() + ": " + t.getMessage(), t);
         try {
-            session.getBasicRemote().sendText(t.toString());
-        } catch (IOException e) {
-
+            session.getBasicRemote().sendText(t.getMessage());
+        } catch (Exception e) {
+            LOG.warn("Unable to send error to session " + session.getId() + " due to " + e.getMessage());
         }
     }
 
