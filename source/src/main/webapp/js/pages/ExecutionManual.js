@@ -725,7 +725,7 @@ function Action(json, parentStep) {
         this.forceExeStatus = json.forceExeStatus;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = json.returnMessage;
+        this.returnMessage = safeLinkify(json.returnMessage);
         this.sequence = json.sequence;
         this.sort = json.sort;
         this.start = json.start;
@@ -1011,7 +1011,7 @@ function Control(json, parentAction) {
         this.fatal = json.fatal;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = json.returnMessage;
+        this.returnMessage = safeLinkify(json.returnMessage);
         this.screenshotFileName = "";
         this.sequence = json.sequence;
         this.sort = json.sort;
