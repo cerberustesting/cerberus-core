@@ -22,12 +22,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
         var executionId = GetURLParameter("executionId");
+        /* global */ sockets = [];
         initPage(executionId);
-        loadExecutionInformation(executionId, stepList);
+        loadExecutionInformation(executionId, stepList, sockets);
     });
 });
 
-function loadExecutionInformation(executionId, stepList){
+function loadExecutionInformation(executionId, stepList, sockets){
         
         $.ajax({
             url: "ReadTestCaseExecution",
@@ -64,6 +65,9 @@ function loadExecutionInformation(executionId, stepList){
                                 loadExecutionInformation(executionId, stepList);
                             }, 5000);
                     } //on traite les cas d'erreur*/
+
+                    // Remain in memory
+                    sockets.push(socket);
                 }
                 $("#seeProperties").click(function () {
                     $("#propertiesModal").modal('show');

@@ -410,7 +410,9 @@ public class TestCaseExecution {
     }
 
     public void addFileList(TestCaseExecutionFile file) {
-        this.fileList.add(file);
+        if (file != null) {
+            this.fileList.add(file);
+        }
     }
 
     public void addFileList(List<TestCaseExecutionFile> fileList) {
