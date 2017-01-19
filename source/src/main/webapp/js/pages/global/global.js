@@ -1382,7 +1382,7 @@ function showTitleWhenTextOverflow() {
     /**
      * for TH and TD, append title into div
      */
-    $('td, th').each(function () {
+    $('td, th, h4').each(function () {
         var $ele = $(this);
         //Check if text to display is bigger than the width
         if (this.offsetWidth < this.scrollWidth && $ele.get(0).innerText.trim().length > 0) {

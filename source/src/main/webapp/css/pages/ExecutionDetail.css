@@ -91,6 +91,13 @@
     border-radius: 1px 1px 0 0;
 }
 
+.properties {
+    font-size: 12px;
+    border: 1px solid #e5e5e5;
+    border-left: 8px solid #f0ad4e;
+    border-radius: 3px 3px 0 0;
+}
+
 .form-control{
 }
 

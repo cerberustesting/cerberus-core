@@ -28,49 +28,49 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function loadExecutionInformation(executionId, stepList){
-        
-        $.ajax({
-            url: "ReadTestCaseExecution",
-            method: "GET",
-            data: "executionId=" + executionId,
-            datatype: "json",
-            async: true,
-            success: function (data) {
-                var tce = data.testCaseExecution;
-                updatePage(tce, stepList);
-                if (tce.controlStatus == "PE") {
-                    var parser = document.createElement('a');
-                    parser.href = window.location.href;
 
-                    var protocol = "ws:";
-                    if (parser.protocol == "https:") {
-                        protocol = "wss:";
-                    }
-                    var path = parser.pathname.split("ExecutionDetail2")[0];
-                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
+      $.ajax({
+        url: "ReadTestCaseExecution",
+        method: "GET",
+        data: "executionId=" + executionId,
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            var tce = data.testCaseExecution;
+            updatePage(tce, stepList);
+            if (tce.controlStatus == "PE") {
+                var parser = document.createElement('a');
+                parser.href = window.location.href;
 
-                    var socket = new WebSocket(new_uri);
-
-                    socket.onopen = function (e) {
-                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function (e) {
-                        var data = JSON.parse(e.data);
-                        updatePage(data, stepList);
-                    } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function (e) {
-                    } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function (e) {
-                        setTimeout(function () {
-                                loadExecutionInformation(executionId, stepList);
-                            }, 5000);
-                    } //on traite les cas d'erreur*/
+                var protocol = "ws:";
+                if (parser.protocol == "https:") {
+                    protocol = "wss:";
                 }
-                $("#seeProperties").click(function () {
-                    $("#propertiesModal").modal('show');
-                });
+                var path = parser.pathname.split("ExecutionDetail2")[0];
+                var new_uri = protocol + parser.host + path + "execution/" + executionId;
+
+                var socket = new WebSocket(new_uri);
+
+                socket.onopen = function (e) {
+                } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
+                socket.onmessage = function (e) {
+                    var data = JSON.parse(e.data);
+                    updatePage(data, stepList);
+                } //on récupère les messages provenant du serveur websocket
+                socket.onclose = function (e) {
+                } //on est informé lors de la fermeture de la connexion vers le serveur
+                socket.onerror = function (e) {
+                    setTimeout(function () {
+                        loadExecutionInformation(executionId, stepList);
+                    }, 5000);
+                } //on traite les cas d'erreur*/
             }
+            $("#seeProperties").click(function () {
+                $("#propertiesModal").modal('show');
+            });
+        }
         });
-    }
+}
 
 function initPage(id) {
 
@@ -80,9 +80,9 @@ function initPage(id) {
 
     var wrap = $(window);
 
-            wrap.on("scroll", function (e) {
-                $(".affix").width($("#page-layout").width()-3);
-                });
+    wrap.on("scroll", function (e) {
+        $(".affix").width($("#page-layout").width() - 3);
+    });
 
     $("#editTcInfo").prop("disabled", true);
     $("#runTestCase").prop("disabled", true);
@@ -255,7 +255,7 @@ function updatePage(data, stepList) {
     configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
     configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
     configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
-    
+
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer);
@@ -411,21 +411,21 @@ function createProperties(propList) {
         var test = property.fromTest;
         var testcase = property.fromTestCase;
 
-        var moreBtn = $("<button class='btn btn-default btn-block'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+        var moreBtn = $("<div></div>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down").attr("style", "font-size:1.5em"));
 
         var rcDiv = $("<div>").addClass("col-sm-1");
         if (property.RC == "OK") {
-            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-ok pull-left'></span>"))
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-ok pull-left' style='font-size:1.5em'></span>"))
         } else if (property.RC == "FA") {
-            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-alert pull-left'></span>"))
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-alert pull-left' style='font-size:1.5em'></span>"))
         } else if (property.RC == "PE") {
-            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-refresh spin pull-left'></span>"))
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-refresh spin pull-left' style='font-size:1.5em'></span>"))
         } else {
-            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left'></span>"))
+            rcDiv.append($("<h4>").html("<span class='glyphicon glyphicon-remove pull-left' style='font-size:1.5em'></span>"))
         }
-        var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.property));
-        var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.type));
-        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(safeLinkify(property.rMessage)));
+        var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.property));
+        var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.value));
+        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(safeLinkify(property.rMessage)));
 
         var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "property_field") + "' readonly>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "description_field") + "' readonly>").addClass("form-control input-sm").val(property.description);
@@ -445,8 +445,8 @@ function createProperties(propList) {
         var retryperiodInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "retryperiod") + "' readonly>").addClass("form-control input-sm").val(property.retryperiod);
 
 
-        var content = $("<div class='row property panel'></div>");
-        var headerDiv = $("<div class='panel-heading'></div>");
+        var content = $("<div class='row property panel' style='margin-bottom:0px'></div>");
+        var headerDiv = $("<div class='panel-heading' style='padding:0px; border-left: 8px solid #f0ad4e;'></div>");
         var header = $("<div class='col-sm-11'></div>");
         var propsbody = $("<div class='panel-body' style='display:none;'>");
         var props = $("<div>");
@@ -477,17 +477,6 @@ function createProperties(propList) {
         var rMessage = $("<div class='col-sm-12 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rMessage"))).append(rMessageInput);
         var retrynb = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retrynb"))).append(retrynbInput);
         var retryperiod = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "retryperiod"))).append(retryperiodInput);
-
-        moreBtn.click(function () {
-            if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
-                $(this).find("span").removeClass("glyphicon-chevron-down");
-                $(this).find("span").addClass("glyphicon-chevron-up");
-            } else {
-                $(this).find("span").removeClass("glyphicon-chevron-up");
-                $(this).find("span").addClass("glyphicon-chevron-down");
-            }
-            $(this).parent().parent().parent().find(".panel-body").toggle();
-        });
 
         row1.data("property", property);
         row1.append(rMessage);
@@ -520,7 +509,16 @@ function createProperties(propList) {
         props.append(row5);
 
         header.append(rcDiv).append(propertyDiv).append(typeDiv).append(messageDiv);
-        headerDiv.append(header).append(right).append($("<div>").addClass("clearfix"));
+        var htmlElement = headerDiv.append(header).append(right).append($("<div>").addClass("clearfix"));
+
+        htmlElement.click(function () {
+            if ($(this).find(".glyphicon-chevron-down").length > 0) {
+                $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            } else {
+                $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+            }
+            $(this).parent().find(".panel-body").toggle();
+        });
 
         right.append(moreBtn);
 
@@ -825,7 +823,7 @@ Action.prototype.draw = function () {
     $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
     // Adding all media attached to action execution.
     addFileLink(this.fileList, $(header).find(".row"));
-    
+
     this.parentStep.stepActionContainer.append(htmlElement);
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
@@ -870,15 +868,17 @@ Action.prototype.generateHeader = function () {
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
     var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
+    var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
     returnMessageField.append(this.returnMessage);
     descriptionField.append(this.description);
+    elapsedTime.append((this.endlong - this.startlong) + " ms");
 
-    contentField.append(descriptionField);
-    contentField.append(returnMessageField);
-
+    contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+    contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
+    
     firstRow.append(contentField);
 
     content.append(firstRow);
@@ -1066,7 +1066,7 @@ function Control(json, parentAction) {
 
     this.toDelete = false;
 
-    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "25px");
+    this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "0px");
 }
 
 Control.prototype.draw = function () {
@@ -1104,7 +1104,7 @@ Control.prototype.draw = function () {
         content.show();
     }
 
-    
+
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length * 2));
     // Adding all media attached to control execution.
@@ -1141,14 +1141,17 @@ Control.prototype.generateHeader = function () {
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
     var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
+    var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
     returnMessageField.append(this.returnMessage);
     descriptionField.append(this.description);
 
-    contentField.append(descriptionField);
-    contentField.append(returnMessageField);
+    elapsedTime.append((this.endlong - this.startlong) + " ms");
+
+    contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+    contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
 
     firstRow.append(contentField);
 
@@ -1281,9 +1284,9 @@ function addFileLink(fileList, container) {
             var linkBox = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
                     .click(function (e) {
-                showPicture(fileDesc, urlImage);
-                return false;
-            }));
+                        showPicture(fileDesc, urlImage);
+                        return false;
+                    }));
             container.append(linkBox);
         } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT")) {
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
