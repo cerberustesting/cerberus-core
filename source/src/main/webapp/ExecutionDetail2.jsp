@@ -40,62 +40,68 @@
             <%@ include file="include/messagesArea.html"%>
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
-                <div class="panel-heading" id="executionHeader"  style="z-index:2; top: 0">
-                    <div class="progress">
-                        <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            <span class="sr-only"></span>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 pull-left">
-                        <div class="">
-                            <span id="idlabel"></span>
-                            <span> - </span>
-                            <span id="test"></span>
-                            <span> - </span>
-                            <span id="testcase"></span>
-                            <span> - </span>
-                            <span id="controlstatus" style="font-weight: 900"></span>
-                            <span> - </span>
-                        </div>
-                    </div>
-                    <div class="col-lg-8" style="padding: 0px;">
-                        <div id="TestCaseButton">
-                            <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
-                            <div class="btn-group pull-right">
-                                <button class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
-                                </ul>
+                <div style="min-height:150px">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px">
+                        <div class="panel-heading" id="executionHeader"  style="z-index:2; top: 0">
+                            <div class="progress">
+                                <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    <span class="sr-only"></span>
+                                </div>
                             </div>
-                            <div class="btn-group pull-right">
-                                <button class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#"><button class="btn btn-default pull-right" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</button></a></li>
-                                </ul>
+                            <div class="col-lg-4 pull-left">
+                                <div class="">
+                                    <span id="idlabel"></span>
+                                    <span> - </span>
+                                    <span id="test"></span>
+                                    <span> - </span>
+                                    <span id="testcase"></span>
+                                    <span> - </span>
+                                    <span id="controlstatus" style="font-weight: 900"></span>
+                                    <span> - </span>
+                                </div>
                             </div>
-                            <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
-                            <div class="side-item pull-right"></div>
+                            <div class="col-lg-8" style="padding: 0px;">
+                                <div id="TestCaseButton">
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="btn-group pull-right">
+                                        <button class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#"><button class="btn btn-default pull-right" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</button></a></li>
+                                        </ul>
+                                    </div>
+                                    <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
+                                    <div class="side-item pull-right"></div>
 
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div style="height:40px; background-color: white">
+                            <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
+                                <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
+                                <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
+                                <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>
+                                <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
+                                <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="clearfix"></div>
                 </div>
                 <div class="panel-body" id="testCaseDetails">
-                    <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" href="#tabSteps" id="editTabStep" name="tabSteps">Steps</a></li>
-                        <li><a data-toggle="tab" href="#tabProperties" id="editTabProperties" name="tabProperties">Properties</a></li>
-                        <li><a data-toggle="tab" href="#tabDetail" id="editTabDetail" name="tabDetail">Execution Details</a></li>
-                        <li><a data-toggle="tab" href="#tabEnv" id="editTabEnv" name="tabEnv">Environment</a></li>
-                        <li><a data-toggle="tab" href="#tabRobot" id="editTabRobot" name="tabRobot">Robot</a></li>
-                    </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in active" id="tabSteps">
                             <div id="handler" class="row" style="margin: 0px; margin-top: 10px;">

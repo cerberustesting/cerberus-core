@@ -76,24 +76,13 @@ function initPage(id) {
 
     var doc = new Doc();
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-    //$('#executionHeader').affix({offset: {top: height}});
+    $('#divPanelDefault').affix({offset: {top: height}});
 
     var wrap = $(window);
 
-//    wrap.on("scroll", function (e) {
-//        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-//            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    });
-//
-//    wrap.resize(function (e) {
-//        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-//            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//        $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
-//    })
+            wrap.on("scroll", function (e) {
+                $(".affix").width($("#page-layout").width()-3);
+                });
 
     $("#editTcInfo").prop("disabled", true);
     $("#runTestCase").prop("disabled", true);
