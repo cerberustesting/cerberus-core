@@ -30,6 +30,7 @@ import org.cerberus.database.DatabaseSpring;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
@@ -54,6 +55,8 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
     ITestCaseStepActionDAO testCaseStepActionDAO;
     @Autowired
     ITestCaseService testCaseService;
+    @Autowired
+    IParameterService parameterService;
     @Autowired
     private DatabaseSpring dbmanager;
 
@@ -128,55 +131,105 @@ public class TestCaseCountryPropertiesService implements ITestCaseCountryPropert
 
     @Override
     public List<TestCaseCountryProperties> findAllWithDependencies(String test, String testcase, String country) throws CerberusException {
-        List<TestCaseCountryProperties> tccpList = new ArrayList();
-        TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
 
-        /**
-         * We load here all the properties countries from all related testcases
-         * linked with test/testcase The order the load is done is important as
-         * it will define the priority of each property. properties coming from
-         * Pre Testing is the lower prio then, the property coming from the
-         * useStep and then, top priority is the property on the test +
-         * testcase.
-         */
-        //find all properties of preTests
-        List<TestCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
-        for (TestCase tcase : tcptList) {
-            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-        }
-        //find all properties of the used step
-        List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
-        for (TestCase tcase : tcList) {
-            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
-        }
-        //find all properties of the testcase
-        tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
-
-        /**
-         * We loop here the previous list, keeping by property, the last value
-         * (top priority). That will define the level to consider property on
-         * the test. testcase.
-         */
-        HashMap<String, TestCaseCountryProperties> tccpMap1 = new HashMap<String, TestCaseCountryProperties>();
-        for (TestCaseCountryProperties tccp : tccpList) {
-            tccpMap1.put(tccp.getProperty(), tccp);
-        }
-
-        /**
-         * We then loop again in order to keep the selected properties for the
-         * given country and level found on the previous step by property.
-         */
         List<TestCaseCountryProperties> result = new ArrayList<TestCaseCountryProperties>();
-        for (TestCaseCountryProperties tccp : tccpList) {
-            if (tccp.getCountry().equals(country)) {
-                TestCaseCountryProperties toto = (TestCaseCountryProperties) tccpMap1.get(tccp.getProperty());
-                if ((toto != null)
-                        && (((tccp.getTest().equals("Pre Testing")) && (toto.getTest().equals("Pre Testing")))
-                        || ((tccp.getTest().equals(test)) && (tccp.getTestCase().equals(testcase)) && (toto.getTest().equals(test)) && (toto.getTestCase().equals(testcase)))
-                        || ((tccp.getTest().equals(toto.getTest())) && (tccp.getTestCase().equals(toto.getTestCase()))))) {
-                    result.add(tccp);
+
+        if (parameterService.getParameterBooleanByKey("cerberus_property_countrylevelheritage", "", false)) {
+            List<TestCaseCountryProperties> tccpList = new ArrayList();
+            List<TestCaseCountryProperties> tccpListPerCountry = new ArrayList();
+            TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
+
+            //find all properties of preTests
+            List<TestCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
+            for (TestCase tcase : tcptList) {
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+            }
+
+            //find all properties of the used step
+            List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
+            for (TestCase tcase : tcList) {
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+                tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(tcase.getTest(), tcase.getTestCase(), country));
+            }
+
+            //find all properties of the testcase
+            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
+            tccpListPerCountry.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCaseCountry(test, testcase, country));
+
+            //Keep only one property by name
+            //all properties that are defined for the country are included
+            HashMap tccpMap = new HashMap();
+            for (TestCaseCountryProperties tccp : tccpListPerCountry) {
+                tccpMap.put(tccp.getProperty(), tccp);
+            }
+            //These if/else instructions are done because of the way how the propertyService verifies if
+            //the properties exist for the country. 
+            for (TestCaseCountryProperties tccp : tccpList) {
+                TestCaseCountryProperties p = (TestCaseCountryProperties) tccpMap.get(tccp.getProperty());
+                if (p == null) {
+                    tccpMap.put(tccp.getProperty(), tccp);
+                } else if (p.getCountry().compareTo(country) != 0 && tccp.getCountry().compareTo(country) == 0) {
+                    tccpMap.put(tccp.getProperty(), tccp);
                 }
             }
+
+            result = new ArrayList<TestCaseCountryProperties>(tccpMap.values());
+
+        } else {
+
+            List<TestCaseCountryProperties> tccpList = new ArrayList();
+            TestCase mainTC = testCaseService.findTestCaseByKey(test, testcase);
+
+            /**
+             * We load here all the properties countries from all related
+             * testcases linked with test/testcase The order the load is done is
+             * important as it will define the priority of each property.
+             * properties coming from Pre Testing is the lower prio then, the
+             * property coming from the useStep and then, top priority is the
+             * property on the test + testcase.
+             */
+            //find all properties of preTests
+            List<TestCase> tcptList = testCaseService.findTestCaseActiveByCriteria("Pre Testing", mainTC.getApplication(), country);
+            for (TestCase tcase : tcptList) {
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+            }
+            //find all properties of the used step
+            List<TestCase> tcList = testCaseService.findUseTestCaseList(test, testcase);
+            for (TestCase tcase : tcList) {
+                tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(tcase.getTest(), tcase.getTestCase()));
+            }
+            //find all properties of the testcase
+            tccpList.addAll(testCaseCountryPropertiesDAO.findListOfPropertyPerTestTestCase(test, testcase));
+
+            /**
+             * We loop here the previous list, keeping by property, the last
+             * value (top priority). That will define the level to consider
+             * property on the test. testcase.
+             */
+            HashMap<String, TestCaseCountryProperties> tccpMap1 = new HashMap<String, TestCaseCountryProperties>();
+            for (TestCaseCountryProperties tccp : tccpList) {
+                tccpMap1.put(tccp.getProperty(), tccp);
+            }
+
+            /**
+             * We then loop again in order to keep the selected properties for
+             * the given country and level found on the previous step by
+             * property.
+             */
+            result = new ArrayList<TestCaseCountryProperties>();
+            for (TestCaseCountryProperties tccp : tccpList) {
+                if (tccp.getCountry().equals(country)) {
+                    TestCaseCountryProperties toto = (TestCaseCountryProperties) tccpMap1.get(tccp.getProperty());
+                    if ((toto != null)
+                            && (((tccp.getTest().equals("Pre Testing")) && (toto.getTest().equals("Pre Testing")))
+                            || ((tccp.getTest().equals(test)) && (tccp.getTestCase().equals(testcase)) && (toto.getTest().equals(test)) && (toto.getTestCase().equals(testcase)))
+                            || ((tccp.getTest().equals(toto.getTest())) && (tccp.getTestCase().equals(toto.getTestCase()))))) {
+                        result.add(tccp);
+                    }
+                }
+            }
+
         }
 
         return result;
