@@ -17,6 +17,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.cerberus.engine.entity.MessageGeneral"%>
 <%@page import="org.cerberus.enums.MessageGeneralEnum"%>
 <%@page import="org.cerberus.crud.service.ITestCaseExecutionInQueueService"%>
 <%@page import="org.cerberus.crud.service.ICountryEnvironmentParametersService"%>
@@ -30,7 +31,7 @@
 <%@page import="org.cerberus.crud.service.ICountryEnvParamService"%>
 <%@page import="org.cerberus.crud.entity.CountryEnvParam"%>
 <%@page import="org.cerberus.enums.MessageGeneralEnum"%>
-<%@page import="org.cerberus.crud.entity.MessageGeneral"%>
+<%@page import="org.cerberus.engine.entity.MessageGeneral"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStepActionControl"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStepAction"%>
 <%@page import="org.cerberus.crud.entity.TestCaseStep"%>
@@ -174,6 +175,7 @@
                 String testcase = getRequestParameterWildcardIfEmpty(request, "TestCase");
                 String country = getRequestParameterWildcardIfEmpty(request, "Country");
                 String environment = getRequestParameterWildcardIfEmpty(request, "Environment");
+                String environmentData = "";
                 String idFromQueue = getRequestParameterWildcardIfEmpty(request, "IdFromQueue");
                 String browser = getRequestParameterWildcardIfEmpty(request, "Browser");
                 String browserVersion = "";
@@ -216,10 +218,12 @@
                 if (myUser == null || myUser.length() <= 0) {
                     myUser = "Manual";
                 }
-
-                TestCaseExecution execution = factoryTestCaseExecution.create(0, test, testcase, build, revision, environment, country, browser, "", "", browserVersion, now, now,
-                        "PE", "Execution Started", myApp, "", "", "", tag, "Y", 0, 0, 0, 0, true, "", "", tCase.getStatus(), version,
-                        null, null, null, false, "", "", "", "", "", "", null, null, myUser);
+                long toto = 0;
+                 
+                TestCaseExecution execution = factoryTestCaseExecution.create( toto, test, testcase, build, revision, environment, environmentData,
+                country, browser, "", "", browserVersion, now, now,"PE", "Execution Started", myApp, "", "", "", tag, "Y", 0, 0, 0, 0, 
+                true, "", "", tCase.getStatus(), version,
+                        null, null, null, false, "", "", "", "", "", "", null, null, myUser, 0, "", null,"", "","", "", "");
 
                 long executionId = testCaseExecutionService.insertTCExecution(execution);
                 execution.setId(executionId);

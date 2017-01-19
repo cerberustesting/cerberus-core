@@ -17,8 +17,6 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
-
-
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -27,10 +25,8 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
-        <script type="text/javascript" src="dependencies/Linkify-2.1.4/linkify.min.js"></script>
-        <script type="text/javascript" src="dependencies/Linkify-2.1.4/linkify-string.min.js"></script>
-        <script type="text/javascript" src="js/pages/ExecutionDetail.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/pages/ExecutionDetail.css">
+        <script type="text/javascript" src="js/pages/ExecutionManual.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/pages/ExecutionManual.css">
     </head>
     <body>
         <%@ include file="include/header.html"%>
@@ -71,16 +67,7 @@
                                     <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
                                 </ul>
                             </div>
-                            <div class="btn-group pull-right">
-                                <button class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only">Toggle Dropdown</span>
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#"><button class="btn btn-default pull-right" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</button></a></li>
-                                </ul>
-                            </div>
+                            <button class="btn btn-default pull-right" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
                             <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
                             <div class="side-item pull-right"></div>
 

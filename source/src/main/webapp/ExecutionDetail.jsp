@@ -712,7 +712,7 @@
                                 <a href="TestCaseScript.jsp?test=<%=test%>&testcase=<%=testCase%>">Modify the Test Case (Beta).</a>
                             </td>
                             <td>
-                                <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testCase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                                <a href="TestCaseExecution.jsp?test=<%=test%>&testcase=<%=testCase%>">See Last Executions..</a>
                             </td>
                             <td>
                                 <%

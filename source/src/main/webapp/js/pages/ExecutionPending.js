@@ -29,6 +29,8 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
+    
+    drawQueueInformation();
 }
 
 function displayPageLabel() {
@@ -68,10 +70,110 @@ function aoColumnsFunc(tableId) {
         {"data": "browser", "sName": "browser", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col")},
         {"data": "tag", "sName": "tag", "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col")},
         {
-            "data": "proceeded",
-            "sName": "proceeded",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "processed_col")
+            "data": "state",
+            "sName": "state",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col")
         }
     ];
     return aoColumns;
+}
+
+function drawQueueInformation(){
+    
+    var jqxhr = $.get("ReadExecutionPools");
+    $.when(jqxhr).then(function (data) {
+        //var messageType = getAlertType(data.messageType);
+        //if (messageType === "success") {
+            //redraw the datatable
+            for (var inc=0; inc<data.length; inc++){
+        generatePie("statusChart", data[inc].id, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
+    }
+        //}
+        //show message in the main page
+        //showMessageMainPage(messageType, data.message);
+        //close confirmation window
+        //$('#confirmationModal').modal('hide');
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+/**
+ * Generate Pie generate a pie chart and append it to the defined element.
+ * @param {type} elementid : ID of the div where the pie will be included
+ * @param {type} name : Name of the queue
+ * @param {type} poolSize : Size of the Pool
+ * @param {type} inExecution : Number of current execution
+ * @param {type} remaining : Number remaining executions in queue
+ * @returns {undefined}
+ */
+function generatePie(elementid, id, poolSize, inExecution, remaining) {
+
+    /**
+     * Generate data object which is an array of 2 objects that contains 
+     * attributes value and color
+     */
+    var data = [{"color": "#3498DB", "value": inExecution},
+        {"color": "#eee", "value": poolSize - inExecution}];
+
+    var margin = {horizontal: 50, vertical: 50};
+
+    var width = 130;
+    var height = 130;
+    var radius = Math.min(width, height) / 2;
+
+    var svg = d3.select('#' + elementid)
+            .append('svg')
+            .attr('width', width + margin.horizontal)
+            .attr('height', height + margin.vertical)
+            .append('g')
+            .attr('transform', 'translate(' + ((width + margin.horizontal) / 2) + ',' + ((height + margin.vertical) / 2) + ')');
+
+    var arc = d3.svg.arc()
+            .outerRadius(radius)
+            .innerRadius(radius - 10);
+
+    var pie = d3.layout.pie()
+            .value(function (d) {
+                return d.value;
+            })
+            .sort(null);
+
+    svg.append("text")
+            .attr("dy", "-7.1em")
+            .style("text-anchor", "middle")
+            .attr("class", "primary-name")
+            .text(function (d) {
+                return id.application;
+            });
+    svg.append("text")
+        .attr("dy", "-7.2em")
+        .style("text-anchor", "middle")
+        .attr("class", "secondary-name")
+        .text(function (d) {
+            return '('  + id.country + ' - ' + id.environment + ')';
+        });
+    svg.append("text")
+            .style("text-anchor", "middle")
+            .attr("dy", "+0.2em")
+            .attr("class", "count")
+            .text(function (d) {
+                return inExecution + '/' + poolSize;
+            });
+    if (remaining > 0) {
+        svg.append("text")
+            .attr("dy", "+1.9em")
+            .style("text-anchor", "middle")
+            .attr("class", "remaining")
+            .text(function (d) {
+                return '(+ ' + remaining + ')';
+            });
+    }
+
+    var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function (d, i) {
+                return d.data.color;
+            });
 }

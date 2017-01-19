@@ -345,7 +345,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
 
             $("#runTestCase").attr("onclick", "document.location.href='./RunTests1.jsp?test=" + test + "&testcase=" + testcase + "'");
-            $("#seeLastExec").parent().attr("href", "./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLastExec").parent().attr("href", "./TestCaseExecution.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href", "./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
 
             $.ajax({
@@ -365,24 +365,24 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
             var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
-            $("#testCaseTitle").affix({offset: {top: height}});
+            //$("#testCaseTitle").affix({offset: {top: height}});
 
-            var wrap = $(window);
-
-            wrap.on("scroll", function (e) {
-                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
-                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-                    $("#list-wrapper").width($("#nav-execution").width());
-                }
-            });
-
-            wrap.resize(function (e) {
-                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
-                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-                    $("#list-wrapper").width($("#nav-execution").width());
-                }
-                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
-            })
+//            var wrap = $(window);
+//
+//            wrap.on("scroll", function (e) {
+//                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
+//                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+//                    $("#list-wrapper").width($("#nav-execution").width());
+//                }
+//            });
+//
+//            wrap.resize(function (e) {
+//                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
+//                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
+//                    $("#list-wrapper").width($("#nav-execution").width());
+//                }
+//                $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
+//            })
 
             if (tabactive !== null) {
                 $("a[name='" + tabactive + "']").click();

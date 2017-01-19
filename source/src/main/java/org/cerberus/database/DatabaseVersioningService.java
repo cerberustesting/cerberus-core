@@ -8103,6 +8103,29 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the new State column header on the Execution pending page
+        //-- ------------------------ 1043
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'en', 'State', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'fr', 'Etat', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        // Add the new ManualExecution column header on the Execution pending page
+        //-- ------------------------ 1044
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution`"); 
+        SQLS.append("ADD COLUMN `ManualExecution` VARCHAR(1) NULL DEFAULT '' AFTER `ConditionVal2`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Document the new 'edittcstep' field from ExecutionDetail page
+        //-- ------------------------ 1045
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_executiondetail', 'edittcstep', '', 'fr', 'Editer le Cas de Test à partir de l\\'Etape courante', ''),");
+        SQLS.append("('page_executiondetail', 'edittcstep', '', 'en', 'Edit Test Case from the current Step', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -19,23 +19,22 @@
  */
 package org.cerberus.crud.service.impl;
 
-import java.util.List;
-import java.util.Map;
-import org.cerberus.crud.dao.ITestCaseCountryDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Default {@link ITestCaseExecutionInQueueService} implementation
@@ -47,24 +46,9 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
 
     @Autowired
     private ITestCaseExecutionInQueueDAO testCaseExecutionInQueueDAO;
-    @Autowired
-    private ITestCaseCountryDAO testCaseCountryDAO;
+
     @Autowired
     private IFactoryTestCaseExecution factoryTestCaseExecution;
-
-    @Override
-    public boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException {
-        try {
-            testCaseCountryDAO.findTestCaseCountryByKey(inQueue.getTest(), inQueue.getTestCase(), inQueue.getCountry());
-            return true;
-        } catch (CerberusException ce) {
-            MessageGeneral messageGeneral = ce.getMessageError();
-            if (messageGeneral == null || messageGeneral.getCode() != MessageGeneralEnum.NO_DATA_FOUND.getCode()) {
-                throw ce;
-            }
-            return false;
-        }
-    }
 
     @Override
     public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
@@ -206,6 +190,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String outputFormat = testCaseExecutionInQueue.getOutputFormat();
         TestCase tCase = testCaseExecutionInQueue.getTestCaseObj();
         boolean manualURL = testCaseExecutionInQueue.isManualURL();
+        boolean manualExecution = testCaseExecutionInQueue.isManualExecution();
         String myHost = testCaseExecutionInQueue.getManualHost();
         String myContextRoot = testCaseExecutionInQueue.getManualContextRoot();
         String myLoginRelativeURL = testCaseExecutionInQueue.getManualLoginRelativeURL();
@@ -215,7 +200,7 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, environment, country, browser, version, platform,
                 browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
-                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "");
+                myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "", manualExecution);
         result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());

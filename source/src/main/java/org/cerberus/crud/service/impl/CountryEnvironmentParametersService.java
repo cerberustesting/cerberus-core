@@ -63,7 +63,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
         AnswerItem<Integer> poolSize = new AnswerItem<>();
 
         AnswerItem<CountryEnvironmentParameters> countryEnvironmentParameters = readByKey(system, country, environment, application);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() != countryEnvironmentParameters.getResultMessage().getCode()) {
+        if (!MessageEventEnum.DATA_OPERATION_OK.equals(countryEnvironmentParameters.getResultMessage().getSource())) {
             poolSize.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
             return poolSize;
         }
@@ -94,7 +94,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     @Override
     public Answer update(CountryEnvironmentParameters object) {
         Answer answer = countryEnvironmentParametersDao.update(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
             fireUpdate(CountryEnvironmentParameters.Key.fromCountryEnvironmentParameters(object), object);
         }
         return answer;
@@ -103,7 +103,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     @Override
     public Answer delete(CountryEnvironmentParameters object) {
         Answer answer = countryEnvironmentParametersDao.delete(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
             fireDelete(CountryEnvironmentParameters.Key.fromCountryEnvironmentParameters(object), object);
         }
         return answer;
@@ -112,7 +112,7 @@ public class CountryEnvironmentParametersService implements ICountryEnvironmentP
     @Override
     public Answer create(CountryEnvironmentParameters object) {
         Answer answer = countryEnvironmentParametersDao.create(object);
-        if (MessageEventEnum.DATA_OPERATION_OK.getCode() == answer.getResultMessage().getCode()) {
+        if (MessageEventEnum.DATA_OPERATION_OK.equals(answer.getResultMessage().getSource())) {
             fireCreate(CountryEnvironmentParameters.Key.fromCountryEnvironmentParameters(object), object);
         }
         return answer;

@@ -21,7 +21,7 @@
         if (request.getParameter("error").equals("403")) 
                 {
         %>
-        <h1>Not Authorised Ressource...</h1>
+        <h1>Not Authorised Resource...</h1>
         <h3> You don't have enough privilege to open this page, Please ask your Cerberus administrator to grant the access.</h3>
         <%
                 

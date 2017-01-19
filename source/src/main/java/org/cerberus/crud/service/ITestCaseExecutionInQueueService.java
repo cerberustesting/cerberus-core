@@ -38,17 +38,6 @@ import org.cerberus.util.answer.AnswerList;
 public interface ITestCaseExecutionInQueueService {
 
     /**
-     * Checks if the given {@link TestCaseExecutionInQueue} can be inserted into
-     * the execution queue
-     *
-     * @param inQueue the {@link TestCaseExecutionInQueue} to check
-     * @return <code>true</code> if the given {@link TestCaseExecutionInQueue}
-     * can be inserted into the execution queue, <code>false</code> otherwise
-     * @throws CerberusException if an exception occurs
-     */
-    boolean canInsert(TestCaseExecutionInQueue inQueue) throws CerberusException;
-
-    /**
      * Inserts the given {@link TestCaseExecutionInQueue} to the execution queue
      *
      * @param inQueue the {@link TestCaseExecutionInQueue} to insert to the

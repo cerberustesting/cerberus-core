@@ -17,18 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var stepList = [];
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
-        loadExecutionInformation(executionId, stepList);
-    });
-});
 
-function loadExecutionInformation(executionId, stepList){
-        
         $.ajax({
             url: "ReadTestCaseExecution",
             method: "GET",
@@ -60,9 +54,6 @@ function loadExecutionInformation(executionId, stepList){
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
                     socket.onerror = function (e) {
-                        setTimeout(function () {
-                                loadExecutionInformation(executionId, stepList);
-                            }, 5000);
                     } //on traite les cas d'erreur*/
                 }
                 $("#seeProperties").click(function () {
@@ -70,30 +61,31 @@ function loadExecutionInformation(executionId, stepList){
                 });
             }
         });
-    }
+    });
+});
 
 function initPage(id) {
 
     var doc = new Doc();
     var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
-    //$('#executionHeader').affix({offset: {top: height}});
+    $('#executionHeader').affix({offset: {top: height}});
 
     var wrap = $(window);
 
-//    wrap.on("scroll", function (e) {
-//        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-//            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    });
-//
-//    wrap.resize(function (e) {
-//        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
-//            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//        $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
-//    })
+    wrap.on("scroll", function (e) {
+        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+    });
+
+    wrap.resize(function (e) {
+        if ($("#executionHeader").width() != $("#executionHeader").parent().width() - 30) {
+            $("#executionHeader").width($("#executionHeader").parent().width() - 30);
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+        $('.action [data-toggle="tooltip"], .control [data-toggle="tooltip"]').tooltip('show');
+    })
 
     $("#editTcInfo").prop("disabled", true);
     $("#runTestCase").prop("disabled", true);
@@ -134,17 +126,17 @@ function initPage(id) {
 
     var wrap = $(window);
 
-//    wrap.on("scroll", function (e) {
-//        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    });
-//
-//    wrap.resize(function (e) {
-//        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    })
+    wrap.on("scroll", function (e) {
+        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+    });
+
+    wrap.resize(function (e) {
+        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
+            $("#list-wrapper").width($("#nav-execution").width());
+        }
+    })
 }
 
 function displayPageLabel(doc) {
@@ -180,7 +172,6 @@ function displayPageLabel(doc) {
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
     $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
-    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
     $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
@@ -196,10 +187,6 @@ function updatePage(data, stepList) {
 
     $("#editTcInfo").click(function () {
         window.location = "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase;
-    });
-    $("#editTcStepInfo").click(function () {
-        var currentStep = $('#stepInfo');
-        window.location = "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step');
     });
     $("#runTestCase").click(function () {
         window.location = "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag;
@@ -277,8 +264,8 @@ function updatePage(data, stepList) {
         async: true,
         success: function (dataApp) {
             var link;
-            var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
-            if ((data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") && newBugURL != undefined) {
+            if (data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") {
+                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
                 newBugURL = newBugURL.replace("%EXEID%", data.id);
                 newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
                 newBugURL = newBugURL.replace("%TEST%", data.test);
@@ -436,7 +423,7 @@ function createProperties(propList) {
         }
         var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.property));
         var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.type));
-        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(safeLinkify(property.rMessage)));
+        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'>").text(property.rMessage));
 
         var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "property_field") + "' readonly>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "description_field") + "' readonly>").addClass("form-control input-sm").val(property.description);
@@ -583,13 +570,13 @@ function Step(json, stepList) {
     this.fullStart = json.fullStart;
     this.id = json.id;
     this.returnCode = json.returnCode;
-    this.returnMessage = safeLinkify(json.returnMessage);
+    this.returnMessage = json.returnMessage;
     this.sort = json.sort;
     this.start = json.start;
     this.step = json.step;
     this.index = json.index;
     this.test = json.test;
-    this.testcase = json.testcase;
+    this.testcase = json.testCase;
     this.timeElapsed = json.timeElapsed;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
@@ -665,13 +652,12 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     }
 
-    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.description));
+    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.returnMessage));
     if (object.useStep === "Y") {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text(""));
     }
-    $("#stepInfo").attr('test', object.test).attr('testcase', object.testcase).attr('step', object.step);
     $("#stepInfo").append(stepDesc);
     object.stepActionContainer.show();
     $("#stepInfo").show();
@@ -884,8 +870,8 @@ Action.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.append(this.returnMessage);
-    descriptionField.append(this.description);
+    returnMessageField.text(this.returnMessage);
+    descriptionField.text(this.description);
 
     contentField.append(descriptionField);
     contentField.append(returnMessageField);
@@ -1155,8 +1141,8 @@ Control.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.append(this.returnMessage);
-    descriptionField.append(this.description);
+    returnMessageField.text(this.returnMessage);
+    descriptionField.text(this.description);
 
     contentField.append(descriptionField);
     contentField.append(returnMessageField);
@@ -1311,15 +1297,4 @@ function addFileLink(fileList, container) {
     }
 }
 
-var LINKIFY_OPTIONS = {
-    validate: {
-        url: function (value) {
-            return /^(http|ftp)s?:\/\//.test(value);
-        }
-    }
-};
-
-function safeLinkify(str) {
-    return str == undefined ? str : str.linkify(LINKIFY_OPTIONS);
-}
 

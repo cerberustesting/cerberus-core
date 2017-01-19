@@ -282,7 +282,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $("#saveScript").click(saveScript);
 
             $("#runTestCase").parent().attr("href","./RunTests1.jsp?test=" + test + "&testcase=" + testcase);
-            $("#seeLastExec").parent().attr("href","./ExecutionDetailList.jsp?test=" + test + "&testcase=" + testcase);
+            $("#seeLastExec").parent().attr("href","./TestCaseExecution.jsp?test=" + test + "&testcase=" + testcase);
             $("#seeLogs").parent().attr("href","./LogViewer.jsp?Test=" + test + "&TestCase=" + testcase);
 
             $.ajax({

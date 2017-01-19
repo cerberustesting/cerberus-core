@@ -2046,7 +2046,7 @@
                     </td>
                     <%        }%>    
                     <td>
-                        <a href="ExecutionDetailList.jsp?test=<%=test%>&testcase=<%=testcase%>&MySystem=<%=appSystem%>">See Last Executions..</a>
+                        <a href="TestCaseExecution.jsp?test=<%=test%>&testcase=<%=testcase%>">See Last Executions..</a>
                     </td>
                     <%if (request.getUserPrincipal()
                                 != null && request.isUserInRole("TestAdmin")) {

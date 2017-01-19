@@ -24,7 +24,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
+        <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="js/pages/TestCaseExecution.js"></script>
+        
         <title id="pageTitle">Execution</title>
     </head>
     <body>

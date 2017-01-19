@@ -104,8 +104,19 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
                     "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
                     "WHERE `" + COLUMN_ID + "` = ?";
-    private static final String QUERY_FIND_BY_STATE = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_STATE + "` = ? ORDER BY `" + COLUMN_ID + "` ASC";
-    private static final String QUERY_FIND_BY_STATE_LIMIT = "SELECT * FROM `" + TABLE + "` WHERE `" + COLUMN_STATE + "` = ? ORDER BY `" + COLUMN_ID + "` ASC LIMIT ?";
+    private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES =
+            "SELECT * FROM `" + TABLE + "` exq " +
+                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
+                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
+                    "WHERE `" + COLUMN_STATE + "` = ? " +
+                    "ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_FIND_BY_STATE_LIMIT_WITH_DEPENDENCIES =
+            "SELECT * FROM `" + TABLE + "` exq " +
+                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
+                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
+                    "WHERE `" + COLUMN_STATE + "` = ? " +
+                    "ORDER BY `" + COLUMN_ID + "` ASC " +
+                    "LIMIT ?";
     private static final String QUERY_GET_ALL = "SELECT * FROM `" + TABLE + "`;";
     private static final String QUERY_UPDATE_STATE = "UPDATE `" + TABLE + "` SET `" + COLUMN_STATE + "` = ? WHERE `" + COLUMN_ID + "` = ?";
     private static final String QUERY_UPDATE_STATE_AND_COMMENT = "UPDATE `" + TABLE + "` SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT +  "` = ? WHERE `" + COLUMN_ID + "` = ?";
@@ -378,7 +389,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 Connection connection = this.databaseSpring.connect()
         ) {
             List<TestCaseExecutionInQueue> result = new ArrayList<TestCaseExecutionInQueue>();
-            final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE : QUERY_FIND_BY_STATE_LIMIT;
+            final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE_WITH_DEPENDENCIES : QUERY_FIND_BY_STATE_LIMIT_WITH_DEPENDENCIES;
 
             // Begin transaction
             connection.setAutoCommit(false);
@@ -396,7 +407,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 // Then set their state to QUEUED
                 while (waitings.next()) {
                     try {
-                        TestCaseExecutionInQueue waiting = loadFromResultSet(waitings);
+                        TestCaseExecutionInQueue waiting = loadWithDependenciesFromResultSet(waitings);
                         updateStateStatement.setString(1, TestCaseExecutionInQueue.State.QUEUED.name());
                         updateStateStatement.setLong(2, waiting.getId());
                         updateStateStatement.addBatch();
@@ -758,7 +769,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             searchSQL.append(" or exq.Environment like ?");
             searchSQL.append(" or exq.Browser like ?");
             searchSQL.append(" or exq.Tag like ?");
-            searchSQL.append(" or exq.Processed like ?)");
+            searchSQL.append(" or exq.State like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -1479,7 +1490,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             searchSQL.append(" or exq.Environment like ?");
             searchSQL.append(" or exq.Browser like ?");
             searchSQL.append(" or exq.Tag like ?");
-            searchSQL.append(" or exq.Processed like ?)");
+            searchSQL.append(" or exq.State like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
