@@ -8110,11 +8110,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'en', 'State', ''),");
         SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'fr', 'Etat', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add the new ManualExecution column header on the Execution pending page
         //-- ------------------------ 1044
         SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution`"); 
+        SQLS.append("ALTER TABLE `testcaseexecution`");
         SQLS.append("ADD COLUMN `ManualExecution` VARCHAR(1) NULL DEFAULT '' AFTER `ConditionVal2`;");
         SQLInstruction.add(SQLS.toString());
 
@@ -8124,6 +8124,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('page_executiondetail', 'edittcstep', '', 'fr', 'Editer le Cas de Test à partir de l\\'Etape courante', ''),");
         SQLS.append("('page_executiondetail', 'edittcstep', '', 'en', 'Edit Test Case from the current Step', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to tune the level of the property definition
+        //-- ------------------------ 1046
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_property_countrylevelheritage','N','Boolean that activate the heritage of the property calculation at the country level. if N, a property will be considered as not available on country XXX when it does not exist for XXX and exist for any other country but XXX at testcase level (even if it has been defined at usestep or pretest level for that country XXX). If Y, it will be considered as defined for country XXX as long as it has been defined for that country at testcase, usestep or pretest level.')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

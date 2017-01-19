@@ -83,7 +83,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = StringUtil.parseBoolean(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error(ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
         return outPutResult;
     }
@@ -96,7 +96,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Integer.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error(ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
         return outPutResult;
     }
@@ -109,7 +109,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Long.parseLong(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error(ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
         return outPutResult;
     }
@@ -122,7 +122,7 @@ public class ParameterService implements IParameterService {
             myParameter = this.findParameterByKey(key, system);
             outPutResult = Float.valueOf(myParameter.getValue());
         } catch (CerberusException | NumberFormatException ex) {
-            LOG.error(ex);
+            LOG.error("Error when trying to retreive parameter : '" + key + "' for system : '" + system + "'. Default value returned : '" + defaultValue + "'. Trace : " + ex);
         }
         return outPutResult;
     }
@@ -273,17 +273,17 @@ public class ParameterService implements IParameterService {
 
     @Override
     public void fireCreate(String topic, Parameter parameter) {
-      observableEngine.fireCreate(topic, parameter);
+        observableEngine.fireCreate(topic, parameter);
     }
 
     @Override
     public void fireUpdate(String topic, Parameter parameter) {
-      observableEngine.fireUpdate(topic, parameter);
+        observableEngine.fireUpdate(topic, parameter);
     }
 
     @Override
     public void fireDelete(String topic, Parameter parameter) {
-      observableEngine.fireDelete(topic, parameter);
+        observableEngine.fireDelete(topic, parameter);
     }
 
 }

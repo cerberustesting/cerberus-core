@@ -163,7 +163,7 @@ function addEntryModalSaveHandler() {
     clearResponseMessage($('#addApplicationModal'));
     var formAdd = $("#addApplicationModal #addApplicationModalForm");
 
-    var nameElement = formAdd.find("#addApplicationModalForm");
+    var nameElement = formAdd.find("#application");
     var nameElementEmpty = nameElement.prop("value") === '';
     if (nameElementEmpty) {
         var localMessage = new Message("danger", "Please specify the name of the application!");
@@ -173,8 +173,18 @@ function addEntryModalSaveHandler() {
         nameElement.parents("div.form-group").removeClass("has-error");
     }
 
+    var deployTypeElement = formAdd.find("#deploytype");
+    var deployTypeElementEmpty = deployTypeElement.prop("value") === '';
+    if (deployTypeElementEmpty) {
+        var localMessage = new Message("danger", "Please specify the Deploy Type! If necessary create at least one Deploy Type in the corresponding screen under Application menu.");
+        deployTypeElement.parents("div.form-group").addClass("has-error");
+        showMessage(localMessage, $('#addApplicationModal'));
+    } else {
+        deployTypeElement.parents("div.form-group").removeClass("has-error");
+    }
+    
     // verif if all mendatory fields are not empty
-    if (nameElementEmpty)
+    if ((nameElementEmpty) || (deployTypeElementEmpty))
         return;
 
     // Get the header data from the form.
