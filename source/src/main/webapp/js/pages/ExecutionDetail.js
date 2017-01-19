@@ -653,7 +653,7 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     }
 
-    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.returnMessage));
+    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.description));
     if (object.useStep === "Y") {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
     } else {
