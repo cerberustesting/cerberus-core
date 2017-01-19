@@ -28,46 +28,24 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     });
 });
 
-function loadExecutionInformation(executionId, stepList, sockets){
-        
-        $.ajax({
-            url: "ReadTestCaseExecution",
-            method: "GET",
-            data: "executionId=" + executionId,
-            datatype: "json",
-            async: true,
-            success: function (data) {
-                var tce = data.testCaseExecution;
-                updatePage(tce, stepList);
-                if (tce.controlStatus == "PE") {
-                    var parser = document.createElement('a');
-                    parser.href = window.location.href;
+function loadExecutionInformation(executionId, stepList, sockets) {
 
-                    var protocol = "ws:";
-                    if (parser.protocol == "https:") {
-                        protocol = "wss:";
-                    }
-                    var path = parser.pathname.split("ExecutionDetail2")[0];
-                    var new_uri = protocol + parser.host + path + "execution/" + executionId;
+    $.ajax({
+        url: "ReadTestCaseExecution",
+        method: "GET",
+        data: "executionId=" + executionId,
+        datatype: "json",
+        async: true,
+        success: function (data) {
+            var tce = data.testCaseExecution;
+            updatePage(tce, stepList);
+            if (tce.controlStatus == "PE") {
+                var parser = document.createElement('a');
+                parser.href = window.location.href;
 
-                    var socket = new WebSocket(new_uri);
-
-                    socket.onopen = function (e) {
-                    } //on "écoute" pour savoir si la connexion vers le serveur websocket s'est bien faite
-                    socket.onmessage = function (e) {
-                        var data = JSON.parse(e.data);
-                        updatePage(data, stepList);
-                    } //on récupère les messages provenant du serveur websocket
-                    socket.onclose = function (e) {
-                    } //on est informé lors de la fermeture de la connexion vers le serveur
-                    socket.onerror = function (e) {
-                        setTimeout(function () {
-                                loadExecutionInformation(executionId, stepList);
-                            }, 5000);
-                    } //on traite les cas d'erreur*/
-
-                    // Remain in memory
-                    sockets.push(socket);
+                var protocol = "ws:";
+                if (parser.protocol == "https:") {
+                    protocol = "wss:";
                 }
                 var path = parser.pathname.split("ExecutionDetail2")[0];
                 var new_uri = protocol + parser.host + path + "execution/" + executionId;
@@ -87,12 +65,15 @@ function loadExecutionInformation(executionId, stepList, sockets){
                         loadExecutionInformation(executionId, stepList);
                     }, 5000);
                 } //on traite les cas d'erreur*/
+
+                // Remain in memory
+                sockets.push(socket);
             }
             $("#seeProperties").click(function () {
                 $("#propertiesModal").modal('show');
             });
         }
-        });
+    });
 }
 
 function initPage(id) {
@@ -901,7 +882,7 @@ Action.prototype.generateHeader = function () {
 
     contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
-    
+
     firstRow.append(contentField);
 
     content.append(firstRow);
