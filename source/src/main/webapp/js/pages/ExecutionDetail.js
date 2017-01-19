@@ -23,7 +23,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var stepList = [];
         var executionId = GetURLParameter("executionId");
         initPage(executionId);
+        loadExecutionInformation(executionId, stepList);
+    });
+});
 
+function loadExecutionInformation(executionId, stepList){
+        
         $.ajax({
             url: "ReadTestCaseExecution",
             method: "GET",
@@ -55,6 +60,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     socket.onclose = function (e) {
                     } //on est informé lors de la fermeture de la connexion vers le serveur
                     socket.onerror = function (e) {
+                        setTimeout(function () {
+                                loadExecutionInformation(executionId, stepList);
+                            }, 5000);
                     } //on traite les cas d'erreur*/
                 }
                 $("#seeProperties").click(function () {
@@ -62,8 +70,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 });
             }
         });
-    });
-});
+    }
 
 function initPage(id) {
 
