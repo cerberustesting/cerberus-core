@@ -365,16 +365,15 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
             var height = $("nav.navbar.navbar-inverse.navbar-static-top").outerHeight(true) + $("div.alert.alert-warning").outerHeight(true) + $(".page-title-line").outerHeight(true) - 10;
 
-            //$("#testCaseTitle").affix({offset: {top: height}});
+            $("#divPanelDefault").affix({offset: {top: height}});
 
-//            var wrap = $(window);
-//
-//            wrap.on("scroll", function (e) {
-//                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
-//                    $("#testCaseTitle").width($("#testCaseTitle").parent().width() - 30);
-//                    $("#list-wrapper").width($("#nav-execution").width());
-//                }
-//            });
+            var wrap = $(window);
+
+            wrap.on("scroll", function (e) {
+                $(".affix").width($("#page-layout").width()-3);
+                //$(".affix-top").width($("#divPanelDefault").width());
+                });
+            
 //
 //            wrap.resize(function (e) {
 //                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
