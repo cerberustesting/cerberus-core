@@ -277,8 +277,8 @@ function updatePage(data, stepList) {
         async: true,
         success: function (dataApp) {
             var link;
-            if (data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") {
-                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+            var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+            if ((data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") && newBugURL != undefined) {
                 newBugURL = newBugURL.replace("%EXEID%", data.id);
                 newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
                 newBugURL = newBugURL.replace("%TEST%", data.test);
