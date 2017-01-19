@@ -26,6 +26,8 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
+import org.cerberus.crud.entity.Test;
+import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -46,6 +48,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -236,13 +239,27 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerItem tce = this.readByKey(executionId);
         TestCaseExecution testCaseExecution = (TestCaseExecution) tce.getItem();
 
-        AnswerItem ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
-        testCaseExecution.setTestCaseObj((TestCase) ai.getItem());
+        AnswerItem<TestCase> ai = testCaseService.readByKeyWithDependency(testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        testCaseExecution.setTestCaseObj(ai.getItem());
 
         AnswerList a = testCaseExecutionDataService.readByIdWithDependency(executionId);
         testCaseExecution.setTestCaseExecutionDataList(a.getDataList());
 
-        AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        AnswerList<TestCaseStepExecution> steps = new AnswerList<>();
+        steps.setDataList(new ArrayList<TestCaseStepExecution>());
+        List<TestCase> preTestCases = testCaseService.findTestCaseActiveByCriteria("Pre Testing", testCaseExecution.getApplication(), testCaseExecution.getCountry());
+        if (preTestCases != null) {
+            for (TestCase preTestCase : preTestCases) {
+                AnswerList<TestCaseStepExecution> preTestCaseStepsExecution = testCaseStepExecutionService.readByVarious1WithDependency(executionId, preTestCase.getTest(), preTestCase.getTestCase());
+                if (preTestCaseStepsExecution.getDataList() != null) {
+                    steps.getDataList().addAll(preTestCaseStepsExecution.getDataList());
+                }
+            }
+        }
+        AnswerList<TestCaseStepExecution> testCaseStepExecution = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        if (testCaseStepExecution.getDataList() != null) {
+            steps.getDataList().addAll(testCaseStepExecution.getDataList());
+        }
         testCaseExecution.setTestCaseStepExecutionAnswerList(steps);
 
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
