@@ -8118,6 +8118,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `ManualExecution` VARCHAR(1) NULL DEFAULT '' AFTER `ConditionVal2`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Document the new 'edittcstep' field from ExecutionDetail page
+        //-- ------------------------ 1045
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_executiondetail', 'edittcstep', '', 'fr', 'Editer le Cas de Test à partir de l\\'Etape courante', ''),");
+        SQLS.append("('page_executiondetail', 'edittcstep', '', 'en', 'Edit Test Case from the current Step', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

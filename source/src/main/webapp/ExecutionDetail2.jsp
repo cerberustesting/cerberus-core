@@ -71,7 +71,16 @@
                                     <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
                                 </ul>
                             </div>
-                            <button class="btn btn-default pull-right" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
+                            <div class="btn-group pull-right">
+                                <button class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#"><button class="btn btn-default pull-right" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</button></a></li>
+                                </ul>
+                            </div>
                             <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
                             <div class="side-item pull-right"></div>
 

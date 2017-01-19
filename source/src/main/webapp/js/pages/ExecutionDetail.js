@@ -173,6 +173,7 @@ function displayPageLabel(doc) {
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
     $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
     $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
+    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
     $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
     $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
@@ -188,6 +189,10 @@ function updatePage(data, stepList) {
 
     $("#editTcInfo").click(function () {
         window.location = "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase;
+    });
+    $("#editTcStepInfo").click(function () {
+        var currentStep = $('#stepInfo');
+        window.location = "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step');
     });
     $("#runTestCase").click(function () {
         window.location = "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag;
@@ -577,7 +582,7 @@ function Step(json, stepList) {
     this.step = json.step;
     this.index = json.index;
     this.test = json.test;
-    this.testcase = json.testCase;
+    this.testcase = json.testcase;
     this.timeElapsed = json.timeElapsed;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
@@ -659,6 +664,7 @@ Step.prototype.show = function () {
     } else {
         stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text(""));
     }
+    $("#stepInfo").attr('test', object.test).attr('testcase', object.testcase).attr('step', object.step);
     $("#stepInfo").append(stepDesc);
     object.stepActionContainer.show();
     $("#stepInfo").show();
