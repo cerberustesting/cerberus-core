@@ -182,6 +182,8 @@
                             </div>
                             <div class="col-lg-6">
                                 <label for="countryList" id="countryListLabel" class="bold">Country List :</label>
+                                <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                                <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
                                 <div id="countryList" name="countryList" style="padding-top: 4%;"></div>
                             </div>
                         </div>

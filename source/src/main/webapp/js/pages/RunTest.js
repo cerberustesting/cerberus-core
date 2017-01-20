@@ -126,6 +126,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#testCaseList").on("change", updatePotentialNumber);
         $("#envSettingsAuto select").on("change", updatePotentialNumber);
 
+        $("#countrySelectAll").on("click", function () {
+            $("#countryList input").prop('checked', true);
+            updatePotentialNumber();
+        });
+        $("#countryUnselectAll").on("click", function () {
+            $("#countryList input").prop('checked', false);
+            updatePotentialNumber();
+        });
+
+
     });
 });
 
@@ -135,65 +145,65 @@ function loadRequestContext() {
     $('#testCaseList').find('option[value="' + test + '-' + testcase + '"]').prop("selected", true);
 }
 
-function displayPageLabel(){
+function displayPageLabel() {
     var doc = new Doc();
-    $("h1.page-title-line").text(doc.getDocLabel("page_runtest","title"));
-    $("#environmentPanel div.panel-heading").text(doc.getDocLabel("page_runtest","selection_type"));
-    $("#environmentPanel input[value='filters']").next().text(doc.getDocLabel("page_runtest","select_list_test"));
-    $("#environmentPanel input[value='campaign']").next().text(doc.getDocLabel("page_runtest","select_campaign"));
-    $("#loadCampaignBtn").text(doc.getDocLabel("page_runtest","load"));
-    $("#TestPanel .panel-heading").text(doc.getDocLabel("page_runtest","choose_test"));
-    $("#TestPanel #filtersPanelContainer .panel-heading span:nth-child(2)").text(doc.getDocLabel("page_runtest","filters"));
-    $("#lbl_test").text(doc.getDocLabel("page_runtest","test"));
-    $("#lbl_project").text(doc.getDocLabel("page_runtest","project"));
-    $("#lbl_application").text(doc.getDocLabel("page_runtest","application"));
-    $("#lbl_creator").text(doc.getDocLabel("page_runtest","creator"));
-    $("#lbl_implementer").text(doc.getDocLabel("page_runtest","implementer"));
-    $("#lbl_group").text(doc.getDocLabel("page_runtest","group"));
-    $("#lbl_campaign").text(doc.getDocLabel("page_runtest","campaign"));
-    $("#lbl_testBattery").text(doc.getDocLabel("page_runtest","testbattery"));
-    $("#lbl_priority").text(doc.getDocLabel("page_runtest","priority"));
-    $("#lbl_status").text(doc.getDocLabel("page_runtest","status"));
-    $("#lbl_targetRev").text(doc.getDocLabel("page_runtest","targetrev"));
-    $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest","targetsprint"));
-    $("#lbl_size").text(doc.getDocLabel("page_runtest","size"));
-    $("#selectAll").text(doc.getDocLabel("page_runtest","select_all"));
-    $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest","automatic"));
-    $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest","manual"));
-    $("label[for='myhost']").text(doc.getDocLabel("page_runtest","myhost"));
-    $("label[for='mycontextroot']").text(doc.getDocLabel("page_runtest","mycontextroot"));
-    $("label[for='myloginrelativeurl']").text(doc.getDocLabel("page_runtest","myloginrelativeurl"));
-    $("label[for='myenvdata']").text(doc.getDocLabel("page_runtest","myenvdata"));
-    $("label[for='countryList']").text(doc.getDocLabel("page_runtest","countryList"));
-    $("#potential span:nth-child(2)").text(doc.getDocLabel("page_runtest","potential"));
-    $("#addQueue").text(doc.getDocLabel("page_runtest","addtoqueue"));
-    $("#addQueueAndRun").text(doc.getDocLabel("page_runtest","addtoqueueandrun"));
-    $("#RobotPanel .panel-heading").text(doc.getDocLabel("page_runtest","robot_settings"));
-    $("#RobotPanel label[for='robot']").text(doc.getDocLabel("page_runtest","select_robot"));
-    $("#RobotPanel label[for='seleniumIP']").text(doc.getDocLabel("page_runtest","selenium_ip"));
-    $("#RobotPanel label[for='seleniumPort']").text(doc.getDocLabel("page_runtest","selenium_port"));
-    $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest","browser"));
-    $("#RobotPanel label[for='version']").text(doc.getDocLabel("page_runtest","version"));
-    $("#RobotPanel label[for='platform']").text(doc.getDocLabel("page_runtest","platform"));
-    $("#RobotPanel label[for='screenSize']").text(doc.getDocLabel("page_runtest","screensize"));
-    $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest","saverobotpref"));
-    $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest","execution_settings"));
-    $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest","tag"));
-    $("#executionPanel label[for='outputFormat']").text(doc.getDocLabel("page_runtest","outputformat"));
-    $("#executionPanel label[for='verbose']").text(doc.getDocLabel("page_runtest","verbose"));
-    $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest","screenshot"));
-    $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest","pagesource"));
-    $("#executionPanel label[for='seleniumLog']").text(doc.getDocLabel("page_runtest","seleniumlog"));
-    $("#executionPanel label[for='synchroneous']").text(doc.getDocLabel("page_runtest","synchroneous"));
-    $("#executionPanel label[for='timeout']").text(doc.getDocLabel("page_runtest","timeout"));
-    $("#executionPanel label[for='retries']").text(doc.getDocLabel("page_runtest","retries"));
-    $("#executionPanel label[for='manualExecution']").text(doc.getDocLabel("page_runtest","manual_execution"));
-    $("#saveExecutionParams").text(doc.getDocLabel("page_runtest","save_execution_params"));
-    $("#notValid span:nth-child(2)").text(doc.getDocLabel("page_runtest","notValid"));
-    $("#valid span:nth-child(2)").text(doc.getDocLabel("page_runtest","valid"));
-    $("#resetQueue").text(doc.getDocLabel("page_runtest","reset_queue"));
-    $("#resetQueue").next().text(doc.getDocLabel("page_runtest","queue"));
-    $("#run").text(doc.getDocLabel("page_runtest","run"));
+    $("h1.page-title-line").text(doc.getDocLabel("page_runtest", "title"));
+    $("#environmentPanel div.panel-heading").text(doc.getDocLabel("page_runtest", "selection_type"));
+    $("#environmentPanel input[value='filters']").next().text(doc.getDocLabel("page_runtest", "select_list_test"));
+    $("#environmentPanel input[value='campaign']").next().text(doc.getDocLabel("page_runtest", "select_campaign"));
+    $("#loadCampaignBtn").text(doc.getDocLabel("page_runtest", "load"));
+    $("#TestPanel .panel-heading").text(doc.getDocLabel("page_runtest", "choose_test"));
+    $("#TestPanel #filtersPanelContainer .panel-heading span:nth-child(2)").text(doc.getDocLabel("page_runtest", "filters"));
+    $("#lbl_test").text(doc.getDocLabel("page_runtest", "test"));
+    $("#lbl_project").text(doc.getDocLabel("page_runtest", "project"));
+    $("#lbl_application").text(doc.getDocLabel("page_runtest", "application"));
+    $("#lbl_creator").text(doc.getDocLabel("page_runtest", "creator"));
+    $("#lbl_implementer").text(doc.getDocLabel("page_runtest", "implementer"));
+    $("#lbl_group").text(doc.getDocLabel("page_runtest", "group"));
+    $("#lbl_campaign").text(doc.getDocLabel("page_runtest", "campaign"));
+    $("#lbl_testBattery").text(doc.getDocLabel("page_runtest", "testbattery"));
+    $("#lbl_priority").text(doc.getDocLabel("page_runtest", "priority"));
+    $("#lbl_status").text(doc.getDocLabel("page_runtest", "status"));
+    $("#lbl_targetRev").text(doc.getDocLabel("page_runtest", "targetrev"));
+    $("#lbl_targetSprint").text(doc.getDocLabel("page_runtest", "targetsprint"));
+    $("#lbl_size").text(doc.getDocLabel("page_runtest", "size"));
+    $("#selectAll").text(doc.getDocLabel("page_runtest", "select_all"));
+    $("input[name='envSettings'][value='auto']").next().text(doc.getDocLabel("page_runtest", "automatic"));
+    $("input[name='envSettings'][value='manual']").next().text(doc.getDocLabel("page_runtest", "manual"));
+    $("label[for='myhost']").text(doc.getDocLabel("page_runtest", "myhost"));
+    $("label[for='mycontextroot']").text(doc.getDocLabel("page_runtest", "mycontextroot"));
+    $("label[for='myloginrelativeurl']").text(doc.getDocLabel("page_runtest", "myloginrelativeurl"));
+    $("label[for='myenvdata']").text(doc.getDocLabel("page_runtest", "myenvdata"));
+    $("label[for='countryList']").text(doc.getDocLabel("page_runtest", "countryList"));
+    $("#potential span:nth-child(2)").text(doc.getDocLabel("page_runtest", "potential"));
+    $("#addQueue").text(doc.getDocLabel("page_runtest", "addtoqueue"));
+    $("#addQueueAndRun").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
+    $("#RobotPanel .panel-heading").text(doc.getDocLabel("page_runtest", "robot_settings"));
+    $("#RobotPanel label[for='robot']").text(doc.getDocLabel("page_runtest", "select_robot"));
+    $("#RobotPanel label[for='seleniumIP']").text(doc.getDocLabel("page_runtest", "selenium_ip"));
+    $("#RobotPanel label[for='seleniumPort']").text(doc.getDocLabel("page_runtest", "selenium_port"));
+    $("#RobotPanel label[for='browser']").text(doc.getDocLabel("page_runtest", "browser"));
+    $("#RobotPanel label[for='version']").text(doc.getDocLabel("page_runtest", "version"));
+    $("#RobotPanel label[for='platform']").text(doc.getDocLabel("page_runtest", "platform"));
+    $("#RobotPanel label[for='screenSize']").text(doc.getDocLabel("page_runtest", "screensize"));
+    $("#saveRobotPreferences").text(doc.getDocLabel("page_runtest", "saverobotpref"));
+    $("#executionPanel .panel-heading").text(doc.getDocLabel("page_runtest", "execution_settings"));
+    $("#executionPanel label[for='tag']").text(doc.getDocLabel("page_runtest", "tag"));
+    $("#executionPanel label[for='outputFormat']").text(doc.getDocLabel("page_runtest", "outputformat"));
+    $("#executionPanel label[for='verbose']").text(doc.getDocLabel("page_runtest", "verbose"));
+    $("#executionPanel label[for='screenshot']").text(doc.getDocLabel("page_runtest", "screenshot"));
+    $("#executionPanel label[for='pageSource']").text(doc.getDocLabel("page_runtest", "pagesource"));
+    $("#executionPanel label[for='seleniumLog']").text(doc.getDocLabel("page_runtest", "seleniumlog"));
+    $("#executionPanel label[for='synchroneous']").text(doc.getDocLabel("page_runtest", "synchroneous"));
+    $("#executionPanel label[for='timeout']").text(doc.getDocLabel("page_runtest", "timeout"));
+    $("#executionPanel label[for='retries']").text(doc.getDocLabel("page_runtest", "retries"));
+    $("#executionPanel label[for='manualExecution']").text(doc.getDocLabel("page_runtest", "manual_execution"));
+    $("#saveExecutionParams").text(doc.getDocLabel("page_runtest", "save_execution_params"));
+    $("#notValid span:nth-child(2)").text(doc.getDocLabel("page_runtest", "notValid"));
+    $("#valid span:nth-child(2)").text(doc.getDocLabel("page_runtest", "valid"));
+    $("#resetQueue").text(doc.getDocLabel("page_runtest", "reset_queue"));
+    $("#resetQueue").next().text(doc.getDocLabel("page_runtest", "queue"));
+    $("#run").text(doc.getDocLabel("page_runtest", "run"));
 }
 
 function typeSelectHandler(test, testcase, environment, country) {
@@ -398,7 +408,7 @@ function checkForms() {
 
     if ($("#queue li").length === 0) {
         type = getAlertType("KO");
-        message = doc.getDocLabel("page_runtest","empty_queue"); //Execution queue is empty !
+        message = doc.getDocLabel("page_runtest", "empty_queue"); //Execution queue is empty !
         showMessageMainPage(type, message);
         return false;
 // Browser is not mandatory when application is not GUI.        
@@ -409,7 +419,7 @@ function checkForms() {
 //        return false;
     } else if ($("#queue li").length > 1 && $("#tag").val() === "") { // More than 1 excution and no Tag specified.
         type = getAlertType("KO");
-        message = doc.getDocLabel("page_runtest","more_than_one_execution_requested"); //More than 1 execution has been requested. It will be executed in batch mode so please, indicate a tag (to find it back)
+        message = doc.getDocLabel("page_runtest", "more_than_one_execution_requested"); //More than 1 execution has been requested. It will be executed in batch mode so please, indicate a tag (to find it back)
         showMessageMainPage(type, message);
         return false;
     }
@@ -633,11 +643,11 @@ function checkExecution(triggerRun) {
 
     $("#error").empty();
     if (testcase.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest","select_one_testcase")); //!!! Please, select at least 1 Test Case !!!
+        $("#error").text(doc.getDocLabel("page_runtest", "select_one_testcase")); //!!! Please, select at least 1 Test Case !!!
     } else if (environment.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest","select_one_env")); //"!!! Please, select at least 1 Environment !!!");
+        $("#error").text(doc.getDocLabel("page_runtest", "select_one_env")); //"!!! Please, select at least 1 Environment !!!");
     } else if (countries.length === 0) {
-        $("#error").text(doc.getDocLabel("page_runtest","select_one_country")); //"!!! Please, select at least 1 Country !!!");
+        $("#error").text(doc.getDocLabel("page_runtest", "select_one_country")); //"!!! Please, select at least 1 Country !!!");
     } else {
         showLoader("#queuePanel");
         $.ajax({
@@ -829,7 +839,7 @@ function appendRobotList() {
     $.when(jqXHR).then(function (data) {
         var robotList = $("#robot");
 
-        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest","custom_config")).val(""));
+        robotList.append($('<option></option>').text(doc.getDocLabel("page_runtest", "custom_config")).val(""));
         for (var index = 0; index < data.contentTable.length; index++) {
             robotList.append($('<option></option>').text(data.contentTable[index].robot).val(data.contentTable[index].robot));
         }
@@ -910,9 +920,9 @@ function loadRobotForm(browser) {
     return $.when(
             appendRobotList(),
             loadSelect("BROWSER", "browser"),
-            $("[name=Platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest","default")).val("")),
+            $("[name=Platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
             loadSelect("PLATFORM", "Platform"),
-            $("[name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest","default_full_screen")).val("")),
+            $("[name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
             loadSelect("screensize", "screenSize")
             ).then(function () {
         applyRobotPref(browser);
