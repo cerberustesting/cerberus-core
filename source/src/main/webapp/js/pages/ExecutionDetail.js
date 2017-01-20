@@ -1110,7 +1110,7 @@ Control.prototype.draw = function () {
 
 
     // Starting to reduce the size of the row by the length of elements.
-    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length * 2));
+    $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
     addFileLink(this.fileList, $(header).find(".row"));
 
@@ -1285,18 +1285,18 @@ function addFileLink(fileList, container) {
         if (fileList[i].fileType === "JPG") {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
                     .click(function (e) {
                         showPicture(fileDesc, urlImage);
                         return false;
                     }));
             container.append(linkBox);
-        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT")) {
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT")|| (fileList[i].fileType === "XML")) {
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
-            var linkBoxtxt = $("<div>").addClass("col-sm-2").css("padding", "0px 7px 0px 7px")
+            var linkBoxtxt = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                     .css("height", "30px").click(function (f) {
                 showTextArea(fileDesctxt, "", urlImagetxt);
