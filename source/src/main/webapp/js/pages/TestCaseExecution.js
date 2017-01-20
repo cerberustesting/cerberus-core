@@ -86,10 +86,10 @@ function aoColumnsFunc() {
                     var glyphClass = getRowClass(obj.controlStatus);
                     var tooltip = generateTooltip(obj);
                     var cell = '<div class="progress-bar status' + obj.controlStatus + '" \n\
-                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 40px;" \n\
+                                role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 20px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
                                 onclick="window.open(\'' + executionLink + '\')">\n\
-                                <span class="' + glyphClass.glyph + ' marginRight5"></span>\n\
+                                <span class="' + glyphClass.glyph + ' marginRight5" style="margin-top:0;"></span>\n\
                                  <span>' + obj.controlStatus + '<span></div>';
                     return cell;
                 } else {
