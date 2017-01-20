@@ -98,6 +98,9 @@
     <body>
         <%@ include file="include/function.jsp" %>
         <%@ include file="include/header.jsp" %>
+         <div id="warningOldPage" style="margin: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; border-radius: 4px; border: 1px solid transparent; margin-bottom: 20px; padding: 15px; border-color: #ebccd1; background-color: #f2dede; color:#a94442;">
+                <strong>DEPRECATED</strong> This Page is now deprecated. Follow this link to get the new Page. <button style="color: #fff;background-color: #337ab7;border-color:#2e6da4;display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;-ms-touch-action:manipulation;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius:4px" onclick="window.location='ExecutionPending2.jsp'">Execution Pending</button>
+            </div>
         <div id="manualTestCaseExecution" style="display: none;">
             <p class="dttTitle">Execution In Queue</p>
             <div style="width: 100%; font: 90% sans-serif">

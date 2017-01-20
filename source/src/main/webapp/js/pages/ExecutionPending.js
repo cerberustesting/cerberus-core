@@ -29,8 +29,18 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc(), [1, 'asc']);
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
-    
+
     drawQueueInformation();
+    
+    $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    var target = $(e.target).attr("href"); // activated tab
+    if (target == "#tabDetails") {
+        // Reload table
+        $("#executionsTable").DataTable().draw();
+    }
+ });
+ 
+ $("#runOld").parent().attr("href", "./ExecutionPending.jsp");
 }
 
 function displayPageLabel() {
@@ -78,16 +88,16 @@ function aoColumnsFunc(tableId) {
     return aoColumns;
 }
 
-function drawQueueInformation(){
-    
+function drawQueueInformation() {
+
     var jqxhr = $.get("ReadExecutionPools");
     $.when(jqxhr).then(function (data) {
         //var messageType = getAlertType(data.messageType);
         //if (messageType === "success") {
-            //redraw the datatable
-            for (var inc=0; inc<data.length; inc++){
-        generatePie("statusChart", data[inc].id, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
-    }
+        //redraw the datatable
+        for (var inc = 0; inc < data.length; inc++) {
+            generatePie("statusChart", data[inc].id, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
+        }
         //}
         //show message in the main page
         //showMessageMainPage(messageType, data.message);
@@ -145,12 +155,12 @@ function generatePie(elementid, id, poolSize, inExecution, remaining) {
                 return id.application;
             });
     svg.append("text")
-        .attr("dy", "-7.2em")
-        .style("text-anchor", "middle")
-        .attr("class", "secondary-name")
-        .text(function (d) {
-            return '('  + id.country + ' - ' + id.environment + ')';
-        });
+            .attr("dy", "-7.2em")
+            .style("text-anchor", "middle")
+            .attr("class", "secondary-name")
+            .text(function (d) {
+                return '(' + id.country + ' - ' + id.environment + ')';
+            });
     svg.append("text")
             .style("text-anchor", "middle")
             .attr("dy", "+0.2em")
@@ -160,12 +170,12 @@ function generatePie(elementid, id, poolSize, inExecution, remaining) {
             });
     if (remaining > 0) {
         svg.append("text")
-            .attr("dy", "+1.9em")
-            .style("text-anchor", "middle")
-            .attr("class", "remaining")
-            .text(function (d) {
-                return '(+ ' + remaining + ')';
-            });
+                .attr("dy", "+1.9em")
+                .style("text-anchor", "middle")
+                .attr("class", "remaining")
+                .text(function (d) {
+                    return '(+ ' + remaining + ')';
+                });
     }
 
     var path = svg.selectAll('path')
