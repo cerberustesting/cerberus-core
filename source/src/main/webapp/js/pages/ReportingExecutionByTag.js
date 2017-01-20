@@ -191,7 +191,7 @@ function loadTagFilters(urlTag) {
             //if the tag is passed as a url parameter, then it loads the report from this tag
             if (urlTag !== null) {
                 $('#selectTag').val(urlTag).trigger("change");
-                loadReport();
+                loadAllReports();
             }
         } else {
             showMessageMainPage(messageType, data.message);
@@ -199,7 +199,7 @@ function loadTagFilters(urlTag) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function loadReport() {
+function loadAllReports() {
     var selectTag = $("#selectTag option:selected").text();
 
     InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
@@ -208,18 +208,32 @@ function loadReport() {
         //handle the test case execution list display
         loadEnvCountryBrowserReport();
         loadReportList();
-        //Retrieve data for charts and draw them
-        var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
-        $.when(jqxhr).then(function (data) {
-            //clear the old report content before redrawing it
-            $("#ReportByStatusTable").empty();
-            $("#statusChart").empty();
-            $("#functionChart").empty();
-            loadReportByStatusTable(data);
-            loadReportByFunctionChart(data);
-        });
+        loadByStatusAndByfunctionReports(selectTag);
     }
 }
+
+function loadByStatusAndByfunctionReports() {
+    var selectTag = $("#selectTag option:selected").text();
+    showLoader($("#ReportByStatus"));
+    showLoader($("#functionChart"));
+        $("#startExe").val("");
+        $("#endExe").val("");
+    //Retrieve data for charts and draw them
+    var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
+    $.when(jqxhr).then(function (data) {
+        //clear the old report content before redrawing it
+        $("#ReportByStatusTable").empty();
+        $("#statusChart").empty();
+        $("#ReportByfunctionChart").empty();
+        loadReportByStatusTable(data);
+        loadReportByFunctionChart(data);
+        $("#startExe").val(data.start);
+        $("#endExe").val(data.end);
+    });
+
+}
+
+
 
 function generateBarTooltip(data, statusOrder) {
     var htmlRes = "";
@@ -305,6 +319,7 @@ function loadEnvCountryBrowserReport() {
 }
 
 function loadReportList() {
+    showLoader($("#listReport"));
     var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
@@ -326,6 +341,7 @@ function loadReportList() {
 
             createDataTable(config, createShortDescRow, undefined, undefined);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
+            hideLoader($("#listReport"));
 
         });
     }
@@ -442,6 +458,7 @@ function loadReportByStatusChart(data) {
             .attr('fill', function (d, i) {
                 return d.data.color;
             });
+    hideLoader($("#ReportByStatus"));
 }
 
 function convertData(dataset) {
@@ -487,7 +504,7 @@ function loadReportByFunctionChart(dataset) {
                 return res;
             });
 
-    var svg = d3.select("#functionChart").append("svg")
+    var svg = d3.select("#ReportByfunctionChart").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -562,6 +579,7 @@ function loadReportByFunctionChart(dataset) {
             .style("fill", function (d) {
                 return d.color;
             });
+    hideLoader($("#functionChart"));
 }
 
 /*** EXPORT OPTIONS***/
@@ -687,18 +705,18 @@ function selectTableToCopy() {
 
 function createShortDescRow(row, data, index) {
     var tableAPI = $("#listTable").DataTable();
-    
+
     var createdRow = tableAPI.row(row);
-    
-    createdRow.child([data.shortDesc,"labels"]);
+
+    createdRow.child([data.shortDesc, "labels"]);
     $(row).children('.center').attr('rowspan', '3');
     $(row).children('.priority').attr('rowspan', '3');
     $(row).children('.bugid').attr('rowspan', '3');
     $(createdRow.child()).children('td').attr('colspan', '3').attr('class', 'shortDesc');
     var labelValue = '';
-                $.each(data.labels, function (i, e) {
-                    labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
-                });
+    $.each(data.labels, function (i, e) {
+        labelValue += '<div style="float:left"><span class="label label-primary" style="background-color:' + e.color + '" data-toggle="tooltip" title="' + e.description + '">' + e.name + '</span></div> ';
+    });
     $($(createdRow.child())[1]).children('td').html(labelValue);
     createdRow.child.show();
 }
@@ -797,11 +815,11 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
     var col =
             {
-                "data": "bugId", 
-                        "mRender": function (data) {
-                            var link = '<a href="'+data.bugTrackerUrl+'">'+data.bugId+"</a>";
-                            return link;
-                        },
+                "data": "bugId",
+                "mRender": function (data) {
+                    var link = '<a href="' + data.bugTrackerUrl + '">' + data.bugId + "</a>";
+                    return link;
+                },
                 "sName": "tec.bugId",
                 "sClass": "bugid",
                 "sWidth": testCaseInfoWidth + "%",
@@ -862,10 +880,10 @@ function generateExecutionLink(status, id) {
     if (status === "NE") {
         result = "./RunTests.jsp?queuedExecution=" + id;
     } else {
-        var data =getParameter("cerberus_executiondetail_use");
-        if(data.value !== "N"){
+        var data = getParameter("cerberus_executiondetail_use");
+        if (data.value !== "N") {
             result = "./ExecutionDetail2.jsp?executionId=" + id;
-        }else{
+        } else {
             result = "./ExecutionDetail.jsp?id_tc=" + id;
         }
     }

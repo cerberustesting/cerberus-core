@@ -36,10 +36,14 @@
                                         <div class="input-group">
                                             <select class="form-control col-lg-7" name="Tag" id="selectTag"></select>
                                             <div class="input-group-btn">
-                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadReport()">Load</button>
+                                                <button type="button" class="btn btn-default" style="margin-left: 10px;" id="loadbutton" onclick="loadAllReports()">Load</button>
                                             </div>
                                         </div>
                                     </div>
+                                    <label for="selectTag">Start :</label>
+                                    <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
+                                    <label for="selectTag">End :</label>
+                                    <input type="text" class="form-control" name="endExe" id="endExe" readonly aria-describedby="basic-addon1" >
                                 </div>
                             </div>
                         </div>
@@ -53,6 +57,7 @@
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="ReportByStatus">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadByStatusAndByfunctionReports()" id="reloadByStatusAndByfunctionbutton1">Reload</button>
                             <div class="row">
                                 <div class="col-xs-6" id="ReportByStatusTable"></div>
                                 <div class="col-xs-6" id="statusChart"></div>
@@ -69,7 +74,12 @@
                             <label id="reportFunction">Report by Function</label>
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
-                        <div class="panel-body collapse in" id="functionChart"></div>
+                        <div class="panel-body collapse in" id="functionChart">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadByStatusAndByfunctionReports()" id="reloadByStatusAndByfunctionbutton2">Reload</button>
+                            <div class="row">
+                                <div class="col-xs-12" id="ReportByfunctionChart"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

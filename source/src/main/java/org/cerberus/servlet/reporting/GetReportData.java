@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,6 +60,7 @@ public class GetReportData extends HttpServlet {
 
     ITestCaseExecutionService testCaseExecutionService;
     ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -99,6 +101,20 @@ public class GetReportData extends HttpServlet {
          */
         testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
 
+        /**
+         * Geting the global start and end of the execution tag.
+         */
+        long startMin = 0;
+        long endMax = 0;
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            if ((startMin == 0) || (testCaseExecution.getStart() < startMin)) {
+                startMin = testCaseExecution.getStart();
+            }
+            if ((endMax == 0) || (testCaseExecution.getEnd() > endMax)) {
+                endMax = testCaseExecution.getEnd();
+            }
+        }
+
         if (!split) {
 
             Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
@@ -135,7 +151,11 @@ public class GetReportData extends HttpServlet {
 
             jsonResult.put("axis", axisMap.values());
             jsonResult.put("tag", tag);
+            jsonResult.put("start", new Date(startMin));
+            jsonResult.put("end", new Date(endMax));
+
         } else if (split) {
+
             boolean env = ParameterParserUtil.parseBooleanParam(request.getParameter("env"), false);
             boolean country = ParameterParserUtil.parseBooleanParam(request.getParameter("country"), false);
             boolean browser = ParameterParserUtil.parseBooleanParam(request.getParameter("browser"), false);
