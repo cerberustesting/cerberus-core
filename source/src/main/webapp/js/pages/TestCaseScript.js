@@ -2205,7 +2205,13 @@ function listenEnterKeypressWhenFocusingOnDescription() {
 
 function addControl(action, control) {
     setModif(true);
-    var act = action.data("item");
+    var act;
+    if (action instanceof Action){
+    act = action;
+    } else {
+    act = action.data("item");  
+    }
+
     var ctrl = new Control(null, act, true);
     act.setControl(ctrl, control, true);
     setAllSort();
