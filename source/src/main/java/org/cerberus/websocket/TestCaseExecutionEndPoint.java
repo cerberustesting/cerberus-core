@@ -19,6 +19,8 @@
  */
 package org.cerberus.websocket;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.websocket.decoders.TestCaseExecutionDecoder;
@@ -33,6 +35,8 @@ import javax.websocket.Session;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,15 +45,24 @@ import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution} changes
+ *
+ * @author corentin
+ * @author aurel
+ */
 @ServerEndpoint(
         value = "/execution/{execution-id}",
-        configurator = TestCaseExecutionEndPoint.Configurator.class,
+        configurator = TestCaseExecutionEndPoint.SingletonConfigurator.class,
         decoders = {TestCaseExecutionDecoder.class},
         encoders = {TestCaseExecutionEncoder.class}
 )
 public class TestCaseExecutionEndPoint {
 
-    public static class Configurator extends ServerEndpointConfig.Configurator {
+    /**
+     * The {@link javax.websocket.server.ServerEndpointConfig.Configurator} of this {@link ServerEndpoint} that give always the same {@link TestCaseExecutionEndPoint} instance to deserve websocket support.
+     */
+    public static class SingletonConfigurator extends ServerEndpointConfig.Configurator {
 
         @Override
         public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
@@ -61,112 +74,135 @@ public class TestCaseExecutionEndPoint {
 
     }
 
+    /**
+     * The associated {@link Logger} to this class
+     */
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionEndPoint.class);
 
+    /**
+     * The unique instance of this {@link TestCaseExecutionEndPoint} class
+     */
     private static final TestCaseExecutionEndPoint INSTANCE = new TestCaseExecutionEndPoint();
 
+    /**
+     * Get the unique instance of this {@link TestCaseExecutionEndPoint} class
+     *
+     * @return the unique instance of this {@link TestCaseExecutionEndPoint}
+     */
     public static TestCaseExecutionEndPoint getInstance() {
         return INSTANCE;
     }
 
     /**
-     * All open WebSocket sessions
+     * All open WebSocket sessions, grouped by executions
      */
     private Lock lock = new ReentrantLock();
     private Map<String, Session> sessions = new HashMap<>();
     private Map<Long, Set<String>> executions = new HashMap<>();
 
     /**
-     * Send Live message for all peers connected to this execution
+     * Send the given {@link TestCaseExecution} for all session opened to this execution.
+     * <p>
+     * Message is sent only if the current timestamp is out of the {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}
      *
-     * @param msg
-     * @param forcePush
+     * @param execution the {@link TestCaseExecution} to send to opened sessions
+     * @param forcePush if send has to be forced, regardless of the {@link TestCaseExecution#getCerberus_featureflipping_websocketpushperiod()}}
+     * @see TestCaseExecution#getLastWebsocketPush()
      */
-    public void send(TestCaseExecution msg, boolean forcePush) {
-        if (!msg.isCerberus_featureflipping_activatewebsocketpush()) {
+    public void send(TestCaseExecution execution, boolean forcePush) {
+        // Check if sending is enabled
+        if (!execution.isCerberus_featureflipping_activatewebsocketpush()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Push is disabled. Ignore sending of execution " + msg.getId());
+                LOG.debug("Push is disabled. Ignore sending of execution " + execution.getId());
             }
             return;
         }
 
-        long nbmssincelastpush = new Date().getTime() - msg.getLastWebsocketPush();
-        if ((nbmssincelastpush < msg.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
+        // Check if sending can be done regarding on the last push and allowed period
+        long nbmssincelastpush = new Date().getTime() - execution.getLastWebsocketPush();
+        if ((nbmssincelastpush < execution.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Not enough elapsed time since the last push for execution " + msg.getId() + " (" + nbmssincelastpush + " < " + msg.getCerberus_featureflipping_websocketpushperiod());
+                LOG.debug("Not enough elapsed time since the last push for execution " + execution.getId() + " (" + nbmssincelastpush + " < " + execution.getCerberus_featureflipping_websocketpushperiod());
             }
             return;
         }
 
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Trying to send execution " + msg.getId() + " to sessions");
-        }
-
+        // Get registered sessions
+        Collection<Session> registeredSessions = new ArrayList<>();
         lock.lock();
-        Set<String> registeredSessions = executions.get(msg.getId());
-        if (registeredSessions == null) {
-            lock.unlock();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("No registered session for execution " + msg.getId());
-            }
-            msg.setLastWebsocketPush(new Date().getTime());
-            return;
+        Set<String> registeredSessionIds = executions.get(execution.getId());
+        if (registeredSessionIds != null) {
+            registeredSessions = Maps.filterKeys(sessions, Predicates.in(registeredSessionIds)).values();
         }
+        lock.unlock();
 
-        for (String registeredSession : registeredSessions) {
-            Session session = sessions.get(registeredSession);
+        // Send the given TestCaseExecution to all registered sessions
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Trying to send execution " + execution.getId() + " to sessions");
+        }
+        for (Session registeredSession : registeredSessions) {
             try {
-                session.getBasicRemote().sendObject(msg);
+                registeredSession.getBasicRemote().sendObject(execution);
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Execution " + msg.getId() + " sent to session " + session.getId());
+                    LOG.debug("Execution " + execution.getId() + " sent to session " + registeredSession.getId());
                 }
             } catch (Exception e) {
-                LOG.warn("Unable to send execution " + msg.getId() + " to session " + session.getId() + " due to " + e.getMessage());
+                LOG.warn("Unable to send execution " + execution.getId() + " to session " + registeredSession.getId() + " due to " + e.getMessage());
+            }
+        }
+
+        // Finally set the last push date to the given TestCaseExecution
+        execution.setLastWebsocketPush(new Date().getTime());
+    }
+
+    /**
+     * Process to the end of the given {@link TestCaseExecution}, i.e., close all registered session to the given {@link TestCaseExecution}
+     *
+     * @param execution the given {@link TestCaseExecution} to end
+     */
+    public void end(TestCaseExecution execution) {
+        // Get the registered sessions to the given TestCaseExecution
+        Collection<Session> registeredSessions = new ArrayList<>();
+        lock.lock();
+        Set<String> registeredSessionIds = executions.remove(execution.getId());
+        if (registeredSessionIds != null) {
+            for (String registeredSessionId : registeredSessionIds) {
+                registeredSessions.add(sessions.remove(registeredSessionId));
             }
         }
         lock.unlock();
-        msg.setLastWebsocketPush(new Date().getTime());
-    }
 
-    public void end(TestCaseExecution execution) {
+        // Close registered sessions
         if (LOG.isDebugEnabled()) {
             LOG.debug("Clean execution " + execution.getId());
         }
-        lock.lock();
-        Set<String> registeredSessions = executions.remove(execution.getId());
-        if (registeredSessions != null) {
-            for (String registeredSession : registeredSessions) {
-                Session session = sessions.remove(registeredSession);
-                try {
-                    session.close();
-                } catch (Exception e) {
-                    LOG.warn("Unable to close session " + session.getId() + " for execution " + execution.getId() + " due to " + e.getMessage());
-                }
+        for (Session registeredSession : registeredSessions) {
+            try {
+                registeredSession.close();
+            } catch (Exception e) {
+                LOG.warn("Unable to close session " + registeredSession.getId() + " for execution " + execution.getId() + " due to " + e.getMessage());
             }
         }
-        lock.unlock();
     }
 
     /**
-     * Behavior of the Endpoint when the client send him a message
+     * Callback when receiving message from client side
      *
-     * @param session
-     * @param msg
-     * @param executionId
+     * @param session     the client {@link Session}
+     * @param execution   the associated {@link TestCaseExecution} sent by client
+     * @param executionId the execution identifier from the {@link ServerEndpoint} path
      */
     @OnMessage
-    public void message(final Session session, TestCaseExecution msg, @PathParam("execution-id") int executionId) {
+    public void message(final Session session, TestCaseExecution execution, @PathParam("execution-id") int executionId) {
+        // Nothing to do
     }
 
     /**
-     * Behaviour of the endpoint when a client connect to him Here we save the
-     * session of the client in a Array so it is subscribed to the
-     * TestCaseExecution And we send to the client the actual state of the
-     * TestCaseExecution thanks to a Read
+     * Callback when receiving opened connection from client side
      *
-     * @param session
-     * @param config
-     * @param executionId
+     * @param session     the client {@link Session}
+     * @param config      the associated {@link EndpointConfig} to the new connection
+     * @param executionId the execution identifier from the {@link ServerEndpoint} path
      */
     @OnOpen
     public void openConnection(Session session, EndpointConfig config, @PathParam("execution-id") long executionId) {
@@ -185,11 +221,10 @@ public class TestCaseExecutionEndPoint {
     }
 
     /**
-     * Behaviour of the EndPoint When the client closes his connexion We remove
-     * the client from the array of Sessions
+     * Callback when receiving closed connection from client side
      *
-     * @param session
-     * @param executionId
+     * @param session     the client {@link Session}
+     * @param executionId the execution identifier from the {@link ServerEndpoint} path
      */
     @OnClose
     public void closedConnection(Session session, @PathParam("execution-id") long executionId) {
@@ -206,16 +241,16 @@ public class TestCaseExecutionEndPoint {
     }
 
     /**
-     * Behaviour of the endpoint when there is an error
+     * Callback when receiving error connection from client side
      *
-     * @param session
-     * @param t
+     * @param session the client {@link Session}
+     * @param error   the associated {@link Throwable} to the received error
      */
     @OnError
-    public void error(Session session, Throwable t) {
-        LOG.warn("An error occurred during websocket communication with session " + session.getId() + ": " + t.getMessage(), t);
+    public void error(Session session, Throwable error) {
+        LOG.warn("An error occurred during websocket communication with session " + session.getId() + ": " + error.getMessage(), error);
         try {
-            session.getBasicRemote().sendText(t.getMessage());
+            session.getBasicRemote().sendText(error.getMessage());
         } catch (Exception e) {
             LOG.warn("Unable to send error to session " + session.getId() + " due to " + e.getMessage());
         }
