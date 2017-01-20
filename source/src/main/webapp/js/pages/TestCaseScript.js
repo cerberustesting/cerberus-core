@@ -2189,6 +2189,7 @@ function listenEnterKeypressWhenFocusingOnDescription() {
                     if ($(field).closest(".step-action").hasClass("action")) {
                         var newAction = $(field).closest(".action-group");
                         var oldAction = newAction.prev().find(".step-action.row.action").last();
+                        console.log(oldAction);
                         newAction.remove();
                         addControlAndFocus(oldAction);
                     } else {
@@ -2204,8 +2205,9 @@ function listenEnterKeypressWhenFocusingOnDescription() {
 
 function addControl(action, control) {
     setModif(true);
-    var ctrl = new Control(null, action, true);
-    action.setControl(ctrl, control);
+    var act = action.data("item");
+    var ctrl = new Control(null, act, true);
+    act.setControl(ctrl, control, true);
     setAllSort();
     return ctrl;
 }
