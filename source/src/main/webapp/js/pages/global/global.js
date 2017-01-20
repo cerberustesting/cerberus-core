@@ -2395,3 +2395,26 @@ function showTextArea(title, text, fileUrl) {
 
     $('#showGenericModal').modal('show');
 }
+
+/**
+ * Default options to apply when using linkify actions
+ */
+var DEFAULT_LINKIFY_OPTIONS = {
+    validate: {
+        url: function (value) {
+            return /^(http|ftp)s?:\/\//.test(value);
+        }
+    }
+};
+
+/**
+ * Find any potential links from the given string and replace them by real HTML link
+ *
+ * @param str the given string to format
+ * @param options (optional) options to use during find and replace process. If not given, then use #DEFAULT_LINKIFY_OPTIONS
+ * @returns {*} a new string with any potential links replaced by the HTML link value
+ * @see http://soapbox.github.io/linkifyjs/
+ */
+function safeLinkify(str, options) {
+    return str == undefined ? str : str.linkify(options == undefined ? DEFAULT_LINKIFY_OPTIONS : options);
+}

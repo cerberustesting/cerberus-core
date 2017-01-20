@@ -27,8 +27,6 @@
         <%@ include file="include/dependenciesInclusions.html" %>
         <title id="pageTitle">Execution Detail</title>        
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
-        <script type="text/javascript" src="dependencies/Linkify-2.1.4/linkify.min.js"></script>
-        <script type="text/javascript" src="dependencies/Linkify-2.1.4/linkify-string.min.js"></script>
         <script type="text/javascript" src="js/pages/ExecutionDetail.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/ExecutionDetail.css">
     </head>

@@ -1307,15 +1307,3 @@ function addFileLink(fileList, container) {
     }
 }
 
-var LINKIFY_OPTIONS = {
-    validate: {
-        url: function (value) {
-            return /^(http|ftp)s?:\/\//.test(value);
-        }
-    }
-};
-
-function safeLinkify(str) {
-    return str == undefined ? str : str.linkify(LINKIFY_OPTIONS);
-}
-
