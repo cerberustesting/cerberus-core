@@ -8140,13 +8140,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_testcaseexecution', 'title', '', 'fr', 'Execution des Cas de Test', ''),");
         SQLS.append("('page_header', 'menuReportingExecutionList', '', 'en', 'Execution Report', ''),");
         SQLS.append("('page_header', 'menuReportingExecutionList', '', 'fr', 'Rapport d\\'Execution', '');");
+        SQLInstruction.add(SQLS.toString());
         
-        // Add documentation for TestCaseExecution page
+        // Add documentation for Execution Detail page
         //-- ------------------------ 1048
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('page_executiondetail', 'forceexec', '', 'en', 'Force Execution', ''),");
-        SQLS.append("('page_executiondetail', 'forceexec', '', 'fr', 'Forcer L\\'Execution, ''),");
+        SQLS.append("('page_executiondetail', 'forceexec', '', 'fr', 'Forcer L\\'Execution', ''),");
         SQLS.append("('page_executiondetail', 'conditionVal1Init', '', 'en', 'Condition Value1 Initial', ''),");
         SQLS.append("('page_executiondetail', 'conditionVal1Init', '', 'fr', 'Condition Value1 Initiale', ''),");
         SQLS.append("('page_executiondetail', 'conditionVal2Init', '', 'en', 'Condition Value2 Initial', ''),");
@@ -8157,7 +8158,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_executiondetail', 'conditionVal2', '', 'fr', 'Condition Value2', ''),");
         SQLS.append("('page_executiondetail', 'conditionOper', '', 'en', 'Condition Operator', ''),");
         SQLS.append("('page_executiondetail', 'conditionOper', '', 'fr', 'Condition Opérateur', '');");
-        
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
