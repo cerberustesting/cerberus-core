@@ -32,7 +32,8 @@ function initPage() {
 
 //    showLoader('#logViewerTable');
     //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", "ReadTestCaseExecution", "contentTable", aoColumnsFunc(), [1, 'desc']);
+    var lengthMenu = [10, 25, 50, 100, 500, 1000]
+    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", "ReadTestCaseExecution", "contentTable", aoColumnsFunc(), [1, 'desc'], lengthMenu);
 
     var table = createDataTable(configurations, undefined, undefined, "#testCaseExecution");
 //    hideLoader('#logViewerTable');
@@ -74,7 +75,7 @@ function aoColumnsFunc() {
         {
             "data": null,
             "sName": "exe.controlStatus",
-            "title": doc.getDocOnline("testcaseexecution", "controlStatus"),
+            "title": doc.getDocOnline("page_executiondetail", "controlstatus"),
             "sWidth": "100px",
             "sDefaultContent": "",
             "sClass": "center",
@@ -99,7 +100,7 @@ function aoColumnsFunc() {
         {
             "data": "id",
             "sName": "exe.id",
-            "title": doc.getDocOnline("testcaseexecution", "Id"),
+            "title": doc.getDocOnline("page_executiondetail", "id"),
             "sWidth": "120px",
             "sDefaultContent": ""
         },
@@ -120,154 +121,154 @@ function aoColumnsFunc() {
         {
             "data": "build",
             "sName": "exe.build",
-            "title": doc.getDocOnline("testcaseexecution", "Build"),
+            "title": doc.getDocOnline("page_executiondetail", "build"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "revision",
             "sName": "exe.revision",
-            "title": doc.getDocOnline("testcaseexecution", "Revision"),
+            "title": doc.getDocOnline("page_executiondetail", "revision"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "environment",
             "sName": "exe.environment",
-            "title": doc.getDocOnline("testcaseexecution", "Environment"),
+            "title": doc.getDocOnline("page_executiondetail", "environment"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "country",
             "sName": "exe.country",
-            "title": doc.getDocOnline("testcaseexecution", "Country"),
+            "title": doc.getDocOnline("page_executiondetail", "country"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "application",
             "sName": "exe.application",
-            "title": doc.getDocOnline("application", "Application"),
+            "title": doc.getDocOnline("page_executiondetail", "application"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },
         {
             "data": "browser",
             "sName": "exe.browser",
-            "title": doc.getDocOnline("testcaseexecution", "Browser"),
+            "title": doc.getDocOnline("page_executiondetail", "browser"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "version",
             "sName": "exe.version",
-            "title": doc.getDocOnline("testcaseexecution", "Version"),
+            "title": doc.getDocOnline("page_executiondetail", "version"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "platform",
             "sName": "exe.platform",
-            "title": doc.getDocOnline("testcaseexecution", "Platform"),
+            "title": doc.getDocOnline("page_executiondetail", "platform"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "browserFullVersion",
             "sName": "exe.browserfullversion",
-            "title": doc.getDocOnline("testcaseexecution", "BrowserFullVersion"),
+            "title": doc.getDocOnline("page_executiondetail", "browserfull"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "start",
             "sName": "exe.start",
-            "title": doc.getDocOnline("testcaseexecution", "Start"),
+            "title": doc.getDocOnline("page_executiondetail", "start"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "end",
             "sName": "exe.end",
-            "title": doc.getDocOnline("testcaseexecution", "End"),
+            "title": doc.getDocOnline("page_executiondetail", "end"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "controlMessage",
             "sName": "exe.controlmessage",
-            "title": doc.getDocOnline("testcaseexecution", "ControlMessage"),
+            "title": doc.getDocOnline("page_executiondetail", "controlmessage"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "ip",
             "sName": "exe.ip",
-            "title": doc.getDocOnline("testcaseexecution", "Ip"),
+            "title": doc.getDocOnline("page_executiondetail", "ip"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "url",
             "sName": "exe.url",
-            "title": doc.getDocOnline("testcaseexecution", "Url"),
+            "title": doc.getDocOnline("page_executiondetail", "url"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "port",
             "sName": "exe.port",
-            "title": doc.getDocOnline("testcaseexecution", "Port"),
+            "title": doc.getDocOnline("page_executiondetail", "port"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "tag",
             "sName": "exe.tag",
-            "title": doc.getDocOnline("testcaseexecution", "Tag"),
+            "title": doc.getDocOnline("page_executiondetail", "tag"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "finished",
             "sName": "exe.finished",
-            "title": doc.getDocOnline("testcaseexecution", "Finished"),
+            "title": doc.getDocOnline("page_executiondetail", "finished"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "verbose",
             "sName": "exe.verbose",
-            "title": doc.getDocOnline("testcaseexecution", "Verbose"),
+            "title": doc.getDocOnline("page_executiondetail", "verbose"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "status",
             "sName": "exe.status",
-            "title": doc.getDocOnline("testcaseexecution", "Status"),
+            "title": doc.getDocOnline("page_executiondetail", "status"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "crbVersion",
             "sName": "exe.crbVersion",
-            "title": doc.getDocOnline("testcaseexecution", "CrbVersion"),
+            "title": doc.getDocOnline("page_executiondetail", "cerberusversion"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "executor",
             "sName": "exe.executor",
-            "title": doc.getDocOnline("testcaseexecution", "Executor"),
+            "title": doc.getDocOnline("page_executiondetail", "executor"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
         {
             "data": "screenSize",
             "sName": "exe.screensize",
-            "title": doc.getDocOnline("testcaseexecution", "Screensize"),
+            "title": doc.getDocOnline("page_executiondetail", "screensize"),
             "sWidth": "70px",
             "sDefaultContent": ""
         }

@@ -967,7 +967,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
  * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
  * @returns {TableConfigurationsServerSide}
  */
-function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting) {
+function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu) {
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.ajaxSource = ajaxSource;
@@ -975,7 +975,11 @@ function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFun
 
     this.processing = true;
     this.serverSide = true;
-    this.lengthMenu = [10, 25, 50, 100];
+    if (lengthMenu === undefined) {
+        this.lengthMenu = [10, 25, 50, 100];
+    } else {
+        this.lengthMenu = lengthMenu;
+    }
     this.lengthChange = true;
     //not mandatory properties, and default values
     this.searchText = "";
