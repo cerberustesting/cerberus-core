@@ -184,6 +184,18 @@
         <servlet-class>org.cerberus.servlet.GetConnectionPoolName</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>ReadExecutionPools</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.ReadExecutionPools</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RemoveExecutionPool</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.RemoveExecutionPool</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.ReadTestCaseExecutionMedia</servlet-class>
+    </servlet>
+    <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>
         <servlet-name>NewRelease</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.NewRelease</servlet-class>
@@ -1111,6 +1123,18 @@
         <url-pattern>/GetConnectionPoolName</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionPools</servlet-name>
+        <url-pattern>/ReadExecutionPools</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RemoveExecutionPool</servlet-name>
+        <url-pattern>/RemoveExecutionPool</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
+        <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GetNumberOfExecutions</servlet-name>
         <url-pattern>/GetNumberOfExecutions</url-pattern>
     </servlet-mapping>
@@ -1980,8 +2004,9 @@
             <web-resource-name>jsp</web-resource-name>
             <description>jsp</description>
             <url-pattern>/ExecutionDetail.jsp</url-pattern>
-            <url-pattern>/ExecutionDetail1.jsp</url-pattern>
             <url-pattern>/ExecutionDetail2.jsp</url-pattern>
+            <url-pattern>/ExecutionManual.jsp</url-pattern>
+            <url-pattern>/TestCaseExecution.jsp</url-pattern>
             <url-pattern>/ExecutionDetailList.jsp</url-pattern>
             <url-pattern>/ExecutionPerBuildRevision.jsp</url-pattern>
             <url-pattern>/NetworkTraficDetail.jsp</url-pattern>
@@ -2009,7 +2034,10 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
+            <url-pattern>/RemoveExecutionPool</url-pattern>
+            <url-pattern>/ReadExecutionPools</url-pattern>
             <url-pattern>/GetTestCaseList</url-pattern>
+            <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>
             <url-pattern>/GetTestCase</url-pattern>
             <url-pattern>/TestcaseList</url-pattern>
             <url-pattern>/ExportListTestCase</url-pattern>

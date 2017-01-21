@@ -101,8 +101,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
                 for (var index = 0; index < list.length; index++) {
                     var item = list[index].value;
+                    var desc = list[index].value + " - " + list[index].description;
 
-                    $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+                    $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
                 }
                 if (defaultValue !== undefined) {
                     $("[name='" + selectName + "']").val(defaultValue);
@@ -112,8 +113,9 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
     } else {
         for (var index = 0; index < list.length; index++) {
             var item = list[index].value;
+            var desc = list[index].value + " - " + list[index].description;
 
-            $("[name='" + selectName + "']").append($('<option></option>').text(item).val(item));
+            $("[name='" + selectName + "']").append($('<option></option>').text(desc).val(item));
         }
         if (defaultValue !== undefined) {
             $("[name='" + selectName + "']").val(defaultValue);
