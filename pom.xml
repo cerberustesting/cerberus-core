@@ -4,7 +4,7 @@
 
 	<groupId>org.cerberus</groupId>
 	<artifactId>cerberus-testing</artifactId>
-	<version>1.1.10</version>
+	<version>1.1.11-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Cerberus Testing</name>
@@ -16,7 +16,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
-      <tag>cerberus-testing-1.1.10</tag>
+      <tag>HEAD</tag>
   </scm>
 
 	<modules>
