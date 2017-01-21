@@ -1210,7 +1210,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
     var domConf = 'RCB<"clear">lf<"pull-right"p>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
-        domConf = 'l<"showInlineElement pull-left marginLeft5"fp>rti<"marginTop5">';
+        domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
     }
 
 
