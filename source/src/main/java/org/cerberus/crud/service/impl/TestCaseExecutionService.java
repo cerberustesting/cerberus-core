@@ -245,23 +245,13 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         AnswerList a = testCaseExecutionDataService.readByIdWithDependency(executionId);
         testCaseExecution.setTestCaseExecutionDataList(a.getDataList());
 
-        AnswerList<TestCaseStepExecution> steps = new AnswerList<>();
-        steps.setDataList(new ArrayList<TestCaseStepExecution>());
-        List<TestCase> preTestCases = testCaseService.findTestCaseActiveByCriteria("Pre Testing", testCaseExecution.getApplication(), testCaseExecution.getCountry());
-        if (preTestCases != null) {
-            for (TestCase preTestCase : preTestCases) {
-                AnswerList<TestCaseStepExecution> preTestCaseStepsExecution = testCaseStepExecutionService.readByVarious1WithDependency(executionId, preTestCase.getTest(), preTestCase.getTestCase());
-                if (preTestCaseStepsExecution.getDataList() != null) {
-                    steps.getDataList().addAll(preTestCaseStepsExecution.getDataList());
-                }
-            }
-        }
-        AnswerList<TestCaseStepExecution> testCaseStepExecution = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
-        if (testCaseStepExecution.getDataList() != null) {
-            steps.getDataList().addAll(testCaseStepExecution.getDataList());
-        }
-        testCaseExecution.setTestCaseStepExecutionAnswerList(steps);
-
+        // We frist add the 'Pres Testing' testcase execution steps.
+        AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, "Pre Testing", null);
+        testCaseExecution.setTestCaseStepExecutionList(preTestCaseSteps.getDataList());
+        // Then we add the steps from the main testcase.
+        AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
+        testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
+        
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 

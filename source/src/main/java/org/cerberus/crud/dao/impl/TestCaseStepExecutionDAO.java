@@ -39,6 +39,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -231,7 +232,15 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         List<TestCaseStepExecution> list = new ArrayList<TestCaseStepExecution>();
         StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM testcasestepexecution a ");
-        query.append("where id = ? and test = ? and testcase = ?");
+        query.append("where 1=1 and id = ? ");
+        if (!(StringUtil.isNullOrEmpty(test))) {
+            query.append("and test = ? ");
+        }
+        if (!(StringUtil.isNullOrEmpty(test))) {
+            query.append("and testcase = ? ");
+        }
+            query.append(" order by start ");
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -240,9 +249,14 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setLong(1, executionId);
-                preStat.setString(2, test);
-                preStat.setString(3, testcase);
+                int i = 1;
+                preStat.setLong(i++, executionId);
+                if (!(StringUtil.isNullOrEmpty(test))) {
+                    preStat.setString(i++, test);
+                }
+                if (!(StringUtil.isNullOrEmpty(test))) {
+                    preStat.setString(i++, testcase);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     while (resultSet.next()) {

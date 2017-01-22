@@ -23,7 +23,6 @@ import org.cerberus.engine.entity.Selenium;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,40 +71,43 @@ public class TestCaseExecution {
     /**
      * From here are data outside database model.
      */
-    private Application applicationObj;
-    private Invariant CountryObj;
-    private Test testObj;
-    private TestCase testCaseObj;
-    private List<TestCase> PreTestCaseList;
-    private CountryEnvParam countryEnvParam;
-    private CountryEnvironmentParameters countryEnvironmentParameters;
+    // Execution Parameters
     private int screenshot;
     private String outputFormat;
-    private Invariant environmentDataObj;
     private boolean manualURL;
     private String myHost;
     private String myContextRoot;
     private String myLoginRelativeURL;
     private String seleniumIP;
     private String seleniumPort;
-    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at execution level
-    private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
-    private AnswerList testCaseStepExecutionAnswerList;
-    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
-    private MessageGeneral resultMessage;
-    private Selenium selenium;
-    private String executionUUID;
     private Integer pageSource;
     private Integer seleniumLog;
-    private Session session;
-    private List<TestCaseCountryProperties> testCaseCountryPropertyList;
-    private long idFromQueue;
     private Integer numberOfRetries;
     private String userAgent;
     private boolean synchroneous;
     private String timeout;
+    // Objects.
+    private Application applicationObj;
+    private Invariant CountryObj;
+    private Test testObj;
+    private TestCase testCaseObj;
+    private List<TestCase> preTestCaseList;
+    private CountryEnvParam countryEnvParam;
+    private CountryEnvironmentParameters countryEnvironmentParameters;
+    private Invariant environmentDataObj;
+    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at execution level
+    private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
+    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
+    private List<TestCaseCountryProperties> testCaseCountryPropertyList;
+    // Others
+    private MessageGeneral resultMessage;
+    private Selenium selenium;
+    private String executionUUID;
+    private Session session;
+    private long idFromQueue;
     private AnswerItem lastSOAPCalled;
     private List<RobotCapability> capabilities;
+    // Global parameters.
     private Integer cerberus_action_wait_default;
     private boolean cerberus_featureflipping_activatewebsocketpush;
     private long cerberus_featureflipping_websocketpushperiod;
@@ -423,14 +425,6 @@ public class TestCaseExecution {
         }
     }
 
-    public AnswerList getTestCaseStepExecutionAnswerList() {
-        return testCaseStepExecutionAnswerList;
-    }
-
-    public void setTestCaseStepExecutionAnswerList(AnswerList testCaseStepExecutionAnswerList) {
-        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
-    }
-
     public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
         return testCaseStepExecutionList;
     }
@@ -678,11 +672,11 @@ public class TestCaseExecution {
     }
 
     public List<TestCase> getPreTestCaseList() {
-        return PreTestCaseList;
+        return preTestCaseList;
     }
 
     public void setPreTestCaseList(List<TestCase> PreTCase) {
-        this.PreTestCaseList = PreTCase;
+        this.preTestCaseList = PreTCase;
     }
 
     public List<TestCaseExecutionData> getTestCaseExecutionDataList() {
@@ -764,8 +758,8 @@ public class TestCaseExecution {
 
             // Looping on ** Step **
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStepExecutionAnswerList() != null && this.getTestCaseStepExecutionAnswerList().getDataList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepExecutionAnswerList().getDataList()) {
+            if (this.getTestCaseStepExecutionList() != null) {
+                for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
                     array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
                 }
             }

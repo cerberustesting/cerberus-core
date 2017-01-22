@@ -104,7 +104,7 @@ public class VariableService implements IVariableService {
 
         return result;
     }
-    
+
     @Override
     public String decodeStringWithSystemVariable(String stringToDecode, TestCaseExecution tCExecution) {
         /**
@@ -162,45 +162,43 @@ public class VariableService implements IVariableService {
          * Trying to replace by system environment variables from Step Execution
          * .
          */
-        if (tCExecution.getTestCaseStepExecutionAnswerList() != null) {
-            if (tCExecution.getTestCaseStepExecutionAnswerList() != null && tCExecution.getTestCaseStepExecutionAnswerList().getDataList() != null) {
+        if (tCExecution.getTestCaseStepExecutionList() != null) {
 
-                // %SYS_CURRENTSTEP_INDEX%
-                if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
-                    TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
-                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
-                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
-                    nowInMS = new Date().getTime();
-                    stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
-
-                }
-                if (stringToDecode.contains("%system.CURRENTSTEP_")) {
-                    TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionAnswerList().getDataList().get(tCExecution.getTestCaseStepExecutionAnswerList().getDataList().size() - 1);
-                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
-                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
-                    nowInMS = new Date().getTime();
-                    stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
-                }
-
-                // %SYS_STEP.n.RETURNCODE%
-                if (stringToDecode.contains("%SYS_STEP.")) {
-                    String syntaxToReplace = "";
-                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
-                        TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
-                        syntaxToReplace = "%SYS_STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
-                        stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
-                    }
-                }
-                if (stringToDecode.contains("%system.STEP.")) {
-                    String syntaxToReplace = "";
-                    for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionAnswerList().getDataList()) {
-                        TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
-                        syntaxToReplace = "%system.STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
-                        stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
-                    }
-                }
+            // %SYS_CURRENTSTEP_INDEX%
+            if (stringToDecode.contains("%SYS_CURRENTSTEP_")) {
+                TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
+                nowInMS = new Date().getTime();
+                stringToDecode = stringToDecode.replace("%SYS_CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
 
             }
+            if (stringToDecode.contains("%system.CURRENTSTEP_")) {
+                TestCaseStepExecution currentStep = (TestCaseStepExecution) tCExecution.getTestCaseStepExecutionList().get(tCExecution.getTestCaseStepExecutionList().size() - 1);
+                stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_INDEX%", String.valueOf(currentStep.getIndex()));
+                stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_STARTISO%", new Timestamp(currentStep.getStart()).toString());
+                nowInMS = new Date().getTime();
+                stringToDecode = stringToDecode.replace("%system.CURRENTSTEP_ELAPSEDMS%", String.valueOf(nowInMS - currentStep.getFullStart()));
+            }
+
+            // %SYS_STEP.n.RETURNCODE%
+            if (stringToDecode.contains("%SYS_STEP.")) {
+                String syntaxToReplace = "";
+                for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionList()) {
+                    TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
+                    syntaxToReplace = "%SYS_STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
+                    stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
+                }
+            }
+            if (stringToDecode.contains("%system.STEP.")) {
+                String syntaxToReplace = "";
+                for (Object testCaseStepExecution : tCExecution.getTestCaseStepExecutionList()) {
+                    TestCaseStepExecution tcse = (TestCaseStepExecution) testCaseStepExecution;
+                    syntaxToReplace = "%system.STEP." + tcse.getSort() + "." + tcse.getIndex() + ".RETURNCODE%";
+                    stringToDecode = stringToDecode.replace(syntaxToReplace, tcse.getReturnCode());
+                }
+            }
+
         }
 
         /**
@@ -239,5 +237,4 @@ public class VariableService implements IVariableService {
         return stringToDecode;
     }
 
-    
 }

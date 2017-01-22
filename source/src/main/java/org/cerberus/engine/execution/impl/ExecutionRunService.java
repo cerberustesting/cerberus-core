@@ -346,17 +346,7 @@ public class ExecutionRunService implements IExecutionRunService {
                          * We populate the TestCaseStep inside the execution
                          * List
                          */
-                        AnswerList<TestCaseStepExecution> ai = tCExecution.getTestCaseStepExecutionAnswerList();
-                        if (ai == null) {
-                            ai = new AnswerList<>();
-                        }
-                        List<TestCaseStepExecution> tcsExecutionList = ai.getDataList();
-                        if (tcsExecutionList == null) {
-                            tcsExecutionList = new LinkedList<>();
-                        }
-                        tcsExecutionList.add(testCaseStepExecution);
-                        ai.setDataList(tcsExecutionList);
-                        tCExecution.setTestCaseStepExecutionAnswerList(ai);
+                        tCExecution.addTestCaseStepExecutionList(testCaseStepExecution);
 
                         // determine if step is executed (execute_Step) and if we trigger a new step execution after (execute_Next_Step)
                         boolean execute_Step = true;

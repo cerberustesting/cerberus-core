@@ -86,6 +86,9 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setEnvironmentData(myEnvData);
         newTce.setSeleniumIP(seleniumIP);
         newTce.setSeleniumPort(seleniumPort);
+        if (testCaseStepExecution == null) {
+         testCaseStepExecution = new ArrayList<>();
+        }
         newTce.setTestCaseStepExecutionList(testCaseStepExecution);
         newTce.setResultMessage(resultMessage);
         newTce.setOutputFormat(outputFormat);
