@@ -1282,6 +1282,7 @@ Control.prototype.getJsonData = function () {
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container) {
+    container.empty();
     for (var i = 0; i < fileList.length; i++) {
         if (fileList[i].fileType === "JPG") {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
