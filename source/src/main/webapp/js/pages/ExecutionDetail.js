@@ -215,6 +215,7 @@ function updatePage(data, stepList) {
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#controlstatus").text(data.controlStatus);
+    configPanel.find("#environment").text(data.environment);
     configPanel.find("#controlstatus").removeClass("text-primary");
     if (data.controlStatus === "PE") {
         configPanel.find("#controlstatus").addClass("text-primary");

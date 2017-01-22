@@ -423,12 +423,34 @@ public class TestCaseExecution {
         }
     }
 
+    public AnswerList getTestCaseStepExecutionAnswerList() {
+        return testCaseStepExecutionAnswerList;
+    }
+
+    public void setTestCaseStepExecutionAnswerList(AnswerList testCaseStepExecutionAnswerList) {
+        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
+    }
+
     public List<TestCaseStepExecution> getTestCaseStepExecutionList() {
         return testCaseStepExecutionList;
     }
 
     public void setTestCaseStepExecutionList(List<TestCaseStepExecution> testCaseStepExecutionList) {
         this.testCaseStepExecutionList = testCaseStepExecutionList;
+    }
+
+    public void addTestCaseStepExecutionList(TestCaseStepExecution testCaseStepExecution) {
+        if (testCaseStepExecution != null) {
+            this.testCaseStepExecutionList.add(testCaseStepExecution);
+        }
+    }
+
+    public void addTestCaseStepExecutionList(List<TestCaseStepExecution> testCaseStepExecutionList) {
+        if (testCaseStepExecutionList != null) {
+            for (TestCaseStepExecution testCaseStepExecution : testCaseStepExecutionList) {
+                this.testCaseStepExecutionList.add(testCaseStepExecution);
+            }
+        }
     }
 
     public String getSeleniumIP() {
@@ -685,14 +707,6 @@ public class TestCaseExecution {
 
     public void setScreenSize(String screenSize) {
         this.screenSize = screenSize;
-    }
-
-    public AnswerList getTestCaseStepExecutionAnswerList() {
-        return testCaseStepExecutionAnswerList;
-    }
-
-    public void setTestCaseStepExecutionAnswerList(AnswerList testCaseStepExecutionAnswerList) {
-        this.testCaseStepExecutionAnswerList = testCaseStepExecutionAnswerList;
     }
 
     public AnswerItem getLastSOAPCalled() {

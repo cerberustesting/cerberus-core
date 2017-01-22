@@ -193,7 +193,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.ReadTestCaseExecutionMedia</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionMedia</servlet-class>
     </servlet>
     <servlet>
         <description>This Servlet is used to Record a new Release inside the pending sprint.</description>

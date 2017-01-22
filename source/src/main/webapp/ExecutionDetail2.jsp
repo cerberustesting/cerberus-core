@@ -54,8 +54,9 @@
                                     <span> - </span>
                                     <span id="testcase"></span>
                                     <span> - </span>
-                                    <span id="controlstatus" style="font-weight: 900"></span>
+                                    <span id="environment"></span>
                                     <span> - </span>
+                                    <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
                             </div>
                             <div class="col-lg-8" style="padding: 0px;">
