@@ -34,8 +34,8 @@ function initPage() {
     //configure and create the dataTable
     var lengthMenu = [10, 25, 50, 100, 500, 1000]
     var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", "ReadTestCaseExecution", "contentTable", aoColumnsFunc(), [1, 'desc'], lengthMenu);
-
-    var table = createDataTable(configurations, undefined, undefined, "#testCaseExecution");
+    
+    var table = createDataTableWithPermissions(configurations, undefined, undefined);
 //    hideLoader('#logViewerTable');
 
     var api = table.api();
@@ -47,6 +47,10 @@ function initPage() {
     
     var allowedColumns = new Array("test","testcase","application","country","environment");
     applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns);
+}
+
+function afterTableLoad(){
+    $("#testCaseExecutionTable_paginate").remove();
 }
 
 function displayPageLabel() {
