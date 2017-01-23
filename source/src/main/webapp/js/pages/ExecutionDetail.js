@@ -1282,12 +1282,12 @@ Control.prototype.getJsonData = function () {
 
 // Function in order to add the Media files links into TestCase, step, action and control level.
 function addFileLink(fileList, container) {
-    container.empty();
+    $("[name='mediaMiniature']").remove();
     for (var i = 0; i < fileList.length; i++) {
         if (fileList[i].fileType === "JPG") {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesc = fileList[i].fileDesc;
-            var linkBox = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+            var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", urlImage + "&h=30").css("height", "30px")
                     .click(function (e) {
                         showPicture(fileDesc, urlImage);
@@ -1298,7 +1298,7 @@ function addFileLink(fileList, container) {
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
-            var linkBoxtxt = $("<div>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+            var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
                     .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                     .css("height", "30px").click(function (f) {
                 showTextArea(fileDesctxt, "", urlImagetxt);
