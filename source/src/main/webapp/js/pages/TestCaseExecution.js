@@ -38,13 +38,6 @@ function initPage() {
     var table = createDataTableWithPermissions(configurations, undefined, undefined);
 //    hideLoader('#logViewerTable');
 
-    var api = table.api();
-    // if test and testcase parameter are sent, we filter the logs on it.
-    if (test !== null && testCase !== null) {
-        var searchString = "'" + test + "'|'" + testCase + "'";
-        api.search(searchString).draw();
-    }
-    
     var allowedColumns = new Array("test","testcase","application","country","environment");
     applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns);
 }
