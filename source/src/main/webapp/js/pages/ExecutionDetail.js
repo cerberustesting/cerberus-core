@@ -430,7 +430,7 @@ function createProperties(propList) {
         }
         var propertyDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.property));
         var typeDiv = $("<div>").addClass("col-sm-2").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.value));
-        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(safeLinkify(property.rMessage)));
+        var messageDiv = $("<div>").addClass("col-sm-7").append($("<h4 style='overflow: hidden; text-overflow: ellipsis; white-space: nowrap'; data-toggle='tooltip'>").text(property.rMessage));
 
         var propertyInput = $("<textarea style='width:100%;' rows='1' id='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "property_field") + "' readonly>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea style='width:100%;' rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "description_field") + "' readonly>").addClass("form-control input-sm").val(property.description);
@@ -575,7 +575,7 @@ function Step(json, stepList) {
     this.fullStart = json.fullStart;
     this.id = json.id;
     this.returnCode = json.returnCode;
-    this.returnMessage = safeLinkify(json.returnMessage);
+    this.returnMessage = json.returnMessage;
     this.sort = json.sort;
     this.start = json.start;
     this.step = json.step;
@@ -731,7 +731,7 @@ function Action(json, parentStep) {
         this.forceExeStatus = json.forceExeStatus;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = safeLinkify(json.returnMessage);
+        this.returnMessage = json.returnMessage;
         this.sequence = json.sequence;
         this.sort = json.sort;
         this.start = json.start;
@@ -877,7 +877,7 @@ Action.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.append(this.returnMessage);
+    returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
     elapsedTime.append((this.endlong - this.startlong) + " ms");
 
@@ -1019,7 +1019,7 @@ function Control(json, parentAction) {
         this.fatal = json.fatal;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = safeLinkify(json.returnMessage);
+        this.returnMessage = json.returnMessage;
         this.screenshotFileName = "";
         this.sequence = json.sequence;
         this.sort = json.sort;
@@ -1150,7 +1150,7 @@ Control.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.append(this.returnMessage);
+    returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
 
     elapsedTime.append((this.endlong - this.startlong) + " ms");
