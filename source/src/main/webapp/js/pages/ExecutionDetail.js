@@ -879,7 +879,13 @@ Action.prototype.generateHeader = function () {
 
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
-    elapsedTime.append((this.endlong - this.startlong) + " ms");
+    console.log(this.endlong);
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+        elapsedTime.append((this.endlong - this.startlong) + " ms");
+    } else {
+        elapsedTime.append("...");
+    }
+    
 
     contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
@@ -946,7 +952,11 @@ Action.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
-    timeField.val((this.endlong - this.startlong) + " ms");
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+        timeField.val((this.endlong - this.startlong) + " ms");
+    } else {
+        timeField.val("...");
+    }
     forceexecField.val(this.forceExeStatus);
     returnCodeField.val(this.returnCode);
     returnMessageField.val(this.returnMessage);
@@ -1153,7 +1163,11 @@ Control.prototype.generateHeader = function () {
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
 
-    elapsedTime.append((this.endlong - this.startlong) + " ms");
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+        elapsedTime.append((this.endlong - this.startlong) + " ms");
+    } else {
+        elapsedTime.append("...");
+    }
 
     contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
@@ -1218,7 +1232,11 @@ Control.prototype.generateContent = function () {
     returnCodeField.val(this.returnCode);
     returnMessageField.val(this.returnMessage);
     controlTypeField.val(this.controlType);
-    timeField.val((this.endlong - this.startlong) + " ms");
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+        timeField.val((this.endlong - this.startlong) + " ms");
+    } else {
+        timeField.val("...");
+    }
     value1Field.val(this.value1);
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
