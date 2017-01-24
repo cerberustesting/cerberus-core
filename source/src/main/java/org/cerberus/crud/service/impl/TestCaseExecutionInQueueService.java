@@ -71,11 +71,6 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
-    public TestCaseExecutionInQueue findByKeyWithDependencies(long key) throws CerberusException {
-        return testCaseExecutionInQueueDAO.findByKeyWithDependencies(key);
-    }
-
-    @Override
     public void toWaiting(long id) throws CerberusException {
         testCaseExecutionInQueueDAO.toWaiting(id);
     }

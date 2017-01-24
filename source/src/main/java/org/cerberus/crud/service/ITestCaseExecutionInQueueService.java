@@ -73,8 +73,6 @@ public interface ITestCaseExecutionInQueueService {
      */
     TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
 
-    TestCaseExecutionInQueue findByKeyWithDependencies(long key) throws CerberusException;
-
     void toWaiting(long id) throws CerberusException;
 
     List<TestCaseExecutionInQueue> toQueued() throws CerberusException;
