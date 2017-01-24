@@ -222,7 +222,7 @@ public class RunTestCase extends HttpServlet {
                 ITestCaseExecutionInQueueService testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
                 testCaseExecutionInQueueService.toExecuting(idFromQueue);
             } catch (CerberusException e) {
-                LOG.warn("Unable to execute execution " + idFromQueue + " from queue due to " + e.getMessage(), e);
+                LOG.warn("Unable to execute execution " + idFromQueue + " from queue. Is it due to an incompatible state value?", e);
                 out.println("Error - The execution in queue cannot be executed. Probably because of its incompatible state value");
                 error = true;
             }
@@ -518,10 +518,10 @@ public class RunTestCase extends HttpServlet {
 
             if (idFromQueue > 0) {
                 try {
-                    appContext.getBean(ITestCaseExecutionInQueueService.class).remove(idFromQueue);
+                    appContext.getBean(ITestCaseExecutionInQueueService.class).toError(idFromQueue, "Test case could not be started due to validation error. Check logs");
                 }
                 catch(CerberusException ex){
-                    LOG.error("Error while removing execution " + idFromQueue + " from queue due to " + ex.getMessage(), ex);
+                    LOG.error("Error while moving test case execution in queue " + idFromQueue + " to the ERROR state", ex);
                 }
             }
 
