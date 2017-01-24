@@ -57,6 +57,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -118,7 +119,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
 
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
-            
+
             Session session = new Session();
             session.setCerberus_selenium_implicitlyWait(cerberus_selenium_implicitlyWait);
             session.setCerberus_selenium_pageLoadTimeout(cerberus_selenium_pageLoadTimeout);
@@ -224,7 +225,7 @@ public class SeleniumServerService implements ISeleniumServerService {
      * Set DesiredCapabilities
      * @param tCExecution
      * @return
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     private DesiredCapabilities setCapabilities(TestCaseExecution tCExecution) throws CerberusException {
         /**
@@ -268,6 +269,16 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
         }
 
+        /**
+         * Add custom capabilities
+         */
+        // Maximize windows for chrome browser
+        if ("chrome".equals(caps.getBrowserName())) {
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--kiosk");
+            caps.setCapability(ChromeOptions.CAPABILITY, options);
+        }
+
         return caps;
     }
 
@@ -300,7 +311,7 @@ public class SeleniumServerService implements ISeleniumServerService {
                     LOG.warn("Country selected (" + tCExecution.getCountry() + ") not in Invariant table, default language set to English (en)");
                     profile.setPreference("intl.accept_languages", "en");
                 }
-                
+
                 capabilities.setCapability("acceptInsecureCerts", true);
                 capabilities.setCapability("acceptSslCerts", true);
                 //capabilities.setCapability("marionette", true);
