@@ -70,14 +70,13 @@ function aoColumnsFunc() {
 
     var aoColumns = [
         {
-            "data": null,
+            "data": "controlStatus",
             "sName": "exe.controlStatus",
             "title": doc.getDocOnline("page_executiondetail", "controlstatus"),
             "sWidth": "100px",
             "sDefaultContent": "",
             "sClass": "center",
             "mRender": function (data, type, obj) {
-                console.log(obj);
                 if (obj !== "") {
                     var executionLink = "./ExecutionDetail2.jsp?executionId=" + obj.id;
                     var glyphClass = getRowClass(obj.controlStatus);
