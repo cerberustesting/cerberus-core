@@ -2400,9 +2400,14 @@ function showTextArea(title, text, fileUrl) {
 
 /**
  * Default options to apply when using linkify actions
+ *
+ * @see #safeLinkify(str, options)
  */
 var DEFAULT_LINKIFY_OPTIONS = {
     validate: {
+        email: function (value) {
+            return false;
+        },
         url: function (value) {
             return /^(http|ftp)s?:\/\//.test(value);
         }

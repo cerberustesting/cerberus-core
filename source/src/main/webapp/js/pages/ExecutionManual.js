@@ -725,7 +725,7 @@ function Action(json, parentStep) {
         this.forceExeStatus = json.forceExeStatus;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = safeLinkify(json.returnMessage);
+        this.returnMessage = json.returnMessage;
         this.sequence = json.sequence;
         this.sort = json.sort;
         this.start = json.start;
@@ -870,7 +870,7 @@ Action.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.text(this.returnMessage);
+    returnMessageField.text(safeLinkify(this.returnMessage));
     descriptionField.text(this.description);
 
     contentField.append(descriptionField);
@@ -1011,7 +1011,7 @@ function Control(json, parentAction) {
         this.fatal = json.fatal;
         this.id = json.id;
         this.returnCode = json.returnCode;
-        this.returnMessage = safeLinkify(json.returnMessage);
+        this.returnMessage = json.returnMessage;
         this.screenshotFileName = "";
         this.sequence = json.sequence;
         this.sort = json.sort;
@@ -1141,7 +1141,7 @@ Control.prototype.generateHeader = function () {
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
 
-    returnMessageField.text(this.returnMessage);
+    returnMessageField.text(safeLinkify(this.returnMessage));
     descriptionField.text(this.description);
 
     contentField.append(descriptionField);
