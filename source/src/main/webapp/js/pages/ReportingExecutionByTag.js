@@ -216,8 +216,8 @@ function loadByStatusAndByfunctionReports() {
     var selectTag = $("#selectTag option:selected").text();
     showLoader($("#ReportByStatus"));
     showLoader($("#functionChart"));
-        $("#startExe").val("");
-        $("#endExe").val("");
+    $("#startExe").val("");
+    $("#endExe").val("");
     //Retrieve data for charts and draw them
     var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
     $.when(jqxhr).then(function (data) {
@@ -815,10 +815,14 @@ function aoColumnsFunc(Columns) {
     aoColumns.push(col);
     var col =
             {
-                "data": "bugId",
-                "mRender": function (data) {
-                    var link = '<a href="' + data.bugTrackerUrl + '">' + data.bugId + "</a>";
-                    return link;
+                "data": "bugId.bugId",
+                "mRender": function (data, type, obj) {
+                    if (obj.bugId.bugId !== "") {
+                        var link = '<a href="' + obj.bugId.bugTrackerUrl + '">' + obj.bugId.bugId + "</a>";
+                        return link;
+                    } else {
+                        return "";
+                    }
                 },
                 "sName": "tec.bugId",
                 "sClass": "bugid",
