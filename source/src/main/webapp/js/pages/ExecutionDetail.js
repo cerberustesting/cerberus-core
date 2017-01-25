@@ -879,7 +879,7 @@ Action.prototype.generateHeader = function () {
 
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
-    console.log(this.endlong);
+
     if (this.endlong !== 19700101010000000 && this.endlong !== 0){
         elapsedTime.append((this.endlong - this.startlong) + " ms");
     } else {

@@ -370,10 +370,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var wrap = $(window);
 
             wrap.on("scroll", function (e) {
-                $(".affix").width($("#page-layout").width()-3);
+                $(".affix").width($("#page-layout").width() - 3);
                 //$(".affix-top").width($("#divPanelDefault").width());
-                });
-            
+            });
+
 //
 //            wrap.resize(function (e) {
 //                if ($("#testCaseTitle").width() != $("#testCaseTitle").parent().width() - 30) {
@@ -488,6 +488,9 @@ function setAllSort() {
 }
 
 function saveScript() {
+    // Disable the save button to avoid double click.
+    $("#saveScript").attr("disabled", true);
+    
     var stepArr = setAllSort();
     var doc = new Doc();
 
@@ -500,14 +503,14 @@ function saveScript() {
         }
         propArr.push($(properties[i]).data("property"));
     }
-    
+
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({
             url: "UpdateTestCaseWithDependencies1",
             async: true,
             method: "POST",
-            contentType:'application/json; charset=utf-8',
+            contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             data: JSON.stringify({
                 informationInitialTest: GetURLParameter("test"),
@@ -530,13 +533,13 @@ function saveScript() {
                 var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort + "&tabactive=" + tabActive;
 
                 setModif(false);
-                
+
                 window.location.href = new_uri;
             },
             error: showUnexpectedError
         });
     };
-    
+
     if (propertyWithoutCountry) {
         showModalConfirmation(function () {
             $('#confirmationModal').modal('hide');
@@ -1444,8 +1447,8 @@ Step.prototype.show = function () {
         setModif(true);
         object.loop = $(this).val();
     });
-    
-    
+
+
     $("#stepConditionVal1").unbind("change").change(function () {
         setModif(true);
         object.conditionVal1 = $(this).val();
@@ -1455,7 +1458,7 @@ Step.prototype.show = function () {
         setModif(true);
         object.conditionVal2 = $(this).val();
     });
-    
+
 
     $("#stepConditionOper").replaceWith(getSelectInvariant("STEPCONDITIONOPER", false, true).css("width", "100%").addClass("form-control input-sm").attr("id", "stepConditionOper"));
     $("#stepConditionOper").unbind("change").change(function () {
@@ -1469,8 +1472,8 @@ Step.prototype.show = function () {
             conditionVal2.parent().show();
         }
     });
-    
-    
+
+
     object.stepActionContainer.show();
     $("#stepDescription").unbind("change").change(function () {
         setModif(true);
@@ -1770,7 +1773,7 @@ Action.prototype.generateContent = function () {
 
     var actionList = $("<select></select>").addClass("form-control input-sm");
     var descContainer = $("<div class='input-group'></div>");
-    var descField = $("<input class='description form-control' placeholder='"+ doc.getDocLabel("page_testcasescript", "describe_action")+"'>");
+    var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_action") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append(descField);
     var objectField = $("<input>").attr("data-toggle", "tooltip").attr("data-animation", "false").attr("data-html", "true").attr("data-container", "body").attr("data-placement", "top").attr("data-trigger", "manual").attr("type", "text").addClass("form-control input-sm");
@@ -2045,7 +2048,7 @@ Control.prototype.generateContent = function () {
 
     var controlList = $("<select></select>").addClass("form-control input-sm").css("width", "100%");
     var descContainer = $("<div class='input-group'></div>");
-    var descField = $("<input class='description form-control' placeholder='"+ doc.getDocLabel("page_testcasescript", "describe_control")+"'>");
+    var descField = $("<input class='description form-control' placeholder='" + doc.getDocLabel("page_testcasescript", "describe_control") + "'>");
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelDiv'></span>"));
     descContainer.append($("<span class='input-group-addon' style='font-weight: 700;' id='labelControlDiv'></span>"));
     descContainer.append(descField);
@@ -2068,13 +2071,13 @@ Control.prototype.generateContent = function () {
     controlconditionval1.on("change", function () {
         obj.conditionVal1 = controlconditionval1.val();
     });
-    
+
     controlconditionval2.val(this.conditionVal2);
     controlconditionval2.css("width", "100%");
     controlconditionval2.on("change", function () {
         obj.conditionVal2 = controlconditionval2.val();
     });
-    
+
 
     controlList = getSelectInvariant("CONTROL", false, true).attr("id", "controlSelect");
     controlList.val(this.control);
@@ -2206,10 +2209,10 @@ function listenEnterKeypressWhenFocusingOnDescription() {
 function addControl(action, control) {
     setModif(true);
     var act;
-    if (action instanceof Action){
-    act = action;
+    if (action instanceof Action) {
+        act = action;
     } else {
-    act = action.data("item");  
+        act = action.data("item");
     }
 
     var ctrl = new Control(null, act, true);
