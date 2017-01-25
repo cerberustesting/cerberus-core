@@ -8167,6 +8167,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `comment` `comment` TEXT NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the Comment column header documentation
+        //-- ------------------------ 1050
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'en', 'Comment', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'fr', 'Commentaire', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

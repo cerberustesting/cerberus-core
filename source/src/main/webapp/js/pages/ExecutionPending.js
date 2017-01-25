@@ -83,6 +83,11 @@ function aoColumnsFunc(tableId) {
             "data": "state",
             "sName": "state",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col")
+        },
+        {
+            "data": "comment",
+            "sName": "comment",
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col")
         }
     ];
     return aoColumns;
