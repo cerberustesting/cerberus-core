@@ -88,6 +88,7 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         int sequence = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequence"), 0, charset);
         int sequenceControl = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("sequenceControl"), 0, charset);
         int iterator = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("iterator"), 0, charset);
+        boolean autoContentType = ParameterParserUtil.parseBooleanParam(request.getParameter("autoContentType"), true);
         long id = ParameterParserUtil.parseLongParamAndDecode(request.getParameter("id"), 0, charset);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -157,14 +158,21 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "HTML":
+                    if (autoContentType) {
+                        response.setContentType("text/html");
+                    }
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "XML":
-                    response.setContentType("application/xml");
+                    if (autoContentType) {
+                        response.setContentType("application/xml");
+                    }
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "JSON":
-                    response.setContentType("application/json");
+                    if (autoContentType) {
+                        response.setContentType("application/json");
+                    }
                     returnFile(request, response, tceFile, pathString);
                     break;
                 case "TXT":
