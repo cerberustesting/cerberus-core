@@ -457,6 +457,9 @@ function setAllSort() {
                 if (!action.toDelete) {
                     // Set the action's sort
                     action.setSort(j + 1);
+                    
+                    // Set the action's step
+                    action.setStep(i + 1);
 
                     // Get action's controls
                     var controlList = action.html.children(".control");
@@ -467,7 +470,10 @@ function setAllSort() {
 
                         if (!control.toDelete) {
                             // Set the control's sort
+                            control.setParentActionSort(j + 1);
                             control.setSort(k + 1);
+                            control.setStep(i + 1);
+                            
 
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
@@ -1244,6 +1250,10 @@ function handleDragEnter(event) {
         } else {
             $(target).before(source);
         }
+    } else if (sourceData instanceof Action && targetData instanceof Step) {
+        $(target).click();
+    } else if (sourceData instanceof Control && targetData instanceof Step) {
+        $(target).click();
     }
 }
 
@@ -1931,6 +1941,7 @@ function Control(json, parentAction, canUpdate) {
 
     this.parentStep = parentAction.parentStep;
     this.parentAction = parentAction;
+    this.parentActionSort = parentAction.sort;
 
     this.toDelete = false;
     this.hasPermissionsUpdate = canUpdate;
@@ -2028,13 +2039,17 @@ Control.prototype.setControl = function (control) {
     this.control = control;
 };
 
+Control.prototype.setParentActionSort = function (parentActionSort) {
+    this.parentActionSort = parentActionSort;
+};
+
 Control.prototype.setSort = function (sort) {
     this.sort = sort;
     this.refreshSort();
 };
 
 Control.prototype.refreshSort = function () {
-    this.html.find("#labelDiv").text(this.parentAction.sort);
+    this.html.find("#labelDiv").text(this.parentActionSort);
     this.html.find("#labelControlDiv").text(this.sort);
 };
 
