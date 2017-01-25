@@ -880,12 +880,12 @@ Action.prototype.generateHeader = function () {
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
 
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         elapsedTime.append((this.endlong - this.startlong) + " ms");
     } else {
         elapsedTime.append("...");
     }
-    
+
 
     contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
@@ -952,7 +952,7 @@ Action.prototype.generateContent = function () {
     value1InitField.val(this.value1init);
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         timeField.val((this.endlong - this.startlong) + " ms");
     } else {
         timeField.val("...");
@@ -1163,7 +1163,7 @@ Control.prototype.generateHeader = function () {
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
 
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         elapsedTime.append((this.endlong - this.startlong) + " ms");
     } else {
         elapsedTime.append("...");
@@ -1232,7 +1232,7 @@ Control.prototype.generateContent = function () {
     returnCodeField.val(this.returnCode);
     returnMessageField.val(this.returnMessage);
     controlTypeField.val(this.controlType);
-    if (this.endlong !== 19700101010000000 && this.endlong !== 0){
+    if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
         timeField.val((this.endlong - this.startlong) + " ms");
     } else {
         timeField.val("...");
@@ -1312,16 +1312,33 @@ function addFileLink(fileList, container) {
                         return false;
                     }));
             container.append(linkBox);
-        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT")|| (fileList[i].fileType === "XML")) {
+        } else if ((fileList[i].fileType === "HTML") || (fileList[i].fileType === "JSON") || (fileList[i].fileType === "TXT") || (fileList[i].fileType === "XML")) {
+            var j = i;
             var urlImagetxt = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesctxt = fileList[i].fileDesc;
             var filetypetxt = fileList[i].fileType.toLowerCase();
-            var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
-                    .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
-                    .css("height", "30px").click(function (f) {
-                showTextArea(fileDesctxt, "", urlImagetxt);
-                return false;
-            }));
+            if (i === 0) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc);
+                    return false;
+                }));
+            } else if (i === 1) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc);
+                    return false;
+                }));
+            } else if (i === 2) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+                    return false;
+                }));
+            }
             container.append(linkBoxtxt);
         }
     }

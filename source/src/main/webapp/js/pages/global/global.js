@@ -2386,7 +2386,7 @@ function showTextArea(title, text, fileUrl) {
     $('#modalContent').empty();
     //set the translations
 
-    var jqxhr = $.get(fileUrl, "");
+    var jqxhr = $.get(fileUrl, "&autoContentType=N");
     $.when(jqxhr).then(function (data) {
         $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(data)));
     });
