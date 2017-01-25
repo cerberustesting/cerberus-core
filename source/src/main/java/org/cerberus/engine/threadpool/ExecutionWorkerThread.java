@@ -19,80 +19,346 @@
  */
 package org.cerberus.engine.threadpool;
 
+import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.crud.service.impl.TestCaseExecutionInQueueService;
-import org.cerberus.engine.entity.ExecutionThreadPool;
-import org.springframework.context.ApplicationContext;
+import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.enums.MessageGeneralEnum;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.zzpublic.RunTestCase;
+import org.cerberus.util.ParamRequestMaker;
+import org.cerberus.util.ParameterParserUtil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author bcivel
  */
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
-    private String executionUrl;
-    private String executionInQueueId;
+    /**
+     * The fixed value for {@link RunTestCase#PARAMETER_OUTPUT_FORMAT}
+     */
+    public static String PARAMETER_OUTPUT_FORMAT_VALUE = "verbose-txt";
 
+    /**
+     * The fixed value for {@link RunTestCase#PARAMETER_SYNCHRONEOUS}.
+     * <p>
+     * Always {@link ParameterParserUtil#DEFAULT_BOOLEAN_TRUE_VALUE} to respect maximum thread pool size
+     */
+    public static String PARAMETER_SYNCHRONEOUS_VALUE = ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE;
+
+    /**
+     * The default timeout for an execution
+     */
+    public static int DEFAULT_TIMEOUT = 600000;
+
+    /**
+     * The associated {@link Logger} to this class
+     */
     private static final Logger LOG = Logger.getLogger(ExecutionWorkerThread.class);
 
-    public ExecutionWorkerThread() {
+    /**
+     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer output
+     */
+    private static final Pattern RETURN_CODE_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCode = (\\d+)$", Pattern.MULTILINE);
+
+    /**
+     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer output
+     */
+    private static final Pattern RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCodeDescription = (.*)$", Pattern.MULTILINE);
+
+    /**
+     * The set of return code to be considered as technical error
+     */
+    private static Map<Integer, Void> RETURN_CODES_IN_ERROR = new HashMap<Integer, Void>() {
+        {
+            put(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode(), null);
+        }
+    };
+
+    /**
+     * Associated builder to the {@link ExecutionWorkerThread} class
+     */
+    public static class Builder {
+
+        private ExecutionWorkerThread executionWorkerThread;
+
+        private String cerberusUrl;
+
+        public Builder() {
+            executionWorkerThread = new ExecutionWorkerThread();
+        }
+
+        public Builder toExecute(TestCaseExecutionInQueue toExecute) {
+            executionWorkerThread.setToExecute(toExecute);
+            return this;
+        }
+
+        public Builder cerberusUrl(String cerberusUrl) {
+            this.cerberusUrl = cerberusUrl;
+            return this;
+        }
+
+        public Builder inQueueService(ITestCaseExecutionInQueueService inQueueService) {
+            executionWorkerThread.setInQueueService(inQueueService);
+            return this;
+        }
+
+        public Builder toExecuteTimeout(int toExecuteTimeout) {
+            executionWorkerThread.setToExecuteTimeout(toExecuteTimeout);
+            return this;
+        }
+
+        public ExecutionWorkerThread build() {
+            if (executionWorkerThread.getToExecute() == null) {
+                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the TestCaseExecutionInQueue to execute");
+            }
+            if (cerberusUrl == null) {
+                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the Cerberus base URL");
+            }
+            if (executionWorkerThread.getInQueueService() == null) {
+                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the TestCaseExecutionInQueueService service");
+            }
+            if (executionWorkerThread.getToExecuteTimeout() == 0) {
+                executionWorkerThread.setToExecuteTimeout(DEFAULT_TIMEOUT);
+            }
+            executionWorkerThread.setToExecuteUrl(getExecutionUrl());
+            return executionWorkerThread;
+        }
+
+        private String getExecutionUrl() {
+            StringBuilder url = new StringBuilder();
+            url.append(cerberusUrl);
+            url.append(RunTestCase.SERVLET_URL);
+            url.append("?");
+            url.append(makeParamRequest().mkString().replace(" ", "+"));
+            return url.toString();
+        }
+
+        private ParamRequestMaker makeParamRequest() {
+            ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, executionWorkerThread.getToExecute().getTest());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, executionWorkerThread.getToExecute().getTestCase());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, executionWorkerThread.getToExecute().getCountry());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, executionWorkerThread.getToExecute().getEnvironment());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, executionWorkerThread.getToExecute().getRobot());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, executionWorkerThread.getToExecute().getRobotIP());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, executionWorkerThread.getToExecute().getRobotPort());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, executionWorkerThread.getToExecute().getBrowser());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, executionWorkerThread.getToExecute().getBrowserVersion());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, executionWorkerThread.getToExecute().getPlatform());
+            if (executionWorkerThread.getToExecute().isManualURL()) {
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, executionWorkerThread.getToExecute().getManualHost());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, executionWorkerThread.getToExecute().getManualContextRoot());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, executionWorkerThread.getToExecute().getManualLoginRelativeURL());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, executionWorkerThread.getToExecute().getManualEnvData());
+            }
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, executionWorkerThread.getToExecute().getTag());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(executionWorkerThread.getToExecute().getScreenshot()));
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(executionWorkerThread.getToExecute().getVerbose()));
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, executionWorkerThread.getToExecute().getTimeout());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, PARAMETER_SYNCHRONEOUS_VALUE);
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(executionWorkerThread.getToExecute().getPageSource()));
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(executionWorkerThread.getToExecute().getSeleniumLog()));
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(executionWorkerThread.getToExecute().getId()));
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(executionWorkerThread.getToExecute().getRetries()));
+            return paramRequestMaker;
+        }
 
     }
 
-    public ExecutionWorkerThread(String executionUrlUrl, String executionInQueueId) {
-        this.executionUrl = executionUrlUrl;
-        this.executionInQueueId = executionInQueueId;
+    /**
+     * The associated {@link RuntimeException} for any errors during the run process
+     */
+    public static class RunProcessException extends RuntimeException {
+
+        public RunProcessException(String message) {
+            super(message);
+        }
+
+        public RunProcessException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
     }
 
+    private TestCaseExecutionInQueue toExecute;
+
+    private String toExecuteUrl;
+
+    private int toExecuteTimeout;
+
+    private ITestCaseExecutionInQueueService inQueueService;
+
+    /**
+     * Private constructor, use the {@link Builder} instead
+     */
+    private ExecutionWorkerThread() {
+    }
+
+    public TestCaseExecutionInQueue getToExecute() {
+        return toExecute;
+    }
+
+    private void setToExecute(TestCaseExecutionInQueue toExecute) {
+        this.toExecute = toExecute;
+    }
+
+    public String getToExecuteUrl() {
+        return toExecuteUrl;
+    }
+
+    private void setToExecuteUrl(String toExecuteUrl) {
+        this.toExecuteUrl = toExecuteUrl;
+    }
+
+    public int getToExecuteTimeout() {
+        return toExecuteTimeout;
+    }
+
+    private void setToExecuteTimeout(int toExecuteTimeout) {
+        this.toExecuteTimeout = toExecuteTimeout;
+    }
+
+    public ITestCaseExecutionInQueueService getInQueueService() {
+        return inQueueService;
+    }
+
+    private void setInQueueService(ITestCaseExecutionInQueueService inQueueService) {
+        this.inQueueService = inQueueService;
+    }
+
+    /**
+     * Process to the test case in queue execution by:
+     * <ol>
+     * <li>Moving its state from its current ({@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#QUEUED}) to {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING}</li>
+     * <li>Following state moving result then process execution by requesting the associated {@link RunTestCase} servlet</li>
+     * <li>Following execution result then removing it from the execution in queue table or moving its state to ERROR in case of technical error</li>
+     * </ol>
+     *
+     * @see #runFromQueuedToExecuting()
+     * @see #runExecution()
+     * @see #runParseAnswer(String)
+     * @see #runRemoveExecutionInQueue()
+     */
     @Override
     public void run() {
         try {
-            processCommand(executionUrl);
-        } catch (Exception ex) {
-            LOG.warn("Unable to start execution in queue " + executionInQueueId + " due to " + ex.toString(), ex);
+            if (!runFromQueuedToExecuting()) {
+                LOG.warn("Execution in queue " + toExecute.getId() + " has finished with error");
+                return;
+            }
+            runParseAnswer(runExecution());
+            runRemoveExecutionInQueue();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Execution in queue " + toExecute.getId() + " has been successfully executed");
+            }
+        } catch (RunProcessException e) {
+            LOG.warn("Execution in queue " + toExecute.getId() + " has finished with error", e);
+            try {
+                inQueueService.toError(toExecute.getId(), e.getMessage());
+            } catch (CerberusException again) {
+                LOG.warn("Unable to mark execution in queue " + toExecute.getId() + " as in error", again);
+            }
         }
     }
 
-    private void processCommand(String url) throws IOException {
-        URL urlToCall = new URL(url);
-        HttpURLConnection c = null;
-        BufferedReader br = null;
+    /**
+     * Move the inner {@link TestCaseExecutionInQueue} to the {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING} state
+     *
+     * @see #run()
+     */
+    private boolean runFromQueuedToExecuting() {
         try {
-            c = (HttpURLConnection) urlToCall.openConnection();
-            c.setConnectTimeout(600000);
-            c.setReadTimeout(600000);
+            inQueueService.toExecuting(toExecute.getId());
+            return true;
+        } catch (CerberusException e) {
+            LOG.warn("Unable to mark execution in queue " + toExecute.getId() + " as executing. Is execution in queue currently marked as queued?", e);
+            return false;
+        }
+    }
 
-            // get a stream to read data from url
-            String str = "";
-            StringBuilder sb = new StringBuilder();
+    /**
+     * Request execution of the inner {@link TestCaseExecutionInQueue} to the {@link RunTestCase} servlet
+     *
+     * @return the execution answer from the {@link RunTestCase} servlet
+     * @see #run()
+     */
+    private String runExecution() {
+        try {
+            return Request
+                    .Get(toExecuteUrl)
+                    .connectTimeout(toExecuteTimeout)
+                    .socketTimeout(toExecuteTimeout)
+                    .execute()
+                    .returnContent()
+                    .asString();
+        } catch (Exception e) {
+            throw new RunProcessException("An unexpected error occurred during test case execution. Check server logs", e);
+        }
+    }
 
-            br = new BufferedReader(new InputStreamReader(c.getInputStream()));
-            while (null != (str = br.readLine())) {
-                sb.append(str);
-            }
+    /**
+     * Parse the answer given by the {@link RunTestCase}
+     * <p>
+     * Assume answer has been written following the {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
+     *
+     * @param answer the {@link RunTestCase}'s answer
+     * @see #run()
+     */
+    private void runParseAnswer(String answer) {
+        // Check answer format
+        Matcher matcher = RETURN_CODE_FROM_ANSWER_PATTERN.matcher(answer);
+        if (!matcher.find()) {
+            LOG.warn("Bad answer format: " + answer);
+            throw new RunProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Check server logs");
+        }
 
-        } catch (SocketTimeoutException ex) {
-            LOG.warn("Unable to process execution in queue " + executionInQueueId + " due to " + ex.toString(), ex);
-        } finally {
-            if (null != br) {
-                br.close();
+        // Extract the return code
+        int returnCode;
+        try {
+            returnCode = Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException e) {
+            throw new RunProcessException("Bad return code format: " + matcher.group(1));
+        }
+
+        // Check if return code is in error
+        if (RETURN_CODES_IN_ERROR.containsKey(returnCode)) {
+            Matcher descriptionMatcher = RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN.matcher(answer);
+            if (!descriptionMatcher.find()) {
+                LOG.warn("Bad return code description format: " + answer);
+                throw new RunProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Check server logs");
             }
-            if (null != c) {
-                c.disconnect();
-            }
+            throw new RunProcessException(descriptionMatcher.group(1));
+        }
+    }
+
+    /**
+     * Remove the inner execution in queue from the execution in queue table
+     *
+     * @see #run()
+     */
+    private void runRemoveExecutionInQueue() {
+        try {
+            inQueueService.remove(toExecute.getId());
+        } catch (CerberusException e) {
+            throw new RunProcessException("Unable to remove execution in queue " + toExecute.getId() + " due to " + e.getMessageError(), e);
         }
     }
 
     @Override
     public String toString() {
-        return this.executionUrl;
+        return "ExecutionWorkerThread{" +
+                "toExecute=" + toExecute +
+                ", toExecuteUrl='" + toExecuteUrl + '\'' +
+                ", toExecuteTimeout=" + toExecuteTimeout +
+                '}';
     }
 
     @Override

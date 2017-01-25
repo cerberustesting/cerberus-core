@@ -48,6 +48,7 @@
         <groovy-sandbox.version>1.10</groovy-sandbox.version>
         <asciidoctor.version>1.5.4</asciidoctor.version>
         <apache.tika>1.13</apache.tika>
+        <fluent-hc.version>4.5.2</fluent-hc.version>
         
         <!-- Maven plugin version -->
         <maven-compiler-plugin.version>2.3.2</maven-compiler-plugin.version>
@@ -260,6 +261,11 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>${apache.tika}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>${fluent-hc.version}</version>
         </dependency>
 
         <!-- Provided scope -->

@@ -20,7 +20,6 @@
 package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.Country;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -31,9 +30,6 @@ import org.cerberus.engine.entity.ExecutionThreadPool;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.zzpublic.RunTestCase;
-import org.cerberus.util.ParamRequestMaker;
-import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.observe.Observer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,38 +131,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
      */
     private static final String EXECUTION_POOL_NAME_FORMAT = "%s-%s-%s";
 
-    private static ParamRequestMaker makeParamRequest(TestCaseExecutionInQueue lastInQueue) {
-        ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, lastInQueue.getTest());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, lastInQueue.getTestCase());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, lastInQueue.getCountry());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, lastInQueue.getEnvironment());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, lastInQueue.getRobot());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, lastInQueue.getRobotIP());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, lastInQueue.getRobotPort());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, lastInQueue.getBrowser());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, lastInQueue.getBrowserVersion());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, lastInQueue.getPlatform());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, lastInQueue.isManualURL() ? ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE : null);
-        if (lastInQueue.isManualURL()) {
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, lastInQueue.getManualHost());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, lastInQueue.getManualContextRoot());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, lastInQueue.getManualLoginRelativeURL());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, lastInQueue.getManualEnvData());
-        }
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, lastInQueue.getTag());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, lastInQueue.getOutputFormat());
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(lastInQueue.getScreenshot()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(lastInQueue.getVerbose()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, lastInQueue.getTimeout());
-        // Always synchronous in order to respect maximum thread pool size
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(lastInQueue.getPageSource()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(lastInQueue.getSeleniumLog()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(lastInQueue.getId()));
-        paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(lastInQueue.getRetries()));
-        return paramRequestMaker;
-    }
+    private static final String PARAMETER_CERBERUS_URL = "cerberus_url";
 
     @Autowired
     private ITestCaseExecutionInQueueService tceiqService;
@@ -220,7 +185,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
             associatedPool.stop();
             executionPools.remove(key);
         }
-        // TODO remove executions from database
+        // TODO remove also executions from database?
     }
 
     @Override
@@ -278,7 +243,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
         try {
             ExecutionThreadPool executionPool = getOrCreateExecutionPool(getKey(toExecute));
-            ExecutionWorkerThread execution = new ExecutionWorkerThread(getExecutionUrl(toExecute), toExecute.getTag());
+            ExecutionWorkerThread execution = new ExecutionWorkerThread.Builder()
+                    .toExecute(toExecute)
+                    .cerberusUrl(parameterService.findParameterByKey(PARAMETER_CERBERUS_URL, "").getValue())
+                    .inQueueService(tceiqService)
+                    .build();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Request to execute " + execution + " from execution pool " + executionPool);
             }
@@ -288,12 +257,6 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
             LOG.warn(message, e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR).resolveDescription("REASON", message));
         }
-    }
-
-    private String getExecutionUrl(TestCaseExecutionInQueue toExecute) throws CerberusException{
-        ParamRequestMaker paramRequestMaker = makeParamRequest(toExecute);
-        String executionParameters = paramRequestMaker.mkString().replace(" ", "+");
-        return parameterService.findParameterByKey("cerberus_url", "").getValue() + "/RunTestCase?" + executionParameters;
     }
 
     private ExecutionThreadPool getOrCreateExecutionPool(CountryEnvironmentParameters.Key key) {

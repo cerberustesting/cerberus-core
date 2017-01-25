@@ -8160,6 +8160,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_executiondetail', 'conditionOper', '', 'fr', 'Condition Opérateur', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Increase the testcaseexecutionqueue's comment column size
+        //-- ------------------------ 1049
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `comment` `comment` TEXT NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
