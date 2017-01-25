@@ -1068,6 +1068,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["colVis"] = tableConfigurations.lang.colVis;
     configs["scrollX"] = tableConfigurations.scrollX;
     configs["lengthChange"] = tableConfigurations.lengthChange;
+    configs["lengthMenu"] = tableConfigurations.lengthMenu;
     configs["orderClasses"] = tableConfigurations.orderClasses;
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
     configs["columnReorder"] = tableConfigurations.colreorder;
@@ -1492,7 +1493,7 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns) {
     /**
      * Apply the filter to the table
      */
-    var oTable = $('#' + tableId).dataTable();
+    var oTable = $('#' + tableId).DataTable();
     resetFilters(oTable);
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
