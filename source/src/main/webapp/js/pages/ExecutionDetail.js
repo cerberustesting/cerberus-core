@@ -265,38 +265,43 @@ function updatePage(data, stepList) {
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer);
 
-    $.ajax({
-        url: "ReadApplication",
-        data: {application: data.application},
-        async: true,
-        success: function (dataApp) {
-            var link;
-            var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
-            if ((data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") && newBugURL != undefined) {
-                newBugURL = newBugURL.replace("%EXEID%", data.id);
-                newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
-                newBugURL = newBugURL.replace("%TEST%", data.test);
-                newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
-                newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
-                newBugURL = newBugURL.replace("%COUNTRY%", data.country);
-                newBugURL = newBugURL.replace("%ENV%", data.environment);
-                newBugURL = newBugURL.replace("%BUILD%", data.build);
-                newBugURL = newBugURL.replace("%REV%", data.revision);
-                newBugURL = newBugURL.replace("%BROWSER%", data.browser);
-                newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
-                link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
-            } else {
-                newBugURL = dataApp.contentTable.bugTrackerUrl;
-                if (newBugURL != undefined && newBugURL != "") {
-                    newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
-                    link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+    var myURL = $("#bugID").data("appBugURL");
+    if (myURL === undefined) {
+        // We only refresh the bugURL and call readApplication if the information is not already filed.
+        $.ajax({
+            url: "ReadApplication",
+            data: {application: data.application},
+            async: true,
+            success: function (dataApp) {
+                var link;
+                var newBugURL = dataApp.contentTable.bugTrackerNewUrl;
+                if ((data.testCaseObj.bugId == undefined || data.testCaseObj.bugId == "") && newBugURL != undefined) {
+                    newBugURL = newBugURL.replace("%EXEID%", data.id);
+                    newBugURL = newBugURL.replace("%EXEDATE%", new Date(data.start).toLocaleString());
+                    newBugURL = newBugURL.replace("%TEST%", data.test);
+                    newBugURL = newBugURL.replace("%TESTCASE%", data.testcase);
+                    newBugURL = newBugURL.replace("%TESTCASEDESC%", data.testCaseObj.description);
+                    newBugURL = newBugURL.replace("%COUNTRY%", data.country);
+                    newBugURL = newBugURL.replace("%ENV%", data.environment);
+                    newBugURL = newBugURL.replace("%BUILD%", data.build);
+                    newBugURL = newBugURL.replace("%REV%", data.revision);
+                    newBugURL = newBugURL.replace("%BROWSER%", data.browser);
+                    newBugURL = newBugURL.replace("%BROWSERFULLVERSION%", data.browserFullVersion);
+                    link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text("Open a new bug"));
                 } else {
-                    link = $("<span>").text(data.testCaseObj.bugId);
+                    newBugURL = dataApp.contentTable.bugTrackerUrl;
+                    if (newBugURL != undefined && newBugURL != "") {
+                        newBugURL = newBugURL.replace("%BUGID%", data.testCaseObj.bugId);
+                        link = $('<a target="_blank" id="bugID">').attr("href", newBugURL).append($("<button class='btn btn-default btn-block'>").text(data.testCaseObj.bugId));
+                    } else {
+                        link = $("<span>").text(data.testCaseObj.bugId);
+                    }
                 }
+                $("#bugID").append(link);
+                $("#bugID").data("appBugURL", "true");
             }
-            $("#bugID").append(link);
-        }
-    });
+        });
+    }
 
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
