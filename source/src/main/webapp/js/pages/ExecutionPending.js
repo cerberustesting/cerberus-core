@@ -87,7 +87,8 @@ function aoColumnsFunc(tableId) {
         {
             "data": "comment",
             "sName": "comment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col")
+            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
+            "defaultContent": ""
         }
     ];
     return aoColumns;
