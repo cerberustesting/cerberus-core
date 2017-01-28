@@ -585,9 +585,15 @@ function Step(json, stepList) {
     this.start = json.start;
     this.step = json.step;
     this.index = json.index;
+    this.loop = json.loop;
     this.test = json.test;
     this.testcase = json.testcase;
     this.timeElapsed = json.timeElapsed;
+    this.conditionOper = json.conditionOper;
+    this.conditionVal1 = json.conditionVal1;
+    this.conditionVal2 = json.conditionVal2;
+    this.conditionVal1Init = json.conditionVal1Init;
+    this.conditionVal2Init = json.conditionVal2Init;
     this.useStep = json.useStep;
     this.useStepTest = json.useStepTest;
     this.useStepTestCase = json.useStepTestCase;
@@ -634,8 +640,11 @@ Step.prototype.draw = function () {
 Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
-    var stepDesc = $("<div>").addClass("col-sm-11");
-
+    var stepDesc = $("<div>").addClass("col-sm-10");
+    var stepButton = $("<button id='stepPlus'></a>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+//    var stepButton1 = $("<div id='stepPlus'></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+//    stepButton.append(stepButton1);
+    
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
 
@@ -645,8 +654,6 @@ Step.prototype.show = function () {
     $("#stepInfo").empty();
     $("#stepContent").removeClass();
     $(this).addClass("active");
-
-
 
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
@@ -662,16 +669,38 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     }
 
-    stepDesc.append($("<h2 id='stepDescription' style='float:left;'>").text(object.description));
-    if (object.useStep === "Y") {
-        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text("(" + doc.getDocLabel("page_testcasescript", "imported_from") + " " + object.useStepTest + " - " + object.useStepTestCase + " - " + object.useStepStep + " )"));
-    } else {
-        stepDesc.append($("<div id='libInfo' style='float:right; margin-top: 20px;'>").text(""));
-    }
+
+    stepDesc.append($("<h2 id='stepHeaderDescription' >").text(object.description));
+    stepDesc.append($("<h2 id='stepHeaderMessage' style='font-size:1.2em;'>").text(object.returnMessage));
     $("#stepInfo").attr('test', object.test).attr('testcase', object.testcase).attr('step', object.step);
     $("#stepInfo").append(stepDesc);
+    $("#stepInfo").append(stepButton);
     object.stepActionContainer.show();
     $("#stepInfo").show();
+
+    $("#stepRC").val(object.returnCode);
+    $("#stepDescription").val(object.description);
+    $("#stepSort").val(object.sort);
+    $("#stepLoop").val(object.loop);
+    $("#stepIndex").val(object.index);
+    $("#stepElapsed").val(object.timeElapsed);
+    $("#stepConditionOper").val(object.conditionOper);
+    $("#stepConditionVal1").val(object.conditionVal1);
+    $("#stepConditionVal2").val(object.conditionVal2);
+    $("#stepConditionVal1Init").val(object.conditionVal1Init);
+    $("#stepConditionVal2Init").val(object.conditionVal2Init);
+    $("#stepMessage").val(object.returnMessage);
+
+
+    $("#stepInfo").unbind("click").click(function () {
+        $("#stepHiddenRow").toggle();
+        if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
+            $(this).find("span").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        } else {
+            $(this).find("span").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+        }
+    });
+
     return false;
 };
 
@@ -699,7 +728,7 @@ Step.prototype.setAction = function (action) {
 Step.prototype.setDescription = function (description) {
     this.description = description;
     this.textArea.text(description);
-    $("#stepDescription").text(description);
+    $("#stepHeaderDescription").text(description);
 };
 
 Step.prototype.setStep = function (step) {

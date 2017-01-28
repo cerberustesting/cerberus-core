@@ -30,12 +30,12 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  */
 public interface IFactoryTestCaseStepExecution {
 
-    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, 
+    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop,
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2,
             String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
             String returnMessage, String description);
 
-    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, 
+    TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, 
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2,
             String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode,
             MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest,

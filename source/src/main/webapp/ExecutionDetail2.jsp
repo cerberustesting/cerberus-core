@@ -113,12 +113,78 @@
                                 </nav>
                                 <div class="col-lg-9 well marginTop5" id="contentWrapper" style="min-height: 200px;">
                                     <div id="stepContent">
-                                        <div  id="stepHeader" style="margin-bottom: 15px;">
-                                            <div id="stepInfo" class="row" style="display: none;">
+                                        <div class="row step">
+                                            <div class="content col-lg-12">
+                                                <div  id="stepHeader" style="margin-bottom: 15px;">
+                                                    <div id="stepInfo" class="row" style="display: none;">
+                                                    </div>
+                                                </div>
+                                                <div class="fieldRow marginTop25" id="stepHiddenRow" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-lg-2 form-group">
+                                                            <label>Code de Retour</label>
+                                                            <input class="form-control input-sm" id="stepRC">
+                                                        </div>
+                                                        <div class="col-lg-10 form-group">
+                                                            <label>Description</label>
+                                                            <input class="form-control input-sm" id="stepDescription">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-1 form-group">
+                                                            <label>Ordre</label>
+                                                            <input class="form-control input-sm" id="stepSort">
+                                                        </div>
+                                                        <div class="col-lg-1 form-group">
+                                                            <label>Index</label>
+                                                            <input class="form-control input-sm" id="stepIndex">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Loop</label>
+                                                            <input class="form-control input-sm" id="stepLoop">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>temps</label>
+                                                            <input class="form-control input-sm" id="stepElapsed">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-2 form-group">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param1 Init</label>
+                                                            <input class="form-control input-sm" id="stepConditionVal1Init">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param2 Init</label>
+                                                            <input class="form-control input-sm" id="stepConditionVal2Init">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-2 form-group">
+                                                            <label>Condition Operation</label>
+                                                            <input class="form-control input-sm" id="stepConditionOper">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param1</label>
+                                                            <input class="form-control input-sm" id="stepConditionVal1">
+                                                        </div>
+                                                        <div class="col-lg-5 form-group">
+                                                            <label>Param2</label>
+                                                            <input class="form-control input-sm" id="stepConditionVal2">
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12 form-group">
+                                                            <label>Message de retour</label>
+                                                            <input class="form-control input-sm" id="stepMessage">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div id="actionContainer"></div>
                                     </div>
+                                    <div id="actionContainer"></div>
                                 </div>
                             </div>
                         </div>

@@ -374,6 +374,7 @@ public class TestCaseStepExecution {
             result.put("useStepTest", this.getUseStepTest());
             result.put("useStepTestCase", this.getUseStepTestCase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
+            result.put("loop", this.getLoop());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());

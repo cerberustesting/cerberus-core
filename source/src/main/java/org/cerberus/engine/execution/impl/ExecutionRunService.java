@@ -335,7 +335,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 .resolveDescription("STEPINDEX", String.valueOf(step_index));
                         testCaseStepExecution = factoryTestCaseStepExecution.create(
                                 runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                                testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
+                                testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
                                 startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                 testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                         testCaseStepExecution.setLoop(testCaseStep.getLoop());
