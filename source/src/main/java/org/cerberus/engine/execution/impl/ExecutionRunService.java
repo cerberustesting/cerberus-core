@@ -628,17 +628,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We populate the TestCase Action List
              */
-            AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
-            if (ai == null) {
-                ai = new AnswerList<>();
-            }
-            List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
-            if (tcsaExecution == null) {
-                tcsaExecution = new LinkedList<>();
-            }
-            tcsaExecution.add(testCaseStepActionExecution);
-            ai.setDataList(tcsaExecution);
-            testCaseStepExecution.setTestCaseStepActionExecution(ai);
+            testCaseStepExecution.addTestCaseStepActionExecutionList(testCaseStepActionExecution);
 
             /**
              * Preparing the previously calculated data coming from 1/ the other
@@ -781,17 +771,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We populate the TestCase Control List
              */
-            AnswerList<TestCaseStepActionControlExecution> ai = testCaseStepActionExecution.getTestCaseStepActionControlExecutionList();
-            if (ai == null) {
-                ai = new AnswerList<>();
-            }
-            List<TestCaseStepActionControlExecution> tcsaExecution = ai.getDataList();
-            if (tcsaExecution == null) {
-                tcsaExecution = new LinkedList<>();
-            }
-            tcsaExecution.add(testCaseStepActionControlExecution);
-            ai.setDataList(tcsaExecution);
-            testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(ai);
+            testCaseStepActionExecution.addTestCaseStepActionExecutionList(testCaseStepActionControlExecution);
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;

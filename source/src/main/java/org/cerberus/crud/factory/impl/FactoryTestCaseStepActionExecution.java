@@ -24,6 +24,7 @@ import java.util.List;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepActionExecution;
@@ -70,8 +71,10 @@ public class FactoryTestCaseStepActionExecution implements IFactoryTestCaseStepA
         testCaseStepActionExecution.setTestCaseStepExecution(testCaseStepExecution);
         testCaseStepActionExecution.setDescription(description);
         // List objects
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         testCaseStepActionExecution.setFileList(objectFileList);
+        List<TestCaseStepActionControlExecution> testCaseStepActionControlExecution = new ArrayList<>();
+        testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(testCaseStepActionControlExecution);
         return testCaseStepActionExecution;
     }
 

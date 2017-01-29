@@ -27,6 +27,7 @@ import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseStepExecution;
 import org.springframework.stereotype.Service;
 
@@ -37,14 +38,19 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecution {
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, String returnMessage, String description) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOper, String conditionVal1Init,
+            String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
+            String returnCode, String returnMessage, String description) {
         TestCaseStepExecution testCaseStepExecution = create(id, test, testCase, step, index, sort, loop, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullStart, fullEnd, timeElapsed, returnCode, null, null, null, null, null, null, -1, description);
         testCaseStepExecution.setReturnMessage(returnMessage);
         return testCaseStepExecution;
     }
 
     @Override
-    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed, String returnCode, MessageEvent stepResultMessage, TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
+    public TestCaseStepExecution create(long id, String test, String testCase, int step, int index, int sort, String loop, String conditionOper, String conditionVal1Init,
+            String conditionVal2Init, String conditionVal1, String conditionVal2, String batNumExe, long start, long end, long fullStart, long fullEnd, BigDecimal timeElapsed,
+            String returnCode, MessageEvent stepResultMessage,
+            TestCaseStep testCaseStep, TestCaseExecution tCExecution, String useStep, String useStepTest, String useStepTestCase, int useStepTestCaseStep, String description) {
         TestCaseStepExecution testCaseStepExecution = new TestCaseStepExecution();
         testCaseStepExecution.setBatNumExe(batNumExe);
         testCaseStepExecution.setEnd(end);
@@ -74,8 +80,11 @@ public class FactoryTestCaseStepExecution implements IFactoryTestCaseStepExecuti
         testCaseStepExecution.setUseStepTestCaseStep(useStepTestCaseStep);
         testCaseStepExecution.setDescription(description);
         // List objects
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<>();
         testCaseStepExecution.setFileList(objectFileList);
+        List<TestCaseStepActionExecution> testCaseStepActionExecution = new ArrayList<>();
+        testCaseStepExecution.setTestCaseStepActionExecutionList(testCaseStepActionExecution);
+
         return testCaseStepExecution;
     }
 
