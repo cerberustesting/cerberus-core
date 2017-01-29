@@ -123,29 +123,29 @@
                                                     <div class="row">
                                                         <div class="col-lg-2 form-group">
                                                             <label>Code de Retour</label>
-                                                            <input class="form-control input-sm" id="stepRC">
+                                                            <input class="form-control input-sm" readonly id="stepRC">
                                                         </div>
                                                         <div class="col-lg-10 form-group">
                                                             <label>Description</label>
-                                                            <input class="form-control input-sm" id="stepDescription">
+                                                            <input class="form-control input-sm" readonly id="stepDescription">
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-1 form-group">
                                                             <label>Ordre</label>
-                                                            <input class="form-control input-sm" id="stepSort">
+                                                            <input class="form-control input-sm" readonly id="stepSort">
                                                         </div>
                                                         <div class="col-lg-1 form-group">
                                                             <label>Index</label>
-                                                            <input class="form-control input-sm" id="stepIndex">
+                                                            <input class="form-control input-sm" readonly id="stepIndex">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>Loop</label>
-                                                            <input class="form-control input-sm" id="stepLoop">
+                                                            <input class="form-control input-sm" readonly id="stepLoop">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>temps</label>
-                                                            <input class="form-control input-sm" id="stepElapsed">
+                                                            <input class="form-control input-sm" readonly id="stepElapsed">
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -153,31 +153,31 @@
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>Param1 Init</label>
-                                                            <input class="form-control input-sm" id="stepConditionVal1Init">
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal1Init">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>Param2 Init</label>
-                                                            <input class="form-control input-sm" id="stepConditionVal2Init">
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal2Init">
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-2 form-group">
                                                             <label>Condition Operation</label>
-                                                            <input class="form-control input-sm" id="stepConditionOper">
+                                                            <input class="form-control input-sm" readonly id="stepConditionOper">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>Param1</label>
-                                                            <input class="form-control input-sm" id="stepConditionVal1">
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal1">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
                                                             <label>Param2</label>
-                                                            <input class="form-control input-sm" id="stepConditionVal2">
+                                                            <input class="form-control input-sm" readonly id="stepConditionVal2">
                                                         </div>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-12 form-group">
                                                             <label>Message de retour</label>
-                                                            <input class="form-control input-sm" id="stepMessage">
+                                                            <input class="form-control input-sm" readonly id="stepMessage">
                                                         </div>
                                                     </div>
                                                 </div>

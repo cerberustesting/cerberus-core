@@ -457,6 +457,7 @@ public class ReadTestCase extends HttpServlet {
         JSONArray stepList = new JSONArray();
         Gson gson = new Gson();
         for (TestCaseStep step : (List<TestCaseStep>) testCaseStepList.getDataList()) {
+            step = testCaseStepService.modifyTestCaseStepDataFromUsedStep(step);
             JSONObject jsonStep = new JSONObject(gson.toJson(step));
 
             //Fill JSON with step info

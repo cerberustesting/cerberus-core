@@ -34,6 +34,7 @@ public interface ITestCaseStepService {
 
     /**
      * GetListOfSteps
+     *
      * @param test
      * @param testcase
      * @return List of TestCaseStep
@@ -44,20 +45,23 @@ public interface ITestCaseStepService {
 
     /**
      * InsertTestCaseStep
+     *
      * @param testCaseStep
-     * @throws CerberusException 
+     * @throws CerberusException
      */
     void insertTestCaseStep(TestCaseStep testCaseStep) throws CerberusException;
 
     /**
      * InsertListTestCaseStep
+     *
      * @param testCaseStepList
      * @return true if no exception reached
      */
     boolean insertListTestCaseStep(List<TestCaseStep> testCaseStepList);
-    
+
     /**
      * FindTestCaseStep
+     *
      * @param test
      * @param testcase
      * @param step
@@ -65,24 +69,34 @@ public interface ITestCaseStepService {
      */
     TestCaseStep findTestCaseStep(String test, String testcase, Integer step);
 
-    public void updateTestCaseStep(TestCaseStep tcsLeft) throws CerberusException ;
+    /**
+     * This method is changing the data that belong to masterStep by the data that
+     * is inherited from the usedStep.
+     *
+     * @param masterStep
+     * @return masterStep but with data replaced from used step in case the step
+     * is linked with a used step.
+     */
+    TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep);
 
-    public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException ;
-    
-    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException ;
-    
-    List <TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
-    
-    List <TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
-    
+    public void updateTestCaseStep(TestCaseStep tcsLeft) throws CerberusException;
+
+    public void deleteTestCaseStep(TestCaseStep tcs) throws CerberusException;
+
+    public void deleteListTestCaseStep(List<TestCaseStep> tcsToDelete) throws CerberusException;
+
+    List<TestCaseStep> getTestCaseStepUsingStepInParamter(String test, String testCase, int step) throws CerberusException;
+
+    List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
+
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList, boolean duplicate) throws CerberusException;
-    
+
     List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;
 
     List<TestCaseStep> getStepLibraryBySystem(String system) throws CerberusException;
-    
+
     List<TestCaseStep> getStepLibraryBySystemTest(String system, String test) throws CerberusException;
-    
+
     List<TestCaseStep> getStepLibraryBySystemTestTestCase(String system, String test, String testCase) throws CerberusException;
 
     AnswerList readByTestTestCase(String test, String testcase);
@@ -92,7 +106,7 @@ public interface ITestCaseStepService {
     AnswerList readByTestTestCaseWithDependency(String test, String testcase);
 
     Answer create(TestCaseStep object);
-    
+
     Answer createList(List<TestCaseStep> objectList);
 
     Answer duplicateList(List<TestCaseStep> objectList, String test, String testCase);

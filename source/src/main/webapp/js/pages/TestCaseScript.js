@@ -1504,9 +1504,9 @@ Step.prototype.show = function () {
     });
 
     $("#stepLoop").val(object.loop);
+    $("#stepConditionOper").val(object.conditionOper);
     $("#stepConditionVal1").val(object.conditionVal1);
     $("#stepConditionVal2").val(object.conditionVal2);
-    $("#stepConditionOper").val(object.conditionOper);
     $("#stepDescription").val(object.description);
     $("#stepId").text(object.sort);
     $("#stepInfo").show();
@@ -1514,12 +1514,15 @@ Step.prototype.show = function () {
     $("#stepHeader").show()
 
     // Disable fields if Permission not allowing.
-    $("#stepDescription").attr("disabled", !object.hasPermissionsUpdate);
-    $("#isUseStep").attr("disabled", !object.hasPermissionsUpdate);
-    $("#stepConditionOper").attr("disabled", !object.hasPermissionsUpdate);
-    $("#stepConditionVal1").attr("disabled", !object.hasPermissionsUpdate);
-    $("#stepConditionVal2").attr("disabled", !object.hasPermissionsUpdate);
-    $("#isLib").attr("disabled", !object.hasPermissionsUpdate);
+    var activateDisable = !object.hasPermissionsUpdate;
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
+    $("#stepDescription").attr("disabled", activateDisable);
+    $("#isUseStep").attr("disabled", activateDisable);
+    $("#stepLoop").attr("disabled", activateDisableWithUseStep);
+    $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
+    $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
+    $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
+    $("#isLib").attr("disabled", activateDisable);
 
     object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
 
