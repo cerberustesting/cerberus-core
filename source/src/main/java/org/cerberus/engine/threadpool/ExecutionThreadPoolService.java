@@ -21,12 +21,14 @@ package org.cerberus.engine.threadpool;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.crud.service.ICountryEnvironmentParametersService;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
+import org.cerberus.crud.service.ICountryEnvironmentParametersService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
-import org.cerberus.engine.entity.ExecutionThreadPool;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
+import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
+import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -45,74 +47,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Manage a set of {@link ExecutionThreadPool} to support multiple Cerberus test case executions
+ *
  * @author bcivel
+ * @author abourdon
  */
 @Service
 public class ExecutionThreadPoolService implements Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
-
-    public static class ExecutionThreadPoolStats {
-
-        private CountryEnvironmentParameters.Key id;
-
-        private long poolSize;
-
-        private long inExecution;
-
-        private long inQueue;
-
-        private long remaining;
-
-        public CountryEnvironmentParameters.Key getId() {
-            return id;
-        }
-
-        /* default */ ExecutionThreadPoolStats setId(CountryEnvironmentParameters.Key id) {
-            this.id = id;
-            return this;
-        }
-
-        public long getPoolSize() {
-            return poolSize;
-        }
-
-        /* default */ ExecutionThreadPoolStats setPoolSize(long poolSize) {
-            this.poolSize = poolSize;
-            return this;
-        }
-
-        public long getInExecution() {
-            return inExecution;
-        }
-
-        /* default */ ExecutionThreadPoolStats setInExecution(long inExecution) {
-            this.inExecution = inExecution;
-            computeRemaining();
-            return this;
-        }
-
-        public long getInQueue() {
-            return inQueue;
-        }
-
-        /* default */ ExecutionThreadPoolStats setInQueue(long inQueue) {
-            this.inQueue = inQueue;
-            computeRemaining();
-            return this;
-        }
-
-        public long getRemaining() {
-            return remaining;
-        }
-
-        private void setRemaining(long remaining) {
-            this.remaining = remaining;
-        }
-
-        private void computeRemaining() {
-            setRemaining(getInQueue() - getInExecution());
-        }
-
-    }
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
@@ -170,9 +111,27 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
                     .setPoolSize(pool.getValue().getPoolSize())
                     .setInQueue(pool.getValue().getInQueue())
                     .setInExecution(pool.getValue().getInExecution())
+                    .setPaused(pool.getValue().isPaused())
+                    .setStopped(pool.getValue().isStopped())
             );
         }
         return stats;
+    }
+
+    public void pauseExecutionThreadPool(CountryEnvironmentParameters.Key key) {
+        ExecutionThreadPool associatedPool = getExecutionPool(key);
+        if (associatedPool == null) {
+            return;
+        }
+        associatedPool.pause();
+    }
+
+    public void resumeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
+        ExecutionThreadPool associatedPool = getExecutionPool(key);
+        if (associatedPool == null) {
+            return;
+        }
+        associatedPool.resume();
     }
 
     public void stopExecutionThreadPool(CountryEnvironmentParameters.Key key) {

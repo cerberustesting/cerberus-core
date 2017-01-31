@@ -49,7 +49,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution} changes
  *
  * @author corentin
- * @author aurel
+ * @author abourdon
  */
 @ServerEndpoint(
         value = "/execution/{execution-id}",

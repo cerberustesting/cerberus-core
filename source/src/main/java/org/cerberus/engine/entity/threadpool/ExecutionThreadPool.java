@@ -17,9 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.entity;
+package org.cerberus.engine.entity.threadpool;
 
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
+import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * The execution thread pool to control Test Cases executions.
- *
+ * <p>
  * Internally, this execution thread pool works as a size-settable {@link ThreadPoolExecutor}
  *
  * @author bcivel
@@ -41,12 +42,12 @@ public class ExecutionThreadPool {
     private String name;
 
     /**
-     * The inner {@link ThreadPoolExecutor} that control Test Cases executions.
+     * The inner {@link PausableThreadPoolExecutor} that control Test Cases executions.
      * <p>
-     * When instanciated, this {@link ThreadPoolExecutor} act the same as a {@link java.util.concurrent.Executors#newFixedThreadPool(int)},
-     * but with the ability to tune its core pool size
+     * When instanciated, this {@link PausableThreadPoolExecutor} act the same as a {@link java.util.concurrent.Executors#newFixedThreadPool(int)},
+     * but with the ability to tune its core pool size and be pausable/resumable
      */
-    private ThreadPoolExecutor executor;
+    private PausableThreadPoolExecutor executor;
 
     /**
      * Create a new {@link ExecutionThreadPool} based on the given {@link CountryEnvironmentParameters.Key} and initial pool size
@@ -145,10 +146,42 @@ public class ExecutionThreadPool {
     }
 
     /**
+     * Pause this {@link ExecutionThreadPool}
+     */
+    public void pause() {
+        executor.pause();
+    }
+
+    /**
+     * Resume this {@link ExecutionThreadPool}
+     */
+    public void resume() {
+        executor.resume();
+    }
+
+    /**
+     * Check if this {@link ExecutionThreadPool} is currently paused
+     *
+     * @return <code>true</code> if this {@link ExecutionThreadPool} is currently paused, <code>false</code> otherwise
+     */
+    public boolean isPaused() {
+        return executor.isPaused();
+    }
+
+    /**
      * Stop this {@link ExecutionThreadPool} stopping its inner thread pool
      */
     public void stop() {
         stopExecutor();
+    }
+
+    /**
+     * Check if this {@link ExecutionThreadPool} is currently stopped, i.e., if its internal {@link ThreadPoolExecutor} is (or being to be) shutdown
+     *
+     * @return <code>true</code> if this {@link ExecutionThreadPool} is currently stopped, <code>false</code> otherwise
+     */
+    public boolean isStopped() {
+        return executor.isShutdown();
     }
 
     @Override
@@ -162,10 +195,10 @@ public class ExecutionThreadPool {
      * @param poolSize the thread pool size to set to the inner thread pool executor
      */
     private void initExecutor(int poolSize) {
-        // The same as Executors#newFixedThreadPool(int) but with access to the
-        // ThreadPoolExecutor API and so more controls than the ExecutorService one provided by
-        // Executors#newFixedThreadPool(int)
-        executor = new ThreadPoolExecutor(
+        // The same as Executors#newFixedThreadPool(int) but with:
+        // - access to the ThreadPoolExecutor API and so more controls than the ExecutorService one provided by Executors#newFixedThreadPool(int)
+        // - access to the PausableThreadPoolExecutor API and so be able to pause/resume executions
+        executor = new PausableThreadPoolExecutor(
                 poolSize,
                 poolSize,
                 0L, TimeUnit.MILLISECONDS,

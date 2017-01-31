@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.threadpool;
+package org.cerberus.engine.entity.threadpool;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
