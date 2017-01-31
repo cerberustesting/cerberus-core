@@ -24,6 +24,7 @@ import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
 
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -216,7 +217,10 @@ public class ExecutionThreadPool {
      */
     private List<Runnable> stopExecutor() {
         if (!executor.isShutdown()) {
-            return executor.shutdownNow();
+            final List<Runnable> remainingTasks = executor.shutdownNow();
+            // Release waiting threads to this now shutdown ExecutionThreadPool
+            resume();
+            return remainingTasks;
         }
         return null;
     }

@@ -135,7 +135,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         associatedPool.resume();
     }
 
-    public void stopExecutionThreadPool(CountryEnvironmentParameters.Key key) {
+    public void removeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
         // Stop the execution thread pool and remove it from our associated map
         ExecutionThreadPool associatedPool;
         List<Runnable> remainingExecutions = null;
@@ -175,7 +175,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     @Override
     public void observeDelete(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        stopExecutionThreadPool(key);
+        removeExecutionThreadPool(key);
     }
 
     @PostConstruct
@@ -214,9 +214,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
         try {
-            ExecutionThreadPool executionPool = getOrCreateExecutionPool(getKey(toExecute));
+            CountryEnvironmentParameters.Key toExecuteKey = getKey(toExecute);
+            ExecutionThreadPool executionPool = getOrCreateExecutionPool(toExecuteKey);
             ExecutionWorkerThread execution = new ExecutionWorkerThread.Builder()
                     .toExecute(toExecute)
+                    .toExecuteKey(toExecuteKey)
                     .cerberusUrl(parameterService.findParameterByKey(PARAMETER_CERBERUS_URL, "").getValue())
                     .inQueueService(tceiqService)
                     .build();

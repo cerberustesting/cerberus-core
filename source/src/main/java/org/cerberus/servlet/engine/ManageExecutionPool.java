@@ -94,7 +94,7 @@ public class ManageExecutionPool extends HttpServlet {
     }
 
     private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final ExecutionThreadPoolService executionPoolService) {
-        executionPoolService.stopExecutionThreadPool(executionPoolKey);
+        executionPoolService.removeExecutionThreadPool(executionPoolKey);
     }
 
     private RequestBody getBody(HttpServletRequest req) throws IOException, JsonSyntaxException {

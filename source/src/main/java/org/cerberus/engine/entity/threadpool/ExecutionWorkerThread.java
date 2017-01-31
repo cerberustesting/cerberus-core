@@ -21,6 +21,7 @@ package org.cerberus.engine.entity.threadpool;
 
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -87,6 +88,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
         private ExecutionWorkerThread executionWorkerThread;
 
+        private CountryEnvironmentParameters.Key toExecuteKey;
+
         private String cerberusUrl;
 
         public Builder() {
@@ -95,6 +98,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
         public Builder toExecute(TestCaseExecutionInQueue toExecute) {
             executionWorkerThread.setToExecute(toExecute);
+            return this;
+        }
+
+        public Builder toExecuteKey(CountryEnvironmentParameters.Key toExecuteKey) {
+            this.toExecuteKey = toExecuteKey;
             return this;
         }
 
@@ -117,6 +125,9 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecute() == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the TestCaseExecutionInQueue to execute");
             }
+            if (toExecuteKey == null) {
+                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the CountryEnvironmentParameters.Key associated to the TestCaseExecutionInQueue to execute");
+            }
             if (cerberusUrl == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the Cerberus base URL");
             }
@@ -126,8 +137,19 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecuteTimeout() == 0) {
                 executionWorkerThread.setToExecuteTimeout(DEFAULT_TIMEOUT);
             }
+            executionWorkerThread.setName(getName());
             executionWorkerThread.setToExecuteUrl(getExecutionUrl());
             return executionWorkerThread;
+        }
+
+        private String getName() {
+            return String.format("pool(%s/%s/%s/%s),queued(%d)",
+                    toExecuteKey.getSystem(),
+                    toExecuteKey.getApplication(),
+                    toExecuteKey.getCountry(),
+                    toExecuteKey.getEnvironment(),
+                    executionWorkerThread.getToExecute().getId()
+            );
         }
 
         private String getExecutionUrl() {
@@ -188,6 +210,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
     }
 
+    private String name;
+
     private TestCaseExecutionInQueue toExecute;
 
     private String toExecuteUrl;
@@ -200,6 +224,14 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Private constructor, use the {@link Builder} instead
      */
     private ExecutionWorkerThread() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    private void setName(final String name) {
+        this.name = name;
     }
 
     public TestCaseExecutionInQueue getToExecute() {
@@ -249,6 +281,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     @Override
     public void run() {
+        Thread.currentThread().setName(getName());
         try {
             if (!runFromQueuedToExecuting()) {
                 LOG.warn("Execution in queue " + toExecute.getId() + " has finished with error");
@@ -356,6 +389,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     public String toString() {
         return "ExecutionWorkerThread{" +
                 "toExecute=" + toExecute +
+                ", name=" + name +
                 ", toExecuteUrl='" + toExecuteUrl + '\'' +
                 ", toExecuteTimeout=" + toExecuteTimeout +
                 '}';
