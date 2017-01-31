@@ -22,6 +22,7 @@ package org.cerberus.engine.entity.threadpool;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
 
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -170,9 +171,11 @@ public class ExecutionThreadPool {
 
     /**
      * Stop this {@link ExecutionThreadPool} stopping its inner thread pool
+     *
+     * @return the list of remaining tasks of this {@link ExecutionThreadPool}, or <code>null</code> if this {@link ExecutionThreadPool} cannot be stopped
      */
-    public void stop() {
-        stopExecutor();
+    public List<Runnable> stop() {
+        return stopExecutor();
     }
 
     /**
@@ -207,12 +210,15 @@ public class ExecutionThreadPool {
     }
 
     /**
-     * Shutdown the inner thread pool by trying to stop any of its active or pending tasks
+     * Shutdown the inner thread pool by sopping any of its pending tasks
+     *
+     * @return the list of pending taks, or <code>null</code> if the inner thread pool cannot be stopped
      */
-    private void stopExecutor() {
+    private List<Runnable> stopExecutor() {
         if (!executor.isShutdown()) {
-            executor.shutdownNow();
+            return executor.shutdownNow();
         }
+        return null;
     }
 
 }

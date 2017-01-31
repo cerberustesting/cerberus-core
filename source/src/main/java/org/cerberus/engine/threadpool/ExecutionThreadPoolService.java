@@ -34,6 +34,7 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.observe.Observer;
+import org.cerberus.util.threadpool.JobDiscoverer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -135,16 +136,28 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     public void stopExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool associatedPool = getExecutionPool(key);
-        if (associatedPool == null) {
-            return;
+        // Stop the execution thread pool and remove it from our associated map
+        ExecutionThreadPool associatedPool;
+        List<Runnable> remainingExecutions = null;
+        synchronized (executionPools) {
+            associatedPool = executionPools.remove(key);
+            if (associatedPool != null) {
+                remainingExecutions = associatedPool.stop();
+            }
         }
 
-        synchronized (executionPools) {
-            associatedPool.stop();
-            executionPools.remove(key);
+        // Try to remove executions from database
+        if (remainingExecutions != null) {
+            for (Runnable remainingTask : remainingExecutions) {
+                long executionId = -1;
+                try {
+                    executionId = ((ExecutionWorkerThread) JobDiscoverer.findRealTask(remainingTask)).getToExecute().getId();
+                    tceiqService.remove(executionId);
+                } catch (Exception e) {
+                    LOG.warn("Unable to clean execution in queue " + executionId + " during stopping process of the execution thread pool " + associatedPool.getName(), e);
+                }
+            }
         }
-        // TODO remove also executions from database?
     }
 
     @Override
@@ -162,7 +175,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     @Override
     public void observeDelete(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        removeExecutionPool(key);
+        stopExecutionThreadPool(key);
     }
 
     @PostConstruct
@@ -236,16 +249,6 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     private ExecutionThreadPool getExecutionPool(CountryEnvironmentParameters.Key key) {
         synchronized (executionPools) {
             return executionPools.get(key);
-        }
-    }
-
-    private void removeExecutionPool(CountryEnvironmentParameters.Key key) {
-        synchronized (executionPools) {
-            ExecutionThreadPool pool = executionPools.get(key);
-            if (pool != null) {
-                pool.stop();
-                executionPools.remove(key);
-            }
         }
     }
 
