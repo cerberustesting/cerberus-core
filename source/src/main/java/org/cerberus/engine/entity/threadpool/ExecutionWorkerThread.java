@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.entity.threadpool;
 
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
@@ -32,11 +33,15 @@ import org.cerberus.util.ParameterParserUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Execute a {@link TestCaseExecutionInQueue}
+ *
  * @author bcivel
+ * @author abourdon
  */
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
@@ -85,6 +90,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Associated builder to the {@link ExecutionWorkerThread} class
      */
     public static class Builder {
+
+        public static final String THREAD_NAME_FORMAT = "pool(%s-%s-%s-%s), queued(%d)";
 
         private ExecutionWorkerThread executionWorkerThread;
 
@@ -143,7 +150,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         }
 
         private String getName() {
-            return String.format("pool(%s/%s/%s/%s),queued(%d)",
+            return String.format(THREAD_NAME_FORMAT,
                     toExecuteKey.getSystem(),
                     toExecuteKey.getApplication(),
                     toExecuteKey.getCountry(),
@@ -333,7 +340,14 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                     .returnContent()
                     .asString();
         } catch (Exception e) {
-            throw new RunProcessException("An unexpected error occurred during test case execution. Check server logs", e);
+            final StringBuilder errorMessage = new StringBuilder("An unexpected error occurred during test case execution: ");
+            if (e instanceof HttpResponseException) {
+                errorMessage.append(String.format("%d (%s)", ((HttpResponseException) e).getStatusCode(), e.getMessage()));
+            } else {
+                errorMessage.append(e.getMessage());
+                errorMessage.append(". Check server logs");
+            }
+            throw new RunProcessException(errorMessage.toString(), e);
         }
     }
 
