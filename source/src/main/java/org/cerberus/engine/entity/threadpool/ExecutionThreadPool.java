@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * A parameterized and size-settable execution thread pool.
@@ -50,6 +52,11 @@ public class ExecutionThreadPool<T extends Runnable> {
      * but with the ability to tune its core pool size and be pausable/resumable
      */
     private ManageableThreadPoolExecutor executor;
+
+    /**
+     * The associated {@link Lock} to handle critical section when dealing with executor's pool size
+     */
+    private Lock executorPoolSizeLock = new ReentrantLock();
 
     /**
      * Create a new {@link ExecutionThreadPool} based on the given name and initial pool size
@@ -86,13 +93,18 @@ public class ExecutionThreadPool<T extends Runnable> {
      * @param size the number of maximum simultaneous active threads to set
      */
     public void setSize(Integer size) {
-        int currentSize = getPoolSize();
-        if (size < currentSize) {
-            executor.setCorePoolSize(size);
-            executor.setMaximumPoolSize(size);
-        } else if (size > currentSize) {
-            executor.setMaximumPoolSize(size);
-            executor.setCorePoolSize(size);
+        executorPoolSizeLock.lock();
+        try {
+            int currentSize = getPoolSize();
+            if (size < currentSize) {
+                executor.setCorePoolSize(size);
+                executor.setMaximumPoolSize(size);
+            } else if (size > currentSize) {
+                executor.setMaximumPoolSize(size);
+                executor.setCorePoolSize(size);
+            }
+        } finally {
+            executorPoolSizeLock.unlock();
         }
     }
 
@@ -102,8 +114,13 @@ public class ExecutionThreadPool<T extends Runnable> {
      * @return the number of {@link Runnable} tasks this {@link ExecutionThreadPool} can execute in the same time
      */
     public int getPoolSize() {
-        // Should be equal to executor.getMaximumPoolSize()
-        return executor.getCorePoolSize();
+        executorPoolSizeLock.lock();
+        try {
+            // Should be equal to executor.getMaximumPoolSize()
+            return executor.getCorePoolSize();
+        } finally {
+            executorPoolSizeLock.unlock();
+        }
     }
 
     /**
@@ -133,7 +150,12 @@ public class ExecutionThreadPool<T extends Runnable> {
      * @see #getPoolSize()
      */
     public void submit(T task) {
-        executor.submit(task);
+        executorPoolSizeLock.lock();
+        try {
+            executor.submit(task);
+        } finally {
+            executorPoolSizeLock.unlock();
+        }
     }
 
     /**
