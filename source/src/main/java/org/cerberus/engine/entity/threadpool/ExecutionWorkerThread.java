@@ -328,6 +328,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Request execution of the inner {@link TestCaseExecutionInQueue} to the {@link RunTestCase} servlet
      *
      * @return the execution answer from the {@link RunTestCase} servlet
+     * @throws RunProcessException if an error occurred during request execution
      * @see #run()
      */
     private String runExecution() {
@@ -357,6 +358,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Assume answer has been written following the {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
      *
      * @param answer the {@link RunTestCase}'s answer
+     * @throws RunProcessException if an error occurred if execution was on failure or if answer cannot be parsed
      * @see #run()
      */
     private void runParseAnswer(String answer) {
@@ -389,6 +391,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * Remove the inner execution in queue from the execution in queue table
      *
+     * @throws RunProcessException if an error occurred during execution in queue removal
      * @see #run()
      */
     private void runRemoveExecutionInQueue() {
