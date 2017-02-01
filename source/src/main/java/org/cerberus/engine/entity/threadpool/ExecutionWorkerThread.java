@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.entity.threadpool;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
@@ -33,7 +34,6 @@ import org.cerberus.util.ParameterParserUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -221,10 +221,13 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
     private TestCaseExecutionInQueue toExecute;
 
+    @JsonIgnore
     private String toExecuteUrl;
 
+    @JsonIgnore
     private int toExecuteTimeout;
 
+    @JsonIgnore
     private ITestCaseExecutionInQueueService inQueueService;
 
     /**
