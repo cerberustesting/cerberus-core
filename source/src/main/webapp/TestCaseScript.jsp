@@ -119,7 +119,6 @@
                                     <div class="row step">
                                         <div class="marginLeft25 content col-lg-9">
                                             <div class="fieldRow row" id="UseStepRow" style="display: none;">
-
                                             </div>
                                             <div style="margin-top:15px;" class="input-group marginBottom20">
                                                 <span class="input-group-addon" style="font-weight: 700;" id="stepId"></span>

@@ -8131,7 +8131,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_property_countrylevelheritage','N','Boolean that activate the heritage of the property calculation at the country level. if N, a property will be considered as not available on country XXX when it does not exist for XXX and exist for any other country but XXX at testcase level (even if it has been defined at usestep or pretest level for that country XXX). If Y, it will be considered as defined for country XXX as long as it has been defined for that country at testcase, usestep or pretest level.')");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Document the title field from TestCaseExecution page
         //-- ------------------------ 1047
         SQLS = new StringBuilder();
@@ -8141,7 +8141,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_header', 'menuReportingExecutionList', '', 'en', 'Execution Report', ''),");
         SQLS.append("('page_header', 'menuReportingExecutionList', '', 'fr', 'Rapport d\\'Execution', '');");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Add documentation for Execution Detail page
         //-- ------------------------ 1048
         SQLS = new StringBuilder();
@@ -8173,6 +8173,55 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'en', 'Comment', ''),");
         SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'fr', 'Commentaire', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the loop column in step execution table
+        //-- ------------------------ 1051
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution`  ");
+        SQLS.append("ADD COLUMN `loop` VARCHAR(45) NULL DEFAULT '' AFTER `Sort`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add missing columns to ExecutionPending page
+        //-- ------------------------ 1052
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'en', 'Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'fr', 'Nom du Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'en', 'Robot host', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'fr', 'Adresse du Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'en', 'Robot port', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'fr', 'Port du Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'en', 'Browser version', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'fr', 'Version du navigateur', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'en', 'Platform', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'fr', 'Platforme', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'en', 'Manual URL', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'fr', 'URL manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'en', 'Manual host', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'fr', 'Adresse manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'en', 'Manual context root', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'fr', 'Chemin de contexte manuel', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'en', 'Manual login relative URL', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'fr', 'URL relative du login manuel', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'en', 'Manual environment data', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'fr', 'Environnement manuel de données', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'en', 'Screenshots', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'fr', 'Captures d\\'écran', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'en', 'Page source', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'fr', 'Code source', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'en', 'Selenium log', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'fr', 'Journalisation Selenium', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'en', 'Verbose', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'fr', 'Verbeux', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'en', 'Timeout', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'fr', 'Durée d\\'attente limite', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'en', 'Request date', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'fr', 'Date d\\'insertion', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'en', 'Retries', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'fr', 'Tentatives', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'en', 'Manual execution', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'fr', 'Execution manuelle', '');");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

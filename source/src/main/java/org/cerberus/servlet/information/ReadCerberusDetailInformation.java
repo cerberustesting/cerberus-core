@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.database.dao.ICerberusInformationDAO;
-import org.cerberus.engine.entity.ExecutionThreadPool;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.crud.entity.SessionCounter;
 import org.cerberus.crud.entity.TestCaseExecution;

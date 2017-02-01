@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import org.cerberus.crud.dao.ITestCaseStepExecutionDAO;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseStepActionExecutionService;
@@ -81,7 +82,7 @@ public class TestCaseStepExecutionService implements ITestCaseStepExecutionServi
             TestCaseStepExecution tces = (TestCaseStepExecution) step;
 
             AnswerList actions = testCaseStepActionExecutionService.readByVarious1WithDependency(executionId, test, testcase, tces.getStep(), tces.getIndex());
-            tces.setTestCaseStepActionExecution(actions);
+            tces.setTestCaseStepActionExecutionList((List<TestCaseStepActionExecution>) actions.getDataList());
 
             AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tces.getTest() + "-" + tces.getTestCase() + "-" + tces.getStep() + "-" + tces.getIndex());
             tces.setFileList((List<TestCaseExecutionFile>) files.getDataList());

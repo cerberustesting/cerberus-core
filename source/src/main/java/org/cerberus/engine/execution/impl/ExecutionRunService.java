@@ -335,7 +335,7 @@ public class ExecutionRunService implements IExecutionRunService {
                                 .resolveDescription("STEPINDEX", String.valueOf(step_index));
                         testCaseStepExecution = factoryTestCaseStepExecution.create(
                                 runID, testCaseStep.getTest(), testCaseStep.getTestCase(),
-                                testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
+                                testCaseStep.getStep(), step_index, testCaseStep.getSort(), testCaseStep.getLoop(), testCaseStep.getConditionOper(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), testCaseStep.getConditionVal1(), testCaseStep.getConditionVal2(), null,
                                 startStep, 0, startStep, 0, new BigDecimal("0"), null, stepMess, testCaseStep, tCExecution,
                                 testCaseStep.getUseStep(), testCaseStep.getUseStepTest(), testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getDescription());
                         testCaseStepExecution.setLoop(testCaseStep.getLoop());
@@ -628,17 +628,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We populate the TestCase Action List
              */
-            AnswerList<TestCaseStepActionExecution> ai = testCaseStepExecution.getTestCaseStepActionExecutionList();
-            if (ai == null) {
-                ai = new AnswerList<>();
-            }
-            List<TestCaseStepActionExecution> tcsaExecution = ai.getDataList();
-            if (tcsaExecution == null) {
-                tcsaExecution = new LinkedList<>();
-            }
-            tcsaExecution.add(testCaseStepActionExecution);
-            ai.setDataList(tcsaExecution);
-            testCaseStepExecution.setTestCaseStepActionExecution(ai);
+            testCaseStepExecution.addTestCaseStepActionExecutionList(testCaseStepActionExecution);
 
             /**
              * Preparing the previously calculated data coming from 1/ the other
@@ -781,17 +771,7 @@ public class ExecutionRunService implements IExecutionRunService {
             /**
              * We populate the TestCase Control List
              */
-            AnswerList<TestCaseStepActionControlExecution> ai = testCaseStepActionExecution.getTestCaseStepActionControlExecutionList();
-            if (ai == null) {
-                ai = new AnswerList<>();
-            }
-            List<TestCaseStepActionControlExecution> tcsaExecution = ai.getDataList();
-            if (tcsaExecution == null) {
-                tcsaExecution = new LinkedList<>();
-            }
-            tcsaExecution.add(testCaseStepActionControlExecution);
-            ai.setDataList(tcsaExecution);
-            testCaseStepActionExecution.setTestCaseStepActionControlExecutionList(ai);
+            testCaseStepActionExecution.addTestCaseStepActionExecutionList(testCaseStepActionControlExecution);
 
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswer;

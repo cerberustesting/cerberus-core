@@ -29,6 +29,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ITestCaseExecutionDAO;
 import org.cerberus.crud.dao.ITestCaseStepActionExecutionDAO;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
@@ -144,7 +145,7 @@ public class TestCaseStepActionExecutionService implements ITestCaseStepActionEx
             TestCaseStepActionExecution tcsae = (TestCaseStepActionExecution) action;
 
             AnswerList controls = testCaseStepActionControlExecutionService.readByVarious1WithDependency(executionId, test, testcase, step, index, tcsae.getSequence());
-            tcsae.setTestCaseStepActionControlExecutionList(controls);
+            tcsae.setTestCaseStepActionControlExecutionList((List<TestCaseStepActionControlExecution>) controls.getDataList());
 
             AnswerList files = testCaseExecutionFileService.readByVarious(executionId, tcsae.getTest() + "-" + tcsae.getTestCase() + "-" + tcsae.getStep() + "-" + tcsae.getIndex() + "-" + tcsae.getSequence());
             tcsae.setFileList((List<TestCaseExecutionFile>) files.getDataList());

@@ -184,12 +184,16 @@
         <servlet-class>org.cerberus.servlet.GetConnectionPoolName</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ReadExecutionPools</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.ReadExecutionPools</servlet-class>
+        <servlet-name>ReadExecutionPool</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.threadpool.ReadExecutionPool</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RemoveExecutionPool</servlet-name>
-        <servlet-class>org.cerberus.servlet.engine.RemoveExecutionPool</servlet-class>
+        <servlet-name>ReadExecutionPools</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.threadpool.ReadExecutionPools</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageExecutionPool</servlet-name>
+        <servlet-class>org.cerberus.servlet.engine.threadpool.ManageExecutionPool</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
@@ -1123,12 +1127,16 @@
         <url-pattern>/GetConnectionPoolName</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>ReadExecutionPool</servlet-name>
+        <url-pattern>/ReadExecutionPool</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>ReadExecutionPools</servlet-name>
         <url-pattern>/ReadExecutionPools</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RemoveExecutionPool</servlet-name>
-        <url-pattern>/RemoveExecutionPool</url-pattern>
+        <servlet-name>ManageExecutionPool</servlet-name>
+        <url-pattern>/ManageExecutionPool</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ReadTestCaseExecutionMedia</servlet-name>
@@ -2034,7 +2042,8 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
-            <url-pattern>/RemoveExecutionPool</url-pattern>
+            <url-pattern>/ManageExecutionPool</url-pattern>
+            <url-pattern>/ReadExecutionPool</url-pattern>
             <url-pattern>/ReadExecutionPools</url-pattern>
             <url-pattern>/GetTestCaseList</url-pattern>
             <url-pattern>/ReadTestCaseExecutionMedia</url-pattern>

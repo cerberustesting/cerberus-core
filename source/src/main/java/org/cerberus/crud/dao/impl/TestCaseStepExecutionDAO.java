@@ -76,9 +76,9 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
      */
     @Override
     public void insertTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
-        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, batnumexe, returncode, start, fullstart, "
+        final String query = "INSERT INTO testcasestepexecution(id, test, testcase, step, `index`, sort, `loop`, batnumexe, returncode, start, fullstart, "
                 + "returnMessage, description, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -91,6 +91,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setInt(i++, testCaseStepExecution.getStep());
                 preStat.setInt(i++, testCaseStepExecution.getIndex());
                 preStat.setInt(i++, testCaseStepExecution.getSort());
+                preStat.setString(i++, testCaseStepExecution.getLoop());
                 preStat.setString(i++, testCaseStepExecution.getBatNumExe());
                 preStat.setString(i++, testCaseStepExecution.getReturnCode());
                 preStat.setTimestamp(i++, new Timestamp(testCaseStepExecution.getStart()));
@@ -129,7 +130,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
     @Override
     public void updateTestCaseStepExecution(TestCaseStepExecution testCaseStepExecution) {
         final String query = "UPDATE testcasestepexecution SET returncode = ?, start = ?, fullstart = ?, end = ?, fullend = ?, timeelapsed = ?, "
-                + "returnmessage = ?, description = ?, sort = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal1 = ?, conditionVal2 = ? "
+                + "returnmessage = ?, description = ?, sort = ?, `loop` = ?, conditionOper = ?, conditionVal1Init = ?, conditionVal2Init = ?, conditionVal1 = ?, conditionVal2 = ? "
                 + "WHERE id = ? AND step = ? AND `index` = ? AND test = ? AND testcase = ?";
 
         Connection connection = this.databaseSpring.connect();
@@ -150,6 +151,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getReturnMessage());
                 preStat.setString(i++, testCaseStepExecution.getDescription());
                 preStat.setInt(i++, testCaseStepExecution.getSort());
+                preStat.setString(i++, testCaseStepExecution.getLoop());
                 preStat.setString(i++, testCaseStepExecution.getConditionOper());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal1Init());
                 preStat.setString(i++, testCaseStepExecution.getConditionVal2Init());
@@ -314,6 +316,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         int step = resultSet.getInt("step");
         int index = resultSet.getInt("index");
         int sort = resultSet.getInt("sort");
+        String loop = resultSet.getString("loop");
         String conditionOper = resultSet.getString("conditionOper");
         String conditionVal1 = resultSet.getString("conditionVal1");
         String conditionVal2 = resultSet.getString("conditionVal2");
@@ -328,6 +331,6 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         String returnCode = resultSet.getString("returncode");
         String returnMessage = resultSet.getString("returnMessage");
         String description = resultSet.getString("description");
-        return factoryTestCaseStepExecution.create(id, test, testcase, step, index, sort, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
+        return factoryTestCaseStepExecution.create(id, test, testcase, step, index, sort, loop, conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, batNumExe, start, end, fullstart, fullend, timeelapsed, returnCode, returnMessage, description);
     }
 }

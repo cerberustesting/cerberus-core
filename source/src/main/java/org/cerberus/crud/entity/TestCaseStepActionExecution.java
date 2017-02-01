@@ -69,7 +69,7 @@ public class TestCaseStepActionExecution {
     private boolean stopExecution;
     private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
-    private AnswerList testCaseStepActionControlExecutionList;
+    private List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList; // Host the full list of data that was previously calculated and that will be used to calculate during the calculation of any property during the action.
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;
@@ -90,6 +90,7 @@ public class TestCaseStepActionExecution {
             }
         }
     }
+
     public String getConditionOper() {
         return conditionOper;
     }
@@ -342,12 +343,26 @@ public class TestCaseStepActionExecution {
         this.testCase = testCase;
     }
 
-    public void setTestCaseStepActionControlExecutionList(AnswerList testCaseStepActionControlExecutionList) {
+    public List<TestCaseStepActionControlExecution> getTestCaseStepActionControlExecutionList() {
+        return testCaseStepActionControlExecutionList;
+    }
+
+    public void setTestCaseStepActionControlExecutionList(List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList) {
         this.testCaseStepActionControlExecutionList = testCaseStepActionControlExecutionList;
     }
 
-    public AnswerList getTestCaseStepActionControlExecutionList() {
-        return testCaseStepActionControlExecutionList;
+    public void addTestCaseStepActionExecutionList(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
+        if (testCaseStepActionControlExecution != null) {
+            this.testCaseStepActionControlExecutionList.add(testCaseStepActionControlExecution);
+        }
+    }
+
+    public void addTestCaseStepActionExecutionList(List<TestCaseStepActionControlExecution> testCaseStepActionControlExecutionList) {
+        if (testCaseStepActionControlExecutionList != null) {
+            for (TestCaseStepActionControlExecution testCaseStepActionControlExecution : testCaseStepActionControlExecutionList) {
+                this.testCaseStepActionControlExecutionList.add(testCaseStepActionControlExecution);
+            }
+        }
     }
 
     public String getDescription() {
@@ -388,8 +403,8 @@ public class TestCaseStepActionExecution {
             result.put("returnMessage", this.getReturnMessage());
 
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionControlExecutionList() != null && this.getTestCaseStepActionControlExecutionList().getDataList() != null) {
-                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList().getDataList()) {
+            if (this.getTestCaseStepActionControlExecutionList() != null) {
+                for (Object testCaseStepActionControlExecution : this.getTestCaseStepActionControlExecutionList()) {
                     array.put(((TestCaseStepActionControlExecution) testCaseStepActionControlExecution).toJson());
                 }
             }

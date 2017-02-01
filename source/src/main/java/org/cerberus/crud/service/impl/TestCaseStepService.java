@@ -87,6 +87,20 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
+    public TestCaseStep modifyTestCaseStepDataFromUsedStep(TestCaseStep masterStep) {
+        if (masterStep.getUseStep().equals("Y")) {
+            TestCaseStep usedStep = findTestCaseStep(masterStep.getUseStepTest(), masterStep.getUseStepTestCase(), masterStep.getUseStepStep());
+            // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
+            masterStep.setLoop(usedStep.getLoop());
+            masterStep.setConditionOper(usedStep.getConditionOper());
+            masterStep.setConditionVal1(usedStep.getConditionVal1());
+            masterStep.setConditionVal2(usedStep.getConditionVal2());
+        }
+
+        return masterStep;
+    }
+
+    @Override
     public void updateTestCaseStep(TestCaseStep tcs) throws CerberusException {
         testCaseStepDAO.updateTestCaseStep(tcs);
     }

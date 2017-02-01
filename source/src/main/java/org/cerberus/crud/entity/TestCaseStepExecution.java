@@ -63,6 +63,7 @@ public class TestCaseStepExecution {
     private TestCaseExecution tCExecution;
     private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at step level
     private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the list of data calculated during the step execution.
+    private List<TestCaseStepActionExecution> testCaseStepActionExecutionList;
     private MessageEvent stepResultMessage;
     private MessageGeneral executionResultMessage;
     private boolean stopExecution;
@@ -70,7 +71,6 @@ public class TestCaseStepExecution {
     private String useStepTest;
     private String useStepTestCase;
     private int useStepTestCaseStep;
-    private AnswerList testCaseStepActionExecutionList;
 
     public List<TestCaseExecutionFile> getFileList() {
         return fileList;
@@ -336,12 +336,26 @@ public class TestCaseStepExecution {
         this.timeElapsed = timeElapsed;
     }
 
-    public void setTestCaseStepActionExecution(AnswerList testCaseStepActionExecutionList) {
+    public List<TestCaseStepActionExecution> getTestCaseStepActionExecutionList() {
+        return testCaseStepActionExecutionList;
+    }
+
+    public void setTestCaseStepActionExecutionList(List<TestCaseStepActionExecution> testCaseStepActionExecutionList) {
         this.testCaseStepActionExecutionList = testCaseStepActionExecutionList;
     }
 
-    public AnswerList getTestCaseStepActionExecutionList() {
-        return testCaseStepActionExecutionList;
+    public void addTestCaseStepActionExecutionList(TestCaseStepActionExecution testCaseStepActionExecution) {
+        if (testCaseStepActionExecution != null) {
+            this.testCaseStepActionExecutionList.add(testCaseStepActionExecution);
+        }
+    }
+
+    public void addTestCaseStepActionExecutionList(List<TestCaseStepActionExecution> testCaseStepActionExecutionList) {
+        if (testCaseStepActionExecutionList != null) {
+            for (TestCaseStepActionExecution testCaseStepActionExecution : testCaseStepActionExecutionList) {
+                this.testCaseStepActionExecutionList.add(testCaseStepActionExecution);
+            }
+        }
     }
 
     public String getDescription() {
@@ -374,6 +388,7 @@ public class TestCaseStepExecution {
             result.put("useStepTest", this.getUseStepTest());
             result.put("useStepTestCase", this.getUseStepTestCase());
             result.put("useStepTestCaseStep", this.getUseStepTestCaseStep());
+            result.put("loop", this.getLoop());
             result.put("conditionOper", this.getConditionOper());
             result.put("conditionVal1Init", this.getConditionVal1Init());
             result.put("conditionVal2Init", this.getConditionVal2Init());
@@ -381,8 +396,8 @@ public class TestCaseStepExecution {
             result.put("conditionVal2", this.getConditionVal2());
 
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStepActionExecutionList() != null && this.getTestCaseStepActionExecutionList().getDataList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList().getDataList()) {
+            if (this.getTestCaseStepActionExecutionList() != null) {
+                for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList()) {
                     array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson());
                 }
             }

@@ -238,7 +238,7 @@ public class RunManualTest extends HttpServlet {
                 String stepResultMessage = getParameterIfExists(request, "stepResultMessage_" + inc);
                 String stepReturnCode = getParameterIfExists(request, "stepStatus_" + inc);
 
-                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, 1, sort, "", "", "", "", "", null, now, now, now, now,
+                result.add(testCaseStepExecutionFactory.create(executionId, test, testCase, step, 1, sort, "", "", "", "", "", "", null, now, now, now, now,
                         new BigDecimal("0"), stepReturnCode, stepResultMessage, ""));
             }
         }

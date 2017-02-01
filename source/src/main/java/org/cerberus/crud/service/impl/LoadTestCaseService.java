@@ -146,11 +146,14 @@ public class LoadTestCaseService implements ILoadTestCaseService {
                     testCaseStep.setTestCaseStepAction(tcsa);
                 }
             } else {
+                // Step is used from another testcase.
                 List<TestCaseStepAction> tcsa = this.loadTestCaseStepAction(testCaseStep, factoryTCS.create(testCaseStep.getUseStepTest(), 
                         testCaseStep.getUseStepTestCase(), testCaseStep.getUseStepStep(), testCaseStep.getSort(), null, null, null, null, null, null, null, null, 0, null));
                 if (tcsa != null) {
                     testCaseStep.setTestCaseStepAction(tcsa);
                 }
+                // Copy the usedStep property to main step. Loop and conditionoper are taken from used step.
+                testCaseStep = testCaseStepService.modifyTestCaseStepDataFromUsedStep(testCaseStep);
             }
             MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "adding testCaseStep");
             result.add(testCaseStep);
