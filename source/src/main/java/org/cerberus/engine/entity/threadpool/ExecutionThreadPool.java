@@ -19,24 +19,22 @@
  */
 package org.cerberus.engine.entity.threadpool;
 
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
+import org.cerberus.util.threadpool.JobDiscoverer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The execution thread pool to control Test Cases executions.
- * <p>
- * Internally, this execution thread pool works as a size-settable {@link ThreadPoolExecutor}
+ * A parameterized and size-settable execution thread pool.
  *
+ * @param <T> the type of submitted tasks
  * @author bcivel
  * @author abourdon
  */
-public class ExecutionThreadPool {
+public class ExecutionThreadPool<T extends Runnable> {
 
     /**
      * The associated name of this {@link ExecutionThreadPool}
@@ -52,7 +50,7 @@ public class ExecutionThreadPool {
     private PausableThreadPoolExecutor executor;
 
     /**
-     * Create a new {@link ExecutionThreadPool} based on the given {@link CountryEnvironmentParameters.Key} and initial pool size
+     * Create a new {@link ExecutionThreadPool} based on the given name and initial pool size
      *
      * @param name        the {@link ExecutionThreadPool} name
      * @param initialSize the initial pool size of this {@link ExecutionThreadPool}
@@ -125,14 +123,14 @@ public class ExecutionThreadPool {
     }
 
     /**
-     * Submit a new {@link Runnable} to a new thread from this {@link ExecutionThreadPool}.
+     * Submit a new task to execute from this {@link ExecutionThreadPool}.
      * <p>
      * If the maximum of simultaneous active threads is reached, then this task is kept in queue until a thread is released
      *
-     * @param task the {@link Runnable} to submit to this {@link ExecutionThreadPool}
+     * @param task the task to submit to this {@link ExecutionThreadPool}
      * @see #getPoolSize()
      */
-    public synchronized void submit(Runnable task) {
+    public synchronized void submit(T task) {
         executor.submit(task);
     }
 
@@ -175,7 +173,7 @@ public class ExecutionThreadPool {
      *
      * @return the list of remaining tasks of this {@link ExecutionThreadPool}, or <code>null</code> if this {@link ExecutionThreadPool} cannot be stopped
      */
-    public List<Runnable> stop() {
+    public List<T> stop() {
         return stopExecutor();
     }
 
@@ -215,12 +213,20 @@ public class ExecutionThreadPool {
      *
      * @return the list of pending taks, or <code>null</code> if the inner thread pool cannot be stopped
      */
-    private List<Runnable> stopExecutor() {
+    private List<T> stopExecutor() {
         if (!executor.isShutdown()) {
+            // First, shutdown the inner thread pool
             final List<Runnable> remainingTasks = executor.shutdownNow();
-            // Release waiting threads to this now shutdown ExecutionThreadPool
+
+            // Then, release waiting threads to this now shutdown ExecutionThreadPool
             resume();
-            return remainingTasks;
+
+            // Finally retrieve the original tasks submitted to #submit(Runnable) from the remaining
+            final List<T> orginalRemainingTasks = new ArrayList<>(remainingTasks.size());
+            for (Runnable task : remainingTasks) {
+                orginalRemainingTasks.add((T) JobDiscoverer.findRealTask(task));
+            }
+            return orginalRemainingTasks;
         }
         return null;
     }

@@ -34,7 +34,6 @@ import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.observe.Observer;
-import org.cerberus.util.threadpool.JobDiscoverer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +83,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     @Autowired
     private ICountryEnvironmentParametersService countryEnvironmentParametersService;
 
-    private Map<CountryEnvironmentParameters.Key, ExecutionThreadPool> executionPools;
+    private Map<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> executionPools;
 
     public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
         List<TestCaseExecutionInQueue> executionsInQueue = tceiqService.toQueued();
@@ -105,7 +104,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
      */
     public Collection<ExecutionThreadPoolStats> getStats() {
         final Collection<ExecutionThreadPoolStats> stats = new ArrayList<>();
-        for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool> pool : executionPools.entrySet()) {
+        for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> pool : executionPools.entrySet()) {
             // Quasi-accurate statistics
             stats.add(new ExecutionThreadPoolStats()
                     .setId(pool.getKey())
@@ -120,7 +119,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     public void pauseExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool associatedPool = getExecutionPool(key);
+        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
         if (associatedPool == null) {
             return;
         }
@@ -128,7 +127,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     public void resumeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool associatedPool = getExecutionPool(key);
+        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
         if (associatedPool == null) {
             return;
         }
@@ -137,8 +136,8 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     public void removeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
         // Stop the execution thread pool and remove it from our associated map
-        ExecutionThreadPool associatedPool;
-        List<Runnable> remainingExecutions = null;
+        ExecutionThreadPool<ExecutionWorkerThread> associatedPool;
+        List<ExecutionWorkerThread> remainingExecutions = null;
         synchronized (executionPools) {
             associatedPool = executionPools.remove(key);
             if (associatedPool != null) {
@@ -148,13 +147,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
         // Try to remove executions from database
         if (remainingExecutions != null) {
-            for (Runnable remainingTask : remainingExecutions) {
-                long executionId = -1;
+            for (ExecutionWorkerThread remainingExecution : remainingExecutions) {
                 try {
-                    executionId = ((ExecutionWorkerThread) JobDiscoverer.findRealTask(remainingTask)).getToExecute().getId();
-                    tceiqService.remove(executionId);
+                    tceiqService.remove(remainingExecution.getToExecute().getId());
                 } catch (Exception e) {
-                    LOG.warn("Unable to clean execution in queue " + executionId + " during stopping process of the execution thread pool " + associatedPool.getName(), e);
+                    LOG.warn("Unable to clean execution in queue " + remainingExecution.getToExecute().getId() + " during stopping process of the execution thread pool " + associatedPool.getName(), e);
                 }
             }
         }
@@ -167,7 +164,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     @Override
     public void observeUpdate(CountryEnvironmentParameters.Key key, CountryEnvironmentParameters countryEnvironmentParameters) {
-        ExecutionThreadPool associatedExecutionPool = getExecutionPool(key);
+        ExecutionThreadPool<ExecutionWorkerThread> associatedExecutionPool = getExecutionPool(key);
         if (associatedExecutionPool != null) {
             associatedExecutionPool.setSize(countryEnvironmentParameters.getPoolSize());
         }
@@ -198,7 +195,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         if (executionPools == null) {
             return;
         }
-        for (ExecutionThreadPool executionPool : executionPools.values()) {
+        for (ExecutionThreadPool<ExecutionWorkerThread> executionPool : executionPools.values()) {
             LOG.info("Stopping execution pool " + executionPool.getName());
             executionPool.stop();
         }
@@ -215,7 +212,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     private void execute(TestCaseExecutionInQueue toExecute) throws CerberusException {
         try {
             CountryEnvironmentParameters.Key toExecuteKey = getKey(toExecute);
-            ExecutionThreadPool executionPool = getOrCreateExecutionPool(toExecuteKey);
+            ExecutionThreadPool<ExecutionWorkerThread> executionPool = getOrCreateExecutionPool(toExecuteKey);
             ExecutionWorkerThread execution = new ExecutionWorkerThread.Builder()
                     .toExecute(toExecute)
                     .toExecuteKey(toExecuteKey)
@@ -234,12 +231,12 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     private ExecutionThreadPool getOrCreateExecutionPool(CountryEnvironmentParameters.Key key) {
-        ExecutionThreadPool executionPool = executionPools.get(key);
+        ExecutionThreadPool<ExecutionWorkerThread> executionPool = executionPools.get(key);
         if (executionPool == null) {
             synchronized (executionPools) {
                 executionPool = executionPools.get(key);
                 if (executionPool == null) {
-                    executionPool = new ExecutionThreadPool(generateName(key), getPoolSize(key));
+                    executionPool = new ExecutionThreadPool<>(generateName(key), getPoolSize(key));
                     executionPools.put(key, executionPool);
                     registerTo(key);
                 }
@@ -248,7 +245,7 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         return executionPool;
     }
 
-    private ExecutionThreadPool getExecutionPool(CountryEnvironmentParameters.Key key) {
+    private ExecutionThreadPool<ExecutionWorkerThread> getExecutionPool(CountryEnvironmentParameters.Key key) {
         synchronized (executionPools) {
             return executionPools.get(key);
         }
