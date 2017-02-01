@@ -1,9 +1,10 @@
-package org.cerberus.servlet.engine;
+package org.cerberus.servlet.engine.threadpool;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
-import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.util.json.ObjectMapperUtil;
 import org.cerberus.util.validity.Validity;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class ManageExecutionPool extends HttpServlet {
     private static final String CONTENT_TYPE = "application/json";
     private static final String CHARACTER_ENCODING = "UTF-8";
 
-    private final Gson gson = new Gson();
+    private ObjectMapper objectMapper = ObjectMapperUtil.newInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -71,7 +72,7 @@ public class ManageExecutionPool extends HttpServlet {
         }
 
         final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        final ExecutionThreadPoolService executionThreadPoolService = appContext.getBean(ExecutionThreadPoolService.class);
+        final IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         switch (requestBody.getAction()) {
             case PAUSE:
                 pauseExecutionPool(requestBody.getExecutionPoolKey(), executionThreadPoolService);
@@ -85,15 +86,15 @@ public class ManageExecutionPool extends HttpServlet {
         }
     }
 
-    private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final ExecutionThreadPoolService executionPoolService) {
+    private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService executionPoolService) {
         executionPoolService.pauseExecutionThreadPool(executionPoolKey);
     }
 
-    private void resumeExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final ExecutionThreadPoolService executionPoolService) {
+    private void resumeExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService  executionPoolService) {
         executionPoolService.resumeExecutionThreadPool(executionPoolKey);
     }
 
-    private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final ExecutionThreadPoolService executionPoolService) {
+    private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService  executionPoolService) {
         executionPoolService.removeExecutionThreadPool(executionPoolKey);
     }
 
@@ -105,7 +106,7 @@ public class ManageExecutionPool extends HttpServlet {
             body.append(line);
         }
 
-        return gson.fromJson(body.toString(), RequestBody.class);
+        return objectMapper.readValue(body.toString(), RequestBody.class);
     }
 
     private void usage(HttpServletRequest req, HttpServletResponse resp) throws IOException {

@@ -43,6 +43,13 @@ public class CountryEnvironmentParameters {
 
         private String environment;
 
+        /**
+         * For (de)serialization purpose
+         */
+        private Key() {
+
+        }
+
         public Key(String system, String application, String country, String environment) {
             this.system = system;
             this.application = application;

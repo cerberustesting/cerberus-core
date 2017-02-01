@@ -63,6 +63,7 @@
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
         <jsch.version>0.1.42</jsch.version>
         <ant-jsch.version>1.8.2</ant-jsch.version>
+        <jackson.version>2.8.5</jackson.version>
 
         <!-- Additional properties -->
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -266,6 +267,11 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>${fluent-hc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- Provided scope -->

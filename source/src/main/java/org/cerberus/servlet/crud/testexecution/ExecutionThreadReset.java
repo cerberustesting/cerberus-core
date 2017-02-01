@@ -33,6 +33,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  * @author bcivel
  */
+@Deprecated
 @WebServlet(name = "ExecutionThreadReset", urlPatterns = {"/ExecutionThreadReset"})
 public class ExecutionThreadReset extends HttpServlet {
 
@@ -47,9 +48,7 @@ public class ExecutionThreadReset extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ExecutionThreadPool etp = appContext.getBean(ExecutionThreadPool.class);
-        etp.reset();
+        // Do nothing
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

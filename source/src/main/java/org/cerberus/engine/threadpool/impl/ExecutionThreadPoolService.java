@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.threadpool;
+package org.cerberus.engine.threadpool.impl;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
@@ -29,6 +29,8 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPool;
 import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
 import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
+import org.cerberus.engine.entity.threadpool.ManageableThreadPoolExecutor;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -39,7 +41,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -47,13 +48,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Manage a set of {@link ExecutionThreadPool} to support multiple Cerberus test case executions
+ * {@link IExecutionThreadPoolService} default implementation
  *
  * @author bcivel
  * @author abourdon
  */
 @Service
-public class ExecutionThreadPoolService implements Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
+public class ExecutionThreadPoolService implements IExecutionThreadPoolService, Observer<CountryEnvironmentParameters.Key, CountryEnvironmentParameters> {
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
@@ -85,7 +86,11 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
 
     private Map<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> executionPools;
 
-    public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException, UnsupportedEncodingException, InterruptedException {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException {
         List<TestCaseExecutionInQueue> executionsInQueue = tceiqService.toQueued();
         for (TestCaseExecutionInQueue executionInQueue : executionsInQueue) {
             try {
@@ -98,14 +103,13 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     }
 
     /**
-     * Get an quasi-accurate statistics of the current execution pools
-     *
-     * @return a collection of {@link ExecutionThreadPoolStats}
+     * {@inheritDoc}
      */
+    @Override
     public Collection<ExecutionThreadPoolStats> getStats() {
         final Collection<ExecutionThreadPoolStats> stats = new ArrayList<>();
         for (Map.Entry<CountryEnvironmentParameters.Key, ExecutionThreadPool<ExecutionWorkerThread>> pool : executionPools.entrySet()) {
-            // Quasi-accurate statistics
+            // Quasi-accurate (not atomic) statistics
             stats.add(new ExecutionThreadPoolStats()
                     .setId(pool.getKey())
                     .setPoolSize(pool.getValue().getPoolSize())
@@ -118,6 +122,22 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         return stats;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>> getTasks(CountryEnvironmentParameters.Key key) {
+        ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
+        if (associatedPool == null) {
+            return null;
+        }
+        return associatedPool.getTasks();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void pauseExecutionThreadPool(CountryEnvironmentParameters.Key key) {
         ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
         if (associatedPool == null) {
@@ -126,6 +146,10 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         associatedPool.pause();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void resumeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
         ExecutionThreadPool<ExecutionWorkerThread> associatedPool = getExecutionPool(key);
         if (associatedPool == null) {
@@ -134,6 +158,10 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         associatedPool.resume();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void removeExecutionThreadPool(CountryEnvironmentParameters.Key key) {
         // Stop the execution thread pool and remove it from our associated map
         ExecutionThreadPool<ExecutionWorkerThread> associatedPool;
@@ -185,7 +213,6 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
         stopRegistration();
         stopExecutionPools();
     }
-
 
     private void initExecutionPools() {
         executionPools = new HashMap<>();
@@ -273,6 +300,5 @@ public class ExecutionThreadPoolService implements Observer<CountryEnvironmentPa
     private void registerTo(CountryEnvironmentParameters.Key key) {
         countryEnvironmentParametersService.register(key, this);
     }
-
 
 }

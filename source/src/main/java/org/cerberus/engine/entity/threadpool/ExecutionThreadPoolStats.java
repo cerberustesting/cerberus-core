@@ -23,6 +23,10 @@ public class ExecutionThreadPoolStats {
 
     private boolean paused;
 
+    public ExecutionThreadPoolStats() {
+
+    }
+
     public CountryEnvironmentParameters.Key getId() {
         return id;
     }

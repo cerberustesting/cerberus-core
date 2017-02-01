@@ -13,8 +13,11 @@ import java.util.concurrent.FutureTask;
  * Helper to extract the real task which was submitted to a {@link java.util.concurrent.ThreadPoolExecutor}
  * <p>
  * From the H. M. Kabutz's javaspecialists issue: http://www.javaspecialists.eu/archive/Issue228.html
+ * <p>
+ * Edit: change {@link #findRealTask} signature to accept {@link Object} instead of {@link Runnable}
  *
  * @author Heinz M. Kabutz
+ * @author abourdon
  */
 public class JobDiscoverer {
     private final static Field callableInFutureTask;
@@ -38,7 +41,7 @@ public class JobDiscoverer {
         }
     }
 
-    public static Object findRealTask(Runnable task) {
+    public static Object findRealTask(Object task) {
         if (task instanceof FutureTask) {
             try {
                 Object callable = callableInFutureTask.get(task);

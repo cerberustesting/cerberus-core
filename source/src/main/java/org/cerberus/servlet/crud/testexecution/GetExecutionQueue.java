@@ -33,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
@@ -47,12 +46,12 @@ import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestService;
 import org.cerberus.dto.ExecutionValidator;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.engine.execution.IExecutionCheckService;
-import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -267,7 +266,7 @@ public class GetExecutionQueue extends HttpServlet {
         }
 
         if (push) {
-            ExecutionThreadPoolService executionThreadService = appContext.getBean(ExecutionThreadPoolService.class);
+            IExecutionThreadPoolService executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             IFactoryTestCaseExecutionInQueue inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
             ITestCaseExecutionInQueueService inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
@@ -364,16 +363,6 @@ public class GetExecutionQueue extends HttpServlet {
             try {
                 executionThreadService.searchExecutionInQueueTableAndTriggerExecution();
             } catch (CerberusException ex) {
-                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-                answer.getResultMessage().setDescription(errorMessage);
-            } catch (UnsupportedEncodingException ex) {
-                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-                answer.getResultMessage().setDescription(errorMessage);
-            } catch (InterruptedException ex) {
                 String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                 LOG.warn(errorMessage);
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));

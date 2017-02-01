@@ -22,7 +22,9 @@ package org.cerberus.engine.entity.threadpool;
 import org.cerberus.util.threadpool.JobDiscoverer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -42,12 +44,12 @@ public class ExecutionThreadPool<T extends Runnable> {
     private String name;
 
     /**
-     * The inner {@link PausableThreadPoolExecutor} that control Test Cases executions.
+     * The inner {@link ManageableThreadPoolExecutor} that control Test Cases executions.
      * <p>
-     * When instanciated, this {@link PausableThreadPoolExecutor} act the same as a {@link java.util.concurrent.Executors#newFixedThreadPool(int)},
+     * When instanciated, this {@link ManageableThreadPoolExecutor} act the same as a {@link java.util.concurrent.Executors#newFixedThreadPool(int)},
      * but with the ability to tune its core pool size and be pausable/resumable
      */
-    private PausableThreadPoolExecutor executor;
+    private ManageableThreadPoolExecutor executor;
 
     /**
      * Create a new {@link ExecutionThreadPool} based on the given name and initial pool size
@@ -83,7 +85,7 @@ public class ExecutionThreadPool<T extends Runnable> {
      *
      * @param size the number of maximum simultaneous active threads to set
      */
-    public synchronized void setSize(Integer size) {
+    public void setSize(Integer size) {
         int currentSize = getPoolSize();
         if (size < currentSize) {
             executor.setCorePoolSize(size);
@@ -99,7 +101,7 @@ public class ExecutionThreadPool<T extends Runnable> {
      *
      * @return the number of {@link Runnable} tasks this {@link ExecutionThreadPool} can execute in the same time
      */
-    public synchronized int getPoolSize() {
+    public int getPoolSize() {
         // Should be equal to executor.getMaximumPoolSize()
         return executor.getCorePoolSize();
     }
@@ -109,16 +111,16 @@ public class ExecutionThreadPool<T extends Runnable> {
      *
      * @return the number of currently active threads
      */
-    public synchronized int getInExecution() {
+    public int getInExecution() {
         return executor.getActiveCount();
     }
 
     /**
-     * Get the approximate number of active and pending executions
+     * Get the approximate (not atomic) number of active and pending executions
      *
      * @return the approximate number of active and pending executions
      */
-    public synchronized long getInQueue() {
+    public long getInQueue() {
         return executor.getTaskCount() - executor.getCompletedTaskCount();
     }
 
@@ -130,19 +132,8 @@ public class ExecutionThreadPool<T extends Runnable> {
      * @param task the task to submit to this {@link ExecutionThreadPool}
      * @see #getPoolSize()
      */
-    public synchronized void submit(T task) {
+    public void submit(T task) {
         executor.submit(task);
-    }
-
-    /**
-     * Reset this {@link ExecutionThreadPool} by trying to stop any submitted tasks and make the {@link #getInExecution()} equals to 0
-     *
-     * @see #getInExecution()
-     */
-    public synchronized void reset() {
-        int currentSIze = getPoolSize();
-        stopExecutor();
-        initExecutor(currentSIze);
     }
 
     /**
@@ -186,6 +177,27 @@ public class ExecutionThreadPool<T extends Runnable> {
         return executor.isShutdown();
     }
 
+    /**
+     * Get the currently queued and executing tasks registered to this {@link ExecutionThreadPool}
+     *
+     * @return the currently queued and executing tasks registered to this {@link ExecutionThreadPool}
+     */
+    public Map<ManageableThreadPoolExecutor.TaskState, List<T>> getTasks() {
+        final Map<ManageableThreadPoolExecutor.TaskState, List<? super Object>> rawTasks = executor.getTasks();
+        final Map<ManageableThreadPoolExecutor.TaskState, List<T>> formatedTasks = new HashMap<ManageableThreadPoolExecutor.TaskState, List<T>>() {
+            {
+                put(ManageableThreadPoolExecutor.TaskState.QUEUED, new ArrayList<T>());
+                put(ManageableThreadPoolExecutor.TaskState.EXECUTING, new ArrayList<T>());
+            }
+        };
+        for (final Map.Entry<ManageableThreadPoolExecutor.TaskState, List<? super Object>> rawTaskGroup : rawTasks.entrySet()) {
+            for (final Object rawTask : rawTaskGroup.getValue()) {
+                formatedTasks.get(rawTaskGroup.getKey()).add((T) JobDiscoverer.findRealTask(rawTask));
+            }
+        }
+        return formatedTasks;
+    }
+
     @Override
     public String toString() {
         return getName();
@@ -199,8 +211,8 @@ public class ExecutionThreadPool<T extends Runnable> {
     private void initExecutor(int poolSize) {
         // The same as Executors#newFixedThreadPool(int) but with:
         // - access to the ThreadPoolExecutor API and so more controls than the ExecutorService one provided by Executors#newFixedThreadPool(int)
-        // - access to the PausableThreadPoolExecutor API and so be able to pause/resume executions
-        executor = new PausableThreadPoolExecutor(
+        // - access to the ManageableThreadPoolExecutor API and so be able to pause/resume executions
+        executor = new ManageableThreadPoolExecutor(
                 poolSize,
                 poolSize,
                 0L, TimeUnit.MILLISECONDS,
@@ -222,11 +234,11 @@ public class ExecutionThreadPool<T extends Runnable> {
             resume();
 
             // Finally retrieve the original tasks submitted to #submit(Runnable) from the remaining
-            final List<T> orginalRemainingTasks = new ArrayList<>(remainingTasks.size());
+            final List<T> originalRemainingTasks = new ArrayList<>(remainingTasks.size());
             for (Runnable task : remainingTasks) {
-                orginalRemainingTasks.add((T) JobDiscoverer.findRealTask(task));
+                originalRemainingTasks.add((T) JobDiscoverer.findRealTask(task));
             }
-            return orginalRemainingTasks;
+            return originalRemainingTasks;
         }
         return null;
     }
