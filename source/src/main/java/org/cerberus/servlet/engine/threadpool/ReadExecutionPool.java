@@ -30,7 +30,17 @@ public class ReadExecutionPool extends HttpServlet {
     private static final String CONTENT_TYPE = "application/json";
     private static final String CHARACTER_ENCODING = "UTF-8";
 
-    private ObjectMapper objectMapper = ObjectMapperUtil.newInstance();
+    private ObjectMapper objectMapper;
+
+    private IExecutionThreadPoolService executionThreadPoolService;
+
+    @Override
+    public void init() throws ServletException {
+        objectMapper = ObjectMapperUtil.newInstance();
+
+        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -45,10 +55,6 @@ public class ReadExecutionPool extends HttpServlet {
             usage(req, resp);
             return;
         }
-
-        // Get associated information to the request key
-        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        final IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
 
         resp.setContentType(CONTENT_TYPE);
         resp.setCharacterEncoding(CHARACTER_ENCODING);

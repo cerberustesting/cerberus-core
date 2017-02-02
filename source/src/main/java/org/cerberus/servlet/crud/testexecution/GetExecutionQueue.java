@@ -20,7 +20,6 @@
 package org.cerberus.servlet.crud.testexecution;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -361,7 +360,7 @@ public class GetExecutionQueue extends HttpServlet {
              * Trigger the execution
              */
             try {
-                executionThreadService.searchExecutionInQueueTableAndTriggerExecution();
+                executionThreadService.executeNextInQueue();
             } catch (CerberusException ex) {
                 String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                 LOG.warn(errorMessage);

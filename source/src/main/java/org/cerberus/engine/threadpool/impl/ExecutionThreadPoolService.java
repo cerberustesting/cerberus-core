@@ -58,6 +58,8 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
 
     private static final Logger LOG = Logger.getLogger(ExecutionThreadPoolService.class);
 
+    private static final int UNLIMITED_FETCH_SIZE = -1;
+
     /**
      * The string format when displaying generated name.
      * <p>
@@ -90,9 +92,21 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
      * {@inheritDoc}
      */
     @Override
-    public void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException {
-        List<TestCaseExecutionInQueue> executionsInQueue = tceiqService.toQueued();
-        for (TestCaseExecutionInQueue executionInQueue : executionsInQueue) {
+    public void executeNextInQueue() throws CerberusException {
+        executeNextInQueue(UNLIMITED_FETCH_SIZE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void executeNextInQueue(final int limit) throws CerberusException {
+        if (limit < 0 && limit != UNLIMITED_FETCH_SIZE) {
+            LOG.warn("Unable to fetch " + limit + " waiting execution in queue");
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+        final List<TestCaseExecutionInQueue> executionsInQueue = limit == UNLIMITED_FETCH_SIZE ? tceiqService.toQueued() : tceiqService.toQueued(limit);
+        for (final TestCaseExecutionInQueue executionInQueue : executionsInQueue) {
             try {
                 execute(executionInQueue);
             } catch (CerberusException e) {

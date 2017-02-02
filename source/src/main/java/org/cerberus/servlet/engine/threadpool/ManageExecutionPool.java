@@ -53,7 +53,17 @@ public class ManageExecutionPool extends HttpServlet {
     private static final String CONTENT_TYPE = "application/json";
     private static final String CHARACTER_ENCODING = "UTF-8";
 
-    private ObjectMapper objectMapper = ObjectMapperUtil.newInstance();
+    private ObjectMapper objectMapper;;
+
+    private IExecutionThreadPoolService executionThreadPoolService;
+
+    @Override
+    public void init() throws ServletException {
+        objectMapper = ObjectMapperUtil.newInstance();
+
+        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -71,31 +81,29 @@ public class ManageExecutionPool extends HttpServlet {
             return;
         }
 
-        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        final IExecutionThreadPoolService executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
         switch (requestBody.getAction()) {
             case PAUSE:
-                pauseExecutionPool(requestBody.getExecutionPoolKey(), executionThreadPoolService);
+                pauseExecutionPool(requestBody.getExecutionPoolKey());
                 break;
             case RESUME:
-                resumeExecutionPool(requestBody.getExecutionPoolKey(), executionThreadPoolService);
+                resumeExecutionPool(requestBody.getExecutionPoolKey());
                 break;
             case STOP:
-                stopExecutionPool(requestBody.getExecutionPoolKey(), executionThreadPoolService);
+                stopExecutionPool(requestBody.getExecutionPoolKey());
                 break;
         }
     }
 
-    private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService executionPoolService) {
-        executionPoolService.pauseExecutionThreadPool(executionPoolKey);
+    private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {
+        executionThreadPoolService.pauseExecutionThreadPool(executionPoolKey);
     }
 
-    private void resumeExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService  executionPoolService) {
-        executionPoolService.resumeExecutionThreadPool(executionPoolKey);
+    private void resumeExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {
+        executionThreadPoolService.resumeExecutionThreadPool(executionPoolKey);
     }
 
-    private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey, final IExecutionThreadPoolService  executionPoolService) {
-        executionPoolService.removeExecutionThreadPool(executionPoolKey);
+    private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {
+        executionThreadPoolService.removeExecutionThreadPool(executionPoolKey);
     }
 
     private RequestBody getBody(HttpServletRequest req) throws IOException, JsonSyntaxException {

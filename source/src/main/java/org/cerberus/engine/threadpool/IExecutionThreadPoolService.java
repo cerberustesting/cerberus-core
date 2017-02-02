@@ -23,7 +23,15 @@ public interface IExecutionThreadPoolService {
      *
      * @throws CerberusException if an error occurred during search or trigger process
      */
-    void searchExecutionInQueueTableAndTriggerExecution() throws CerberusException;
+    void executeNextInQueue() throws CerberusException;
+
+    /**
+     * Search at most #limit {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} which are currently waiting for execution and trigger their executions
+     *
+     * @param limit the limit size of {@link org.cerberus.crud.entity.TestCaseExecutionInQueue} in waiting state to execute
+     * @throws CerberusException if an error occurred during search or trigger process
+     */
+    void executeNextInQueue(int limit) throws CerberusException;
 
     /**
      * Get an quasi-accurate (not atomic) statistics of the current execution pools
