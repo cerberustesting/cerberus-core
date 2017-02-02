@@ -112,6 +112,12 @@ public class CreateApplication extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Application name is missing!"));
             ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(system)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "System is missing!"));
+            ans.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")

@@ -134,6 +134,12 @@ public class UpdateApplication extends HttpServlet {
                     .replace("%OPERATION%", "Update")
                     .replace("%REASON%", "Application ID (application) is missing."));
             ans.setResultMessage(msg);
+        } else if (StringUtil.isNullOrEmpty(system)) {
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
+                    .replace("%OPERATION%", "Update")
+                    .replace("%REASON%", "System is missing!"));
+            ans.setResultMessage(msg);
         } else if (sort_error) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Application")
