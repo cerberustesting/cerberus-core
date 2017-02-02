@@ -65,6 +65,8 @@ public class DeleteInvariant2 extends HttpServlet {
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
         String charset = request.getCharacterEncoding();
+        
+        response.setContentType("application/json");
 
         String id = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("idName"), "", charset);
         String value = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("value"), "", charset);
@@ -113,7 +115,7 @@ public class DeleteInvariant2 extends HttpServlet {
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
 
-        response.getWriter().print(jsonResponse);
+        response.getWriter().print(jsonResponse.toString());
         response.getWriter().flush();
 
     }
