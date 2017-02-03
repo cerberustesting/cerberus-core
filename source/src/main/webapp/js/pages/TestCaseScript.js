@@ -457,7 +457,7 @@ function setAllSort() {
                 if (!action.toDelete) {
                     // Set the action's sort
                     action.setSort(j + 1);
-                    
+
                     // Set the action's step
                     action.setStep(i + 1);
 
@@ -473,7 +473,7 @@ function setAllSort() {
                             control.setParentActionSort(j + 1);
                             control.setSort(k + 1);
                             control.setStep(i + 1);
-                            
+
 
                             // Then push control into result array
                             controlArr.push(control.getJsonData());
@@ -496,7 +496,7 @@ function setAllSort() {
 function saveScript() {
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
-    
+
     var stepArr = setAllSort();
     var doc = new Doc();
 
@@ -559,7 +559,6 @@ function saveScript() {
 
 function drawProperty(property, testcaseinfo, canUpdate) {
     var doc = new Doc();
-    console.debug(canUpdate);
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
@@ -942,6 +941,16 @@ function changeLib() {
     }
 }
 
+function showImportStepDetail(element) {
+    var stepInfo = $(element).data("stepInfo");
+
+    $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
+    $("#addStepModal #description").val(stepInfo.description);
+    $("#useStep").prop("checked", true);
+
+    $("#importDetail").show();
+}
+
 function addStep(event) {
     var stepList = event.data.stepList;
     $("#addStepModal").modal('show');
@@ -951,15 +960,7 @@ function addStep(event) {
         $('#description').focus();
     })
 
-    $(".sub-sub-item").click(function () {
-        var stepInfo = $(this).data("stepInfo");
-
-        $("#importInfo").text("Imported from " + stepInfo.test + " - " + stepInfo.testCase + " - " + stepInfo.sort + ")").data("stepInfo", stepInfo);
-        $("#addStepModal #description").val(stepInfo.description);
-        $("#useStep").prop("checked", true);
-
-        $("#importDetail").show();
-    });
+    $(".sub-sub-item").on("click", function(){showImportStepDetail($(this))});
 
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
@@ -1074,41 +1075,42 @@ function loadLibraryStep(search) {
         data: {system: getUser().defaultSystem},
         async: true,
         success: function (data) {
-            var test = {};
+    var test = {};
 
-            for (var index = 0; index < data.testCaseStepList.length; index++) {
-                var step = data.testCaseStepList[index];
+    for (var index = 0; index < data.testCaseStepList.length; index++) {
+        var step = data.testCaseStepList[index];
 
-                if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
-                    if (!test.hasOwnProperty(step.test)) {
-                        $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+        if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
+            if (!test.hasOwnProperty(step.test)) {
+                $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
+                        .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                        var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
-                        $("#lib").append(listGr);
+                var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
+                $("#lib").append(listGr);
 
-                        test[step.test] = {content: listGr, testCase: {}};
-                    }
-                    if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
-                        var listGrp = test[step.test].content;
-                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
-
-                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
-                        listGrp.append(listCaseGr);
-
-                        test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
-                    }
-                    var listCaseGrp = test[step.test].testCase[step.testCase].content;
-                    var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);
-                    listCaseGrp.append(listStepGrp);
-                    test[step.test].testCase[step.testCase].step[step.description] = listStepGrp;
-                }
+                test[step.test] = {content: listGr, testCase: {}};
             }
+            if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
+                var listGrp = test[step.test].content;
+                listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
+                        .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+
+                var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
+                listGrp.append(listCaseGr);
+
+                test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
+            }
+            var listCaseGrp = test[step.test].testCase[step.testCase].content;
+            var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);
+            listStepGrp.attr("onclick", "javascript:showImportStepDetail($(this))");
+            listCaseGrp.append(listStepGrp);
+            test[step.test].testCase[step.testCase].step[step.description] = listStepGrp;
+        }
+    }
 
             if (search != undefined && search != "") {
                 $('#lib').find("div").toggleClass('in');
-            }
+}
 
             $('.list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
@@ -2210,7 +2212,6 @@ function listenEnterKeypressWhenFocusingOnDescription() {
                     if ($(field).closest(".step-action").hasClass("action")) {
                         var newAction = $(field).closest(".action-group");
                         var oldAction = newAction.prev().find(".step-action.row.action").last();
-                        console.log(oldAction);
                         newAction.remove();
                         addControlAndFocus(oldAction);
                     } else {
