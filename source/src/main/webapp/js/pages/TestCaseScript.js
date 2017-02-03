@@ -400,7 +400,7 @@ function displayPageLabel(doc) {
     $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_testcasescript", "edit_testcase"));
     $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_testcasescript", "run_testcase"));
     $("#rerunTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_testcasescript", "rerun_testcase"));
-    $("#seeLastExec").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
+    $("#seeLastExec").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_testcasescript", "see_lastexec"));
     $("#seeLogs").html("<span class='glyphicon glyphicon-book'></span> " + doc.getDocLabel("page_testcasescript", "see_logs"));
     $("#runOld").html("<span class='glyphicon glyphicon-bookmark'></span> " + doc.getDocLabel("page_testcasescript", "run_old"));
     $("#addStep").html(doc.getDocLabel("page_testcasescript", "add_step"));

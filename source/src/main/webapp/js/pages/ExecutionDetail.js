@@ -172,11 +172,11 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='version']").text(doc.getDocLabel("page_executiondetail", "version"));
     $("#steps h3").text(doc.getDocLabel("page_executiondetail", "steps"));
     $("#actions h3").text(doc.getDocLabel("page_global", "columnAction"));
-    $("#editTcInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
-    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-pencil'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
-    $("#runTestCase").html("<span class='glyphicon glyphicon-play'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
-    $("#lastExecution").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
-    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-fast-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
+    $("#editTcInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittc"));
+    $("#editTcStepInfo").html("<span class='glyphicon glyphicon-new-window'></span> " + doc.getDocLabel("page_executiondetail", "edittcstep"));
+    $("#runTestCase").html("<span class='glyphicon glyphicon-forward'></span> " + doc.getDocLabel("page_executiondetail", "runtc"));
+    $("#lastExecution").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecution"));
+    $("#lastExecutionwithEnvCountry").html("<span class='glyphicon glyphicon-backward'></span> " + doc.getDocLabel("page_executiondetail", "lastexecutionwithenvcountry"));
 }
 
 function updatePage(data, stepList) {
