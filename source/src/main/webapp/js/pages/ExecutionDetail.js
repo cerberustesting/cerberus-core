@@ -523,9 +523,9 @@ function createProperties(propList) {
 
         htmlElement.click(function () {
             if ($(this).find(".glyphicon-chevron-down").length > 0) {
-                $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+                $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
             } else {
-                $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+                $(this).find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
             }
             $(this).parent().find(".panel-body").toggle();
         });
@@ -641,7 +641,7 @@ Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-sm-10");
-    var stepButton = $("<button id='stepPlus'></a>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var stepButton = $("<div id='stepPlus'></a>").addClass("col-sm-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 //    var stepButton1 = $("<div id='stepPlus'></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 //    stepButton.append(stepButton1);
     
@@ -867,9 +867,9 @@ Action.prototype.draw = function () {
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
-            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
-            $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+            $(this).find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
         }
         content.toggle();
         return false;
@@ -1163,9 +1163,9 @@ Control.prototype.draw = function () {
     this.parentStep.stepActionContainer.append(content);
     htmlElement.click(function () {
         if ($(this).find(".glyphicon-chevron-down").length > 0) {
-            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            $(this).find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
         } else {
-            $(this).find(".glyphicon-chevron-right").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+            $(this).find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
         }
         content.toggle();
         return false;
