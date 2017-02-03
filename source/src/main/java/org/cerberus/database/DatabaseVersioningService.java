@@ -8223,6 +8223,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'en', 'Manual execution', ''),");
         SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'fr', 'Execution manuelle', '');");
         SQLInstruction.add(SQLS.toString());
+        
+        // Add documentation for button remove on invariant
+        //-- ------------------------ 1053
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `cerberus`.`documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
+        SQLS.append("('page_invariant', 'button_remove', '', 'en', 'Delete Invariant'),");
+        SQLS.append("('page_invariant', 'button_remove', '', 'fr', 'Supprimer l\\'Invariant');");
+        SQLInstruction.add(SQLS.toString());
+        
 
         return SQLInstruction;
     }
