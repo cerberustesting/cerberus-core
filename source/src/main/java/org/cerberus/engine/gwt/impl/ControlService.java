@@ -597,7 +597,8 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplicationObj().getType();
 
-            if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
+            if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)
+                    || "IPA".equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 
             } else if ("WS".equalsIgnoreCase(applicationType)) {
