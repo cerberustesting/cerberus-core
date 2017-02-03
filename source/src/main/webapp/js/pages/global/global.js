@@ -1493,7 +1493,7 @@ function applyFiltersOnMultipleColumns(tableId, searchColumns) {
     /**
      * Apply the filter to the table
      */
-    var oTable = $('#' + tableId).DataTable();
+    var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable);
     var oSettings = oTable.fnSettings();
     for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
