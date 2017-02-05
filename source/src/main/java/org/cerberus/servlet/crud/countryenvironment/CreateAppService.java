@@ -18,16 +18,14 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -39,20 +37,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.cerberus.crud.factory.IFactoryAppService;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  * @author cte
  */
-public class DeleteSoapLibrary2 extends HttpServlet {
+public class CreateAppService extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -68,50 +68,45 @@ public class DeleteSoapLibrary2 extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("servicePath"), "", charset);
+        String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parsingAnswer"), "", charset);
+        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), "", charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
+        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-
-        ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isNullOrEmpty(service)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
-                    .replace("%OPERATION%", "Delete")
-                    .replace("%REASON%", "SOAPLibrary ID (name) is missing!"));
+                    .replace("%OPERATION%", "Create")
+                    .replace("%REASON%", "SoapLibrary name is missing!"));
             ans.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-            AnswerItem resp = soapLibraryService.readByKey(name);
-            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
-                /**
-                 * Object could not be found. We stop here and report the error.
-                 */
-                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-                msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
-                        .replace("%OPERATION%", "Delete")
-                        .replace("%REASON%", "SoapLibrary does not exist."));
-                ans.setResultMessage(msg);
 
-            } else {
-                /**
-                 * The service was able to perform the query and confirm the
-                 * object exist, then we can delete it.
-                 */
-                SoapLibrary soapl = (SoapLibrary)resp.getItem();
-                ans = soapLibraryService.delete(soapl);
+            IAppServiceService appServiceService = appContext.getBean(IAppServiceService.class);
+            IFactoryAppService factoryAppService = appContext.getBean(IFactoryAppService.class);
 
-                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Adding Log entry.
-                     */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteSoapLibrary", "DELETE", "Delete SOAPLibrary : " + name, request);
-                }
+            AppService appService = factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, parsingAnswer, operation, request.getRemoteUser(), null, null, null);
+            appService.setUsrCreated(request.getRemoteUser());
+            ans = appServiceService.create(appService);
+
+            if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Adding Log entry.
+                 */
+                ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                logEventService.createPrivateCalls("/CreateAppService", "CREATE", "Create AppService : " + service, request);
             }
         }
 
@@ -124,16 +119,15 @@ public class DeleteSoapLibrary2 extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -141,19 +135,19 @@ public class DeleteSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -161,9 +155,9 @@ public class DeleteSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(DeleteSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(CreateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 

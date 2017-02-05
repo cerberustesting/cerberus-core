@@ -21,9 +21,8 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.log4j.Level;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.SoapLibrary;
-import org.cerberus.crud.service.ISoapLibraryService;
-import org.cerberus.crud.service.impl.SoapLibraryService;
+import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -44,13 +43,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  * @author bcivel
  */
-public class ReadSoapLibrary extends HttpServlet {
+public class ReadAppService extends HttpServlet {
 
-    private ISoapLibraryService soapLibraryService;
+    private IAppServiceService appServiceService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -96,14 +96,14 @@ public class ReadSoapLibrary extends HttpServlet {
 
             String system;
 
-            if (request.getParameter("name") == null && Strings.isNullOrEmpty(columnName)) {
-                answer = findSoapLibraryList(appContext, userHasPermissions, request);
+            if (request.getParameter("service") == null && Strings.isNullOrEmpty(columnName)) {
+                answer = findAppServiceList(appContext, userHasPermissions, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                answer = findSoapLibraryBySystemByKey(request.getParameter("name"), appContext, userHasPermissions);
+                answer = findAppServiceBySystemByKey(request.getParameter("service"), appContext, userHasPermissions);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -114,17 +114,17 @@ public class ReadSoapLibrary extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (JSONException e) {
-            org.apache.log4j.Logger.getLogger(ReadSoapLibrary.class.getName()).log(Level.ERROR, null, e);
+            org.apache.log4j.Logger.getLogger(ReadAppService.class.getName()).log(Level.ERROR, null, e);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 
-    private AnswerItem findSoapLibraryList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
+    private AnswerItem findAppServiceList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        soapLibraryService = appContext.getBean(SoapLibraryService.class);
+        appServiceService = appContext.getBean(AppServiceService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -132,7 +132,7 @@ public class ReadSoapLibrary extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "2"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "service,type,method,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
@@ -145,11 +145,11 @@ public class ReadSoapLibrary extends HttpServlet {
             }
         }
 
-        AnswerList resp = soapLibraryService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
+        AnswerList resp = appServiceService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (SoapLibrary param : (List<SoapLibrary>) resp.getDataList()) {
+            for (AppService param : (List<AppService>) resp.getDataList()) {
                 jsonArray.put(convertSoapLibraryToJSONObject(param));
             }
         }
@@ -164,14 +164,14 @@ public class ReadSoapLibrary extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findSoapLibraryBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
+    private AnswerItem findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
-        soapLibraryService = appContext.getBean(SoapLibraryService.class);
+        appServiceService = appContext.getBean(AppServiceService.class);
 
-        AnswerItem resp = soapLibraryService.readByKey(key);
-        SoapLibrary p = null;
+        AnswerItem resp = appServiceService.readByKey(key);
+        AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            p = (SoapLibrary) resp.getItem();
+            p = (AppService) resp.getItem();
         }
         JSONObject item = convertSoapLibraryToJSONObject(p);
         item.put("hasPermissions", userHasPermissions);
@@ -184,7 +184,7 @@ public class ReadSoapLibrary extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        soapLibraryService = appContext.getBean(ISoapLibraryService.class);
+        appServiceService = appContext.getBean(IAppServiceService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "para,valC,valS,descr");
@@ -198,7 +198,7 @@ public class ReadSoapLibrary extends HttpServlet {
             }
         }
 
-        AnswerList applicationList = soapLibraryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
+        AnswerList applicationList = appServiceService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
 
         object.put("distinctValues", applicationList.getDataList());
 
@@ -207,10 +207,10 @@ public class ReadSoapLibrary extends HttpServlet {
         return answer;
     }
 
-    private JSONObject convertSoapLibraryToJSONObject(SoapLibrary parameter) throws JSONException {
+    private JSONObject convertSoapLibraryToJSONObject(AppService appservice) throws JSONException {
 
         Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(parameter));
+        JSONObject result = new JSONObject(gson.toJson(appservice));
         return result;
     }
 

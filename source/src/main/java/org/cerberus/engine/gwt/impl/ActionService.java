@@ -26,14 +26,13 @@ import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
@@ -56,6 +55,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  *
@@ -71,7 +71,7 @@ public class ActionService implements IActionService {
     @Autowired
     private ISoapService soapService;
     @Autowired
-    private ISoapLibraryService soapLibraryService;
+    private IAppServiceService appServiceService;
     @Autowired
     private IRecorderService recorderService;
     @Autowired
@@ -220,12 +220,9 @@ public class ActionService implements IActionService {
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_WAIT)) {
             res = this.doActionWait(tCExecution, value1, value2);
 
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALLSOAP)) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, value1, value2, false);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALLSOAPWITHBASE)) {
-            res = this.doActionMakeSoapCall(testCaseStepActionExecution, value1, value2, true);
-
+        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)) {
+            res = this.doActionCallService(testCaseStepActionExecution, value1);
+            
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_REMOVEDIFFERENCE)) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
 
@@ -872,41 +869,45 @@ public class ActionService implements IActionService {
 
     }
 
-    private MessageEvent doActionMakeSoapCall(TestCaseStepActionExecution testCaseStepActionExecution, String object, String property, boolean withBase) {
+    private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
         MessageEvent message;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         String decodedEnveloppe;
         String decodedServicePath = null;
         String decodedMethod;
         AnswerItem lastSoapCalled;
-        //if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
         try {
-            SoapLibrary soapLibrary = soapLibraryService.findSoapLibraryByKey(object);
+            AppService appService = appServiceService.findAppServiceByKey(value1);
             String servicePath;
-            if (withBase) {
-                servicePath = tCExecution.getCountryEnvironmentParameters().getIp() + tCExecution.getCountryEnvironmentParameters().getUrl() + soapLibrary.getServicePath();
-            } else {
-                servicePath = soapLibrary.getServicePath();
-            }
+
+            // We first try with appService value.
+            servicePath = appService.getServicePath();
             if (!(StringUtil.isURL(servicePath))) {
-                servicePath = "http://" + servicePath;
+                // If appService value does not look like an URL, it means it is relative and we add the application host and context root.
+                servicePath = StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getIp(), "/");
+                servicePath += StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getUrl(), "/");
+                servicePath += appService.getServicePath();
+
+                if (!(StringUtil.isURL(servicePath))) { // If still does not look lke an URL, we add http:// by default.
+                    servicePath = "http://" + servicePath;
+                }
             }
             /**
              * Decode Envelope, ServicePath and Method replacing properties
              * encapsulated with %
              */
-            decodedEnveloppe = soapLibrary.getEnvelope();
+            decodedEnveloppe = appService.getServiceRequest();
             decodedServicePath = servicePath;
-            decodedMethod = soapLibrary.getMethod();
+            decodedMethod = appService.getOperation();
 
             try {
-                if (soapLibrary.getEnvelope().contains("%")) {
+                if (appService.getServiceRequest().contains("%")) {
                     decodedEnveloppe = variableService.decodeStringCompletly(decodedEnveloppe, tCExecution, testCaseStepActionExecution, false);
                 }
-                if (soapLibrary.getServicePath().contains("%")) {
+                if (appService.getServicePath().contains("%")) {
                     decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
                 }
-                if (soapLibrary.getMethod().contains("%")) {
+                if (appService.getOperation().contains("%")) {
                     decodedMethod = variableService.decodeStringCompletly(decodedMethod, tCExecution, testCaseStepActionExecution, false);
                 }
 
@@ -916,7 +917,7 @@ public class ActionService implements IActionService {
                 }
             } catch (CerberusEventException cee) {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+                message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
                 message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
                 return message;
@@ -938,13 +939,13 @@ public class ActionService implements IActionService {
 
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-            message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
             return message;
         } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-            message.setDescription(message.getDescription().replace("%SOAPNAME%", object));
+            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
             return message;
@@ -955,7 +956,6 @@ public class ActionService implements IActionService {
         recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
 
         return lastSoapCalled.getResultMessage();
-        //}
     }
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -968,9 +968,9 @@ public class ActionService implements IActionService {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TAKESCREENSHOT);
             return message;
         } else if (testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getApplicationObj().getType().equalsIgnoreCase("FAT")) {
-        /**
-         * TODO Implement screenshot for FAT client application
-         */
+            /**
+             * TODO Implement screenshot for FAT client application
+             */
             message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
         }
         message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);

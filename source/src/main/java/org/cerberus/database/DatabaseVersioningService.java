@@ -8182,6 +8182,59 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `loop` VARCHAR(45) NULL DEFAULT '' AFTER `Sort`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Change and add database structure in order to support testing of services (no longuer specific to soap library)
+        //-- ------------------------ 1052-1061
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `soaplibrary` ");
+        SQLS.append("CHANGE COLUMN `Name` `Service` VARCHAR(255) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Type` `Group` VARCHAR(45) NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Method` `Operation` VARCHAR(255) NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Envelope` `ServiceRequest` MEDIUMTEXT NULL DEFAULT NULL  , RENAME TO  `appservice` ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("CHANGE COLUMN `Group` `Group` VARCHAR(45) NULL DEFAULT '' AFTER `ParsingAnswer`,");
+        SQLS.append("ADD COLUMN `Application` VARCHAR(200) NULL DEFAULT '' AFTER `Service`,");
+        SQLS.append("ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT ''  AFTER `Application`,");
+        SQLS.append("ADD COLUMN `Method` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Type`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('SRVTYPE', 'SOAP', 100, 'SOAP Service.', '', '', '', '')");
+        SQLS.append(",('SRVTYPE', 'REST', 200, 'REST Service.', '', '', '', '')");
+        SQLS.append(",('SRVMETHOD', 'GET', 100, 'GET http method.', '', '', '', '')");
+        SQLS.append(",('SRVMETHOD', 'POST', 200, 'POST http method.', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'SRVTYPE', '600', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'SRVMETHOD', '610', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `appservice` SET `Type`='SOAP', `application` = null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ADD INDEX `FK_appservice_01` (`Application` ASC) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("ADD CONSTRAINT `FK_appservice_01` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Description`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update testcasestepaction SET `action` = 'callService' where `action` in ('callSoap','callSoapWithBase');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTION', 'callService', 17000, 'Call Service.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname` = 'ACTION' and `value` in ('callSoap','callSoapWithBase');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -30,7 +30,7 @@ import org.apache.log4j.Level;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -80,7 +80,7 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private ISqlLibraryService sqlLibraryService;
     @Autowired
-    private ISoapLibraryService soapLibraryService;
+    private IAppServiceService appServiceService;
     @Autowired
     private ITestDataService testDataService;
     @Autowired
@@ -901,8 +901,8 @@ public class PropertyService implements IPropertyService {
     private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String result = null;
         try {
-            SoapLibrary soapLib = this.soapLibraryService.findSoapLibraryByKey(testCaseExecutionData.getValue1());
-            if (soapLib != null) {
+            AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
+            if (appService != null) {
                 String attachement = "";//TODO implement this feature
                 //TODO implement the executeSoapFromLib
                 /*if (!testCaseExecutionData.getValue2().isEmpty()){
@@ -910,18 +910,18 @@ public class PropertyService implements IPropertyService {
                  }else{
                  attachement = soapLib.getAttachmentUrl();
                  }*/
-                String decodedEnveloppe = soapLib.getEnvelope();
-                String decodedServicePath = soapLib.getServicePath();
-                String decodedMethod = soapLib.getMethod();
+                String decodedEnveloppe = appService.getServiceRequest();
+                String decodedServicePath = appService.getServicePath();
+                String decodedMethod = appService.getOperation();
 
-                if (soapLib.getEnvelope().contains("%")) {
-                    decodedEnveloppe = variableService.decodeStringCompletly(soapLib.getEnvelope(), tCExecution, testCaseStepActionExecution, false);
+                if (appService.getServiceRequest().contains("%")) {
+                    decodedEnveloppe = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
                 }
-                if (soapLib.getServicePath().contains("%")) {
-                    decodedServicePath = variableService.decodeStringCompletly(soapLib.getServicePath(), tCExecution, testCaseStepActionExecution, false);
+                if (appService.getServicePath().contains("%")) {
+                    decodedServicePath = variableService.decodeStringCompletly(appService.getServicePath(), tCExecution, testCaseStepActionExecution, false);
                 }
-                if (soapLib.getMethod().contains("%")) {
-                    decodedMethod = variableService.decodeStringCompletly(soapLib.getMethod(), tCExecution, testCaseStepActionExecution, false);
+                if (appService.getOperation().contains("%")) {
+                    decodedMethod = variableService.decodeStringCompletly(appService.getOperation(), tCExecution, testCaseStepActionExecution, false);
                 }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
@@ -935,7 +935,7 @@ public class PropertyService implements IPropertyService {
                 if (soapCall.isCodeEquals(200)) {
                     SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                     String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-                    result = xmlUnitService.getFromXml(xmlResponse, null, soapLib.getParsingAnswer());
+                    result = xmlUnitService.getFromXml(xmlResponse, null, appService.getParsingAnswer());
                 }
                 if (result != null) {
                     testCaseExecutionData.setValue(result);

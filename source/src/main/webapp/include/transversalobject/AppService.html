@@ -1,0 +1,153 @@
+<!--Edit soapLibrary page-->
+<div data-backdrop="static" class="modal fade center" id="editSoapLibraryModal" tabindex="-1" role="dialog"
+     aria-labelledby="editSoapLibraryModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom width1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="editSoapLibraryModalLabel" name="editSoapLibraryField">Edit SoapLibrary</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--edit form-->
+                <form id="editSoapLibraryModalForm" name="editSoapLibraryModalForm" title="Edit SoapLibrary"
+                      role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert" style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert" aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-12">
+                                <label for="service" name="serviceField">Service</label>
+                                <input type="text" class="form-control" name="service" id="service"
+                                       aria-describedby="basic-editon1">
+
+                                </input>
+                            </div>
+                        </div>
+                        <!-- tabs definition-->
+                        <ul id="tabsEdit" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsEdit-1" id="tab1Text" name="tabsEdit1">Definition</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-2" id="tab2Text" name="tabsEdit2">Request</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-3" id="tab3Text" name="tabsEdit3">Request Detail</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-4" id="tab4Text" name="tabsEdit4">Header</a></li>
+                            <li><a data-toggle="tab" href="#tabsEdit-5" id="tab5Text" name="tabsEdit5">Tracability</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsEdit-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="application" name="applicationField">Application</label>
+                                        <select class="form-control"  id="application" name="application">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="type" name="typeField">Type</label>
+                                        <select class="form-control"  id="type" name="type">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-xs-6">
+                                        <label for="method" name="methodField">Method</label>
+                                        <select class="form-control"  id="method" name="method">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="servicepath" name="servicePathField">ServicePath</label>
+                                        <input type="text" class="form-control" name="servicePath" id="servicePath"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="group" name="groupField">Group</label>
+                                        <input type="text" class="form-control" name="group" id="group"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="description" name="descriptionField">Description</label>
+                                        <textarea class="form-control" name="description" id="description"
+                                                  aria-describedby="basic-editon1"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-2">
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <label for="operation" name="operationField">Operation</label>
+                                        <input type="text" class="form-control" name="operation" id="operation"
+                                               aria-describedby="basic-editon1">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <label for="serviceRequest" name="serviceRequestField">Service Request</label>
+                                        <div name="srvRequestContainer" id="srvRequestContainer" aria-describedby="basic-editon1">
+                                            <pre style="min-height: 150px"><code id='srvRequest' name='srvRequest' contentEditable='true' class='language-markup'></code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-3">
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-4">
+                            </div>
+                            <div class="center marginTop25 tab-pane fade in" id="tabsEdit-5">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="row">
+                                            <div class="form-group col-xs-3">
+                                                <label name="lbl_created" for="created">Created</label>
+                                                <div>
+                                                    <input id="datecreated" name="datecreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-xs-3">
+                                                <label name="lbl_creator" for="creator">Creator</label>
+                                                <div>
+                                                    <input id="usrcreated" name="usrcreated" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div> 
+                                        <div class="row">
+                                            <div class="form-group col-xs-3">
+                                                <label name="lbl_lastModified" for="lastModified">Last Modified</label>
+                                                <div>
+                                                    <input id="datemodif" name="datemodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                            <div class="form-group col-xs-3">
+                                                <label name="lbl_lastModifier" for="lastModifier">Last Modifier</label>
+                                                <div>
+                                                    <input id="usrmodif" name="usrmodif" class="form-control" readonly="readonly" />     
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                </div>  
+                            </div>   
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+                <button type="button" id="editSoapLibraryButton" class="btn btn-primary" name="buttonEdit">Save</button>
+                <button type="button" id="addSoapLibraryButton" class="btn btn-primary" name="buttonAdd">Add</button>
+                <button type="button" id="duplicateSoapLibraryButton" class="btn btn-primary" name="buttonDuplicate">Duplicate</button>
+            </div>
+        </div>
+    </div>
+</div>

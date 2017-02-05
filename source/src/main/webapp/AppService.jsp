@@ -23,22 +23,21 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <%@ include file="include/dependenciesInclusions.html" %>
-    <title>SOAP Library</title>
-    <script type="text/javascript" src="js/pages/SoapLibrary.js"></script>
+    <title>Service Library</title>
+    <script type="text/javascript" src="js/pages/AppService.js"></script>
+    <script type="text/javascript" src="js/pages/transversalobject/AppService.js"></script>
 </head>
 <body>
 <%@ include file="include/header.html" %>
 <div class="container-fluid center" id="page-layout">
     <%@ include file="include/messagesArea.html" %>
     <%@ include file="include/utils/modal-confirmation.html" %>
-    <%@ include file="include/soapLibrary/editSoapLibrary.html" %>
-    <%@ include file="include/soapLibrary/addSoapLibrary.html" %>
+    <%@ include file="include/transversalobject/AppService.html" %>
 
-    <h1 class="page-title-line" id="title">SQL Library</h1>
+    <h1 class="page-title-line" id="title">Application Service</h1>
     <div class="panel panel-default">
         <div class="panel-heading" id="soapLibraryListLabel">
             <span class="glyphicon glyphicon-list"></span>
-            SQL Library
         </div>
         <div class="panel-body" id="soapLibraryList">
             <table id="soapLibrarysTable" class="table table-bordered table-hover display"

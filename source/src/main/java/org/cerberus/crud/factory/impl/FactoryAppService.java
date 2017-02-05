@@ -17,27 +17,36 @@
  */
 package org.cerberus.crud.factory.impl;
 
-import org.cerberus.crud.entity.SoapLibrary;
-import org.cerberus.crud.factory.IFactorySoapLibrary;
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.AppService;
 import org.springframework.stereotype.Service;
+import org.cerberus.crud.factory.IFactoryAppService;
 
 /**
  *
  * @author cte
  */
 @Service
-public class FactorySoapLibrary implements IFactorySoapLibrary {
+public class FactoryAppService implements IFactoryAppService {
 
     @Override
-    public SoapLibrary create(String type, String name, String envelope, String description, String servicePath, String parsingAnswer, String method) {
-        SoapLibrary s = new SoapLibrary();
-        s.setName(name);
-        s.setEnvelope(envelope);
-        s.setType(type);
+    public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String description, 
+            String servicePath, String parsingAnswer, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+        AppService s = new AppService();
+        s.setService(service);
+        s.setServiceRequest(serviceRequest);
+        s.setGroup(group);
         s.setDescription(description);
         s.setServicePath(servicePath);
         s.setParsingAnswer(parsingAnswer);
+        s.setOperation(operation);
         s.setMethod(method);
+        s.setApplication(application);
+        s.setType(type);
+        s.setUsrCreated(usrCreated);
+        s.setUsrModif(usrModif);
+        s.setDateCreated(dateCreated);
+        s.setDateModif(dateModif);
         return s;
     }
 }
