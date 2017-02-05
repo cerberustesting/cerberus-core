@@ -17,12 +17,14 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.util.validity.Validity;
+
 /**
  * @author bcivel
  */
 public class CountryEnvironmentParameters {
 
-    public static class Key {
+    public static class Key implements Validity {
 
         public static Key fromCountryEnvironmentParameters(CountryEnvironmentParameters countryEnvironmentParameters) {
             return new Key(
@@ -40,6 +42,13 @@ public class CountryEnvironmentParameters {
         private String country;
 
         private String environment;
+
+        /**
+         * For (de)serialization purpose
+         */
+        private Key() {
+
+        }
 
         public Key(String system, String application, String country, String environment) {
             this.system = system;
@@ -63,6 +72,11 @@ public class CountryEnvironmentParameters {
 
         public String getEnvironment() {
             return environment;
+        }
+
+        @Override
+        public boolean isValid() {
+            return system != null && application != null && country != null && environment != null;
         }
 
         @Override

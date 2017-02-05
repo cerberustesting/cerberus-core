@@ -19,36 +19,33 @@
  */
 package org.cerberus.servlet.zzpublic;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.engine.threadpool.ExecutionThreadPoolService;
-import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Add a test case to the execution queue (so to be executed later).
@@ -123,7 +120,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
     private ITestCaseExecutionInQueueService inQueueService;
     private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
-    private ExecutionThreadPoolService executionThreadService;
+    private IExecutionThreadPoolService executionThreadService;
     private ITestCaseService testCaseService;
     private ICampaignService campaignService;
 
@@ -132,7 +129,7 @@ public class AddToExecutionQueue extends HttpServlet {
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         inQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
         inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
-        executionThreadService = appContext.getBean(ExecutionThreadPoolService.class);
+        executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
         campaignService = appContext.getBean(ICampaignService.class);
     }
@@ -190,16 +187,8 @@ public class AddToExecutionQueue extends HttpServlet {
 
         // Part 3 : Put these tests in the queue in memory
         try {
-            executionThreadService.searchExecutionInQueueTableAndTriggerExecution();
+            executionThreadService.executeNextInQueue();
         } catch (CerberusException ex) {
-            String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-            LOG.warn(errorMessage);
-            errorMessages.add(errorMessage);
-        } catch (UnsupportedEncodingException ex) {
-            String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-            LOG.warn(errorMessage);
-            errorMessages.add(errorMessage);
-        } catch (InterruptedException ex) {
             String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
             LOG.warn(errorMessage);
             errorMessages.add(errorMessage);

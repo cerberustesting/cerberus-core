@@ -191,25 +191,33 @@ function viewEntryClick(param, value) {
 
 function removeEntryClick(param, value) {
     var doc = new Doc();
-    showModalConfirmation(function (ev) {
-        var param = $('#confirmationModal #hiddenField1').prop("value");
-        var value = $('#confirmationModal #hiddenField2').prop("value");
-        $.ajax({
-            url: "DeleteInvariant2?idName=" + param + "&value=" + value,
-            async: true,
-            method: "GET",
-            success: function (data) {
-                hideLoaderInModal('#removeInvariantModal');
-                var oTable = $("#invariantsTable").dataTable();
-                oTable.fnDraw(true);
-                $('#removeInvariantModal').modal('hide');
-                showMessage(data);
-            },
-            error: showUnexpectedError
-        });
+    showModalConfirmation(deleteEntryHandlerClick, doc.getDocLabel("page_invariant", "message_remove"), doc.getDocLabel("page_invariant", "message_remove"), param, value, "", "");
+}
 
+function deleteEntryHandlerClick() {
+    var param = $('#confirmationModal #hiddenField1').prop("value");
+    var value = $('#confirmationModal #hiddenField2').prop("value");
+    var jqxhr = $.post("DeleteInvariant2", {idName:param,value:value}, "json");
+    $.when(jqxhr).then(function (data) {
+        console.log(data);
+        console.log(data.messageType);
+        var messageType = getAlertType(data.messageType);
+        console.log(messageType);
+        if (messageType === "success") {
+            //redraw the datatable
+            var oTable = $("#invariantsTable").dataTable();
+            oTable.fnDraw(true);
+            var info = oTable.fnGetData().length;
+
+            if (info === 1) {//page has only one row, then returns to the previous page
+                oTable.fnPageChange('previous');
+            }
+        }
+        //show message in the main page
+        showMessageMainPage(messageType, data.message);
+        //close confirmation window
         $('#confirmationModal').modal('hide');
-    }, doc.getDocLabel("page_invariant", "title_remove"), doc.getDocLabel("page_invariant", "message_remove"), param, value, undefined, undefined);
+    }).fail(handleErrorAjaxAfterTimeout);
 }
 function editEntryModalSaveHandler() {
     clearResponseMessage($('#editInvariantModal'));

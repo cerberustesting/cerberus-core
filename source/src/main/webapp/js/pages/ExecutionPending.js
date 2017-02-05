@@ -66,30 +66,34 @@ function aoColumnsFunc(tableId) {
     var aoColumns = [
         {"data": "id", "sName": "id", "title": doc.getDocLabel("page_testcaseexecutionqueue", "id_col")},
         {"data": "test", "sName": "test", "title": doc.getDocLabel("page_testcaseexecutionqueue", "test_col")},
-        {
-            "data": "testCase",
-            "sName": "testcase",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col")
-        },
+        {"data": "testCase", "sName": "testcase", "title": doc.getDocLabel("page_testcaseexecutionqueue", "testcase_col")},
         {"data": "country", "sName": "country", "title": doc.getDocLabel("page_testcaseexecutionqueue", "country_col")},
-        {
-            "data": "environment",
-            "sName": "environment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col")
-        },
-        {"data": "browser", "sName": "browser", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col")},
+        {"data": "environment", "sName": "environment", "title": doc.getDocLabel("page_testcaseexecutionqueue", "environment_col")},
         {"data": "tag", "sName": "tag", "title": doc.getDocLabel("page_testcaseexecutionqueue", "tag_col")},
-        {
-            "data": "state",
-            "sName": "state",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col")
-        },
-        {
-            "data": "comment",
-            "sName": "comment",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"),
-            "defaultContent": ""
-        }
+        {"data": "requestDate", "sName": "requestDate", "title": doc.getDocLabel("page_testcaseexecutionqueue", "requestDate_col")},
+        {"data": "state", "sName": "state", "title": doc.getDocLabel("page_testcaseexecutionqueue", "state_col")},
+        {"data": "comment", "sName": "comment", "title": doc.getDocLabel("page_testcaseexecutionqueue", "comment_col"), "defaultContent": ""},
+        {"data": "robot", "sName": "robot", "title": doc.getDocLabel("page_testcaseexecutionqueue", "robot_col"), "defaultContent": "", "visible": false},
+        {"data": "robotIP", "sName": "robotIP", "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotIP_col"), "defaultContent": "", "visible": false},
+        {"data": "robotPort", "sName": "robotPort", "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotPort_col"), "defaultContent": "", "visible": false},
+        {"data": "robotPort", "sName": "robotPort", "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotPort_col"), "defaultContent": "", "visible": false},
+        {"data": "browser", "sName": "browser", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col"), "defaultContent": "", "visible": false},
+        {"data": "browserVersion", "sName": "browserVersion", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browserVersion_col"), "defaultContent": "", "visible": false},
+        {"data": "browserVersion", "sName": "browserVersion", "title": doc.getDocLabel("page_testcaseexecutionqueue", "browserVersion_col"), "defaultContent": "", "visible": false},
+        {"data": "platform", "sName": "platform", "title": doc.getDocLabel("page_testcaseexecutionqueue", "platform_col"), "defaultContent": "", "visible": false},
+        {"data": "platform", "sName": "platform", "title": doc.getDocLabel("page_testcaseexecutionqueue", "platform_col"), "defaultContent": "", "visible": false},
+        {"data": "manualExecution", "sName": "manualExecution", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualExecution_col"), "defaultContent": "", "visible": false},
+        {"data": "manualURL", "sName": "manualURL", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualURL_col"), "defaultContent": "", "visible": false},
+        {"data": "manualHost", "sName": "manualHost", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualHost_col"), "defaultContent": "", "visible": false},
+        {"data": "manualContextRoot", "sName": "manualContextRoot", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualContextRoot_col"), "defaultContent": "", "visible": false},
+        {"data": "manualLoginRelativeURL", "sName": "manualLoginRelativeURL", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualLoginRelativeURL_col"), "defaultContent": "", "visible": false},
+        {"data": "manualEnvData", "sName": "manualEnvData", "title": doc.getDocLabel("page_testcaseexecutionqueue", "manualEnvData_col"), "defaultContent": "", "visible": false},
+        {"data": "screenshot", "sName": "screenshot", "title": doc.getDocLabel("page_testcaseexecutionqueue", "screenshot_col"), "defaultContent": "", "visible": false},
+        {"data": "pageSource", "sName": "pageSource", "title": doc.getDocLabel("page_testcaseexecutionqueue", "pageSource_col"), "defaultContent": "", "visible": false},
+        {"data": "seleniumLog", "sName": "seleniumLog", "title": doc.getDocLabel("page_testcaseexecutionqueue", "seleniumLog_col"), "defaultContent": "", "visible": false},
+        {"data": "verbose", "sName": "verbose", "title": doc.getDocLabel("page_testcaseexecutionqueue", "verbose_col"), "defaultContent": "", "visible": false},
+        {"data": "retries", "sName": "retries", "title": doc.getDocLabel("page_testcaseexecutionqueue", "retries_col"), "defaultContent": "", "visible": false},
+        {"data": "timeout", "sName": "timeout", "title": doc.getDocLabel("page_testcaseexecutionqueue", "timeout_col"), "defaultContent": "", "visible": false}
     ];
     return aoColumns;
 }

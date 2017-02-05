@@ -17,10 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.threadpool;
+package org.cerberus.engine.entity.threadpool;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -35,7 +38,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Execute a {@link TestCaseExecutionInQueue}
+ *
  * @author bcivel
+ * @author abourdon
  */
 public class ExecutionWorkerThread implements Runnable, Comparable {
 
@@ -85,7 +91,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     public static class Builder {
 
+        public static final String THREAD_NAME_FORMAT = "pool(%s-%s-%s-%s), queued(%d)";
+
         private ExecutionWorkerThread executionWorkerThread;
+
+        private CountryEnvironmentParameters.Key toExecuteKey;
 
         private String cerberusUrl;
 
@@ -95,6 +105,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
         public Builder toExecute(TestCaseExecutionInQueue toExecute) {
             executionWorkerThread.setToExecute(toExecute);
+            return this;
+        }
+
+        public Builder toExecuteKey(CountryEnvironmentParameters.Key toExecuteKey) {
+            this.toExecuteKey = toExecuteKey;
             return this;
         }
 
@@ -117,6 +132,9 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecute() == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the TestCaseExecutionInQueue to execute");
             }
+            if (toExecuteKey == null) {
+                throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the CountryEnvironmentParameters.Key associated to the TestCaseExecutionInQueue to execute");
+            }
             if (cerberusUrl == null) {
                 throw new IllegalStateException("Unable to create a new ExecutionWorkerThread without the Cerberus base URL");
             }
@@ -126,8 +144,19 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             if (executionWorkerThread.getToExecuteTimeout() == 0) {
                 executionWorkerThread.setToExecuteTimeout(DEFAULT_TIMEOUT);
             }
+            executionWorkerThread.setName(getName());
             executionWorkerThread.setToExecuteUrl(getExecutionUrl());
             return executionWorkerThread;
+        }
+
+        private String getName() {
+            return String.format(THREAD_NAME_FORMAT,
+                    toExecuteKey.getSystem(),
+                    toExecuteKey.getApplication(),
+                    toExecuteKey.getCountry(),
+                    toExecuteKey.getEnvironment(),
+                    executionWorkerThread.getToExecute().getId()
+            );
         }
 
         private String getExecutionUrl() {
@@ -188,18 +217,31 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
     }
 
+    private String name;
+
     private TestCaseExecutionInQueue toExecute;
 
+    @JsonIgnore
     private String toExecuteUrl;
 
+    @JsonIgnore
     private int toExecuteTimeout;
 
+    @JsonIgnore
     private ITestCaseExecutionInQueueService inQueueService;
 
     /**
      * Private constructor, use the {@link Builder} instead
      */
     private ExecutionWorkerThread() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    private void setName(final String name) {
+        this.name = name;
     }
 
     public TestCaseExecutionInQueue getToExecute() {
@@ -249,6 +291,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     @Override
     public void run() {
+        Thread.currentThread().setName(getName());
         try {
             if (!runFromQueuedToExecuting()) {
                 LOG.warn("Execution in queue " + toExecute.getId() + " has finished with error");
@@ -288,6 +331,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Request execution of the inner {@link TestCaseExecutionInQueue} to the {@link RunTestCase} servlet
      *
      * @return the execution answer from the {@link RunTestCase} servlet
+     * @throws RunProcessException if an error occurred during request execution
      * @see #run()
      */
     private String runExecution() {
@@ -300,7 +344,14 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
                     .returnContent()
                     .asString();
         } catch (Exception e) {
-            throw new RunProcessException("An unexpected error occurred during test case execution. Check server logs", e);
+            final StringBuilder errorMessage = new StringBuilder("An unexpected error occurred during test case execution: ");
+            if (e instanceof HttpResponseException) {
+                errorMessage.append(String.format("%d (%s)", ((HttpResponseException) e).getStatusCode(), e.getMessage()));
+            } else {
+                errorMessage.append(e.getMessage());
+                errorMessage.append(". Check server logs");
+            }
+            throw new RunProcessException(errorMessage.toString(), e);
         }
     }
 
@@ -310,6 +361,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      * Assume answer has been written following the {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
      *
      * @param answer the {@link RunTestCase}'s answer
+     * @throws RunProcessException if an error occurred if execution was on failure or if answer cannot be parsed
      * @see #run()
      */
     private void runParseAnswer(String answer) {
@@ -342,6 +394,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * Remove the inner execution in queue from the execution in queue table
      *
+     * @throws RunProcessException if an error occurred during execution in queue removal
      * @see #run()
      */
     private void runRemoveExecutionInQueue() {
@@ -356,6 +409,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     public String toString() {
         return "ExecutionWorkerThread{" +
                 "toExecute=" + toExecute +
+                ", name=" + name +
                 ", toExecuteUrl='" + toExecuteUrl + '\'' +
                 ", toExecuteTimeout=" + toExecuteTimeout +
                 '}';

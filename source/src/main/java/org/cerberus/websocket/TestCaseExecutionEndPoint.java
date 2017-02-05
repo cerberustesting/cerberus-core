@@ -49,7 +49,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * {@link ServerEndpoint} to be kept informed about {@link TestCaseExecution} changes
  *
  * @author corentin
- * @author aurel
+ * @author abourdon
  */
 @ServerEndpoint(
         value = "/execution/{execution-id}",
@@ -96,7 +96,7 @@ public class TestCaseExecutionEndPoint {
     /**
      * All open WebSocket sessions, grouped by executions
      */
-    private Lock lock = new ReentrantLock();
+    private Lock mainLock = new ReentrantLock();
     private Map<String, Session> sessions = new HashMap<>();
     private Map<Long, Set<String>> executions = new HashMap<>();
 
@@ -119,22 +119,25 @@ public class TestCaseExecutionEndPoint {
         }
 
         // Check if sending can be done regarding on the last push and allowed period
-        long nbmssincelastpush = new Date().getTime() - execution.getLastWebsocketPush();
-        if ((nbmssincelastpush < execution.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
+        long sinceLastPush = new Date().getTime() - execution.getLastWebsocketPush();
+        if ((sinceLastPush < execution.getCerberus_featureflipping_websocketpushperiod()) && !forcePush) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Not enough elapsed time since the last push for execution " + execution.getId() + " (" + nbmssincelastpush + " < " + execution.getCerberus_featureflipping_websocketpushperiod());
+                LOG.debug("Not enough elapsed time since the last push for execution " + execution.getId() + " (" + sinceLastPush + " < " + execution.getCerberus_featureflipping_websocketpushperiod());
             }
             return;
         }
 
         // Get registered sessions
         Collection<Session> registeredSessions = new ArrayList<>();
-        lock.lock();
-        Set<String> registeredSessionIds = executions.get(execution.getId());
-        if (registeredSessionIds != null) {
-            registeredSessions = Maps.filterKeys(sessions, Predicates.in(registeredSessionIds)).values();
+        mainLock.lock();
+        try {
+            Set<String> registeredSessionIds = executions.get(execution.getId());
+            if (registeredSessionIds != null) {
+                registeredSessions = Maps.filterKeys(sessions, Predicates.in(registeredSessionIds)).values();
+            }
+        } finally {
+            mainLock.unlock();
         }
-        lock.unlock();
 
         // Send the given TestCaseExecution to all registered sessions
         if (LOG.isDebugEnabled()) {
@@ -163,14 +166,17 @@ public class TestCaseExecutionEndPoint {
     public void end(TestCaseExecution execution) {
         // Get the registered sessions to the given TestCaseExecution
         Collection<Session> registeredSessions = new ArrayList<>();
-        lock.lock();
-        Set<String> registeredSessionIds = executions.remove(execution.getId());
-        if (registeredSessionIds != null) {
-            for (String registeredSessionId : registeredSessionIds) {
-                registeredSessions.add(sessions.remove(registeredSessionId));
+        mainLock.lock();
+        try {
+            Set<String> registeredSessionIds = executions.remove(execution.getId());
+            if (registeredSessionIds != null) {
+                for (String registeredSessionId : registeredSessionIds) {
+                    registeredSessions.add(sessions.remove(registeredSessionId));
+                }
             }
+        } finally {
+            mainLock.unlock();
         }
-        lock.unlock();
 
         // Close registered sessions
         if (LOG.isDebugEnabled()) {
@@ -209,15 +215,18 @@ public class TestCaseExecutionEndPoint {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Session " + session.getId() + " opened connection to execution " + executionId);
         }
-        lock.lock();
-        sessions.put(session.getId(), session);
-        Set<String> registeredSessions = executions.get(executionId);
-        if (registeredSessions == null) {
-            registeredSessions = new HashSet<>();
+        mainLock.lock();
+        try {
+            sessions.put(session.getId(), session);
+            Set<String> registeredSessions = executions.get(executionId);
+            if (registeredSessions == null) {
+                registeredSessions = new HashSet<>();
+            }
+            registeredSessions.add(session.getId());
+            executions.put(executionId, registeredSessions);
+        } finally {
+            mainLock.unlock();
         }
-        registeredSessions.add(session.getId());
-        executions.put(executionId, registeredSessions);
-        lock.unlock();
     }
 
     /**
@@ -231,13 +240,16 @@ public class TestCaseExecutionEndPoint {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Session " + session.getId() + " closed connection to execution " + executionId);
         }
-        lock.lock();
-        sessions.remove(session.getId());
-        Set<String> registeredSessions = executions.get(executionId);
-        if (registeredSessions != null) {
-            registeredSessions.remove(session.getId());
+        mainLock.lock();
+        try {
+            sessions.remove(session.getId());
+            Set<String> registeredSessions = executions.get(executionId);
+            if (registeredSessions != null) {
+                registeredSessions.remove(session.getId());
+            }
+        } finally {
+            mainLock.unlock();
         }
-        lock.unlock();
     }
 
     /**
