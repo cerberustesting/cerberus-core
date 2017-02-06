@@ -587,7 +587,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exq.`test` like ? ");
             query.append(" or exq.`testCase` like ? ");
-            query.append(" or exq.`application` like ? ");
+            query.append(" or tec.`application` like ? ");
             query.append(" or tec.`bugid` like ? ");
             query.append(" or tec.`priority` like ? ");
             query.append(" or tec.`description` like ? )");
@@ -1106,14 +1106,14 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         query.append(" select exq.*, tec.*, app.* ");
         query.append(" from testcaseexecutionqueue exq ");
         query.append(" inner join testcase tec on exq.test = tec.test and exq.testcase = tec.testcase ");
-        query.append(" inner join application app on exq.application = app.application ");
+        query.append(" inner join application app on tec.application = app.application ");
 
         String testClause = SqlUtil.generateInClause("exq.test", testList);
         if (!StringUtil.isNullOrEmpty(testClause)) {
             whereClauses.add(testClause);
         }
 
-        String applicationClause = SqlUtil.generateInClause("exq.application", applicationList);
+        String applicationClause = SqlUtil.generateInClause("tec.application", applicationList);
         if (!StringUtil.isNullOrEmpty(applicationClause)) {
             whereClauses.add(applicationClause);
         }
