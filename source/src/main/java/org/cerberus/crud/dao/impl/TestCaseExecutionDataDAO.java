@@ -421,9 +421,9 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.id : " + object.getId());
             LOG.debug("SQL.param.property : " + object.getProperty());
             LOG.debug("SQL.param.index : " + object.getIndex());
-            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
+            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
+            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
+            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -436,10 +436,10 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 preStat.setString(i++, object.getProperty());
                 preStat.setInt(i++, object.getIndex());
                 preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getType());
-                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getRC());
                 preStat.setString(i++, object.getrMessage());
                 preStat.setTimestamp(i++, new Timestamp(object.getStart()));
@@ -551,9 +551,9 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
             LOG.debug("SQL.param.id : " + object.getId());
             LOG.debug("SQL.param.property : " + object.getProperty());
             LOG.debug("SQL.param.index : " + object.getIndex());
-            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 2500), object.getProperty()));
+            LOG.debug("SQL.param.value : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
+            LOG.debug("SQL.param.value1 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
+            LOG.debug("SQL.param.value2 : " + ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue2(), 65000), object.getProperty()));
         }
 
         Connection connection = this.databaseSpring.connect();
@@ -563,12 +563,12 @@ public class TestCaseExecutionDataDAO implements ITestCaseExecutionDataDAO {
                 DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_TIMESTAMP);
                 int i = 1;
                 preStat.setString(i++, object.getDescription());
-                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 3000), object.getProperty()));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue(), 65000), object.getProperty()));
                 preStat.setString(i++, object.getType());
-                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 3000), object.getProperty()));
-                preStat.setString(i++, StringUtil.getLeftString(object.getValue2(), 2500));
+                preStat.setString(i++, ParameterParserUtil.securePassword(StringUtil.getLeftString(object.getValue1(), 65000), object.getProperty()));
+                preStat.setString(i++, StringUtil.getLeftString(object.getValue2(), 65000));
                 preStat.setString(i++, object.getRC());
-                preStat.setString(i++, StringUtil.getLeftString(object.getrMessage(), 3000));
+                preStat.setString(i++, StringUtil.getLeftString(object.getrMessage(), 65000));
                 preStat.setTimestamp(i++, new Timestamp(object.getStart()));
                 preStat.setTimestamp(i++, new Timestamp(object.getEnd()));
                 preStat.setString(i++, df.format(object.getStart()));
