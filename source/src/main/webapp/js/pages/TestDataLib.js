@@ -341,8 +341,8 @@ function addTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURI($("#addTestDataLibModalForm #envelope").text());
-    data.script = encodeURI($("#addTestDataLibModalForm #script").text());
+    data.envelope = encodeURIComponent($("#addTestDataLibModalForm #envelope").text());
+    data.script = encodeURIComponent($("#addTestDataLibModalForm #script").text());
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -507,8 +507,8 @@ function duplicateTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURI($("#duplicateTestDataLibModal #envelope").text());
-    data.script = encodeURI($("#duplicateTestDataLibModal #script").text());
+    data.envelope = encodeURIComponent($("#duplicateTestDataLibModal #envelope").text());
+    data.script = encodeURIComponent($("#duplicateTestDataLibModal #script").text());
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -706,8 +706,8 @@ function editTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURI($("form#editTestLibData #envelope").text());
-    data.script = encodeURI($("form#editTestLibData #script").text());
+    data.envelope = encodeURIComponent($("form#editTestLibData #envelope").text());
+    data.script = encodeURIComponent($("form#editTestLibData #script").text());
 
     $.ajax({
         url: "UpdateTestDataLib",
