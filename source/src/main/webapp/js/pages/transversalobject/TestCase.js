@@ -407,7 +407,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
             appendTestList(testCase.test);
             feedTestCaseField(testCase.test, "editTestCaseModalForm");  // Calculate corresponding testcase value.
         }
-
     }
     if (isEmpty(testCase)) {
         formEdit.find("#status").prop("value", "STANDBY");

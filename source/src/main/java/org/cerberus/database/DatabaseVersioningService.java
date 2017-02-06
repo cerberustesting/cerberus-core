@@ -5865,6 +5865,601 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 956-957
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 958
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add path to picture for appliation object in paramaters
+        //-- ------------------------ 959
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Create Table Application Object
+        //-- ------------------------ 960
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `applicationobject` ("
+                + "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
+                + "  `Application` varchar(200) NOT NULL,"
+                + "  `Object` varchar(150) NOT NULL,"
+                + "  `Value` text,"
+                + "  `ScreenshotFileName` varchar(250) DEFAULT NULL,"
+                + "  `UsrCreated` varchar(45) DEFAULT NULL,"
+                + "  `DateCreated` timestamp NULL DEFAULT NULL,"
+                + "  `UsrModif` varchar(45) DEFAULT NULL,"
+                + "  `DateModif` timestamp NULL DEFAULT NULL,"
+                + "  PRIMARY KEY (`Application`,`Object`),"
+                + "  UNIQUE KEY `ID_UNIQUE` (`ID`),"
+                + "  CONSTRAINT `fk_applicationobject_1` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE"
+                + ") ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation update.
+        //-- ------------------------ 961-962
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // PArameter new ExecutionDetail Page
+        //-- ------------------------ 963
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add tracability fields in testcasestep table.
+        //-- ------------------------ 964
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("DROP COLUMN `last_modified`,");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `inlibrary`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean Steps that use steps that also use step (we remove the link).
+        //-- ------------------------ 965
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV964', useStep='N', UseStepTest='', UseStepTestCase='', UseStepStep=-1 where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcsa.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.useStep='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
+        SQLInstruction.add(SQLS.toString());
+
+        // Clean Steps that are used but not flagged as inLibrary (we flag them as can be used inLibrary='Y').
+        //-- ------------------------ 966
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV965', inLibrary='Y' where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcs1.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.inLibrary!='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation typo.
+        //-- ------------------------ 967
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Control model with conditionOper and ConditionVal1.
+        //-- ------------------------ 968-971
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('CONTROLCONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('CONTROLCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('CONTROLCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'CONTROLCONDITIONOPER', '560', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Resize login.
+        //-- ------------------------ 972-978
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` DROP FOREIGN KEY `FK_usersystem_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` DROP FOREIGN KEY `FK_usergroup_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `user` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usersystem` ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login`) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add path to picture for appliation object in paramaters
+        //-- ------------------------ 979
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append("('','cerberus_featureflipping_activatewebsocketpush','Y','Boolean that enable/disable the websocket push.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Step model with conditionOper and ConditionVal1.
+        //-- ------------------------ 980-983
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('STEPCONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('STEPCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('STEPCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'STEPCONDITIONOPER', '570', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New testcase model with conditionOper and ConditionVal1.
+        //-- ------------------------ 984-990
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `TcActive`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET ConditionOper = 'always' where ConditionOper=''; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
+        SQLS.append("  ('TESTCASECONDITIONOPER', 'always', '100', 'Always.', '')");
+        SQLS.append(", ('TESTCASECONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
+        SQLS.append(", ('TESTCASECONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
+        SQLS.append(", ('INVARIANTPRIVATE', 'TESTCASECONDITIONOPER', '580', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcase SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestep SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepexecution SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionVal1 = '' where ConditionVal1 is null; ");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed skipAction and skipControl and replaced by conditionOper = never.
+        //-- ------------------------ 991-994
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname = 'ACTION' and value = 'skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from invariant where idname = 'CONTROL' and value = 'skipControl';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepaction Set ConditionOper = 'never', Action = 'Unknown' where Action = 'skipAction';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol Set ConditionOper = 'never', Control = 'Unknown' where Control = 'skipControl';");
+        SQLInstruction.add(SQLS.toString());
+
+        // New Appium capabtilities for IOS testing
+        // 995-997
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'udid', '8', 'Unique Device IDentifier (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and `value`='udid') LIMIT 1;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'xcodeConfigFile', '9', 'Path to the Xcode Configuration File containing information about application sign (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and `value`='xcodeConfigFile') LIMIT 1;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'realDeviceLogger', '10', 'Path to the logger for real IOS devices (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and  `value`='realDeviceLogger') LIMIT 1;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Updated Documentation
+        //-- ------------------------ 998
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New ConditionVal2 columns
+        // 999-1009
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcase` SET `ConditionVal2` = '';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` SET `ConditionVal2` = '';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepaction` SET `ConditionVal2` = '';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestepactioncontrol` SET `ConditionVal2` = '';");
+        SQLInstruction.add(SQLS.toString());
+
+        //Update doc - 1010
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Update doc - 1011
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding new condition at all levels
+        // 1012-1015
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTIONCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('STEPCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('CONTROLCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('TESTCASECONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
+        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding FAT Client Application Type
+        // 1016
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('APPLITYPE', 'FAT', '60', 'FAT client application', '', '', '', '')");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding index column on execution step in order to prepare changes for looping steps
+        // 1017-1028
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactionexecution_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution`");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`,");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD CONSTRAINT `FK_testcasestepactioncontrolexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step`, `index` ) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index` ) ON DELETE CASCADE ON UPDATE CASCADE ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step` , `index`) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestep` ");
+        SQLS.append("ADD COLUMN `Loop` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`)  ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("DROP PRIMARY KEY,");
+        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`, `ControlSequence`) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('STEPLOOP', 'onceIfConditionTrue', 100, 'We execute the step once only if the condiion is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'onceIfConditionFalse', 200, 'We execute the step once only if the condiion is false.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'doWhileConditionTrue', 300, 'We execute the step and then execute it again and again as long as condition is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'doWhileConditionFalse', 400, 'We execute the step and then execute it again and again as long as condition is false.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'whileConditionTrueDo', 500, 'We execute the step as long the condition is true.', '', '', '', '')");
+        SQLS.append(",('STEPLOOP', 'whileConditionFalseDo', 600, 'We execute the step as long the condition is false.', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'STEPLOOP', '590', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasestep` SET `Loop` = 'onceIfConditionTrue' WHERE `Loop` = '';");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding Screensize to robot table
+        // 1029
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("ADD COLUMN `screensize` VARCHAR(250) NOT NULL DEFAULT '' AFTER `useragent`;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Adding Screensize to robot table
+        // 1030
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to limit the number of loop operation allowed in loop operation
+        //-- ------------------------ 1031
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_loopstep_max','20','Integer value that correspond to the max number of step loop authorised.<br>This parameter can be configured at the system level.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add poolSize attribute to CountryEnvironmentParameters
+        //-- ------------------------ 1032-1034
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
+        SQLS.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to limit the frequency of the websocket push
+        //-- ------------------------ 1035
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_featureflipping_websocketpushperiod','5000','Integer value that correspond to the nb of ms between every websocket push.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the State column to the TestCaseExecutionQueue table and fill it with default value
+        //-- ------------------------ 1036-1038
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("ADD COLUMN `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `manualexecution`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'WAITING' WHERE `Proceeded` = 0;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'EXECUTING' WHERE `Proceeded` = 1;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding ConditionInit columns in all tables.
+        //-- ------------------------ 1039-1042
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `EnvironmentData` VARCHAR(45) NULL DEFAULT ''  AFTER `Environment`,");
+        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NULL DEFAULT ''  AFTER `screensize`,");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`,");
+        SQLS.append("ADD COLUMN `ConditionVal1` TEXT NULL AFTER `ConditionVal2Init`,");
+        SQLS.append("ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
+        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
+        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the new State column header on the Execution pending page
+        //-- ------------------------ 1043
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the new ManualExecution column header on the Execution pending page
+        //-- ------------------------ 1044
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution`");
+        SQLS.append("ADD COLUMN `ManualExecution` VARCHAR(1) NULL DEFAULT '' AFTER `ConditionVal2`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Document the new 'edittcstep' field from ExecutionDetail page
+        //-- ------------------------ 1045
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to tune the level of the property definition
+        //-- ------------------------ 1046
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_property_countrylevelheritage','N','Boolean that activate the heritage of the property calculation at the country level. if N, a property will be considered as not available on country XXX when it does not exist for XXX and exist for any other country but XXX at testcase level (even if it has been defined at usestep or pretest level for that country XXX). If Y, it will be considered as defined for country XXX as long as it has been defined for that country at testcase, usestep or pretest level.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Document the title field from TestCaseExecution page
+        //-- ------------------------ 1047
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add documentation for Execution Detail page
+        //-- ------------------------ 1048
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Increase the testcaseexecutionqueue's comment column size
+        //-- ------------------------ 1049
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `comment` `comment` TEXT NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the Comment column header documentation
+        //-- ------------------------ 1050
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the loop column in step execution table
+        //-- ------------------------ 1051
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasestepexecution`  ");
+        SQLS.append("ADD COLUMN `loop` VARCHAR(45) NULL DEFAULT '' AFTER `Sort`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add missing columns to ExecutionPending page
+        //-- ------------------------ 1052
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add documentation for button remove on invariant
+        //-- ------------------------ 1053
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Change and add database structure in order to support testing of services (no longuer specific to soap library)
+        //-- ------------------------ 1054-1063
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `soaplibrary` ");
+        SQLS.append("CHANGE COLUMN `Name` `Service` VARCHAR(255) NOT NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Type` `Group` VARCHAR(45) NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Method` `Operation` VARCHAR(255) NULL DEFAULT ''  ,");
+        SQLS.append("CHANGE COLUMN `Envelope` `ServiceRequest` MEDIUMTEXT NULL DEFAULT NULL  , RENAME TO  `appservice` ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("CHANGE COLUMN `Group` `Group` VARCHAR(45) NULL DEFAULT '' AFTER `ParsingAnswer`,");
+        SQLS.append("ADD COLUMN `Application` VARCHAR(200) NULL DEFAULT '' AFTER `Service`,");
+        SQLS.append("ADD COLUMN `Type` VARCHAR(45) NOT NULL DEFAULT ''  AFTER `Application`,");
+        SQLS.append("ADD COLUMN `Method` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Type`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('SRVTYPE', 'SOAP', 100, 'SOAP Service.', '', '', '', '')");
+        SQLS.append(",('SRVTYPE', 'REST', 200, 'REST Service.', '', '', '', '')");
+        SQLS.append(",('SRVMETHOD', 'GET', 100, 'GET http method.', '', '', '', '')");
+        SQLS.append(",('SRVMETHOD', 'POST', 200, 'POST http method.', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'SRVTYPE', '600', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'SRVMETHOD', '610', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `appservice` SET `Type`='SOAP', `application` = null;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ADD INDEX `FK_appservice_01` (`Application` ASC) ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("ADD CONSTRAINT `FK_appservice_01` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Description`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("update testcasestepaction SET `action` = 'callService' where `action` in ('callSoap','callSoapWithBase');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTION', 'callService', 17000, 'Call Service.', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname` = 'ACTION' and `value` in ('callSoap','callSoapWithBase');");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1063-1065
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -5890,6 +6485,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('application','system','','fr','Système','Un <code class=\\'doc-crbvvoca\\'>système</code> est un groupe d\\'<code class=\\'doc-crbvvoca\\'>applications</code> pour lesquels il y a de temps en temps necessité de faire les changements en même temps.<br> La plupart du temps ces <code class=\\'doc-crbvvoca\\'>applications</code> partagent une même base de donnée et donc une structure de donnée unique.')");
         SQLS.append(",('application','type','','en','Type','The Type of the <code class=\\'doc-crbvvoca\\'>application</code> define whether the <code class=\\'doc-crbvvoca\\'>application</code> is a GUI, a Service or a Batch Treatment.<br>An automated <code class=\\'doc-crbvvoca\\'>testcase</code> based on a GUI <code class=\\'doc-crbvvoca\\'>application</code> will require a selenium server to execute.')");
         SQLS.append(",('application','type','','fr','Type','Le type de l\\'<code class=\\'doc-crbvvoca\\'>application</code> defini si l\\'<code class=\\'doc-crbvvoca\\'>application</code> est une interface graphique (GUI), un fournisseur de Service ou un traitement batch.<br>Un <code class=\\'doc-crbvvoca\\'>cas de test</code> automatisé basé sur une <code class=\\'doc-crbvvoca\\'>application</code> de type GUI necessitera un serveur Selenium pour s\\'executer.')");
+        SQLS.append(",('appservice','application','','en','Application','')");
+        SQLS.append(",('appservice','application','','fr','Application','')");
+        SQLS.append(",('appservice','description','','en','Description','')");
+        SQLS.append(",('appservice','description','','fr','Description','')");
+        SQLS.append(",('appservice','group','','en','Group','')");
+        SQLS.append(",('appservice','group','','fr','Group','')");
+        SQLS.append(",('appservice','method','','en','Method','')");
+        SQLS.append(",('appservice','method','','fr','Méthode','')");
+        SQLS.append(",('appservice','operation','','en','Operation','')");
+        SQLS.append(",('appservice','operation','','fr','Operation','')");
+        SQLS.append(",('appservice','service','','en','Service','')");
+        SQLS.append(",('appservice','service','','fr','Service','')");
+        SQLS.append(",('appservice','servicePath','','en','Service Path','')");
+        SQLS.append(",('appservice','servicePath','','fr','Chemin du service','')");
+        SQLS.append(",('appservice','srvRequest','','en','Request','')");
+        SQLS.append(",('appservice','srvRequest','','fr','Request','')");
+        SQLS.append(",('appservice','type','','en','Type','')");
+        SQLS.append(",('appservice','type','','fr','Type','')");
         SQLS.append(",('batchinvariant','Batch','','en','Batch','')");
         SQLS.append(",('batchinvariant','Batch','','fr','Batch','')");
         SQLS.append(",('batchinvariant','Description','','en','Description','Description of the batch.')");
@@ -5952,7 +6565,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('buildrevisionparameters','TicketIDFixed','','fr','ID du Ticket associé','ID du ticket dont la release est associée.')");
         SQLS.append(",('countryenvdeploytype','JenkinsAgent','','en','Jenkins Agent','')");
         SQLS.append(",('countryenvdeploytype','JenkinsAgent','','fr','Agent Jenkins','')");
-        SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','en','JDBC Ressource','This is the name of the JDBC Ressource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Ressource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Ressource</th><th class=\\'ex\\'>Application server Ressource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
+        SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','en','JDBC Resource','This is the name of the JDBC Resource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Resource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Resource</th><th class=\\'ex\\'>Application server Resource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
         SQLS.append(",('countryenvironmentdatabase','ConnectionPoolName','','fr','Ressource JDBC','Nom de la ressource JDBC utilisée pour se connecter à la <code class=\\'doc-crbvvoca\\'>base de donnée</code> correspondant au <code class=\\'doc-crbvvoca\\'>pays</code> / <code class=\\'doc-crbvvoca\\'>environnement</code>.<br>La ressource JDBC (préfixée par <code class=\\'doc-fixed\\'>jdbc/</code> ) doit être configuré dans le serveur l\\'application qui héberge Cerberus et associé à un pool de connexion.<br><br>Exemple :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Ressource</th><th class=\\'ex\\'>Application server Ressource name</th><tr>\n<td class=\\'ex\\'>MyConnection</td>\n<td class=\\'ex\\'>jdbc/MyConnection</td>\n</tr></table>\n</doc>')");
         SQLS.append(",('countryenvironmentdatabase','Database','','en','Database','')");
         SQLS.append(",('countryenvironmentdatabase','Database','','fr','Base de donnée','')");
@@ -5960,6 +6573,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('countryenvironmentparameters','domain','','fr','Domaine','Domaine Internet de l\\'application. Peut être utilisé pendant l\\'execution des tests avec la variable %SYS_APP_DOMAIN%.')");
         SQLS.append(",('countryenvironmentparameters','IP','','en','Host','Ressource location of the application.<br><br>Examples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>NB : If the protocol is not specified, the default selected is http://<br>In case you want to test an https:// application, this ressource location must begin by https://.')");
         SQLS.append(",('countryenvironmentparameters','IP','','fr','Hote','Chemin de l\\'application.<br><br>Exemples :<br><doc class=\"examples\"><code class=\\'doc-url\\'>www.domain.com</code><br><code class=\\'doc-url\\'>192.168.1.1:80</code><br><code class=\\'doc-url\\'>user:password@www.domain.com:8080</code><br><code class=\\'doc-url\\'>user:password@192.168.1.1:80</code><br><code class=\\'doc-url\\'>http://www.laredoute.fr</code><br><code class=\\'doc-url\\'>https://www.facebook.com</code><br></doc><br>NB : Si le protocole n\\'est pas specifié, le protocople par default utilisé est http://<br>En cas de test d\\'une application en https, il faut commencer l\\'URL par https://.')");
+        SQLS.append(",('countryenvironmentparameters','poolSize','','en','Pool size','Maximal number of testcases that can be executed in same time by a single Cerberus instance')");
+        SQLS.append(",('countryenvironmentparameters','poolSize','','fr','Parallelisation','Nombre maximal, par instances Cerberus, de tests pouvant être exécutés en parallèle')");
         SQLS.append(",('countryenvironmentparameters','URL','','en','Context Root','Root URL used to access the application. Equivalent to context root.<br>This path will always be added to the information specified in the testcase.<br><br>Example :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>When opening <code class=\\'doc-url\\'>login.jsp</code>, Cerberus will open <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
         SQLS.append(",('countryenvironmentparameters','URL','','fr','Context Root','URL Racine de l\\'application. Equivalent du Context Root.<br>Ce chemin sera systematiquement ajouté aux chemin specifiés dans chaque cas de test.<br><br>Exemple :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>URL</th><th class=\\'ex\\'>Description</th><tr><td class=\\'ex\\'><code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/</code></td><td class=\\'ex\\'>Lorsque l\\'on ouvrira <code class=\\'doc-url\\'>login.jsp</code>, Cerberus ouvrira  <code class=\\'doc-url\\'>/Cerberus-1.0.1-SNAPSHOT/login.jsp</code> URL</td></tr></table></doc>')");
         SQLS.append(",('countryenvironmentparameters','URLLOGIN','','en','Login URL','Path to login page. This path is used only when calling the <code class=\\'doc-action\\'>openUrlLogin</code> Action.')");
@@ -6144,6 +6759,72 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_application','tabEnv','','fr','Environnements','')");
         SQLS.append(",('page_application','title','','en','APPLICATION','This page can be used to manage the applications.')");
         SQLS.append(",('page_application','title','','fr','APPLICATION','Cette page permet de gérer et créer des applications.')");
+        SQLS.append(",('page_applicationObject','Application','','en','Application','')");
+        SQLS.append(",('page_applicationObject','Application','','fr','Application','')");
+        SQLS.append(",('page_applicationObject','applicationfield','','en','Application','')");
+        SQLS.append(",('page_applicationObject','applicationfield','','fr','Application','')");
+        SQLS.append(",('page_applicationObject','button_add','','en','Add','')");
+        SQLS.append(",('page_applicationObject','button_add','','fr','Ajouter','')");
+        SQLS.append(",('page_applicationObject','button_close','','en','Close','')");
+        SQLS.append(",('page_applicationObject','button_close','','fr','Fermer','')");
+        SQLS.append(",('page_applicationObject','button_create','','en','Create an Application Object','')");
+        SQLS.append(",('page_applicationObject','button_create','','fr','Créer un objet d application','')");
+        SQLS.append(",('page_applicationObject','button_delete','','en','Delete Object','')");
+        SQLS.append(",('page_applicationObject','button_delete','','fr','Supprimer l objet','')");
+        SQLS.append(",('page_applicationObject','button_edit','','en','Edit Object','')");
+        SQLS.append(",('page_applicationObject','button_edit','','fr','Modifier l objet','')");
+        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','en','Create Application Object','')");
+        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d application','')");
+        SQLS.append(",('page_applicationObject','DateCreated','','en','Creation date','')");
+        SQLS.append(",('page_applicationObject','DateCreated','','fr','Date de création','')");
+        SQLS.append(",('page_applicationObject','DateModif','','en','Last modification date','')");
+        SQLS.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','')");
+        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','')");
+        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','fr','Modifier un objet d application','')");
+        SQLS.append(",('page_applicationObject','message_delete','','en','Are you sure?','')");
+        SQLS.append(",('page_applicationObject','message_delete','','fr','Etes-vous sûrs?','')");
+        SQLS.append(",('page_applicationObject','Object','','en','Object','')");
+        SQLS.append(",('page_applicationObject','Object','','fr','Objet','')");
+        SQLS.append(",('page_applicationObject','objectfield','','en','Object','')");
+        SQLS.append(",('page_applicationObject','objectfield','','fr','Objet','')");
+        SQLS.append(",('page_applicationObject','ScreenshotFileName','','en','File Name','')");
+        SQLS.append(",('page_applicationObject','ScreenshotFileName','','fr','Nom du fichier','')");
+        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','en','FileName','')");
+        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','fr','Nom du ficher','')");
+        SQLS.append(",('page_applicationObject','title','','en','Application Object','')");
+        SQLS.append(",('page_applicationObject','title','','fr','Objet d application','')");
+        SQLS.append(",('page_applicationObject','UsrCreated','','en','Creator','')");
+        SQLS.append(",('page_applicationObject','UsrCreated','','fr','Createur','')");
+        SQLS.append(",('page_applicationObject','UsrModif','','en','Last Modificator','')");
+        SQLS.append(",('page_applicationObject','UsrModif','','fr','Dernier Editeur','')");
+        SQLS.append(",('page_applicationObject','Value','','en','Value','')");
+        SQLS.append(",('page_applicationObject','Value','','fr','Valeur','')");
+        SQLS.append(",('page_applicationObject','valuefield','','en','Value','')");
+        SQLS.append(",('page_applicationObject','valuefield','','fr','Valeur','')");
+        SQLS.append(",('page_appservice','addSoapLibrary_field','','en','Add Service','')");
+        SQLS.append(",('page_appservice','addSoapLibrary_field','','fr','Ajouter un Service','')");
+        SQLS.append(",('page_appservice','allSoapLibrarys','','en','Service Library','')");
+        SQLS.append(",('page_appservice','allSoapLibrarys','','fr','Bibliotheque de Service','')");
+        SQLS.append(",('page_appservice','button_col','','en','Actions','')");
+        SQLS.append(",('page_appservice','button_col','','fr','Actions','')");
+        SQLS.append(",('page_appservice','button_create','','en','Add Service','')");
+        SQLS.append(",('page_appservice','button_create','','fr','Ajouter un Service','')");
+        SQLS.append(",('page_appservice','button_duplicate','','en','Duplicate Service',NULL)");
+        SQLS.append(",('page_appservice','button_duplicate','','fr','Dupliquer Service',NULL)");
+        SQLS.append(",('page_appservice','button_edit','','en','Edit Service','')");
+        SQLS.append(",('page_appservice','button_edit','','fr','Editer le Service','')");
+        SQLS.append(",('page_appservice','button_remove','','en','Remove Service','')");
+        SQLS.append(",('page_appservice','button_remove','','fr','Supprimer le Service','')");
+        SQLS.append(",('page_appservice','close_btn','','en','Close','')");
+        SQLS.append(",('page_appservice','close_btn','','fr','Fermer','')");
+        SQLS.append(",('page_appservice','editSoapLibrary_field','','en','Edit Service','')");
+        SQLS.append(",('page_appservice','editSoapLibrary_field','','fr','Editer le Service','')");
+        SQLS.append(",('page_appservice','message_remove','','en','Are you sure to delete the service \\'%SERVICE%\\' ?','')");
+        SQLS.append(",('page_appservice','message_remove','','fr','Êtes-vous sûrs de supprimer le service \\'%SERVICE%\\' ?','')");
+        SQLS.append(",('page_appservice','save_btn','','en','Save Service','')");
+        SQLS.append(",('page_appservice','save_btn','','fr','Sauvegarder le Service','')");
+        SQLS.append(",('page_appservice','title_remove','','en','Remove Service','')");
+        SQLS.append(",('page_appservice','title_remove','','fr','Supprimer le Service','')");
         SQLS.append(",('page_batchinvariant','button_create','','en','Create new Batch','')");
         SQLS.append(",('page_batchinvariant','button_create','','fr','Créer un nouveau Batch','')");
         SQLS.append(",('page_batchinvariant','button_delete','','en','Delete Batch','')");
@@ -6278,9 +6959,111 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_environment','title','','fr','ENVIRONNEMENT','Cette page permet de gérer et créer des environnements.')");
         SQLS.append(",('page_environment','to','','en','To','')");
         SQLS.append(",('page_environment','to','','fr','Destinataire','')");
+        SQLS.append(",('page_executiondetail','action','','en','Action','')");
+        SQLS.append(",('page_executiondetail','action','','fr','Action','')");
+        SQLS.append(",('page_executiondetail','application','','en','Application','')");
+        SQLS.append(",('page_executiondetail','application','','fr','Application','')");
+        SQLS.append(",('page_executiondetail','browser','','en','Browser','')");
+        SQLS.append(",('page_executiondetail','browser','','fr','Navigateur','')");
+        SQLS.append(",('page_executiondetail','browserfull','','en','Browser full version','')");
+        SQLS.append(",('page_executiondetail','browserfull','','fr','Navigateur version complete','')");
+        SQLS.append(",('page_executiondetail','build','','en','Build','')");
+        SQLS.append(",('page_executiondetail','build','','fr','Build','')");
         SQLS.append(",('page_executiondetail','buildrevision','','en','BuildRev','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the <code class=\\'doc-crbvvoca\\'>system</code> of the <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_executiondetail','buildrevisionlink','','en','BuildRev Linked','Build and Revision of the <code class=\\'doc-crbvvoca\\'>environment</code> of the linked <code class=\\'doc-crbvvoca\\'>system</code>. The linked systems are defined in the \\'Environment Dependancy\\' section of the <code class=\\'doc-crbvvoca\\'>environment</code> page.')");
+        SQLS.append(",('page_executiondetail','cerberusversion','','en','Cerberus Version','')");
+        SQLS.append(",('page_executiondetail','cerberusversion','','fr','Version de Cerberus','')");
+        SQLS.append(",('page_executiondetail','conditionOper','','en','Condition Operator','')");
+        SQLS.append(",('page_executiondetail','conditionOper','','fr','Condition Opérateur','')");
+        SQLS.append(",('page_executiondetail','conditionVal1','','en','Condition Value1','')");
+        SQLS.append(",('page_executiondetail','conditionVal1','','fr','Condition Value1','')");
+        SQLS.append(",('page_executiondetail','conditionVal1Init','','en','Condition Value1 Initial','')");
+        SQLS.append(",('page_executiondetail','conditionVal1Init','','fr','Condition Value1 Initiale','')");
+        SQLS.append(",('page_executiondetail','conditionVal2','','en','Condition Value2','')");
+        SQLS.append(",('page_executiondetail','conditionVal2','','fr','Condition Value2','')");
+        SQLS.append(",('page_executiondetail','conditionVal2Init','','en','Condition Value2 Initial','')");
+        SQLS.append(",('page_executiondetail','conditionVal2Init','','fr','Condition Value2 Initiale','')");
+        SQLS.append(",('page_executiondetail','controlmessage','','en','Control Message','')");
+        SQLS.append(",('page_executiondetail','controlmessage','','fr','Message du control','')");
+        SQLS.append(",('page_executiondetail','controlstatus','','en','Control Status','')");
+        SQLS.append(",('page_executiondetail','controlstatus','','fr','Status du control','')");
+        SQLS.append(",('page_executiondetail','control_type','','en','Control Type','')");
+        SQLS.append(",('page_executiondetail','control_type','','fr','Type de Control','')");
+        SQLS.append(",('page_executiondetail','country','','en','Country','')");
+        SQLS.append(",('page_executiondetail','country','','fr','Pays','')");
+        SQLS.append(",('page_executiondetail','description','','en','Description','')");
+        SQLS.append(",('page_executiondetail','description','','fr','Description','')");
+        SQLS.append(",('page_executiondetail','edittc','','en','Edit Test Case','')");
+        SQLS.append(",('page_executiondetail','edittc','','fr','Modifier le Cas de Test','')");
+        SQLS.append(",('page_executiondetail','edittcstep','','en','Edit Test Case from the current Step','')");
+        SQLS.append(",('page_executiondetail','edittcstep','','fr','Editer le Cas de Test à partir de l\\'Etape courante','')");
+        SQLS.append(",('page_executiondetail','end','','en','End','')");
+        SQLS.append(",('page_executiondetail','end','','fr','Fin','')");
+        SQLS.append(",('page_executiondetail','environment','','en','Environment','')");
+        SQLS.append(",('page_executiondetail','environment','','fr','Environement','')");
+        SQLS.append(",('page_executiondetail','executor','','en','Executor','')");
+        SQLS.append(",('page_executiondetail','executor','','fr','Executeur','')");
+        SQLS.append(",('page_executiondetail','fatal','','en','Fatal','')");
+        SQLS.append(",('page_executiondetail','fatal','','fr','Fatal','')");
+        SQLS.append(",('page_executiondetail','finished','','en','Finished','')");
+        SQLS.append(",('page_executiondetail','finished','','fr','Fini','')");
+        SQLS.append(",('page_executiondetail','forceexec','','en','Force Execution','')");
+        SQLS.append(",('page_executiondetail','forceexec','','fr','Forcer L\\'Execution','')");
+        SQLS.append(",('page_executiondetail','id','','en','ID','')");
+        SQLS.append(",('page_executiondetail','id','','fr','ID','')");
+        SQLS.append(",('page_executiondetail','ip','','en','IP','')");
+        SQLS.append(",('page_executiondetail','ip','','fr','IP','')");
+        SQLS.append(",('page_executiondetail','lastexecution','','en','Last Executions','')");
+        SQLS.append(",('page_executiondetail','lastexecution','','fr','Dernières exécutions','')");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','')");
+        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','')");
+        SQLS.append(",('page_executiondetail','more_detail','','en','More details','')");
+        SQLS.append(",('page_executiondetail','more_detail','','fr','Plus de détails','')");
+        SQLS.append(",('page_executiondetail','platform','','en','Platform','')");
+        SQLS.append(",('page_executiondetail','platform','','fr','Platforme','')");
+        SQLS.append(",('page_executiondetail','port','','en','Port','')");
+        SQLS.append(",('page_executiondetail','port','','fr','Port','')");
+        SQLS.append(",('page_executiondetail','return_code','','en','Return Code','')");
+        SQLS.append(",('page_executiondetail','return_code','','fr','Code de retour','')");
+        SQLS.append(",('page_executiondetail','return_message','','en','Return Message','')");
+        SQLS.append(",('page_executiondetail','return_message','','fr','Message de retour','')");
+        SQLS.append(",('page_executiondetail','revision','','en','Revision','')");
+        SQLS.append(",('page_executiondetail','revision','','fr','Revision','')");
+        SQLS.append(",('page_executiondetail','runtc','','en','Run this Test Case again','')");
+        SQLS.append(",('page_executiondetail','runtc','','fr','Executer ce Cas de Test encore','')");
+        SQLS.append(",('page_executiondetail','screensize','','en','Screen Size','')");
+        SQLS.append(",('page_executiondetail','screensize','','fr','Taille de l ecran','')");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','en','See Execution By Tag','')");
+        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Voir l execution par Tag','')");
         SQLS.append(",('page_executiondetail','SeleniumLog','','en','Media Files','Link to the media execution files (ex : selenium logs).')");
+        SQLS.append(",('page_executiondetail','sort','','en','Sort','')");
+        SQLS.append(",('page_executiondetail','sort','','fr','Ordre','')");
+        SQLS.append(",('page_executiondetail','start','','en','Start','')");
+        SQLS.append(",('page_executiondetail','start','','fr','Début','')");
+        SQLS.append(",('page_executiondetail','status','','en','Status','')");
+        SQLS.append(",('page_executiondetail','status','','fr','Status','')");
+        SQLS.append(",('page_executiondetail','steps','','en','Steps','')");
+        SQLS.append(",('page_executiondetail','steps','','fr','Etapes','')");
+        SQLS.append(",('page_executiondetail','tag','','en','Tag','')");
+        SQLS.append(",('page_executiondetail','tag','','fr','Tag','')");
+        SQLS.append(",('page_executiondetail','time','','en','Time','')");
+        SQLS.append(",('page_executiondetail','time','','fr','Temps','')");
+        SQLS.append(",('page_executiondetail','title','','en','Execution Detail','')");
+        SQLS.append(",('page_executiondetail','title','','fr','Detail de l Execution','')");
+        SQLS.append(",('page_executiondetail','url','','en','URL','')");
+        SQLS.append(",('page_executiondetail','url','','fr','URL','')");
+        SQLS.append(",('page_executiondetail','value1','','en','Value 1','')");
+        SQLS.append(",('page_executiondetail','value1','','fr','Valeur 1','')");
+        SQLS.append(",('page_executiondetail','value1init','','en','Value 1 Initial','')");
+        SQLS.append(",('page_executiondetail','value1init','','fr','Valeur 1 Initiale','')");
+        SQLS.append(",('page_executiondetail','value2','','en','Value 2','')");
+        SQLS.append(",('page_executiondetail','value2','','fr','Valeur 2','')");
+        SQLS.append(",('page_executiondetail','value2init','','en','Value 2 Initial','')");
+        SQLS.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','')");
+        SQLS.append(",('page_executiondetail','verbose','','en','Verbose','')");
+        SQLS.append(",('page_executiondetail','verbose','','fr','Loquacité','')");
+        SQLS.append(",('page_executiondetail','version','','en','Version','')");
+        SQLS.append(",('page_executiondetail','version','','fr','Version','')");
         SQLS.append(",('page_exeperbuildrevision','Days','','en','Days','Number of days with this revision for this build.')");
         SQLS.append(",('page_exeperbuildrevision','NbAPP','','en','Nb Appli','Number of distinct <code class=\\'doc-crbvvoca\\'>application</code> that has been tested.')");
         SQLS.append(",('page_exeperbuildrevision','NbExecution','','en','Exec','Number of <code class=\\'doc-crbvvoca\\'>test case</code> execution.')");
@@ -6291,6 +7074,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_exeperbuildrevision','OK_percentage','','en','%OK','Number of OK / number of execution')");
         SQLS.append(",('page_exeperbuildrevision','RegressionExecutionStatus','','en','Regression Execution Status','This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)')");
         SQLS.append(",('page_exeperbuildrevision','RegressionExecutionStatus1','','en','Regression Execution Status on External Applications','This section report the execution statistics of regression testcases by the last sprint / Revision.<br>Criterias :<br>- On the applications that <b>does not</b> belong to current system.<br>- Test cases had to be in WORKING status at the time of the execution.<br>- Monitoring test cases are excluded<br>  (ie not <i>\\'Performance Monitor\\'</i> and not <i>\\'Business Activity Monitor\\'</i> and not <i>\\'Data Integrity Monitor\\'</i>)')");
+        SQLS.append(",('page_global','beta_message','','en','This page is in beta, some features may not be available or fully functional.','')");
+        SQLS.append(",('page_global','beta_message','','fr','Cette page est en beta, certaines fonctionnalités peuvent être indisponnible ou non complètes.','')");
         SQLS.append(",('page_global','btn_add','','en','Add','')");
         SQLS.append(",('page_global','btn_add','','fr','Ajouter','')");
         SQLS.append(",('page_global','btn_cancel','','en','Cancel','')");
@@ -6333,6 +7118,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','lbl_all','','fr','Tous','')");
         SQLS.append(",('page_global','message_delete','','en','Do you want to delete <b>\\'%ENTRY%\\'</b> %TABLE% ?','')");
         SQLS.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','')");
+        SQLS.append(",('page_global','old_page','','en','Old Page','')");
+        SQLS.append(",('page_global','old_page','','fr','Ancienne Page','')");
         SQLS.append(",('page_global','processing','','en','Processing…','')");
         SQLS.append(",('page_global','processing','','fr','Traitement en cours...','')");
         SQLS.append(",('page_global','tooltip_clearfilter','','en','Clear filters applied','')");
@@ -6357,12 +7144,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','tooltip_showHideColumns','','fr','Afficher/cacher des colonnes','')");
         SQLS.append(",('page_global','unexpected_error_message','','en','Unable to perform the task. An unexpected error has happened!','')");
         SQLS.append(",('page_global','unexpected_error_message','','fr','Impossible de finaliser l\\'operation. Une erreur inattendue est survenue','')");
+        SQLS.append(",('page_global','warning','','en','Warning','')");
+        SQLS.append(",('page_global','warning','','fr','Attention','')");
         SQLS.append(",('page_header','logout','','en','Logout','')");
         SQLS.append(",('page_header','logout','','fr','Déconnexion','')");
         SQLS.append(",('page_header','menuAdmin','','en','Administration','')");
         SQLS.append(",('page_header','menuAdmin','','fr','Administration','')");
+        SQLS.append(",('page_header','menuApplicationObjects','','en','Application Object','')");
+        SQLS.append(",('page_header','menuApplicationObjects','','fr','Objet d application','')");
         SQLS.append(",('page_header','menuApplications','','en','Application','')");
         SQLS.append(",('page_header','menuApplications','','fr','Application','')");
+        SQLS.append(",('page_header','menuAppService','','en','Service Library','')");
+        SQLS.append(",('page_header','menuAppService','','fr','Bibliothèque de Service','')");
         SQLS.append(",('page_header','menuBatchInvariant','','en','Batch','')");
         SQLS.append(",('page_header','menuBatchInvariant','','fr','Batch','')");
         SQLS.append(",('page_header','menuBuildContent','','en','Build Content','')");
@@ -6417,6 +7210,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuReportingExecutionByTag','','fr','Rapport d\\'Execution par Tag','')");
         SQLS.append(",('page_header','menuReportingExecutionDetail','','en','Execution Detail','')");
         SQLS.append(",('page_header','menuReportingExecutionDetail','','fr','Détails d\\'Execution','')");
+        SQLS.append(",('page_header','menuReportingExecutionList','','en','Execution Report','')");
+        SQLS.append(",('page_header','menuReportingExecutionList','','fr','Rapport d\\'Execution','')");
         SQLS.append(",('page_header','menuReportingExecutionStatus','','en','Execution Status','')");
         SQLS.append(",('page_header','menuReportingExecutionStatus','','fr','Etats d\\'Execution','')");
         SQLS.append(",('page_header','menuReportingExecutionThreadMonitoring','','en','Cerberus Monitoring','')");
@@ -6437,8 +7232,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuRunTestTriggerBatchExecution','','fr','Executer plusieurs Cas de Test','')");
         SQLS.append(",('page_header','menuSearchTestCase','','en','Search TestCase','')");
         SQLS.append(",('page_header','menuSearchTestCase','','fr','Rechercher un Cas de Test','')");
-        SQLS.append(",('page_header','menuSoapLibrary','','en','SOAP Library','')");
-        SQLS.append(",('page_header','menuSoapLibrary','','fr','Bibliothèque de WebService SOAP','')");
         SQLS.append(",('page_header','menuSqlLibrary','','en','SQL Library','')");
         SQLS.append(",('page_header','menuSqlLibrary','','fr','Bibliothèque de script SQL','')");
         SQLS.append(",('page_header','menuTest','','en','Test','')");
@@ -6483,6 +7276,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_invariant','button_create','','fr','Créer un Invariant','')");
         SQLS.append(",('page_invariant','button_edit','','en','Edit Invariant','')");
         SQLS.append(",('page_invariant','button_edit','','fr','Editer l Invariant','')");
+        SQLS.append(",('page_invariant','button_remove','','en','Delete Invariant',NULL)");
+        SQLS.append(",('page_invariant','button_remove','','fr','Supprimer l\\'Invariant',NULL)");
         SQLS.append(",('page_invariant','description','','en','Description','')");
         SQLS.append(",('page_invariant','description','','fr','Description','')");
         SQLS.append(",('page_invariant','editinvariant_field','','en','Edit Invariant','')");
@@ -6597,6 +7392,136 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_robot','button_edit','','fr','Modifier le Robot','')");
         SQLS.append(",('page_robot','title','','en','ROBOT','This page can be used in order to manage the robots.')");
         SQLS.append(",('page_robot','title','','fr','ROBOT','Cette page permet de gérer et créer des Robots.')");
+        SQLS.append(",('page_runtest','addtoqueue','','en','Add to queue','')");
+        SQLS.append(",('page_runtest','addtoqueue','','fr','Ajouter à la liste','')");
+        SQLS.append(",('page_runtest','addtoqueueandrun','','en','Add to queue and run','')");
+        SQLS.append(",('page_runtest','addtoqueueandrun','','fr','Ajouter à la liste et executer','')");
+        SQLS.append(",('page_runtest','application','','en','Application','')");
+        SQLS.append(",('page_runtest','application','','fr','Application','')");
+        SQLS.append(",('page_runtest','automatic','','en','Automatic','')");
+        SQLS.append(",('page_runtest','automatic','','fr','Automatique','')");
+        SQLS.append(",('page_runtest','browser','','en','Browser','')");
+        SQLS.append(",('page_runtest','browser','','fr','Navigateur','')");
+        SQLS.append(",('page_runtest','campaign','','en','Campaign','')");
+        SQLS.append(",('page_runtest','campaign','','fr','Campagne','')");
+        SQLS.append(",('page_runtest','choose_test','','en','Choose Test','')");
+        SQLS.append(",('page_runtest','choose_test','','fr','Sélectionnez vos test','')");
+        SQLS.append(",('page_runtest','countryList','','en','Country List','')");
+        SQLS.append(",('page_runtest','countryList','','fr','Liste de pays','')");
+        SQLS.append(",('page_runtest','creator','','en','Creator','')");
+        SQLS.append(",('page_runtest','creator','','fr','Créateur','')");
+        SQLS.append(",('page_runtest','custom_config','','en','-- Custom Configuration --','')");
+        SQLS.append(",('page_runtest','custom_config','','fr','-- Configuration personnalisée --','')");
+        SQLS.append(",('page_runtest','default','','en','Default','')");
+        SQLS.append(",('page_runtest','default','','fr','Defaut','')");
+        SQLS.append(",('page_runtest','default_full_screen','','en','Default - Full Screen','')");
+        SQLS.append(",('page_runtest','default_full_screen','','fr','Defaut - Plein Ecran','')");
+        SQLS.append(",('page_runtest','empty_queue','','en','The Execution Queue is empty !','')");
+        SQLS.append(",('page_runtest','empty_queue','','fr','La liste d execution est vide !','')");
+        SQLS.append(",('page_runtest','execution_settings','','en','Execution Settings','')");
+        SQLS.append(",('page_runtest','execution_settings','','fr','Paramètres d execution','')");
+        SQLS.append(",('page_runtest','filters','','en','Filters','')");
+        SQLS.append(",('page_runtest','filters','','fr','Filtres','')");
+        SQLS.append(",('page_runtest','group','','en','Group','')");
+        SQLS.append(",('page_runtest','group','','fr','Groupe','')");
+        SQLS.append(",('page_runtest','implementer','','en','Implementer','')");
+        SQLS.append(",('page_runtest','implementer','','fr','Implementeur','')");
+        SQLS.append(",('page_runtest','load','','en','Load','')");
+        SQLS.append(",('page_runtest','load','','fr','Charger','')");
+        SQLS.append(",('page_runtest','manual','','en','Manual','')");
+        SQLS.append(",('page_runtest','manual','','fr','Manuel','')");
+        SQLS.append(",('page_runtest','manual_execution','','en','Manual Execution','')");
+        SQLS.append(",('page_runtest','manual_execution','','fr','Execution Manuelle','')");
+        SQLS.append(",('page_runtest','more_than_one_execution_requested','','en','More than 1 excution and no Tag specified','')");
+        SQLS.append(",('page_runtest','more_than_one_execution_requested','','fr','Plus d une execution séléctionnées et aucun tag n a été spécifié','')");
+        SQLS.append(",('page_runtest','mycontextroot','','en','My Context Root','')");
+        SQLS.append(",('page_runtest','mycontextroot','','fr','Ma racine de contexte','')");
+        SQLS.append(",('page_runtest','myenvdata','','en','My environment data','')");
+        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d environment','')");
+        SQLS.append(",('page_runtest','myhost','','en','My host','')");
+        SQLS.append(",('page_runtest','myhost','','fr','Mon hôte','')");
+        SQLS.append(",('page_runtest','myloginrelativeurl','','en','My login relative url','')");
+        SQLS.append(",('page_runtest','myloginrelativeurl','','fr','Mon url de login relative','')");
+        SQLS.append(",('page_runtest','notValid','','en','Some executions couldn t be added to the queue','')");
+        SQLS.append(",('page_runtest','notValid','','fr','Des executions n ont pas pu être ajoutées à la liste','')");
+        SQLS.append(",('page_runtest','outputformat','','en','Output Format','')");
+        SQLS.append(",('page_runtest','outputformat','','fr','Format de sortie','')");
+        SQLS.append(",('page_runtest','pagesource','','en','Page Source','')");
+        SQLS.append(",('page_runtest','pagesource','','fr','Page Source','')");
+        SQLS.append(",('page_runtest','platform','','en','Platform','')");
+        SQLS.append(",('page_runtest','platform','','fr','Plateforme','')");
+        SQLS.append(",('page_runtest','potential','','en','Potential','')");
+        SQLS.append(",('page_runtest','potential','','fr','Potentiel','')");
+        SQLS.append(",('page_runtest','priority','','en','Priority','')");
+        SQLS.append(",('page_runtest','priority','','fr','Priorité','')");
+        SQLS.append(",('page_runtest','project','','en','Project','')");
+        SQLS.append(",('page_runtest','project','','fr','Projet','')");
+        SQLS.append(",('page_runtest','queue','','en','Queue','')");
+        SQLS.append(",('page_runtest','queue','','fr','Liste','')");
+        SQLS.append(",('page_runtest','reset_queue','','en','Reset queue','')");
+        SQLS.append(",('page_runtest','reset_queue','','fr','Vider la liste','')");
+        SQLS.append(",('page_runtest','retries','','en','Retries','')");
+        SQLS.append(",('page_runtest','retries','','fr','Essais','')");
+        SQLS.append(",('page_runtest','robot_settings','','en','Robot Settings','')");
+        SQLS.append(",('page_runtest','robot_settings','','fr','Paramètre du Robot','')");
+        SQLS.append(",('page_runtest','run','','en','Run','')");
+        SQLS.append(",('page_runtest','run','','fr','Executer','')");
+        SQLS.append(",('page_runtest','saverobotpref','','en','Save Robot Preferencies','')");
+        SQLS.append(",('page_runtest','saverobotpref','','fr','Enregistrer les préférences du robot','')");
+        SQLS.append(",('page_runtest','save_execution_params','','en','Save Execution Parameters','')");
+        SQLS.append(",('page_runtest','save_execution_params','','fr','Sauvegarder les paramètres d execution','')");
+        SQLS.append(",('page_runtest','screenshot','','en','Screenshot','')");
+        SQLS.append(",('page_runtest','screenshot','','fr','Screenshot','')");
+        SQLS.append(",('page_runtest','screensize','','en','Screen size','')");
+        SQLS.append(",('page_runtest','screensize','','fr','Taille d écran','')");
+        SQLS.append(",('page_runtest','selection_type','','en','Selection type','')");
+        SQLS.append(",('page_runtest','selection_type','','fr','Type de selection','')");
+        SQLS.append(",('page_runtest','select_all','','en','Select All','')");
+        SQLS.append(",('page_runtest','select_all','','fr','Tout Sélectionner','')");
+        SQLS.append(",('page_runtest','select_campaign','','en','Select a campaign','')");
+        SQLS.append(",('page_runtest','select_campaign','','fr','Sélectionnez une campagne','')");
+        SQLS.append(",('page_runtest','select_list_test','','en','Select a list of test','')");
+        SQLS.append(",('page_runtest','select_list_test','','fr','Sélectionnez une list de test','')");
+        SQLS.append(",('page_runtest','select_one_country','','en','Select at least one Country !','')");
+        SQLS.append(",('page_runtest','select_one_country','','fr','Sélectionnez au moins un Pays !','')");
+        SQLS.append(",('page_runtest','select_one_env','','en','Select at least one Environment !','')");
+        SQLS.append(",('page_runtest','select_one_env','','fr','Sélectionnez au moins un Environment !','')");
+        SQLS.append(",('page_runtest','select_one_testcase','','en','Select at least one TestCase !','')");
+        SQLS.append(",('page_runtest','select_one_testcase','','fr','Sélectionnez au moins un cas de test !','')");
+        SQLS.append(",('page_runtest','select_robot','','en','Select a robot','')");
+        SQLS.append(",('page_runtest','select_robot','','fr','Sélectionnez un robot','')");
+        SQLS.append(",('page_runtest','seleniumlog','','en','Selenium Log','')");
+        SQLS.append(",('page_runtest','seleniumlog','','fr','Log de Selenium','')");
+        SQLS.append(",('page_runtest','selenium_ip','','en','Selenium Server IP','')");
+        SQLS.append(",('page_runtest','selenium_ip','','fr','IP du serveur Selenium','')");
+        SQLS.append(",('page_runtest','selenium_port','','en','Selenium Server Port','')");
+        SQLS.append(",('page_runtest','selenium_port','','fr','Port du serveur Selenium','')");
+        SQLS.append(",('page_runtest','size','','en','Size','')");
+        SQLS.append(",('page_runtest','size','','fr','Taille','')");
+        SQLS.append(",('page_runtest','status','','en','Status','')");
+        SQLS.append(",('page_runtest','status','','fr','Status','')");
+        SQLS.append(",('page_runtest','synchroneous','','en','Synchroneous','')");
+        SQLS.append(",('page_runtest','synchroneous','','fr','Synchrone','')");
+        SQLS.append(",('page_runtest','tag','','en','Tag','')");
+        SQLS.append(",('page_runtest','tag','','fr','Tag','')");
+        SQLS.append(",('page_runtest','targetrev','','en','Target Revision','')");
+        SQLS.append(",('page_runtest','targetrev','','fr','Révision Cible','')");
+        SQLS.append(",('page_runtest','targetsprint','','en','Target Sprint','')");
+        SQLS.append(",('page_runtest','targetsprint','','fr','Sprint Cible','')");
+        SQLS.append(",('page_runtest','test','','en','Test','')");
+        SQLS.append(",('page_runtest','test','','fr','Test','')");
+        SQLS.append(",('page_runtest','testbattery','','en','Test Battery','')");
+        SQLS.append(",('page_runtest','testbattery','','fr','Batterie de test','')");
+        SQLS.append(",('page_runtest','timeout','','en','Timeout','')");
+        SQLS.append(",('page_runtest','timeout','','fr','Temporisation','')");
+        SQLS.append(",('page_runtest','title','','en','Run Test','')");
+        SQLS.append(",('page_runtest','title','','fr','Executer un test','')");
+        SQLS.append(",('page_runtest','valid','','en','Executions in queue','')");
+        SQLS.append(",('page_runtest','valid','','fr','Executions dans la liste','')");
+        SQLS.append(",('page_runtest','verbose','','en','Verbose','')");
+        SQLS.append(",('page_runtest','verbose','','fr','Loquacité','')");
+        SQLS.append(",('page_runtest','version','','en','Version','')");
+        SQLS.append(",('page_runtest','version','','fr','Version','')");
         SQLS.append(",('page_runtests','Browser','','en','Browser','This is the browser on which the <code class=\\'doc-crbvvoca\\'>test case</code> will be executed. <br><br>Firefox is set as the default browser as it is automatically embed in the selenium Server.<br><br>You can use other browsers IE9, IE10, IE11 and chrome using the drivers associated.<br>Please, read the <i>Example scripts to start your local selenium server</i> for more information')");
         SQLS.append(",('page_runtests','manualExecution','','en','ManualExecution','Manual Execution is the way to execute the <code class=\\'doc-crbvvoca\\'>test case</code>. It could be YES to manually execute all kind of <code class=\\'doc-crbvvoca\\'>test case</code>, or NO to execute if automatically.')");
         SQLS.append(",('page_runtests','outputformat','','en','Output Format','This is the format of the output.<br><br><b>gui</b> : output is a web page. If test can be executed, the output will redirect to the test execution detail page.<br><b>compact</b> : output is plain text in a single line. This is more convenient when the test case is executed in batch mode.<br><b>verbose-txt</b> : output is a plain text with key=value format. This is also for batch mode but when the output needs to be parsed to get detailed information.')");
@@ -6609,60 +7534,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtests','SeleniumServerPort','','en','Selenium Server Port','Selenium Server Port is the port which will be used to run the <code class=\\'doc-crbvvoca\\'>test case</code>.')");
         SQLS.append(",('page_runtests','Synchroneous','','en','Synchroneous','This is parameter to define if user mut be redirected to the reporting during the execution.<br><br>By default, synchroneous will be set to Y, meaning the redirection will be at the end of the execution.')");
         SQLS.append(",('page_runtests','Timeout','','en','Timeout','This is the timeout used for the execution.<br><br>If empty, the default value will be the one set in the parameter table.')");
-        SQLS.append(",('page_soapLibrary','addSoapLibrary_field','','en','Add Library','')");
-        SQLS.append(",('page_soapLibrary','addSoapLibrary_field','','fr','Ajouter une librairie','')");
-        SQLS.append(",('page_soapLibrary','allSoapLibrarys','','en','SOAP Libraries','')");
-        SQLS.append(",('page_soapLibrary','allSoapLibrarys','','fr','Librairies SOAP','')");
-        SQLS.append(",('page_soapLibrary','button_col','','en','Actions','')");
-        SQLS.append(",('page_soapLibrary','button_col','','fr','Actions','')");
-        SQLS.append(",('page_soapLibrary','button_create','','en','Add Library','')");
-        SQLS.append(",('page_soapLibrary','button_create','','fr','Ajouter une librairie','')");
-        SQLS.append(",('page_soapLibrary','button_edit','','en','Edit Library','')");
-        SQLS.append(",('page_soapLibrary','button_edit','','fr','Editer la librairie','')");
-        SQLS.append(",('page_soapLibrary','button_remove','','en','Remove Library','')");
-        SQLS.append(",('page_soapLibrary','button_remove','','fr','Supprimer la librairie','')");
-        SQLS.append(",('page_soapLibrary','close_btn','','en','Close','')");
-        SQLS.append(",('page_soapLibrary','close_btn','','fr','Fermer','')");
-        SQLS.append(",('page_soapLibrary','description_col','','en','Description','')");
-        SQLS.append(",('page_soapLibrary','description_col','','fr','Description','')");
-        SQLS.append(",('page_soapLibrary','description_field','','en','Description','')");
-        SQLS.append(",('page_soapLibrary','description_field','','fr','Description','')");
-        SQLS.append(",('page_soapLibrary','editSoapLibrary_field','','en','Edit Library','')");
-        SQLS.append(",('page_soapLibrary','editSoapLibrary_field','','fr','Editer la librairie','')");
-        SQLS.append(",('page_soapLibrary','envelope_col','','en','Envelope','')");
-        SQLS.append(",('page_soapLibrary','envelope_col','','fr','Enveloppe','')");
-        SQLS.append(",('page_soapLibrary','envelope_field','','en','Envelope','')");
-        SQLS.append(",('page_soapLibrary','envelope_field','','fr','Enveloppe','')");
-        SQLS.append(",('page_soapLibrary','idname_field','','en','Name','')");
-        SQLS.append(",('page_soapLibrary','idname_field','','fr','Nom','')");
-        SQLS.append(",('page_soapLibrary','message_remove','','en','Are you sure?','')");
-        SQLS.append(",('page_soapLibrary','message_remove','','fr','Êtes-vous sûrs?','')");
-        SQLS.append(",('page_soapLibrary','method_col','','en','Method','')");
-        SQLS.append(",('page_soapLibrary','method_col','','fr','Méthode','')");
-        SQLS.append(",('page_soapLibrary','method_field','','en','Method','')");
-        SQLS.append(",('page_soapLibrary','method_field','','fr','Méthode','')");
-        SQLS.append(",('page_soapLibrary','parsinganswer_col','','en','Parsing Answer','')");
-        SQLS.append(",('page_soapLibrary','parsinganswer_col','','fr','Réponse Analysée','')");
-        SQLS.append(",('page_soapLibrary','parsingAnswer_field','','en','Parsing Answer','')");
-        SQLS.append(",('page_soapLibrary','parsingAnswer_field','','fr','Réponse analysée','')");
-        SQLS.append(",('page_soapLibrary','save_btn','','en','Save Library','')");
-        SQLS.append(",('page_soapLibrary','save_btn','','fr','Sauvegarder la librairie','')");
-        SQLS.append(",('page_soapLibrary','servicepath_col','','en','Service Path','')");
-        SQLS.append(",('page_soapLibrary','servicepath_col','','fr','Chemin du service','')");
-        SQLS.append(",('page_soapLibrary','servicePath_field','','en','Service Path','')");
-        SQLS.append(",('page_soapLibrary','servicePath_field','','fr','Chemin du service','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary','','en','SOAP Library','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary','','fr','Librairie SOAP','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary_col','','en','Name','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary_col','','fr','Nom','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary_field','','en','SOAP Librairy','')");
-        SQLS.append(",('page_soapLibrary','soapLibrary_field','','fr','Librairie SOAP','')");
-        SQLS.append(",('page_soapLibrary','title_remove','','en','Remove Library','')");
-        SQLS.append(",('page_soapLibrary','title_remove','','fr','Supprimer la librairie','')");
-        SQLS.append(",('page_soapLibrary','type_col','','en','Type','')");
-        SQLS.append(",('page_soapLibrary','type_col','','fr','Type','')");
-        SQLS.append(",('page_soapLibrary','type_field','','en','Type','')");
-        SQLS.append(",('page_soapLibrary','type_field','','fr','Type','')");
         SQLS.append(",('page_sqlLibrary','addSqlLibrary_field','','en','Add Library','')");
         SQLS.append(",('page_sqlLibrary','addSqlLibrary_field','','fr','Ajouter une librairie','')");
         SQLS.append(",('page_sqlLibrary','allSqlLibrarys','','en','SQL Libraries','')");
@@ -6839,10 +7710,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase','tooltip_step_used','','en','This step is being used by another step(s)!','')");
         SQLS.append(",('page_testcase','txt_property_not_defined','','en','** Property not defined **','')");
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
+        SQLS.append(",('page_testcaseexecution','title','','en','Test Case Execution','')");
+        SQLS.append(",('page_testcaseexecution','title','','fr','Execution des Cas de Test','')");
         SQLS.append(",('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
         SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
         SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
         SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
+        SQLS.append(",('page_testcaseexecutionqueue','comment_col','','en','Comment','')");
+        SQLS.append(",('page_testcaseexecutionqueue','comment_col','','fr','Commentaire','')");
         SQLS.append(",('page_testcaseexecutionqueue','country_col','','en','Country','')");
         SQLS.append(",('page_testcaseexecutionqueue','country_col','','fr','Pays','')");
         SQLS.append(",('page_testcaseexecutionqueue','environment_col','','en','Environment','')");
@@ -6851,6 +7726,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
+        SQLS.append(",('page_testcaseexecutionqueue','state_col','','en','State','')");
+        SQLS.append(",('page_testcaseexecutionqueue','state_col','','fr','Etat','')");
         SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
         SQLS.append(",('page_testcaseexecutionqueue','tag_col','','fr','Tag','')");
         SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','en','Test Case','')");
@@ -6887,6 +7764,110 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist','testCaseParameter','','fr','Parametres du Cas de Test','')");
         SQLS.append(",('page_testcaselist','testInfo','','en','Test Info','')");
         SQLS.append(",('page_testcaselist','testInfo','','fr','Test Info','')");
+        SQLS.append(",('page_testcasescript','action_field','','en','Action : ','')");
+        SQLS.append(",('page_testcasescript','action_field','','fr','Action : ','')");
+        SQLS.append(",('page_testcasescript','add_action','','en','Add Action','')");
+        SQLS.append(",('page_testcasescript','add_action','','fr','Ajouter une Action','')");
+        SQLS.append(",('page_testcasescript','add_step','','en','Add step','')");
+        SQLS.append(",('page_testcasescript','add_step','','fr','Ajouter une Etape','')");
+        SQLS.append(",('page_testcasescript','cant_detach_library','','en','You can t detach this library because it is used in these steps : ','')");
+        SQLS.append(",('page_testcasescript','cant_detach_library','','fr','Vous ne pouvez pas détacher cette librairie car elle est utilisée dans ces étapes : ','')");
+        SQLS.append(",('page_testcasescript','condition_operation_field','','en','Condition Operation : ','')");
+        SQLS.append(",('page_testcasescript','condition_operation_field','','fr','Condition d execution : ','')");
+        SQLS.append(",('page_testcasescript','condition_parameter_field','','en','Condition Parameter : ','')");
+        SQLS.append(",('page_testcasescript','condition_parameter_field','','fr','Paramètre de la condition : ','')");
+        SQLS.append(",('page_testcasescript','control_field','','en','Control : ','')");
+        SQLS.append(",('page_testcasescript','control_field','','fr','Control : ','')");
+        SQLS.append(",('page_testcasescript','db_field','','en','Database : ','')");
+        SQLS.append(",('page_testcasescript','db_field','','fr','Base de donnée : ','')");
+        SQLS.append(",('page_testcasescript','describe_action','','en','Describe Action','')");
+        SQLS.append(",('page_testcasescript','describe_action','','fr','Décrivez cette action','')");
+        SQLS.append(",('page_testcasescript','describe_control','','en','Describe Control','')");
+        SQLS.append(",('page_testcasescript','describe_control','','fr','Décrivez ce control','')");
+        SQLS.append(",('page_testcasescript','description_field','','en','Description : ','')");
+        SQLS.append(",('page_testcasescript','description_field','','fr','Description : ','')");
+        SQLS.append(",('page_testcasescript','edit_testcase','','en','Edit TestCase','')");
+        SQLS.append(",('page_testcasescript','edit_testcase','','fr','Modifier le TestCase','')");
+        SQLS.append(",('page_testcasescript','fatal_field','','en','Fatal :','')");
+        SQLS.append(",('page_testcasescript','fatal_field','','fr','Fatal :','')");
+        SQLS.append(",('page_testcasescript','feed_propertydescription','','en','Feed Property Description','')");
+        SQLS.append(",('page_testcasescript','feed_propertydescription','','fr','Remplissez la description','')");
+        SQLS.append(",('page_testcasescript','feed_propertyname','','en','Feed Property name','')");
+        SQLS.append(",('page_testcasescript','feed_propertyname','','fr','Remplissez le nom de la propriété','')");
+        SQLS.append(",('page_testcasescript','force_execution_field','','en','Force Execution : ','')");
+        SQLS.append(",('page_testcasescript','force_execution_field','','fr','Forcer l execution : ','')");
+        SQLS.append(",('page_testcasescript','imported_from','','en','Imported from','')");
+        SQLS.append(",('page_testcasescript','imported_from','','fr','Importé depuis','')");
+        SQLS.append(",('page_testcasescript','index','','en','Index : ','')");
+        SQLS.append(",('page_testcasescript','index','','fr','Index : ','')");
+        SQLS.append(",('page_testcasescript','length','','en','Length','')");
+        SQLS.append(",('page_testcasescript','length','','fr','Taille','')");
+        SQLS.append(",('page_testcasescript','length_field','','en','Length : ','')");
+        SQLS.append(",('page_testcasescript','length_field','','fr','Taille : ','')");
+        SQLS.append(",('page_testcasescript','manage_prop','','en','Manage Properties','')");
+        SQLS.append(",('page_testcasescript','manage_prop','','fr','Gestion des Propriétés','')");
+        SQLS.append(",('page_testcasescript','nature_field','','en','Nature : ','')");
+        SQLS.append(",('page_testcasescript','nature_field','','fr','Nature : ','')");
+        SQLS.append(",('page_testcasescript','not_application_object','','en','It is not an Application Object','')");
+        SQLS.append(",('page_testcasescript','not_application_object','','fr','Ce n est pas un object de l application','')");
+        SQLS.append(",('page_testcasescript','not_property','','en','It is not a property','')");
+        SQLS.append(",('page_testcasescript','not_property','','fr','Ce n est pas une propriété','')");
+        SQLS.append(",('page_testcasescript','property_field','','en','Property : ','')");
+        SQLS.append(",('page_testcasescript','property_field','','fr','Propriété : ','')");
+        SQLS.append(",('page_testcasescript','rc','','en','Reslut Code :','')");
+        SQLS.append(",('page_testcasescript','rc','','fr','Code de Retour :','')");
+        SQLS.append(",('page_testcasescript','rerun_testcase','','en','Rerun TestCase','')");
+        SQLS.append(",('page_testcasescript','rerun_testcase','','fr','ReExecuter le TestCase','')");
+        SQLS.append(",('page_testcasescript','retrynb','','en','Retry Number :','')");
+        SQLS.append(",('page_testcasescript','retrynb','','fr','Nombre d essais :','')");
+        SQLS.append(",('page_testcasescript','retryperiod','','en','Retry Period :','')");
+        SQLS.append(",('page_testcasescript','retryperiod','','fr','Periode d essai :','')");
+        SQLS.append(",('page_testcasescript','rMessage','','en','Result Message :','')");
+        SQLS.append(",('page_testcasescript','rMessage','','fr','Message de Retour :','')");
+        SQLS.append(",('page_testcasescript','rowlimit_field','','en','Row limit : ','')");
+        SQLS.append(",('page_testcasescript','rowlimit_field','','fr','Nombre de lignes limite : ','')");
+        SQLS.append(",('page_testcasescript','row_limit','','en','Row Limit','')");
+        SQLS.append(",('page_testcasescript','row_limit','','fr','Nombre de lignes limite','')");
+        SQLS.append(",('page_testcasescript','run_old','','en','Old page','')");
+        SQLS.append(",('page_testcasescript','run_old','','fr','Ancienne page','')");
+        SQLS.append(",('page_testcasescript','run_testcase','','en','Run TestCase','')");
+        SQLS.append(",('page_testcasescript','run_testcase','','fr','Executer le TestCase','')");
+        SQLS.append(",('page_testcasescript','save_script','','en','Save','')");
+        SQLS.append(",('page_testcasescript','save_script','','fr','Sauvegarder','')");
+        SQLS.append(",('page_testcasescript','see_lastexec','','en','See last Executions','')");
+        SQLS.append(",('page_testcasescript','see_lastexec','','fr','Dernières Exécutions','')");
+        SQLS.append(",('page_testcasescript','see_logs','','en','Logs','')");
+        SQLS.append(",('page_testcasescript','see_logs','','fr','Logs','')");
+        SQLS.append(",('page_testcasescript','select_test','','en','Select a test','')");
+        SQLS.append(",('page_testcasescript','select_test','','fr','Sélectionnez un test','')");
+        SQLS.append(",('page_testcasescript','select_testcase','','en','Select a TestCase','')");
+        SQLS.append(",('page_testcasescript','select_testcase','','fr','Sélectionnez un TestCase','')");
+        SQLS.append(",('page_testcasescript','steps_title','','en','Steps','')");
+        SQLS.append(",('page_testcasescript','steps_title','','fr','Etapes','')");
+        SQLS.append(",('page_testcasescript','step_condition_operation','','en','Step Condition Operation','')");
+        SQLS.append(",('page_testcasescript','step_condition_operation','','fr','Condition d exécution de l étape','')");
+        SQLS.append(",('page_testcasescript','step_condition_value1','','en','Step Condition Parameter','')");
+        SQLS.append(",('page_testcasescript','step_condition_value1','','fr','Paramètre de condition','')");
+        SQLS.append(",('page_testcasescript','testcasescript_title','','en','Test Case Script','')");
+        SQLS.append(",('page_testcasescript','testcasescript_title','','fr','Script du Test Case','')");
+        SQLS.append(",('page_testcasescript','type_field','','en','Type : ','')");
+        SQLS.append(",('page_testcasescript','type_field','','fr','Type : ','')");
+        SQLS.append(",('page_testcasescript','unlink_useStep','','en','Unlink Used step','')");
+        SQLS.append(",('page_testcasescript','unlink_useStep','','fr','Délier l étape de sa librairie','')");
+        SQLS.append(",('page_testcasescript','unlink_useStep_warning','','en','You are going to unlink this used step. You can t undo this.','')");
+        SQLS.append(",('page_testcasescript','unlink_useStep_warning','','fr','Vous aller délier cette étape de sa librairie. Cette action n est pas annulable','')");
+        SQLS.append(",('page_testcasescript','value1init_field','','en','Value 1 Initial :','')");
+        SQLS.append(",('page_testcasescript','value1init_field','','fr','Valeur 1 Initiale :','')");
+        SQLS.append(",('page_testcasescript','value1_field','','en','Value1 : ','')");
+        SQLS.append(",('page_testcasescript','value1_field','','fr','Value1 : ','')");
+        SQLS.append(",('page_testcasescript','value2init_field','','en','Value 2 Initial :','')");
+        SQLS.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale :','')");
+        SQLS.append(",('page_testcasescript','value2_field','','en','Value2 : ','')");
+        SQLS.append(",('page_testcasescript','value2_field','','fr','Value2 : ','')");
+        SQLS.append(",('page_testcasescript','value_field','','en','Value :','')");
+        SQLS.append(",('page_testcasescript','value_field','','fr','Valeur :','')");
+        SQLS.append(",('page_testcasescript','warning_no_country','','en','There is no country for at least one parameter. If you save it will be destroyed.','')");
+        SQLS.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins un paramètre sans pays. Si vous sauvegardez il sera supprimé.','')");
         SQLS.append(",('page_testcasesearch','text','','en','Text','Insert here the text that will search against the following Fields of every <code class=\\'doc-crbvvoca\\'>test case</code> :<br>- Short Description,<br>- Detailed description / Value Expected,<br>- HowTo<br>- Comment<br><br>NB : Search is case insensitive.')");
         SQLS.append(",('page_testcase_m_addPicture','error_message_empty','','en','The URL value is empty!','')");
         SQLS.append(",('page_testcase_m_addPicture','lbl_feedurl','','en','Feed URL','')");
@@ -7023,6 +8004,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('robot','robot','','fr','Robot','Nom du Robot. Le Robot est le serveur en charge de l\\'execution d\\'un test automatisé. Il permet de lancer une execution de test sans avoir à renseigner l\\'IP, le port, le navigateur ou OS à utiliser.')");
         SQLS.append(",('robot','robotID','','en','Robot ID','Technical identifier of the Robot.')");
         SQLS.append(",('robot','robotID','','fr','ID du Robot','Identifiant technique invariant du Robot.')");
+        SQLS.append(",('robot','screensize','','en','Screen Size','This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the invariant SCREENSIZE that can be configured on Edit Public invariant screen..<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.')");
+        SQLS.append(",('robot','screensize','','fr','Taille d écran','Cette valeur correspond à la taille d\\'écran qui sera utilisé lors de l\\'execution.<br><br>Les valeurs sont définies dans la table d\\'invariant et peuvent être complétées si besoin via la page d\\'invariant.<br>Les valeur doivent être deux entiers séparé par une <b>*</b>.<br><i>Par Example : 1024*768</i><br><br>Pour ajouter de nouvelles valeurs, contactez votre administrateur Cerberus.')");
         SQLS.append(",('robot','useragent','','en','User Agent','User Agent of the robot.')");
         SQLS.append(",('robot','useragent','','fr','User Agent','User Agent du Robot.')");
         SQLS.append(",('robot','version','','en','Version','Brower Version of the robot.')");
@@ -7097,7 +8080,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasecountryproperties','Type','getFromTestData','en','[DEPRECATED] Get a value from Cerberus Test Data.','<code class=\\'doc-fixed\\'>getFromDataLib</code> will allow you to calculate a full object that include a list of string.</br>The return of the object can be used with either of the following syntax : %PROPERTY.subdata% or %PROPERTY(subdata)%.<br>Multiples rows can be retreived and you can access it using the following syntax : %PROPERTY.3.subdata% or %PROPERTY(3)(subdata)%<br>Use the Data library screen in order to configure the data library.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Text.</td></tr><tr><td class=\\'ex\\'>Number of rows the object will retreive. Use %PROPERTY.n.subdata% in order to get the corresponding row.<br>In case not enought dat can be retreive, the property will report a NA status.</td><td class=\\'ex\\'>Size of the string if Nature is STATIC.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Limit the data retreive from the source.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain.STATIC, RANDOM, RANDOMNEW and NOTINUSE can be used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>toto</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>totoPTtiti</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>a5Gx3</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','getFromXML','en','Get a value from an XML file.','<code class=\\'doc-fixed\\'>getFromXml</code> will allow you to get value from an XML file specifying the URL of the file and the xpath to eecute to get the data.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>URL to the Xml file to parse.</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>xpath information to get data.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Not used</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Not used.</td></tr></table></doc><br><br>Examples :<br>Parsing a file www.cerberus-testing.org/test.xml which contains an xml structure with ResponseCode element equals to OK and ResponseValue equals to 12345, it should be configured that way:<br><ResponseCode<doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseCode</td><td class=\\'ex\\'>OK</td></tr><tr><td class=\\'ex\\'>www.cerberus-testing.org/test.xml</td><td class=\\'ex\\'>//ResponseValue</td><td class=\\'ex\\'>12345</td></tr></table></doc>')");
         SQLS.append(",('testcasecountryproperties','Type','text','en','Simple text.','<code class=\\'doc-fixed\\'>text</code> will allow you to calculate a string.</br>Using the Nature, random string can also be calculated.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>DTB</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Value</td><td class=\\'ex\\'>Text.</td></tr><tr><td class=\\'ex\\'>Length</td><td class=\\'ex\\'>Size of the string if Nature is STATIC.</td></tr><tr><td class=\\'ex\\'>RowLimit</td><td class=\\'ex\\'>Not used.</td></tr><tr><td class=\\'ex\\'>Nature</td><td class=\\'ex\\'>Nature to be used for unicity constrain. Only Static and RANDOM (or RANDOMNEW) are used.</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value</th><th class=\\'ex\\'>Nature</th><th class=\\'ex\\'>Length</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>toto</td></tr><tr><td class=\\'ex\\'>toto%SYS_COUNTRY%titi</td><td class=\\'ex\\'>STATIC</td><td class=\\'ex\\'>0</td><td class=\\'ex\\'>totoPTtiti</td></tr><tr><td class=\\'ex\\'>toto</td><td class=\\'ex\\'>RANDOM</td><td class=\\'ex\\'>5</td><td class=\\'ex\\'>a5Gx3</td></tr></table></doc>')");
-        SQLS.append(",('testcasecountryproperties','Value','','en','Value','Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR1%</code></td><td class=\\'ex\\'>VAR1 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR2%</code></td><td class=\\'ex\\'>VAR2 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR3%</code></td><td class=\\'ex\\'>VAR3 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR4%</code></td><td class=\\'ex\\'>VAR4 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TESTCASE%</code></td><td class=\\'ex\\'>TestCase</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTORAGEURL%</code></td><td class=\\'ex\\'>Path where media are stored (based from the exeid).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>')");
+        SQLS.append(",('testcasecountryproperties','Value','','en','Value','Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR1%</code></td><td class=\\'ex\\'>VAR1 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR2%</code></td><td class=\\'ex\\'>VAR2 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR3%</code></td><td class=\\'ex\\'>VAR3 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR4%</code></td><td class=\\'ex\\'>VAR4 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TEST%</code></td><td class=\\'ex\\'>Test.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TESTCASE%</code></td><td class=\\'ex\\'>TestCase</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_BROWSER%</code></td><td class=\\'ex\\'>Browser name of the current execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTART%</code></td><td class=\\'ex\\'>Start date and time of the execution with format : 2016-12-31 21:24:53.008.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTORAGEURL%</code></td><td class=\\'ex\\'>Path where media are stored (based from the exeid).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_STEP.n.RETURNCODE%</code></td><td class=\\'ex\\'>Return Code of the step n. n being the execution sequence of the step (sort).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>')");
         SQLS.append(",('testcaseexecution','Browser','','en','Browser','This is the browser that was used to run the <code class=\\'doc-crbvvoca\\'>test case</code> (only used if that was a GUI application <code class=\\'doc-crbvvoca\\'>test case</code>).')");
         SQLS.append(",('testcaseexecution','BrowserFullVersion','','en','Browser Version','This is the full version information of the browser that was used to run the <code class=\\'doc-crbvvoca\\'>test case</code> (only used if that was a GUI application <code class=\\'doc-crbvvoca\\'>test case</code>).')");
         SQLS.append(",('testcaseexecution','Build','','en','Sprint','Name of the Build/sprint.')");
@@ -7176,6 +8159,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepaction','Sequence','','en','Sequence','Sequence of execution of the actions inside the step.')");
         SQLS.append(",('testcasestepaction','Value1','','en','Val1','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
         SQLS.append(",('testcasestepaction','Value2','','en','Val2','This is the information that is used to perform the action.<br>The same variable as property value field can be used (See <a href=\"?DocTable=testcasecountryproperties&DocField=Value\">doc</a>)<br>This information needs to be feed according to the action chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>action</code> field.')");
+        SQLS.append(",('testcasestepactioncontrol','ConditionOper','','en','Cond','')");
+        SQLS.append(",('testcasestepactioncontrol','ConditionVal1','','en','Val1','')");
         SQLS.append(",('testcasestepactioncontrol','Control','','en','Control','It is the control that will be executed by Cerberus.<br><br>It can take the following values :<br>')");
         SQLS.append(",('testcasestepactioncontrol','Control','getPageSource','en','Save source of the page.','TBD')");
         SQLS.append(",('testcasestepactioncontrol','Control','skipControl','en','Skip the control.','TBD')");
@@ -7194,7 +8179,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerEquals','en','True if the ControlProp is equal to the integer ControlValue.','<b>verifyIntegerEquals</b><br><br>Verify if two integers are equals.<br><br><i>Control Property :</i> The first integer<br><br><i>Control Value :</i> The second integer<br><br>')");
         SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerGreater','en','True if an integer is greater than another.','TBD')");
         SQLS.append(",('testcasestepactioncontrol','Control','verifyIntegerMinor','en','True if an integer is lower than another.','TBD')");
-        SQLS.append(",('testcasestepactioncontrol','Control','verifyRegexInElement','en','True if a regex match the content of a field.','TBD')");
+        SQLS.append(",('testcasestepactioncontrol','Control','verifyRegexInElement','en','True if a regex match the content of a field.','<code class=\\'doc-fixed\\'>verifyRegexInElement</code> will return true if a regex match the content of a field.<br><br>Usage :<br><doc class=\"usage\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Field name</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Regex</td></tr></table></doc><br><br>Examples :<br><doc class=\"examples\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>xpath=.//*[@class=\\'breadcrumbs\\']</td><td class=\\'ex\\'>.*becoming seller.*</td><td class=\\'ex\\'>true if the data inside the field contains \\'becoming seller\\'.</td></tr></table></doc><br>NB : Standard Java regex can be used. Further details <a href=\"https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html\">here</a>.')");
         SQLS.append(",('testcasestepactioncontrol','Control','verifyStringContains','en','True if Property String contains value String.','<b>verifyStringContains</b><br><br>Verify if the value is contains in the propery<br><b>This test is case sensitive</b>')");
         SQLS.append(",('testcasestepactioncontrol','Control','verifyStringDifferent','en','True if 2 strings are different.','TBD')");
         SQLS.append(",('testcasestepactioncontrol','Control','verifyStringEqual','en','True if 2 strings are equal.','TBD')");
@@ -7264,974 +8249,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
         SQLInstruction.add(SQLS.toString());
-
-        // New updated Documentation.
-        //-- ------------------------ 958
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_header','menuApplicationObjects','','en','Application Object','')");
-        SQLS.append(",('page_header','menuApplicationObjects','','fr','Objet d application','')");
-        SQLS.append(",('page_applicationObject','title','','en','Application Object','')");
-        SQLS.append(",('page_applicationObject','title','','fr','Objet d application','')");
-        SQLS.append(",('page_applicationObject','button_create','','en','Create an Application Object','')");
-        SQLS.append(",('page_applicationObject','button_create','','fr','Créer un objet d application','')");
-        SQLS.append(",('page_applicationObject','button_delete','','en','Delete Object','')");
-        SQLS.append(",('page_applicationObject','button_delete','','fr','Supprimer l objet','')");
-        SQLS.append(",('page_applicationObject','message_delete','','en','Are you sure?','')");
-        SQLS.append(",('page_applicationObject','message_delete','','fr','Etes-vous sûrs?','')");
-        SQLS.append(",('page_applicationObject','button_edit','','en','Edit Object','')");
-        SQLS.append(",('page_applicationObject','button_edit','','fr','Modifier l objet','')");
-        SQLS.append(",('page_applicationObject','applicationfield','','en','Application','')");
-        SQLS.append(",('page_applicationObject','applicationfield','','fr','Application','')");
-        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','en','Create Application Object','')");
-        SQLS.append(",('page_applicationObject','createapplicationobjectfield','','fr','Créer un object d application','')");
-        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','en','Edit Application Object','')");
-        SQLS.append(",('page_applicationObject','editapplicationobjectfield','','fr','Modifier un objet d application','')");
-        SQLS.append(",('page_applicationObject','objectfield','','en','Object','')");
-        SQLS.append(",('page_applicationObject','objectfield','','fr','Objet','')");
-        SQLS.append(",('page_applicationObject','valuefield','','en','Value','')");
-        SQLS.append(",('page_applicationObject','valuefield','','fr','Valeur','')");
-        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','en','FileName','')");
-        SQLS.append(",('page_applicationObject','screenshotfilenamefield','','fr','Nom du ficher','')");
-        SQLS.append(",('page_applicationObject','button_close','','en','Close','')");
-        SQLS.append(",('page_applicationObject','button_close','','fr','Fermer','')");
-        SQLS.append(",('page_applicationObject','button_add','','en','Add','')");
-        SQLS.append(",('page_applicationObject','button_add','','fr','Ajouter','')");
-        SQLS.append(",('page_applicationObject','Application','','en','Application','')");
-        SQLS.append(",('page_applicationObject','Application','','fr','Application','')");
-        SQLS.append(",('page_applicationObject','Object','','en','Object','')");
-        SQLS.append(",('page_applicationObject','Object','','fr','Objet','')");
-        SQLS.append(",('page_applicationObject','Value','','en','Value','')");
-        SQLS.append(",('page_applicationObject','Value','','fr','Valeur','')");
-        SQLS.append(",('page_applicationObject','ScreenshotFileName','','en','File Name','')");
-        SQLS.append(",('page_applicationObject','ScreenshotFileName','','fr','Nom du fichier','')");
-        SQLS.append(",('page_applicationObject','UsrCreated','','en','Creator','')");
-        SQLS.append(",('page_applicationObject','UsrCreated','','fr','Createur','')");
-        SQLS.append(",('page_applicationObject','DateCreated','','en','Creation date','')");
-        SQLS.append(",('page_applicationObject','DateCreated','','fr','Date de création','')");
-        SQLS.append(",('page_applicationObject','UsrModif','','en','Last Modificator','')");
-        SQLS.append(",('page_applicationObject','UsrModif','','fr','Dernier Editeur','')");
-        SQLS.append(",('page_applicationObject','DateModif','','en','Last modification date','')");
-        SQLS.append(",('page_applicationObject','DateModif','','fr','Date de dernière modification','');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add path to picture for appliation object in paramaters
-        //-- ------------------------ 959
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ");
-        SQLS.append("('','cerberus_applicationobject_path','','Path whare you will store all the files you upload in application object');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Create Table Application Object
-        //-- ------------------------ 960
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `applicationobject` ("
-                + "  `ID` int(11) NOT NULL AUTO_INCREMENT,"
-                + "  `Application` varchar(200) NOT NULL,"
-                + "  `Object` varchar(150) NOT NULL,"
-                + "  `Value` text,"
-                + "  `ScreenshotFileName` varchar(250) DEFAULT NULL,"
-                + "  `UsrCreated` varchar(45) DEFAULT NULL,"
-                + "  `DateCreated` timestamp NULL DEFAULT NULL,"
-                + "  `UsrModif` varchar(45) DEFAULT NULL,"
-                + "  `DateModif` timestamp NULL DEFAULT NULL,"
-                + "  PRIMARY KEY (`Application`,`Object`),"
-                + "  UNIQUE KEY `ID_UNIQUE` (`ID`),"
-                + "  CONSTRAINT `fk_applicationobject_1` FOREIGN KEY (`Application`) REFERENCES `application` (`Application`) ON DELETE CASCADE ON UPDATE CASCADE"
-                + ") ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation update.
-        //-- ------------------------ 961-962
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocDesc`='Value of the property. Depend on the <code class=\\'doc-fixed\\'>type</code> of property chosen.<br><br>Get more information on <code class=\\'doc-fixed\\'>type</code> field.<br><br><table cellspacing=0 cellpadding=3><th class=\\'ex\\' colspan=\\'2\\'>The following system variables can be used</th><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SYSTEM%</code></td><td class=\\'ex\\'>System value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APPLI%</code></td><td class=\\'ex\\'>Application reference</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_DOMAIN%</code></td><td class=\\'ex\\'>Domain of the Application</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR1%</code></td><td class=\\'ex\\'>VAR1 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR2%</code></td><td class=\\'ex\\'>VAR2 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR3%</code></td><td class=\\'ex\\'>VAR3 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_APP_VAR4%</code></td><td class=\\'ex\\'>VAR4 of the application on the environment.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENV%</code></td><td class=\\'ex\\'>Environment value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ENVGP%</code></td><td class=\\'ex\\'>Environment group code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRY%</code></td><td class=\\'ex\\'>Country code</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TEST%</code></td><td class=\\'ex\\'>Test.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TESTCASE%</code></td><td class=\\'ex\\'>TestCase</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_COUNTRYGP1%</code></td><td class=\\'ex\\'>Country group1 value</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSIP%</code></td><td class=\\'ex\\'>Selenium server IP</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_SSPORT%</code></td><td class=\\'ex\\'>Selenium server port</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_BROWSER%</code></td><td class=\\'ex\\'>Browser name of the current execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TAG%</code></td><td class=\\'ex\\'>Execution tag</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXECUTIONID%</code></td><td class=\\'ex\\'>Execution ID</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTART%</code></td><td class=\\'ex\\'>Start date and time of the execution with format : 2016-12-31 21:24:53.008.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_EXESTORAGEURL%</code></td><td class=\\'ex\\'>Path where media are stored (based from the exeid).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_STEP.n.RETURNCODE%</code></td><td class=\\'ex\\'>Return Code of the step n. n being the execution sequence of the step (sort).</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-yyyy%</code></td><td class=\\'ex\\'>Year of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-MM%</code></td><td class=\\'ex\\'>Month of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-dd%</code></td><td class=\\'ex\\'>Day of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of today from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-HH%</code></td><td class=\\'ex\\'>Hour of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-mm%</code></td><td class=\\'ex\\'>Minute of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-ss%</code></td><td class=\\'ex\\'>Second of today</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-yyyy%</code></td><td class=\\'ex\\'>Year of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-MM%</code></td><td class=\\'ex\\'>Month of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-dd%</code></td><td class=\\'ex\\'>Day of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_TODAY-doy%</code></td><td class=\\'ex\\'>Day of yesterday from the beginning of the year</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-HH%</code></td><td class=\\'ex\\'>Hour of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-mm%</code></td><td class=\\'ex\\'>Minute of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_YESTERDAY-ss%</code></td><td class=\\'ex\\'>Second of yesterday</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-EXESTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution.</td></tr><tr><td class=\\'ex\\'><code class=\\'doc-variable\\'>%SYS_ELAPSED-STEPSTART%</code></td><td class=\\'ex\\'>Number of milisecond since the start of the execution of the current step.</td></tr></table>' WHERE `DocTable`='testcasecountryproperties' and`DocField`='Value' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocDesc`='<code class=\\'doc-fixed\\'>verifyRegexInElement</code> will return true if a regex match the content of a field.<br><br>Usage :<br><doc class=\\\"usage\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Field</th><th class=\\'ex\\'>Usage</th><tr><td class=\\'ex\\'>Value1</td><td class=\\'ex\\'>Field name</td></tr><tr><td class=\\'ex\\'>Value2</td><td class=\\'ex\\'>Regex</td></tr></table></doc><br><br>Examples :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=2><th class=\\'ex\\'>Value1</th><th class=\\'ex\\'>Value2</th><th class=\\'ex\\'>Result</th><tr><td class=\\'ex\\'>xpath=.//*[@class=\\'breadcrumbs\\']</td><td class=\\'ex\\'>.*becoming seller.*</td><td class=\\'ex\\'>true if the data inside the field contains \\'becoming seller\\'.</td></tr></table></doc><br>NB : Standard Java regex can be used. Further details <a href=\\\"https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html\\\">here</a>.' WHERE `DocTable`='testcasestepactioncontrol' and`DocField`='Control' and`DocValue`='verifyRegexInElement' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-
-        // PArameter new ExecutionDetail Page
-        //-- ------------------------ 963
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_executiondetail_use','Y','Do you want to use the new Execution Detail Page (Y or N)')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add tracability fields in testcasestep table.
-        //-- ------------------------ 964
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("DROP COLUMN `last_modified`,");
-        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `inlibrary`,");
-        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
-        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
-        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Clean Steps that use steps that also use step (we remove the link).
-        //-- ------------------------ 965
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV964', useStep='N', UseStepTest='', UseStepTestCase='', UseStepStep=-1 where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcsa.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.useStep='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
-        SQLInstruction.add(SQLS.toString());
-
-        // Clean Steps that are used but not flagged as inLibrary (we flag them as can be used inLibrary='Y').
-        //-- ------------------------ 966
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep tcs SET DateModif=now(), UsrModif = 'DatabaseMaintenanceV965', inLibrary='Y' where concat(tcs.test, '||', tcs.testcase, '||', tcs.step, '||') in (select concat(toto.test, '||', toto.testcase, '||', toto.step, '||') from (select tcs1.* from testcasestep tcsa join testcasestep tcs1 on tcs1.test=tcsa.useSteptest and tcs1.testcase=tcsa.useSteptestcase and tcs1.step=tcsa.useStepstep where tcsa.useStep = 'Y' and tcs1.inLibrary!='Y' order by tcs1.test, tcs1.testcase, tcs1.step) as toto );");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation typo.
-        //-- ------------------------ 967
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='JDBC Resource', `DocDesc`='This is the name of the JDBC Resource used to connect to the corresponding <code class=\\'doc-crbvvoca\\'>database</code> on the <code class=\\'doc-crbvvoca\\'>country</code> / <code class=\\'doc-crbvvoca\\'>environment</code>.<br>The JDBC Resource (prefixed by <code class=\\'doc-fixed\\'>jdbc/</code> ) needs to be configured and associated to a connection pool on the application server that host the Cerberus application.<br><br>Example :<br><doc class=\\\"examples\\\"><table cellspacing=0 cellpadding=3><th class=\\'ex\\'>JDBC Resource</th><th class=\\'ex\\'>Application server Resource name</th><tr>\\n<td class=\\'ex\\'>MyConnection</td>\\n<td class=\\'ex\\'>jdbc/MyConnection</td>\\n</tr></table>\\n</doc>' WHERE `DocTable`='countryenvironmentdatabase' and`DocField`='ConnectionPoolName' and`DocValue`='' and`Lang`='en';");
-        SQLInstruction.add(SQLS.toString());
-
-        // New Control model with conditionOper and ConditionVal1.
-        //-- ------------------------ 968-971
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionOper = 'always' where ConditionOper=''; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
-        SQLS.append("  ('CONTROLCONDITIONOPER', 'always', '100', 'Always.', '')");
-        SQLS.append(", ('CONTROLCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
-        SQLS.append(", ('CONTROLCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
-        SQLS.append(", ('INVARIANTPRIVATE', 'CONTROLCONDITIONOPER', '560', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Resize login.
-        //-- ------------------------ 972-978
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usersystem` DROP FOREIGN KEY `FK_usersystem_01`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usersystem` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usergroup` DROP FOREIGN KEY `FK_usergroup_01`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usergroup` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `user` CHANGE COLUMN `Login` `Login` VARCHAR(255) NOT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usersystem` ADD CONSTRAINT `FK_usersystem_01` FOREIGN KEY (`Login`) REFERENCES `user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `usergroup` ADD CONSTRAINT `FK_usergroup_01` FOREIGN KEY (`Login`) REFERENCES `cerberus`.`user` (`Login`) ON DELETE CASCADE ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add path to picture for appliation object in paramaters
-        //-- ------------------------ 979
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ");
-        SQLS.append("('','cerberus_featureflipping_activatewebsocketpush','Y','Boolean that enable/disable the websocket push.');");
-        SQLInstruction.add(SQLS.toString());
-
-        // New Step model with conditionOper and ConditionVal1.
-        //-- ------------------------ 980-983
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) AFTER `Sort`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep SET ConditionOper = 'always' where ConditionOper=''; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
-        SQLS.append("  ('STEPCONDITIONOPER', 'always', '100', 'Always.', '')");
-        SQLS.append(", ('STEPCONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
-        SQLS.append(", ('STEPCONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
-        SQLS.append(", ('INVARIANTPRIVATE', 'STEPCONDITIONOPER', '570', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // New testcase model with conditionOper and ConditionVal1.
-        //-- ------------------------ 984-990
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcase` ");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NOT NULL DEFAULT '' AFTER `TcActive`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT AFTER `ConditionOper`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcase SET ConditionOper = 'always' where ConditionOper=''; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES");
-        SQLS.append("  ('TESTCASECONDITIONOPER', 'always', '100', 'Always.', '')");
-        SQLS.append(", ('TESTCASECONDITIONOPER', 'ifPropertyExist', '200', 'Only execute if property exist for the execution.', '')");
-        SQLS.append(", ('TESTCASECONDITIONOPER', 'never', '9999', 'Never execute the control.', '')");
-        SQLS.append(", ('INVARIANTPRIVATE', 'TESTCASECONDITIONOPER', '580', '', '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcase SET ConditionVal1 = '' where ConditionVal1 is null; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestep SET ConditionVal1 = '' where ConditionVal1 is null; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepexecution SET ConditionVal1 = '' where ConditionVal1 is null; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET ConditionVal1 = '' where ConditionVal1 is null; ");
-        SQLInstruction.add(SQLS.toString());
-
-        // Removed skipAction and skipControl and replaced by conditionOper = never.
-        //-- ------------------------ 991-994
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE from invariant where idname = 'ACTION' and value = 'skipAction';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE from invariant where idname = 'CONTROL' and value = 'skipControl';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepaction Set ConditionOper = 'never', Action = 'Unknown' where Action = 'skipAction';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol Set ConditionOper = 'never', Control = 'Unknown' where Control = 'skipControl';");
-        SQLInstruction.add(SQLS.toString());
-
-        // New Appium capabtilities for IOS testing
-        // 995-997
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'udid', '8', 'Unique Device IDentifier (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and `value`='udid') LIMIT 1;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'xcodeConfigFile', '9', 'Path to the Xcode Configuration File containing information about application sign (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and `value`='xcodeConfigFile') LIMIT 1;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) SELECT * from (SELECT 'CAPABILITY', 'realDeviceLogger', '10', 'Path to the logger for real IOS devices (useful for IOS testing)', '') AS tmp WHERE NOT EXISTS ( SELECT `value` FROM `invariant` WHERE idname='CAPABILITY' and  `value`='realDeviceLogger') LIMIT 1;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Updated Documentation
-        //-- ------------------------ 998
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_executiondetail','title','','en','Execution Detail','')");
-        SQLS.append(",('page_executiondetail','title','','fr','Detail de l Execution','')");
-        SQLS.append(",('page_global','beta_message','','en','This page is in beta, some features may not be available or fully functional.','')");
-        SQLS.append(",('page_global','beta_message','','fr','Cette page est en beta, certaines fonctionnalités peuvent être indisponnible ou non complètes.','')");
-        SQLS.append(",('page_global','old_page','','en','Old Page','')");
-        SQLS.append(",('page_global','old_page','','fr','Ancienne Page','')");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','en','See Execution By Tag','')");
-        SQLS.append(",('page_executiondetail','see_execution_tag','','fr','Voir l execution par Tag','')");
-        SQLS.append(",('page_executiondetail','more_detail','','en','More details','')");
-        SQLS.append(",('page_executiondetail','more_detail','','fr','Plus de détails','')");
-        SQLS.append(",('page_executiondetail','application','','en','Application','')");
-        SQLS.append(",('page_executiondetail','application','','fr','Application','')");
-        SQLS.append(",('page_executiondetail','browser','','en','Browser','')");
-        SQLS.append(",('page_executiondetail','browser','','fr','Navigateur','')");
-        SQLS.append(",('page_executiondetail','browserfull','','en','Browser full version','')");
-        SQLS.append(",('page_executiondetail','browserfull','','fr','Navigateur version complete','')");
-        SQLS.append(",('page_executiondetail','country','','en','Country','')");
-        SQLS.append(",('page_executiondetail','country','','fr','Pays','')");
-        SQLS.append(",('page_executiondetail','environment','','en','Environment','')");
-        SQLS.append(",('page_executiondetail','environment','','fr','Environement','')");
-        SQLS.append(",('page_executiondetail','status','','en','Status','')");
-        SQLS.append(",('page_executiondetail','status','','fr','Status','')");
-        SQLS.append(",('page_executiondetail','controlstatus','','en','Control Status','')");
-        SQLS.append(",('page_executiondetail','controlstatus','','fr','Status du control','')");
-        SQLS.append(",('page_executiondetail','controlmessage','','en','Control Message','')");
-        SQLS.append(",('page_executiondetail','controlmessage','','fr','Message du control','')");
-        SQLS.append(",('page_executiondetail','ip','','en','IP','')");
-        SQLS.append(",('page_executiondetail','ip','','fr','IP','')");
-        SQLS.append(",('page_executiondetail','port','','en','Port','')");
-        SQLS.append(",('page_executiondetail','port','','fr','Port','')");
-        SQLS.append(",('page_executiondetail','platform','','en','Platform','')");
-        SQLS.append(",('page_executiondetail','platform','','fr','Platforme','')");
-        SQLS.append(",('page_executiondetail','cerberusversion','','en','Cerberus Version','')");
-        SQLS.append(",('page_executiondetail','cerberusversion','','fr','Version de Cerberus','')");
-        SQLS.append(",('page_executiondetail','executor','','en','Executor','')");
-        SQLS.append(",('page_executiondetail','executor','','fr','Executeur','')");
-        SQLS.append(",('page_executiondetail','url','','en','URL','')");
-        SQLS.append(",('page_executiondetail','url','','fr','URL','')");
-        SQLS.append(",('page_executiondetail','start','','en','Start','')");
-        SQLS.append(",('page_executiondetail','start','','fr','Début','')");
-        SQLS.append(",('page_executiondetail','end','','en','End','')");
-        SQLS.append(",('page_executiondetail','end','','fr','Fin','')");
-        SQLS.append(",('page_executiondetail','finished','','en','Finished','')");
-        SQLS.append(",('page_executiondetail','finished','','fr','Fini','')");
-        SQLS.append(",('page_executiondetail','id','','en','ID','')");
-        SQLS.append(",('page_executiondetail','id','','fr','ID','')");
-        SQLS.append(",('page_executiondetail','revision','','en','Revision','')");
-        SQLS.append(",('page_executiondetail','revision','','fr','Revision','')");
-        SQLS.append(",('page_executiondetail','screensize','','en','Screen Size','')");
-        SQLS.append(",('page_executiondetail','screensize','','fr','Taille de l ecran','')");
-        SQLS.append(",('page_executiondetail','tag','','en','Tag','')");
-        SQLS.append(",('page_executiondetail','tag','','fr','Tag','')");
-        SQLS.append(",('page_executiondetail','verbose','','en','Verbose','')");
-        SQLS.append(",('page_executiondetail','verbose','','fr','Loquacité','')");
-        SQLS.append(",('page_executiondetail','build','','en','Build','')");
-        SQLS.append(",('page_executiondetail','build','','fr','Build','')");
-        SQLS.append(",('page_executiondetail','version','','en','Version','')");
-        SQLS.append(",('page_executiondetail','version','','fr','Version','')");
-        SQLS.append(",('page_executiondetail','steps','','en','Steps','')");
-        SQLS.append(",('page_executiondetail','steps','','fr','Etapes','')");
-        SQLS.append(",('page_executiondetail','edittc','','en','Edit Test Case','')");
-        SQLS.append(",('page_executiondetail','edittc','','fr','Modifier le Cas de Test','')");
-        SQLS.append(",('page_executiondetail','runtc','','en','Run this Test Case again','')");
-        SQLS.append(",('page_executiondetail','runtc','','fr','Executer ce Cas de Test encore','')");
-        SQLS.append(",('page_executiondetail','lastexecution','','en','Last Executions','')");
-        SQLS.append(",('page_executiondetail','lastexecution','','fr','Dernières exécutions','')");
-        SQLS.append(",('page_executiondetail','action','','en','Action','')");
-        SQLS.append(",('page_executiondetail','action','','fr','Action','')");
-        SQLS.append(",('page_executiondetail','description','','en','Description','')");
-        SQLS.append(",('page_executiondetail','description','','fr','Description','')");
-        SQLS.append(",('page_executiondetail','value1','','en','Value 1','')");
-        SQLS.append(",('page_executiondetail','value1','','fr','Valeur 1','')");
-        SQLS.append(",('page_executiondetail','time','','en','Time','')");
-        SQLS.append(",('page_executiondetail','time','','fr','Temps','')");
-        SQLS.append(",('page_executiondetail','value2','','en','Value 2','')");
-        SQLS.append(",('page_executiondetail','value2','','fr','Valeur 2','')");
-        SQLS.append(",('page_executiondetail','return_code','','en','Return Code','')");
-        SQLS.append(",('page_executiondetail','return_code','','fr','Code de retour','')");
-        SQLS.append(",('page_executiondetail','return_message','','en','Return Message','')");
-        SQLS.append(",('page_executiondetail','return_message','','fr','Message de retour','')");
-        SQLS.append(",('page_executiondetail','sort','','en','Sort','')");
-        SQLS.append(",('page_executiondetail','sort','','fr','Ordre','')");
-        SQLS.append(",('page_executiondetail','control_type','','en','Control Type','')");
-        SQLS.append(",('page_executiondetail','control_type','','fr','Type de Control','')");
-        SQLS.append(",('page_executiondetail','fatal','','en','Fatal','')");
-        SQLS.append(",('page_executiondetail','fatal','','fr','Fatal','')");
-        SQLS.append(",('page_runtest','title','','en','Run Test','')");
-        SQLS.append(",('page_runtest','title','','fr','Executer un test','')");
-        SQLS.append(",('page_runtest','selection_type','','en','Selection type','')");
-        SQLS.append(",('page_runtest','selection_type','','fr','Type de selection','')");
-        SQLS.append(",('page_runtest','select_list_test','','en','Select a list of test','')");
-        SQLS.append(",('page_runtest','select_list_test','','fr','Sélectionnez une list de test','')");
-        SQLS.append(",('page_runtest','select_campaign','','en','Select a campaign','')");
-        SQLS.append(",('page_runtest','select_campaign','','fr','Sélectionnez une campagne','')");
-        SQLS.append(",('page_runtest','load','','en','Load','')");
-        SQLS.append(",('page_runtest','load','','fr','Charger','')");
-        SQLS.append(",('page_runtest','choose_test','','en','Choose Test','')");
-        SQLS.append(",('page_runtest','choose_test','','fr','Sélectionnez vos test','')");
-        SQLS.append(",('page_runtest','filters','','en','Filters','')");
-        SQLS.append(",('page_runtest','filters','','fr','Filtres','')");
-        SQLS.append(",('page_runtest','test','','en','Test','')");
-        SQLS.append(",('page_runtest','test','','fr','Test','')");
-        SQLS.append(",('page_runtest','project','','en','Project','')");
-        SQLS.append(",('page_runtest','project','','fr','Projet','')");
-        SQLS.append(",('page_runtest','application','','en','Application','')");
-        SQLS.append(",('page_runtest','application','','fr','Application','')");
-        SQLS.append(",('page_runtest','creator','','en','Creator','')");
-        SQLS.append(",('page_runtest','creator','','fr','Créateur','')");
-        SQLS.append(",('page_runtest','implementer','','en','Implementer','')");
-        SQLS.append(",('page_runtest','implementer','','fr','Implementeur','')");
-        SQLS.append(",('page_runtest','group','','en','Group','')");
-        SQLS.append(",('page_runtest','group','','fr','Groupe','')");
-        SQLS.append(",('page_runtest','campaign','','en','Campaign','')");
-        SQLS.append(",('page_runtest','campaign','','fr','Campagne','')");
-        SQLS.append(",('page_runtest','testbattery','','en','Test Battery','')");
-        SQLS.append(",('page_runtest','testbattery','','fr','Batterie de test','')");
-        SQLS.append(",('page_runtest','priority','','en','Priority','')");
-        SQLS.append(",('page_runtest','priority','','fr','Priorité','')");
-        SQLS.append(",('page_runtest','status','','en','Status','')");
-        SQLS.append(",('page_runtest','status','','fr','Status','')");
-        SQLS.append(",('page_runtest','targetrev','','en','Target Revision','')");
-        SQLS.append(",('page_runtest','targetrev','','fr','Révision Cible','')");
-        SQLS.append(",('page_runtest','targetsprint','','en','Target Sprint','')");
-        SQLS.append(",('page_runtest','targetsprint','','fr','Sprint Cible','')");
-        SQLS.append(",('page_runtest','size','','en','Size','')");
-        SQLS.append(",('page_runtest','size','','fr','Taille','')");
-        SQLS.append(",('page_runtest','select_all','','en','Select All','')");
-        SQLS.append(",('page_runtest','select_all','','fr','Tout Sélectionner','')");
-        SQLS.append(",('page_runtest','automatic','','en','Automatic','')");
-        SQLS.append(",('page_runtest','automatic','','fr','Automatique','')");
-        SQLS.append(",('page_runtest','manual','','en','Manual','')");
-        SQLS.append(",('page_runtest','manual','','fr','Manuel','')");
-        SQLS.append(",('page_runtest','myhost','','en','My host','')");
-        SQLS.append(",('page_runtest','myhost','','fr','Mon hôte','')");
-        SQLS.append(",('page_runtest','mycontextroot','','en','My Context Root','')");
-        SQLS.append(",('page_runtest','mycontextroot','','fr','Ma racine de contexte','')");
-        SQLS.append(",('page_runtest','myloginrelativeurl','','en','My login relative url','')");
-        SQLS.append(",('page_runtest','myloginrelativeurl','','fr','Mon url de login relative','')");
-        SQLS.append(",('page_runtest','myenvdata','','en','My environment data','')");
-        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d environment','')");
-        SQLS.append(",('page_runtest','countryList','','en','Country List','')");
-        SQLS.append(",('page_runtest','countryList','','fr','Liste de pays','')");
-        SQLS.append(",('page_runtest','potential','','en','Potential','')");
-        SQLS.append(",('page_runtest','potential','','fr','Potentiel','')");
-        SQLS.append(",('page_runtest','addtoqueue','','en','Add to queue','')");
-        SQLS.append(",('page_runtest','addtoqueue','','fr','Ajouter à la liste','')");
-        SQLS.append(",('page_runtest','addtoqueueandrun','','en','Add to queue and run','')");
-        SQLS.append(",('page_runtest','addtoqueueandrun','','fr','Ajouter à la liste et executer','')");
-        SQLS.append(",('page_runtest','robot_settings','','en','Robot Settings','')");
-        SQLS.append(",('page_runtest','robot_settings','','fr','Paramètre du Robot','')");
-        SQLS.append(",('page_runtest','select_robot','','en','Select a robot','')");
-        SQLS.append(",('page_runtest','select_robot','','fr','Sélectionnez un robot','')");
-        SQLS.append(",('page_runtest','selenium_ip','','en','Selenium Server IP','')");
-        SQLS.append(",('page_runtest','selenium_ip','','fr','IP du serveur Selenium','')");
-        SQLS.append(",('page_runtest','selenium_port','','en','Selenium Server Port','')");
-        SQLS.append(",('page_runtest','selenium_port','','fr','Port du serveur Selenium','')");
-        SQLS.append(",('page_runtest','browser','','en','Browser','')");
-        SQLS.append(",('page_runtest','browser','','fr','Navigateur','')");
-        SQLS.append(",('page_runtest','version','','en','Version','')");
-        SQLS.append(",('page_runtest','version','','fr','Version','')");
-        SQLS.append(",('page_runtest','platform','','en','Platform','')");
-        SQLS.append(",('page_runtest','platform','','fr','Plateforme','')");
-        SQLS.append(",('page_runtest','screensize','','en','Screen size','')");
-        SQLS.append(",('page_runtest','screensize','','fr','Taille d écran','')");
-        SQLS.append(",('page_runtest','saverobotpref','','en','Save Robot Preferencies','')");
-        SQLS.append(",('page_runtest','saverobotpref','','fr','Enregistrer les préférences du robot','')");
-        SQLS.append(",('page_runtest','execution_settings','','en','Execution Settings','')");
-        SQLS.append(",('page_runtest','execution_settings','','fr','Paramètres d execution','')");
-        SQLS.append(",('page_runtest','tag','','en','Tag','')");
-        SQLS.append(",('page_runtest','tag','','fr','Tag','')");
-        SQLS.append(",('page_runtest','outputformat','','en','Output Format','')");
-        SQLS.append(",('page_runtest','outputformat','','fr','Format de sortie','')");
-        SQLS.append(",('page_runtest','verbose','','en','Verbose','')");
-        SQLS.append(",('page_runtest','verbose','','fr','Loquacité','')");
-        SQLS.append(",('page_runtest','screenshot','','en','Screenshot','')");
-        SQLS.append(",('page_runtest','screenshot','','fr','Screenshot','')");
-        SQLS.append(",('page_runtest','pagesource','','en','Page Source','')");
-        SQLS.append(",('page_runtest','pagesource','','fr','Page Source','')");
-        SQLS.append(",('page_runtest','seleniumlog','','en','Selenium Log','')");
-        SQLS.append(",('page_runtest','seleniumlog','','fr','Log de Selenium','')");
-        SQLS.append(",('page_runtest','synchroneous','','en','Synchroneous','')");
-        SQLS.append(",('page_runtest','synchroneous','','fr','Synchrone','')");
-        SQLS.append(",('page_runtest','timeout','','en','Timeout','')");
-        SQLS.append(",('page_runtest','timeout','','fr','Temporisation','')");
-        SQLS.append(",('page_runtest','retries','','en','Retries','')");
-        SQLS.append(",('page_runtest','retries','','fr','Essais','')");
-        SQLS.append(",('page_runtest','manual_execution','','en','Manual Execution','')");
-        SQLS.append(",('page_runtest','manual_execution','','fr','Execution Manuelle','')");
-        SQLS.append(",('page_runtest','save_execution_params','','en','Save Execution Parameters','')");
-        SQLS.append(",('page_runtest','save_execution_params','','fr','Sauvegarder les paramètres d execution','')");
-        SQLS.append(",('page_runtest','notValid','','en','Some executions couldn t be added to the queue','')");
-        SQLS.append(",('page_runtest','notValid','','fr','Des executions n ont pas pu être ajoutées à la liste','')");
-        SQLS.append(",('page_runtest','valid','','en','Executions in queue','')");
-        SQLS.append(",('page_runtest','valid','','fr','Executions dans la liste','')");
-        SQLS.append(",('page_runtest','reset_queue','','en','Reset queue','')");
-        SQLS.append(",('page_runtest','reset_queue','','fr','Vider la liste','')");
-        SQLS.append(",('page_runtest','queue','','en','Queue','')");
-        SQLS.append(",('page_runtest','queue','','fr','Liste','')");
-        SQLS.append(",('page_runtest','run','','en','Run','')");
-        SQLS.append(",('page_runtest','run','','fr','Executer','')");
-        SQLS.append(",('page_runtest','empty_queue','','en','The Execution Queue is empty !','')");
-        SQLS.append(",('page_runtest','empty_queue','','fr','La liste d execution est vide !','')");
-        SQLS.append(",('page_runtest','more_than_one_execution_requested','','en','More than 1 excution and no Tag specified','')");
-        SQLS.append(",('page_runtest','more_than_one_execution_requested','','fr','Plus d une execution séléctionnées et aucun tag n a été spécifié','')");
-        SQLS.append(",('page_runtest','select_one_testcase','','en','Select at least one TestCase !','')");
-        SQLS.append(",('page_runtest','select_one_testcase','','fr','Sélectionnez au moins un cas de test !','')");
-        SQLS.append(",('page_runtest','select_one_env','','en','Select at least one Environment !','')");
-        SQLS.append(",('page_runtest','select_one_env','','fr','Sélectionnez au moins un Environment !','')");
-        SQLS.append(",('page_runtest','select_one_country','','en','Select at least one Country !','')");
-        SQLS.append(",('page_runtest','select_one_country','','fr','Sélectionnez au moins un Pays !','')");
-        SQLS.append(",('page_runtest','custom_config','','en','-- Custom Configuration --','')");
-        SQLS.append(",('page_runtest','custom_config','','fr','-- Configuration personnalisée --','')");
-        SQLS.append(",('page_runtest','default','','en','Default','')");
-        SQLS.append(",('page_runtest','default','','fr','Defaut','')");
-        SQLS.append(",('page_runtest','default_full_screen','','en','Default - Full Screen','')");
-        SQLS.append(",('page_runtest','default_full_screen','','fr','Defaut - Plein Ecran','')");
-        SQLS.append(",('page_testcasescript','select_test','','en','Select a test','')");
-        SQLS.append(",('page_testcasescript','select_test','','fr','Sélectionnez un test','')");
-        SQLS.append(",('page_testcasescript','select_testcase','','en','Select a TestCase','')");
-        SQLS.append(",('page_testcasescript','select_testcase','','fr','Sélectionnez un TestCase','')");
-        SQLS.append(",('page_testcasescript','testcasescript_title','','en','Test Case Script','')");
-        SQLS.append(",('page_testcasescript','testcasescript_title','','fr','Script du Test Case','')");
-        SQLS.append(",('page_testcasescript','steps_title','','en','Steps','')");
-        SQLS.append(",('page_testcasescript','steps_title','','fr','Etapes','')");
-        SQLS.append(",('page_testcasescript','save_script','','en','Save','')");
-        SQLS.append(",('page_testcasescript','save_script','','fr','Sauvegarder','')");
-        SQLS.append(",('page_testcasescript','edit_testcase','','en','Edit TestCase','')");
-        SQLS.append(",('page_testcasescript','edit_testcase','','fr','Modifier le TestCase','')");
-        SQLS.append(",('page_testcasescript','run_testcase','','en','Run TestCase','')");
-        SQLS.append(",('page_testcasescript','run_testcase','','fr','Executer le TestCase','')");
-        SQLS.append(",('page_testcasescript','rerun_testcase','','en','Rerun TestCase','')");
-        SQLS.append(",('page_testcasescript','rerun_testcase','','fr','ReExecuter le TestCase','')");
-        SQLS.append(",('page_testcasescript','see_lastexec','','en','See last Executions','')");
-        SQLS.append(",('page_testcasescript','see_lastexec','','fr','Dernières Exécutions','')");
-        SQLS.append(",('page_testcasescript','see_logs','','en','Logs','')");
-        SQLS.append(",('page_testcasescript','see_logs','','fr','Logs','')");
-        SQLS.append(",('page_testcasescript','run_old','','en','Old page','')");
-        SQLS.append(",('page_testcasescript','run_old','','fr','Ancienne page','')");
-        SQLS.append(",('page_testcasescript','add_step','','en','Add step','')");
-        SQLS.append(",('page_testcasescript','add_step','','fr','Ajouter une Etape','')");
-        SQLS.append(",('page_testcasescript','manage_prop','','en','Manage Properties','')");
-        SQLS.append(",('page_testcasescript','manage_prop','','fr','Gestion des Propriétés','')");
-        SQLS.append(",('page_testcasescript','add_action','','en','Add Action','')");
-        SQLS.append(",('page_testcasescript','add_action','','fr','Ajouter une Action','')");
-        SQLS.append(",('page_testcasescript','step_condition_operation','','en','Step Condition Operation','')");
-        SQLS.append(",('page_testcasescript','step_condition_operation','','fr','Condition d exécution de l étape','')");
-        SQLS.append(",('page_testcasescript','step_condition_value1','','en','Step Condition Parameter','')");
-        SQLS.append(",('page_testcasescript','step_condition_value1','','fr','Paramètre de condition','')");
-        SQLS.append(",('page_testcasescript','feed_propertyname','','en','Feed Property name','')");
-        SQLS.append(",('page_testcasescript','feed_propertyname','','fr','Remplissez le nom de la propriété','')");
-        SQLS.append(",('page_testcasescript','feed_propertydescription','','en','Feed Property Description','')");
-        SQLS.append(",('page_testcasescript','feed_propertydescription','','fr','Remplissez la description','')");
-        SQLS.append(",('page_testcasescript','length','','en','Length','')");
-        SQLS.append(",('page_testcasescript','length','','fr','Taille','')");
-        SQLS.append(",('page_testcasescript','row_limit','','en','Row Limit','')");
-        SQLS.append(",('page_testcasescript','row_limit','','fr','Nombre de lignes limite','')");
-        SQLS.append(",('page_testcasescript','property_field','','en','Property : ','')");
-        SQLS.append(",('page_testcasescript','property_field','','fr','Propriété : ','')");
-        SQLS.append(",('page_testcasescript','description_field','','en','Description : ','')");
-        SQLS.append(",('page_testcasescript','description_field','','fr','Description : ','')");
-        SQLS.append(",('page_testcasescript','type_field','','en','Type : ','')");
-        SQLS.append(",('page_testcasescript','type_field','','fr','Type : ','')");
-        SQLS.append(",('page_testcasescript','db_field','','en','Database : ','')");
-        SQLS.append(",('page_testcasescript','db_field','','fr','Base de donnée : ','')");
-        SQLS.append(",('page_testcasescript','value1_field','','en','Value1 : ','')");
-        SQLS.append(",('page_testcasescript','value1_field','','fr','Value1 : ','')");
-        SQLS.append(",('page_testcasescript','value2_field','','en','Value2 : ','')");
-        SQLS.append(",('page_testcasescript','value2_field','','fr','Value2 : ','')");
-        SQLS.append(",('page_testcasescript','length_field','','en','Length : ','')");
-        SQLS.append(",('page_testcasescript','length_field','','fr','Taille : ','')");
-        SQLS.append(",('page_testcasescript','rowlimit_field','','en','Row limit : ','')");
-        SQLS.append(",('page_testcasescript','rowlimit_field','','fr','Nombre de lignes limite : ','')");
-        SQLS.append(",('page_testcasescript','nature_field','','en','Nature : ','')");
-        SQLS.append(",('page_testcasescript','nature_field','','fr','Nature : ','')");
-        SQLS.append(",('page_global','warning','','en','Warning','')");
-        SQLS.append(",('page_global','warning','','fr','Attention','')");
-        SQLS.append(",('page_testcasescript','cant_detach_library','','en','You can t detach this library because it is used in these steps : ','')");
-        SQLS.append(",('page_testcasescript','cant_detach_library','','fr','Vous ne pouvez pas détacher cette librairie car elle est utilisée dans ces étapes : ','')");
-        SQLS.append(",('page_testcasescript','imported_from','','en','Imported from','')");
-        SQLS.append(",('page_testcasescript','imported_from','','fr','Importé depuis','')");
-        SQLS.append(",('page_testcasescript','unlink_useStep','','en','Unlink Used step','')");
-        SQLS.append(",('page_testcasescript','unlink_useStep','','fr','Délier l étape de sa librairie','')");
-        SQLS.append(",('page_testcasescript','unlink_useStep_warning','','en','You are going to unlink this used step. You can t undo this.','')");
-        SQLS.append(",('page_testcasescript','unlink_useStep_warning','','fr','Vous aller délier cette étape de sa librairie. Cette action n est pas annulable','')");
-        SQLS.append(",('page_testcasescript','describe_action','','en','Describe Action','')");
-        SQLS.append(",('page_testcasescript','describe_action','','fr','Décrivez cette action','')");
-        SQLS.append(",('page_testcasescript','action_field','','en','Action : ','')");
-        SQLS.append(",('page_testcasescript','action_field','','fr','Action : ','')");
-        SQLS.append(",('page_testcasescript','condition_operation_field','','en','Condition Operation : ','')");
-        SQLS.append(",('page_testcasescript','condition_operation_field','','fr','Condition d execution : ','')");
-        SQLS.append(",('page_testcasescript','condition_parameter_field','','en','Condition Parameter : ','')");
-        SQLS.append(",('page_testcasescript','condition_parameter_field','','fr','Paramètre de la condition : ','')");
-        SQLS.append(",('page_testcasescript','force_execution_field','','en','Force Execution : ','')");
-        SQLS.append(",('page_testcasescript','force_execution_field','','fr','Forcer l execution : ','')");
-        SQLS.append(",('page_testcasescript','describe_control','','en','Describe Control','')");
-        SQLS.append(",('page_testcasescript','describe_control','','fr','Décrivez ce control','')");
-        SQLS.append(",('page_testcasescript','control_field','','en','Control : ','')");
-        SQLS.append(",('page_testcasescript','control_field','','fr','Control : ','')");
-        SQLS.append(",('page_testcasescript','not_application_object','','en','It is not an Application Object','')");
-        SQLS.append(",('page_testcasescript','not_application_object','','fr','Ce n est pas un object de l application','')");
-        SQLS.append(",('page_testcasescript','not_property','','en','It is not a property','')");
-        SQLS.append(",('page_testcasescript','not_property','','fr','Ce n est pas une propriété','')");
-        SQLS.append(",('page_testcasescript','warning_no_country','','en','There is no country for at least one parameter. If you save it will be destroyed.','')");
-        SQLS.append(",('page_testcasescript','warning_no_country','','fr','Il y a au moins un paramètre sans pays. Si vous sauvegardez il sera supprimé.','');");
-        SQLInstruction.add(SQLS.toString());
-
-        // New ConditionVal2 columns
-        // 999-1009
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcase` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepaction` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrol` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcase` SET `ConditionVal2` = '';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestep` SET `ConditionVal2` = '';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepaction` SET `ConditionVal2` = '';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestepactioncontrol` SET `ConditionVal2` = '';");
-        SQLInstruction.add(SQLS.toString());
-
-        //Update doc - 1010
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcasescript','rMessage','','en','Result Message :','')");
-        SQLS.append(",('page_testcasescript','rMessage','','fr','Message de Retour :','')");
-        SQLS.append(",('page_testcasescript','value1init_field','','en','Value 1 Initial :','')");
-        SQLS.append(",('page_testcasescript','value1init_field','','fr','Valeur 1 Initiale :','')");
-        SQLS.append(",('page_testcasescript','value2init_field','','en','Value 2 Initial :','')");
-        SQLS.append(",('page_testcasescript','value2init_field','','fr','Valeur 2 Initiale :','')");
-        SQLS.append(",('page_testcasescript','value_field','','en','Value :','')");
-        SQLS.append(",('page_testcasescript','value_field','','fr','Valeur :','')");
-        SQLS.append(",('page_testcasescript','rc','','en','Reslut Code :','')");
-        SQLS.append(",('page_testcasescript','rc','','fr','Code de Retour :','')");
-        SQLS.append(",('page_testcasescript','retrynb','','en','Retry Number :','')");
-        SQLS.append(",('page_testcasescript','retrynb','','fr','Nombre d essais :','')");
-        SQLS.append(",('page_testcasescript','retryperiod','','en','Retry Period :','')");
-        SQLS.append(",('page_testcasescript','retryperiod','','fr','Periode d essai :','')");
-        SQLS.append(",('page_testcasescript','index','','en','Index : ','')");
-        SQLS.append(",('page_testcasescript','index','','fr','Index : ','');");
-        SQLInstruction.add(SQLS.toString());
-
-        //Update doc - 1011
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` VALUES ");
-        SQLS.append("('page_testcasescript','fatal_field','','en','Fatal :','')");
-        SQLS.append(",('page_testcasescript','fatal_field','','fr','Fatal :','')");
-        SQLS.append(",('page_executiondetail','value1init','','en','Value 1 Initial','')");
-        SQLS.append(",('page_executiondetail','value1init','','fr','Valeur 1 Initiale','')");
-        SQLS.append(",('page_executiondetail','value2init','','en','Value 2 Initial','')");
-        SQLS.append(",('page_executiondetail','value2init','','fr','Valeur 2 Initiale','')");
-        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','en','Last Execution with Environment & Country','')");
-        SQLS.append(",('page_executiondetail','lastexecutionwithenvcountry','','fr','Dernières Exécutions même Environement & Pays','');");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding new condition at all levels
-        // 1012-1015
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('ACTIONCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('ACTIONCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('STEPCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('CONTROLCONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('TESTCASECONDITIONOPER', 'ifNumericEqual', 300, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericDifferent', 310, 'Only execute if value1 is different from value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreater', 320, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericGreaterOrEqual', 330, 'Only execute if value1 greater or equal than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinor', 340, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifNumericMinorOrEqual', 350, 'Only execute if value1 lower or equal than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringEqual', 400, 'Only execute if value1 equals value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringDifferent', 410, 'Only execute if value1 different from value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringGreater', 420, 'Only execute if value1 greater than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringMinor', 430, 'Only execute if value1 lower than value2.', '', '', '', '')");
-        SQLS.append(",('TESTCASECONDITIONOPER', 'ifStringContains', 440, 'Only execute if value1 contains value2.', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding FAT Client Application Type
-        // 1016
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('APPLITYPE', 'FAT', '60', 'FAT client application', '', '', '', '')");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding index column on execution step in order to prepare changes for looping steps
-        // 1017-1028
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactioncontrolexecution_01`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("DROP FOREIGN KEY `FK_testcasestepactionexecution_01`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution`");
-        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`,");
-        SQLS.append("DROP PRIMARY KEY,");
-        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`) ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ADD CONSTRAINT `FK_testcasestepactioncontrolexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step`, `index` ) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index` ) ON DELETE CASCADE ON UPDATE CASCADE ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("ADD COLUMN `index` INT(11) NOT NULL DEFAULT '1' AFTER `Step`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ADD CONSTRAINT `FK_testcasestepactionexecution_01` FOREIGN KEY (`ID` , `Test` , `TestCase` , `Step` , `index`) REFERENCES `testcasestepexecution` (`ID` , `Test` , `TestCase` , `Step` , `index`) ON DELETE CASCADE ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestep` ");
-        SQLS.append("ADD COLUMN `Loop` VARCHAR(45) NOT NULL DEFAULT '' AFTER `Sort`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("DROP PRIMARY KEY,");
-        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`)  ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("DROP PRIMARY KEY,");
-        SQLS.append("ADD PRIMARY KEY (`ID`, `Test`, `TestCase`, `Step`, `index`, `Sequence`, `ControlSequence`) ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('STEPLOOP', 'onceIfConditionTrue', 100, 'We execute the step once only if the condiion is true.', '', '', '', '')");
-        SQLS.append(",('STEPLOOP', 'onceIfConditionFalse', 200, 'We execute the step once only if the condiion is false.', '', '', '', '')");
-        SQLS.append(",('STEPLOOP', 'doWhileConditionTrue', 300, 'We execute the step and then execute it again and again as long as condition is true.', '', '', '', '')");
-        SQLS.append(",('STEPLOOP', 'doWhileConditionFalse', 400, 'We execute the step and then execute it again and again as long as condition is false.', '', '', '', '')");
-        SQLS.append(",('STEPLOOP', 'whileConditionTrueDo', 500, 'We execute the step as long the condition is true.', '', '', '', '')");
-        SQLS.append(",('STEPLOOP', 'whileConditionFalseDo', 600, 'We execute the step as long the condition is false.', '', '', '', '')");
-        SQLS.append(",('INVARIANTPRIVATE', 'STEPLOOP', '590', '', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcasestep` SET `Loop` = 'onceIfConditionTrue' WHERE `Loop` = '';");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding Screensize to robot table
-        // 1029
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robot` ");
-        SQLS.append("ADD COLUMN `screensize` VARCHAR(250) NOT NULL DEFAULT '' AFTER `useragent`;");
-        SQLInstruction.add(SQLS.toString());
-
-        //Adding Screensize to robot table
-        // 1030
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('robot', 'screensize', '', 'en', 'Screen Size', 'This is the size of the browser screen that will be set for the execution.<br><br>Default Values are set inside the invariant SCREENSIZE that can be configured on Edit Public invariant screen..<br>Value must be two Integer splitted by a <b>*</b> mark.<br><i>For Exemple : 1024*768</i><br><br>If you need to add other Values, please contact your Cerberus Administrator.'),");
-        SQLS.append("('robot', 'screensize', '', 'fr', 'Taille d écran', 'Cette valeur correspond à la taille d\\'écran qui sera utilisé lors de l\\'execution.<br><br>Les valeurs sont définies dans la table d\\'invariant et peuvent être complétées si besoin via la page d\\'invariant.<br>Les valeur doivent être deux entiers séparé par une <b>*</b>.<br><i>Par Example : 1024*768</i><br><br>Pour ajouter de nouvelles valeurs, contactez votre administrateur Cerberus.');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter in order to limit the number of loop operation allowed in loop operation
-        //-- ------------------------ 1031
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_loopstep_max','20','Integer value that correspond to the max number of step loop authorised.<br>This parameter can be configured at the system level.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add poolSize attribute to CountryEnvironmentParameters
-        //-- ------------------------ 1032-1034
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('countryenvironmentparameters', 'poolSize', '', 'fr', 'Parallelisation', 'Nombre maximal, par instances Cerberus, de tests pouvant être exécutés en parallèle');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ('countryenvironmentparameters', 'poolSize', '', 'en', 'Pool size', 'Maximal number of testcases that can be executed in same time by a single Cerberus instance');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `countryenvironmentparameters` ");
-        SQLS.append("ADD COLUMN `poolSize` INT NULL AFTER `Var4`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter in order to limit the frequency of the websocket push
-        //-- ------------------------ 1035
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_featureflipping_websocketpushperiod','5000','Integer value that correspond to the nb of ms between every websocket push.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the State column to the TestCaseExecutionQueue table and fill it with default value
-        //-- ------------------------ 1036-1038
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
-        SQLS.append("ADD COLUMN `State` VARCHAR(9) NOT NULL DEFAULT 'WAITING' AFTER `manualexecution`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'WAITING' WHERE `Proceeded` = 0;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `testcaseexecutionqueue` SET `State` = 'EXECUTING' WHERE `Proceeded` = 1;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding ConditionInit columns in all tables.
-        //-- ------------------------ 1039-1042
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append("ADD COLUMN `EnvironmentData` VARCHAR(45) NULL DEFAULT ''  AFTER `Environment`,");
-        SQLS.append("ADD COLUMN `ConditionOper` VARCHAR(45) NULL DEFAULT ''  AFTER `screensize`,");
-        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
-        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`,");
-        SQLS.append("ADD COLUMN `ConditionVal1` TEXT NULL AFTER `ConditionVal2Init`,");
-        SQLS.append("ADD COLUMN `ConditionVal2` TEXT NULL AFTER `ConditionVal1`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution` ");
-        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
-        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactionexecution` ");
-        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
-        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepactioncontrolexecution` ");
-        SQLS.append("ADD COLUMN `ConditionVal1Init` TEXT NULL AFTER `ConditionOper`,");
-        SQLS.append("ADD COLUMN `ConditionVal2Init` TEXT NULL AFTER `ConditionVal1Init`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the new State column header on the Execution pending page
-        //-- ------------------------ 1043
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'en', 'State', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'state_col', '', 'fr', 'Etat', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the new ManualExecution column header on the Execution pending page
-        //-- ------------------------ 1044
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution`");
-        SQLS.append("ADD COLUMN `ManualExecution` VARCHAR(1) NULL DEFAULT '' AFTER `ConditionVal2`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Document the new 'edittcstep' field from ExecutionDetail page
-        //-- ------------------------ 1045
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_executiondetail', 'edittcstep', '', 'fr', 'Editer le Cas de Test à partir de l\\'Etape courante', ''),");
-        SQLS.append("('page_executiondetail', 'edittcstep', '', 'en', 'Edit Test Case from the current Step', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter in order to tune the level of the property definition
-        //-- ------------------------ 1046
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_property_countrylevelheritage','N','Boolean that activate the heritage of the property calculation at the country level. if N, a property will be considered as not available on country XXX when it does not exist for XXX and exist for any other country but XXX at testcase level (even if it has been defined at usestep or pretest level for that country XXX). If Y, it will be considered as defined for country XXX as long as it has been defined for that country at testcase, usestep or pretest level.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Document the title field from TestCaseExecution page
-        //-- ------------------------ 1047
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaseexecution', 'title', '', 'en', 'Test Case Execution', ''),");
-        SQLS.append("('page_testcaseexecution', 'title', '', 'fr', 'Execution des Cas de Test', ''),");
-        SQLS.append("('page_header', 'menuReportingExecutionList', '', 'en', 'Execution Report', ''),");
-        SQLS.append("('page_header', 'menuReportingExecutionList', '', 'fr', 'Rapport d\\'Execution', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add documentation for Execution Detail page
-        //-- ------------------------ 1048
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_executiondetail', 'forceexec', '', 'en', 'Force Execution', ''),");
-        SQLS.append("('page_executiondetail', 'forceexec', '', 'fr', 'Forcer L\\'Execution', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal1Init', '', 'en', 'Condition Value1 Initial', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal1Init', '', 'fr', 'Condition Value1 Initiale', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal2Init', '', 'en', 'Condition Value2 Initial', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal2Init', '', 'fr', 'Condition Value2 Initiale', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal1', '', 'en', 'Condition Value1', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal1', '', 'fr', 'Condition Value1', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal2', '', 'en', 'Condition Value2', ''),");
-        SQLS.append("('page_executiondetail', 'conditionVal2', '', 'fr', 'Condition Value2', ''),");
-        SQLS.append("('page_executiondetail', 'conditionOper', '', 'en', 'Condition Operator', ''),");
-        SQLS.append("('page_executiondetail', 'conditionOper', '', 'fr', 'Condition Opérateur', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Increase the testcaseexecutionqueue's comment column size
-        //-- ------------------------ 1049
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
-        SQLS.append("CHANGE COLUMN `comment` `comment` TEXT NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the Comment column header documentation
-        //-- ------------------------ 1050
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'en', 'Comment', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'comment_col', '', 'fr', 'Commentaire', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the loop column in step execution table
-        //-- ------------------------ 1051
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasestepexecution`  ");
-        SQLS.append("ADD COLUMN `loop` VARCHAR(45) NULL DEFAULT '' AFTER `Sort`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add missing columns to ExecutionPending page
-        //-- ------------------------ 1052
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'en', 'Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'fr', 'Nom du Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'en', 'Robot host', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'fr', 'Adresse du Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'en', 'Robot port', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'fr', 'Port du Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'en', 'Browser version', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'fr', 'Version du navigateur', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'en', 'Platform', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'fr', 'Platforme', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'en', 'Manual URL', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'fr', 'URL manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'en', 'Manual host', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'fr', 'Adresse manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'en', 'Manual context root', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'fr', 'Chemin de contexte manuel', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'en', 'Manual login relative URL', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'fr', 'URL relative du login manuel', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'en', 'Manual environment data', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'fr', 'Environnement manuel de données', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'en', 'Screenshots', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'fr', 'Captures d\\'écran', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'en', 'Page source', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'fr', 'Code source', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'en', 'Selenium log', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'fr', 'Journalisation Selenium', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'en', 'Verbose', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'fr', 'Verbeux', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'en', 'Timeout', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'fr', 'Durée d\\'attente limite', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'en', 'Request date', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'fr', 'Date d\\'insertion', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'en', 'Retries', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'fr', 'Tentatives', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'en', 'Manual execution', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'fr', 'Execution manuelle', '');");
-        SQLInstruction.add(SQLS.toString());
-        
-        // Add documentation for button remove on invariant
-        //-- ------------------------ 1053
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `cerberus`.`documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`) VALUES ");
-        SQLS.append("('page_invariant', 'button_remove', '', 'en', 'Delete Invariant'),");
-        SQLS.append("('page_invariant', 'button_remove', '', 'fr', 'Supprimer l\\'Invariant');");
-        SQLInstruction.add(SQLS.toString());
-        
 
         return SQLInstruction;
     }

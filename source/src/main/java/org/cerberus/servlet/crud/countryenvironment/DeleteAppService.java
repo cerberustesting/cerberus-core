@@ -18,16 +18,15 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.SoapLibrary;
-import org.cerberus.crud.factory.IFactorySoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
+import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -39,11 +38,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  * @author cte
  */
-public class CreateSoapLibrary2 extends HttpServlet {
+public class DeleteAppService extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -68,41 +68,50 @@ public class CreateSoapLibrary2 extends HttpServlet {
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
-        String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
-        String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
-        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
+
+        IAppServiceService soapLibraryService = appContext.getBean(IAppServiceService.class);
 
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isNullOrEmpty(service)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "SoapLibrary name is missing!"));
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
+                    .replace("%OPERATION%", "Delete")
+                    .replace("%REASON%", "AppService ID (service) is missing!"));
             ans.setResultMessage(msg);
-        }else{
+        } else {
             /**
              * All data seems cleans so we can call the services.
              */
-
-            ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-            IFactorySoapLibrary factorySoapLibrary = appContext.getBean(IFactorySoapLibrary.class);
-
-            SoapLibrary soapLib = factorySoapLibrary.create(type, name, envelope, description, servicePath, parsingAnswer, method);
-            ans = soapLibraryService.create(soapLib);
-
-            if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            AnswerItem resp = soapLibraryService.readByKey(service);
+            if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem()!=null)) {
                 /**
-                 * Adding Log entry.
+                 * Object could not be found. We stop here and report the error.
                  */
-                ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateSoapLibrary", "CREATE", "Create SOAPLibrary : " + name, request);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
+                        .replace("%OPERATION%", "Delete")
+                        .replace("%REASON%", "SoapLibrary does not exist."));
+                ans.setResultMessage(msg);
+
+            } else {
+                /**
+                 * The service was able to perform the query and confirm the
+                 * object exist, then we can delete it.
+                 */
+                AppService soapl = (AppService)resp.getItem();
+                ans = soapLibraryService.delete(soapl);
+
+                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                    /**
+                     * Adding Log entry.
+                     */
+                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService.createPrivateCalls("/DeleteAppService", "DELETE", "Delete AppService : " + service, request);
+                }
             }
         }
 
@@ -115,6 +124,7 @@ public class CreateSoapLibrary2 extends HttpServlet {
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
+
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
@@ -131,9 +141,9 @@ public class CreateSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
@@ -151,9 +161,9 @@ public class CreateSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(CreateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(CreateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(DeleteAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 

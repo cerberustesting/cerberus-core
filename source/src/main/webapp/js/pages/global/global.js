@@ -170,8 +170,11 @@ function displayDeployTypeList(selectName, defaultValue) {
  */
 function displayApplicationList(selectName, system, defaultValue) {
     var myData = "";
-    if (system !== "") {
+    if ((system !== "") && (system !== undefined) && (system !== null)) {
         myData = "system=" + system;
+    }
+    if (defaultValue !== undefined && defaultValue !== null) {
+        $("[name='" + selectName + "']").append($('<option></option>').text(defaultValue).val(defaultValue));
     }
     $.when($.getJSON("ReadApplication", myData)).then(function (data) {
         for (var option in data.contentTable) {

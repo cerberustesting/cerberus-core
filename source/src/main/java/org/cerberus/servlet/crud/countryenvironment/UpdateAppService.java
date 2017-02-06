@@ -18,9 +18,8 @@
 package org.cerberus.servlet.crud.countryenvironment;
 
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -40,21 +39,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.logging.Logger;
-import org.springframework.web.util.HtmlUtils;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  * @author cte
  */
-public class UpdateSoapLibrary2 extends HttpServlet {
+public class UpdateAppService extends HttpServlet {
+    
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateAppService.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     final void processRequest(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -64,21 +65,23 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-
+        
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
 
         // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
         // Parameter that needs to be secured --> We SECURE+DECODE them
-        String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
+        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
-        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Description"), null, charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ServicePath"), null, charset);
-        String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ParsingAnswer"), null, charset);
-        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("Method"), null, charset);
+        String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
+        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("servicePath"), null, charset);
+        String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), null, charset);
+        String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), null, charset);
+        String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String envelope = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("Envelope"), null, charset);
-        
+        String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
+
         // Prepare the final answer.
         MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
         Answer finalAnswer = new Answer(msg1);
@@ -86,48 +89,51 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         /**
          * Checking all constrains before calling the services.
          */
-        if (StringUtil.isNullOrEmpty(name)) {
+        if (StringUtil.isNullOrEmpty(service)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "SoapLibrary")
+            msg.setDescription(msg.getDescription().replace("%ITEM%", "AppService")
                     .replace("%OPERATION%", "Update")
-                    .replace("%REASON%", "SoapLibrary ID (name) is missing."));
+                    .replace("%REASON%", "AppService ID (service) is missing."));
             finalAnswer.setResultMessage(msg);
         } else {
             /**
              * All data seems cleans so we can call the services.
              */
-            ISoapLibraryService soapLibraryService = appContext.getBean(ISoapLibraryService.class);
-
-            AnswerItem resp = soapLibraryService.readByKey(name);
+            IAppServiceService soapLibraryService = appContext.getBean(IAppServiceService.class);
+            
+            AnswerItem resp = soapLibraryService.readByKey(service);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
-
+                
             } else {
                 /**
                  * The service was able to perform the query and confirm the
                  * object exist, then we can update it.
                  */
-                SoapLibrary soapLib = (SoapLibrary) resp.getItem();
-                soapLib.setType(type);
-                soapLib.setDescription(description);
-                soapLib.setEnvelope(envelope);
-                soapLib.setMethod(method);
-                soapLib.setParsingAnswer(parsingAnswer);
-                soapLib.setServicePath(servicePath);
-                ans = soapLibraryService.update(soapLib);
+                AppService appService = (AppService) resp.getItem();
+                appService.setGroup(group);
+                appService.setDescription(description);
+                appService.setServiceRequest(serviceRequest);
+                appService.setOperation(operation);
+                appService.setType(type);
+                appService.setApplication(application);
+                appService.setMethod(method);
+                appService.setServicePath(servicePath);
+                appService.setUsrModif(request.getRemoteUser());
+                ans = soapLibraryService.update(appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-
+                
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateSoapLibrary", "UPDATE", "Updated SoapLibrary : ['" + name + "']", request);
+                    logEventService.createPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
                 }
-
+                
             }
         }
 
@@ -136,7 +142,7 @@ public class UpdateSoapLibrary2 extends HttpServlet {
          */
         jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-
+        
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
@@ -145,10 +151,10 @@ public class UpdateSoapLibrary2 extends HttpServlet {
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -156,19 +162,19 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -176,9 +182,9 @@ public class UpdateSoapLibrary2 extends HttpServlet {
         try {
             this.processRequest(request, response);
         } catch (CerberusException ex) {
-            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(UpdateSoapLibrary2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(UpdateAppService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 

@@ -576,36 +576,20 @@
         <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSqlLibrary2</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.CreateSoapLibrary</servlet-class>
+        <servlet-name>CreateAppService</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateAppService</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateSoapLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.CreateSoapLibrary2</servlet-class>
+        <servlet-name>DeleteAppService</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteAppService</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteSoapLibrary</servlet-class>
+        <servlet-name>ReadAppService</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadAppService</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteSoapLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.DeleteSoapLibrary2</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindAllSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllSoapLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ReadSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadSoapLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateSoapLibrary</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateSoapLibrary</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>UpdateSoapLibrary2</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateSoapLibrary2</servlet-class>
+        <servlet-name>UpdateAppService</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.UpdateAppService</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CreateInvariant2</servlet-name>
@@ -1547,36 +1531,20 @@
         <url-pattern>/UpdateSqlLibrary2</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateSoapLibrary</servlet-name>
-        <url-pattern>/CreateSoapLibrary</url-pattern>
+        <servlet-name>CreateAppService</servlet-name>
+        <url-pattern>/CreateAppService</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateSoapLibrary2</servlet-name>
-        <url-pattern>/CreateSoapLibrary2</url-pattern>
+        <servlet-name>DeleteAppService</servlet-name>
+        <url-pattern>/DeleteAppService</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteSoapLibrary</servlet-name>
-        <url-pattern>/DeleteSoapLibrary</url-pattern>
+        <servlet-name>ReadAppService</servlet-name>
+        <url-pattern>/ReadAppService</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteSoapLibrary2</servlet-name>
-        <url-pattern>/DeleteSoapLibrary2</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindAllSoapLibrary</servlet-name>
-        <url-pattern>/FindAllSoapLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ReadSoapLibrary</servlet-name>
-        <url-pattern>/ReadSoapLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateSoapLibrary</servlet-name>
-        <url-pattern>/UpdateSoapLibrary</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateSoapLibrary2</servlet-name>
-        <url-pattern>/UpdateSoapLibrary2</url-pattern>
+        <servlet-name>UpdateAppService</servlet-name>
+        <url-pattern>/UpdateAppService</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>CreateInvariant2</servlet-name>
@@ -2081,7 +2049,7 @@
             <url-pattern>/ImportTestCase.jsp</url-pattern>
             <url-pattern>/TestData.jsp</url-pattern>
             <url-pattern>/SqlLibrary.jsp</url-pattern>
-            <url-pattern>/SoapLibrary.jsp</url-pattern>
+            <url-pattern>/AppService.jsp</url-pattern>
             <url-pattern>/TestDataLib.jsp</url-pattern>
             <url-pattern>/Label.jsp</url-pattern>
         </web-resource-collection>
@@ -2108,8 +2076,6 @@
             <url-pattern>/ReadTestDataLibData</url-pattern>
             <url-pattern>/FindAllSqlLibrary</url-pattern>
             <url-pattern>/ReadSqlLibrary</url-pattern>
-            <url-pattern>/FindAllSoapLibrary</url-pattern>
-            <url-pattern>/ReadSoapLibrary</url-pattern>
             <url-pattern>/PictureConnector</url-pattern>
             <url-pattern>/UseTestCaseStep</url-pattern>
             <url-pattern>/UpdateTestCaseWithDependencies</url-pattern>
@@ -2205,12 +2171,6 @@
             <url-pattern>/DeleteTestDataLib</url-pattern>
             <url-pattern>/UpdateTestDataLibData</url-pattern>
             <url-pattern>/UpdateTestDataLib</url-pattern>
-            <url-pattern>/CreateSoapLibrary</url-pattern>
-            <url-pattern>/DeleteSoapLibrary</url-pattern>
-            <url-pattern>/UpdateSoapLibrary</url-pattern>
-            <url-pattern>/CreateSoapLibrary2</url-pattern>
-            <url-pattern>/DeleteSoapLibrary2</url-pattern>
-            <url-pattern>/UpdateSoapLibrary2</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestDataManager</description>
@@ -2253,6 +2213,7 @@
             <url-pattern>/ReadCountryEnvironmentDatabase</url-pattern>
             <url-pattern>/ReadCountryEnvironmentParameters</url-pattern>
             <url-pattern>/ReadCountryEnvLink</url-pattern>
+            <url-pattern>/ReadAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>IntegratorRO</description>
@@ -2298,6 +2259,9 @@
             <url-pattern>/CreateBatchInvariant</url-pattern>
             <url-pattern>/DeleteBatchInvariant</url-pattern>
             <url-pattern>/UpdateBatchInvariant</url-pattern>
+            <url-pattern>/CreateAppService</url-pattern>
+            <url-pattern>/DeleteAppService</url-pattern>
+            <url-pattern>/UpdateAppService</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Integrator</description>

@@ -17,13 +17,15 @@
  */
 package org.cerberus.crud.factory;
 
-import org.cerberus.crud.entity.SoapLibrary;
+import java.sql.Timestamp;
+import org.cerberus.crud.entity.AppService;
 
 /**
  *
  * @author cte
  */
-public interface IFactorySoapLibrary {
+public interface IFactoryAppService {
 
-    SoapLibrary create(String type, String name, String envelope, String description, String servicePath, String parsingAnswer, String method);
+    AppService create(String service, String type, String method, String application, String group, String serviceRequest, 
+            String description, String servicePath, String parsingAnswer, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

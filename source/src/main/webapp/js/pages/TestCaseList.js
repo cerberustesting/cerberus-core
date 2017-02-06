@@ -446,7 +446,7 @@ function aoColumnsFunc(countries, tableId) {
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var testCaseBetaLink = '<button id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
+                var editScript = '<button id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
                                     data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick="window.open(\'./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '\', \'_blank\')">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </button>';
@@ -465,7 +465,7 @@ function aoColumnsFunc(countries, tableId) {
                     buttons += deleteEntry;
                 }
                 buttons += runTest;
-                buttons += testCaseBetaLink;
+                buttons += editScript;
 
 
 

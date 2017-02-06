@@ -32,7 +32,7 @@ import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestData;
@@ -42,13 +42,12 @@ import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
-import org.cerberus.crud.service.ISoapLibraryService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.CountryEnvironmentDatabaseService;
-import org.cerberus.crud.service.impl.SoapLibraryService;
+import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.crud.service.impl.SqlLibraryService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.crud.service.impl.TestDataService;
@@ -62,6 +61,7 @@ import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.cerberus.crud.service.IAppServiceService;
 
 /**
  * {Insert class description here}
@@ -112,18 +112,18 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                 description = td.getDescription();
 
             } else if (type.equals("executeSoapFromLib")) {
-                ISoapLibraryService soapLibraryService = appContext.getBean(SoapLibraryService.class);
+                IAppServiceService appServiceService = appContext.getBean(AppServiceService.class);
                 ISoapService soapService = appContext.getBean(ISoapService.class);
                 IXmlUnitService xmlUnitService = appContext.getBean(IXmlUnitService.class);
-                SoapLibrary soapLib = soapLibraryService.findSoapLibraryByKey(property);
-                if (soapLib != null) {
+                AppService appService = appServiceService.findAppServiceByKey(property);
+                if (appService != null) {
                     ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), null);
-                    String attachement = soapLib.getAttachmentUrl();
-                    soapService.callSOAP(soapLib.getEnvelope(), soapLib.getServicePath(), soapLib.getMethod(), attachement);
-                    result = xmlUnitService.getFromXml(executionUUID.toString(), null, soapLib.getParsingAnswer());
-                    description = soapLib.getDescription();
+                    String attachement = appService.getAttachmentUrl();
+                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement);
+                    result = xmlUnitService.getFromXml(executionUUID.toString(), null, appService.getParsingAnswer());
+                    description = appService.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
                     MyLogger.log(CalculatePropertyForTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
                 }

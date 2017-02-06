@@ -21,22 +21,21 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.ISoapLibraryDAO;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.crud.factory.impl.FactorySoapLibrary;
+import org.cerberus.crud.factory.impl.FactoryAppService;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.crud.entity.SoapLibrary;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.factory.IFactorySoapLibrary;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
@@ -46,6 +45,8 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.cerberus.crud.factory.IFactoryAppService;
+import org.cerberus.crud.dao.IAppServiceDAO;
 
 /**
  * {Insert class description here}
@@ -53,7 +54,7 @@ import org.springframework.stereotype.Repository;
  * @author cte
  */
 @Repository
-public class SoapLibraryDAO implements ISoapLibraryDAO {
+public class AppServiceDAO implements IAppServiceDAO {
 
     /**
      * Description of the variable here.
@@ -61,59 +62,67 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactorySoapLibrary factorySoapLib;
+    private IFactoryAppService factoryAppService;
 
-    private static final Logger LOG = Logger.getLogger(ParameterDAO.class);
+    private static final Logger LOG = Logger.getLogger(AppServiceDAO.class);
 
     private final int MAX_ROW_SELECTED = 100000;
     private final String SQL_DUPLICATED_CODE = "23000";
 
-    private final String OBJECT_NAME = "SqlLibrary";
+    private final String OBJECT_NAME = "AppService";
 
     @Override
-    public SoapLibrary findSoapLibraryByKey(String name) throws CerberusException {
+    public AppService findAppServiceByKey(String service) throws CerberusException {
         boolean throwEx = false;
-        SoapLibrary result = null;
-        final String query = "SELECT * FROM soaplibrary  WHERE NAME = ?";
+        AppService result = null;
+        final String query = "SELECT * FROM appservice  WHERE `service` = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, name);
+                preStat.setString(1, service);
 
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
-                        String type = resultSet.getString("Type");
-                        String envelope = resultSet.getString("Envelope");
+                        String group = resultSet.getString("Group");
+                        String serviceRequest = resultSet.getString("ServiceRequest");
                         String description = resultSet.getString("Description");
                         String servicePath = resultSet.getString("servicePath");
                         String parsingAnswer = resultSet.getString("parsingAnswer");
-                        String method = resultSet.getString("method");
-                        result = this.factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+                        String operation = resultSet.getString("Operation");
+                        String application = resultSet.getString("Application");
+                        String type = resultSet.getString("Type");
+                        String method = resultSet.getString("Method");
+                        String usrModif = resultSet.getString("UsrModif");
+                        String usrCreated = resultSet.getString("UsrCreated");
+                        Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
+                        Timestamp dateModif = resultSet.getTimestamp("DateModif");
+
+                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, parsingAnswer, operation, usrCreated, dateCreated, usrModif, dateModif);
                     } else {
                         throwEx = true;
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            MyLogger.log(AppServiceDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
+                MyLogger.log(AppServiceDAO.class.getName(), Level.WARN, e.toString());
             }
         }
         if (throwEx) {
@@ -123,391 +132,39 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     }
 
     @Override
-    public void createSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO soaplibrary (`Type`, `Name`, `Envelope`, `Description`, `ServicePath`, `ParsingAnswer`, `Method`) ");
-        query.append("VALUES (?,?,?,?,?,?,?);");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, soapLibrary.getType());
-                preStat.setString(2, soapLibrary.getName());
-                preStat.setString(3, soapLibrary.getEnvelope());
-                preStat.setString(4, soapLibrary.getDescription());
-                preStat.setString(5, soapLibrary.getServicePath());
-                preStat.setString(6, soapLibrary.getParsingAnswer());
-                preStat.setString(7, soapLibrary.getMethod());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public void updateSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("update soaplibrary set `envelope`=?, `description`=?, `type`=?, 'servicePath'=?, 'parsingAnswer'=?, 'method'=?  where `name`=? ");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, soapLibrary.getEnvelope());
-                preStat.setString(2, soapLibrary.getDescription());
-                preStat.setString(3, soapLibrary.getType());
-                preStat.setString(4, soapLibrary.getName());
-                preStat.setString(5, soapLibrary.getServicePath());
-                preStat.setString(6, soapLibrary.getParsingAnswer());
-                preStat.setString(7, soapLibrary.getMethod());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public void deleteSoapLibrary(SoapLibrary soapLibrary) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("delete from soaplibrary where `Name`=? ");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, soapLibrary.getName());
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public List<SoapLibrary> findAllSoapLibrary() {
-        List<SoapLibrary> list = null;
-        final String query = "SELECT * FROM SoapLibrary";
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query);
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                list = new ArrayList<SoapLibrary>();
-                try {
-                    while (resultSet.next()) {
-                        list.add(this.loadFromResultSet(resultSet));
-                    }
-                } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        return list;
-    }
-
-    @Override
-    public List<SoapLibrary> findSoapLibraryListByCriteria(int start, int amount, String column, String dir, String searchTerm, String individualSearch) {
-        List<SoapLibrary> soapLibraryList = new ArrayList<SoapLibrary>();
-        StringBuilder gSearch = new StringBuilder();
-        StringBuilder searchSQL = new StringBuilder();
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM soaplibrary ");
-
-        gSearch.append(" where (`type` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `name` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `envelope` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !individualSearch.equals("")) {
-            searchSQL.append(gSearch.toString());
-            searchSQL.append(" and ");
-            searchSQL.append(individualSearch);
-        } else if (!individualSearch.equals("")) {
-            searchSQL.append(" where `");
-            searchSQL.append(individualSearch);
-            searchSQL.append("`");
-        } else if (!searchTerm.equals("")) {
-            searchSQL.append(gSearch.toString());
-        }
-
-        query.append(searchSQL);
-        query.append("order by `");
-        query.append(column);
-        query.append("` ");
-        query.append(dir);
-        query.append(" limit ");
-        query.append(start);
-        query.append(" , ");
-        query.append(amount);
-
-        SoapLibrary soapLibrary;
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    while (resultSet.next()) {
-                        soapLibraryList.add(this.loadFromResultSet(resultSet));
-                    }
-
-                } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, e.toString());
-            }
-        }
-        return soapLibraryList;
-    }
-
-    @Override
-    public void updateSoapLibrary(String name, String columnName, String value) throws CerberusException {
-        boolean throwExcep = false;
-        StringBuilder query = new StringBuilder();
-        query.append("update soaplibrary set `");
-        query.append(columnName);
-        query.append("`=? where `name`=? ");
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                preStat.setString(1, value);
-                preStat.setString(2, name);
-
-                preStat.executeUpdate();
-                throwExcep = false;
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.WARN, e.toString());
-            }
-        }
-        if (throwExcep) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
-        }
-    }
-
-    @Override
-    public Integer getNumberOfSoapLibraryPerCrtiteria(String searchTerm, String inds) {
-        Integer result = 0;
-        StringBuilder query = new StringBuilder();
-        StringBuilder gSearch = new StringBuilder();
-        String searchSQL = "";
-
-        query.append("SELECT count(*) FROM soaplibrary");
-
-        gSearch.append(" where (`name` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `type` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `envelope` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%'");
-        gSearch.append(" or `description` like '%");
-        gSearch.append(searchTerm);
-        gSearch.append("%')");
-
-        if (!searchTerm.equals("") && !inds.equals("")) {
-            searchSQL = gSearch.toString() + " and " + inds;
-        } else if (!inds.equals("")) {
-            searchSQL = " where " + inds;
-        } else if (!searchTerm.equals("")) {
-            searchSQL = gSearch.toString();
-        }
-
-        query.append(searchSQL);
-
-        Connection connection = this.databaseSpring.connect();
-        try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            try {
-                ResultSet resultSet = preStat.executeQuery();
-                try {
-
-                    if (resultSet.first()) {
-                        result = resultSet.getInt(1);
-                    }
-
-                } catch (SQLException exception) {
-                    MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-                } finally {
-                    resultSet.close();
-                }
-
-            } catch (SQLException exception) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-            } finally {
-                preStat.close();
-            }
-
-        } catch (SQLException exception) {
-            MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                MyLogger.log(SoapLibraryDAO.class.getName(), Level.ERROR, e.toString());
-            }
-        }
-        return result;
-
-    }
-
-    @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
 
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<SoapLibrary> objectList = new ArrayList<SoapLibrary>();
+        List<AppService> objectList = new ArrayList<AppService>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM soaplibrary sol ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservice srv ");
 
         query.append(" WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (sol.Name like ?");
-            searchSQL.append(" or sol.Type like ?");
-            searchSQL.append(" or sol.ServicePath like ?");
-            searchSQL.append(" or sol.Method like ?");
-            searchSQL.append(" or sol.ParsingAnswer like ?");
-            searchSQL.append(" or sol.Description like ?");
-            searchSQL.append(" or sol.Envelope like ?)");
+            searchSQL.append(" and (srv.Name like ?");
+            searchSQL.append(" or srv.Type like ?");
+            searchSQL.append(" or srv.ServicePath like ?");
+            searchSQL.append(" or srv.Method like ?");
+            searchSQL.append(" or srv.ParsingAnswer like ?");
+            searchSQL.append(" or srv.Description like ?");
+            searchSQL.append(" or srv.Envelope like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
                 searchSQL.append(" and ");
-                String key = "IFNULL(sol." + entry.getKey() + ",'')";
+                String key = "IFNULL(" + entry.getKey() + ",'')";
                 String q = SqlUtil.getInSQLClauseForPreparedStatement(key, entry.getValue());
                 if (q == null || q == "") {
-                    q = "(sol." + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
+                    q = "(" + entry.getKey() + " IS NULL OR " + entry.getKey() + " = '')";
                 }
                 searchSQL.append(q);
                 individalColumnSearchValues.addAll(entry.getValue());
@@ -518,7 +175,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by sol.").append(column).append(" ").append(dir);
+            query.append(" order by ").append(column).append(" ").append(dir);
         }
 
         if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
@@ -625,10 +282,10 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     public AnswerItem readByKey(String key) {
         AnswerItem a = new AnswerItem();
         StringBuilder query = new StringBuilder();
-        SoapLibrary p = new SoapLibrary();
+        AppService p = new AppService();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        query.append("SELECT * FROM soaplibrary sol WHERE Name = ?");
+        query.append("SELECT * FROM appservice srv WHERE `Service` = ?");
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
@@ -661,18 +318,24 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     }
 
     @Override
-    public SoapLibrary loadFromResultSet(ResultSet rs) throws SQLException {
-        String name = ParameterParserUtil.parseStringParam(rs.getString("Name"), "");
-        String type = ParameterParserUtil.parseStringParam(rs.getString("Type"), "");
+    public AppService loadFromResultSet(ResultSet rs) throws SQLException {
+        String service = ParameterParserUtil.parseStringParam(rs.getString("Service"), "");
+        String group = ParameterParserUtil.parseStringParam(rs.getString("Group"), "");
         String servicePath = ParameterParserUtil.parseStringParam(rs.getString("ServicePath"), "");
-        String method = ParameterParserUtil.parseStringParam(rs.getString("Method"), "");
-        String envelope = ParameterParserUtil.parseStringParam(rs.getString("Envelope"), "");
-        String parsingAnswer = ParameterParserUtil.parseStringParam(rs.getString("ParsingAnswer"), "");
+        String operation = ParameterParserUtil.parseStringParam(rs.getString("Operation"), "");
+        String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("ServiceRequest"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
+        String type = ParameterParserUtil.parseStringParam(rs.getString("Type"), "");
+        String method = ParameterParserUtil.parseStringParam(rs.getString("Method"), "");
+        String application = ParameterParserUtil.parseStringParam(rs.getString("Application"), "");
+        String usrModif = rs.getString("UsrModif");
+        String usrCreated = rs.getString("UsrCreated");
+        Timestamp dateCreated = rs.getTimestamp("DateCreated");
+        Timestamp dateModif = rs.getTimestamp("DateModif");
 
         //TODO remove when working in test with mockito and autowired
-        factorySoapLib = new FactorySoapLibrary();
-        return factorySoapLib.create(type, name, envelope, description, servicePath, parsingAnswer, method);
+        factoryAppService = new FactoryAppService();
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, "", operation, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -686,39 +349,39 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct sol.");
+        query.append("SELECT distinct srv.");
         query.append(columnName);
-        query.append(" as distinctValues FROM soaplibrary sol");
+        query.append(" as distinctValues FROM appservice srv");
         query.append(" where 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (sol.Name like ?");
-            searchSQL.append(" or sol.Type like ?");
-            searchSQL.append(" or sol.ServicePath like ?");
-            searchSQL.append(" or sol.Method like ?");
-            searchSQL.append(" or sol.ParsingAnswer like ?");
-            searchSQL.append(" or sol.Description like ?");
-            searchSQL.append(" or sol.Envelope like ?)");
+            searchSQL.append(" and (srv.Service like ?");
+            searchSQL.append(" or srv.Group like ?");
+            searchSQL.append(" or srv.ServicePath like ?");
+            searchSQL.append(" or srv.Operation like ?");
+            searchSQL.append(" or srv.ParsingAnswer like ?");
+            searchSQL.append(" or srv.Description like ?");
+            searchSQL.append(" or srv.ServiceRequest like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
             for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
-                searchSQL.append(" and sol.");
+                searchSQL.append(" and srv.");
                 searchSQL.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
                 individalColumnSearchValues.addAll(entry.getValue());
             }
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(sol.").append(columnName).append(",'')");
-        query.append(" order by sol.").append(columnName).append(" asc");
+        query.append(" group by ifnull(srv.").append(columnName).append(",'')");
+        query.append(" order by srv.").append(columnName).append(" asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -777,11 +440,15 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     }
 
     @Override
-    public Answer create(SoapLibrary object) {
+    public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO soaplibrary (`Name`, `Type`, `ServicePath`, `Method`, `Envelope`, `ParsingAnswer`, `Description`) ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `Description`) ");
+        if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+            query.append("VALUES (?,?,?,?,?,?,?,?,?)");
+        } else {
+            query.append("VALUES (?,?,null,?,?,?,?,?,?)");
+        }
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -791,13 +458,18 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, object.getName());
-                preStat.setString(2, object.getType());
-                preStat.setString(3, object.getServicePath());
-                preStat.setString(4, object.getMethod());
-                preStat.setString(5, object.getEnvelope());
-                preStat.setString(6, object.getParsingAnswer());
-                preStat.setString(7, object.getDescription());
+                int i = 1;
+                preStat.setString(i++, object.getService());
+                preStat.setString(i++, object.getGroup());
+                if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+                    preStat.setString(i++, object.getApplication());
+                }
+                preStat.setString(i++, object.getType());
+                preStat.setString(i++, object.getMethod());
+                preStat.setString(i++, object.getServicePath());
+                preStat.setString(i++, object.getOperation());
+                preStat.setString(i++, object.getServiceRequest());
+                preStat.setString(i++, object.getDescription());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -833,25 +505,39 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     }
 
     @Override
-    public Answer update(SoapLibrary object) {
+    public Answer update(AppService object) {
         MessageEvent msg = null;
-        final String query = "UPDATE soaplibrary sol SET Type = ?, `ServicePath` = ?, `Method` = ?, Envelope = ?, ParsingAnswer = ?, Description = ? WHERE Name = ?";
+        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, ParsingAnswer = ?, Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
+        if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+            query += " ,Application = ?";
+        } else {
+            query += " ,Application = null";
+        }
+        query += " WHERE `Service` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.application : " + object.getApplication());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getType());
-                preStat.setString(2, object.getServicePath());
-                preStat.setString(3, object.getMethod());
-                preStat.setString(4, object.getEnvelope());
-                preStat.setString(5, object.getParsingAnswer());
-                preStat.setString(6, object.getDescription());
-                preStat.setString(7, object.getName());
+                int i = 1;
+                preStat.setString(i++, object.getGroup());
+                preStat.setString(i++, object.getServicePath());
+                preStat.setString(i++, object.getOperation());
+                preStat.setString(i++, object.getServiceRequest());
+                preStat.setString(i++, object.getParsingAnswer());
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getType());
+                preStat.setString(i++, object.getMethod());
+                preStat.setString(i++, object.getUsrModif());
+                if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
+                    preStat.setString(i++, object.getApplication());
+                }
+                preStat.setString(i++, object.getService());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -880,9 +566,9 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
     }
 
     @Override
-    public Answer delete(SoapLibrary object) {
+    public Answer delete(AppService object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM soaplibrary WHERE name = ? ";
+        final String query = "DELETE FROM appservice WHERE `Service` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -892,7 +578,7 @@ public class SoapLibraryDAO implements ISoapLibraryDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getName());
+                preStat.setString(1, object.getService());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

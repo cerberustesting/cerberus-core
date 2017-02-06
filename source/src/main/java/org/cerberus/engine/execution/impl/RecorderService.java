@@ -315,7 +315,7 @@ public class RecorderService implements IRecorderService {
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), SoapUtil.convertSoapMessageToString(se.getSOAPResponse()));
 
                 // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "SOAP Response", recorderRequest.getRelativeFilenameURL(), "XML", "", null, "", null);
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "SOAP Response", recorderResponse.getRelativeFilenameURL(), "XML", "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
             }

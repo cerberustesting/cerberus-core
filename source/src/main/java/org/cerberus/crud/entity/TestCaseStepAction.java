@@ -74,8 +74,7 @@ public class TestCaseStepAction {
     public static final String ACTION_SELECT = "select";
     public static final String ACTION_TYPE = "type";
     public static final String ACTION_WAIT = "wait";
-    public static final String ACTION_CALLSOAP = "callSoap";
-    public static final String ACTION_CALLSOAPWITHBASE = "callSoapWithBase";
+    public static final String ACTION_CALLSERVICE = "callService";
     public static final String ACTION_REMOVEDIFFERENCE = "removeDifference";
     public static final String ACTION_EXECUTESQLUPDATE = "executeSqlUpdate";
     public static final String ACTION_EXECUTESQLSTOREPROCEDURE = "executeSqlStoredProcedure";
