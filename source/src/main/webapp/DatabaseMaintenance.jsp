@@ -17,6 +17,9 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
 --%>
+<%@page import="org.springframework.context.ApplicationContext"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="org.apache.log4j.Level"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils" %>
 <%@page import="org.cerberus.crud.factory.IFactoryMyversion"%>
@@ -32,15 +35,16 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <%@ include file="include/dependenciesInclusions.html" %>
         <title>Cerberus Database Maintenance</title>
-        <link rel="stylesheet" type="text/css" href="css/crb_style.css">
-        <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
-        <script type="text/javascript" src="dependencies/zz_OldDependencies/js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/pages/DatabaseMaintenance.js"></script>
     </head>
     <body>
-        <%@ include file="include/function.jsp" %>
-        <%@ include file="include/header.jsp" %>
-        <div id="body">
+        <%@ include file="include/header.html" %>
+        <div class="container-fluid center" id="page-layout">
+            <%@ include file="include/messagesArea.html"%>
+            <%@ include file="include/utils/modal-confirmation.html"%>
+            <h1 class="page-title-line" id="title">Database Maintenance</h1>
             <%
                 Integer NewVersion;
                 // Full script that create the cerberus database.
@@ -68,23 +72,17 @@
                 try {
                     // I get here the current version of the database. (null if no database found)
                     MyVersion DtbVersion = null;
+                    ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
                     IMyVersionService myVersionService = appContext.getBean(IMyVersionService.class);
                     if (myVersionService.findMyVersionByKey("database") != null) {
                         DtbVersion = myVersionService.findMyVersionByKey("database");
                     } else {
-                        out.print("<h1><b>Database is empty. A first version needs to be initialised. Please click on <i>Initialize Database</i> button bellow in order to initialize it. If already done, please click on <i>Apply Next SQL</i> button until all SQLs has been executed.<br>Anytime you will deploy a new version of Cerberus, you will have to come back to this page (Menu : Admin / Database Maintenance) and execute the missing SQL in order to upgrade the database.</b></h1><br><br>");
+                        out.print("<div class=\"alert alert-warning\"><strong>Database is empty. A first version needs to be initialised. Please click on <i>Initialize Database</i> button bellow in order to initialize it. If already done, please click on <i>Apply Next SQL</i> button until all SQLs has been executed.<br>Anytime you will deploy a new version of Cerberus, you will have to come back to this page (Menu : Admin / Database Maintenance) and execute the missing SQL in order to upgrade the database.</strong></div>");
                         factoryMyversion = new FactoryMyversion();
                         DtbVersion = factoryMyversion.create("database", 0);
                     }
 
                     // Displaying the current version of the database.
-                    out.print("<br><table><tr><td><b>Current<br>Database Version : ");
-                    out.print("</b></td>");
-                    out.print("<td><b>Target<br>Database Version : </td>");
-                    out.print("</b></td></tr><tr><td><b>");
-                    out.print(DtbVersion.getValue());
-                    out.print("</b></td>");
-
                     // Start to build the SQL Script here.
                     SQLInstruction = new ArrayList<String>();
                     appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
@@ -96,133 +94,145 @@
 
                     // Calculate the version that will be updated. Version correspond directly to the size of the arry (ie the number of SQL to execute)
                     NewVersion = SQLInstruction.size();
-                    out.print("<td><i><b>");
-                    out.print(NewVersion);
-                    out.print("</b></i></td></tr></table>");
-                    out.print("<br>");
 
                     if (DtbVersion.getValue() < NewVersion) {
-                        out.print("<h1>SQL performed in that Batch :</h1><br>");
-                        out.print("<table>");
-                        out.print("<tr><td>version</td><td>SQL</td></tr>");
-                        Integer i = 0;
-                        for (String MySQL : SQLInstruction) {
-                            i = i + 1;
-                            if ((i > DtbVersion.getValue()) && ((request.getParameter("GO") != null))) { // Only if the SQL has not been executed already. and button pressed.
-                            if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
-                                    out.print("<tr><td>");
-                                    out.print(i);
-                                    out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"5\" style=\"font-size:x-small;width: 100%\" readonly>");
-                                    out.print(MySQL.replace("</textarea>", "</text4rea>"));
-                                    out.print("</textarea></td>");
-                                    // Execute the SQL Here
-                                    MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
-                                    MySQLRC = databaseVersionService.exeSQL(MySQL);
-                                    SQLExecuted = true;
-                                    SQLRC.add(MySQLRC);
-                                    if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3
-                                        // Update the myversion table to comit the execution of the SQL Instruction.
-                                        DtbVersion.setValue(i);
-                                        myVersionService.UpdateMyVersionTable(DtbVersion);
-                                    }
-                                    if (i >= 4) { // The log table is only available after the Version 4
-                                        // Log the SQL execution here
-                                    }
-                                    if (MySQLRC.equalsIgnoreCase("OK")) {
-                                        out.print("<td class=\"OK\">");
-                                        out.print(MySQLRC);
-                                        out.print("</td>");
-                                    } else {
-                                        out.print("<td class=\"KO\">");
-                                        out.print(MySQLRC);
-                                        out.print("</td>");
-                                    }
-                                    out.println("</tr>");
-                                }
-                            }
+                        String ButtonText = "Apply Next SQL";
+                        if (DtbVersion.getValue() == 0) {
+                            ButtonText = "Initialize Database";
                         }
-                        out.print("</table>");
-                        DtbVersion = myVersionService.findMyVersionByKey("database");
-                        if (DtbVersion == null) {
-                            factoryMyversion = new FactoryMyversion();
-                            DtbVersion = factoryMyversion.create("database", 0);
-                        }
-                        out.print("<b>Database Moved to Version : ");
-                        out.print(DtbVersion.getValue());
-                        out.print("</b><br><br>");
+
+                        out.print("<div class=\"row\"><div class=\"form-group col-xs-2\">");
+                        out.print("<label for=\"databaseVersion\" name=\"databaseVersion\">Database Version</label>");
+                        out.print("<input type=\"text\" class=\"form-control\" name=\"databaseVersion\" aria-describedby=\"basic-addon1\" value=\"" + DtbVersion.getValue() + "\" readonly></div>");
+                        out.print("<div class=\"form-group col-xs-2\">");
+                        out.print("<label for=\"targetVersion\" name=\"targetVersion\">Target Database Version</label>");
+                        out.print("<input type=\"text\" class=\"form-control\" name=\"targetDatabaseVersion\" aria-describedby=\"basic-addon1\" value=\"" + SQLInstruction.size() + "\" readonly></div></div>");
+                        out.print("<input class=\"btn btn-warning btn-lg\" type=\"submit\" value=\"" + ButtonText + "\" onClick=\"ExecApply.submit(); this.disabled=true; this.value='Processing...'; \">");
 
                         if (DtbVersion.getValue() < NewVersion) {
-                            out.print("<h1>Pending SQL To be performed : </h1><br>");
-                            String ButtonText = "Apply Next SQL";
-                            if (DtbVersion.getValue()==0) {
-                                ButtonText = "Initialize Database";
-                            }
-            %><form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
-                <input style="font-size: large" type="submit" value="<%=ButtonText%>" onClick="this.form.submit(); this.disabled=true; this.value='Processing...'; "></form>
-                <%
-                                i = 0;
-                                out.print("<table>");
-                                out.print("<tr><td>version</td><td>SQL</td></tr>");
-                                for (String MySQL : SQLInstruction) {
-                                    i = i + 1;
-                                    if (i > DtbVersion.getValue()) {
-                                        out.print("<tr><td>");
+                            out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  SQL performed in that Batch :</label></div>");
+                            out.print("<div class=\"panel-body\"><table class=\"table table-hover\">");
+                            out.print("<tr><th class=\"col-md-1\">version</th><th class=\"col-md-9\">SQL</th><th class=\"col-md-2\">Status</th></tr>");
+                            Integer i = 0;
+                            for (String MySQL : SQLInstruction) {
+                                i = i + 1;
+                                if ((i > DtbVersion.getValue()) && ((request.getParameter("GO") != null))) { // Only if the SQL has not been executed already. and button pressed.
+                                    if ((i < SQLLimit) || (SQLExecuted == false)) { // After version SQLLimit, only 1 execution at a time.
+                                        // Execute the SQL Here
+                                        MyLogger.log("DatabaseMaintenance.jsp", Level.INFO, "Execute SQL to version : " + i + " / " + SQLInstruction.size());
+                                        MySQLRC = databaseVersionService.exeSQL(MySQL);
+                                        SQLExecuted = true;
+                                        SQLRC.add(MySQLRC);
+                                        String colorClass = "";
+                                        if (MySQLRC.equalsIgnoreCase("OK")) {
+                                            colorClass = "success";
+                                        } else {
+                                            colorClass = "danger";
+                                        }
+                                        
+                                        out.print("<tr class=\""+colorClass+"\"><td>");
                                         out.print(i);
-                                        out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
+                                        out.print("</td><td class=\"wob\" style=\"padding: 0\"><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                         out.print("</textarea></td>");
+                                        
+                                        if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3
+                                            // Update the myversion table to comit the execution of the SQL Instruction.
+                                            DtbVersion.setValue(i);
+                                            myVersionService.UpdateMyVersionTable(DtbVersion);
+                                        }
+                                        if (i >= 4) { // The log table is only available after the Version 4
+                                            // Log the SQL execution here
+                                        }
+                                        out.print("<td>");
+                                            out.print(MySQLRC);
+                                            out.print("</td>");
                                         out.println("</tr>");
                                     }
                                 }
-                                out.print("</table>");
                             }
-                        }
+                            out.print("</table>");
 
-                        if (DtbVersion.getValue() == (NewVersion)) { // Database is already (or just have been) updated
-
-                            out.print("Database is now uptodate. Enjoy the tool.<br>");
-                            out.print("Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.");
-                            %>
-                            <script>function clearSessionStorage(){
-                                sessionStorage.clear();
-                                console.log("sessionStorage cleared");
+                            DtbVersion = myVersionService.findMyVersionByKey("database");
+                            if (DtbVersion == null) {
+                                factoryMyversion = new FactoryMyversion();
+                                DtbVersion = factoryMyversion.create("database", 0);
                             }
-                            clearSessionStorage();
-                            </script>
+                            out.print("<b>Database Moved to Version : ");
+                            out.print(DtbVersion.getValue());
+                            out.print("</b><br><br></div></div>");
+
+                            if (DtbVersion.getValue() < NewVersion) {
+                                out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  Pending SQL To be performed :</label></div>");
+                            }
+            %><form action="DatabaseMaintenance.jsp?GO=Y" method="post" name="ExecApply" id="ExecApply">
+            </form>
             <%
-                            if (request.getParameter("ShowAll") != null) {
-                                Integer i = 0;
-                                out.print("<table>");
-                                out.print("<tr><td>version</td><td>SQL</td></tr>");
-                                for (String MySQL : SQLInstruction) {
-                                    i = i + 1;
-                                    out.print("<tr><td>");
-                                    out.print(i);
-                                    out.print("</td><td class=\"wob\" style=\"width: 900px\"><textarea name=\"SQL\" rows=\"3\" style=\"font-size:x-small;width: 100%\" readonly>");
-                                    out.print(MySQL.replace("</textarea>", "</text4rea>"));
-                                    out.print("</textarea></td>");
-                                    out.println("</tr>");
-                                }
-                                out.print("</table>");
+                        i = 0;
+                        out.print("<div class=\"panel-body\"><table class=\"table table-hover\">");
+                        out.print("<tr><th class=\"col-md-1\">version</th><th class=\"col-md-11\">SQL</th></tr>");
+                        for (String MySQL : SQLInstruction) {
+                            i = i + 1;
+                            if (i > DtbVersion.getValue()) {
+                                out.print("<tr><td>");
+                                out.print(i);
+                                out.print("</td><td class=\"wob\" style=\"padding:0\"><textarea class=\"form-control\" name=\"SQL\" rows=\"3\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
+                                out.print(MySQL.replace("</textarea>", "</text4rea>"));
+                                out.print("</textarea></td>");
+                                out.println("</tr>");
                             }
-
                         }
-
-                        if (DtbVersion.getValue() > NewVersion) { // Database is earlier than what it is supposed to do. In theory, that should never happen.
-
-                            out.print("Database version is earlier than application. Please update the version of Cerberus quickly as retro compatibility is not supported.<br>");
-
-                        }
-
-                    } catch (Exception exception1) {
-                        MyLogger.log("DatabaseMaintenance.jsp", Level.ERROR, exception1.toString());
-                        out.print(exception1.toString());
-                    } finally {
+                        out.print("</table></div></div>");
                     }
-                %>         
+                }
+
+                if (DtbVersion.getValue() == (NewVersion)) { // Database is already (or just have been) updated
+
+                    out.print("<h3>Database is now uptodate. Enjoy the tool.</h3><br>");
+                    out.print("<h4>Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.</h4>");
+            %>
+            <script>function clearSessionStorage() {
+                    sessionStorage.clear();
+                    console.log("sessionStorage cleared");
+                }
+                clearSessionStorage();
+            </script>
+            <%
+                        if (request.getParameter("ShowAll") != null) {
+                            Integer i = 0;
+                            out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  All SQL Scripts :</label></div>");
+                            out.print("<div class=\"panel-body\"><table class=\"table table-hover\">");
+                            out.print("<tr><th class=\"col-md-1\">version</th><th class=\"col-md-11\">SQL</th></tr>");
+                            for (String MySQL : SQLInstruction) {
+                                i = i + 1;
+                                out.print("<tr><td>");
+                                out.print(i);
+                                out.print("</td><td class=\"wob\" style=\"padding:0\"><textarea class=\"form-control\" name=\"SQL\" rows=\"3\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
+                                out.print(MySQL.replace("</textarea>", "</text4rea>"));
+                                out.print("</textarea></td>");
+                                out.println("</tr>");
+                            }
+                            out.print("</table></div></div>");
+                        }
+
+                    }
+
+                    if (DtbVersion.getValue() > NewVersion) { // Database is earlier than what it is supposed to do. In theory, that should never happen.
+
+                        out.print("<div class=\"alert alert-danger\"><strong>Database version is earlier than application. Please update the version of Cerberus quickly as retro compatibility is not supported.</strong></div><br>");
+
+                    }
+
+                } catch (Exception exception1) {
+                    MyLogger.log("DatabaseMaintenance.jsp", Level.ERROR, exception1.toString());
+                    out.print(exception1.toString());
+                } finally {
+                }
+            %>         
+            <footer class="footer">
+                <div class="container-fluid" id="footer"></div>
+            </footer>
         </div>
-        <br><%
-            out.print(display_footer(DatePageStart));
-        %>
+        <br>
     </body>
 </html>
