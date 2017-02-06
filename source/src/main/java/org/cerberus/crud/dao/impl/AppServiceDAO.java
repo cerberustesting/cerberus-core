@@ -126,7 +126,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             }
         }
         if (throwEx) {
-            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.SQLLIB_NOT_FOUND));
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
         return result;
     }
@@ -280,41 +280,64 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public AnswerItem readByKey(String key) {
-        AnswerItem a = new AnswerItem();
-        StringBuilder query = new StringBuilder();
-        AppService p = new AppService();
+        AnswerItem ans = new AnswerItem();
+        AppService result = null;
+        final String query = "SELECT * FROM `appservice` WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        query.append("SELECT * FROM appservice srv WHERE `Service` = ?");
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.service : " + key);
+        }
+
         Connection connection = this.databaseSpring.connect();
         try {
-            PreparedStatement preStat = connection.prepareStatement(query.toString());
-            preStat.setString(1, key);
-            ResultSet resultSet = preStat.executeQuery();
-            //gets the data
-            while (resultSet.next()) {
-                p = this.loadFromResultSet(resultSet);
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, key);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
             }
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
-        } catch (SQLException e) {
-            LOG.error("Unable to execute query : " + e.toString());
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
-            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", e.toString()));
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
         } finally {
             try {
-                if (!this.databaseSpring.isOnTransaction()) {
-                    if (connection != null) {
-                        connection.close();
-                    }
+                if (connection != null) {
+                    connection.close();
                 }
             } catch (SQLException exception) {
                 LOG.warn("Unable to close connection : " + exception.toString());
             }
         }
-        a.setResultMessage(msg);
-        a.setItem(p);
-        return a;
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
     }
 
     @Override

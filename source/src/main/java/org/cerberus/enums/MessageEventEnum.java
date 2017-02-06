@@ -221,6 +221,8 @@ public enum MessageEventEnum {
     ACTION_FAILED_MOUSEDOWN_NO_SUCH_ELEMENT(283, "FA", "Failed to left click because could not find element '%ELEMENT%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find element '%WINDOW%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close to alert popup !", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALLSERVICE(286, "FA", "Failed to call the Service '%SERVICE%'. Caused by : %DESCRIPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALLSERVICEWITHPATH(286, "FA", "Failed to call the Service '%SERVICE%' on Service Path '%SERVICEPATH%'. Caused by : %DESCRIPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP(286, "FA", "Failed to call the SOAP Operation '%SOAPMETHOD%' on Service Path %SERVICEPATH% ! Caused by : %DESCRIPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP_ENVELOPEMISSING(286, "FA", "Failed to call the SOAP because Envelope is not defined.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING(286, "FA", "Failed to call the SOAP because Service Path is not defined.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),

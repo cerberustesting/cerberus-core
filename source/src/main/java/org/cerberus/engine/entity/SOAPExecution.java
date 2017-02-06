@@ -19,8 +19,6 @@
  */
 package org.cerberus.engine.entity;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import javax.xml.soap.SOAPMessage;
 
 /**
