@@ -21,6 +21,7 @@ package org.cerberus.crud.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -86,9 +87,13 @@ public interface ITestCaseExecutionInQueueDAO {
 
     void toWaiting(long id) throws CerberusException;
 
+    List<Long> toWaiting(List<Long> ids) throws CerberusException;
+
     void toError(long id, String comment) throws CerberusException;
 
     void toCancelled(long id) throws CerberusException;
+
+    List<Long> toCancelled(List<Long> ids) throws CerberusException;
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 

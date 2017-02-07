@@ -1,45 +1,42 @@
 package org.cerberus.servlet.engine.threadpool;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
-import org.cerberus.util.json.ObjectMapperUtil;
-import org.springframework.context.ApplicationContext;
+import org.cerberus.servlet.api.EmptyRequest;
+import org.cerberus.servlet.api.GetableHttpServlet;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author abourdon
  */
 @WebServlet(name = "ReadExecutionPools", urlPatterns = {"/ReadExecutionPools"})
-public class ReadExecutionPools extends HttpServlet {
-
-    private static final String CONTENT_TYPE = "application/json";
-    private static final String CHARACTER_ENCODING = "UTF-8";
-
-    private ObjectMapper objectMapper;
+public class ReadExecutionPools extends GetableHttpServlet<EmptyRequest, Collection<ExecutionThreadPoolStats>> {
 
     private IExecutionThreadPoolService executionThreadPoolService;
 
     @Override
     public void init() throws ServletException {
-        objectMapper = ObjectMapperUtil.newInstance();
-
-        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        super.init();
+        executionThreadPoolService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(IExecutionThreadPoolService.class);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType(CONTENT_TYPE);
-        resp.setCharacterEncoding(CHARACTER_ENCODING);
-        resp.getWriter().print(objectMapper.writeValueAsString(executionThreadPoolService.getStats()));
-        resp.getWriter().flush();
+    protected EmptyRequest parseRequest(final HttpServletRequest req) throws RequestParsingException {
+        return new EmptyRequest();
     }
 
+    @Override
+    protected Collection<ExecutionThreadPoolStats> processRequest(final EmptyRequest emptyRequest) throws RequestProcessException {
+        return executionThreadPoolService.getStats();
+    }
+
+    @Override
+    protected String getUsageDescription() {
+        return "No parameter needed";
+    }
 }
