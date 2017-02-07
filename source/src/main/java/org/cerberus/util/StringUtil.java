@@ -323,6 +323,47 @@ public final class StringUtil {
 
     /**
      *
+     * This method is used to build an URL from host, contextroot and uri by
+     * managing the /.<br>
+     * For Ex : host = www.laredoute.fr/, contextroot = /fr/, uri = /toto.jsp
+     * will provide the result : www.laredoute.fr/fr/toto.jsp<br>
+     * in stead of www.laredoute.fr//fr//toto.jsp<br>
+     * host = www.laredoute.fr, contextroot = fr, uri = toto.jsp will provide
+     * the result : www.laredoute.fr/fr/toto.jsp<br>
+     * in stead of www.laredoute.frfrtoto.jsp<br>
+     * Protocol will be added in case host did not already have the protocol.
+     *
+     * @param host
+     * @param contextRoot
+     * @param uri
+     * @param protocol
+     * @return true is URL looks OK and false on any other cases.
+     */
+    public static String getURLFromString(String host, String contextRoot, String uri, String protocol) {
+        String result = "";
+        if (!isNullOrEmpty(host)) {
+            result += StringUtil.addSuffixIfNotAlready(host, "/");
+        }
+        if (!isNullOrEmpty(contextRoot)) {
+            if (contextRoot.startsWith("/")) {
+                contextRoot = contextRoot.substring(1);
+            }
+            result += StringUtil.addSuffixIfNotAlready(contextRoot, "/");
+        }
+        if (!isNullOrEmpty(uri)) {
+            if (uri.startsWith("/")) {
+                uri = uri.substring(1);
+            }
+            result += uri;
+        }
+        if (!(StringUtil.isURL(result))) { // If still does not look lke an URL, we add protocol string ( ex : http://) by default.
+            result = protocol + result;
+        }
+        return result;
+    }
+
+    /**
+     *
      * @param text
      * @param suffix
      * @return

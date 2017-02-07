@@ -260,7 +260,7 @@ public class WebDriverService implements IWebDriverService {
         }
         return false;
     }
-    
+
     @Override
     public boolean isElementNotPresent(Session session, Identifier identifier) {
         By locator = this.getBy(identifier);
@@ -835,7 +835,7 @@ public class WebDriverService implements IWebDriverService {
             if (!StringUtil.isNull(identifier.getLocator())) {
                 if (withBase) {
                     host = StringUtil.cleanHostURL(host);
-                    url = host + identifier.getLocator();
+                    url = StringUtil.getURLFromString(host, "", identifier.getLocator(), "");
                 } else {
                     url = StringUtil.cleanHostURL(identifier.getLocator());
                 }
@@ -970,7 +970,7 @@ public class WebDriverService implements IWebDriverService {
         MessageEvent message;
 
         host = StringUtil.cleanHostURL(host);
-        String url = host + (host.endsWith("/") ? uri.replace("/", "") : uri);
+        String url = StringUtil.getURLFromString(host, "", uri, "");
 
         try {
             session.getDriver().get(url);

@@ -161,7 +161,7 @@ public class DataLibService implements IDataLibService {
         }
 
         /**
-         * Get the dataObject from the list depending on the nature
+         * Filter the result from requested rows depending on the nature
          */
         result = filterWithNature(testCaseCountryProperty.getNature(), resultData, tCExecution, testCaseCountryProperty, nbRowsRequested);
 
@@ -210,7 +210,8 @@ public class DataLibService implements IDataLibService {
      * @param dataObjectList : List of dataObject
      * @param tCExecution : TestCaseExecution
      * @param testCaseCountryProperties : TestCaseCountryProperties
-     * @return one item (dataObject) from the dataObjectList
+     * @return List of items (dataObject) from the dataObjectList filtered out
+     * of records depending on the nature.
      */
     private AnswerList<HashMap<String, String>> filterWithNature(String nature, AnswerList dataObjectList, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperties, int outputRequestedDimention) {
         switch (nature) {
@@ -781,7 +782,7 @@ public class DataLibService implements IDataLibService {
                                     return result;
                                 }
                                 // soapURL from database is not empty so we prefix the Service URL with it.
-                                servicePath = soapURL + lib.getServicePath();
+                                servicePath = StringUtil.getURLFromString(soapURL, "", lib.getServicePath(), "");
 
                                 if (!StringUtil.isURL(servicePath)) {
                                     msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKO);

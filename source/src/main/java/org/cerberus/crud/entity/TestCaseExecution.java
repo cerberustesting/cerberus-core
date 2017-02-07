@@ -51,8 +51,8 @@ public class TestCaseExecution {
     private String controlStatus;
     private String controlMessage;
     private String application;
-    private String ip; // Host the Selenium IP
     private String url;
+    private String ip; // Host the Selenium IP
     private String port; // host the Selenium Port
     private String tag;
     private String finished;
