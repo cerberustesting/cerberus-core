@@ -84,7 +84,7 @@ public class SoapService implements ISoapService {
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
         MimeHeaders headers = new MimeHeaders();
-        headers.addHeader("SOAPAction", method);
+        headers.addHeader("SOAPAction", "\""+method+"\"");
         headers.addHeader("Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
 
         InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
@@ -121,7 +121,7 @@ public class SoapService implements ISoapService {
         SOAPExecution executionSOAP = new SOAPExecution();
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
-
+        
         if (StringUtils.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
             result.setResultMessage(message);

@@ -885,7 +885,7 @@ public class ActionService implements IActionService {
             if (!(StringUtil.isURL(servicePath))) {
                 // If appService value does not look like an URL, it means it is relative and we add the application host and context root.
                 servicePath = StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getIp(), "/");
-                servicePath += StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getUrl(), "/");
+                servicePath += StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getUrl(), "");
                 servicePath += appService.getServicePath();
 
                 if (!(StringUtil.isURL(servicePath))) { // If still does not look lke an URL, we add http:// by default.
