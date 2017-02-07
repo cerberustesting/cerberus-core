@@ -149,13 +149,19 @@ public class AppServiceDAO implements IAppServiceDAO {
         query.append(" WHERE 1=1");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (srv.Name like ?");
+            searchSQL.append(" and (srv.Service like ?");
+            searchSQL.append(" or srv.Application like ?");
             searchSQL.append(" or srv.Type like ?");
             searchSQL.append(" or srv.ServicePath like ?");
             searchSQL.append(" or srv.Method like ?");
-            searchSQL.append(" or srv.ParsingAnswer like ?");
+            searchSQL.append(" or srv.Operation like ?");
+            searchSQL.append(" or srv.ServiceRequest like ?");
+            searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.Description like ?");
-            searchSQL.append(" or srv.Envelope like ?)");
+            searchSQL.append(" or srv.UsrCreated like ?");
+            searchSQL.append(" or srv.DateCreated like ?");
+            searchSQL.append(" or srv.UsrModif like ?");
+            searchSQL.append(" or srv.DateModif like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -195,6 +201,12 @@ public class AppServiceDAO implements IAppServiceDAO {
                 int i = 1;
 
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
