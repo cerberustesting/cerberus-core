@@ -222,7 +222,7 @@ public class ActionService implements IActionService {
 
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)) {
             res = this.doActionCallService(testCaseStepActionExecution, value1);
-            
+
         } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_REMOVEDIFFERENCE)) {
             res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
 
@@ -870,92 +870,155 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
-        MessageEvent message;
+        MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
         String decodedEnveloppe;
         String decodedServicePath = null;
-        String decodedMethod;
+        String decodedOperation;
         AnswerItem lastSoapCalled;
+
         try {
-            AppService appService = appServiceService.findAppServiceByKey(value1);
+            AppService appService = appServiceService.convert(appServiceService.readByKey(value1));
             String servicePath;
 
-            // We first try with appService value.
-            servicePath = appService.getServicePath();
-            if (!(StringUtil.isURL(servicePath))) {
-                // If appService value does not look like an URL, it means it is relative and we add the application host and context root.
-                servicePath = StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getIp(), "/");
-                servicePath += StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getUrl(), "");
-                servicePath += appService.getServicePath();
+            if (appService == null) {
 
-                if (!(StringUtil.isURL(servicePath))) { // If still does not look lke an URL, we add http:// by default.
-                    servicePath = "http://" + servicePath;
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service does not exist !!"));
+
+            } else {
+
+                // We start by calculating the servicePath and decode it.
+                servicePath = appService.getServicePath();
+                if (!(StringUtil.isURL(servicePath))) {
+                    // If appService value does not look like an URL, it means it is relative and we add the application host and context root.
+                    servicePath = StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getIp(), "/");
+                    servicePath += StringUtil.addSuffixIfNotAlready(tCExecution.getCountryEnvironmentParameters().getUrl(), "");
+                    servicePath += appService.getServicePath();
+
+                    if (!(StringUtil.isURL(servicePath))) { // If still does not look lke an URL, we add http:// by default.
+                        servicePath = "http://" + servicePath;
+                    }
+                }
+                decodedServicePath = servicePath;
+                try {
+                    if (appService.getServicePath().contains("%")) {
+                        decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    }
+                    //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
+                    if (testCaseStepActionExecution.isStopExecution()) {
+                        return testCaseStepActionExecution.getActionResultMessage();
+                    }
+                } catch (CerberusEventException cee) {
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICEWITHPATH);
+                    message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                    message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+                    message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
+                    return message;
+                }
+
+                // The rest of the data will be prepared depending on the TYPE and METHOD used.
+                switch (appService.getType()) {
+                    case AppService.TYPE_SOAP:
+
+                        /**
+                         * SOAP. Decode Envelope and Operation replacing
+                         * properties encapsulated with %
+                         */
+                        decodedEnveloppe = appService.getServiceRequest();
+                        decodedOperation = appService.getOperation();
+                        try {
+                            if (appService.getServiceRequest().contains("%")) {
+                                decodedEnveloppe = variableService.decodeStringCompletly(decodedEnveloppe, tCExecution, testCaseStepActionExecution, false);
+                            }
+                            if (appService.getOperation().contains("%")) {
+                                decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
+                            }
+
+                            //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
+                            if (testCaseStepActionExecution.isStopExecution()) {
+                                return testCaseStepActionExecution.getActionResultMessage();
+                            }
+                        } catch (CerberusEventException cee) {
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
+                            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
+                            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+                            message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
+                            return message;
+                        }
+
+                        /**
+                         * Add attachment.
+                         */
+                        String attachement = "";
+                        //TODO: the picture url should be used instead of the property value
+                        //the database does not include the attachmentURL field 
+                        /*if (!property.isEmpty()) {
+                        attachement = property; 
+                    } else {
+                        attachement = soapLibrary.getAttachmentUrl();
+                    }*/
+
+                        /**
+                         * Call SOAP and store it into the execution.
+                         */
+                        lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedOperation, attachement);
+                        tCExecution.setLastSOAPCalled(lastSoapCalled);
+
+                        /**
+                         * Record the Request and Response in filesystem.
+                         */
+                        SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
+                        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
+                        message = lastSoapCalled.getResultMessage();
+
+                        break;
+
+                    case AppService.TYPE_REST:
+
+                        /**
+                         * REST.
+                         */
+                        switch (appService.getMethod()) {
+                            case AppService.METHOD_HTTPGET:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "REST-GET not implemented yet"));
+                                break;
+                            case AppService.METHOD_HTTPPOST:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "REST-POST not implemented yet"));
+                                break;
+                            default:
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
+                        }
+
+                        break;
+
+                    default:
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", value1));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service Type : '" + appService.getType() + "' is not supported by the engine."));
                 }
             }
-            /**
-             * Decode Envelope, ServicePath and Method replacing properties
-             * encapsulated with %
-             */
-            decodedEnveloppe = appService.getServiceRequest();
-            decodedServicePath = servicePath;
-            decodedMethod = appService.getOperation();
-
-            try {
-                if (appService.getServiceRequest().contains("%")) {
-                    decodedEnveloppe = variableService.decodeStringCompletly(decodedEnveloppe, tCExecution, testCaseStepActionExecution, false);
-                }
-                if (appService.getServicePath().contains("%")) {
-                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
-                }
-                if (appService.getOperation().contains("%")) {
-                    decodedMethod = variableService.decodeStringCompletly(decodedMethod, tCExecution, testCaseStepActionExecution, false);
-                }
-
-                //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
-                if (testCaseStepActionExecution.isStopExecution()) {
-                    return testCaseStepActionExecution.getActionResultMessage();
-                }
-            } catch (CerberusEventException cee) {
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
-                message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
-                message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
-                return message;
-            }
-
-            /*
-             * Add attachment
-             */
-            String attachement = "";
-            //TODO: the picture url should be used instead of the property value
-            //the database does not include the attachmentURL field 
-            /*if (!property.isEmpty()) {
-             attachement = property; 
-             } else {
-             attachement = soapLibrary.getAttachmentUrl();
-             }*/
-            lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
-            tCExecution.setLastSOAPCalled(lastSoapCalled);
 
         } catch (CerberusException ex) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
-            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+            message.setDescription(message.getDescription().replace("%SERVICE%", value1));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
             return message;
         } catch (Exception ex) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
-            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+            message.setDescription(message.getDescription().replace("%SERVICE%", value1));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
             return message;
         }
 
-        //Record the Request and Response in filesystem.
-        SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
-        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
-
-        return lastSoapCalled.getResultMessage();
+        return message;
     }
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {

@@ -65,7 +65,6 @@ import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerList;
 import org.cerberus.websocket.TestCaseExecutionEndPoint;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriverException;
@@ -76,9 +75,10 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.cerberus.engine.execution.IExecutionStartService;
+import org.cerberus.engine.execution.IRunTestCaseService;
 
 /**
  *
@@ -458,7 +458,7 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
-                        TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
+                            TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
                         }
 
                         step_index++;
@@ -523,6 +523,12 @@ public class ExecutionRunService implements IExecutionRunService {
                 //TODO:FN debug messages to be removed
                 org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
                         "[DEBUG] Exception cleaning Memory:" + ex.getMessage());
+            }
+
+            if (tCExecution.getNumberOfRetries() > 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
+                tCExecution.decreaseNumberOfRetries();
+                IRunTestCaseService runTestCaseService = new RunTestCaseService();
+                runTestCaseService.runTestCase(tCExecution);
             }
 
             MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()

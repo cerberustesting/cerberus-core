@@ -334,16 +334,16 @@ public class RunTestCase extends HttpServlet {
                  * Loop on the execution of the testcase until we get an OK or
                  * reached the number of retries.
                  */
-                while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
+                //while (tCExecution.getNumberOfRetries() >= 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
                     try {
                         LOG.debug("Start execution " + tCExecution.getId());
                         tCExecution = runTestCaseService.runTestCase(tCExecution);
-                        tCExecution.decreaseNumberOfRetries();
+                     //   tCExecution.decreaseNumberOfRetries();
                     } catch (Exception ex) {
                         LOG.error("Error while executing RunTestCase ", ex);
-                        break;
+                  //      break;
                     }
-                }
+               // }
 
                 /**
                  * If execution happened, we Log the Execution.

@@ -44,7 +44,7 @@ public interface IAppServiceService {
      * @param sort
      * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
-     * @return 
+     * @return
      */
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
@@ -52,7 +52,7 @@ public interface IAppServiceService {
      * Get the {@link AppService} of the given key
      *
      * @param key the key of the {@link AppService} to get
-     * @return 
+     * @return
      */
     AnswerItem readByKey(String key);
 
@@ -62,7 +62,7 @@ public interface IAppServiceService {
      * @param columnName the Column name to get
      * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
-     * @return 
+     * @return
      */
     AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
@@ -83,5 +83,28 @@ public interface IAppServiceService {
      * @return {@link AnswerItem}
      */
     Answer delete(AppService object);
+
+    /**
+     *
+     * @param answerItem
+     * @return
+     * @throws CerberusException
+     */
+    AppService convert(AnswerItem answerItem) throws CerberusException;
+
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<AppService> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 
 }

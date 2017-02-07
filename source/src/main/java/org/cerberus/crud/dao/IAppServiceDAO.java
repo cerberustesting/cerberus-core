@@ -37,23 +37,17 @@ public interface IAppServiceDAO {
 
     AppService findAppServiceByKey(String name) throws CerberusException;
 
-
-
-
-
-
-
-
     /**
-     * Get the {@link AppService} List of the given {@link System} with the given Criteria
+     * Get the {@link AppService} List of the given {@link System} with the
+     * given Criteria
      *
-     * @param startPosition    the start index to look for
-     * @param length           the number of {@link AppService} to get
-     * @param columnName       the Column name to sort
+     * @param startPosition the start index to look for
+     * @param length the number of {@link AppService} to get
+     * @param columnName the Column name to sort
      * @param sort
-     * @param searchParameter  the string to search in the {@link AppService}
+     * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
-     * @return 
+     * @return
      */
     AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
@@ -61,17 +55,17 @@ public interface IAppServiceDAO {
      * Get the {@link AppService} of the given key
      *
      * @param key the key of the {@link AppService} to get
-     * @return 
+     * @return
      */
     AnswerItem readByKey(String key);
 
     /**
      * Get the distinctValue of the column
      *
-     * @param columnName       the Column name to get
-     * @param searchParameter  the string to search in the {@link AppService}
+     * @param columnName the Column name to get
+     * @param searchParameter the string to search in the {@link AppService}
      * @param individualSearch the string to search for each column
-     * @return 
+     * @return
      */
     AnswerList readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
