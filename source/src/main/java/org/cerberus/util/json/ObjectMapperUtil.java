@@ -18,7 +18,7 @@ public final class ObjectMapperUtil {
      *
      * @return a new {@link ObjectMapper} instance with additional configuration
      */
-    public static ObjectMapper newInstance() {
+    public static ObjectMapper newDefaultInstance() {
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         return objectMapper;

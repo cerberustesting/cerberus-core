@@ -1,30 +1,22 @@
 package org.cerberus.servlet.engine.threadpool;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonSyntaxException;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
-import org.cerberus.util.json.ObjectMapperUtil;
+import org.cerberus.servlet.api.EmptyResponse;
+import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.util.validity.Validity;
-import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
-import java.io.IOException;
 
 /**
  * @author abourdon
  */
 @WebServlet(name = "ManageExecutionPool", urlPatterns = {"/ManageExecutionPool"})
-public class ManageExecutionPool extends HttpServlet {
+public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool.Request, EmptyResponse> {
 
-    private static class RequestBody implements Validity {
+    /* default */ static class Request implements Validity {
 
         private Action action;
 
@@ -42,6 +34,7 @@ public class ManageExecutionPool extends HttpServlet {
         public boolean isValid() {
             return action != null && executionPoolKey != null && executionPoolKey.isValid();
         }
+
     }
 
     private enum Action {
@@ -50,48 +43,39 @@ public class ManageExecutionPool extends HttpServlet {
         STOP
     }
 
-    private static final String CONTENT_TYPE = "application/json";
-    private static final String CHARACTER_ENCODING = "UTF-8";
-
-    private ObjectMapper objectMapper;;
-
     private IExecutionThreadPoolService executionThreadPoolService;
 
     @Override
     public void init() throws ServletException {
-        objectMapper = ObjectMapperUtil.newInstance();
-
-        final ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        executionThreadPoolService = appContext.getBean(IExecutionThreadPoolService.class);
+        super.init();
+        executionThreadPoolService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(IExecutionThreadPoolService.class);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType(CONTENT_TYPE);
-        resp.setCharacterEncoding(CHARACTER_ENCODING);
+    protected Class<Request> getRequestType() {
+        return Request.class;
+    }
 
-        final RequestBody requestBody;
-        try {
-            requestBody = getBody(req);
-            if (requestBody == null || !requestBody.isValid()) {
-                throw new JsonSyntaxException("Invalid request body");
-            }
-        } catch (JsonSyntaxException e) {
-            usage(req, resp);
-            return;
-        }
-
-        switch (requestBody.getAction()) {
+    @Override
+    protected EmptyResponse processRequest(final Request request) throws RequestProcessException {
+        switch (request.getAction()) {
             case PAUSE:
-                pauseExecutionPool(requestBody.getExecutionPoolKey());
+                pauseExecutionPool(request.getExecutionPoolKey());
                 break;
             case RESUME:
-                resumeExecutionPool(requestBody.getExecutionPoolKey());
+                resumeExecutionPool(request.getExecutionPoolKey());
                 break;
             case STOP:
-                stopExecutionPool(requestBody.getExecutionPoolKey());
+                stopExecutionPool(request.getExecutionPoolKey());
                 break;
         }
+        return new EmptyResponse();
+    }
+
+    @Override
+    protected String getUsageDescription() {
+        // TODO describe the Json object structure
+        return "Need to have the action to execute and the thread pool key from which execute action";
     }
 
     private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {
@@ -104,42 +88,6 @@ public class ManageExecutionPool extends HttpServlet {
 
     private void stopExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {
         executionThreadPoolService.removeExecutionThreadPool(executionPoolKey);
-    }
-
-    private RequestBody getBody(HttpServletRequest req) throws IOException, JsonSyntaxException {
-        StringBuilder body = new StringBuilder();
-
-        BufferedReader reader = new BufferedReader(req.getReader());
-        for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-            body.append(line);
-        }
-
-        return objectMapper.readValue(body.toString(), RequestBody.class);
-    }
-
-    private void usage(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        resp.getWriter().print(
-                String.format(
-                        "{" +
-                            "\"usage\": {" +
-                                "\"description\": \"Pause, Resume or Stop a given Execution Thread Pool\"," +
-                                "\"target\": \"POST %s\"," +
-                                "\"body\": {" +
-                                    "\"action\": \"[PAUSE, RESUME, STOP]\"," +
-                                    "\"executionPoolKey\": {" +
-                                        "\"system\": \"<the execution pool's system>\"," +
-                                        "\"application\": \"<the execution pool's application>\"," +
-                                        "\"country\": \"<the execution pool's country>\"," +
-                                        "\"environment\": \"<the execution pool's environment>\"" +
-                                    "}" +
-                                "}" +
-                            "}" +
-                        "}",
-                        req.getRequestURL().toString()
-                )
-        );
-        resp.getWriter().flush();
     }
 
 }

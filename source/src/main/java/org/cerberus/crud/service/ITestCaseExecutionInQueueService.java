@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -75,6 +76,8 @@ public interface ITestCaseExecutionInQueueService {
 
     void toWaiting(long id) throws CerberusException;
 
+    List<Long> toWaiting(List<Long> ids) throws CerberusException;
+
     List<TestCaseExecutionInQueue> toQueued() throws CerberusException;
 
     List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException;
@@ -84,6 +87,8 @@ public interface ITestCaseExecutionInQueueService {
     void toError(long id, String comment) throws CerberusException;
 
     void toCancelled(long id) throws CerberusException;
+
+    List<Long> toCancelled(List<Long> ids) throws CerberusException;
 
     /**
      * Find the list of TestCaseWithExecution object from testcaseexecutionqueue

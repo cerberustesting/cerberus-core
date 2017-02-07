@@ -475,6 +475,40 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
+    public List<Long> toWaiting(final List<Long> ids) throws CerberusException {
+        final List<Long> inSuccess = new ArrayList<>(ids);
+        final List<Long> inError = new ArrayList<>();
+        try (
+                final Connection connection = databaseSpring.connect();
+                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)
+        ) {
+            // First, create batch statement
+            for (final long id: ids) {
+                try {
+                    fillUpdateStateNotFromStateStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
+                    updateStateStatement.addBatch();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to WAITING", e);
+                    inSuccess.remove(id);
+                    inError.add(id);
+                }
+            }
+
+            // Then execute batch statement and parse result
+            final int[] batchExecutionResult = updateStateStatement.executeBatch();
+            for (int batchExecutionResultIndex = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
+                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
+                    inError.add(inSuccess.get(batchExecutionResultIndex));
+                }
+            }
+            return inError;
+        } catch (SQLException e) {
+            LOG.warn("Unable to move state to WAITING for selected executions in queue", e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
     public void toError(long id, String comment) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
@@ -506,6 +540,40 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             }
         } catch (SQLException e) {
             LOG.warn("Unable to move state from QUEUED to CANCELLED for execution in queue id " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public List<Long> toCancelled(final List<Long> ids) throws CerberusException {
+        final List<Long> inSuccess = new ArrayList<>(ids);
+        final List<Long> inError = new ArrayList<>();
+        try (
+                final Connection connection = databaseSpring.connect();
+                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
+        ) {
+            // First, create batch statement
+            for (final long id: ids) {
+                try {
+                    fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.QUEUED, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+                    updateStateStatement.addBatch();
+                } catch (SQLException e) {
+                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to CANCELLED", e);
+                    inSuccess.remove(id);
+                    inError.add(id);
+                }
+            }
+
+            // Then execute batch statement and parse result
+            final int[] batchExecutionResult = updateStateStatement.executeBatch();
+            for (int batchExecutionResultIndex = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
+                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
+                    inError.add(inSuccess.get(batchExecutionResultIndex));
+                }
+            }
+            return inError;
+        } catch (SQLException e) {
+            LOG.warn("Unable to move state to CANCELLED for selected executions in queue", e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }

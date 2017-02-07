@@ -76,6 +76,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public List<Long> toWaiting(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.toWaiting(ids);
+    }
+
+    @Override
     public List<TestCaseExecutionInQueue> toQueued() throws CerberusException {
         return testCaseExecutionInQueueDAO.toQueued(ITestCaseExecutionInQueueDAO.UNLIMITED_FETCH_SIZE);
     }
@@ -98,6 +103,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     @Override
     public void toCancelled(long id) throws CerberusException {
         testCaseExecutionInQueueDAO.toCancelled(id);
+    }
+
+    @Override
+    public List<Long> toCancelled(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.toCancelled(ids);
     }
 
     @Override
