@@ -4,6 +4,8 @@ package org.cerberus.util.threadpool;
  * Created by aurel on 31/01/2017.
  */
 
+import org.apache.log4j.Logger;
+
 import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -14,7 +16,13 @@ import java.util.concurrent.FutureTask;
  * <p>
  * From the H. M. Kabutz's javaspecialists issue: http://www.javaspecialists.eu/archive/Issue228.html
  * <p>
- * Edit: change {@link #findRealTask} signature to accept {@link Object} instead of {@link Runnable}
+ * Edit:
+ * <ul>
+ * <li>change {@link #findRealTask} signature to accept {@link Object} instead of {@link Runnable}</li>
+ * <li>be compatible with old {@link FutureTask} implementations before change due to http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7132378</li>
+ * <li>reinforce exception catching during class initialization</li>
+ * <li>add logger to read exception message easier</li>
+ * </ul>
  *
  * @author Heinz M. Kabutz
  * @author abourdon
@@ -24,10 +32,18 @@ public class JobDiscoverer {
     private static final Class<? extends Callable> adapterClass;
     private static final Field runnableInAdapter;
 
+    private static final Logger LOGGER = Logger.getLogger(JobDiscoverer.class);
+
     static {
         try {
-            callableInFutureTask =
-                    FutureTask.class.getDeclaredField("callable");
+            Field callableInFutureTaskCandidate;
+            try {
+                callableInFutureTaskCandidate =
+                        FutureTask.class.getDeclaredField("callable");
+            } catch (NoSuchFieldException e) {
+                callableInFutureTaskCandidate = FutureTask.class.getDeclaredField("sync").getType().getDeclaredField("callable");
+            }
+            callableInFutureTask = callableInFutureTaskCandidate;
             callableInFutureTask.setAccessible(true);
             adapterClass = Executors.callable(new Runnable() {
                 public void run() {
@@ -36,7 +52,8 @@ public class JobDiscoverer {
             runnableInAdapter =
                     adapterClass.getDeclaredField("task");
             runnableInAdapter.setAccessible(true);
-        } catch (NoSuchFieldException e) {
+        } catch (Exception e) {
+            LOGGER.error("Unable to initialize JobDiscover due to " + e.getMessage(), e);
             throw new ExceptionInInitializerError(e);
         }
     }
