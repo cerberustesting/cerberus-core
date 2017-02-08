@@ -19,7 +19,7 @@
  */
 package org.cerberus.engine.entity.threadpool;
 
-import org.cerberus.util.threadpool.JobDiscoverer;
+import org.cerberus.util.threadpool.jobdiscoverer.JobDiscovererManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +214,7 @@ public class ExecutionThreadPool<T extends Runnable> {
         };
         for (final Map.Entry<ManageableThreadPoolExecutor.TaskState, List<? super Object>> rawTaskGroup : rawTasks.entrySet()) {
             for (final Object rawTask : rawTaskGroup.getValue()) {
-                formatedTasks.get(rawTaskGroup.getKey()).add((T) JobDiscoverer.findRealTask(rawTask));
+                formatedTasks.get(rawTaskGroup.getKey()).add((T) JobDiscovererManager.getInstance().findRealTask(rawTask));
             }
         }
         return formatedTasks;
@@ -258,7 +258,7 @@ public class ExecutionThreadPool<T extends Runnable> {
             // Finally retrieve the original tasks submitted to #submit(Runnable) from the remaining
             final List<T> originalRemainingTasks = new ArrayList<>(remainingTasks.size());
             for (Runnable task : remainingTasks) {
-                originalRemainingTasks.add((T) JobDiscoverer.findRealTask(task));
+                originalRemainingTasks.add((T) JobDiscovererManager.getInstance().findRealTask(task));
             }
             return originalRemainingTasks;
         }
