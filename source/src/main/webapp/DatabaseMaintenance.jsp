@@ -112,7 +112,7 @@
                         if (DtbVersion.getValue() < NewVersion) {
                             out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  SQL performed in that Batch :</label></div>");
                             out.print("<div class=\"panel-body\"><table class=\"table table-hover\">");
-                            out.print("<tr><th class=\"col-md-1\">version</th><th class=\"col-md-9\">SQL</th><th class=\"col-md-2\">Status</th></tr>");
+                            out.print("<tr><th>version</th><th>SQL</th><th>Status</th></tr>");
                             Integer i = 0;
                             for (String MySQL : SQLInstruction) {
                                 i = i + 1;
@@ -132,7 +132,7 @@
                                         
                                         out.print("<tr class=\""+colorClass+"\"><td>");
                                         out.print(i);
-                                        out.print("</td><td class=\"wob\" style=\"padding: 0\"><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
+                                        out.print("</td><td class=\"wob\"><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                         out.print("</textarea></td>");
                                         
@@ -144,9 +144,9 @@
                                         if (i >= 4) { // The log table is only available after the Version 4
                                             // Log the SQL execution here
                                         }
-                                        out.print("<td>");
+                                        out.print("<td><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                             out.print(MySQLRC);
-                                            out.print("</td>");
+                                            out.print("</textarea></td>");
                                         out.println("</tr>");
                                     }
                                 }

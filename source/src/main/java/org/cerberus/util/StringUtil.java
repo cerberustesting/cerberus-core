@@ -337,7 +337,7 @@ public final class StringUtil {
      * @param contextRoot
      * @param uri
      * @param protocol
-     * @return true is URL looks OK and false on any other cases.
+     * @return URL correctly formated.
      */
     public static String getURLFromString(String host, String contextRoot, String uri, String protocol) {
         String result = "";
