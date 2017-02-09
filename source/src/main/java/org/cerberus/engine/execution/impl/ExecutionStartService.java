@@ -223,7 +223,7 @@ public class ExecutionStartService implements IExecutionStartService {
                 cea = this.factorycountryEnvironmentParameters.create(tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication(), tCExecution.getMyHost(), "", tCExecution.getMyContextRoot(), tCExecution.getMyLoginRelativeURL(), "", "", "", "", countryEnvironmentParametersService.defaultPoolSize());
                 cea.setIp(tCExecution.getMyHost());
                 cea.setUrl(tCExecution.getMyContextRoot());
-                tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+                tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                 cea.setUrlLogin(tCExecution.getMyLoginRelativeURL());
                 tCExecution.setCountryEnvironmentParameters(cea);
                 LOG.debug(" -> Execution will be done with manual application connectivity setting. IP/URL/LOGIN : " + cea.getIp() + "-" + cea.getUrl() + "-" + cea.getUrlLogin());
@@ -250,7 +250,7 @@ public class ExecutionStartService implements IExecutionStartService {
                         tCExecution.getApplicationObj().getSystem(), tCExecution.getCountry(), tCExecution.getEnvironment(), tCExecution.getApplicationObj().getApplication()));
                 if (cea != null) {
                     tCExecution.setCountryEnvironmentParameters(cea);
-                    tCExecution.setUrl(StringUtil.getURLFromString(cea.getIp(), cea.getUrl(), "", ""));
+                    tCExecution.setUrl(cea.getIp()+ cea.getUrl());
                 } else {
                     MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND);
                     mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
