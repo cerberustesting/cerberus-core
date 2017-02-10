@@ -837,21 +837,23 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyUrl(TestCaseExecution tCExecution, String page) throws CerberusEventException {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyUrl on : " + page);
+    private MessageEvent verifyUrl(TestCaseExecution tCExecution, String value1) throws CerberusEventException {
+        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyUrl on : " + value1);
         MessageEvent mes;
         try {
             String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
-
-            if (url.equalsIgnoreCase(page)) {
+            // Control is made forcing the / at the beginning of URL. getCurrentUrl from Selenium 
+            //  already have that control but value1 is specified by user and could miss it.
+            String controlUrl = StringUtil.addPrefixIfNotAlready(value1, "/");
+            if (url.equalsIgnoreCase(controlUrl)) {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_URL);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", page));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
                 return mes;
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL);
                 mes.setDescription(mes.getDescription().replace("%STRING1%", url));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", page));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", controlUrl));
                 return mes;
             }
         } catch (WebDriverException exception) {
