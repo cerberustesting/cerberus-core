@@ -22,7 +22,7 @@ package org.cerberus.crud.service;
 import java.util.List;
 import java.util.Map;
 
-import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -32,14 +32,15 @@ import org.cerberus.util.answer.AnswerList;
  *
  * @author vertigo
  */
-public interface IApplicationService {
+public interface IAppServiceContentService {
 
     /**
      *
-     * @param id
+     * @param service
+     * @param key
      * @return
      */
-    AnswerItem readByKey(String id);
+    AnswerItem readByKey(String service, String key);
 
     /**
      *
@@ -49,10 +50,11 @@ public interface IApplicationService {
 
     /**
      *
-     * @param System
+     * @param service
+     * @param active
      * @return
      */
-    AnswerList readBySystem(String System);
+    AnswerList readByVarious(String service, String active);
 
     /**
      *
@@ -68,7 +70,8 @@ public interface IApplicationService {
 
     /**
      *
-     * @param system
+     * @param service
+     * @param active
      * @param startPosition
      * @param length
      * @param columnName
@@ -77,49 +80,37 @@ public interface IApplicationService {
      * @param individualSearch
      * @return
      */
-    AnswerList readBySystemByCriteria(String system, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList readByServiceByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
-     * @param system
-     * @return
-     */
-    AnswerItem readTestCaseCountersBySystemByStatus(String system);
-
-    /**
-     *
-     * @param application
+     * @param service
+     * @param key
      * @return true is application exist or false is application does not exist
      * in database.
      */
-    boolean exist(String application);
+    boolean exist(String service, String key);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer create(Application object);
+    Answer create(AppServiceContent object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer delete(Application object);
+    Answer delete(AppServiceContent object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer update(Application object);
-
-    /**
-     *
-     * @return @since 0.9.1
-     */
-    AnswerList readDistinctSystem();
+    Answer update(AppServiceContent object);
 
     /**
      *
@@ -127,7 +118,7 @@ public interface IApplicationService {
      * @return
      * @throws CerberusException
      */
-    Application convert(AnswerItem answerItem) throws CerberusException;
+    AppServiceContent convert(AnswerItem answerItem) throws CerberusException;
 
     /**
      *
@@ -135,7 +126,7 @@ public interface IApplicationService {
      * @return
      * @throws CerberusException
      */
-    List<Application> convert(AnswerList answerList) throws CerberusException;
+    List<AppServiceContent> convert(AnswerList answerList) throws CerberusException;
 
     /**
      *
@@ -146,11 +137,11 @@ public interface IApplicationService {
 
     /**
      * 
-     * @param system
+     * @param service
      * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return 
      */
-    AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }

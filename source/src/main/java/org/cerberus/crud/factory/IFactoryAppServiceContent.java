@@ -20,43 +20,36 @@
 package org.cerberus.crud.factory;
 
 import java.sql.Timestamp;
-import org.cerberus.crud.entity.Application;
+import org.cerberus.crud.entity.AppServiceContent;
 
 /**
  * @author vertigo
  */
-public interface IFactoryApplication {
+public interface IFactoryAppServiceContent {
 
     /**
-     * @param application ID of the application.
-     * @param description Description of the Application.
+     *
+     * @param service
+     * @param key
+     * @param description Description.
+     * @param value
+     * @param active
      * @param sort
-     * @param type
-     * @param system
-     * @param subsystem
-     * @param svnurl
-     * @param deploytype
-     * @param mavengroupid
-     * @param bugtrackerurl
-     * @param bugtrackernewurl
      * @param usrCreated
      * @param dateCreated
      * @param usrModif
      * @param dateModif
      * @return
      */
-    Application create(String application, String description,
-            int sort, String type, String system, String subsystem,
-            String svnurl, String deploytype, String mavengroupid,
-            String bugtrackerurl, String bugtrackernewurl,
+    AppServiceContent create(String service, String key,
+            String value, String active, int sort, String description,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 
     /**
-     * Return Application object with only application defined
      *
-     * @param application
+     * @param service
      * @return
      */
-    Application create(String application);
+    AppServiceContent create(String service);
 
 }

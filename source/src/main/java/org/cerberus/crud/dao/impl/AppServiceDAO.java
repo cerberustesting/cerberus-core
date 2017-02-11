@@ -66,16 +66,16 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     private static final Logger LOG = Logger.getLogger(AppServiceDAO.class);
 
+    private final String OBJECT_NAME = "AppService";
     private final int MAX_ROW_SELECTED = 100000;
     private final String SQL_DUPLICATED_CODE = "23000";
 
-    private final String OBJECT_NAME = "AppService";
 
     @Override
     public AppService findAppServiceByKey(String service) throws CerberusException {
         boolean throwEx = false;
         AppService result = null;
-        final String query = "SELECT * FROM appservice  WHERE `service` = ?";
+        final String query = "SELECT * FROM appservice srv WHERE `service` = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -294,7 +294,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     public AnswerItem readByKey(String key) {
         AnswerItem ans = new AnswerItem();
         AppService result = null;
-        final String query = "SELECT * FROM `appservice` WHERE `service` = ?";
+        final String query = "SELECT * FROM `appservice` srv WHERE `service` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -354,19 +354,19 @@ public class AppServiceDAO implements IAppServiceDAO {
 
     @Override
     public AppService loadFromResultSet(ResultSet rs) throws SQLException {
-        String service = ParameterParserUtil.parseStringParam(rs.getString("Service"), "");
-        String group = ParameterParserUtil.parseStringParam(rs.getString("Group"), "");
-        String servicePath = ParameterParserUtil.parseStringParam(rs.getString("ServicePath"), "");
-        String operation = ParameterParserUtil.parseStringParam(rs.getString("Operation"), "");
-        String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("ServiceRequest"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("Description"), "");
-        String type = ParameterParserUtil.parseStringParam(rs.getString("Type"), "");
-        String method = ParameterParserUtil.parseStringParam(rs.getString("Method"), "");
-        String application = ParameterParserUtil.parseStringParam(rs.getString("Application"), "");
-        String usrModif = rs.getString("UsrModif");
-        String usrCreated = rs.getString("UsrCreated");
-        Timestamp dateCreated = rs.getTimestamp("DateCreated");
-        Timestamp dateModif = rs.getTimestamp("DateModif");
+        String service = ParameterParserUtil.parseStringParam(rs.getString("srv.Service"), "");
+        String group = ParameterParserUtil.parseStringParam(rs.getString("srv.Group"), "");
+        String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
+        String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
+        String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
+        String type = ParameterParserUtil.parseStringParam(rs.getString("srv.Type"), "");
+        String method = ParameterParserUtil.parseStringParam(rs.getString("srv.Method"), "");
+        String application = ParameterParserUtil.parseStringParam(rs.getString("srv.Application"), "");
+        String usrModif = rs.getString("srv.UsrModif");
+        String usrCreated = rs.getString("srv.UsrCreated");
+        Timestamp dateCreated = rs.getTimestamp("srv.DateCreated");
+        Timestamp dateModif = rs.getTimestamp("srv.DateModif");
 
         //TODO remove when working in test with mockito and autowired
         factoryAppService = new FactoryAppService();
@@ -542,7 +542,8 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer update(AppService object) {
         MessageEvent msg = null;
-        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, ParsingAnswer = ?, Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
+        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, ParsingAnswer = ?, "
+                + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
         } else {

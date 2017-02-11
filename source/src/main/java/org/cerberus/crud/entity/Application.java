@@ -17,13 +17,14 @@
  */
 package org.cerberus.crud.entity;
 
+import java.sql.Timestamp;
+
 /**
  * @author vertigo
  */
 public class Application {
 
     private String application;
-    private String description;
     private int sort;
     private String type;
     private String system;
@@ -33,6 +34,43 @@ public class Application {
     private String bugTrackerNewUrl;
     private String deploytype;
     private String mavengroupid;
+    private String description;
+    private String UsrCreated;
+    private Timestamp DateCreated;
+    private String UsrModif;
+    private Timestamp DateModif;
+
+    public String getUsrCreated() {
+        return UsrCreated;
+    }
+
+    public void setUsrCreated(String UsrCreated) {
+        this.UsrCreated = UsrCreated;
+    }
+
+    public Timestamp getDateCreated() {
+        return DateCreated;
+    }
+
+    public void setDateCreated(Timestamp DateCreated) {
+        this.DateCreated = DateCreated;
+    }
+
+    public String getUsrModif() {
+        return UsrModif;
+    }
+
+    public void setUsrModif(String UsrModif) {
+        this.UsrModif = UsrModif;
+    }
+
+    public Timestamp getDateModif() {
+        return DateModif;
+    }
+
+    public void setDateModif(Timestamp DateModif) {
+        this.DateModif = DateModif;
+    }
 
     public String getBugTrackerNewUrl() {
         return bugTrackerNewUrl;
@@ -120,6 +158,85 @@ public class Application {
 
     public void setMavengroupid(String mavengroupid) {
         this.mavengroupid = mavengroupid;
+    }
+
+    public boolean hasSameKey(Application obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final Application other = (Application) obj;
+        if ((this.application == null) ? (other.application != null) : !this.application.equals(other.application)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int hash = 3;
+        hash = 67 * hash + (this.application != null ? this.application.hashCode() : 0);
+        hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
+        hash = 67 * hash + this.sort;
+        hash = 67 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 67 * hash + (this.system != null ? this.system.hashCode() : 0);
+        hash = 67 * hash + (this.subsystem != null ? this.subsystem.hashCode() : 0);
+        hash = 67 * hash + (this.svnurl != null ? this.svnurl.hashCode() : 0);
+        hash = 67 * hash + (this.bugTrackerUrl != null ? this.bugTrackerUrl.hashCode() : 0);
+        hash = 67 * hash + (this.bugTrackerNewUrl != null ? this.bugTrackerNewUrl.hashCode() : 0);
+        hash = 67 * hash + (this.deploytype != null ? this.deploytype.hashCode() : 0);
+        hash = 67 * hash + (this.mavengroupid != null ? this.mavengroupid.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Application other = (Application) obj;
+        if ((this.application == null) ? (other.application != null) : !this.application.equals(other.application)) {
+            return false;
+        }
+        if ((this.description == null) ? (other.description != null) : !this.description.equals(other.description)) {
+            return false;
+        }
+        if (this.sort != other.sort) {
+            return false;
+        }
+        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+            return false;
+        }
+        if ((this.system == null) ? (other.system != null) : !this.system.equals(other.system)) {
+            return false;
+        }
+        if ((this.subsystem == null) ? (other.subsystem != null) : !this.subsystem.equals(other.subsystem)) {
+            return false;
+        }
+        if ((this.svnurl == null) ? (other.svnurl != null) : !this.svnurl.equals(other.svnurl)) {
+            return false;
+        }
+        if ((this.bugTrackerUrl == null) ? (other.bugTrackerUrl != null) : !this.bugTrackerUrl.equals(other.bugTrackerUrl)) {
+            return false;
+        }
+        if ((this.bugTrackerNewUrl == null) ? (other.bugTrackerNewUrl != null) : !this.bugTrackerNewUrl.equals(other.bugTrackerNewUrl)) {
+            return false;
+        }
+        if ((this.deploytype == null) ? (other.deploytype != null) : !this.deploytype.equals(other.deploytype)) {
+            return false;
+        }
+        if ((this.mavengroupid == null) ? (other.mavengroupid != null) : !this.mavengroupid.equals(other.mavengroupid)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

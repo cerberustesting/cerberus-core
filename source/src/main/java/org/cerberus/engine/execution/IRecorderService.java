@@ -22,6 +22,7 @@ package org.cerberus.engine.execution;
 import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -69,6 +70,16 @@ public interface IRecorderService {
      * @return 
      */
     List<TestCaseExecutionFile> recordSOAPCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, SOAPExecution se);
+
+    /**
+     *
+     * @param testCaseExecution
+     * @param testCaseStepActionExecution
+     * @param control
+     * @param service
+     * @return 
+     */
+    List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService service);
 
     /**
      *

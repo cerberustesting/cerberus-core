@@ -132,7 +132,8 @@ public class CreateApplication extends HttpServlet {
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
             IFactoryApplication factoryApplication = appContext.getBean(IFactoryApplication.class);
 
-            Application applicationData = factoryApplication.create(application, description, sort, type, system, subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL);
+            Application applicationData = factoryApplication.create(application, description, sort, type, system, 
+                    subSystem, svnURL, deployType, mavenGpID, bugTrackerURL, newBugURL, request.getRemoteUser(), null, null, null);
             ans = applicationService.create(applicationData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {

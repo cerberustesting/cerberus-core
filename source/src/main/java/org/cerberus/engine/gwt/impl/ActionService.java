@@ -56,6 +56,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.service.rest.IRestService;
 
 /**
  *
@@ -70,6 +71,8 @@ public class ActionService implements IActionService {
     private IWebDriverService webdriverService;
     @Autowired
     private ISoapService soapService;
+    @Autowired
+    private IRestService restService;
     @Autowired
     private IAppServiceService appServiceService;
     @Autowired
@@ -872,13 +875,14 @@ public class ActionService implements IActionService {
     private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        String decodedEnveloppe;
+        String decodedRequest;
         String decodedServicePath = null;
         String decodedOperation;
         AnswerItem lastSoapCalled;
+        AnswerItem lastServiceCalled;
 
         try {
-            AppService appService = appServiceService.convert(appServiceService.readByKey(value1));
+            AppService appService = appServiceService.convert(appServiceService.readByKeyWithDependency(value1, "Y"));
             String servicePath;
 
             if (appService == null) {
@@ -897,9 +901,13 @@ public class ActionService implements IActionService {
                             tCExecution.getCountryEnvironmentParameters().getUrl(), appService.getServicePath(), "http://");
                 }
                 decodedServicePath = servicePath;
+                decodedRequest = appService.getServiceRequest();
                 try {
                     if (appService.getServicePath().contains("%")) {
                         decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    }
+                    if (appService.getServiceRequest().contains("%")) {
+                        decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
                     }
                     //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                     if (testCaseStepActionExecution.isStopExecution()) {
@@ -921,12 +929,8 @@ public class ActionService implements IActionService {
                          * SOAP. Decode Envelope and Operation replacing
                          * properties encapsulated with %
                          */
-                        decodedEnveloppe = appService.getServiceRequest();
                         decodedOperation = appService.getOperation();
                         try {
-                            if (appService.getServiceRequest().contains("%")) {
-                                decodedEnveloppe = variableService.decodeStringCompletly(decodedEnveloppe, tCExecution, testCaseStepActionExecution, false);
-                            }
                             if (appService.getOperation().contains("%")) {
                                 decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
                             }
@@ -958,14 +962,14 @@ public class ActionService implements IActionService {
                         /**
                          * Call SOAP and store it into the execution.
                          */
-                        lastSoapCalled = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedOperation, attachement);
+                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement);
                         tCExecution.setLastSOAPCalled(lastSoapCalled);
 
                         /**
                          * Record the Request and Response in filesystem.
                          */
-                        SOAPExecution se = (SOAPExecution) lastSoapCalled.getItem();
-                        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, se);
+                        SOAPExecution lsoapC = (SOAPExecution) lastSoapCalled.getItem();
+                        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, lsoapC);
                         message = lastSoapCalled.getResultMessage();
 
                         break;
@@ -977,15 +981,24 @@ public class ActionService implements IActionService {
                          */
                         switch (appService.getMethod()) {
                             case AppService.METHOD_HTTPGET:
-                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "REST-GET not implemented yet"));
-                                break;
                             case AppService.METHOD_HTTPPOST:
-                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "REST-POST not implemented yet"));
+
+                                /**
+                                 * Call REST and store it into the execution.
+                                 */
+                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), appService.getHeaderList(), appService.getContentList());
+                                AppService lservicec = (AppService) lastServiceCalled.getItem();
+                                tCExecution.setLastServiceCalled(lservicec);
+                                LOG.debug("TOTO" + lservicec.getHTTPResponseBody());
+
+                                /**
+                                 * Record the Request and Response in
+                                 * filesystem.
+                                 */
+                                recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec);
+                                message = lastServiceCalled.getResultMessage();
                                 break;
+
                             default:
                                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                                 message.setDescription(message.getDescription().replace("%SERVICE%", value1));

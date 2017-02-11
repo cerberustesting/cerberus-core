@@ -8257,7 +8257,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Added content and header Service tables.
-        //-- ------------------------ 1067-1068
+        //-- ------------------------ 1067-1070
         SQLS = new StringBuilder();
         SQLS.append("CREATE TABLE `appservicecontent` (");
         SQLS.append("  `Service` VARCHAR(255) NOT NULL ,");
@@ -8287,6 +8287,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("  PRIMARY KEY (`Service`, `Key`), ");
         SQLS.append("  CONSTRAINT `FK_appserviceheader_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE)");
         SQLS.append("  ENGINE=InnoDB DEFAULT CHARSET=utf8; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appserviceheader` ");
+        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservicecontent` ");
+        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added tracability on application table.
+        //-- ------------------------ 1071
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `mavengroupid`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

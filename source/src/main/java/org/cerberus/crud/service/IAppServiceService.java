@@ -57,6 +57,15 @@ public interface IAppServiceService {
     AnswerItem readByKey(String key);
 
     /**
+     * Get the {@link AppService} of the given key
+     *
+     * @param key the key of the {@link AppService} to get
+     * @param activeDetail Y will load detail only with Active data on header and content. null wil load all data.
+     * @return
+     */
+    AnswerItem readByKeyWithDependency(String key, String activeDetail);
+
+    /**
      * Get the distinctValue of the column
      *
      * @param columnName the Column name to get
