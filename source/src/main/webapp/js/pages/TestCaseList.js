@@ -446,14 +446,14 @@ function aoColumnsFunc(countries, tableId) {
                                         class="duplicateEntry btn btn-default btn-xs margin-right5" \n\
                                         name="duplicateEntry" data-toggle="tooltip"  title="' + doc.getDocLabel("page_testcaselist", "btn_duplicate") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-duplicate"></span></button>';
-                var editScript = '<button id="testCaseBetaLink" class="btn btn-warning btn-xs margin-right5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" onclick="window.open(\'./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '\', \'_blank\')">\n\
+                var editScript = '<a id="testCaseBetaLink" class="btn btn-primary btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_editScript") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
-                                    </button>';
-                var runTest = '<button id="runTest" class="btn btn-default btn-xs margin-right5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" onclick=window.location="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + "&testcase=" + encodeURIComponent(obj["testCase"]) + '">\n\
+                                    </a>';
+                var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_testcaselist", "btn_runTest") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testCase"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
-                                    </button>';
+                                    </a>';
 
                 if (data.hasPermissionsUpdate) {
                     buttons += editEntry;

@@ -61,28 +61,28 @@
                             </div>
                             <div class="col-lg-8" style="padding: 0px;">
                                 <div id="TestCaseButton">
-                                    <a target="_blank"><button class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button></a>
+                                    <a href="#" class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</a>
                                     <div class="btn-group pull-right">
-                                        <button class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button>
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href="#" class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</a>
+                                        <a type="button" class="btn btn-default dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
-                                        </button>
+                                        </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#"><button class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</button></a></li>
+                                            <li><a href="#" class="btn btn-default pull-right" id="lastExecutionwithEnvCountry"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions With Country Env</a></li>
                                         </ul>
                                     </div>
                                     <div class="btn-group pull-right">
-                                        <button class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</button>
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a href="#" class="btn btn-default pull-left" id="editTcInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case</a>
+                                        <a type="button" id="editTcToggleButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
-                                        </button>
+                                        </a>
                                         <ul class="dropdown-menu">
-                                            <li><a href="#"><button class="btn btn-default pull-right" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</button></a></li>
+                                            <li><a href="#" id="editTcStepInfo"><span class="glyphicon glyphicon-pencil"></span> Edit Test Case from the current Step</a></li>
                                         </ul>
                                     </div>
-                                    <a target="_blank"><button class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</button></a>
+                                    <a href="#" class="btn btn-default pull-right" id="ExecutionByTag" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> See Execution By Tag</a>
                                     <div class="side-item pull-right"></div>
 
                                 </div>
