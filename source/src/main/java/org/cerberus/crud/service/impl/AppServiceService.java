@@ -22,6 +22,10 @@ import java.util.Map;
 
 import org.cerberus.crud.dao.impl.AppServiceDAO;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.service.IAppServiceContentService;
+import org.cerberus.crud.service.IAppServiceHeaderService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
@@ -42,6 +46,10 @@ public class AppServiceService implements IAppServiceService {
 
     @Autowired
     AppServiceDAO appServiceDao;
+    @Autowired
+    private IAppServiceContentService appServiceContentService;
+    @Autowired
+    private IAppServiceHeaderService appServiceHeaderService;
 
     @Override
     public AppService findAppServiceByKey(String name) throws CerberusException {
@@ -56,6 +64,22 @@ public class AppServiceService implements IAppServiceService {
     @Override
     public AnswerItem readByKey(String key) {
         return appServiceDao.readByKey(key);
+    }
+
+    @Override
+    public AnswerItem readByKeyWithDependency(String key, String activedetail) {
+        AnswerItem answerAppService = this.readByKey(key);
+        AppService appService = (AppService) answerAppService.getItem();
+
+        AnswerList content = appServiceContentService.readByVarious(key, activedetail);
+        appService.setContentList((List<AppServiceContent>) content.getDataList());
+
+        AnswerList header = appServiceHeaderService.readByVarious(key, activedetail);
+        appService.setHeaderList((List<AppServiceHeader>) header.getDataList());
+
+        answerAppService.setItem(appService);
+
+        return answerAppService;
     }
 
     @Override

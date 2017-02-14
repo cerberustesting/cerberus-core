@@ -20,47 +20,39 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.factory.IFactoryApplication;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.springframework.stereotype.Service;
 
 /**
  * @author vertigo
  */
 @Service
-public class FactoryApplication implements IFactoryApplication {
+public class FactoryAppServiceHeader implements IFactoryAppServiceHeader {
 
     @Override
-    public Application create(String application, String description
-            , int sort, String type, String system, String subsystem
-            , String svnurl, String deploytype, String mavengroupid
-            , String bugTrackerUrl, String bugTrackerNewUrl,
+    public AppServiceHeader create(String service, String key,
+            String value, String active, int sort, String description,
             String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
-        Application newObject = new Application();
-        newObject.setApplication(application);
-        newObject.setDeploytype(deploytype);
-        newObject.setDescription(description);
-        newObject.setMavengroupid(mavengroupid);
+        AppServiceHeader newObject = new AppServiceHeader();
+        newObject.setService(service);
+        newObject.setKey(key);
+        newObject.setValue(value);
+        newObject.setActive(active);
         newObject.setSort(sort);
-        newObject.setSubsystem(subsystem);
-        newObject.setSvnurl(svnurl);
-        newObject.setSystem(system);
-        newObject.setType(type);
-        newObject.setBugTrackerUrl(bugTrackerUrl);
-        newObject.setBugTrackerNewUrl(bugTrackerNewUrl);
-        newObject.setUsrModif(usrModif);
+        newObject.setDescription(description);
         newObject.setUsrCreated(usrCreated);
-        newObject.setDateModif(dateModif);
+        newObject.setUsrModif(usrModif);
         newObject.setDateCreated(dateCreated);
+        newObject.setDateModif(dateModif);
         return newObject;
     }
 
     @Override
-    public Application create(String application) {
-        Application newObject = new Application();
-        newObject.setApplication(application);
+    public AppServiceHeader create(String service) {
+        AppServiceHeader newObject = new AppServiceHeader();
+        newObject.setService(service);
         return newObject;
     }
-
 
 }

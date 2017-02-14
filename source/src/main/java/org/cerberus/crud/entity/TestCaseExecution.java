@@ -105,7 +105,8 @@ public class TestCaseExecution {
     private String executionUUID;
     private Session session;
     private long idFromQueue;
-    private AnswerItem lastSOAPCalled;
+    private AnswerItem lastSOAPCalled; // DEPRECATED will be soon replaced by last Service Called.
+    private AppService lastServiceCalled;
     private List<RobotCapability> capabilities;
     // Global parameters.
     private Integer cerberus_action_wait_default;
@@ -122,6 +123,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+
+    public AppService getLastServiceCalled() {
+        return lastServiceCalled;
+    }
+
+    public void setLastServiceCalled(AppService lastServiceCalled) {
+        this.lastServiceCalled = lastServiceCalled;
+    }
 
     public long getLastWebsocketPush() {
         return lastWebsocketPush;

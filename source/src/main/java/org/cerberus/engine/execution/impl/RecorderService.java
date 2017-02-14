@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -316,6 +317,49 @@ public class RecorderService implements IRecorderService {
 
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "SOAP Response", recorderResponse.getRelativeFilenameURL(), "XML", "", null, "", null);
+                testCaseExecutionFileService.save(object);
+                objectFileList.add(object);
+            }
+
+        } catch (CerberusException ex) {
+            LOG.error(logPrefix + ex.toString());
+        }
+        return objectFileList;
+    }
+
+    @Override
+    public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService se) {
+        // Used for logging purposes
+        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
+
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        TestCaseExecutionFile object = null;
+        String test = testCaseExecution.getTest();
+        String testCase = testCaseExecution.getTestCase();
+        String step = String.valueOf(testCaseStepActionExecution.getStep());
+        String index = String.valueOf(testCaseStepActionExecution.getIndex());
+        String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String controlString = control.equals(0) ? null : String.valueOf(control);
+        long runId = testCaseExecution.getId();
+
+        try {
+
+            // REQUEST.
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "request", "txt");
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.getServicePath() + se.getServiceRequest());
+
+            // Index file created to database.
+            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "REST Request", recorderRequest.getRelativeFilenameURL(), "TXT", "", null, "", null);
+            testCaseExecutionFileService.save(object);
+            objectFileList.add(object);
+
+            // RESPONSE exists.
+            if (null != se.getHTTPResponseBody()) {
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "response", "txt");
+                recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getHTTPResponseBody());
+
+                // Index file created to database.
+                object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "REST Response", recorderResponse.getRelativeFilenameURL(), "TXT", "", null, "", null);
                 testCaseExecutionFileService.save(object);
                 objectFileList.add(object);
             }

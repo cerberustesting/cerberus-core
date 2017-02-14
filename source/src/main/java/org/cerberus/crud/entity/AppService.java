@@ -18,6 +18,8 @@
 package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
+import java.util.List;
+import javax.xml.soap.SOAPMessage;
 
 /**
  * Map la table Service
@@ -44,6 +46,13 @@ public class AppService {
      * From here are data outside database model.
      */
     private String attachmentUrl;
+    private List<AppServiceContent> contentList;
+    private List<AppServiceHeader> headerList;
+    // Result from call.
+    private SOAPMessage SOAPRequest;
+    private SOAPMessage SOAPResponse;
+    private String HTTPResponseBody;
+    private int HTTPResponseCode;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -52,6 +61,54 @@ public class AppService {
     public static final String TYPE_REST = "REST";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
+
+    public SOAPMessage getSOAPRequest() {
+        return SOAPRequest;
+    }
+
+    public void setSOAPRequest(SOAPMessage SOAPRequest) {
+        this.SOAPRequest = SOAPRequest;
+    }
+
+    public SOAPMessage getSOAPResponse() {
+        return SOAPResponse;
+    }
+
+    public void setSOAPResponse(SOAPMessage SOAPResponse) {
+        this.SOAPResponse = SOAPResponse;
+    }
+
+    public String getHTTPResponseBody() {
+        return HTTPResponseBody;
+    }
+
+    public void setHTTPResponseBody(String HTTPResponseBody) {
+        this.HTTPResponseBody = HTTPResponseBody;
+    }
+
+    public int getHTTPResponseCode() {
+        return HTTPResponseCode;
+    }
+
+    public void setHTTPResponseCode(int HTTPResponseCode) {
+        this.HTTPResponseCode = HTTPResponseCode;
+    }
+
+    public List<AppServiceContent> getContentList() {
+        return contentList;
+    }
+
+    public void setContentList(List<AppServiceContent> contentList) {
+        this.contentList = contentList;
+    }
+
+    public List<AppServiceHeader> getHeaderList() {
+        return headerList;
+    }
+
+    public void setHeaderList(List<AppServiceHeader> headerList) {
+        this.headerList = headerList;
+    }
 
     public String getUsrCreated() {
         return UsrCreated;

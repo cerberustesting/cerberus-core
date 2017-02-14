@@ -175,6 +175,7 @@ public class UpdateApplication extends HttpServlet {
                 applicationData.setBugTrackerNewUrl(newBugURL);
                 applicationData.setDescription(description);
                 applicationData.setSort(sort);
+                applicationData.setUsrModif(request.getRemoteUser());
                 ans = applicationService.update(applicationData);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 

@@ -316,33 +316,32 @@ public class WebDriverService implements IWebDriverService {
      * Return the current URL from Selenium.
      *
      * @param session
-     * @param url
+     * @param applicationUrl
      * @return current URL without HTTP://IP:PORT/CONTEXTROOT/
      * @throws CerberusEventException Cannot find application host (from
      * Database) inside current URL (from Selenium)
      */
     @Override
-    public String getCurrentUrl(Session session, String url) throws CerberusEventException {
+    public String getCurrentUrl(Session session, String applicationUrl) throws CerberusEventException {
         /*
-         * Example: URL (http://mypage/page/index.jsp), IP (mypage)
-         * URL.split(IP, 2)
-         * Pos | Description
-         *  0  |    http://
-         *  1  |    /page/index.jsp
+         * Example: URL (http://cerberus.domain.fr/Cerberus/mypage/page/index.jsp)<br>
+         * will return /mypage/page/index.jsp
+         * No matter what, the output current relative URl will start by /
          */
         // We start to remove the protocol part of the urls.
         String cleanedCurrentURL = StringUtil.removeProtocolFromHostURL(session.getDriver().getCurrentUrl());
-        String cleanedURL = StringUtil.removeProtocolFromHostURL(url);
+        String cleanedURL = StringUtil.removeProtocolFromHostURL(applicationUrl);
         // We remove from current url the host part of the application.
         String strings[] = cleanedCurrentURL.split(cleanedURL, 2);
         if (strings.length < 2) {
             MessageEvent msg = new MessageEvent(MessageEventEnum.CONTROL_FAILED_URL_NOT_MATCH_APPLICATION);
-            msg.setDescription(msg.getDescription().replace("%HOST%", url));
+            msg.setDescription(msg.getDescription().replace("%HOST%", applicationUrl));
             msg.setDescription(msg.getDescription().replace("%CURRENTURL%", session.getDriver().getCurrentUrl()));
             MyLogger.log(WebDriverService.class.getName(), Level.WARN, msg.toString());
             throw new CerberusEventException(msg);
         }
-        return strings[1];
+        String result = StringUtil.addPrefixIfNotAlready(strings[1], "/");
+        return result;
     }
 
     public File takeScreenShotFile(Session session) {

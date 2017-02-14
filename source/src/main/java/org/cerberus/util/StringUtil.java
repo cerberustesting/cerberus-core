@@ -376,4 +376,18 @@ public final class StringUtil {
         }
     }
 
+    /**
+     *
+     * @param text
+     * @param prefix
+     * @return
+     */
+    public static String addPrefixIfNotAlready(String text, String prefix) {
+        if (text.toUpperCase().startsWith((prefix.toUpperCase()))) {
+            return text;
+        } else {
+            return prefix + text;
+        }
+    }
+
 }
