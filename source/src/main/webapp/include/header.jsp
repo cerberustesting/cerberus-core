@@ -81,7 +81,7 @@
                     <img src="images/dropdown.gif"/></a>
                 <ul class="subnav" id="subnavlist">
                     <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests1.jsp" style="width:200px">Run Tests</a></li>
-                    <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending2.jsp" style="width:200px">See Execution In Queue</a></li>
+                    <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp" style="width:200px">See Execution In Queue</a></li>
                     <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp" style="width:200px">Robot</a></li>
                     <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign2.jsp" style="width:160px">Test Campaign</a></li>
                 </ul>

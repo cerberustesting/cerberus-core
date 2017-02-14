@@ -647,7 +647,7 @@ function massActionClick() {
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
     if (formList.serialize().indexOf("id-") === -1) {
-        var localMessage = new Message("danger", doc.getDocLabel("page_buildcontent", "message_massActionError1"));
+        var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
         showMessage(localMessage, null);
     } else {
         $('#massActionBrpModal').modal('show');

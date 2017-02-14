@@ -1,0 +1,66 @@
+<!--Mass Action on a Build Content List -->
+<div data-backdrop="static" class="modal fade center" id="massActionBrpModal" tabindex="-1" role="dialog" aria-labelledby="massActionBrpModalLabel" aria-hidden="true">
+    <div class="modal-dialog nomargintop nomarginbottom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="massActionBrpModalLabel" name="massActionBrpField">Massively operate on selected executions in queue</h4>
+            </div>
+            <div class="modal-body">
+
+                <!--add form-->
+                <form id="massActionBrpModalForm" name="massActionBrpModalForm"  title="Massive Update" role="form">
+                    <div class="container-fluid center">
+                        <!-- messages area-->
+                        <div id="DialogMessagesArea">
+                            <div class="alert" id="DialogMessagesAlert"  style="display:none;">
+                                <strong><span class="alert-description" id="DialogAlertDescription"></span></strong>
+                                <button type="button" class="close" data-hide="alert"  aria-hidden="true">
+                                    <span class="glyphicon glyphicon-remove alert-right alert-close pull-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabState">Set state</a></li>
+                            <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabRun">Run in waiting executions</a></li>
+                            <li><a data-toggle="tab" href="#tabsMass-3" id="massTab3Text" name="tabDelete">Delete</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="center marginTop25 tab-pane fade in active" id="tabsMass-1">
+                                <div class="row">
+                                    <div class="form-group col-xs-6">
+                                        <label for="state" name="stateField">State</label>
+                                        <select class="form-control"  id="massState" name="state">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-xs-12">
+                                        <button type="button" id="massActionBrpButtonSetState" class="btn btn-primary" name="buttonState">Set state</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade" id="tabsMass-2">
+                                <div class="row">
+                                    <div class="form-group col-xs-2">
+                                        <button type="button" id="massActionBrpButtonRun" class="btn btn-primary" name="buttonRun">Run in waiting executions</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="center marginTop25 tab-pane fade" id="tabsMass-3">
+                                <div class="row">
+                                    <div class="form-group col-xs-2">
+                                        <button type="button" id="massActionBrpButtonDelete" class="btn btn-primary" name="buttonDelete">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

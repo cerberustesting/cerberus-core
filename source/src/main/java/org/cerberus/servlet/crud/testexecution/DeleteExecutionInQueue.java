@@ -19,132 +19,91 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
-import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
+import org.apache.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
-import org.springframework.context.ApplicationContext;
+import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.util.validity.Validity;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- *
  * @author bcivel
+ * @author abourdon
  */
 @WebServlet(name = "DeleteExecutionInQueue", urlPatterns = {"/DeleteExecutionInQueue"})
-public class DeleteExecutionInQueue extends HttpServlet {
+public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionInQueue.Request, DeleteExecutionInQueue.Response> {
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * The associated request to this {@link DeleteExecutionInQueue}
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        ITestCaseExecutionInQueueService executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-        String echo = request.getParameter("sEcho");
-        String data = policy.sanitize(request.getParameter("tableData"));
-        String[] dataL = data.split("\\n");
-        for (String d : dataL){
-            try {
-                Long l = Long.parseLong(d.trim());
-                executionService.remove(l);
-            } catch (CerberusException ex) {
-                Logger.getLogger(DeleteExecutionInQueue.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-            
+    public static class Request implements Validity {
+
+        private List<Long> ids;
+
+        public List<Long> getIds() {
+            return ids;
         }
-        JSONArray dataList = new JSONArray();
-        try {
-            JSONObject jsonResponse = new JSONObject();
-            try {
-                for (TestCaseExecutionInQueue exec : executionService.findAll()) {
-                    JSONArray row = new JSONArray();
-                    row.put(exec.getId());
-                    row.put(exec.getTest());
-                    row.put(exec.getTestCase());
-                    row.put(exec.getCountry());
-                    row.put(exec.getEnvironment());
-                    row.put(exec.getBrowser());
-                    row.put(exec.getTag());
-                    row.put(exec.getState().name());
-                    dataList.put(row);
-                }
-            } catch (CerberusException ex) {
-                response.setContentType("text/html");
-                response.getWriter().print(ex.getMessageError().getDescription());
-            }
-            jsonResponse.put("aaData", dataList);
-            jsonResponse.put("sEcho", echo);
-            jsonResponse.put("iTotalRecords", data.length());
-            jsonResponse.put("iTotalDisplayRecords", data.length());
-            response.setContentType("application/json");
-            response.getWriter().print(jsonResponse.toString());
-        } catch (JSONException e) {
-            MyLogger.log(FindExecutionInQueue.class.getName(), Level.FATAL, "" + e);
-            response.setContentType("text/html");
-            response.getWriter().print(e.getMessage());
+
+        @Override
+        public boolean isValid() {
+            return ids != null && !ids.isEmpty();
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     * The associated response to this {@link DeleteExecutionInQueue}
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    public static class Response {
+
+        private List<Long> inError;
+
+        public Response() {
+            inError = new ArrayList<>();
+        }
+
+        public List<Long> getInError() {
+            return inError;
+        }
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
+    private static final Logger LOGGER = Logger.getLogger(DeleteExecutionInQueue.class);
+
+    private ITestCaseExecutionInQueueService executionInQueueService;
+
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
+    public void init() throws ServletException {
+        super.init();
+        executionInQueueService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(ITestCaseExecutionInQueueService.class);
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+    protected Class<Request> getRequestType() {
+        return Request.class;
+    }
+
+    @Override
+    protected Response processRequest(final Request request) throws RequestProcessException {
+        Response response = new Response();
+        for (long idToRemove : request.getIds()) {
+            try {
+                executionInQueueService.remove(idToRemove);
+            } catch (CerberusException e) {
+                LOGGER.warn("Unable to remove execution in queue #" + idToRemove, e);
+                response.getInError().add(idToRemove);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    protected String getUsageDescription() {
+        // TODO describe the Json object structure
+        return "Need to have the list of execution in queue identifiers to delete";
+    }
 
 }
