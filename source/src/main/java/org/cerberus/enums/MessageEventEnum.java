@@ -223,6 +223,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SWITCHTOWINDOW_NO_SUCH_ELEMENT(280, "FA", "Failed to switch to window because could not find element '%WINDOW%'!", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CLOSE_ALERT(280, "FA", "Failed to close to alert popup !", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSERVICE(286, "FA", "Failed to call the Service '%SERVICE%'. Caused by : %DESCRIPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALLSERVICE_TIMEOUT(286, "FA", "Failed to call the Service '%SERVICEURL%' due to timeout (%TIMEOUT% ms).", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSERVICEWITHPATH(286, "FA", "Failed to call the Service '%SERVICE%' on Service Path '%SERVICEPATH%'. Caused by : %DESCRIPTION%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSERVICE_METHODMISSING(286, "FA", "Failed to call the Service because Method is not defined.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALLSERVICE_SERVICEPATHMISSING(286, "FA", "Failed to call the Service because Service Path is not defined.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),

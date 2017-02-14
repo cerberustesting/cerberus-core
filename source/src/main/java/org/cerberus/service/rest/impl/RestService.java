@@ -21,6 +21,7 @@ package org.cerberus.service.rest.impl;
 
 import org.cerberus.engine.execution.impl.RecorderService;
 import com.mysql.jdbc.StringUtils;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.client.fluent.Request;
@@ -85,6 +86,7 @@ public class RestService implements IRestService {
             Request req = null;
             switch (method) {
                 case AppService.METHOD_HTTPGET:
+                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + queryString);
                     // TODO Add the QueryString
                     servicePath = StringUtil.addQueryString(servicePath, queryString);
                     req = Request.Get(servicePath);
@@ -94,10 +96,13 @@ public class RestService implements IRestService {
                         req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
                     serviceREST.setHeaderList(headerList);
+                    result.setItem(serviceREST);
                     // Call the REST
                     resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
+                    LOG.info("REST Call performed (GET). " + servicePath);
                     break;
                 case AppService.METHOD_HTTPPOST:
+                    LOG.info("Start preparing the REST Call (POST). " + servicePath);
                     req = Request.Post(servicePath);
                     serviceREST.setServicePath(servicePath);
                     // Content.
@@ -114,8 +119,10 @@ public class RestService implements IRestService {
                         req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
                     serviceREST.setHeaderList(headerList);
+                    result.setItem(serviceREST);
                     // Call the REST
                     resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
+                    LOG.info("REST Call performed (POST). " + servicePath);
                     break;
             }
 
@@ -134,10 +141,18 @@ public class RestService implements IRestService {
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
             result.setResultMessage(message);
 
+        } catch (SocketTimeoutException ex) {
+            LOG.info("Exception when performing the REST Call. " + ex.toString());
+            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
+            message.setDescription(message.getDescription().replace("%SERVICEURL%", servicePath));
+            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(timeOutMs)));
+            result.setResultMessage(message);
+            return result;
         } catch (Exception ex) {
+            LOG.error("Exception when performing the REST Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Error on CallREST : " + ex.toString()));
             result.setResultMessage(message);
             return result;
         }

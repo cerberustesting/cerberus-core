@@ -1029,12 +1029,13 @@ public class ActionService implements IActionService {
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Cerberus exception on CallService : " + ex.getMessageError().getDescription()));
             return message;
         } catch (Exception ex) {
+            LOG.error("Exception when performing CallService Action. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Error on CallService : " + ex.toString()));
             return message;
         }
 
