@@ -23,7 +23,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <%@ include file="include/dependenciesInclusions.html" %>
-        <title>Execution in Queue</title>
+        <title>Executions in Queue</title>
         <link rel="stylesheet" type="text/css" href="css/pages/ExecutionPending.css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
@@ -40,16 +40,16 @@
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
 
-            <h1 class="page-title-line" id="title">Execution in Queue</h1>
+            <h1 class="page-title-line" id="title">Executions in Queue</h1>
             <div class="panel panel-default">
                 <div class="panel-heading" id="executionListLabel">
                     <span class="glyphicon glyphicon-list"></span>
-                    Execution in Queue
+                    Executions in Queue
                 </div>
                 <div class="panel-body" id="executionList">
                     <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                    <li class="active"><a data-toggle="tab" href="#tabSummary" id="editTabSummary" name="tabSummary">Summary</a></li>
-                    <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Detail</a></li>
+                    <li class="active"><a data-toggle="tab" href="#tabSummary" id="editTabSummary" name="tabSummary">Execution pools</a></li>
+                    <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
                 </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in active" id="tabSummary">
