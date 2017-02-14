@@ -79,9 +79,13 @@ public interface ITestCaseExecutionInQueueDAO {
      */
     TestCaseExecutionInQueue findByKey(long id) throws CerberusException;
 
+    TestCaseExecutionInQueue findByKeyWithDependencies(long id) throws CerberusException;
+
     public List<TestCaseExecutionInQueue> findAll() throws CerberusException;
 
     List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException;
+
+    List<TestCaseExecutionInQueue> toQueued(List<Long> ids) throws CerberusException;
 
     void toExecuting(long id) throws CerberusException;
 

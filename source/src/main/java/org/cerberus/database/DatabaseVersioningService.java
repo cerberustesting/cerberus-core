@@ -8351,6 +8351,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocLabel`='Fil d\\'exécutions' WHERE `DocTable`='page_header' and`DocField`='menuRunTestSeePendingExecution' and`DocValue`='' and`Lang`='fr';\n");
         SQLInstruction.add(SQLS.toString());
 
+        // Add the mass action on the execution pending page
+        //-- ------------------------ 1083-1085
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='en';\n");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError', `DocLabel`='Merci de selectionner au moins 1 élément avant de faire une action en masse !' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='fr';\n");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

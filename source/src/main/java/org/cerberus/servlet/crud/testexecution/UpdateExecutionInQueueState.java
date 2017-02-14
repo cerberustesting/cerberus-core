@@ -23,7 +23,7 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     /**
      * The associated request body to this {@link UpdateExecutionInQueueState}
      */
-    /* default */ static class Request implements Validity {
+    public static class Request implements Validity {
 
         private TestCaseExecutionInQueue.State state;
 
@@ -51,7 +51,7 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     /**
      * The associated response to this {@link UpdateExecutionInQueueState}
      */
-    /* default */ static class Response {
+    public static class Response {
 
         private List<Long> inError;
 

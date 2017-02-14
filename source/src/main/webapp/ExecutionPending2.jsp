@@ -39,6 +39,7 @@
             </div>
             <%@ include file="include/messagesArea.html"%>
             <%@ include file="include/utils/modal-confirmation.html"%>
+            <%@ include file="include/executionpending/massActionExecutionPending.html"%>
 
             <h1 class="page-title-line" id="title">Executions in Queue</h1>
             <div class="panel panel-default">
@@ -56,7 +57,9 @@
                             <div id="statusChart"></div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabDetails">
-                            <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
+                            <form id="massActionForm" name="massActionForm"  title="" role="form">
+                                <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
+                            </form>
                         </div>
                     </div>
                     <div class="marginBottom20"></div>

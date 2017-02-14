@@ -82,6 +82,8 @@ public interface ITestCaseExecutionInQueueService {
 
     List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException;
 
+    List<TestCaseExecutionInQueue> toQueued(List<Long> ids) throws CerberusException;
+
     void toExecuting(long id) throws CerberusException;
 
     void toError(long id, String comment) throws CerberusException;

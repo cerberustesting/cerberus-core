@@ -34,6 +34,14 @@ public interface IExecutionThreadPoolService {
     void executeNextInQueue(int limit) throws CerberusException;
 
     /**
+     * Start execution of the given list of executions in queue id
+     *
+     * @param ids the list of executions in queue to start
+     * @throws CerberusException if an error occurred
+     */
+    void executeNextInQueue(List<Long> ids) throws CerberusException;
+
+    /**
      * Get an quasi-accurate (not atomic) statistics of the current execution pools
      *
      * @return a collection of {@link ExecutionThreadPoolStats}

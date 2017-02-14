@@ -91,6 +91,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
+    public List<TestCaseExecutionInQueue> toQueued(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.toQueued(ids);
+    }
+
+    @Override
     public void toExecuting(long id) throws CerberusException {
         testCaseExecutionInQueueDAO.toExecuting(id);
     }
