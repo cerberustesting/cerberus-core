@@ -47,8 +47,6 @@ function initPage() {
     $("#massActionBrpButtonRun").click(massActionModalSaveHandler_run);
     $("#massActionBrpButtonDelete").click(massActionModalSaveHandler_delete);
     $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
-
-    $("#runOld").parent().attr("href", "./ExecutionPending.jsp");
 }
 
 function displayPageLabel() {

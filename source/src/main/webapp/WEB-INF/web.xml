@@ -1991,7 +1991,6 @@
             <url-pattern>/ReportingExecutionTime.jsp</url-pattern>
             <url-pattern>/ReportingExecutionByTag.jsp</url-pattern>
             <url-pattern>/ExecutionPending.jsp</url-pattern>
-            <url-pattern>/ExecutionPending2.jsp</url-pattern>
             <url-pattern>/Test.jsp</url-pattern>
             <url-pattern>/TestCase.jsp</url-pattern>
             <url-pattern>/TestCaseScript.jsp</url-pattern>
