@@ -64,17 +64,17 @@
                                             </ul>
                                         </div>
                                         <div class="btn-group pull-right">
-                                            <button class="btn btn-default" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</button>
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <a href="#" class="btn btn-default" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</a>
+                                            <a type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <span class="caret"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
+                                            </a>
                                             <ul class="dropdown-menu">
                                                 <li><a href="#" id="rerunTestCase"><span class="glyphicon glyphicon-forward"></span> ReRun</a></li>
                                             </ul>
                                         </div>
-                                        <a target="_blank"><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
-                                        <a target="_blank"><button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button></a>
+                                        <a><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
+                                        <a><button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button></a>
                                         <button class="btn btn-default pull-right" id="editTcInfo"> Edit Test Case</button>
                                         <button class="btn btn-default pull-right" id="deleteTestCase"> Delete Test Case</button>
                                         <div class="side-item pull-right"></div>

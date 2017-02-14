@@ -187,30 +187,18 @@ function updatePage(data, stepList) {
     $("#runTestCase").prop("disabled", false);
     $("#lastExecution").prop("disabled", false);
 
-    $("#editTcInfo").click(function () {
-        window.location = "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase;
+    $("#editTcToggleButton").click(function () {
+        setLinkOnEditTCStepInfoButton();
     });
-    $("#editTcStepInfo").click(function () {
-        var currentStep = $('#stepInfo');
-        window.location = "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step');
-    });
-    $("#runTestCase").click(function () {
-        window.location = "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag;
-    });
-    $("#lastExecution").click(function () {
-        window.location = "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase;
-    });
-    $("#lastExecutionwithEnvCountry").click(function () {
-        window.location = "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application;
-    });
-
+    
+    $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#runTestCase").attr("href", "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
+    $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
+    $("#lastExecution").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase);
+    $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
+    
     var configPanel = $("#testCaseConfig");
-
-    configPanel.find("#ExecutionByTag").click(function () {
-        window.open("ReportingExecutionByTag.jsp?Tag=" + data.tag, '_blank');
-        return false;
-    });
-
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
     configPanel.find("#testcase").text(data.testcase);
@@ -306,6 +294,11 @@ function updatePage(data, stepList) {
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
     updateLoadBar(data);
+}
+
+function setLinkOnEditTCStepInfoButton(){
+    var currentStep = $('#stepInfo');
+    $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step'));
 }
 
 function updateLoadBar(data) {
