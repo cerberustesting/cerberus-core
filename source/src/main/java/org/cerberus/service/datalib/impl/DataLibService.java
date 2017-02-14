@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.datalib.impl;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.CountryEnvironmentDatabase;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -38,7 +38,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibDataService;
 import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
@@ -47,7 +46,6 @@ import org.cerberus.service.file.IFileService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
-import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
@@ -732,7 +730,8 @@ public class DataLibService implements IDataLibService {
                 break;
 
             case TestDataLib.TYPE_SOAP:
-                SOAPExecution executionSoap = new SOAPExecution();
+//                SOAPExecution executionSoap = new SOAPExecution();
+                AppService appService = new AppService();
                 HashMap<String, String> resultHash = new HashMap<>();
                 List<HashMap<String, String>> listResult = new ArrayList<HashMap<String, String>>();
 
@@ -823,22 +822,21 @@ public class DataLibService implements IDataLibService {
                 }
 
                 // SOAP Call is made here.
-                AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), servicePath, lib.getMethod(), null);
+                AnswerItem ai = soapService.callSOAP(lib.getEnvelope(), servicePath, lib.getMethod(), null, null, null, 60000);
                 msg = ai.getResultMessage();
 
                 //if the call returns success then we can process the soap ressponse
                 if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
 
-                    executionSoap = (SOAPExecution) ai.getItem();
-                    Document xmlDocument = xmlUnitService.getXmlDocument(SoapUtil.convertSoapMessageToString(executionSoap.getSOAPResponse()));
+//                    executionSoap = (SOAPExecution) ai.getItem();
+                    appService = (AppService) ai.getItem();
+                    Document xmlDocument = xmlUnitService.getXmlDocument(appService.getResponseHTTPBody());
 
                     // Call successful so we can start to parse the result and build RawData per columns from subdata entries.
                     try {
 
                         // We get the content of the XML in order to report it log messages.
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        executionSoap.getSOAPResponse().writeTo(out);
-                        xmlResponseString = new String(out.toByteArray());
+                        xmlResponseString = appService.getResponseHTTPBody();
 
                         /**
                          * This Step will calculate hashTemp1 : Hash of List

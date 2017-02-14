@@ -22,7 +22,6 @@ import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.Selenium;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -105,7 +104,7 @@ public class TestCaseExecution {
     private String executionUUID;
     private Session session;
     private long idFromQueue;
-    private AnswerItem lastSOAPCalled; // DEPRECATED will be soon replaced by last Service Called.
+//    private AnswerItem lastSOAPCalled; // DEPRECATED will be soon replaced by last Service Called.
     private AppService lastServiceCalled;
     private List<RobotCapability> capabilities;
     // Global parameters.
@@ -712,13 +711,13 @@ public class TestCaseExecution {
         this.screenSize = screenSize;
     }
 
-    public AnswerItem getLastSOAPCalled() {
-        return lastSOAPCalled;
-    }
-
-    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
-        this.lastSOAPCalled = lastSOAPCalled;
-    }
+//    public AnswerItem getLastSOAPCalled() {
+//        return lastSOAPCalled;
+//    }
+//
+//    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
+//        this.lastSOAPCalled = lastSOAPCalled;
+//    }
 
     public List<RobotCapability> getCapabilities() {
         return capabilities;

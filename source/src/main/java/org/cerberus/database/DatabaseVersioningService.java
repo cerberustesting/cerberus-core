@@ -8307,6 +8307,35 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
         SQLInstruction.add(SQLS.toString());
 
+        // 2 new Parameters used for CallService Action.
+        //-- ------------------------ 1072
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append(" ('','cerberus_callservice_enablehttpheadertoken','Y','Boolean that activate the addition of a header entry cerberus_token with execution id value on every serice call.'), ");
+        SQLS.append(" ('','cerberus_callservice_timeoutms','60000','timeout in ms second used for any service call.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Remove WS type of application and convert it to SRV + Reorder Application Type in menu.
+        //-- ------------------------ 1073-1078
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE application SET `Type` = 'SRV' WHERE `Type` = 'WS'; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='APPLITYPE' and`value`='WS'; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='900' WHERE `idname`='APPLITYPE' and`value`='NONE';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='800' WHERE `idname`='APPLITYPE' and`value`='BAT';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `description`='Web GUI application' WHERE `idname`='APPLITYPE' and`value`='GUI';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `description`='Service Application (REST or SOAP)' WHERE `idname`='APPLITYPE' and`value`='SRV';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

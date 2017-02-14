@@ -39,6 +39,18 @@ public class TestCaseExecutionFile {
     private String usrModif;
     private Timestamp dateModif;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String FILETYPE_XML = "XML";
+    public static final String FILETYPE_TXT = "TXT";
+    public static final String FILETYPE_JSON = "JSON";
+    public static final String FILETYPE_HTML = "HTML";
+    public static final String FILETYPE_JPG = "JPG";
+    public static final String FILETYPE_PNG = "PNG";
+    public static final String FILETYPE_GIF = "GIF";
+    
+    
     public long getId() {
         return id;
     }

@@ -323,6 +323,7 @@ public enum MessageEventEnum {
     CONTROL_FAILED_ELEMENTEQUALS(388, "KO", "Element in path '%XPATH%' is not equal to '%EXPECTED_ELEMENT%'.", true, true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_FAILED_ELEMENTDIFFERENT(389, "KO", "Element in path '%XPATH%' is not different from '%DIFFERENT_ELEMENT%'.", true, true, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(384, "KO", "Not executed because Control '%CONTROL%' is not supported for application type '%APPLICATIONTYPE%'.", true, true, false, MessageGeneralEnum.EXECUTION_FA),
+    CONTROL_FAILED_NOOBJECTINMEMORY(362, "KO", "Cannot perform the control because no successfull Service/Page/Screen was accessed previously.", true, false, true, MessageGeneralEnum.EXECUTION_KO),
     CONTROL_PENDING(399, "PE", "Control beeing performed...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION STEP ***********
     STEP_SUCCESS(400, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),

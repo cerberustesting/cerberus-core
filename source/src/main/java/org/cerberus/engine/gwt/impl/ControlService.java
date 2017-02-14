@@ -27,12 +27,12 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
@@ -47,7 +47,6 @@ import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.SoapUtil;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -391,9 +390,9 @@ public class ControlService implements IControlService {
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
 
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 try {
                     if (identifier.getIdentifier().equals("picture")) {
                         return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
@@ -409,19 +408,25 @@ public class ControlService implements IControlService {
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
-                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-                if (xmlUnitService.isElementPresent(xmlResponse, html)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                    return mes;
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//                String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
+                if (tCExecution.getLastServiceCalled() != null) {
+                    String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    if (xmlUnitService.isElementPresent(xmlResponse, html)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    }
                 } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                     return mes;
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
             } else {
                 mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
@@ -439,7 +444,8 @@ public class ControlService implements IControlService {
             LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
         }
         MessageEvent mes;
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI") || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI) 
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
             if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
                 try {
                     Identifier identifier = identifierService.convertStringToIdentifier(element);
@@ -473,19 +479,28 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
-            try {
-                Identifier identifier = identifierService.convertStringToIdentifier(html);
-                if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                    return mes;
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                    mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                    return mes;
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    }
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
                 }
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return mes;
             }
         } else {
             return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT_NULL);
@@ -548,7 +563,7 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementEquals"));
             mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -556,12 +571,19 @@ public class ControlService implements IControlService {
         }
 
         // Check if element on the given xpath is equal to the given expected element
-        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-        String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-        mes = xmlUnitService.isElementEquals(xmlResponse, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
-        mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
-        mes.setDescription(mes.getDescription().replace("%EXPECTED_ELEMENT%", expectedElement));
-        // TODO Give the actual element found into the description.
+        if (tCExecution.getLastServiceCalled() != null) {
+            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+            mes = xmlUnitService.isElementEquals(xmlResponse, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
+            mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
+            mes.setDescription(mes.getDescription().replace("%EXPECTED_ELEMENT%", expectedElement));
+            // TODO Give the actual element found into the description.
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+            return mes;
+        }
+
+//        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//        String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
         return mes;
     }
 
@@ -569,7 +591,7 @@ public class ControlService implements IControlService {
         MessageEvent mes = null;
 
         // If case of not compatible application then exit with error
-        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase("WS")) {
+        if (!tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementDifferent"));
             mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -577,11 +599,19 @@ public class ControlService implements IControlService {
         }
 
         // Check if element on the given xpath is different from the given different element
-        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-        String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-        mes = xmlUnitService.isElementEquals(xmlResponse, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
-        mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
-        mes.setDescription(mes.getDescription().replace("%DIFFERENT_ELEMENT%", differentElement));
+//        SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+        if (tCExecution.getLastServiceCalled() != null) {
+            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+            mes = xmlUnitService.isElementEquals(xmlResponse, xpath, differentElement) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTDIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTDIFFERENT);
+            mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
+            mes.setDescription(mes.getDescription().replace("%DIFFERENT_ELEMENT%", differentElement));
+            // TODO Give the actual element found into the description.
+        } else {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+            return mes;
+        }
+
+//        String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
         // TODO Give the actual element found into the description.
         return mes;
     }
@@ -597,19 +627,28 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplicationObj().getType();
 
-            if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)
-                    || "IPA".equalsIgnoreCase(applicationType)) {
+            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType) 
+                    || Application.TYPE_APK.equalsIgnoreCase(applicationType)
+                    || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 
-            } else if ("WS".equalsIgnoreCase(applicationType)) {
-                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-                if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
-                    throw new NoSuchElementException("Unable to find element " + path);
-                }
-                String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+            } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
 
+                if (tCExecution.getLastServiceCalled() != null) {
+                    String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
+                        throw new NoSuchElementException("Unable to find element " + path);
+                    }
+                    String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
+                    actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+                    // TODO Give the actual element found into the description.
+                } else {
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+                    return mes;
+                }
+
+//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//                String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
@@ -651,18 +690,26 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplicationObj().getType();
 
-            if ("GUI".equalsIgnoreCase(applicationType) || "APK".equalsIgnoreCase(applicationType)) {
+            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType) 
+                    || Application.TYPE_APK.equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 
-            } else if ("WS".equalsIgnoreCase(applicationType)) {
-                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-                String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-                if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
-                    throw new NoSuchElementException("Unable to find element " + path);
-                }
-                String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+            } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
 
+                if (tCExecution.getLastServiceCalled() != null) {
+                    String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
+                        throw new NoSuchElementException("Unable to find element " + path);
+                    }
+                    String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
+                    actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+                } else {
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+                    return mes;
+                }
+
+//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//                String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
             } else {
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextNotInElement"));
@@ -899,19 +946,27 @@ public class ControlService implements IControlService {
         MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyXmlTreeStructure on : " + controlProperty);
         MessageEvent mes;
         try {
-            SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-            String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
-            if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
-                return mes;
+//            SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//            String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
+
+            if (tCExecution.getLastServiceCalled() != null) {
+                String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
+                    mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                    return mes;
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
+                    mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                    return mes;
+                }
             } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
                 return mes;
             }
+
         } catch (Exception exception) {
             LOG.fatal(exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED);
@@ -924,8 +979,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 try {
                     if (this.webdriverService.isElementClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_CLICKABLE);
@@ -955,8 +1010,8 @@ public class ControlService implements IControlService {
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 try {
                     if (this.webdriverService.isElementNotClickable(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTCLICKABLE);
@@ -983,9 +1038,9 @@ public class ControlService implements IControlService {
 
     private MessageEvent takeScreenshot(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             TestCaseExecutionFile file = recorderService.recordScreenshot(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             testCaseStepActionControlExecution.addFileList(file);
             message = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TAKESCREENSHOT);
@@ -999,9 +1054,9 @@ public class ControlService implements IControlService {
 
     private MessageEvent getPageSource(TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent message;
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             TestCaseExecutionFile file = recorderService.recordPageSource(tCExecution, testCaseStepActionExecution, testCaseStepActionControlExecution.getControlSequence());
             if (file != null) {
                 List<TestCaseExecutionFile> fileList = new ArrayList<TestCaseExecutionFile>();

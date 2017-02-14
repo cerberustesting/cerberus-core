@@ -21,13 +21,13 @@ package org.cerberus.engine.execution;
 
 import java.util.HashMap;
 import java.util.List;
+import javax.xml.soap.SOAPMessage;
 import org.apache.commons.fileupload.FileItem;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.engine.entity.SOAPExecution;
 
 /**
  *
@@ -39,7 +39,7 @@ public interface IRecorderService {
      *
      * @param testCaseStepActionExecution
      * @param testCaseStepActionControlExecution
-     * @return 
+     * @return
      */
     List<TestCaseExecutionFile> recordExecutionInformationAfterStepActionandControl(TestCaseStepActionExecution testCaseStepActionExecution, TestCaseStepActionControlExecution testCaseStepActionControlExecution);
 
@@ -48,7 +48,7 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
-     * @return 
+     * @return
      */
     TestCaseExecutionFile recordScreenshot(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
@@ -57,7 +57,7 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
-     * @return 
+     * @return
      */
     TestCaseExecutionFile recordPageSource(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control);
 
@@ -66,18 +66,8 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
-     * @param se
-     * @return 
-     */
-    List<TestCaseExecutionFile> recordSOAPCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, SOAPExecution se);
-
-    /**
-     *
-     * @param testCaseExecution
-     * @param testCaseStepActionExecution
-     * @param control
      * @param service
-     * @return 
+     * @return
      */
     List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService service);
 
@@ -86,10 +76,11 @@ public interface IRecorderService {
      * @param runId
      * @param property
      * @param propertyIndex
-     * @param se
-     * @return 
+     * @param request
+     * @param response
+     * @return
      */
-    List<TestCaseExecutionFile> recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPExecution se);
+    List<TestCaseExecutionFile> recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPMessage request, SOAPMessage response);
 
     /**
      *
@@ -97,14 +88,14 @@ public interface IRecorderService {
      * @param property
      * @param propertyIndex
      * @param result
-     * @return 
+     * @return
      */
     TestCaseExecutionFile recordTestDataLibProperty(Long runId, String property, int propertyIndex, List<HashMap<String, String>> result);
 
     /**
      *
      * @param testCaseExecution
-     * @return 
+     * @return
      */
     TestCaseExecutionFile recordSeleniumLog(TestCaseExecution testCaseExecution);
 

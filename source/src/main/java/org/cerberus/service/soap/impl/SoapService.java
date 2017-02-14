@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
@@ -41,17 +43,18 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Level;
-import org.cerberus.engine.entity.SOAPExecution;
+import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.factory.IFactoryAppService;
+import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.soap.ISoapService;
-import org.cerberus.service.xmlunit.IXmlUnitService;
+import org.cerberus.util.SoapUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,20 +75,22 @@ public class SoapService implements ISoapService {
     @Autowired
     RecorderService recorderService;
     @Autowired
-    private ITestDataLibService testDataLibService;
+    private IFactoryAppService factoryAppService;
     @Autowired
-    private IPropertyService propertyService;
-    @Autowired
-    private IXmlUnitService xmlUnitService;
+    private IFactoryAppServiceHeader factoryAppServiceHeader;
 
     @Override
-    public SOAPMessage createSoapRequest(String envelope, String method) throws SOAPException, IOException, SAXException, ParserConfigurationException {
+    public SOAPMessage createSoapRequest(String envelope, String method, List<AppServiceHeader> header, String token) throws SOAPException, IOException, SAXException, ParserConfigurationException {
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
+
         MimeHeaders headers = new MimeHeaders();
-        headers.addHeader("SOAPAction", "\""+method+"\"");
-        headers.addHeader("Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
+//        headers.addHeader("SOAPAction", "\"" + method + "\"");
+//        headers.addHeader("Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
+        for (AppServiceHeader appServiceHeader : header) {
+            headers.addHeader(appServiceHeader.getKey(), appServiceHeader.getValue());
+        }
 
         InputStream input = new ByteArrayInputStream(unescapedEnvelope.getBytes("UTF-8"));
         MessageFactory messageFactory = MessageFactory.newInstance(is12SoapVersion ? SOAPConstants.SOAP_1_2_PROTOCOL : SOAPConstants.SOAP_1_1_PROTOCOL);
@@ -116,12 +121,16 @@ public class SoapService implements ISoapService {
     }
 
     @Override
-    public AnswerItem<SOAPExecution> callSOAP(String envelope, String servicePath, String method, String attachmentUrl) {
+    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs) {
         AnswerItem result = new AnswerItem();
-        SOAPExecution executionSOAP = new SOAPExecution();
+        String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
+        boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
+        
+        AppService serviceSOAP = factoryAppService.create("", "", "", "", "", envelope, "", servicePath, "", method, "", null, "", null);
+//        SOAPExecution executionSOAP = new SOAPExecution();
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
-        
+
         if (StringUtils.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
             result.setResultMessage(message);
@@ -138,6 +147,18 @@ public class SoapService implements ISoapService {
             return result;
         }
 
+        // If header is null we create the list empty.
+        if (header == null) {
+            header = new ArrayList<AppServiceHeader>();
+        }
+        // We feed the header with token + Standard SOAP header.
+        if (token != null) {
+            header.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+        }
+        header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + method + "\"", "Y", 0, "", "", null, "", null));
+        header.add(factoryAppServiceHeader.create(null, "Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE, "Y", 0, "", "", null, "", null));
+        serviceSOAP.setHeaderList(header);
+        
         SOAPConnectionFactory soapConnectionFactory;
         SOAPConnection soapConnection = null;
         try {
@@ -148,7 +169,7 @@ public class SoapService implements ISoapService {
 
             // Create SOAP Request
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Create request");
-            SOAPMessage input = createSoapRequest(envelope, method);
+            SOAPMessage input = createSoapRequest(envelope, method, header, token);
 
             //Add attachment File if specified
             //TODO: this feature is not implemented yet therefore is always empty!
@@ -160,8 +181,10 @@ public class SoapService implements ISoapService {
             out = new ByteArrayOutputStream();
             input.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
-            executionSOAP.setSOAPRequest(input);
-            result.setItem(executionSOAP);
+//            executionSOAP.setSOAPRequest(input);
+            serviceSOAP.setRequestSOAPMessage(input);
+            // We already set the item in order to keep the question in case of failure of SOAP calls.
+            result.setItem(serviceSOAP);
 
             // Call the WS
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
@@ -173,13 +196,18 @@ public class SoapService implements ISoapService {
             soapResponse.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
-            executionSOAP.setSOAPResponse(soapResponse);
+//            executionSOAP.setSOAPResponse(soapResponse);
+            serviceSOAP.setResponseSOAPMessage(soapResponse);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
                     .replace("%SOAPMETHOD%", method));
-            result.setItem(executionSOAP);
+
+            // We save convert to string the final response from SOAP request.
+            serviceSOAP.setResponseHTTPBody(SoapUtil.convertSoapMessageToString(soapResponse));
+
+            result.setItem(serviceSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
             MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());

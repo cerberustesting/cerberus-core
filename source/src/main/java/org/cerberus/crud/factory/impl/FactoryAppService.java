@@ -18,7 +18,11 @@
 package org.cerberus.crud.factory.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.factory.IFactoryAppService;
 
@@ -30,7 +34,7 @@ import org.cerberus.crud.factory.IFactoryAppService;
 public class FactoryAppService implements IFactoryAppService {
 
     @Override
-    public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String description, 
+    public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String description,
             String servicePath, String parsingAnswer, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         AppService s = new AppService();
         s.setService(service);
@@ -47,6 +51,10 @@ public class FactoryAppService implements IFactoryAppService {
         s.setUsrModif(usrModif);
         s.setDateCreated(dateCreated);
         s.setDateModif(dateModif);
+        List<AppServiceContent> objectContentList = new ArrayList<>();
+        s.setContentList(objectContentList);
+        List<AppServiceHeader> objectHeaderList = new ArrayList<>();
+        s.setHeaderList(objectHeaderList);
         return s;
     }
 }

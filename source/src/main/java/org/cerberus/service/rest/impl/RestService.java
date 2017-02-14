@@ -21,10 +21,8 @@ package org.cerberus.service.rest.impl;
 
 import org.cerberus.engine.execution.impl.RecorderService;
 import com.mysql.jdbc.StringUtils;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicNameValuePair;
@@ -32,9 +30,12 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.factory.impl.FactoryAppService;
+import org.cerberus.crud.factory.impl.FactoryAppServiceHeader;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.rest.IRestService;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,13 +49,17 @@ public class RestService implements IRestService {
 
     @Autowired
     RecorderService recorderService;
+    @Autowired
+    FactoryAppServiceHeader factoryAppServiceHeader;
+    @Autowired
+    FactoryAppService factoryAppService;
 
     private static final Logger LOG = Logger.getLogger(RestService.class);
 
     @Override
-    public AnswerItem<AppService> callREST(String servicePath, String queryString, String method, List<AppServiceHeader> headerList, List<AppServiceContent> contentList) {
+    public AnswerItem<AppService> callREST(String servicePath, String queryString, String method, List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs) {
         AnswerItem result = new AnswerItem();
-        AppService serviceREST = new AppService();
+        AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", null, "", null);
         MessageEvent message = null;
 
         if (StringUtils.isNullOrEmpty(servicePath)) {
@@ -67,25 +72,34 @@ public class RestService implements IRestService {
             result.setResultMessage(message);
             return result;
         }
+        // If token is defined, we add 'cerberus-token' on the http header.
+        if (token != null) {
+            headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
+        }
         try {
 
             String responseBody = "";
+            String responseContentType = "";
             int responseCode = 0;
             Response resp = null;
             Request req = null;
             switch (method) {
                 case AppService.METHOD_HTTPGET:
                     // TODO Add the QueryString
+                    servicePath = StringUtil.addQueryString(servicePath, queryString);
                     req = Request.Get(servicePath);
+                    serviceREST.setServicePath(servicePath);
                     // Header.
                     for (AppServiceHeader contentHeader : headerList) {
                         req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
+                    serviceREST.setHeaderList(headerList);
                     // Call the REST
-                    resp = req.execute();
+                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
                     break;
                 case AppService.METHOD_HTTPPOST:
                     req = Request.Post(servicePath);
+                    serviceREST.setServicePath(servicePath);
                     // Content.
                     List<BasicNameValuePair> requestData = new ArrayList<>();
                     for (AppServiceContent contentVal : contentList) {
@@ -94,35 +108,33 @@ public class RestService implements IRestService {
                     if (!(contentList.isEmpty())) {
                         req.bodyForm(requestData);
                     }
+                    serviceREST.setContentList(contentList);
                     // Header.
                     for (AppServiceHeader contentHeader : headerList) {
                         req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
+                    serviceREST.setHeaderList(headerList);
                     // Call the REST
-                    resp = req.execute();
+                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
                     break;
             }
 
             if (resp != null) {
                 responseBody = resp.returnContent().asString();
-                // TODO Manage the return Code
+                // TODO Manage the return Code + Content Type.
 //                responseCode = resp.returnResponse().getStatusLine().getStatusCode();
             }
 
-            serviceREST.setHTTPResponseBody(responseBody);
-            serviceREST.setHTTPResponseCode(responseCode);
-            serviceREST.setMethod(method);
-            serviceREST.setServicePath(servicePath);
-            serviceREST.setServiceRequest(queryString);
-            serviceREST.setContentList(contentList);
-            serviceREST.setHeaderList(headerList);
+            serviceREST.setResponseHTTPBody(responseBody);
+            serviceREST.setResponseHTTPContentType(responseContentType);
+            serviceREST.setResponseHTTPCode(responseCode);
             result.setItem(serviceREST);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", method));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
             result.setResultMessage(message);
 
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));

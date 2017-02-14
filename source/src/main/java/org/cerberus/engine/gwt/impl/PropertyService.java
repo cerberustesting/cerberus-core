@@ -38,7 +38,6 @@ import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.cerberus.crud.service.*;
-import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -925,16 +924,17 @@ public class PropertyService implements IPropertyService {
                 }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
-                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement);
-                tCExecution.setLastSOAPCalled(soapCall);
+                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement, null, null, 60000);
+                AppService se1 = (AppService) soapCall.getItem();
+//                tCExecution.setLastSOAPCalled(soapCall);
 
                 //Record the Request and Response.
-                SOAPExecution se = (SOAPExecution) soapCall.getItem();
-                recorderService.recordSOAPProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, se);
+//                SOAPExecution se = (SOAPExecution) soapCall.getItem();
+                recorderService.recordSOAPProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, se1.getRequestSOAPMessage(), se1.getResponseSOAPMessage());
 
                 if (soapCall.isCodeEquals(200)) {
-                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-                    String xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+//                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+                    String xmlResponse = se1.getResponseHTTPBody();
                     result = xmlUnitService.getFromXml(xmlResponse, null, appService.getParsingAnswer());
                 }
                 if (result != null) {
@@ -969,9 +969,10 @@ public class PropertyService implements IPropertyService {
             /**
              * If tCExecution LastSoapCalled exist, get the response;
              */
-            if (null != tCExecution.getLastSOAPCalled()) {
-                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-                xmlResponse = SoapUtil.convertSoapMessageToString(lastSoapCalled.getSOAPResponse());
+            if (null != tCExecution.getLastServiceCalled()) {
+//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
+//                xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
+                xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
             }
             // If value1 has no value defined, we force the new url to null.
             String newUrl = null;

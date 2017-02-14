@@ -362,6 +362,19 @@ public final class StringUtil {
         return result;
     }
 
+    public static String addQueryString(String URL, String queryString) {
+        String result = "";
+        URL = URL.trim();
+        if (URL.endsWith("?")) {
+            result = URL + queryString;
+        } else if (URL.contains("?")) {
+            result = URL + "&" + queryString;
+        } else {
+            result = URL + "?" + queryString;
+        }
+        return result;
+    }
+
     /**
      *
      * @param text

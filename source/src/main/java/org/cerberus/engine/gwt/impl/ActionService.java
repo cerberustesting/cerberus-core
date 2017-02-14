@@ -33,7 +33,6 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -56,6 +55,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.rest.IRestService;
 
 /**
@@ -67,6 +67,8 @@ public class ActionService implements IActionService {
 
     @Autowired
     private IPropertyService propertyService;
+    @Autowired
+    private IParameterService parameterService;
     @Autowired
     private IWebDriverService webdriverService;
     @Autowired
@@ -921,6 +923,13 @@ public class ActionService implements IActionService {
                     return message;
                 }
 
+                // Get from parameter whether we define a token or not (in order to trace the cerberus calls in http header)
+                String token = null;
+                if (parameterService.getParameterBooleanByKey("cerberus_callservice_enablehttpheadertoken", tCExecution.getApplicationObj().getSystem(), true)) {
+                    token = String.valueOf(tCExecution.getId());
+                }
+                // Get from parameter the call timeout to be used.
+                int timeOutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", tCExecution.getApplicationObj().getSystem(), 60000);
                 // The rest of the data will be prepared depending on the TYPE and METHOD used.
                 switch (appService.getType()) {
                     case AppService.TYPE_SOAP:
@@ -962,14 +971,17 @@ public class ActionService implements IActionService {
                         /**
                          * Call SOAP and store it into the execution.
                          */
-                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement);
-                        tCExecution.setLastSOAPCalled(lastSoapCalled);
+                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement, 
+                                appService.getHeaderList(), token, timeOutMs);
+//                        tCExecution.setLastSOAPCalled(lastSoapCalled);
+                        AppService lsoapc = (AppService) lastSoapCalled.getItem();
+                        tCExecution.setLastServiceCalled(lsoapc);
 
                         /**
                          * Record the Request and Response in filesystem.
                          */
-                        SOAPExecution lsoapC = (SOAPExecution) lastSoapCalled.getItem();
-                        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, lsoapC);
+//                        SOAPExecution lsoapC = (SOAPExecution) lastSoapCalled.getItem();
+                        testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lsoapc));
                         message = lastSoapCalled.getResultMessage();
 
                         break;
@@ -986,16 +998,16 @@ public class ActionService implements IActionService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), appService.getHeaderList(), appService.getContentList());
+                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), 
+                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
                                 AppService lservicec = (AppService) lastServiceCalled.getItem();
                                 tCExecution.setLastServiceCalled(lservicec);
-                                LOG.debug("TOTO" + lservicec.getHTTPResponseBody());
 
                                 /**
                                  * Record the Request and Response in
                                  * filesystem.
                                  */
-                                recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec);
+                                testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec));
                                 message = lastServiceCalled.getResultMessage();
                                 break;
 
