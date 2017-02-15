@@ -39,7 +39,7 @@ function initPage() {
 //    hideLoader('#logViewerTable');
 
     var allowedColumns = new Array("test","testcase","application","country","environment");
-    applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns);
+    applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns, true);
 }
 
 function afterTableLoad(){

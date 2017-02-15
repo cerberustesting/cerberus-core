@@ -1475,27 +1475,29 @@ function filterOnColumn(tableId, column, value) {
 }
 
 /**
- * Function that apply filters on columns on values get from the URL
- * @param {type} tableId > Id of the datatable
- * @param {type} searchColums > Array of columns 
- * @returns {undefined}
+ * Function that apply filters on given datatable's columns
+ *
+ * Values can either be contained into the given columns, or retrieved from the current URL.
+ *
+ * @param tableId the datatable from which filter columns
+ * @param searchColumns the array of columns to filter. Column can be either an object {param, values}, or simply the name of the column (param)
+ * @param fromURL if values are to be retrived from the current URL
  */
-function applyFiltersOnMultipleColumns(tableId, searchColumns) {
-
-    /**
-     * Loop on searchColumns and get Parameter values >> Build an array of object
-     */
-    var searchArray = new Array;
-    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
-        var param = GetURLParameters(searchColumns[searchColumn]);
-        var searchObject = {
-            param: searchColumns[searchColumn],
-            values: param};
-        searchArray.push(searchObject);
+function applyFiltersOnMultipleColumns(tableId, searchColumns, fromURL) {
+    // Get or create the search array
+    var searchArray = searchColumns;
+    if (fromURL) {
+        searchArray = [];
+        for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
+            var param = GetURLParameters(searchColumns[searchColumn]);
+            var searchObject = {
+                param: searchColumns[searchColumn],
+                values: param};
+            searchArray.push(searchObject);
+        }
     }
-    /**
-     * Apply the filter to the table
-     */
+
+    // Apply filter on table
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable);
     var oSettings = oTable.fnSettings();

@@ -473,7 +473,7 @@ function drawQueueInformation() {
         //if (messageType === "success") {
         //redraw the datatable
         for (var inc = 0; inc < data.length; inc++) {
-            generatePie("statusChart", data[inc].id, data[inc].poolSize, data[inc].inExecution, data[inc].remaining);
+            generatePie("statusChart", inc, data[inc]);
         }
         //}
         //show message in the main page
@@ -481,6 +481,45 @@ function drawQueueInformation() {
         //close confirmation window
         //$('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
+}
+
+function filterAndDisplayTable(poolId) {
+    filterTable(poolId);
+    displayTable();
+}
+
+function filterTable(poolId) {
+    var jqxhr = $.post("ReadExecutionPool", JSON.stringify(poolId), "json");
+    $.when(jqxhr)
+        .then(
+            function (data) {
+                // Get associated execution ids from pool
+                var associcatedIds = [];
+                data.EXECUTING.forEach(function (exec) {
+                    associcatedIds.push(exec.toExecute.id);
+                });
+                data.QUEUED.forEach(function (exec) {
+                    associcatedIds.push(exec.toExecute.id);
+                });
+
+                // Apply filter
+                applyFiltersOnMultipleColumns(
+                    'executionsTable',
+                    [
+                        {
+                            param: 'id',
+                            values: associcatedIds
+                        }
+                    ]
+                );
+                refreshTable();
+            }
+        )
+        .fail(handleErrorAjaxAfterTimeout);
+}
+
+function displayTable() {
+    $('.nav-tabs a[href="#tabDetails"]').tab('show');
 }
 
 /**
@@ -492,27 +531,41 @@ function drawQueueInformation() {
  * @param {type} remaining : Number remaining executions in queue
  * @returns {undefined}
  */
-function generatePie(elementid, id, poolSize, inExecution, remaining) {
+function generatePie(root, id, data) {
+    var width = 130;
+    var height = 130;
+    var margin = {
+        horizontal: 50,
+        vertical: 50
+    };
+    var totalWidth = width + margin.horizontal;
+    var totalHeight = height + margin.vertical;
+
+    var container = $('<div/>')
+        .attr('id', root + id)
+        .attr('role', 'button')
+        .css('width', totalWidth)
+        .css('height', totalHeight);
+    container.click(function () {
+        filterAndDisplayTable(data.id);
+    });
+    $('#' + root).append(container);
 
     /**
      * Generate data object which is an array of 2 objects that contains 
      * attributes value and color
      */
-    var data = [{"color": "#3498DB", "value": inExecution},
-        {"color": "#eee", "value": poolSize - inExecution}];
+    var colors = [{"color": "#3498DB", "value": data.inExecution},
+        {"color": "#eee", "value": data.poolSize - data.inExecution}];
 
-    var margin = {horizontal: 50, vertical: 50};
-
-    var width = 130;
-    var height = 130;
     var radius = Math.min(width, height) / 2;
 
-    var svg = d3.select('#' + elementid)
+    var svg = d3.select('#' + root + id)
             .append('svg')
-            .attr('width', width + margin.horizontal)
-            .attr('height', height + margin.vertical)
+            .attr('width', totalHeight)
+            .attr('height', totalHeight)
             .append('g')
-            .attr('transform', 'translate(' + ((width + margin.horizontal) / 2) + ',' + ((height + margin.vertical) / 2) + ')');
+            .attr('transform', 'translate(' + ((totalWidth) / 2) + ',' + ((totalHeight) / 2) + ')');
 
     var arc = d3.svg.arc()
             .outerRadius(radius)
@@ -529,38 +582,39 @@ function generatePie(elementid, id, poolSize, inExecution, remaining) {
             .style("text-anchor", "middle")
             .attr("class", "primary-name")
             .text(function (d) {
-                return id.application;
+                return data.id.application;
             });
     svg.append("text")
             .attr("dy", "-7.2em")
             .style("text-anchor", "middle")
             .attr("class", "secondary-name")
             .text(function (d) {
-                return '(' + id.country + ' - ' + id.environment + ')';
+                return '(' + data.id.country + ' - ' + data.id.environment + ')';
             });
     svg.append("text")
             .style("text-anchor", "middle")
             .attr("dy", "+0.2em")
             .attr("class", "count")
             .text(function (d) {
-                return inExecution + '/' + poolSize;
+                return data.inExecution + '/' + data.poolSize;
             });
-    if (remaining > 0) {
+    if (data.remaining > 0) {
         svg.append("text")
                 .attr("dy", "+1.9em")
                 .style("text-anchor", "middle")
                 .attr("class", "remaining")
                 .text(function (d) {
-                    return '(+ ' + remaining + ')';
+                    return '(+ ' + data.remaining + ')';
                 });
     }
 
     var path = svg.selectAll('path')
-            .data(pie(data))
+            .data(pie(colors))
             .enter()
             .append('path')
             .attr('d', arc)
             .attr('fill', function (d, i) {
                 return d.data.color;
             });
+
 }
