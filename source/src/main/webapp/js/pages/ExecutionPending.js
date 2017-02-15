@@ -31,12 +31,17 @@ function initPage() {
     createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
 
     drawQueueInformation();
-    
+
+    // React on tab changes
     $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        var target = $(e.target).attr("href"); // activated tab
-        if (target == "#tabDetails") {
-            // Reload table
-            $("#executionsTable").DataTable().draw();
+        switch ($(e.target).attr("href")) {
+            case "#tabDetails":
+                $("#executionsTable").DataTable().draw();
+                break;
+            case "#tabSummary":
+                clearQueueInformation();
+                drawQueueInformation();
+                break;
         }
     });
 
@@ -455,6 +460,10 @@ function massActionModalCloseHandler() {
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
     clearResponseMessage($('#massActionBrpModal'));
+}
+
+function clearQueueInformation() {
+    $('#statusChart').empty();
 }
 
 function drawQueueInformation() {
