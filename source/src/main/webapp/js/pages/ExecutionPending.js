@@ -452,8 +452,16 @@ function massActionModalCloseHandler() {
     clearResponseMessage($('#massActionBrpModal'));
 }
 
+function getTable() {
+    return $('#executionsTable').dataTable()
+}
+
+function resetTableFilters() {
+    resetFilters(getTable());
+}
+
 function refreshTable() {
-    $('#executionsTable').DataTable().draw();
+    getTable().fnDraw();
 }
 
 function refreshQueueInformation() {
@@ -503,6 +511,7 @@ function filterTable(poolId) {
                 });
 
                 if (associcatedIds.length == 0) {
+                    resetTableFilters();
                     showMessage({
                         messageType: 'WARNING',
                         message: 'Execution pool is empty, showing the whole table'
