@@ -8402,6 +8402,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'fr', 'Dépassement de temps', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Remove the unecessary TestCaseExecutionQueue's Proceeded column
+        //-- ------------------------ 1087
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `Proceeded`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

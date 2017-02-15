@@ -19,17 +19,13 @@
  */
 package org.cerberus.crud.service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.cerberus.crud.entity.TestCaseExecution;
-
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Service layer to handle {@link TestCaseExecutionInQueue} instances
@@ -116,12 +112,6 @@ public interface ITestCaseExecutionInQueueService {
                                      List<String> tcactiveList, List<String> priorityList, List<String> targetsprintList, List<String> targetrevisionList, List<String> creatorList,
                                      List<String> implementerList, List<String> buildList, List<String> revisionList, List<String> environmentList, List<String> countryList, List<String> browserList, List<String> tcestatusList, String ip, String port, String tag, String browserversion,
                                      String comment, String bugid, String ticket);
-
-    public Answer create(TestCaseExecutionInQueue test);
-
-    public Answer update(TestCaseExecutionInQueue test);
-
-    public Answer delete(TestCaseExecutionInQueue test);
 
     /**
      * Convert a testCaseExecutionInQueue object into TestCaseExecution
