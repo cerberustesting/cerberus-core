@@ -198,25 +198,9 @@ function aoColumnsFunc(tableId) {
             "visible": false
         },
         {
-            "data": "robotPort",
-            "sName": "robotPort",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "robotPort_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
             "data": "browser",
             "sName": "browser",
             "title": doc.getDocLabel("page_testcaseexecutionqueue", "browser_col"),
-            "sWidth": "70px",
-            "defaultContent": "",
-            "visible": false
-        },
-        {
-            "data": "browserVersion",
-            "sName": "browserVersion",
-            "title": doc.getDocLabel("page_testcaseexecutionqueue", "browserVersion_col"),
             "sWidth": "70px",
             "defaultContent": "",
             "visible": false

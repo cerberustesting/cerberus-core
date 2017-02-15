@@ -8360,6 +8360,48 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError', `DocLabel`='Merci de selectionner au moins 1 élément avant de faire une action en masse !' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='fr';\n");
         SQLInstruction.add(SQLS.toString());
 
+        // Add missing documentation on execution pending table
+        //-- ------------------------ 1086
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
+        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'en', 'Request date', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'fr', 'Date d\\'insertion', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'en', 'Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'fr', 'Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'en', 'Robot host', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'fr', 'Domaine du Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'en', 'Robot port', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'fr', 'Port du Robot', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'en', 'Browser version', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'fr', 'Version du navigateur', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'en', 'Platform', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'fr', 'Plateforme', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'en', 'Manual execution', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'fr', 'Execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'en', 'Manual execution URL', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'fr', 'URL de l\\'execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'en', 'Manual execution host', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'fr', 'Domaine de l\\'execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'en', 'Manual execution context root', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'fr', 'Contexte racine de l\\'execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'en', 'Manual execution login relative URL', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'fr', 'URL relative de connexion pour l\\'execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'en', 'Manual execution environment data', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'fr', 'Données d\\'environnement de l\\'execution manuelle', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'en', 'Screenshots', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'fr', 'Captures d\\'écrans', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'en', 'Page source', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'fr', 'Code source', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'en', 'Selenium logs', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'fr', 'Journalisation Selenium', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'en', 'Verbose', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'fr', 'Verbeux', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'en', 'Retries', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'fr', 'Tentatives', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'en', 'Timeout', ''),");
+        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'fr', 'Dépassement de temps', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
