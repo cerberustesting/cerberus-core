@@ -61,6 +61,16 @@ function initPage() {
 
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
 
+    console.log(table);
+    // React on table redraw
+    table.on(
+        'draw.dt',
+        function () {
+            // Un-check the select all checkbox
+            $('#selectAll')[0].checked = false;
+        }
+    );
+
     // handle the click for specific action buttons
     $("#addBrpButton").click(addEntryModalSaveHandler);
     $("#editBrpButton").click(editEntryModalSaveHandler);
@@ -597,8 +607,7 @@ function massActionModalSaveHandler_changeBuildRev() {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionBrpModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
-            oTable.fnDraw(true);
+            refreshTable();
             $('#massActionBrpModal').modal('hide');
             showMessage(data);
         } else {
@@ -620,8 +629,7 @@ function massActionModalSaveHandler_delete() {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionBrpModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-            var oTable = $("#buildrevisionparametersTable").dataTable();
-            oTable.fnDraw(true);
+            refreshTable();
             $('#massActionBrpModal').modal('hide');
             showMessage(data);
         } else {
@@ -642,7 +650,6 @@ function massActionModalCloseHandler() {
 
 function massActionClick() {
     var doc = new Doc();
-    console.debug("Mass Action");
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
@@ -652,6 +659,10 @@ function massActionClick() {
     } else {
         $('#massActionBrpModal').modal('show');
     }
+}
+
+function refreshTable() {
+    $('#buildrevisionparametersTable').DataTable().draw();
 }
 
 function aoColumnsFunc(tableId) {

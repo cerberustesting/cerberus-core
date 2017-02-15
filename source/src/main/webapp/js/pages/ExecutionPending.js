@@ -26,32 +26,44 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     displayPageLabel();
-    //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
 
+    // Display queue information
     drawQueueInformation();
 
-    // React on tab changes
-    $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        switch ($(e.target).attr("href")) {
-            case "#tabDetails":
-                $("#executionsTable").DataTable().draw();
-                break;
-            case "#tabSummary":
-                clearQueueInformation();
-                drawQueueInformation();
-                break;
-        }
-    });
+    // Display table
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
+    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
 
+    // React on table redraw
+    table.on(
+        'draw.dt',
+        function () {
+            // Un-check the select all checkbox
+            $('#selectAll')[0].checked = false;
+        }
+    );
+
+    // React on select all click
     $("#selectAll").click(selectAll);
 
+    // Display mass action
     displayStateList();
     $("#massActionBrpButtonSetState").click(massActionModalSaveHandler_setState);
     $("#massActionBrpButtonRun").click(massActionModalSaveHandler_run);
     $("#massActionBrpButtonDelete").click(massActionModalSaveHandler_delete);
     $('#massActionBrpModal').on('hidden.bs.modal', massActionModalCloseHandler);
+
+    // React on tab changes
+    $('#executionList a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        switch ($(e.target).attr("href")) {
+            case "#tabDetails":
+                refreshTable();
+                break;
+            case "#tabSummary":
+                refreshQueueInformation();
+                break;
+        }
+    });
 }
 
 function displayPageLabel() {
@@ -361,10 +373,8 @@ function massActionModalSaveHandler_setState() {
 
     var jqxhr = $.post("UpdateExecutionInQueueState", requestBody, "json");
     $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns
+        refreshTable();
         hideLoaderInModal('#massActionBrpModal');
-        var oTable = $("#executionsTable").dataTable();
-        oTable.fnDraw(true);
         $('#massActionBrpModal').modal('hide');
 
         if (!data || !Array.isArray(data.inError)) {
@@ -397,10 +407,8 @@ function massActionModalSaveHandler_run() {
 
     var jqxhr = $.post("RunExecutionInQueue", requestBody, "json");
     $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns
+        refreshTable();
         hideLoaderInModal('#massActionBrpModal');
-        var oTable = $("#executionsTable").dataTable();
-        oTable.fnDraw(true);
         $('#massActionBrpModal').modal('hide');
 
         if (data) {
@@ -428,10 +436,8 @@ function massActionModalSaveHandler_delete() {
 
     var jqxhr = $.post("DeleteExecutionInQueue", requestBody, "json");
     $.when(jqxhr).then(function (data) {
-        // unblock when remote call returns
+        refreshTable();
         hideLoaderInModal('#massActionBrpModal');
-        var oTable = $("#executionsTable").dataTable();
-        oTable.fnDraw(true);
         $('#massActionBrpModal').modal('hide');
 
         if (!data || !Array.isArray(data.inError)) {
@@ -460,6 +466,15 @@ function massActionModalCloseHandler() {
     $(this).find('div.has-error').removeClass("has-error");
     // clear the response messages of the modal
     clearResponseMessage($('#massActionBrpModal'));
+}
+
+function refreshTable() {
+    $('#executionsTable').DataTable().draw();
+}
+
+function refreshQueueInformation() {
+    clearQueueInformation();
+    drawQueueInformation();
 }
 
 function clearQueueInformation() {
