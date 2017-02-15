@@ -159,7 +159,7 @@ public class ReadExecutionInQueue extends HttpServlet {
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "2"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag,processed");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
@@ -198,7 +198,7 @@ public class ReadExecutionInQueue extends HttpServlet {
         executionService = appContext.getBean(ITestCaseExecutionInQueueService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag,processed");
+        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag");
         String columnToSort[] = sColumns.split(",");
         String column = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");

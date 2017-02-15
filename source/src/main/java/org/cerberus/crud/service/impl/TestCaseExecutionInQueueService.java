@@ -21,14 +21,12 @@ package org.cerberus.crud.service.impl;
 
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,21 +154,6 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
                 targetrevisionList, creatorList, implementerList, buildList, revisionList, environmentList, countryList, browserList, tcestatusList,
                 ip, port, tag, browserversion, comment, bugid, ticket);
 
-    }
-
-    @Override
-    public Answer create(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.create(test);
-    }
-
-    @Override
-    public Answer update(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.update(test);
-    }
-
-    @Override
-    public Answer delete(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.delete(test);
     }
 
     @Override

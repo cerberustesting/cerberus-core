@@ -19,14 +19,6 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.*;
-
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -35,23 +27,34 @@ import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryApplication;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO {
@@ -170,29 +173,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private final int MAX_ROW_SELECTED = 100000;
 
     private final String OBJECT_NAME = "TestCaseExecutionInQueue";
-
-    /**
-     * Declare SQL queries used by this {@link RobotCapabilityDAO}
-     *
-     * @author Aurelien Bourdon
-     */
-    private static interface Query {
-
-        /**
-         * Create a new {@link TestCaseExecutionInQueueDAO}
-         */
-        String CREATE = "INSERT INTO `testcaseexecutionqueue` (`test`, `testCase`, `country`, `environment`, `robot`, `robotIP`, `robotPort`, `browser`, `browserVersion`, `platform`, `manualURL`, `manualContextRoot`, `manualLoginRelativeURL`, `manualEnvData`, `tag`, `outputFormat`, `screenshot`, `verbose`, `timeout`, `synchroneous`, `pageSource`, `seleniumLog`, `requestDate`, `proceeded`, `comment`, `retries`, `manualexecution`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        /**
-         * Update an existing {@link TestCaseExecutionInQueueDAO}
-         */
-        String UPDATE = "UPDATE `testcaseexecutionqueue` SET `test` = ? and `testCase` = ? and `country` = ? and `environment` = ? and `robot` = ? and `robotIP` = ? and `robotPort` = ? and `browser` = ? and `browserVersion` = ? and `platform` = ? and `manualURL` = ? and `manualContextRoot` = ? and `manualLoginRelativeURL` = ? and `manualEnvData` = ? and `tag` = ? and `outputFormat` = ? and `screenshot` = ? and `verbose` = ? and `timeout` = ? and `synchroneous` = ? and `pageSource` = ? and `seleniumLog` = ? and `requestDate` = ? and `proceeded` = ? and `comment` = ? and `retries` = ? and `manualexecution` = ? WHERE `id` = ? ";
-
-        /**
-         * Remove an existing {@link TestCaseExecutionInQueueDAO}
-         */
-        String DELETE = "DELETE FROM `testcaseexecutionqueue` WHERE `ID` = ? ";
-    }
 
     @Override
     public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
@@ -1682,81 +1662,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_COMMENT),
                 resultSet.getInt(COLUMN_RETRIES),
                 resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
-    }
-
-    @Override
-    public Answer create(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
-            // Prepare and execute query
-            preStat.setString(1, test.getTest());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "CREATE");
-        } catch (Exception e) {
-            LOG.warn("Unable to create TestCase Execution In Queue: " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
-    }
-
-    @Override
-    public Answer update(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
-            // Prepare and execute query
-            preStat.setString(1, test.getTest());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "UPDATE");
-        } catch (Exception e) {
-            LOG.warn("Unable to update TestCase Execution in Queue " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
-    }
-
-    @Override
-    public Answer delete(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
-            // Prepare and execute query
-            preStat.setLong(1, test.getId());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "DELETE");
-        } catch (Exception e) {
-            LOG.warn("Unable to delete testCase Execution in queue: " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
     }
 
     private TestCaseExecutionInQueue findByKey(long id, PreparedStatement findByKeyStatement) throws SQLException, FactoryCreationException {
