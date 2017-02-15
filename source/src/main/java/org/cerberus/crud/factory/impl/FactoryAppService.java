@@ -55,6 +55,8 @@ public class FactoryAppService implements IFactoryAppService {
         s.setContentList(objectContentList);
         List<AppServiceHeader> objectHeaderList = new ArrayList<>();
         s.setHeaderList(objectHeaderList);
+        List<AppServiceHeader> objectResponseHeaderList = new ArrayList<>();
+        s.setResponseHeaderList(objectResponseHeaderList);
         return s;
     }
 }

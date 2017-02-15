@@ -364,28 +364,43 @@ public class RecorderService implements IRecorderService {
 
     private JSONObject convertToJSON(AppService se) {
         JSONObject jsonResponse = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
         try {
-            jsonResponse.put("CalledURL", se.getServicePath());
-            jsonResponse.put("HTTP-ReturnCode", se.getResponseHTTPCode());
-            jsonResponse.put("HTTP-Content-Type", se.getResponseHTTPContentType());
-            jsonResponse.put("HTTP-Method", se.getMethod());
-            jsonResponse.put("ServiceType", se.getType());
-
+            // Request Information.
+            jsonMyRequest.put("CalledURL", se.getServicePath());
+            jsonMyRequest.put("HTTP-Method", se.getMethod());
+            jsonMyRequest.put("ServiceType", se.getType());
             if (!(se.getHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : se.getHeaderList()) {
                     jsonHeaders.put(header.getKey(), header.getValue());
                 }
-                jsonResponse.put("Header", jsonHeaders);
+                jsonMyRequest.put("Header", jsonHeaders);
             }
-
             if (!(se.getContentList().isEmpty())) {
                 JSONObject jsonContent = new JSONObject();
                 for (AppServiceContent content : se.getContentList()) {
                     jsonContent.put(content.getKey(), content.getValue());
                 }
-                jsonResponse.put("Content", jsonContent);
+                jsonMyRequest.put("Content", jsonContent);
             }
+            jsonResponse.put("Request", jsonMyRequest);
+            
+            // Response Information.
+            jsonMyResponse.put("HTTP-ReturnCode", se.getResponseHTTPCode());
+            jsonMyResponse.put("HTTP-Version", se.getResponseHTTPVersion());
+            if (!(se.getResponseHeaderList().isEmpty())) {
+                JSONObject jsonHeaders = new JSONObject();
+                for (AppServiceHeader header : se.getResponseHeaderList()) {
+                    jsonHeaders.put(header.getKey(), header.getValue());
+                }
+                jsonMyResponse.put("Header", jsonHeaders);
+            }
+            jsonResponse.put("Response", jsonMyResponse);
+
+            
+            
 
         } catch (JSONException ex) {
             Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);

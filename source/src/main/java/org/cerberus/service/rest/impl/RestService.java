@@ -21,12 +21,23 @@ package org.cerberus.service.rest.impl;
 
 import org.cerberus.engine.execution.impl.RecorderService;
 import com.mysql.jdbc.StringUtils;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
@@ -80,26 +91,64 @@ public class RestService implements IRestService {
         try {
 
             String responseBody = "";
-            String responseContentType = "";
             int responseCode = 0;
             Response resp = null;
             Request req = null;
             switch (method) {
                 case AppService.METHOD_HTTPGET:
-                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + queryString);
+
                     // TODO Add the QueryString
-                    servicePath = StringUtil.addQueryString(servicePath, queryString);
-                    req = Request.Get(servicePath);
-                    serviceREST.setServicePath(servicePath);
-                    // Header.
-                    for (AppServiceHeader contentHeader : headerList) {
-                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                    }
-                    serviceREST.setHeaderList(headerList);
-                    result.setItem(serviceREST);
+//                    req = Request.Get(servicePath);
                     // Call the REST
-                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
-                    LOG.info("REST Call performed (GET). " + servicePath);
+//                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
+                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + queryString);
+                    CloseableHttpClient httpclient = HttpClients.createDefault();
+                    try {
+                        servicePath = StringUtil.addQueryString(servicePath, queryString);
+                        serviceREST.setServicePath(servicePath);
+                        HttpGet httpget = new HttpGet(servicePath);
+                        // Header.
+                        for (AppServiceHeader contentHeader : headerList) {
+                            httpget.addHeader(contentHeader.getKey(), contentHeader.getValue());
+//                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                        }
+                        serviceREST.setHeaderList(headerList);
+                        result.setItem(serviceREST);
+
+                        // Create a custom response handler
+                        ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
+
+                            @Override
+                            public AppService handleResponse(
+                                    final HttpResponse response) throws ClientProtocolException, IOException {
+                                AppService myResponse = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null);
+                                int responseCode = response.getStatusLine().getStatusCode();
+                                myResponse.setResponseHTTPCode(responseCode);
+                                myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
+                                LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
+                                Header[] allHeaderList = response.getAllHeaders();
+                                for (Header header : allHeaderList) {
+                                    myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(), header.getValue(), "Y", 0, "", "", null, "", null));
+                                }
+                                HttpEntity entity = response.getEntity();
+                                myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                                return myResponse;
+                            }
+
+                        };
+                        LOG.info("Executing request " + httpget.getRequestLine());
+                        AppService responseHttp;
+                        responseHttp = httpclient.execute(httpget, responseHandler);
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+
+//                responseBody = resp.returnContent().asString();
+                    } finally {
+                        httpclient.close();
+                    }
+
                     break;
                 case AppService.METHOD_HTTPPOST:
                     LOG.info("Start preparing the REST Call (POST). " + servicePath);
@@ -126,15 +175,11 @@ public class RestService implements IRestService {
                     break;
             }
 
-            if (resp != null) {
-                responseBody = resp.returnContent().asString();
-                // TODO Manage the return Code + Content Type.
+//            if (resp != null) {
+//                responseBody = resp.returnContent().asString();
+            // TODO Manage the return Code + Content Type.
 //                responseCode = resp.returnResponse().getStatusLine().getStatusCode();
-            }
-
-            serviceREST.setResponseHTTPBody(responseBody);
-            serviceREST.setResponseHTTPContentType(responseContentType);
-            serviceREST.setResponseHTTPCode(responseCode);
+//            }
             result.setItem(serviceREST);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", method));

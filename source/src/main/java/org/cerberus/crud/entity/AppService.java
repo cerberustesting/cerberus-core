@@ -49,9 +49,10 @@ public class AppService {
     private List<AppServiceContent> contentList;
     private List<AppServiceHeader> headerList;
     // Result from call.
+    private String responseHTTPVersion;
     private int responseHTTPCode;
     private String responseHTTPBody;
-    private String responseHTTPContentType;
+    private List<AppServiceHeader> responseHeaderList;
     private SOAPMessage reponseSOAPMessage;
     private SOAPMessage requestSOAPMessage;
 
@@ -62,6 +63,34 @@ public class AppService {
     public static final String TYPE_REST = "REST";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
+
+    public String getResponseHTTPVersion() {
+        return responseHTTPVersion;
+    }
+
+    public void setResponseHTTPVersion(String responseHTTPVersion) {
+        this.responseHTTPVersion = responseHTTPVersion;
+    }
+
+    public List<AppServiceHeader> getResponseHeaderList() {
+        return responseHeaderList;
+    }
+
+    public void setResponseHeaderList(List<AppServiceHeader> responseHeaderList) {
+        this.responseHeaderList = responseHeaderList;
+    }
+
+    public void addResponseHeaderList(AppServiceHeader object) {
+        this.responseHeaderList.add(object);
+    }
+
+    public SOAPMessage getReponseSOAPMessage() {
+        return reponseSOAPMessage;
+    }
+
+    public void setReponseSOAPMessage(SOAPMessage reponseSOAPMessage) {
+        this.reponseSOAPMessage = reponseSOAPMessage;
+    }
 
     public SOAPMessage getRequestSOAPMessage() {
         return requestSOAPMessage;
@@ -77,14 +106,6 @@ public class AppService {
 
     public void setResponseSOAPMessage(SOAPMessage responseSOAPMessage) {
         this.reponseSOAPMessage = responseSOAPMessage;
-    }
-
-    public String getResponseHTTPContentType() {
-        return responseHTTPContentType;
-    }
-
-    public void setResponseHTTPContentType(String responseHTTPContentType) {
-        this.responseHTTPContentType = responseHTTPContentType;
     }
 
     public String getResponseHTTPBody() {
