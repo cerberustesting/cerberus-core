@@ -551,6 +551,7 @@ function generatePie(root, id, data) {
     var container = $('<div/>')
         .attr('id', root + id)
         .attr('role', 'button')
+        .addClass('pie')
         .css('width', totalWidth)
         .css('height', totalHeight);
     container.click(function () {
