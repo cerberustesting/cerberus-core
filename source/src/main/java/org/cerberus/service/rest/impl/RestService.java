@@ -21,19 +21,27 @@ package org.cerberus.service.rest.impl;
 
 import org.cerberus.engine.execution.impl.RecorderService;
 import com.mysql.jdbc.StringUtils;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -58,22 +66,55 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class RestService implements IRestService {
-
+    
     @Autowired
     RecorderService recorderService;
     @Autowired
     FactoryAppServiceHeader factoryAppServiceHeader;
     @Autowired
     FactoryAppService factoryAppService;
-
+    
     private static final Logger LOG = Logger.getLogger(RestService.class);
-
+    
+    private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
+        try {
+            // Create a custom response handler
+            ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
+                
+                @Override
+                public AppService handleResponse(
+                        final HttpResponse response) throws ClientProtocolException, IOException {
+                    AppService myResponse = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null);
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    myResponse.setResponseHTTPCode(responseCode);
+                    myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
+                    LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
+                    Header[] allHeaderList = response.getAllHeaders();
+                    for (Header header : allHeaderList) {
+                        myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(), header.getValue(), "Y", 0, "", "", null, "", null));
+                    }
+                    HttpEntity entity = response.getEntity();
+                    myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
+                    return myResponse;
+                }
+                
+            };
+            return httpclient.execute(httpget, responseHandler);
+            
+        } catch (Exception ex) {
+            LOG.error(ex.toString());
+            throw ex;
+        } finally {
+            httpclient.close();
+        }
+    }
+    
     @Override
-    public AnswerItem<AppService> callREST(String servicePath, String queryString, String method, List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs) {
+    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs) {
         AnswerItem result = new AnswerItem();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", null, "", null);
         MessageEvent message = null;
-
+        
         if (StringUtils.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_SERVICEPATHMISSING);
             result.setResultMessage(message);
@@ -88,104 +129,111 @@ public class RestService implements IRestService {
         if (token != null) {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
+        CloseableHttpClient httpclient;
+        httpclient = HttpClients.createDefault();
         try {
 
+            // Timeout setup.
+            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).build();
+            
             String responseBody = "";
             int responseCode = 0;
             Response resp = null;
             Request req = null;
+            AppService responseHttp = null;
+            
             switch (method) {
                 case AppService.METHOD_HTTPGET:
+                    
+                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + requestString);
+                    
+                    servicePath = StringUtil.addQueryString(servicePath, requestString);
+                    serviceREST.setServicePath(servicePath);
+                    HttpGet httpGet = new HttpGet(servicePath);
 
-                    // TODO Add the QueryString
-//                    req = Request.Get(servicePath);
-                    // Call the REST
-//                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
-                    LOG.info("Start preparing the REST Call (GET). " + servicePath + " - " + queryString);
-                    CloseableHttpClient httpclient = HttpClients.createDefault();
-                    try {
-                        servicePath = StringUtil.addQueryString(servicePath, queryString);
-                        serviceREST.setServicePath(servicePath);
-                        HttpGet httpget = new HttpGet(servicePath);
-                        // Header.
-                        for (AppServiceHeader contentHeader : headerList) {
-                            httpget.addHeader(contentHeader.getKey(), contentHeader.getValue());
-//                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
-                        }
-                        serviceREST.setHeaderList(headerList);
-                        result.setItem(serviceREST);
+                    // Timeout setup.
+                    httpGet.setConfig(requestConfig);
 
-                        // Create a custom response handler
-                        ResponseHandler<AppService> responseHandler = new ResponseHandler<AppService>() {
-
-                            @Override
-                            public AppService handleResponse(
-                                    final HttpResponse response) throws ClientProtocolException, IOException {
-                                AppService myResponse = factoryAppService.create("", AppService.TYPE_REST, AppService.METHOD_HTTPGET, "", "", "", "", "", "", "", "", null, "", null);
-                                int responseCode = response.getStatusLine().getStatusCode();
-                                myResponse.setResponseHTTPCode(responseCode);
-                                myResponse.setResponseHTTPVersion(response.getProtocolVersion().toString());
-                                LOG.info(String.valueOf(responseCode) + " " + response.getProtocolVersion().toString());
-                                Header[] allHeaderList = response.getAllHeaders();
-                                for (Header header : allHeaderList) {
-                                    myResponse.addResponseHeaderList(factoryAppServiceHeader.create(null, header.getName(), header.getValue(), "Y", 0, "", "", null, "", null));
-                                }
-                                HttpEntity entity = response.getEntity();
-                                myResponse.setResponseHTTPBody(entity != null ? EntityUtils.toString(entity) : null);
-                                return myResponse;
-                            }
-
-                        };
-                        LOG.info("Executing request " + httpget.getRequestLine());
-                        AppService responseHttp;
-                        responseHttp = httpclient.execute(httpget, responseHandler);
+                    // Header.
+                    for (AppServiceHeader contentHeader : headerList) {
+                        httpGet.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                    }
+                    serviceREST.setHeaderList(headerList);
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
+                    result.setItem(serviceREST);
+                    
+                    LOG.info("Executing request " + httpGet.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpGet);
+                    
+                    if (responseHttp != null) {
                         serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
                         serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
                         serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
                         serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
-
-//                responseBody = resp.returnContent().asString();
-                    } finally {
-                        httpclient.close();
                     }
-
+                    
                     break;
                 case AppService.METHOD_HTTPPOST:
+                    
                     LOG.info("Start preparing the REST Call (POST). " + servicePath);
-                    req = Request.Post(servicePath);
+                    
                     serviceREST.setServicePath(servicePath);
-                    // Content.
-                    List<BasicNameValuePair> requestData = new ArrayList<>();
-                    for (AppServiceContent contentVal : contentList) {
-                        requestData.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                    HttpPost httpPost = new HttpPost(servicePath);
+
+                    // Timeout setup.
+                    httpPost.setConfig(requestConfig);
+
+                    // Content
+                    if (!(StringUtil.isNullOrEmpty(requestString))) {
+                        InputStream stream = new ByteArrayInputStream(requestString.getBytes(StandardCharsets.UTF_8));
+                        InputStreamEntity reqEntity = new InputStreamEntity(stream);
+                        reqEntity.setChunked(true);
+                        httpPost.setEntity(reqEntity);
+                        serviceREST.setServiceRequest(requestString);
+                    } else {
+                        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+                        for (AppServiceContent contentVal : contentList) {
+                            nvps.add(new BasicNameValuePair(contentVal.getKey(), contentVal.getValue()));
+                        }
+                        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+                        serviceREST.setContentList(contentList);
                     }
-                    if (!(contentList.isEmpty())) {
-                        req.bodyForm(requestData);
-                    }
-                    serviceREST.setContentList(contentList);
+
                     // Header.
                     for (AppServiceHeader contentHeader : headerList) {
-                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
+                        httpPost.addHeader(contentHeader.getKey(), contentHeader.getValue());
+//                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
                     serviceREST.setHeaderList(headerList);
+                    // Saving the service before the call Just in case it goes wrong (ex : timeout).
                     result.setItem(serviceREST);
-                    // Call the REST
-                    resp = req.connectTimeout(timeOutMs).socketTimeout(timeOutMs).execute();
-                    LOG.info("REST Call performed (POST). " + servicePath);
+                    
+                    LOG.info("Executing request " + httpPost.getRequestLine());
+                    responseHttp = executeHTTPCall(httpclient, httpPost);
+                    
+                    if (responseHttp != null) {
+                        serviceREST.setResponseHTTPBody(responseHttp.getResponseHTTPBody());
+                        serviceREST.setResponseHTTPCode(responseHttp.getResponseHTTPCode());
+                        serviceREST.setResponseHTTPVersion(responseHttp.getResponseHTTPVersion());
+                        serviceREST.setResponseHeaderList(responseHttp.getResponseHeaderList());
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
+                        message.setDescription(message.getDescription().replace("%SERVICE%", servicePath));
+                        message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Any issue was found when calling the service. Coud be a reached timeout during the call (." + timeOutMs + ")"));
+                        result.setResultMessage(message);
+                        return result;
+                        
+                    }
+                    
                     break;
             }
-
-//            if (resp != null) {
-//                responseBody = resp.returnContent().asString();
-            // TODO Manage the return Code + Content Type.
-//                responseCode = resp.returnResponse().getStatusLine().getStatusCode();
-//            }
+            
             result.setItem(serviceREST);
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICEMETHOD%", method));
             message.setDescription(message.getDescription().replace("%SERVICEPATH%", servicePath));
             result.setResultMessage(message);
-
+            
         } catch (SocketTimeoutException ex) {
             LOG.info("Exception when performing the REST Call. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE_TIMEOUT);
@@ -200,9 +248,15 @@ public class RestService implements IRestService {
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Error on CallREST : " + ex.toString()));
             result.setResultMessage(message);
             return result;
+        } finally {
+            try {
+                httpclient.close();
+            } catch (IOException ex) {
+                LOG.error(ex.toString());
+            }
         }
-
+        
         return result;
     }
-
+    
 }

@@ -385,8 +385,9 @@ public class RecorderService implements IRecorderService {
                 }
                 jsonMyRequest.put("Content", jsonContent);
             }
+            jsonMyRequest.put("HTTP-Request", se.getServiceRequest());
             jsonResponse.put("Request", jsonMyRequest);
-            
+
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", se.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", se.getResponseHTTPVersion());
@@ -398,9 +399,6 @@ public class RecorderService implements IRecorderService {
                 jsonMyResponse.put("Header", jsonHeaders);
             }
             jsonResponse.put("Response", jsonMyResponse);
-
-            
-            
 
         } catch (JSONException ex) {
             Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
