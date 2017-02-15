@@ -136,10 +136,6 @@ public class RestService implements IRestService {
             // Timeout setup.
             RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).build();
             
-            String responseBody = "";
-            int responseCode = 0;
-            Response resp = null;
-            Request req = null;
             AppService responseHttp = null;
             
             switch (method) {

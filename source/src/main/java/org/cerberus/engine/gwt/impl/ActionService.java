@@ -19,14 +19,18 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.util.ArrayList;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
+import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -905,12 +909,26 @@ public class ActionService implements IActionService {
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
                 try {
-                    if (appService.getServicePath().contains("%")) {
-                        decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Service Path
+                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Request
+                    decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Header List
+                    List<AppServiceHeader> objectResponseHeaderList = new ArrayList<>();
+                    for (AppServiceHeader object : appService.getHeaderList()) {
+                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
+                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
+                        objectResponseHeaderList.add(object);
                     }
-                    if (appService.getServiceRequest().contains("%")) {
-                        decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
+                    // Decode ContentDetail List
+                    appService.setResponseHeaderList(objectResponseHeaderList);
+                    List<AppServiceContent> objectResponseContentList = new ArrayList<>();
+                    for (AppServiceContent object : appService.getContentList()) {
+                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
+                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
+                        objectResponseContentList.add(object);
                     }
+                    appService.setContentList(objectResponseContentList);
                     //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                     if (testCaseStepActionExecution.isStopExecution()) {
                         return testCaseStepActionExecution.getActionResultMessage();
@@ -940,9 +958,7 @@ public class ActionService implements IActionService {
                          */
                         decodedOperation = appService.getOperation();
                         try {
-                            if (appService.getOperation().contains("%")) {
-                                decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
-                            }
+                            decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
 
                             //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                             if (testCaseStepActionExecution.isStopExecution()) {
@@ -971,7 +987,7 @@ public class ActionService implements IActionService {
                         /**
                          * Call SOAP and store it into the execution.
                          */
-                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement, 
+                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
                                 appService.getHeaderList(), token, timeOutMs);
 //                        tCExecution.setLastSOAPCalled(lastSoapCalled);
                         AppService lsoapc = (AppService) lastSoapCalled.getItem();
@@ -998,7 +1014,7 @@ public class ActionService implements IActionService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), 
+                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
                                         appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
                                 AppService lservicec = (AppService) lastServiceCalled.getItem();
                                 tCExecution.setLastServiceCalled(lservicec);
@@ -1039,6 +1055,7 @@ public class ActionService implements IActionService {
             return message;
         }
 
+        message.setDescription(message.getDescription().replace("%SERVICENAME%", value1));
         return message;
     }
 
