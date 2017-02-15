@@ -502,17 +502,24 @@ function filterTable(poolId) {
                     associcatedIds.push(exec.toExecute.id);
                 });
 
-                // Apply filter
-                applyFiltersOnMultipleColumns(
-                    'executionsTable',
-                    [
-                        {
-                            param: 'id',
-                            values: associcatedIds
-                        }
-                    ]
-                );
-                refreshTable();
+                if (associcatedIds.length == 0) {
+                    showMessage({
+                        messageType: 'WARNING',
+                        message: 'Execution pool is empty, showing the whole table'
+                    });
+                } else {
+                    // Apply filter
+                    applyFiltersOnMultipleColumns(
+                        'executionsTable',
+                        [
+                            {
+                                param: 'id',
+                                values: associcatedIds
+                            }
+                        ]
+                    );
+                    refreshTable();
+                }
             }
         )
         .fail(handleErrorAjaxAfterTimeout);
