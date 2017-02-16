@@ -70,16 +70,28 @@ function ChangeSystem() {
     });
 }
 
-function updateUserPreferences() {
+function updateUserPreferences(objectWaitingLayer) {
+    var objectWL = $(objectWaitingLayer);
+    if (objectWaitingLayer !== undefined) {
+        showLoader(objectWL);
+    }
     var uPref = JSON.stringify(localStorage);
-        $.ajax({url: "UpdateMyUser",
-            type: "POST",
-            data: {column: "userPreferences", value: uPref},
-            async: false,
-            success: function () {
+    $.ajax({url: "UpdateMyUser",
+        type: "POST",
+        data: {column: "userPreferences", value: uPref},
+        async: false,
+        success: function (data) {
+            var messageType = getAlertType(data.messageType);
+            if (messageType === "success") {
                 readUserFromDatabase();
             }
-        });
+            //show message in the main page
+            showMessageMainPage(messageType, data.message);
+        }
+    });
+    if (objectWaitingLayer !== undefined) {
+        hideLoader(objectWL);
+    }
 }
 
 function displayMenuItem(doc) {

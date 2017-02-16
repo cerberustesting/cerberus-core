@@ -126,6 +126,9 @@ td
 }
 /**margins**/
 
+.marginRight0{
+    margin-right: 0px;
+}
 .marginRight5{
     margin-right: 5px;
 }
@@ -144,6 +147,9 @@ td
 
 .marginLeft0{
     margin-left:0px;
+}
+.paddingRight0{
+    padding-right:0px;
 }
 .paddingLeft0{
     padding-left:0px;

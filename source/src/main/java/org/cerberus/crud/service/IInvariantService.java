@@ -72,4 +72,19 @@ public interface IInvariantService {
     Answer update(Invariant invariant);
 
     String getPublicPrivateFilter(String filter);
+    
+    /**
+     *
+     * @param answerList
+     * @return
+     * @throws CerberusException
+     */
+    List<Invariant> convert(AnswerList answerList) throws CerberusException;
+
+    /**
+     *
+     * @param answer
+     * @throws CerberusException
+     */
+    void convert(Answer answer) throws CerberusException;
 }

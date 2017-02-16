@@ -1107,7 +1107,6 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
         Connection connection = this.databaseSpring.connect();
         try {
-            System.out.print(query.toString());
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
@@ -1813,6 +1812,148 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseExecution = this.loadFromResultSet(resultSet);
         testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
         return testCaseExecution;
+    }
+
+    @Override
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
+        AnswerList answer = new AnswerList();
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+        List<String> distinctValues = new ArrayList<>();
+        List<String> individalColumnSearchValues = new ArrayList<String>();
+
+        final StringBuffer query = new StringBuffer();
+        
+        query.append("SELECT distinct ");
+        query.append(columnName);
+        query.append(" as distinctValues FROM testcaseexecution exe ");
+        query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
+        
+        if (!StringUtil.isNullOrEmpty(searchParameter)) {
+            query.append("and (exe.`id` like ? ");
+            query.append(" or exe.`test` like ? ");
+            query.append(" or exe.`testCase` like ? ");
+            query.append(" or exe.`build` like ? ");
+            query.append(" or exe.`revision` like ? ");
+            query.append(" or exe.`environment` like ? ");
+            query.append(" or exe.`country` like ? ");
+            query.append(" or exe.`browser` like ? ");
+            query.append(" or exe.`version` like ? ");
+            query.append(" or exe.`platform` like ? ");
+            query.append(" or exe.`browserfullversion` like ? ");
+            query.append(" or exe.`start` like ? ");
+            query.append(" or exe.`end` like ? ");
+            query.append(" or exe.`controlstatus` like ? ");
+            query.append(" or exe.`controlmessage` like ? ");
+            query.append(" or exe.`application` like ? ");
+            query.append(" or exe.`ip` like ? ");
+            query.append(" or exe.`url` like ? ");
+            query.append(" or exe.`port` like ? ");
+            query.append(" or exe.`tag` like ? ");
+            query.append(" or exe.`finished` like ? ");
+            query.append(" or exe.`verbose` like ? ");
+            query.append(" or exe.`status` like ? ");
+            query.append(" or exe.`crbversion` like ? ");
+            query.append(" or exe.`executor` like ? ");
+            query.append(" or exe.`screensize` like ? )");
+        }
+        if (individualSearch != null && !individualSearch.isEmpty()) {
+            query.append(" and ( 1=1 ");
+            for (Map.Entry<String, List<String>> entry : individualSearch.entrySet()) {
+                query.append(" and ");
+                query.append(SqlUtil.getInSQLClauseForPreparedStatement(entry.getKey(), entry.getValue()));
+                individalColumnSearchValues.addAll(entry.getValue());
+            }
+            query.append(" ) ");
+        }
+
+        query.append(" order by ").append(columnName).append(" asc");
+
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+        
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+            
+            int i = 1;
+            if (!Strings.isNullOrEmpty(searchParameter)) {
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+                preStat.setString(i++, "%" + searchParameter + "%");
+            }
+            for (String individualColumnSearchValue : individalColumnSearchValues) {
+                preStat.setString(i++, individualColumnSearchValue);
+            }
+
+            
+                ResultSet resultSet = preStat.executeQuery();
+                
+                    while (resultSet.next()) {
+                distinctValues.add(resultSet.getString("distinctValues") == null ? "" : resultSet.getString("distinctValues"));
+            }
+
+                //get the total number of rows
+            resultSet = preStat.executeQuery("SELECT FOUND_ROWS()");
+            int nrTotalRows = 0;
+
+            if (resultSet != null && resultSet.next()) {
+                nrTotalRows = resultSet.getInt(1);
+            }
+
+            if (distinctValues.size() >= MAX_ROW_SELECTED) { // Result of SQl was limited by MAX_ROW_SELECTED constrain. That means that we may miss some lines in the resultList.
+                LOG.error("Partial Result in the query.");
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_WARNING_PARTIAL_RESULT);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Maximum row reached : " + MAX_ROW_SELECTED));
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            } else if (distinctValues.size() <= 0) {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                answer = new AnswerList(distinctValues, nrTotalRows);
+            }
+        } catch (Exception e) {
+            LOG.warn("Unable to execute query : " + e.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            // We always set the result message
+            answer.setResultMessage(msg);
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(distinctValues);
+        return answer;
+        
+        
+            
     }
 
 }

@@ -339,7 +339,7 @@ function loadReportList() {
             var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns), [0, 'asc']);
             customConfig(config);
 
-            createDataTable(config, createShortDescRow, undefined, undefined);
+            createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
             hideLoader($("#listReport"));
 

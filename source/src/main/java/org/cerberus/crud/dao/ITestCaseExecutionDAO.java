@@ -189,4 +189,15 @@ public interface ITestCaseExecutionDAO {
      */
     public TestCaseExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 
+    /**
+     * Get the distinct value of the specified column
+     * @param system
+     * @param test
+     * @param searchParameter
+     * @param individualSearch
+     * @param columnName Name of the column
+     * @return object {@link TestCaseExecution}
+     */
+    public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+
 }
