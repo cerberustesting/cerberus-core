@@ -19,15 +19,13 @@
  */
 package org.cerberus.service.json;
 
-import org.json.JSONObject;
-
 /**
  *
  * @author bcivel
  */
 public interface IJsonService {
-    
-    String callUrlAndGetJsonResponse (String url);
-    
-    String getFromJson (String url, String attribute);
+
+    String callUrlAndGetJsonResponse(String url);
+
+    String getFromJson(String jsonMessage, String url, String attribute);
 }

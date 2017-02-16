@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import org.cerberus.service.json.IJsonService;
+import org.cerberus.util.StringUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,6 +36,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JsonService implements IJsonService {
+
+    public static final String DEFAULT_GET_FROM_JSON_VALUE = null;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
 
@@ -63,24 +66,36 @@ public class JsonService implements IJsonService {
     /**
      * Get element value from Json file
      *
+     * @param jsonMessage
      * @param url URL of the Json file to parse
      * @param attributeToFind
      * @return Value of the element from the Json File
      */
     @Override
-    public String getFromJson(String url, String attributeToFind) {
+    public String getFromJson(String jsonMessage, String url, String attributeToFind) {
+        if (attributeToFind == null) {
+            LOG.warn("Null argument");
+            return DEFAULT_GET_FROM_JSON_VALUE;
+        }
 
-        String result = "";
+        String result;
         /**
          * Get the Json File in string format
          */
-        String json = this.callUrlAndGetJsonResponse(url);
+        String json;
+        if (url == null) {
+            json = jsonMessage;
+        } else {
+            json = this.callUrlAndGetJsonResponse(url);
+        }
         /**
          * Get the value
          */
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        result = JsonPath.read(document, "$."+attributeToFind);
-        
+        String jsonPath = StringUtil.addPrefixIfNotAlready(attributeToFind, "$.");
+        LOG.debug("JSON PATH : " + jsonPath);
+        result = JsonPath.read(document, jsonPath);
+
         return result;
     }
 }

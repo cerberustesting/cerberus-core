@@ -127,7 +127,6 @@ public class SoapService implements ISoapService {
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
         
         AppService serviceSOAP = factoryAppService.create("", "", "", "", "", envelope, "", servicePath, "", method, "", null, "", null);
-//        SOAPExecution executionSOAP = new SOAPExecution();
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
@@ -181,9 +180,8 @@ public class SoapService implements ISoapService {
             out = new ByteArrayOutputStream();
             input.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
-//            executionSOAP.setSOAPRequest(input);
             serviceSOAP.setRequestSOAPMessage(input);
-            // We already set the item in order to keep the question in case of failure of SOAP calls.
+            // We already set the item in order to keep the request message in case of failure of SOAP calls.
             result.setItem(serviceSOAP);
 
             // Call the WS
@@ -196,7 +194,6 @@ public class SoapService implements ISoapService {
             soapResponse.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
-//            executionSOAP.setSOAPResponse(soapResponse);
             serviceSOAP.setResponseSOAPMessage(soapResponse);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);

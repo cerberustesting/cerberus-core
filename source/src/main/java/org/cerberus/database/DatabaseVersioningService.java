@@ -8408,6 +8408,24 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `Proceeded`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Invert Value1 and Value2 from 'getFromJSON' and 'getFromXML' Properties.
+        //-- ------------------------ 1088-1092
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `valueTemp` TEXT NULL AFTER `last_modified`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET valueTemp=Value2 where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET Value2=Value1 where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET Value1=valueTemp where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` DROP COLUMN `valueTemp` ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

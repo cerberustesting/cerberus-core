@@ -54,7 +54,6 @@ import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
 import org.cerberus.util.ParameterParserUtil;
-import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -591,7 +590,7 @@ public class PropertyService implements IPropertyService {
                     break;
 
                 case TestCaseCountryProperties.TYPE_EXECUTESQL:
-                    testCaseExecutionData = this.property_executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                    testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
                     break;
 
                 case TestCaseCountryProperties.TYPE_GETFROMHTML:
@@ -623,7 +622,7 @@ public class PropertyService implements IPropertyService {
                     break;
 
                 case TestCaseCountryProperties.TYPE_GETFROMJSON:
-                    testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, forceRecalculation);
+                    testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceRecalculation);
                     break;
 
                 case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
@@ -702,11 +701,11 @@ public class PropertyService implements IPropertyService {
                     new Date().getTime());
             return testCaseExecutionData;
         }
-        testCaseExecutionData = this.property_executeSql(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceCalculation);
+        testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceCalculation);
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, boolean forceCalculation) {
+    private TestCaseExecutionData property_executeSql(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         return sQLService.calculateOnDatabase(testCaseExecutionData, testCaseCountryProperty, tCExecution);
     }
 
@@ -967,24 +966,22 @@ public class PropertyService implements IPropertyService {
         String xmlResponse = "";
         try {
             /**
-             * If tCExecution LastSoapCalled exist, get the response;
+             * If tCExecution LastServiceCalled exist, get the response;
              */
             if (null != tCExecution.getLastServiceCalled()) {
-//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-//                xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
                 xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
             }
             // If value1 has no value defined, we force the new url to null.
             String newUrl = null;
-            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue1()))) {
-                newUrl = testCaseExecutionData.getValue1();
+            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+                newUrl = testCaseExecutionData.getValue2();
             }
-            String valueFromXml = xmlUnitService.getFromXml(xmlResponse, newUrl, testCaseExecutionData.getValue2());
+            String valueFromXml = xmlUnitService.getFromXml(xmlResponse, newUrl, testCaseExecutionData.getValue1());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
+                res.setDescription(res.getDescription().replace("%VALUE%", valueFromXml));
                 res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
@@ -1072,27 +1069,39 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, boolean forceRecalculation) {
+    private TestCaseExecutionData property_getFromJson(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, boolean forceRecalculation) {
+        String jsonResponse = "";
         try {
-            String valueFromJson = this.jsonService.getFromJson(testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
+            /**
+             * If tCExecution LastServiceCalled exist, get the response;
+             */
+            if (null != tCExecution.getLastServiceCalled()) {
+                jsonResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+            }
+            String newUrl = null;
+            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+                newUrl = testCaseExecutionData.getValue2();
+            }
+
+            String valueFromJson = this.jsonService.getFromJson(jsonResponse, newUrl, testCaseExecutionData.getValue1());
             if (valueFromJson != null) {
                 if (!"".equals(valueFromJson)) {
                     testCaseExecutionData.setValue(valueFromJson);
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMJSON);
-                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
                     res.setDescription(res.getDescription().replace("%VALUE%", valueFromJson));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 } else {
                     MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
-                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+                    res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
                     testCaseExecutionData.setPropertyResultMessage(res);
                 }
             } else {
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+                res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
                 testCaseExecutionData.setPropertyResultMessage(res);
 
             }
@@ -1102,8 +1111,8 @@ public class PropertyService implements IPropertyService {
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
 
-            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue1()));
-            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
+            res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;

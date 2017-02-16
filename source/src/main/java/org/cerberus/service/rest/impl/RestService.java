@@ -198,7 +198,6 @@ public class RestService implements IRestService {
                     // Header.
                     for (AppServiceHeader contentHeader : headerList) {
                         httpPost.addHeader(contentHeader.getKey(), contentHeader.getValue());
-//                        req.addHeader(contentHeader.getKey(), contentHeader.getValue());
                     }
                     serviceREST.setHeaderList(headerList);
                     // Saving the service before the call Just in case it goes wrong (ex : timeout).

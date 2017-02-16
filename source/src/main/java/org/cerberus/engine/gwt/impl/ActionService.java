@@ -989,14 +989,12 @@ public class ActionService implements IActionService {
                          */
                         lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
                                 appService.getHeaderList(), token, timeOutMs);
-//                        tCExecution.setLastSOAPCalled(lastSoapCalled);
                         AppService lsoapc = (AppService) lastSoapCalled.getItem();
                         tCExecution.setLastServiceCalled(lsoapc);
 
                         /**
                          * Record the Request and Response in filesystem.
                          */
-//                        SOAPExecution lsoapC = (SOAPExecution) lastSoapCalled.getItem();
                         testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lsoapc));
                         message = lastSoapCalled.getResultMessage();
 
