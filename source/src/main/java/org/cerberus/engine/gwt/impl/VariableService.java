@@ -39,6 +39,8 @@ public class VariableService implements IVariableService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(VariableService.class);
 
+    private static final String VALUE_WHEN_NULL = "<null>";
+
     @Autowired
     PropertyService propertyService;
     @Autowired
@@ -199,6 +201,20 @@ public class VariableService implements IVariableService {
                 }
             }
 
+        }
+
+        /**
+         * Last Service Called Variables.
+         */
+        if (!(tCExecution.getLastServiceCalled() == null)) {
+            stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
+        } else {
+            stringToDecode = stringToDecode.replace("%SYS_LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
+        }
+        if (!(tCExecution.getLastServiceCalled() == null)) {
+            stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", String.valueOf(tCExecution.getLastServiceCalled().getResponseHTTPCode()));
+        } else {
+            stringToDecode = stringToDecode.replace("%system.LASTSERVICE_HTTPCODE%", VALUE_WHEN_NULL);
         }
 
         /**
