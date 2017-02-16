@@ -89,7 +89,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("testbatterysTable", "ReadTestBattery", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForBattery, "#testbatteryList");
+    createDataTableWithPermissions(configurations, renderOptionsForBattery, "#testbatteryList", undefined, true);
 }
 
 function displayPageLabel() {
@@ -187,7 +187,7 @@ function editEntryClick(param) {
                 $("#editTestbatteryModal #batteryTestcasesTable").DataTable().rows.add(data.contentTable.battery).draw();
             } else {
                 var configurations = new TableConfigurationsClientSide("batteryTestcasesTable", data.contentTable.battery, aoColumnsFunc2("batteryTestcasesTable"), true);
-                createDataTableWithPermissions(configurations, renderOptionsForBattery2, "#batteryTestcaseList");
+                createDataTableWithPermissions(configurations, renderOptionsForBattery2, "#batteryTestcaseList", undefined, true);
             }
             renderOptionsForBattery2("batteryTestcasesTable");
 
@@ -199,7 +199,7 @@ function editEntryClick(param) {
             $("#editTestbatteryModal #batteryTestcasesTable").DataTable().clear().draw();
         } else {
             var configurations = new TableConfigurationsClientSide("batteryTestcasesTable", [], aoColumnsFunc2("batteryTestcasesTable"), true);
-            createDataTableWithPermissions(configurations, renderOptionsForBattery2, "#batteryTestcaseList");
+            createDataTableWithPermissions(configurations, renderOptionsForBattery2, "#batteryTestcaseList", undefined, true);
         }
         renderOptionsForBattery2("batteryTestcasesTable");
     }
@@ -208,7 +208,7 @@ function editEntryClick(param) {
         $("#editTestbatteryModal #batteryTestcases2Table").DataTable().draw();
     } else {
         var configurations = new TableConfigurationsServerSide("batteryTestcases2Table", "ReadTestCase", "contentTable", aoColumnsFunc3("batteryTestcases2Table"), [1, 'asc']);
-        var table = createDataTableWithPermissions(configurations, renderOptionsForBattery3, "#batteryTestcase3List");
+        var table = createDataTableWithPermissions(configurations, renderOptionsForBattery3, "#batteryTestcase3List", undefined, true);
     }
 
     $('#editTestbatteryModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');

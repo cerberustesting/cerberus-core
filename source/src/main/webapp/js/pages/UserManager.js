@@ -50,7 +50,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("usersTable", "ReadUser?systems=true&groups=true", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList");
+    createDataTableWithPermissions(configurations, renderOptionsForUser, "#userList", undefined, true);
 }
 
 function displayPageLabel() {

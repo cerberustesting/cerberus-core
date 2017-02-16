@@ -37,7 +37,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("sqlLibrarysTable", "ReadSqlLibrary", "contentTable", aoColumnsFunc("sqlLibrarysTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList");
+    createDataTableWithPermissions(configurations, renderOptionsForSqlLibrary, "#sqlLibraryList", undefined, true);
 }
 
 /**

@@ -50,7 +50,7 @@ function displayPrivateTable() {
     } else {
         //configure and create the dataTable
         var configurationsPriv = new TableConfigurationsServerSide("invariantsPrivateTable", "ReadInvariant?access=PRIVATE", "contentTable", aoColumnsFunc2(), [1, 'asc']);
-        createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList");
+        createDataTableWithPermissions(configurationsPriv, renderOptionsForApplication2, "#invariantPrivateList", undefined, true);
     }
 }
 
@@ -60,7 +60,7 @@ function displayPublicTable() {
     } else {
         //configure and create the dataTable
         var configurations = new TableConfigurationsServerSide("invariantsTable", "ReadInvariant?access=PUBLIC", "contentTable", aoColumnsFunc(), [1, 'asc']);
-        createDataTableWithPermissions(configurations, renderOptionsForApplication, "#invariantList");
+        createDataTableWithPermissions(configurations, renderOptionsForApplication, "#invariantList", undefined, true);
     }
 }
 

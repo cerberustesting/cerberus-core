@@ -64,7 +64,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("testcampaignsTable", "ReadCampaign", "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForCampaign, "#testcampaignList");
+    createDataTableWithPermissions(configurations, renderOptionsForCampaign, "#testcampaignList", undefined, true);
 }
 
 function displayPageLabel() {
@@ -180,7 +180,7 @@ function viewEntryClick(param) {
     }
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("viewTestcampaignsTable", "ReadTestBatteryContent?campaign=" + param, "contentTable", aoColumnsFunc4(), [0, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForCampaign4, "#viewTestcampaignList");
+    createDataTableWithPermissions(configurations, renderOptionsForCampaign4, "#viewTestcampaignList", undefined, true);
 
     var formEdit = $('#viewTestcampaignModal');
 
@@ -237,7 +237,7 @@ function editEntryClick(param) {
         } else {
             //configure and create the dataTable
             var configurations = new TableConfigurationsClientSide("batteryTestcampaignsTable", array, aoColumnsFunc2("batteryTestcampaignsTable"), true);
-            createDataTableWithPermissions(configurations, null, "#batteryTestcampaignList");
+            createDataTableWithPermissions(configurations, null, "#batteryTestcampaignList", undefined, true);
         }
         renderOptionsForCampaign2("batteryTestcampaignsTable");
 
@@ -255,7 +255,7 @@ function editEntryClick(param) {
         } else {
             //configure and create the dataTable
             var configurations = new TableConfigurationsClientSide("parameterTestcampaignsTable", array, aoColumnsFunc3("parameterTestcampaignsTable"), true);
-            createDataTableWithPermissions(configurations, null, "#parameterTestcampaignList");
+            createDataTableWithPermissions(configurations, null, "#parameterTestcampaignList", undefined, true);
         }
         renderOptionsForCampaign3("parameterTestcampaignsTable");
 
@@ -336,7 +336,7 @@ function addEntryClick() {
     } else {
         //configure and create the dataTable
         var configurations = new TableConfigurationsClientSide("addModalBatteryTestcampaignsTable", null, aoColumnsFunc2("addModalBatteryTestcampaignsTable"), true);
-        createDataTableWithPermissions(configurations, null, "#addModalBatteryTestcampaignList");
+        createDataTableWithPermissions(configurations, null, "#addModalBatteryTestcampaignList", undefined, true);
     }
     renderOptionsForCampaign2("addModalBatteryTestcampaignsTable");
 
@@ -345,7 +345,7 @@ function addEntryClick() {
     } else {
         //configure and create the dataTable
         var configurations = new TableConfigurationsClientSide("addModalParameterTestcampaignsTable", null, aoColumnsFunc3("addModalParameterTestcampaignsTable"), true);
-        createDataTableWithPermissions(configurations, null, "#addModalParameterTestcampaignList");
+        createDataTableWithPermissions(configurations, null, "#addModalParameterTestcampaignList", undefined, true);
     }
     renderOptionsForCampaign3("addModalParameterTestcampaignsTable");
 

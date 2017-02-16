@@ -54,7 +54,7 @@ function initPage() {
 
             //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationsTable", "ReadApplication?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationsTable"), [3, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList");
+    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#applicationList", undefined, true);
 }
 
 function displayPageLabel() {
@@ -324,7 +324,7 @@ function editEntryClick(id, system) {
             $("#editApplicationModal #applicationObjectsTable").DataTable().draw();
         } else {
             var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?application="+id, "contentTable", aoColumnsFunc2("applicationObjectsTable"), [1, 'asc']);
-            var table = createDataTableWithPermissions(configurations, function(data){renderOptionsForApplication2(id,data);}, "#applicationObjectList");
+            var table = createDataTableWithPermissions(configurations, function(data){renderOptionsForApplication2(id,data);}, "#applicationObjectList", undefined, true);
         }
 
         formEdit.modal('show');

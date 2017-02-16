@@ -139,7 +139,7 @@ function loadTable(selectTest, sortColumn) {
 
         var config = new TableConfigurationsServerSide("testCaseTable", contentUrl, "contentTable", aoColumnsFunc(data, "testCaseTable"), [2, 'asc']);
 
-        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList");
+        var table = createDataTableWithPermissions(config, renderOptionsForTestCaseList, "#testCaseList", undefined, true);
 
         var app = GetURLParameter('application');
         if (app !== "" && app !== null) {

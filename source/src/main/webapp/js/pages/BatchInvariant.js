@@ -37,7 +37,7 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("batchinvariantsTable", "ReadBatchInvariant?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("batchinvariantsTable"), [1,'asc']);
 
-    createDataTableWithPermissions(configurations, renderOptionsForBatchInvariant, "#batchinvariant");
+    createDataTableWithPermissions(configurations, renderOptionsForBatchInvariant, "#batchinvariant", undefined, true);
 }
 
 function displayPageLabel() {

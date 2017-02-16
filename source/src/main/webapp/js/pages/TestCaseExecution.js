@@ -44,7 +44,7 @@ function loadTable(){
     //configure and create the dataTable
     var lengthMenu = [10, 25, 50, 100, 500, 1000];
     var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [3, 'desc'], lengthMenu);
-    configurations.aaSorting = [3, 'desc'];
+    configurations.aaSorting = [2, 'desc'];
     
     var filtrableColumns = new Array("test","testcase","application","country","environment");
     
@@ -95,11 +95,11 @@ function aoColumnsFunc() {
                                     <span class="glyphicon glyphicon-new-window"></span>\n\
                                     </a>';
                 var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
                                     <span class="glyphicon glyphicon-play"></span>\n\
                                     </a>';
                 var lastExec = '<a id="lastExec" class="btn btn-default btn-xs marginRight5"\n\
-                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./TestCaseExecution.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '&country=' + encodeURIComponent(obj["country"]) + '&environment=' + encodeURIComponent(obj["environment"]) + '">\n\
                                     <span class="glyphicon glyphicon-backward"></span>\n\
                                     </a>';
                 var tag = '<a id="tagExec'+(obj["id"])+'" class="btn btn-default btn-xs marginRight5"\n\

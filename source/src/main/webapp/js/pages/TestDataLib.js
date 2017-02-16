@@ -129,7 +129,7 @@ function initPage() {
     var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFuncTestDataLib("listOfTestDataLib"), [2, 'asc']);
 
     //creates the main table and draws the management buttons if the user has the permissions
-    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib")).then(function () {
+    $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
 

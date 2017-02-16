@@ -35,7 +35,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("parametersTable", "ReadParameter?system1=" + getSys(), "contentTable", aoColumnsFunc(), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList");
+    createDataTableWithPermissions(configurations, renderOptionsForApplication, "#parameterList", undefined, true);
 }
 
 function displayPageLabel() {

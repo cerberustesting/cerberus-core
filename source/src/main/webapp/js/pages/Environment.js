@@ -260,7 +260,7 @@ function loadEnvTable(selectCountry, selectEnvironment, selectBuild, selectRevis
 
     var configurations = new TableConfigurationsServerSide("environmentsTable", contentUrl, "contentTable", aoColumnsFunc("environmentsTable"), [3, 'asc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList");
+    var table = createDataTableWithPermissions(configurations, renderOptionsForEnv, "#environmentList", undefined, true);
     return table;
 }
 
@@ -570,7 +570,7 @@ function loadChangeTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastChangeTable", contentUrl, "contentTable", aoColumnsFuncChange("lastChangeTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations, undefined, "#lastChangeList");
+    var table = createDataTableWithPermissions(configurations, undefined, "#lastChangeList", undefined, true);
     return table;
 }
 
@@ -585,7 +585,7 @@ function loadEventTable(selectSystem, selectCountry, selectEnvironment) {
 
     var configurations = new TableConfigurationsServerSide("lastEventTable", contentUrl, "contentTable", aoColumnsFuncEvent("lastEventTable"), [0, "desc"]);
 
-    var table = createDataTableWithPermissions(configurations, undefined, "#lastEventList");
+    var table = createDataTableWithPermissions(configurations, undefined, "#lastEventList", undefined, true);
     return table;
 }
 

@@ -1131,6 +1131,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 for (var f = 0; f < filters.length; f++) {
                     aoData.push(filters[f]);
                 }
+                aoData.push({name: "iSortCol_0",value: configs["aaSorting"][0][0]});
+                aoData.push({name: "sSortDir_0",value: configs["aaSorting"][0][1]});
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
@@ -1138,6 +1140,7 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if (objectWaitingLayer !== undefined) {
                 showLoader(objectWL);
             }
+            console.log(aoData);
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",

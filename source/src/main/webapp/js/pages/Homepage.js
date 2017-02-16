@@ -94,7 +94,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             configurations.tableWidth = "550px";
             configurations.showColvis = false;
             if ($('#homePageTable').hasClass('dataTable') === false) {
-                createDataTableWithPermissions(configurations);
+                createDataTableWithPermissions(configurations, undefined, "#applicationPanel");
                 showTitleWhenTextOverflow();
             } else {
                 var oTable = $("#homePageTable").dataTable();
