@@ -452,8 +452,16 @@ function massActionModalCloseHandler() {
     clearResponseMessage($('#massActionBrpModal'));
 }
 
+function getTable() {
+    return $('#executionsTable').dataTable()
+}
+
+function resetTableFilters() {
+    resetFilters(getTable());
+}
+
 function refreshTable() {
-    $('#executionsTable').DataTable().draw();
+    getTable().fnDraw();
 }
 
 function refreshQueueInformation() {
@@ -502,17 +510,25 @@ function filterTable(poolId) {
                     associcatedIds.push(exec.toExecute.id);
                 });
 
-                // Apply filter
-                applyFiltersOnMultipleColumns(
-                    'executionsTable',
-                    [
-                        {
-                            param: 'id',
-                            values: associcatedIds
-                        }
-                    ]
-                );
-                refreshTable();
+                if (associcatedIds.length == 0) {
+                    resetTableFilters();
+                    showMessage({
+                        messageType: 'WARNING',
+                        message: 'Execution pool is empty, showing the whole table'
+                    });
+                } else {
+                    // Apply filter
+                    applyFiltersOnMultipleColumns(
+                        'executionsTable',
+                        [
+                            {
+                                param: 'id',
+                                values: associcatedIds
+                            }
+                        ]
+                    );
+                    refreshTable();
+                }
             }
         )
         .fail(handleErrorAjaxAfterTimeout);
@@ -544,6 +560,7 @@ function generatePie(root, id, data) {
     var container = $('<div/>')
         .attr('id', root + id)
         .attr('role', 'button')
+        .addClass('pie')
         .css('width', totalWidth)
         .css('height', totalHeight);
     container.click(function () {
