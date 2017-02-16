@@ -20,7 +20,6 @@
 package org.cerberus.engine.entity;
 
 import io.appium.java_client.AppiumDriver;
-import java.util.List;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 

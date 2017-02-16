@@ -198,6 +198,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             "EXESTART", "EXEELAPSEDMS",
                             "EXESTORAGEURL",
                             "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+                            "LASTSERVICE_HTTPCODE",
                             "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
                             "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
                         ];
