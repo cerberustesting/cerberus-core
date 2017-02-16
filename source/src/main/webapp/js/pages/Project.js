@@ -37,7 +37,7 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("projectsTable", "ReadProject", "contentTable", aoColumnsFunc("projectsTable"), [1,'asc']);
 
-    createDataTableWithPermissions(configurations, renderOptionsForProject, "#project");
+    createDataTableWithPermissions(configurations, renderOptionsForProject, "#project", undefined, true);
 }
 
 function displayPageLabel() {

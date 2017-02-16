@@ -38,7 +38,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("applicationObjectsTable", "ReadApplicationObject?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("applicationObjectsTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList");
+    createDataTableWithPermissions(configurations, renderOptionsForApplicationObject, "#applicationObjectList", undefined, true);
 
     if(application != null) {
         clearIndividualFilter("applicationObjectsTable",undefined,true);

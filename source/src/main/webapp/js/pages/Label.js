@@ -36,7 +36,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("labelsTable", "ReadLabel?system=" + getUser().defaultSystem, "contentTable", aoColumnsFunc("labelsTable"), [3, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList");
+    createDataTableWithPermissions(configurations, renderOptionsForLabel, "#labelList", undefined, true);
 }
 
 function displayPageLabel() {

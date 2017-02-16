@@ -30,7 +30,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
 
-        var table = createDataTableWithPermissions(config, renderOptionsForTest, "#testList");
+        var table = createDataTableWithPermissions(config, renderOptionsForTest, "#testList", undefined, true);
 
     });
 });

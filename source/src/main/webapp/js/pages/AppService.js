@@ -29,7 +29,7 @@ function initPage() {
 
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("soapLibrarysTable", "ReadAppService", "contentTable", aoColumnsFunc("soapLibrarysTable"), [1, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForAppService, "#soapLibraryList");
+    createDataTableWithPermissions(configurations, renderOptionsForAppService, "#soapLibraryList", undefined, true);
 
 }
 

@@ -184,7 +184,7 @@ function loadBCTable(selectBuild, selectRevision, selectApplication) {
 
     var configurations = new TableConfigurationsServerSide("buildrevisionparametersTable", contentUrl, "contentTable", aoColumnsFunc("buildrevisionparametersTable"), [12, 'desc']);
 
-    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp, "#buildContentList");
+    var table = createDataTableWithPermissions(configurations, renderOptionsForBrp, "#buildContentList", undefined, true);
 
     // handle the click for specific action on the list.
     $("#selectAll").click(selectAll);

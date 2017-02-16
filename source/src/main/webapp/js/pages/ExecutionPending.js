@@ -32,7 +32,7 @@ function initPage() {
 
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
-    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList");
+    var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
 
     // React on table redraw
     table.on(

@@ -48,7 +48,7 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("robotsTable", "ReadRobot", "contentTable", aoColumnsFunc("robotsTable"), [1, 'asc']);
 
-    createDataTableWithPermissions(configurations, renderOptionsForRobot, "#robotList");
+    createDataTableWithPermissions(configurations, renderOptionsForRobot, "#robotList", undefined, true);
 }
 
 function displayPageLabel() {
