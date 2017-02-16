@@ -35,6 +35,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.Parameter;
@@ -145,7 +146,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Set Driver");
             WebDriver driver = null;
             AppiumDriver appiumDriver = null;
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
                     appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
@@ -155,13 +156,13 @@ public class SeleniumServerService implements ISeleniumServerService {
                 } else {
                     driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 }
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
                 appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
                 appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
-            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
             }
 
@@ -182,7 +183,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * If Gui application, maximize window Get IP of Node in case of
              * remote Server
              */
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID)) {
                 driver.manage().window().maximize();
                 getIPOfNode(tCExecution);
@@ -259,8 +260,8 @@ public class SeleniumServerService implements ISeleniumServerService {
          * if application is a mobile one, then set the "app" capability to the
          * application binary path
          */
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             // Set the app capability with the application path
             if (tCExecution.isManualURL()) {
                 caps.setCapability("app", tCExecution.getMyHost());

@@ -47,7 +47,6 @@ import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.IInvariantService;
-import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
@@ -55,7 +54,6 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
-import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
 import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.enums.MessageEventEnum;
@@ -64,6 +62,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -104,6 +103,9 @@ public class ReadTestCaseExecution extends HttpServlet {
         response.setCharacterEncoding("utf8");
 
         testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         try {
             JSONObject jsonResponse = new JSONObject();

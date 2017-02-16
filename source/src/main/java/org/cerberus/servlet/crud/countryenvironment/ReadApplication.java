@@ -229,7 +229,7 @@ public class ReadApplication extends HttpServlet {
 
     private AnswerItem findApplicationByKey(String id, ApplicationContext appContext, boolean userHasPermissions) throws JSONException, CerberusException {
         AnswerItem item = new AnswerItem();
-        JSONObject object = new JSONObject();
+        JSONObject response = new JSONObject();
 
         IApplicationService libService = appContext.getBean(IApplicationService.class);
 
@@ -239,12 +239,12 @@ public class ReadApplication extends HttpServlet {
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat
             Application lib = (Application) answer.getItem();
-            JSONObject response = convertApplicationToJSONObject(lib);
-            object.put("contentTable", response);
+            JSONObject object = convertApplicationToJSONObject(lib);
+            response.put("contentTable", object);
         }
 
-        object.put("hasPermissions", userHasPermissions);
-        item.setItem(object);
+        response.put("hasPermissions", userHasPermissions);
+        item.setItem(response);
         item.setResultMessage(answer.getResultMessage());
 
         return item;

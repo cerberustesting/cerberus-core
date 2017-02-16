@@ -75,11 +75,11 @@ public class UpdateAppService extends HttpServlet {
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("servicePath"), null, charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicePath"), null, charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
 
         // Prepare the final answer.

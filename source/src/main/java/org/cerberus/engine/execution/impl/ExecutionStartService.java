@@ -21,6 +21,7 @@ package org.cerberus.engine.execution.impl;
 
 import java.util.Date;
 import java.util.logging.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.ExecutionUUID;
@@ -373,7 +374,7 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * For GUI application, check if Browser is supported.
          */
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
             try {
                 myInvariant = this.invariantService.findInvariantByIdValue("BROWSER", tCExecution.getBrowser());
             } catch (CerberusException ex) {
@@ -387,10 +388,11 @@ public class ExecutionStartService implements IExecutionStartService {
         /**
          * Start server
          */
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("FAT")) {
+        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
             if (tCExecution.getIp().equalsIgnoreCase("")) {
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
@@ -409,6 +411,7 @@ public class ExecutionStartService implements IExecutionStartService {
              * Start Selenium server
              */
             LOG.debug("Starting Server.");
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
             try {
                 this.serverService.startServer(tCExecution);
             } catch (CerberusException ex) {

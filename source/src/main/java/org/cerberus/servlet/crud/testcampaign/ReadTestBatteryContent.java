@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
+import org.cerberus.util.servlet.ServletUtil;
 
 /**
  * @author cerberus
@@ -68,6 +69,9 @@ public class ReadTestBatteryContent extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         try {
             JSONObject jsonResponse = new JSONObject();

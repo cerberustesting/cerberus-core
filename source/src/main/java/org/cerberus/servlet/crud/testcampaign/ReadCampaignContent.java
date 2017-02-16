@@ -21,11 +21,9 @@ package org.cerberus.servlet.crud.testcampaign;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.ICampaignContentService;
-import org.cerberus.crud.service.ICampaignService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -43,7 +41,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.cerberus.util.servlet.ServletUtil;
 
 /**
  * @author cerberus
@@ -69,6 +72,9 @@ public class ReadCampaignContent extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         try {
             JSONObject jsonResponse = new JSONObject();

@@ -34,6 +34,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.answer.AnswerItem; 
 import org.cerberus.util.answer.AnswerList; 
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -73,7 +74,9 @@ public class ReadTestDataLibData extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
         
-        
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
          /**
          * Parsing and securing all required parameters.
          */

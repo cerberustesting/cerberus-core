@@ -37,7 +37,6 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.impl.TestDataService;
 import org.cerberus.dto.TestCaseListDTO;
 import org.cerberus.dto.TestListDTO;
 import org.cerberus.enums.MessageEventEnum;
@@ -45,6 +44,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,6 +87,9 @@ public class ReadTestDataLib extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         /**
          * Parsing and securing all required parameters.

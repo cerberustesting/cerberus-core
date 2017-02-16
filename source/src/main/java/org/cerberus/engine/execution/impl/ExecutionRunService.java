@@ -77,6 +77,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.execution.IRunTestCaseService;
 
 /**
@@ -190,7 +191,7 @@ public class ExecutionRunService implements IExecutionRunService {
              * Get used SeleniumCapabilities (empty if application is not GUI)
              */
             LOG.debug(logPrefix + "Getting Selenium capabitities for GUI applications.");
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 try {
                     Capabilities caps = this.serverService.getUsedCapabilities(tCExecution.getSession());
                     tCExecution.setBrowserFullVersion(caps.getBrowserName() + " " + caps.getVersion() + " " + caps.getPlatform().toString());
@@ -891,9 +892,9 @@ public class ExecutionRunService implements IExecutionRunService {
     }
 
     private TestCaseExecution stopRunTestCase(TestCaseExecution tCExecution) {
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase("GUI")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("APK")
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase("IPA")) {
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
             try {
                 this.serverService.stopServer(tCExecution.getSession());
                 if (LOG.isDebugEnabled()) {

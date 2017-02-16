@@ -2254,7 +2254,6 @@
             <url-pattern>/CreateBuildRevisionParameters</url-pattern>
             <url-pattern>/UpdateBuildRevisionParameters</url-pattern>
             <url-pattern>/DeleteBuildRevisionParameters</url-pattern>
-            <url-pattern>/ReadUser</url-pattern>
             <url-pattern>/CreateBatchInvariant</url-pattern>
             <url-pattern>/DeleteBatchInvariant</url-pattern>
             <url-pattern>/UpdateBatchInvariant</url-pattern>
@@ -2309,6 +2308,7 @@
         <web-resource-collection>
             <web-resource-name>servlet</web-resource-name>
             <description>servlet</description>
+            <url-pattern>/ReadUser</url-pattern>
             <url-pattern>/GetParameter</url-pattern>
             <url-pattern>/UpdateParameter</url-pattern>
             <url-pattern>/GetUsers</url-pattern>

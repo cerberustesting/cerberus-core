@@ -47,6 +47,7 @@ import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.util.servlet.ServletUtil;
 
 /**
  *
@@ -90,6 +91,9 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
         int iterator = ParameterParserUtil.parseIntegerParamAndDecode(request.getParameter("iterator"), 0, charset);
         boolean autoContentType = ParameterParserUtil.parseBooleanParam(request.getParameter("autoContentType"), true);
         long id = ParameterParserUtil.parseLongParamAndDecode(request.getParameter("id"), 0, charset);
+        
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IParameterService parameterService = appContext.getBean(IParameterService.class);

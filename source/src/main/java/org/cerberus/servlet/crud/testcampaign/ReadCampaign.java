@@ -24,22 +24,29 @@ import com.google.common.base.*;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ICampaignParameterService;
+import org.cerberus.crud.service.ICampaignService;
 
-import org.cerberus.crud.entity.*;
-import org.cerberus.crud.service.*;
-import org.cerberus.crud.service.impl.CampaignContentService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,6 +77,9 @@ public class ReadCampaign extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         try {
             JSONObject jsonResponse = new JSONObject();

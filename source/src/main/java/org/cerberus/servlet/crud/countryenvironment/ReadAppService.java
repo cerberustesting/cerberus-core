@@ -56,10 +56,10 @@ public class ReadAppService extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -166,16 +166,18 @@ public class ReadAppService extends HttpServlet {
 
     private AnswerItem findAppServiceBySystemByKey(String key, ApplicationContext appContext, boolean userHasPermissions) throws JSONException {
 
+        JSONObject response = new JSONObject();
         appServiceService = appContext.getBean(AppServiceService.class);
 
-        AnswerItem resp = appServiceService.readByKey(key);
+        AnswerItem resp = appServiceService.readByKeyWithDependency(key, null);
         AppService p = null;
         if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             p = (AppService) resp.getItem();
         }
         JSONObject item = convertSoapLibraryToJSONObject(p);
+        response.put("contentTable", item);
         item.put("hasPermissions", userHasPermissions);
-        resp.setItem(item);
+        resp.setItem(response);
 
         return resp;
     }
@@ -215,14 +217,13 @@ public class ReadAppService extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -233,10 +234,10 @@ public class ReadAppService extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

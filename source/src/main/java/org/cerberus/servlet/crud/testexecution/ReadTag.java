@@ -42,6 +42,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -69,6 +70,9 @@ public class ReadTag extends HttpServlet {
 
         response.setContentType("application/json");
         response.setCharacterEncoding("utf8");
+
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
 
         int tagNumber = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("tagNumber"), "0"));
 

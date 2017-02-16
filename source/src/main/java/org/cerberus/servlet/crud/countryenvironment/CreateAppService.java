@@ -71,13 +71,13 @@ public class CreateAppService extends HttpServlet {
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
-        String servicePath = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("servicePath"), "", charset);
         String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parsingAnswer"), "", charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), "", charset);
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
+        String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicePath"), "", charset);
         String serviceRequest = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("serviceRequest"), null, charset);
 
         /**

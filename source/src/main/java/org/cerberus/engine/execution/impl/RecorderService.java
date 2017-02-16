@@ -115,9 +115,9 @@ public class RecorderService implements IRecorderService {
          */
         if ((myExecution.getScreenshot() == 2) || ((myExecution.getScreenshot() == 1) && (doScreenshot))) {
 
-            if (applicationType.equals("GUI")
-                    || applicationType.equals("APK")
-                    || applicationType.equals("IPA")) {
+            if (applicationType.equals(Application.TYPE_GUI)
+                    || applicationType.equals(Application.TYPE_APK)
+                    || applicationType.equals(Application.TYPE_IPA)) {
                 /**
                  * Only if the return code is not equal to Cancel, meaning lost
                  * connectivity with selenium.
@@ -143,7 +143,7 @@ public class RecorderService implements IRecorderService {
          */
         if ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))) {
 
-            if (applicationType.equals("GUI")) {
+            if (applicationType.equals(Application.TYPE_GUI)) {
                 /**
                  * Only if the return code is not equal to Cancel, meaning lost
                  * connectivity with selenium.
@@ -469,7 +469,7 @@ public class RecorderService implements IRecorderService {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
-        if (testCaseExecution.getApplicationObj().getType().equals("GUI")) {
+        if (testCaseExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
 
             if (testCaseExecution.getSeleniumLog() == 2 || (testCaseExecution.getSeleniumLog() == 1 && !testCaseExecution.getControlStatus().equals("OK"))) {
                 LOG.debug(logPrefix + "Starting to save Selenium log file.");

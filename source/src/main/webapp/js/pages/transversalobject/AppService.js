@@ -237,7 +237,6 @@ function confirmAppServiceModalHandler(mode) {
 }
 
 function refreshDisplayOnTypeChange(newValue) {
-    console.debug("Debug.");
     if (newValue === "SOAP") {
         // If SOAP service, no need to feed the method.
         $('#editSoapLibraryModal #method').prop("disabled", true);
@@ -285,8 +284,8 @@ function feedAppServiceModal(serviceName, modalId, mode) {
             if (data.messageType === "OK") {
 
                 // Feed the data to the screen and manage authorities.
-                var service = data;
-                feedAppServiceData(service, modalId, mode, data["hasPermissions"]);
+                var service = data.contentTable;
+                feedAppServiceData(service, modalId, mode, service.hasPermissions);
 
                 // Force a change event on method field.
                 refreshDisplayOnTypeChange(service.type);
@@ -306,7 +305,6 @@ function feedAppServiceData(service, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
-    console.debug("feedAppServiceData " + service + "-" + mode + hasPermissionsUpdate);
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
@@ -353,30 +351,26 @@ function feedAppServiceData(service, modalId, mode, hasPermissionsUpdate) {
     // Authorities
     if (mode === "EDIT") {
         formEdit.find("#service").prop("readonly", "readonly");
-        console.debug("readonly");
     } else {
         formEdit.find("#service").removeAttr("readonly");
         formEdit.find("#service").removeProp("readonly");
-        console.debug("Not readonly");
     }
     //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
     if (!(hasPermissionsUpdate)) { // If readonly, we readonly all fields
-        //Service info
         formEdit.find("#application").prop("readonly", "readonly");
         formEdit.find("#type").prop("disabled", "disabled");
         formEdit.find("#method").prop("disabled", "disabled");
-        formEdit.find("#servicePath").prop("readonly", "readonly");
+        formEdit.find("#servicePath").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
         // We hide Save button.
         $('#editSoapLibraryButton').attr('class', '');
         $('#editSoapLibraryButton').attr('hidden', 'hidden');
     } else {
-        //test case info
         formEdit.find("#application").removeProp("readonly");
         formEdit.find("#type").removeProp("disabled");
         formEdit.find("#method").removeProp("disabled");
-        formEdit.find("#servicePath").removeProp("readonly");
+        formEdit.find("#servicePath").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
     }
