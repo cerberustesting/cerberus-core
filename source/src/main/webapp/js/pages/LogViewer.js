@@ -35,15 +35,19 @@ function initPage() {
     //configure and create the dataTable
     var configurations = new TableConfigurationsServerSide("logViewerTable", "ReadLogEvent", "contentTable", aoColumnsFunc(), [1,'desc']);
 
-    var table = createDataTable(configurations, undefined, undefined, "#logViewer");
+    var table = createDataTableWithPermissions(configurations, renderOptionsForLogViewer, "#logViewer");
 //    hideLoader('#logViewerTable');
     
-    var api = table.api();
+    //var api = table.api();
     // if test and testcase parameter are sent, we filter the logs on it.
     if (test !== null && testCase !== null) {
         var searchString = "'" + test + "'|'" + testCase + "'";
-        api.search(searchString).draw();
+        table.search(searchString).draw();
     }
+}
+
+function renderOptionsForLogViewer() {
+$("#logViewerTable_paginate").parent().addClass("col-md-12").addClass("paddingRight0");
 }
 
 function displayPageLabel() {

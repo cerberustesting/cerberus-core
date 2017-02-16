@@ -44,12 +44,20 @@ import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.entity.TestCaseLabel;
+import org.cerberus.crud.service.IApplicationService;
+import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.IInvariantService;
+import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseLabelService;
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.crud.service.impl.ApplicationService;
+import org.cerberus.crud.service.impl.BuildRevisionInvariantService;
 import org.cerberus.crud.service.impl.InvariantService;
+import org.cerberus.crud.service.impl.TestCaseCountryService;
 import org.cerberus.crud.service.impl.TestCaseExecutionService;
+import org.cerberus.crud.service.impl.TestCaseService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -73,6 +81,10 @@ public class ReadTestCaseExecution extends HttpServlet {
     private ITestCaseExecutionService testCaseExecutionService;
     private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
+    private ITestCaseService testCaseService;
+    private IInvariantService invariantService;
+    private IBuildRevisionInvariantService buildRevisionInvariantService;
+    private IApplicationService applicationService;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -109,7 +121,8 @@ public class ReadTestCaseExecution extends HttpServlet {
 
             if (!Strings.isNullOrEmpty(columnName)) {
                 //If columnName is present, then return the distinct value of this column.
-                //In this specific case, do nothing as distinct will be done client side
+                answer = findValuesForColumnFilter(system, test, appContext, request, columnName);
+                jsonResponse = (JSONObject) answer.getItem();
             } else if (!Tag.equals("") && byColumns) {
                 //Return the columns to display in the execution table
                 answer = findExecutionColumns(appContext, request, Tag);
@@ -125,7 +138,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (!test.equals("") && !testCase.equals("")) {
                 TestCaseExecution lastExec = testCaseExecutionService.findLastTestCaseExecutionNotPE(test, testCase);
                 JSONObject result = new JSONObject();
-                if(lastExec != null) {
+                if (lastExec != null) {
                     result.put("id", lastExec.getId());
                     result.put("controlStatus", lastExec.getControlStatus());
                     result.put("env", lastExec.getEnvironment());
@@ -284,7 +297,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testCase,application,priority,status,description,bugId,function");
         String columnToSort[] = sColumns.split(",");
-        
+
         //Get Sorting information
         int numberOfColumnToSort = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortingCols"), "1"));
         int columnToSortParameter = 0;
@@ -407,7 +420,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         return answer;
     }
-    
+
     private AnswerItem findTestCaseExecutionList(ApplicationContext appContext, boolean userHasPermissions, HttpServletRequest request) throws JSONException, CerberusException {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
         AnswerList testCaseExecutionList = new AnswerList();
@@ -424,16 +437,16 @@ public class ReadTestCaseExecution extends HttpServlet {
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-        
+
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
-            if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
                 individualSearch.put(columnToSort[a], search);
             }
         }
 
-        testCaseExecutionList = testCaseExecutionService.readByCriteria( startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch);
+        testCaseExecutionList = testCaseExecutionService.readByCriteria(startPosition, length, columnName.concat(" ").concat(sort), searchParameter, individualSearch);
 
         JSONArray jsonArray = new JSONArray();
         if (testCaseExecutionList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
@@ -451,8 +464,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         answer.setResultMessage(testCaseExecutionList.getResultMessage());
         return answer;
     }
-    
-   
+
     private JSONObject getStatusList(HttpServletRequest request) {
         JSONObject statusList = new JSONObject();
 
@@ -703,6 +715,103 @@ public class ReadTestCaseExecution extends HttpServlet {
 
         answer.setItem(jsonResponse);
         answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        return answer;
+    }
+
+    /**
+     * Find Values to display for Column Filter
+     *
+     * @param system
+     * @param test
+     * @param appContext
+     * @param request
+     * @param columnName
+     * @return
+     * @throws JSONException
+     */
+    private AnswerItem findValuesForColumnFilter(String system, String test, ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
+        AnswerItem answer = new AnswerItem();
+        JSONObject object = new JSONObject();
+        AnswerList values = new AnswerList();
+        Map<String, List<String>> individualSearch = new HashMap();
+
+        testCaseService = appContext.getBean(TestCaseService.class);
+        invariantService = appContext.getBean(InvariantService.class);
+        buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
+        applicationService = appContext.getBean(ApplicationService.class);
+
+        switch (columnName) {
+            /**
+             * For columns test and testcase, get distinct values from test
+             * table
+             */
+            case "exe.test":
+            case "exe.testcase":
+            case "exe.status":
+                values = testCaseService.readDistinctValuesByCriteria(system, test, "", null, columnName.replace("exe.", "tec."));
+                break;
+            /**
+             * For columns country, environment get values from invariant
+             */
+            case "exe.country":
+            case "exe.environment":
+                try {
+                    /**
+                     *
+                     */
+                    AnswerList<Invariant> invariants = invariantService.readByIdname(columnName.replace("exe.", ""));
+                    List<Invariant> invariantList = invariantService.convert(invariants);
+                    List<String> stringResult = new ArrayList();
+                    for (Invariant inv : invariantList) {
+                        stringResult.add(inv.getValue());
+                    }
+                    values.setDataList(stringResult);
+                    values.setTotalRows(invariantList.size());
+                    values.setResultMessage(invariants.getResultMessage());
+
+                } catch (CerberusException ex) {
+                    Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            /**
+             * For columns build, revision get values from
+             * buildrevisioninvariant
+             */
+            case "exe.build":
+            case "exe.revision":
+                individualSearch = new HashMap();
+                individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build")?"1":"2")));
+                values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
+                break;
+            /**
+             * For columns application get values from
+             * application
+             */
+            case "exe.application":
+                values = applicationService.readDistinctValuesByCriteria(system, "", null, columnName.replace("exe.", ""));
+                break;
+            /**
+             * For all other columns, get distinct values from testcaseexecution
+             */
+            default:
+                String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
+                String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
+                String columnToSort[] = sColumns.split(",");
+
+                individualSearch = new HashMap<>();
+                for (int a = 0; a < columnToSort.length; a++) {
+                    if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
+                        List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
+                        individualSearch.put(columnToSort[a], search);
+                    }
+                }
+                values = testCaseExecutionService.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
+        }
+
+        object.put("distinctValues", values.getDataList());
+
+        answer.setItem(object);
+        answer.setResultMessage(values.getResultMessage());
         return answer;
     }
 

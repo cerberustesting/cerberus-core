@@ -20,6 +20,7 @@
 package org.cerberus.servlet.crud.usermanagement;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +34,11 @@ import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IUserService;
 import org.cerberus.crud.service.impl.LogEventService;
 import org.cerberus.crud.service.impl.UserService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
+import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -58,38 +63,40 @@ public class UpdateMyUser extends HttpServlet {
         String login = request.getUserPrincipal().getName();
         String column = request.getParameter("column");
         String value = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("value"), "", charset);
+        response.setContentType("application/json");
+        JSONObject jsonResponse = new JSONObject();
 
         MyLogger.log(UpdateMyUser.class.getName(), Level.DEBUG, "value : " + value + " column : " + column + " login : " + login);
 
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         IUserService userService = appContext.getBean(UserService.class);
-        
+
         User myUser;
         try {
-            myUser = userService.findUserByKey(login);
-            switch (column) {
-                case "name":
-                    myUser.setName(value);
-                    break;
-                case "team":
-                    myUser.setTeam(value);
-                    break;
-                case "defaultSystem":
-                    myUser.setDefaultSystem(value);
-                    request.getSession().setAttribute("MySystem", value);
-                    break;
-                case "email":
-                    myUser.setEmail(value);
-                    break;
-                case "language":
-                    myUser.setLanguage(value);
-                    request.getSession().setAttribute("MyLang", value);
-                    break;
-                case "userPreferences":
-                    myUser.setUserPreferences(value);
-                    break;
-            }
             try {
+                myUser = userService.findUserByKey(login);
+                switch (column) {
+                    case "name":
+                        myUser.setName(value);
+                        break;
+                    case "team":
+                        myUser.setTeam(value);
+                        break;
+                    case "defaultSystem":
+                        myUser.setDefaultSystem(value);
+                        request.getSession().setAttribute("MySystem", value);
+                        break;
+                    case "email":
+                        myUser.setEmail(value);
+                        break;
+                    case "language":
+                        myUser.setLanguage(value);
+                        request.getSession().setAttribute("MyLang", value);
+                        break;
+                    case "userPreferences":
+                        myUser.setUserPreferences(value);
+                        break;
+                }
 
                 userService.updateUser(myUser);
 
@@ -99,13 +106,20 @@ public class UpdateMyUser extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
 
-                response.getWriter().print(value);
-            } catch (CerberusException ex) {
-                response.getWriter().print(ex.getMessageError().getDescription());
-            }
-        } catch (CerberusException ex) {
-            response.getWriter().print(ex.getMessageError().getDescription());
-        }
+                jsonResponse.put("messageType", MessageEventEnum.GENERIC_OK.getCodeString());
+                jsonResponse.put("message", MessageEventEnum.GENERIC_OK.getDescription());
 
+            } catch (CerberusException ex) {
+                jsonResponse.put("messageType", MessageEventEnum.GENERIC_ERROR.getCodeString());
+                jsonResponse.put("message", ex.getMessageError().getDescription());
+            }
+
+        } catch (JSONException e) {
+            org.apache.log4j.Logger.getLogger(ChangeUserPassword.class.getName()).log(org.apache.log4j.Level.ERROR, e.getMessage(), e);
+            //returns a default error message with the json format that is able to be parsed by the client-side
+            response.setContentType("application/json");
+            response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
+        }
+        response.getWriter().print(jsonResponse.toString());
     }
 }

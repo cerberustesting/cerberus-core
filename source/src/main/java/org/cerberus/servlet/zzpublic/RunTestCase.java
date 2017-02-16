@@ -350,7 +350,7 @@ public class RunTestCase extends HttpServlet {
                  */
                 if (tCExecution.getId() != 0) {
                     TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                    LOG.info("CerberusExecution " + t.toJson());
+                    LOG.info(t.toJson());
                 }
 
                 /**

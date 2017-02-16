@@ -27,23 +27,34 @@ function initPage() {
     // The page take some parameters.
     var test = GetURLParameter("Test");
     var testCase = GetURLParameter("TestCase");
-
-    displayPageLabel();
-
-//    showLoader('#logViewerTable');
-    //configure and create the dataTable
-    var lengthMenu = [10, 25, 50, 100, 500, 1000]
-    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", "ReadTestCaseExecution", "contentTable", aoColumnsFunc(), [1, 'desc'], lengthMenu);
     
-    var table = createDataTableWithPermissions(configurations, undefined, undefined);
-//    hideLoader('#logViewerTable');
+    displayPageLabel();
+    loadTable();
+    
+}
 
-    var allowedColumns = new Array("test","testcase","application","country","environment");
-    applyFiltersOnMultipleColumns("testCaseExecutionTable", allowedColumns, true);
+function loadTable(){
+    //clear the old report content before reloading it
+    $("#testCaseExecution").empty();
+    $("#testCaseExecution").html('<table id="testCaseExecutionTable" class="table table-bordered table-hover display" name="testCaseExecutionTable">\n\
+                                            </table><div class="marginBottom20"></div>');
+
+    var contentUrl = "ReadTestCaseExecution";
+
+    //configure and create the dataTable
+    var lengthMenu = [10, 25, 50, 100, 500, 1000];
+    var configurations = new TableConfigurationsServerSide("testCaseExecutionTable", contentUrl, "contentTable", aoColumnsFunc(), [3, 'desc'], lengthMenu);
+    configurations.aaSorting = [3, 'desc'];
+    
+    var filtrableColumns = new Array("test","testcase","application","country","environment");
+    
+    var table = createDataTableWithPermissions(configurations, undefined, "#testCaseExecution", filtrableColumns);
+    
+   
 }
 
 function afterTableLoad(){
-    $("#testCaseExecutionTable_paginate").remove();
+    $("#testCaseExecutionTable_paginate").hide();
 }
 
 function displayPageLabel() {
@@ -70,6 +81,44 @@ function aoColumnsFunc() {
 
     var aoColumns = [
         {
+            "data": null,
+            "bSortable": false,
+            "bSearchable": false,
+            "title": doc.getDocOnline("page_global", "columnAction"),
+            "sDefaultContent": "",
+            "sWidth": "100px",
+            "mRender": function (data, type, obj) {
+                var buttons = "";
+
+                var editScript = '<a id="testCaseBetaLink" class="btn btn-default btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "edittc") + '" href="./TestCaseScript.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
+                                    <span class="glyphicon glyphicon-new-window"></span>\n\
+                                    </a>';
+                var runTest = '<a id="runTest" class="btn btn-default btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "runtc") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
+                                    <span class="glyphicon glyphicon-play"></span>\n\
+                                    </a>';
+                var lastExec = '<a id="lastExec" class="btn btn-default btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "lastexecution") + '" href="./RunTests1.jsp?test=' + encodeURIComponent(obj["test"]) + '&testcase=' + encodeURIComponent(obj["testcase"]) + '">\n\
+                                    <span class="glyphicon glyphicon-backward"></span>\n\
+                                    </a>';
+                var tag = '<a id="tagExec'+(obj["id"])+'" class="btn btn-default btn-xs marginRight5"\n\
+                                    data-toggle="tooltip" title="' + doc.getDocLabel("page_executiondetail", "see_execution_tag") + '" href="./ReportingExecutionByTag.jsp?Tag=' + obj["tag"] + '">\n\
+                                    <span class="glyphicon glyphicon-tag"></span>\n\
+                                    </a>';
+
+                
+                buttons += editScript;
+                buttons += lastExec;
+                buttons += tag;
+                buttons += runTest;
+
+
+
+                return '<div class="center btn-group width250">' + buttons + '</div>';
+            }
+        },
+        {
             "data": "controlStatus",
             "sName": "exe.controlStatus",
             "title": doc.getDocOnline("page_executiondetail", "controlstatus"),
@@ -81,12 +130,11 @@ function aoColumnsFunc() {
                     var executionLink = "./ExecutionDetail2.jsp?executionId=" + obj.id;
                     var glyphClass = getRowClass(obj.controlStatus);
                     var tooltip = generateTooltip(obj);
-                    var cell = '<div class="progress-bar status' + obj.controlStatus + '" \n\
+                    var cell = '<a href="' + executionLink + '"><div class="progress-bar status' + obj.controlStatus + '" \n\
                                 role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%;cursor: pointer; height: 20px;" \n\
                                 data-toggle="tooltip" data-html="true" title="' + tooltip + '"\n\
-                                onclick="window.open(\'' + executionLink + '\')">\n\
                                 <span class="' + glyphClass.glyph + ' marginRight5" style="margin-top:0;"></span>\n\
-                                 <span>' + obj.controlStatus + '<span></div>';
+                                 <span>' + obj.controlStatus + '<span></div></a>';
                     return cell;
                 } else {
                     return obj;
@@ -96,6 +144,7 @@ function aoColumnsFunc() {
         {
             "data": "id",
             "sName": "exe.id",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "id"),
             "sWidth": "120px",
             "sDefaultContent": ""
@@ -115,16 +164,9 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "build",
-            "sName": "exe.build",
-            "title": doc.getDocOnline("page_executiondetail", "build"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "revision",
-            "sName": "exe.revision",
-            "title": doc.getDocOnline("page_executiondetail", "revision"),
+            "data": "country",
+            "sName": "exe.country",
+            "title": doc.getDocOnline("page_executiondetail", "country"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
@@ -136,9 +178,16 @@ function aoColumnsFunc() {
             "sDefaultContent": ""
         },
         {
-            "data": "country",
-            "sName": "exe.country",
-            "title": doc.getDocOnline("page_executiondetail", "country"),
+            "data": "build",
+            "sName": "exe.build",
+            "title": doc.getDocOnline("page_executiondetail", "build"),
+            "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "revision",
+            "sName": "exe.revision",
+            "title": doc.getDocOnline("page_executiondetail", "revision"),
             "sWidth": "70px",
             "sDefaultContent": ""
         },
@@ -180,6 +229,7 @@ function aoColumnsFunc() {
         {
             "data": "start",
             "sName": "exe.start",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "start"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -187,6 +237,7 @@ function aoColumnsFunc() {
         {
             "data": "end",
             "sName": "exe.end",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "end"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -194,6 +245,7 @@ function aoColumnsFunc() {
         {
             "data": "controlMessage",
             "sName": "exe.controlmessage",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "controlmessage"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -224,14 +276,15 @@ function aoColumnsFunc() {
             "sName": "exe.tag",
             "title": doc.getDocOnline("page_executiondetail", "tag"),
             "sWidth": "70px",
-            "sDefaultContent": ""
-        },
-        {
-            "data": "finished",
-            "sName": "exe.finished",
-            "title": doc.getDocOnline("page_executiondetail", "finished"),
-            "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                if (data !== "") {
+                        return data;
+                    } else {
+                        $('#tagExec' + (obj["id"])).attr("disabled", "disabled");
+                        return data;
+                    }
+             }
         },
         {
             "data": "verbose",
@@ -250,6 +303,7 @@ function aoColumnsFunc() {
         {
             "data": "crbVersion",
             "sName": "exe.crbVersion",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "cerberusversion"),
             "sWidth": "70px",
             "sDefaultContent": ""
@@ -264,6 +318,7 @@ function aoColumnsFunc() {
         {
             "data": "screenSize",
             "sName": "exe.screensize",
+            "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "screensize"),
             "sWidth": "70px",
             "sDefaultContent": ""

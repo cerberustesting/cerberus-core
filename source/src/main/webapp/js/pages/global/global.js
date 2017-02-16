@@ -1040,17 +1040,24 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
 /***
  * Creates a datatable that is server-side processed.
  * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
- * @param {Function} callbackFunction callback function to be called after each row is created
+ * @param {Function} callbackFunction callback function to be called after table creation
  * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
+ * @param {Array} filtrableColumns array of parameter name that can trigger filter on columns
+ * @param {Boolean} checkPermisson boolean that define if user permission need to be checked
+ * @param {type} userCallbackFunction
+ * @param {Function} createdRowCallback callback function to be called after each row
  * @return {Object} Return the dataTable object to use the api
  */
-function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer) {
+function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback) {
+
+    /**
+     * Define datatable config with tableConfiguration object received 
+     */
+    var configs = {};
     var domConf = 'RCB<"clear">lf<"pull-right"p>rti<"marginTop5">';
     if (!tableConfigurations.showColvis) {
-        domConf = 'l<"showInlineElement pull-left marginLeft5"fp>rti<"marginTop5">';
+        domConf = 'lf<"pull-right"p>rti<"marginTop5">';
     }
-
-    var configs = {};
     configs["dom"] = domConf;
     configs["stateDuration"] = tableConfigurations.stateDuration;
     configs["serverSide"] = tableConfigurations.serverSide;
@@ -1076,19 +1083,14 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     configs["bDeferRender"] = tableConfigurations.bDeferRender;
     configs["columnReorder"] = tableConfigurations.colreorder;
     configs["searchDelay"] = tableConfigurations.searchDelay;
-    configs["buttons"] = [
-        'colvis'
-    ];
+    configs["buttons"] = ['colvis'];
     if (tableConfigurations.aaSorting !== undefined) {
-//        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
         configs["aaSorting"] = [tableConfigurations.aaSorting];
     }
-
+    if (createdRowCallback !== undefined) {
+        configs["createdRow"] = createdRowCallback;
+    }
     if (tableConfigurations.serverSide) {
-        var objectWL = $(objectWaitingLayer);
-        if (objectWaitingLayer !== undefined) {
-            showLoader(objectWL);
-        }
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
         configs["fnStateSaveCallback"] = function (settings, data) {
@@ -1123,7 +1125,19 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 $("#" + tableConfigurations.divId).DataTable().ajax.reload();
             }
         } : false;
+        if (filtrableColumns !== undefined) {
+            configs["fnServerParams"] = function (aoData) {
+                var filters = generateFiltersOnMultipleColumns(tableConfigurations.divId, filtrableColumns);
+                for (var f = 0; f < filters.length; f++) {
+                    aoData.push(filters[f]);
+                }
+            };
+        }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+            var objectWL = $(objectWaitingLayer);
+            if (objectWaitingLayer !== undefined) {
+                showLoader(objectWL);
+            }
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",
@@ -1133,15 +1147,20 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                     if (objectWaitingLayer !== undefined) {
                         hideLoader(objectWL);
                     }
-                    var tabCheckPermissions = $("#" + tableConfigurations.divId);
-                    var hasPermissions = false; //by default does not have permissions
-                    if (Boolean(json["hasPermissions"])) { //if the response information about permissions then we will update it
-                        hasPermissions = json["hasPermissions"];
+                    if (checkPermissions !== undefined && Boolean(checkPermissions)) {
+                        var tabCheckPermissions = $("#" + tableConfigurations.divId);
+                        var hasPermissions = false; //by default does not have permissions
+                        if (Boolean(json["hasPermissions"])) { //if the response information about permissions then we will update it
+                            hasPermissions = json["hasPermissions"];
+                        }
+                        //sets the permissions in the table
+                        tabCheckPermissions.attr("hasPermissions", hasPermissions);
                     }
-                    //sets the permissions in the table
-                    tabCheckPermissions.attr("hasPermissions", hasPermissions);
                     returnMessageHandler(json);
                     fnCallback(json);
+                    if (Boolean(userCallbackFunction)) {
+                        userCallbackFunction(json);
+                    }
                 },
                 "error": showUnexpectedError
             });
@@ -1173,12 +1192,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         $("#" + tableConfigurations.divId + "_wrapper")
                 .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
                 .addClass("btn btn-default").attr("data-toggle", "tooltip").attr("title", showHideButtonTooltip).click(function () {
-            $("#" + tableConfigurations.divIdrobots + " thead").empty();
+            //$("#" + tableConfigurations.divId + " thead").empty();
         }).html("<span class='glyphicon glyphicon-cog'></span> " + showHideButtonLabel);
         $("#" + tableConfigurations.divId + "_wrapper #showHideColumnsButton").parent().before(
                 $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> " + saveTableConfigurationButtonLabel)
                 .attr("data-toggle", "tooltip").attr("title", saveTableConfigurationButtonTooltip).click(function () {
-            updateUserPreferences();
+            updateUserPreferences(objectWaitingLayer);
         })
                 );
         $("#" + tableConfigurations.divId + "_wrapper #saveTableConfigurationButton").before(
@@ -1195,167 +1214,16 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
     //Build the Message that appear when filter is fed
     var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning' style='padding:0px'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;padding:15px'></span></div>";
-    $("#" + tableConfigurations.divId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
-
+    if ($("#" + tableConfigurations.divId + "_paginate").length !== 0) {
+        $("#" + tableConfigurations.divId + "_paginate").parent().after($(showFilteredColumnsAlertMessage).hide());
+    } else {
+        $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
+    }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
 
     return oTable;
 }
-
-/***
- * Creates a datatable that is server-side processed.
- * @param {type} tableConfigurations set of configurations that define how data is retrieved and presented
- * @param {Function} callbackFunction callback function to be called after each row is created
- * @param {Function} userCallbackFunction function to can be called after the data was loaded (is optional)*
- * @param {String} objectWaitingLayer object that will report the waiting layer when external calls. Ex : #logViewer
- * @return {Object} Return the dataTable object to use the api
- */
-function createDataTable(tableConfigurations, callbackFunction, userCallbackFunction, objectWaitingLayer) {
-    var domConf = 'RCB<"clear">lf<"pull-right"p>rti<"marginTop5">';
-    if (!tableConfigurations.showColvis) {
-        domConf = 'l<"showInlineElement pull-left marginLeft5"f>rti<"marginTop5"p>';
-    }
-
-
-    var configs = {};
-    configs["dom"] = domConf;
-    configs["stateDuration"] = tableConfigurations.stateDuration;
-    configs["serverSide"] = tableConfigurations.serverSide;
-    configs["processing"] = tableConfigurations.processig;
-    configs["bJQueryUI"] = tableConfigurations.bJQueryUI;
-    configs["bPaginate"] = tableConfigurations.bPaginate;
-    configs["autoWidth"] = tableConfigurations.autoWidth;
-    configs["sPaginationType"] = tableConfigurations.sPaginationType;
-    configs["columnDefs.targets"] = [0];
-    configs["pageLength"] = tableConfigurations.displayLength;
-    configs["scrollX"] = tableConfigurations.scrollX;
-    configs["scrollY"] = tableConfigurations.scrollY;
-    configs["scrollCollapse"] = tableConfigurations.scrollCollapse;
-    configs["stateSave"] = tableConfigurations.stateSave;
-    configs["language"] = tableConfigurations.lang.table;
-    configs["columns"] = tableConfigurations.aoColumnsFunction;
-    configs["colVis"] = tableConfigurations.lang.colVis;
-    configs["lengthChange"] = tableConfigurations.lengthChange;
-    configs["lengthMenu"] = tableConfigurations.lengthMenu;
-    configs["createdRow"] = callbackFunction;
-    configs["orderClasses"] = tableConfigurations.orderClasses;
-    configs["bDeferRender"] = tableConfigurations.bDeferRender;
-    configs["columnReorder"] = tableConfigurations.colreorder;
-    configs["searchDelay"] = tableConfigurations.searchDelay;
-    if (tableConfigurations.aaSorting !== undefined) {
-//        console.debug("Sorting Defined. " + tableConfigurations.aaSorting);
-        configs["aaSorting"] = [tableConfigurations.aaSorting];
-    }
-
-
-    if (tableConfigurations.serverSide) {
-        var objectWL = $(objectWaitingLayer)
-        if (objectWaitingLayer !== undefined) {
-            showLoader(objectWL);
-        }
-        configs["sAjaxSource"] = tableConfigurations.ajaxSource;
-        configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
-
-        configs["buttons"] = [
-            'colvis'
-        ];
-        configs["fnStateSaveCallback"] = function (settings, data) {
-            try {
-                (settings.iStateDuration === -1 ? sessionStorage : localStorage).setItem(
-                        'DataTables_' + settings.sInstance + '_' + location.pathname,
-                        JSON.stringify(data)
-                        );
-            } catch (e) {
-            }
-        };
-        configs["fnStateLoadCallback"] = function (settings) {
-            //Get UserPreferences from user object
-            var user = null;
-            $.when(getUser()).then(function (data) {
-                user = data;
-            });
-            while (user === null) {
-                //Wait for user information make sure to don't loose it
-            }
-
-            if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
-                var userPref = JSON.parse(user.userPreferences);
-                if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
-                    return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
-                }
-            }
-        };
-        configs["buttons"] = [
-            'colvis'
-        ];
-        configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
-            oSettings.jqXHR = $.ajax({
-                "dataType": 'json',
-                "type": "POST",
-                "url": sSource,
-                "data": aoData,
-                "success": function (json) {
-                    if (objectWaitingLayer !== undefined) {
-                        hideLoader(objectWL);
-                    }
-                    returnMessageHandler(json);
-                    fnCallback(json);
-                    if (Boolean(userCallbackFunction)) {
-                        userCallbackFunction(json);
-                    }
-                },
-                error: showUnexpectedError
-            });
-            $.when(oSettings.jqXHR).then(function (data) {
-                afterDatatableFeeds(tableConfigurations.divId, tableConfigurations.ajaxSource, oSettings);
-            });
-        };
-    } else {
-        configs["aaData"] = tableConfigurations.aaData;
-    }
-    var oTable = $("#" + tableConfigurations.divId).dataTable(configs);
-    //if is a server side table then we use a delay to avoid too many calls to the server
-    if (tableConfigurations.serverSide) {
-        oTable.dataTable().fnSetFilteringDelay(500);
-    }
-    if (tableConfigurations.showColvis) {
-        //Display button show/hide columns and Save table configuration
-        $("#saveTableConfigurationButton").remove();
-        $("#restoreFilterButton").remove();
-        $("#" + tableConfigurations.divId + "_wrapper")
-                .find("[class='dt-buttons btn-group']").removeClass().addClass("pull-right").find("a").attr('id', 'showHideColumnsButton').removeClass()
-                .addClass("btn btn-default").click(function () {
-            $("#" + tableConfigurations.divIdrobots + " thead").empty();
-        }).html("<span class='glyphicon glyphicon-cog'></span> Show/hide columns");
-        $("#showHideColumnsButton").parent().before(
-                $("<button id='saveTableConfigurationButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-save'></span> Save table configuration")
-                .click(function () {
-                    updateUserPreferences();
-                })
-                );
-        $("#saveTableConfigurationButton").before(
-                $("<button id='restoreFilterButton'></button>").addClass("btn btn-default pull-right").append("<span class='glyphicon glyphicon-floppy-open'></span> Restore user preferences")
-                .click(function () {
-                    location.reload();
-                })
-                );
-    }
-    $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").addClass("form-control input-sm");
-    $("#" + tableConfigurations.divId + "_length select[name='" + tableConfigurations.divId + "_length']").css("display", "inline");
-
-    $("#" + tableConfigurations.divId + "_filter input[type='search']").addClass("form-control form-control input-sm");
-
-//Build the Message that appear when filter is fed
-    var showFilteredColumnsAlertMessage = "<div id='filterAlertDiv' class='col-sm-12 alert alert-warning' style='padding:0px'><div class='col-sm-11' id='activatedFilters'></div><div class='col-sm-1  filterMessageButtons'><span id='clearFilterButton' data-toggle='tooltip' title='Clear filters' class='pull-right glyphicon glyphicon-remove-sign' style='cursor:pointer;padding:15px'></span></div>";
-    $("#showHideColumnsButton").parent().after($(showFilteredColumnsAlertMessage).hide());
-
-    $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
-    $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150");
-
-    return oTable;
-}
-
 /**
  * Function called after data loaded in tables
  * @returns {undefined}
@@ -1472,6 +1340,46 @@ function filterOnColumn(tableId, column, value) {
         }
     }
     oTable.fnDraw();
+}
+
+/**
+ * Function that generate Array that will be send do table to define filter
+ * @param {type} tableId > Id of the datatable
+ * @param {type} searchColums > Array of columns 
+ * @returns {undefined}
+ */
+function generateFiltersOnMultipleColumns(tableId, searchColumns) {
+    var filterConfiguration = Array();
+    /**
+     * Loop on searchColumns and get Parameter values >> Build an array of object
+     */
+    var searchArray = new Array;
+    for (var searchColumn = 0; searchColumn < searchColumns.length; searchColumn++) {
+        var param = GetURLParameters(searchColumns[searchColumn]);
+        var searchObject = {
+            param: searchColumns[searchColumn],
+            values: param};
+        searchArray.push(searchObject);
+    }
+    /**
+     * Apply the filter to the table
+     */
+    var oTable = $('#' + tableId).dataTable();
+    //resetFilters(oTable);
+    var oSettings = oTable.fnSettings();
+    for (iCol = 0; iCol < oSettings.aoPreSearchCols.length; iCol++) {
+        for (sCol = 0; sCol < searchArray.length; sCol++) {
+            if (oSettings.aoColumns[iCol].data === searchArray[sCol].param
+                    && searchArray[sCol].values.length !== 0) {
+                var filter = {
+                    name: "sSearch_" + iCol,
+                    value: searchArray[sCol].values.join(", ")};
+                filterConfiguration.push(filter);
+            }
+        }
+
+    }
+    return (filterConfiguration);
 }
 
 /**

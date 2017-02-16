@@ -1606,7 +1606,7 @@ function createEntriesTable() {
         var configurations = new TableConfigurationsServerSide("listOfTestDataLib", "ReadTestDataLib", "contentTable", aoColumnsFunc());
         configurations.scrollY = "460px";
         showLoaderInModal('#selectEntryFromListModal');
-        $.when(createDataTable(configurations)).then(function() {
+        $.when(createDataTableWithPermissions(configurations)).then(function() {
             hideLoaderInModal('#selectEntryFromListModal');
         });
 
