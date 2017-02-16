@@ -179,6 +179,7 @@ public class ExecutionStartService implements IExecutionStartService {
          */
         LOG.debug("Loading Application Information");
         try {
+            tCExecution.setApplication(tCExecution.getTestCaseObj().getApplication());
             tCExecution.setApplicationObj(this.applicationService.convert(this.applicationService.readByKey(tCExecution.getTestCaseObj().getApplication())));
         } catch (CerberusException ex) {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND);

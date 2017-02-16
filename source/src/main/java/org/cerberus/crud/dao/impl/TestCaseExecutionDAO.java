@@ -85,7 +85,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, tCExecution.getTest());
                 preStat.setString(i++, tCExecution.getTestCase());
                 preStat.setString(i++, tCExecution.getBuild());
@@ -114,7 +114,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal2Init());
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
-                preStat.setString(i++, tCExecution.isManualExecution()?"Y":"N");
+                preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -166,7 +166,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                int i=1;
+                int i = 1;
                 preStat.setString(i++, tCExecution.getTest());
                 preStat.setString(i++, tCExecution.getTestCase());
                 preStat.setString(i++, tCExecution.getBuild());
@@ -202,7 +202,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal2Init());
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
-                preStat.setString(i++, tCExecution.isManualExecution()?"Y":"N");
+                preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -1039,7 +1039,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         answer.setDataList(testCaseExecutionList);
         return answer;
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -1047,11 +1047,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         final StringBuffer query = new StringBuffer();
-        
-        
+
         query.append("SELECT * FROM testcaseexecution exe ");
         query.append("where exe.`start`> '").append(DateUtil.getMySQLTimestampTodayDeltaMinutes(-360000)).append("' ");
-        
+
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
             query.append("and (exe.`id` like ? ");
             query.append(" or exe.`test` like ? ");
@@ -1099,7 +1098,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         } else {
             query.append(" limit ").append(start).append(" , ").append(amount);
         }
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -1779,12 +1778,11 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
         boolean manualExecution = ParameterParserUtil.parseBooleanParam(resultSet.getString("exe.manualExecution"), false);
-        TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment, environmentData,
-                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, null, ip, url,
+        TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
+                country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
-                false, null, null, null, null, null, null, null, null, executor, 0, screenSize, null,
+                false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
                 conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution);
-        result.setApplication(application);
         return result;
     }
 

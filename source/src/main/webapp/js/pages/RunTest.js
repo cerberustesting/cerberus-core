@@ -88,6 +88,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $("#addQueueAndRun").click(function () {
             checkExecution(true);
         });
+        $("#addQueueAndRunBis").click(function () {
+            checkExecution(true);
+        });
 
         $("#selectAll").click(function () {
             $("#testCaseList option").prop("selected", "selected");
@@ -178,6 +181,7 @@ function displayPageLabel() {
     $("#potential span:nth-child(2)").text(doc.getDocLabel("page_runtest", "potential"));
     $("#addQueue").text(doc.getDocLabel("page_runtest", "addtoqueue"));
     $("#addQueueAndRun").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
+    $("#addQueueAndRunBis").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
     $("#RobotPanel .panel-heading").text(doc.getDocLabel("page_runtest", "robot_settings"));
     $("#RobotPanel label[for='robot']").text(doc.getDocLabel("page_runtest", "select_robot"));
     $("#RobotPanel label[for='seleniumIP']").text(doc.getDocLabel("page_runtest", "selenium_ip"));

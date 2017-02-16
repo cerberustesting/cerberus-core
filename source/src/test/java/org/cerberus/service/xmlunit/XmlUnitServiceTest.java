@@ -25,7 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import javax.xml.soap.SOAPException;
-import org.cerberus.engine.entity.SOAPExecution;
 
 import org.cerberus.util.XmlUtilException;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -36,7 +35,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -54,9 +52,6 @@ public class XmlUnitServiceTest {
 
     @InjectMocks
     private XmlUnitService xmlUnitService;
-
-    @Mock
-    private SOAPExecution soapExecution;
 
     private Differences differences;
 

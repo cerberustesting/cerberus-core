@@ -122,7 +122,7 @@
                                                 <div class="fieldRow marginTop25" id="stepHiddenRow" style="display: none;">
                                                     <div class="row">
                                                         <div class="col-lg-2 form-group">
-                                                            <label>Code de Retour</label>
+                                                            <label>Return Code</label>
                                                             <input class="form-control input-sm" readonly id="stepRC">
                                                         </div>
                                                         <div class="col-lg-10 form-group">
@@ -132,7 +132,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-1 form-group">
-                                                            <label>Ordre</label>
+                                                            <label>Sort</label>
                                                             <input class="form-control input-sm" readonly id="stepSort">
                                                         </div>
                                                         <div class="col-lg-1 form-group">
@@ -144,7 +144,7 @@
                                                             <input class="form-control input-sm" readonly id="stepLoop">
                                                         </div>
                                                         <div class="col-lg-5 form-group">
-                                                            <label>temps</label>
+                                                            <label>Time elapsed</label>
                                                             <input class="form-control input-sm" readonly id="stepElapsed">
                                                         </div>
                                                     </div>
@@ -176,7 +176,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-lg-12 form-group">
-                                                            <label>Message de retour</label>
+                                                            <label>Return Message</label>
                                                             <input class="form-control input-sm" readonly id="stepMessage">
                                                         </div>
                                                     </div>

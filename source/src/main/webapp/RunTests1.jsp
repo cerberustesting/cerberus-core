@@ -388,6 +388,7 @@
                 </div>
                 <div style="padding-top: 15px;">
                     <button type="button" class="btn btn-primary btn-lg btn-block" id="run">Run</button>
+                    <button type="button" class="btn btn-primary btn-lg btn-block" id="addQueueAndRunBis"> Add selection to queue and Run</button>
                 </div>
             </div>
         </div>

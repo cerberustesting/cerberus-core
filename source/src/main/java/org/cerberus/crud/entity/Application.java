@@ -40,6 +40,17 @@ public class Application {
     private String UsrModif;
     private Timestamp DateModif;
 
+    /**
+     * Invariant PROPERTY TYPE String.
+     */
+    public static final String TYPE_GUI = "GUI";
+    public static final String TYPE_BAT = "BAT";
+    public static final String TYPE_SRV = "SRV";
+    public static final String TYPE_APK = "APK";
+    public static final String TYPE_IPA = "IPA";
+    public static final String TYPE_FAT = "FAT";
+    public static final String TYPE_NONE = "NONE";
+
     public String getUsrCreated() {
         return UsrCreated;
     }

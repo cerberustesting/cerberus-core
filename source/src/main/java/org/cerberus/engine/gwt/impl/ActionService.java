@@ -19,21 +19,24 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.util.ArrayList;
 import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
+import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.engine.entity.SwipeAction;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.engine.entity.SOAPExecution;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
@@ -56,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.service.rest.IRestService;
 
 /**
@@ -67,6 +71,8 @@ public class ActionService implements IActionService {
 
     @Autowired
     private IPropertyService propertyService;
+    @Autowired
+    private IParameterService parameterService;
     @Autowired
     private IWebDriverService webdriverService;
     @Autowired
@@ -903,12 +909,26 @@ public class ActionService implements IActionService {
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
                 try {
-                    if (appService.getServicePath().contains("%")) {
-                        decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Service Path
+                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Request
+                    decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
+                    // Decode Header List
+                    List<AppServiceHeader> objectResponseHeaderList = new ArrayList<>();
+                    for (AppServiceHeader object : appService.getHeaderList()) {
+                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
+                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
+                        objectResponseHeaderList.add(object);
                     }
-                    if (appService.getServiceRequest().contains("%")) {
-                        decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
+                    // Decode ContentDetail List
+                    appService.setResponseHeaderList(objectResponseHeaderList);
+                    List<AppServiceContent> objectResponseContentList = new ArrayList<>();
+                    for (AppServiceContent object : appService.getContentList()) {
+                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
+                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
+                        objectResponseContentList.add(object);
                     }
+                    appService.setContentList(objectResponseContentList);
                     //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                     if (testCaseStepActionExecution.isStopExecution()) {
                         return testCaseStepActionExecution.getActionResultMessage();
@@ -921,6 +941,13 @@ public class ActionService implements IActionService {
                     return message;
                 }
 
+                // Get from parameter whether we define a token or not (in order to trace the cerberus calls in http header)
+                String token = null;
+                if (parameterService.getParameterBooleanByKey("cerberus_callservice_enablehttpheadertoken", tCExecution.getApplicationObj().getSystem(), true)) {
+                    token = String.valueOf(tCExecution.getId());
+                }
+                // Get from parameter the call timeout to be used.
+                int timeOutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", tCExecution.getApplicationObj().getSystem(), 60000);
                 // The rest of the data will be prepared depending on the TYPE and METHOD used.
                 switch (appService.getType()) {
                     case AppService.TYPE_SOAP:
@@ -931,9 +958,7 @@ public class ActionService implements IActionService {
                          */
                         decodedOperation = appService.getOperation();
                         try {
-                            if (appService.getOperation().contains("%")) {
-                                decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
-                            }
+                            decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
 
                             //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
                             if (testCaseStepActionExecution.isStopExecution()) {
@@ -962,14 +987,15 @@ public class ActionService implements IActionService {
                         /**
                          * Call SOAP and store it into the execution.
                          */
-                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement);
-                        tCExecution.setLastSOAPCalled(lastSoapCalled);
+                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
+                                appService.getHeaderList(), token, timeOutMs);
+                        AppService lsoapc = (AppService) lastSoapCalled.getItem();
+                        tCExecution.setLastServiceCalled(lsoapc);
 
                         /**
                          * Record the Request and Response in filesystem.
                          */
-                        SOAPExecution lsoapC = (SOAPExecution) lastSoapCalled.getItem();
-                        recorderService.recordSOAPCall(tCExecution, testCaseStepActionExecution, 0, lsoapC);
+                        testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lsoapc));
                         message = lastSoapCalled.getResultMessage();
 
                         break;
@@ -986,16 +1012,16 @@ public class ActionService implements IActionService {
                                 /**
                                  * Call REST and store it into the execution.
                                  */
-                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(), appService.getHeaderList(), appService.getContentList());
+                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
+                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
                                 AppService lservicec = (AppService) lastServiceCalled.getItem();
                                 tCExecution.setLastServiceCalled(lservicec);
-                                LOG.debug("TOTO" + lservicec.getHTTPResponseBody());
 
                                 /**
                                  * Record the Request and Response in
                                  * filesystem.
                                  */
-                                recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec);
+                                testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec));
                                 message = lastServiceCalled.getResultMessage();
                                 break;
 
@@ -1017,15 +1043,17 @@ public class ActionService implements IActionService {
         } catch (CerberusException ex) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Cerberus exception on CallService : " + ex.getMessageError().getDescription()));
             return message;
         } catch (Exception ex) {
+            LOG.error("Exception when performing CallService Action. " + ex.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
             message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.toString()));
+            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Error on CallService : " + ex.toString()));
             return message;
         }
 
+        message.setDescription(message.getDescription().replace("%SERVICENAME%", value1));
         return message;
     }
 

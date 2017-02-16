@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -83,8 +84,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
         } else /**
          * Automatic application connectivity parameter (from database)
          */
-        {
-            if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
@@ -97,7 +97,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkUserAgentConsistent(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
-        }
         return message;
     }
 
@@ -331,10 +330,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private int compareBuild(String build1, String build2, String system) throws CerberusException{
+    private int compareBuild(String build1, String build2, String system) throws CerberusException {
         BuildRevisionInvariant b1;
         BuildRevisionInvariant b2;
-        
+
         try {
             b1 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 1, build1));
             b2 = buildRevisionInvariantService.convert(buildRevisionInvariantService.readByKey(system, 1, build2));
@@ -385,7 +384,7 @@ public class ExecutionCheckService implements IExecutionCheckService {
     }
 
     private boolean checkVerboseIsNotZeroForFirefoxOnly(TestCaseExecution tCExecution) {
-        if (!tCExecution.getBrowser().equalsIgnoreCase("firefox")) {
+        if ((!tCExecution.getBrowser().equalsIgnoreCase("firefox")) && (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
             if (tCExecution.getVerbose() > 0) {
                 message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
                 return false;

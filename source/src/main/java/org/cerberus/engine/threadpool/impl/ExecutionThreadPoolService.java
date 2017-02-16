@@ -110,8 +110,27 @@ public class ExecutionThreadPoolService implements IExecutionThreadPoolService, 
             try {
                 execute(executionInQueue);
             } catch (CerberusException e) {
-                LOG.warn("Unable to execute " + executionInQueue + " due to " + e.getMessageError().getDescription(), e);
+                LOG.warn("Unable to execute " + executionInQueue.getId() + " due to " + e.getMessageError().getDescription(), e);
                 tceiqService.toError(executionInQueue.getId(), e.getMessageError().getDescription());
+            }
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void executeNextInQueue(final List<Long> ids) throws CerberusException {
+        for (final TestCaseExecutionInQueue queued : tceiqService.toQueued(ids)) {
+            try {
+                execute(queued);
+            } catch (CerberusException e) {
+                LOG.warn("Unable to execute " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
+                try {
+                    tceiqService.toError(queued.getId(), e.getMessageError().getDescription());
+                } catch (CerberusException again) {
+                    LOG.warn("Unable to put in error " + queued.getId() + " due to " + e.getMessageError().getDescription(), e);
+                }
             }
         }
     }

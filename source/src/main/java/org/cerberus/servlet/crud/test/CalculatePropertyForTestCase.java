@@ -121,7 +121,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), null);
                     String attachement = appService.getAttachmentUrl();
-                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement);
+                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement, null, null, 60000);
                     result = xmlUnitService.getFromXml(executionUUID.toString(), null, appService.getParsingAnswer());
                     description = appService.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());

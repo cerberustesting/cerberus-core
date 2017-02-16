@@ -21,14 +21,12 @@ package org.cerberus.crud.service.impl;
 
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,6 +86,11 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     @Override
     public List<TestCaseExecutionInQueue> toQueued(int maxFetchSize) throws CerberusException {
         return testCaseExecutionInQueueDAO.toQueued(maxFetchSize);
+    }
+
+    @Override
+    public List<TestCaseExecutionInQueue> toQueued(final List<Long> ids) throws CerberusException {
+        return testCaseExecutionInQueueDAO.toQueued(ids);
     }
 
     @Override
@@ -154,21 +157,6 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
     }
 
     @Override
-    public Answer create(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.create(test);
-    }
-
-    @Override
-    public Answer update(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.update(test);
-    }
-
-    @Override
-    public Answer delete(TestCaseExecutionInQueue test) {
-        return testCaseExecutionInQueueDAO.delete(test);
-    }
-
-    @Override
     public TestCaseExecution convertToTestCaseExecution(TestCaseExecutionInQueue testCaseExecutionInQueue) {
         String test = testCaseExecutionInQueue.getTest();
         String testCase = testCaseExecutionInQueue.getTestCase();
@@ -202,11 +190,10 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String myEnvData = testCaseExecutionInQueue.getManualEnvData();
         String seleniumIP = testCaseExecutionInQueue.getRobotIP();
         String seleniumPort = testCaseExecutionInQueue.getRobotPort();
-        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, environment, country, browser, version, platform,
-                browser, start, end, controlStatus, controlMessage, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
+        TestCaseExecution result = factoryTestCaseExecution.create(0, test, testCase, ip, version, environment, country, browser, version, platform,
+                browser, start, end, controlStatus, controlMessage, application, applicationObj, ip, tag, port, tag, browser, verbose, screenshot, pageSource,
                 seleniumLog, synchroneous, timeout, outputFormat, tag, version, tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL,
                 myEnvData, seleniumIP, seleniumPort, null, null, null, 0, "", null, "", "", "", "", "", manualExecution);
-        result.setApplication(application);
         result.setIdFromQueue(testCaseExecutionInQueue.getId());
         result.setId(testCaseExecutionInQueue.getId());
         return result;

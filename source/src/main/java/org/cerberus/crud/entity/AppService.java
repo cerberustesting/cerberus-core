@@ -49,10 +49,12 @@ public class AppService {
     private List<AppServiceContent> contentList;
     private List<AppServiceHeader> headerList;
     // Result from call.
-    private SOAPMessage SOAPRequest;
-    private SOAPMessage SOAPResponse;
-    private String HTTPResponseBody;
-    private int HTTPResponseCode;
+    private String responseHTTPVersion;
+    private int responseHTTPCode;
+    private String responseHTTPBody;
+    private List<AppServiceHeader> responseHeaderList;
+    private SOAPMessage reponseSOAPMessage;
+    private SOAPMessage requestSOAPMessage;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -62,36 +64,64 @@ public class AppService {
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
 
-    public SOAPMessage getSOAPRequest() {
-        return SOAPRequest;
+    public String getResponseHTTPVersion() {
+        return responseHTTPVersion;
     }
 
-    public void setSOAPRequest(SOAPMessage SOAPRequest) {
-        this.SOAPRequest = SOAPRequest;
+    public void setResponseHTTPVersion(String responseHTTPVersion) {
+        this.responseHTTPVersion = responseHTTPVersion;
     }
 
-    public SOAPMessage getSOAPResponse() {
-        return SOAPResponse;
+    public List<AppServiceHeader> getResponseHeaderList() {
+        return responseHeaderList;
     }
 
-    public void setSOAPResponse(SOAPMessage SOAPResponse) {
-        this.SOAPResponse = SOAPResponse;
+    public void setResponseHeaderList(List<AppServiceHeader> responseHeaderList) {
+        this.responseHeaderList = responseHeaderList;
     }
 
-    public String getHTTPResponseBody() {
-        return HTTPResponseBody;
+    public void addResponseHeaderList(AppServiceHeader object) {
+        this.responseHeaderList.add(object);
     }
 
-    public void setHTTPResponseBody(String HTTPResponseBody) {
-        this.HTTPResponseBody = HTTPResponseBody;
+    public SOAPMessage getReponseSOAPMessage() {
+        return reponseSOAPMessage;
     }
 
-    public int getHTTPResponseCode() {
-        return HTTPResponseCode;
+    public void setReponseSOAPMessage(SOAPMessage reponseSOAPMessage) {
+        this.reponseSOAPMessage = reponseSOAPMessage;
     }
 
-    public void setHTTPResponseCode(int HTTPResponseCode) {
-        this.HTTPResponseCode = HTTPResponseCode;
+    public SOAPMessage getRequestSOAPMessage() {
+        return requestSOAPMessage;
+    }
+
+    public void setRequestSOAPMessage(SOAPMessage requestSOAPMessage) {
+        this.requestSOAPMessage = requestSOAPMessage;
+    }
+
+    public SOAPMessage getResponseSOAPMessage() {
+        return reponseSOAPMessage;
+    }
+
+    public void setResponseSOAPMessage(SOAPMessage responseSOAPMessage) {
+        this.reponseSOAPMessage = responseSOAPMessage;
+    }
+
+    public String getResponseHTTPBody() {
+        return responseHTTPBody;
+    }
+
+    public void setResponseHTTPBody(String responseHTTPBody) {
+        this.responseHTTPBody = responseHTTPBody;
+    }
+
+    public int getResponseHTTPCode() {
+        return responseHTTPCode;
+    }
+
+    public void setResponseHTTPCode(int responseHTTPCode) {
+        this.responseHTTPCode = responseHTTPCode;
     }
 
     public List<AppServiceContent> getContentList() {

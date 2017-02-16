@@ -35,9 +35,66 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
  */
 public interface IFactoryTestCaseExecution {
 
-    TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String environmentData,
+    /**
+     *
+     * @param id
+     * @param test
+     * @param testCase
+     * @param build
+     * @param revision
+     * @param environment
+     * @param country
+     * @param browser
+     * @param version
+     * @param platform
+     * @param browserFullVersion
+     * @param start
+     * @param end
+     * @param controlStatus
+     * @param controlMessage
+     * @param application
+     * @param applicationObj
+     * @param ip
+     * @param url
+     * @param port
+     * @param tag
+     * @param finished
+     * @param verbose
+     * @param screenshot
+     * @param pageSource
+     * @param seleniumLog
+     * @param synchroneous
+     * @param timeout
+     * @param outputFormat
+     * @param status
+     * @param crbVersion
+     * @param tCase
+     * @param countryEnvParam
+     * @param countryEnvironmentParameters
+     * @param manualURL
+     * @param myHost
+     * @param myContextRoot
+     * @param myLoginRelativeURL
+     * @param myEnvData
+     * @param seleniumIP
+     * @param seleniumPort
+     * @param testCaseStepExecution
+     * @param resultMessage
+     * @param executor
+     * @param numberOfRetries
+     * @param screenSize
+     * @param capabilities
+     * @param conditionOper
+     * @param conditionVal1Init
+     * @param conditionVal2Init
+     * @param conditionVal1
+     * @param conditionVal2
+     * @param manualExecution
+     * @return
+     */
+    TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
             String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
+            String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, 

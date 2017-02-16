@@ -41,16 +41,17 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String environmentData, String country,
+    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
-            Application application, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog,
+            String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
             CountryEnvironmentParameters countryEnvironmentParameters, boolean manualURL, String myHost, String myContextRoot, String myLoginRelativeURL, String myEnvData,
             String seleniumIP, String seleniumPort, List<TestCaseStepExecution> testCaseStepExecution, MessageGeneral resultMessage, String executor,
             int numberOfRetries, String screenSize, List<RobotCapability> capabilities,
             String conditionOper, String conditionVal1Init, String conditionVal2Init, String conditionVal1, String conditionVal2, boolean manualExecution) {
         TestCaseExecution newTce = new TestCaseExecution();
-        newTce.setApplicationObj(application);
+        newTce.setApplicationObj(applicationObj);
+        newTce.setApplication(application);
         newTce.setBrowser(browser);
         newTce.setVersion(version);
         newTce.setPlatform(platform);
@@ -62,7 +63,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setCrbVersion(crbVersion);
         newTce.setEnd(end);
         newTce.setEnvironment(environment);
-        newTce.setEnvironmentData(environmentData);
+        newTce.setEnvironmentData(myEnvData);
         newTce.setFinished(finished);
         newTce.setId(id);
         newTce.setIp(ip);
@@ -83,7 +84,6 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setMyHost(myHost);
         newTce.setMyContextRoot(myContextRoot);
         newTce.setMyLoginRelativeURL(myLoginRelativeURL);
-        newTce.setEnvironmentData(myEnvData);
         newTce.setSeleniumIP(seleniumIP);
         newTce.setSeleniumPort(seleniumPort);
         if (testCaseStepExecution == null) {

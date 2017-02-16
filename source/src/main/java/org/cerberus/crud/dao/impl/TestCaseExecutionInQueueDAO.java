@@ -19,14 +19,6 @@
  */
 package org.cerberus.crud.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.*;
-
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -35,23 +27,34 @@ import org.cerberus.crud.dao.IApplicationDAO;
 import org.cerberus.crud.dao.ITestCaseDAO;
 import org.cerberus.crud.dao.ITestCaseExecutionInQueueDAO;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryApplication;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
 import org.cerberus.log.MyLogger;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO {
@@ -101,6 +104,12 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             "SELECT * FROM `" + TABLE + "` " +
                     "WHERE `" + COLUMN_ID + "` = ?";
 
+    private static final String QUERY_FIND_BY_KEY_WITH_DEPENDENCIES =
+            "SELECT * FROM `" + TABLE + "` exq " +
+                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
+                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
+                    "WHERE `" + COLUMN_ID + "` = ?";
+
     private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES =
             "SELECT * FROM `" + TABLE + "` exq " +
                     "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
@@ -139,6 +148,12 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                     "WHERE `" + COLUMN_ID + "` = ? " +
                     "AND `" + COLUMN_STATE + "` <> ?";
 
+    private static final String QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES =
+            "UPDATE `" + TABLE + "` " +
+                    "SET `" + COLUMN_STATE + "` = ? " +
+                    "WHERE `" + COLUMN_ID + "` = ? " +
+                    "AND `" + COLUMN_STATE + "` NOT IN (?, ?)";
+
     private static final String QUERY_UPDATE_STATE_AND_COMMENT =
             "UPDATE `" + TABLE + "` " +
                     "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT +  "` = ? " +
@@ -158,29 +173,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private final int MAX_ROW_SELECTED = 100000;
 
     private final String OBJECT_NAME = "TestCaseExecutionInQueue";
-
-    /**
-     * Declare SQL queries used by this {@link RobotCapabilityDAO}
-     *
-     * @author Aurelien Bourdon
-     */
-    private static interface Query {
-
-        /**
-         * Create a new {@link TestCaseExecutionInQueueDAO}
-         */
-        String CREATE = "INSERT INTO `testcaseexecutionqueue` (`test`, `testCase`, `country`, `environment`, `robot`, `robotIP`, `robotPort`, `browser`, `browserVersion`, `platform`, `manualURL`, `manualContextRoot`, `manualLoginRelativeURL`, `manualEnvData`, `tag`, `outputFormat`, `screenshot`, `verbose`, `timeout`, `synchroneous`, `pageSource`, `seleniumLog`, `requestDate`, `proceeded`, `comment`, `retries`, `manualexecution`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        /**
-         * Update an existing {@link TestCaseExecutionInQueueDAO}
-         */
-        String UPDATE = "UPDATE `testcaseexecutionqueue` SET `test` = ? and `testCase` = ? and `country` = ? and `environment` = ? and `robot` = ? and `robotIP` = ? and `robotPort` = ? and `browser` = ? and `browserVersion` = ? and `platform` = ? and `manualURL` = ? and `manualContextRoot` = ? and `manualLoginRelativeURL` = ? and `manualEnvData` = ? and `tag` = ? and `outputFormat` = ? and `screenshot` = ? and `verbose` = ? and `timeout` = ? and `synchroneous` = ? and `pageSource` = ? and `seleniumLog` = ? and `requestDate` = ? and `proceeded` = ? and `comment` = ? and `retries` = ? and `manualexecution` = ? WHERE `id` = ? ";
-
-        /**
-         * Remove an existing {@link TestCaseExecutionInQueueDAO}
-         */
-        String DELETE = "DELETE FROM `testcaseexecutionqueue` WHERE `ID` = ? ";
-    }
 
     @Override
     public void insert(TestCaseExecutionInQueue inQueue) throws CerberusException {
@@ -389,6 +381,24 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     }
 
     @Override
+    public TestCaseExecutionInQueue findByKeyWithDependencies(long id) throws CerberusException {
+        try (
+                Connection connection = this.databaseSpring.connect();
+                PreparedStatement selectStatement = connection.prepareStatement(QUERY_FIND_BY_KEY_WITH_DEPENDENCIES);
+        ) {
+            selectStatement.setLong(1, id);
+            ResultSet result = selectStatement.executeQuery();
+            if (!result.next()) {
+                throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
+            }
+            return loadWithDependenciesFromResultSet(result);
+        } catch (SQLException | FactoryCreationException e) {
+            LOG.warn("Unable to find test case execution in queue " + id, e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
     public List<TestCaseExecutionInQueue> toQueued(int fetchSize) throws CerberusException {
             List<TestCaseExecutionInQueue> result = new ArrayList<>();
             final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE_WITH_DEPENDENCIES : QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED;
@@ -433,6 +443,47 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 }
                 return result;
             } catch (SQLException e) {
+            LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
+    public List<TestCaseExecutionInQueue> toQueued(final List<Long> ids) throws CerberusException {
+        List<Long> registeredIds = new ArrayList<>();
+        List<TestCaseExecutionInQueue> result = new ArrayList<>();
+
+        try (
+                Connection connection = this.databaseSpring.connect();
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
+        ) {
+            // Then set their state to QUEUED by checking state is still the same
+            for (Long id : ids) {
+                try {
+                    fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.WAITING, TestCaseExecutionInQueue.State.QUEUED, updateStateStatement);
+                    updateStateStatement.addBatch();
+                    registeredIds.add(id);
+                } catch (SQLException e) {
+                    LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state from WAITING to QUEUED", e);
+                }
+            }
+
+            // And finally remove those which have not been updated
+            int[] batchExecutionResult = updateStateStatement.executeBatch();
+            for (int batchExecutionResultIndex = 0, removedCount = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
+                if (Statement.EXECUTE_FAILED == batchExecutionResult[batchExecutionResultIndex]) {
+                    LOG.warn("Unable to move execution state from WAITING to QUEUED for id " + result.get(batchExecutionResultIndex));
+                }
+                if (batchExecutionResult[batchExecutionResultIndex] > 0) {
+                    try {
+                        result.add(findByKeyWithDependencies(registeredIds.get(batchExecutionResultIndex)));
+                    } catch (CerberusException e) {
+                        LOG.error("Unable to find the well updated execution in queue id " + registeredIds.get(batchExecutionResultIndex), e);
+                    }
+                }
+            }
+            return result;
+        } catch (SQLException e) {
             LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
@@ -530,9 +581,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public void toCancelled(long id) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)
         ) {
-            fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.QUEUED, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+            fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
                 LOG.warn("Unable to move state from QUEUED to CANCELLED for execution in queue " + id + " (update result: " + updateResult + "). Is the execution is not currently QUEUED?");
@@ -550,12 +601,12 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         final List<Long> inError = new ArrayList<>();
         try (
                 final Connection connection = databaseSpring.connect();
-                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
+                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)
         ) {
             // First, create batch statement
             for (final long id: ids) {
                 try {
-                    fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.QUEUED, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
+                    fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
                     updateStateStatement.addBatch();
                 } catch (SQLException e) {
                     LOG.warn("Unable to add execution in queue id " + id + " to the batch process from setting its state to CANCELLED", e);
@@ -1613,81 +1664,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_MANUAL_EXECUTION).equals("Y"));
     }
 
-    @Override
-    public Answer create(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
-            // Prepare and execute query
-            preStat.setString(1, test.getTest());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "CREATE");
-        } catch (Exception e) {
-            LOG.warn("Unable to create TestCase Execution In Queue: " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
-    }
-
-    @Override
-    public Answer update(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.UPDATE)) {
-            // Prepare and execute query
-            preStat.setString(1, test.getTest());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "UPDATE");
-        } catch (Exception e) {
-            LOG.warn("Unable to update TestCase Execution in Queue " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
-    }
-
-    @Override
-    public Answer delete(TestCaseExecutionInQueue test) {
-        Answer ans = new Answer();
-        MessageEvent msg = null;
-
-        try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
-            // Prepare and execute query
-            preStat.setLong(1, test.getId());
-            preStat.executeUpdate();
-
-            // Set the final message
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
-                    .resolveDescription("OPERATION", "DELETE");
-        } catch (Exception e) {
-            LOG.warn("Unable to delete testCase Execution in queue: " + e.getMessage());
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
-                    e.toString());
-        } finally {
-            ans.setResultMessage(msg);
-        }
-
-        return ans;
-    }
-
     private TestCaseExecutionInQueue findByKey(long id, PreparedStatement findByKeyStatement) throws SQLException, FactoryCreationException {
         findByKeyStatement.setLong(1, id);
 
@@ -1706,6 +1682,13 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     private void fillUpdateStateNotFromStateStatement(long id, TestCaseExecutionInQueue.State notFromState, TestCaseExecutionInQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
         fillUpdateStateFromStateStatement(id, notFromState, toState, updateStateFromNotStateStatement);
+    }
+
+    private void fillUpdateStateNotFromBothStatesStatement(long id, TestCaseExecutionInQueue.State notFromState1, TestCaseExecutionInQueue.State notFromState2, TestCaseExecutionInQueue.State toState, PreparedStatement updateStateFromNotStateStatement) throws SQLException {
+        updateStateFromNotStateStatement.setString(1, toState.name());
+        updateStateFromNotStateStatement.setLong(2, id);
+        updateStateFromNotStateStatement.setString(3, notFromState1.name());
+        updateStateFromNotStateStatement.setString(4, notFromState2.name());
     }
 
     private void fillUpdateStateAndCommentStatement(long id, TestCaseExecutionInQueue.State toState, String comment, PreparedStatement updateStateAndCommentStatement) throws SQLException {

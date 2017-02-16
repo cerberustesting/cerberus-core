@@ -47,6 +47,16 @@
 
 }
 
+.pie {
+    float: left;
+}
+
+.pie:hover {
+    background-color: #fcfcfc;
+    z-index: -1;
+    border-radius: 100%;
+}
+
 .g {
     text-overflow: ellipsis;
 }

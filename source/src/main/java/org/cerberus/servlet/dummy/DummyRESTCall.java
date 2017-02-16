@@ -63,6 +63,7 @@ public class DummyRESTCall extends HttpServlet {
         response.setCharacterEncoding("utf8");
 
         try {
+            Thread.sleep(1000);
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("messageType", "OK");
             jsonResponse.put("message", "Dummy call performed with success.");
@@ -88,7 +89,7 @@ public class DummyRESTCall extends HttpServlet {
             }
             jsonResponse.put("Header", jsonHeaders);
 
-            // Extract headers.
+            // Extract Parameters.
             JSONObject jsonParameters = new JSONObject();
             Enumeration<String> parametersNames = request.getParameterNames();
             while (parametersNames.hasMoreElements()) {
