@@ -35,6 +35,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
@@ -124,96 +125,96 @@ public class ControlService implements IControlService {
 
         try {
             //TODO On JDK 7 implement switch with string
-            if (testCaseStepActionControlExecution.getControl().equals("verifyStringEqual")) {
+            if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL)) {
                 res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringDifferent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT)) {
                 res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringGreater")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER)) {
                 res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringMinor")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR)) {
                 res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyStringContains")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS)) {
                 res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerEquals")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGEREQUALS)) {
                 res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerDifferent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERDIFFERENT)) {
                 res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerGreater")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERGREATER)) {
                 res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyIntegerMinor")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERMINOR)) {
                 res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementPresent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT)) {
                 //TODO validate properties
                 res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotPresent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT)) {
                 //TODO validate properties
                 res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementVisible")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE)) {
                 //TODO validate properties
                 res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotVisible")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE)) {
                 //TODO validate properties
                 res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementEquals")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS)) {
                 res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementDifferent")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT)) {
                 res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementInElement")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT)) {
                 //TODO validate properties
                 res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementClickable")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE)) {
                 res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyElementNotClickable")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE)) {
                 res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInElement")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINELEMENT)) {
                 res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextNotInElement")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINELEMENT)) {
                 res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyRegexInElement")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYREGEXINELEMENT)) {
                 res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInPage")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE)) {
                 res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextNotInPage")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE)) {
                 res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTitle")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTITLE)) {
                 res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyUrl")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYURL)) {
                 res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyTextInDialog")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG)) {
                 res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("verifyXmlTreeStructure")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE)) {
                 res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("takeScreenshot")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_TAKESCREENSHOT)) {
                 res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
-            } else if (testCaseStepActionControlExecution.getControl().equals("getPageSource")) {
+            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_GETPAGESOURCE)) {
                 res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
 
             } else {
