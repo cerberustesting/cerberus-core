@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
@@ -26,6 +27,7 @@ import org.cerberus.crud.dao.IAppServiceHeaderDAO;
 
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.service.IAppServiceHeaderService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
@@ -33,6 +35,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,8 +90,26 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
     }
 
     @Override
+    public Answer createList(List<AppServiceHeader> objectList) {
+        Answer ans = new Answer(null);
+        for (AppServiceHeader objectToCreate : objectList) {
+            ans = this.create(objectToCreate);
+        }
+        return ans;
+    }
+
+    @Override
     public Answer delete(AppServiceHeader object) {
         return AppServiceHeaderDAO.delete(object);
+    }
+
+    @Override
+    public Answer deleteList(List<AppServiceHeader> objectList) {
+        Answer ans = new Answer(null);
+        for (AppServiceHeader objectToDelete : objectList) {
+            ans = this.delete(objectToDelete);
+        }
+        return ans;
     }
 
     @Override
@@ -121,6 +142,66 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceHeader> newList) {
+        Answer ans = new Answer(null);
+
+        MessageEvent msg1 = new MessageEvent(MessageEventEnum.GENERIC_OK);
+        Answer finalAnswer = new Answer(msg1);
+
+        List<AppServiceHeader> oldList = new ArrayList();
+        try {
+            oldList = this.convert(this.readByVarious(service, null));
+        } catch (CerberusException ex) {
+            LOG.error(ex);
+        }
+        LOG.debug("Size before : " + newList.size());
+        LOG.debug("Before : " + newList);
+        /**
+         * Update and Create all objects database Objects from newList
+         */
+        List<AppServiceHeader> listToUpdateOrInsert = new ArrayList(newList);
+        listToUpdateOrInsert.removeAll(oldList);
+        List<AppServiceHeader> listToUpdateOrInsertToIterate = new ArrayList(listToUpdateOrInsert);
+
+        for (AppServiceHeader objectDifference : listToUpdateOrInsertToIterate) {
+            for (AppServiceHeader objectInDatabase : oldList) {
+                if (objectDifference.hasSameKey(objectInDatabase)) {
+                    ans = this.update(objectDifference);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                    listToUpdateOrInsert.remove(objectDifference);
+                }
+            }
+        }
+        if (!listToUpdateOrInsert.isEmpty()) {
+            LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
+            LOG.debug("Create Before : " + listToUpdateOrInsert);
+
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        /**
+         * Delete all objects database Objects that do not exist from newList
+         */
+        List<AppServiceHeader> listToDelete = new ArrayList(oldList);
+        listToDelete.removeAll(newList);
+        List<AppServiceHeader> listToDeleteToIterate = new ArrayList(listToDelete);
+
+        for (AppServiceHeader tcsDifference : listToDeleteToIterate) {
+            for (AppServiceHeader tcsInPage : newList) {
+                if (tcsDifference.hasSameKey(tcsInPage)) {
+                    listToDelete.remove(tcsDifference);
+                }
+            }
+        }
+        if (!listToDelete.isEmpty()) {
+            ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+        return finalAnswer;
     }
 
     @Override

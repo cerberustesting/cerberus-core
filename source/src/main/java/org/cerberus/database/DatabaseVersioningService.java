@@ -8426,6 +8426,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasecountryproperties` DROP COLUMN `valueTemp` ;");
         SQLInstruction.add(SQLS.toString());
 
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('APPSERVICECONTENTACT', 'Y', 100, 'Yes', '', '', '', '')");
+        SQLS.append(",('APPSERVICECONTENTACT', 'N', 200, 'No', '', '', '', '')");
+        SQLS.append(",('APPSERVICEHEADERACT', 'Y', 100, 'Yes', '', '', '', '')");
+        SQLS.append(",('APPSERVICEHEADERACT', 'N', 200, 'No', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICECONTENTACT', '620', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICEHEADERACT', '630', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+        
+        
         return SQLInstruction;
     }
 

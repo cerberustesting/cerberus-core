@@ -17,10 +17,25 @@
  */
 package org.cerberus.servlet.crud.countryenvironment;
 
-import org.cerberus.engine.entity.MessageEvent;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.entity.AppServiceHeader;
+import org.cerberus.crud.factory.IFactoryAppServiceContent;
+import org.cerberus.crud.factory.IFactoryAppServiceHeader;
+import org.cerberus.crud.service.IAppServiceContentService;
+import org.cerberus.crud.service.IAppServiceHeaderService;
+import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ILogEventService;
-import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
@@ -28,25 +43,25 @@ import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Logger;
-import org.cerberus.crud.service.IAppServiceService;
-
 /**
  * @author cte
  */
 public class UpdateAppService extends HttpServlet {
-    
+
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(UpdateAppService.class);
+
+    private IAppServiceService appServiceService;
+    private IAppServiceHeaderService appServiceHeaderService;
+    private IAppServiceContentService appServiceContentService;
+    private ILogEventService logEventService;
+    private IFactoryAppServiceContent appServiceContentFactory;
+    private IFactoryAppServiceHeader appServiceHeaderFactory;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -65,7 +80,7 @@ public class UpdateAppService extends HttpServlet {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
-        
+
         response.setContentType("text/html;charset=UTF-8");
         String charset = request.getCharacterEncoding();
 
@@ -99,15 +114,19 @@ public class UpdateAppService extends HttpServlet {
             /**
              * All data seems cleans so we can call the services.
              */
-            IAppServiceService soapLibraryService = appContext.getBean(IAppServiceService.class);
-            
-            AnswerItem resp = soapLibraryService.readByKey(service);
+            appServiceService = appContext.getBean(IAppServiceService.class);
+            appServiceHeaderService = appContext.getBean(IAppServiceHeaderService.class);
+            appServiceContentService = appContext.getBean(IAppServiceContentService.class);
+            appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
+            appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
+
+            AnswerItem resp = appServiceService.readByKey(service);
             if (!(resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && resp.getItem() != null)) {
                 /**
                  * Object could not be found. We stop here and report the error.
                  */
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) resp);
-                
+
             } else {
                 /**
                  * The service was able to perform the query and confirm the
@@ -123,17 +142,39 @@ public class UpdateAppService extends HttpServlet {
                 appService.setMethod(method);
                 appService.setServicePath(servicePath);
                 appService.setUsrModif(request.getRemoteUser());
-                ans = soapLibraryService.update(appService);
+                ans = appServiceService.update(appService);
                 finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-                
+
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     /**
                      * Update was succesfull. Adding Log entry.
                      */
-                    ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                    logEventService = appContext.getBean(ILogEventService.class);
                     logEventService.createPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
                 }
-                
+
+                // Update content
+                if (request.getParameter("contentList") != null) {
+                    JSONArray objContentArray = new JSONArray(request.getParameter("contentList"));
+                    List<AppServiceContent> contentList = new ArrayList();
+                    contentList = getContentListFromRequest(request, appContext, service, objContentArray);
+
+                    // Update the Database with the new list.
+                    ans = appServiceContentService.compareListAndUpdateInsertDeleteElements(service, contentList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                }
+
+                // Update header
+                if (request.getParameter("headerList") != null) {
+                    JSONArray objHeaderArray = new JSONArray(request.getParameter("headerList"));
+                    List<AppServiceHeader> headerList = new ArrayList();
+                    headerList = getHeaderListFromRequest(request, appContext, service, objHeaderArray);
+
+                    // Update the Database with the new list.
+                    ans = appServiceHeaderService.compareListAndUpdateInsertDeleteElements(service, headerList);
+                    finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+                }
+
             }
         }
 
@@ -142,12 +183,54 @@ public class UpdateAppService extends HttpServlet {
          */
         jsonResponse.put("messageType", finalAnswer.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", finalAnswer.getResultMessage().getDescription());
-        
+
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
     }
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
+    private List<AppServiceContent> getContentListFromRequest(HttpServletRequest request, ApplicationContext appContext, String service, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<AppServiceContent> contentList = new ArrayList();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            int sort = objectJson.getInt("sort");
+            String key = objectJson.getString("key");
+            String value = objectJson.getString("value");
+            String active = objectJson.getString("active");
+            String description = objectJson.getString("description");
+
+            if (!delete) {
+                contentList.add(appServiceContentFactory.create(service, key, value, active, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
+            }
+        }
+        return contentList;
+    }
+
+    private List<AppServiceHeader> getHeaderListFromRequest(HttpServletRequest request, ApplicationContext appContext, String service, JSONArray json) throws CerberusException, JSONException, UnsupportedEncodingException {
+        List<AppServiceHeader> headerList = new ArrayList();
+
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject objectJson = json.getJSONObject(i);
+
+            // Parameter that are already controled by GUI (no need to decode) --> We SECURE them
+            boolean delete = objectJson.getBoolean("toDelete");
+            int sort = objectJson.getInt("sort");
+            String key = objectJson.getString("key");
+            String value = objectJson.getString("value");
+            String active = objectJson.getString("active");
+            String description = objectJson.getString("description");
+
+            if (!delete) {
+                headerList.add(appServiceHeaderFactory.create(service, key, value, active, sort, description, request.getRemoteUser(), null, request.getRemoteUser(), null));
+            }
+        }
+        return headerList;
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

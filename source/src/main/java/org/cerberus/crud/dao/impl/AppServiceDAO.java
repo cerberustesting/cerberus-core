@@ -384,7 +384,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         StringBuilder query = new StringBuilder();
 
-        query.append("SELECT distinct srv.");
+        query.append("SELECT distinct ");
         query.append(columnName);
         query.append(" as distinctValues FROM appservice srv");
         query.append(" where 1=1");
@@ -408,8 +408,8 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" )");
         }
         query.append(searchSQL);
-        query.append(" group by ifnull(srv.").append(columnName).append(",'')");
-        query.append(" order by srv.").append(columnName).append(" asc");
+        query.append(" group by ifnull(").append(columnName).append(",'')");
+        query.append(" order by ").append(columnName).append(" asc");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {

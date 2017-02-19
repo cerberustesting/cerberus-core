@@ -71,8 +71,7 @@ function editAppServiceClick(service) {
 
 /***
  * Open the modal with testcase information.
- * @param {String} test - type selected
- * @param {String} testCase - type selected
+ * @param {String} service - type selected
  * @returns {null}
  */
 function duplicateAppServiceClick(service) {
@@ -167,6 +166,11 @@ function prepareAppServiceModal() {
         $('#editSoapLibraryModal #srvRequestContainer').removeClass('highlightedContainer');
     });
 
+    // Adding rows in edit Modal.
+    $('#addContent').off("click");
+    $("#addContent").click(addNewContentRow);
+    $('#addHeader').off("click");
+    $("#addHeader").click(addNewHeaderRow);
 
 }
 
@@ -198,6 +202,20 @@ function confirmAppServiceModalHandler(mode) {
 
     //Add envelope, not in the form
     data.srvRequest = encodeURIComponent($("#editSoapLibraryModal #srvRequest").text());
+    
+    // Getting Data from Content TAB
+    var table1 = $("#contentTableBody tr");
+    var table_content = [];
+    for (var i = 0; i < table1.length; i++) {
+        table_content.push($(table1[i]).data("content"));
+    }
+    // Getting Data from Header TAB
+    var table2 = $("#headerTableBody tr");
+    var table_header = [];
+    for (var i = 0; i < table2.length; i++) {
+        table_header.push($(table2[i]).data("header"));
+    }
+    
 
     showLoaderInModal('#editTestCaseModal');
     $.ajax({
@@ -213,7 +231,9 @@ function confirmAppServiceModalHandler(mode) {
             operation: data.operation,
             description: data.description,
             group: data.group,
-            serviceRequest: data.srvRequest
+            serviceRequest: data.srvRequest,
+            contentList: JSON.stringify(table_content),
+            headerList: JSON.stringify(table_header)
         },
         success: function (data) {
             data = JSON.parse(data);
@@ -259,7 +279,7 @@ function feedNewAppServiceModal(modalId) {
     var formEdit = $('#' + modalId);
 
     // Feed the data to the screen and manage authorities.
-    feedAppServiceData(undefined, modalId, "ADD", true);
+    feedAppServiceModalData(undefined, modalId, "ADD", true);
 
     formEdit.modal('show');
 }
@@ -285,7 +305,7 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 
                 // Feed the data to the screen and manage authorities.
                 var service = data.contentTable;
-                feedAppServiceData(service, modalId, mode, service.hasPermissions);
+                feedAppServiceModalData(service, modalId, mode, service.hasPermissions);
 
                 // Force a change event on method field.
                 refreshDisplayOnTypeChange(service.type);
@@ -301,7 +321,15 @@ function feedAppServiceModal(serviceName, modalId, mode) {
 }
 
 
-function feedAppServiceData(service, modalId, mode, hasPermissionsUpdate) {
+/***
+ * Feed the TestCase modal with all the data from the TestCase.
+ * @param {String} service - service object to be loaded.
+ * @param {String} modalId - id of the modal form where to feed the data.
+ * @param {String} mode - either ADD, EDIT or DUPLICATE in order to define the purpose of the modal.
+ * @param {String} hasPermissionsUpdate - boolean if premition is granted.
+ * @returns {null}
+ */
+function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -375,7 +403,155 @@ function feedAppServiceData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#description").removeProp("disabled");
     }
 
+    // Feed the content table.
+    feedAppServiceModalDataContent(service.contentList);
+
+    // Feed the header table.
+    feedAppServiceModalDataHeader(service.headerList);
 }
 
+function feedAppServiceModalDataContent(ContentList) {
+    $('#contentTableBody tr').remove();
+    $.each(ContentList, function (idx, obj) {
+        obj.toDelete = false;
+        console.debug(obj);
+        appendContentRow(obj);
+    });
+}
+
+function appendContentRow(content) {
+    var doc = new Doc();
+    
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false);
+    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
+    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
+    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
+    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    var table = $("#contentTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var active = $("<td></td>").append(activeSelect.val(content.active));
+    var sortName = $("<td></td>").append(sortInput);
+    var keyName = $("<td></td>").append(keyInput);
+    var valueName = $("<td></td>").append(valueInput);
+    var descriptionName = $("<td></td>").append(descriptionInput);
+    deleteBtn.click(function () {
+        content.toDelete = (content.toDelete) ? false : true;
+
+        if (content.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    activeSelect.change(function () {
+        content.active = $(this).val();
+    });
+    sortInput.change(function () {
+        content.sort = $(this).val();
+    });
+    keyInput.change(function () {
+        content.key = $(this).val();
+    });
+    valueInput.change(function () {
+        content.value = $(this).val();
+    });
+    descriptionInput.change(function () {
+        content.description = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(active);
+    row.append(sortName);
+    row.append(keyName);
+    row.append(valueName);
+    row.append(descriptionName);
+    row.data("content", content);
+    table.append(row);
+}
+
+function addNewContentRow() {
+    var newContent = {
+        active: "Y",
+        sort: 10,
+        key: "",
+        value: "",
+        description: "",
+        toDelete: false
+    };
+    appendContentRow(newContent);
+}
+
+function feedAppServiceModalDataHeader(headerList) {
+    $('#headerTableBody tr').remove();
+    $.each(headerList, function (idx, obj) {
+        obj.toDelete = false;
+        appendHeaderRow(obj);
+    });
+}
+
+function appendHeaderRow(content) {
+    var doc = new Doc();
+    var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false);
+    var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
+    var keyInput = $("<input  maxlength=\"255\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Key") + " --\">").addClass("form-control input-sm").val(content.key);
+    var valueInput = $("<textarea rows='1'  placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Value") + " --\"></textarea>").addClass("form-control input-sm").val(content.value);
+    var descriptionInput = $("<input  maxlength=\"200\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Description") + " --\">").addClass("form-control input-sm").val(content.description);
+    var table = $("#headerTableBody");
+
+    var row = $("<tr></tr>");
+    var deleteBtnRow = $("<td></td>").append(deleteBtn);
+    var active = $("<td></td>").append(activeSelect.val(content.active));
+    var sortName = $("<td></td>").append(sortInput);
+    var keyName = $("<td></td>").append(keyInput);
+    var valueName = $("<td></td>").append(valueInput);
+    var descriptionName = $("<td></td>").append(descriptionInput);
+    deleteBtn.click(function () {
+        content.toDelete = (content.toDelete) ? false : true;
+
+        if (content.toDelete) {
+            row.addClass("danger");
+        } else {
+            row.removeClass("danger");
+        }
+    });
+    activeSelect.change(function () {
+        content.active = $(this).val();
+    });
+    sortInput.change(function () {
+        content.sort = $(this).val();
+    });
+    keyInput.change(function () {
+        content.key = $(this).val();
+    });
+    valueInput.change(function () {
+        content.value = $(this).val();
+    });
+    descriptionInput.change(function () {
+        content.description = $(this).val();
+    });
+    row.append(deleteBtnRow);
+    row.append(active);
+    row.append(sortName);
+    row.append(keyName);
+    row.append(valueName);
+    row.append(descriptionName);
+    row.data("header", content);
+    table.append(row);
+}
+
+function addNewHeaderRow() {
+    var newHeader = {
+        active: "Y",
+        sort: 10,
+        key: "",
+        value: "",
+        description: "",
+        toDelete: false
+    };
+    appendHeaderRow(newHeader);
+}
 
 

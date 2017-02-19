@@ -460,7 +460,8 @@ function editEntryModalSaveHandler() {
             application: JSON.stringify(table_application),
             database: JSON.stringify(table_database),
             dependencies: JSON.stringify(table_dependencies),
-            deployType: JSON.stringify(table_deployType)},
+            deployType: JSON.stringify(table_deployType)
+        },
         success: function (data) {
             hideLoaderInModal('#editEnvModal');
             if (getAlertType(data.messageType) === "success") {

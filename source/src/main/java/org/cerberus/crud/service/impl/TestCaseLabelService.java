@@ -27,7 +27,6 @@ import org.cerberus.crud.dao.ITestCaseLabelDAO;
 import org.cerberus.engine.entity.MessageEvent;
 
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.ITestCaseLabelService;
 import org.cerberus.enums.MessageEventEnum;
@@ -63,17 +62,16 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
         return testCaseLabelDAO.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
-    
+
     @Override
     public AnswerList readByTestTestCase(String test, String testCase) {
         return testCaseLabelDAO.readByTestTestCase(test, testCase);
     }
-    
+
     @Override
     public AnswerList readAll() {
-        return readByCriteria( 0, 0, "sort", "asc", null, null);
+        return readByCriteria(0, 0, "sort", "asc", null, null);
     }
-
 
     @Override
     public boolean exist(Integer id) {
@@ -85,7 +83,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public Answer create(TestCaseLabel object) {
         return testCaseLabelDAO.create(object);
     }
-    
+
     @Override
     public Answer createList(List<TestCaseLabel> objectList) {
         Answer ans = new Answer(null);
@@ -99,7 +97,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public Answer delete(TestCaseLabel object) {
         return testCaseLabelDAO.delete(object);
     }
-    
+
     @Override
     public Answer deleteList(List<TestCaseLabel> objectList) {
         Answer ans = new Answer(null);
@@ -113,7 +111,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     public Answer update(TestCaseLabel object) {
         return testCaseLabelDAO.update(object);
     }
-    
+
     @Override
     public TestCaseLabel convert(AnswerItem answerItem) throws CerberusException {
         if (answerItem.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -140,7 +138,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
     }
-    
+
     @Override
     public Answer compareListAndUpdateInsertDeleteElements(String test, String testCase, List<TestCaseLabel> newList) {
         Answer ans = new Answer(null);
@@ -173,8 +171,8 @@ public class TestCaseLabelService implements ITestCaseLabelService {
             }
         }
         if (!listToUpdateOrInsert.isEmpty()) {
-                    LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
-        LOG.debug("Create Before : " + listToUpdateOrInsert);
+            LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
+            LOG.debug("Create Before : " + listToUpdateOrInsert);
 
             ans = this.createList(listToUpdateOrInsert);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
@@ -213,5 +211,4 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         return createList(listToCreate);
     }
 
-    
 }

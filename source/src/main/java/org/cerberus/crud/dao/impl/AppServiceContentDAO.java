@@ -345,7 +345,7 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     @Override
     public Answer delete(AppServiceContent object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM appservicecontent WHERE service = ? and key = ? ";
+        final String query = "DELETE FROM appservicecontent WHERE `service` = ? and `key` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -357,8 +357,9 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, object.getService());
-                preStat.setString(1, object.getKey());
+                int i = 1;
+                preStat.setString(i++, object.getService());
+                preStat.setString(i++, object.getKey());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);

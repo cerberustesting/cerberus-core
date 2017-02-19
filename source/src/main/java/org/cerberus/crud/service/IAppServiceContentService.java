@@ -100,10 +100,24 @@ public interface IAppServiceContentService {
 
     /**
      *
+     * @param objectList
+     * @return
+     */
+    Answer createList(List<AppServiceContent> objectList);
+
+    /**
+     *
      * @param object
      * @return
      */
     Answer delete(AppServiceContent object);
+
+    /**
+     *
+     * @param objectList
+     * @return
+     */
+    Answer deleteList(List<AppServiceContent> objectList);
 
     /**
      *
@@ -136,12 +150,20 @@ public interface IAppServiceContentService {
     void convert(Answer answer) throws CerberusException;
 
     /**
-     * 
+     *
+     * @param service
+     * @param newList
+     * @return
+     */
+    Answer compareListAndUpdateInsertDeleteElements(String service, List<AppServiceContent> newList);
+
+    /**
+     *
      * @param service
      * @param searchParameter
      * @param individualSearch
      * @param columnName
-     * @return 
+     * @return
      */
     AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 }
