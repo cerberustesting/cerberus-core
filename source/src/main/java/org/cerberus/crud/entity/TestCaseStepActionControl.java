@@ -53,10 +53,12 @@ public class TestCaseStepActionControl {
     public static final String CONTROL_VERIFYSTRINGGREATER = "verifyStringGreater";
     public static final String CONTROL_VERIFYSTRINGMINOR = "verifyStringMinor";
     public static final String CONTROL_VERIFYSTRINGCONTAINS = "verifyStringContains";
-    public static final String CONTROL_VERIFYINTEGEREQUALS = "verifyIntegerEquals";
-    public static final String CONTROL_VERIFYINTEGERDIFFERENT = "verifyIntegerDifferent";
-    public static final String CONTROL_VERIFYINTEGERGREATER = "verifyIntegerGreater";
-    public static final String CONTROL_VERIFYINTEGERMINOR = "verifyIntegerMinor";
+    public static final String CONTROL_VERIFYNUMERICEQUALS = "verifyNumericEquals";
+    public static final String CONTROL_VERIFYNUMERICDIFFERENT = "verifyNumericDifferent";
+    public static final String CONTROL_VERIFYNUMERICGREATER = "verifyNumericGreater";
+    public static final String CONTROL_VERIFYNUMERICGREATEROREQUAL = "verifyNumericGreaterOrEqual";
+    public static final String CONTROL_VERIFYNUMERICMINOR = "verifyNumericMinor";
+    public static final String CONTROL_VERIFYNUMERICMINOROREQUAL = "verifyNumericMinorOrEqual";
     public static final String CONTROL_VERIFYELEMENTPRESENT = "verifyElementPresent";
     public static final String CONTROL_VERIFYELEMENTNOTPRESENT = "verifyElementNotPresent";
     public static final String CONTROL_VERIFYELEMENTVISIBLE = "verifyElementVisible";

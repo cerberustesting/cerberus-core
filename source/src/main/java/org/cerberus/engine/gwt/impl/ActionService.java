@@ -166,122 +166,123 @@ public class ActionService implements IActionService {
         String value1 = testCaseStepActionExecution.getValue1();
         String value2 = testCaseStepActionExecution.getValue2();
         String propertyName = testCaseStepActionExecution.getPropertyName();
-        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with object : " + value1 + " and property : " + value2);
+        MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
 
-        //TODO On JDK 7 implement switch with string [Edit @abourdon: prefer use of chain of responsibility pattern instead of a big switch]
-        if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_KEYPRESS)) {
-            res = this.doActionKeyPress(tCExecution, value1, value2);
+        switch (testCaseStepActionExecution.getAction()) {
+            case TestCaseStepAction.ACTION_KEYPRESS:
+                res = this.doActionKeyPress(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_HIDEKEYBOARD:
+                res = this.doActionHideKeyboard(tCExecution);
+                break;
+            case TestCaseStepAction.ACTION_SWIPE:
+                res = this.doActionSwipe(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_CLICK:
+                res = this.doActionClick(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
+                res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
+                res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_DOUBLECLICK:
+                res = this.doActionDoubleClick(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_RIGHTCLICK:
+                res = this.doActionRightClick(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
+                res = this.doActionFocusToIframe(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME:
+                res = this.doActionFocusDefaultIframe(tCExecution);
+                break;
+            case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
+                res = this.doActionSwitchToWindow(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_MANAGEDIALOG:
+                res = this.doActionManageDialog(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_MOUSEOVER:
+                res = this.doActionMouseOver(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
+                res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_OPENURLWITHBASE:
+                res = this.doActionOpenURL(tCExecution, value1, value2, true);
+                break;
+            case TestCaseStepAction.ACTION_OPENURLLOGIN:
+                testCaseStepActionExecution.setValue1(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
+                res = this.doActionUrlLogin(tCExecution);
+                break;
+            case TestCaseStepAction.ACTION_OPENURL:
+                res = this.doActionOpenURL(tCExecution, value1, value2, false);
+                break;
+            case TestCaseStepAction.ACTION_SELECT:
+                res = this.doActionSelect(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_TYPE:
+                res = this.doActionType(tCExecution, value1, value2, propertyName);
+                break;
+            case TestCaseStepAction.ACTION_WAIT:
+                res = this.doActionWait(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_CALLSERVICE:
+                res = this.doActionCallService(testCaseStepActionExecution, value1);
+                break;
+            case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
+                res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
+                res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
+                res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
+                break;
+            case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
+                res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2, propertyName);
+                break;
+            case TestCaseStepAction.ACTION_DONOTHING:
+                res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                break;
+            case TestCaseStepAction.ACTION_GETPAGESOURCE:
+                res = this.doActionGetPageSource(testCaseStepActionExecution);
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                logEventService.createPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                break;
+            case TestCaseStepAction.ACTION_TAKESCREENSHOT:
+                res = this.doActionTakeScreenshot(testCaseStepActionExecution);
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                logEventService.createPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                break;
+            case TestCaseStepAction.ACTION_CLICKANDWAIT:
+                res = this.doActionClickWait(tCExecution, value1, value2);
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                logEventService.createPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                break;
+            case TestCaseStepAction.ACTION_ENTER:
+                res = this.doActionKeyPress(tCExecution, value1, "RETURN");
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                logEventService.createPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                break;
+            case TestCaseStepAction.ACTION_SELECTANDWAIT:
+                res = this.doActionSelect(tCExecution, value1, value2);
+                this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
+                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                logEventService.createPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                break;
+            default:
+                res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
+                res.setDescription(res.getDescription().replace("%ACTION%", testCaseStepActionExecution.getAction()));
 
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_HIDEKEYBOARD)) {
-            res = this.doActionHideKeyboard(tCExecution);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_SWIPE)) {
-            res = this.doActionSwipe(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CLICK)) {
-            res = this.doActionClick(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS)) {
-            res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE)) {
-            res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_DOUBLECLICK)) {
-            res = this.doActionDoubleClick(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_RIGHTCLICK)) {
-            res = this.doActionRightClick(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_FOCUSTOIFRAME)) {
-            res = this.doActionFocusToIframe(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME)) {
-            res = this.doActionFocusDefaultIframe(tCExecution);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_SWITCHTOWINDOW)) {
-            res = this.doActionSwitchToWindow(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_MANAGEDIALOG)) {
-            res = this.doActionManageDialog(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_MOUSEOVER)) {
-            res = this.doActionMouseOver(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_MOUSEOVERANDWAIT)) {
-            res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_OPENURLWITHBASE)) {
-            res = this.doActionOpenURL(tCExecution, value1, value2, true);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_OPENURLLOGIN)) {
-            testCaseStepActionExecution.setValue1(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
-            res = this.doActionUrlLogin(tCExecution);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_OPENURL)) {
-            res = this.doActionOpenURL(tCExecution, value1, value2, false);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_SELECT)) {
-            res = this.doActionSelect(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_TYPE)) {
-            res = this.doActionType(tCExecution, value1, value2, propertyName);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_WAIT)) {
-            res = this.doActionWait(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALLSERVICE)) {
-            res = this.doActionCallService(testCaseStepActionExecution, value1);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_REMOVEDIFFERENCE)) {
-            res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_EXECUTESQLUPDATE)) {
-            res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE)) {
-            res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CALCULATEPROPERTY)) {
-            res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2, propertyName);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_DONOTHING)) {
-            res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_GETPAGESOURCE)) {
-            res = this.doActionGetPageSource(testCaseStepActionExecution);
-            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_TAKESCREENSHOT)) {
-            res = this.doActionTakeScreenshot(testCaseStepActionExecution);
-            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_CLICKANDWAIT)) { // DEPRECATED ACTION
-            res = this.doActionClickWait(tCExecution, value1, value2);
-            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_ENTER)) { // DEPRECATED ACTION
-            res = this.doActionKeyPress(tCExecution, value1, "RETURN");
-            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-
-        } else if (testCaseStepActionExecution.getAction().equals(TestCaseStepAction.ACTION_SELECTANDWAIT)) { // DEPRECATED ACTION
-            res = this.doActionSelect(tCExecution, value1, value2);
-            this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
-            res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-            logEventService.createPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-            LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-
-        } else {
-            res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
-            res.setDescription(res.getDescription().replace("%ACTION%", testCaseStepActionExecution.getAction()));
         }
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Result of the action : " + res.getCodeString() + " " + res.getDescription());

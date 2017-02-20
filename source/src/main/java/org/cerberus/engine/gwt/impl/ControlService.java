@@ -22,28 +22,26 @@ package org.cerberus.engine.gwt.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.engine.entity.Identifier;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.gwt.IVariableService;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
 import org.cerberus.crud.entity.TestCaseStepActionControlExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.exception.CerberusEventException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.engine.gwt.IControlService;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IIdentifierService;
-import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.gwt.IControlService;
+import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.exception.CerberusEventException;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
@@ -67,8 +65,6 @@ public class ControlService implements IControlService {
 
     @Autowired
     private IWebDriverService webdriverService;
-    @Autowired
-    private IPropertyService propertyService;
     @Autowired
     private IXmlUnitService xmlUnitService;
     @Autowired
@@ -124,102 +120,101 @@ public class ControlService implements IControlService {
         testCaseStepActionControlExecution.setStart(new Date().getTime());
 
         try {
-            //TODO On JDK 7 implement switch with string
-            if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL)) {
-                res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
 
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT)) {
-                res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
+            switch (testCaseStepActionControlExecution.getControl()) {
 
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER)) {
-                res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL:
+                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
+                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
+                    res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR:
+                    res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS:
+                    res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATER:
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATEROREQUAL:
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOR:
+                case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOROREQUAL:
+                    res = this.evaluateControl_ifNumericXXX(testCaseStepActionControlExecution.getControl(), testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT:
+                    //TODO validate properties
+                    res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT:
+                    //TODO validate properties
+                    res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE:
+                    //TODO validate properties
+                    res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE:
+                    //TODO validate properties
+                    res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS:
+                    res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT:
+                    res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT:
+                    //TODO validate properties
+                    res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE:
+                    res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE:
+                    res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTEXTINELEMENT:
+                    res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINELEMENT:
+                    res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYREGEXINELEMENT:
+                    res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE:
+                    res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE:
+                    res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTITLE:
+                    res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYURL:
+                    res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG:
+                    res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE:
+                    res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
+                    break;
+                case TestCaseStepActionControl.CONTROL_TAKESCREENSHOT:
+                    res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+                    break;
+                case TestCaseStepActionControl.CONTROL_GETPAGESOURCE:
+                    res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
+                    break;
 
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGMINOR)) {
-                res = this.verifyStringMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYSTRINGCONTAINS)) {
-                res = this.verifyStringContains(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGEREQUALS)) {
-                res = this.verifyIntegerEquals(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERDIFFERENT)) {
-                res = this.verifyIntegerDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERGREATER)) {
-                res = this.verifyIntegerGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYINTEGERMINOR)) {
-                res = this.verifyIntegerMinor(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT)) {
-                //TODO validate properties
-                res = this.verifyElementPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTPRESENT)) {
-                //TODO validate properties
-                res = this.verifyElementNotPresent(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTVISIBLE)) {
-                //TODO validate properties
-                res = this.verifyElementVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTVISIBLE)) {
-                //TODO validate properties
-                res = this.verifyElementNotVisible(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTEQUALS)) {
-                res = this.verifyElementEquals(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTDIFFERENT)) {
-                res = this.verifyElementDifferent(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTINELEMENT)) {
-                //TODO validate properties
-                res = this.verifyElementInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTCLICKABLE)) {
-                res = this.verifyElementClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTNOTCLICKABLE)) {
-                res = this.verifyElementNotClickable(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINELEMENT)) {
-                res = this.verifyTextInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINELEMENT)) {
-                res = this.verifyTextNotInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYREGEXINELEMENT)) {
-                res = this.VerifyRegexInElement(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINPAGE)) {
-                res = this.VerifyTextInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTNOTINPAGE)) {
-                res = this.VerifyTextNotInPage(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTITLE)) {
-                res = this.verifyTitle(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYURL)) {
-                res = this.verifyUrl(tCExecution, testCaseStepActionControlExecution.getValue1());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYTEXTINDIALOG)) {
-                res = this.verifyTextInDialog(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_VERIFYXMLTREESTRUCTURE)) {
-                res = this.verifyXmlTreeStructure(tCExecution, testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_TAKESCREENSHOT)) {
-                res = this.takeScreenshot(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
-
-            } else if (testCaseStepActionControlExecution.getControl().equals(TestCaseStepActionControl.CONTROL_GETPAGESOURCE)) {
-                res = this.getPageSource(tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), testCaseStepActionControlExecution);
-
-            } else {
-                res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
-                res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));
+                default:
+                    res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
+                    res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));
             }
 
             testCaseStepActionControlExecution.setControlResultMessage(res);
@@ -242,6 +237,7 @@ public class ControlService implements IControlService {
                     testCaseStepActionControlExecution.setStopExecution(true);
                 }
             }
+
         } catch (CerberusEventException exception) {
             testCaseStepActionControlExecution.setControlResultMessage(exception.getMessageError());
         }
@@ -324,68 +320,147 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyIntegerGreater(String value1, String value2) {
-        MessageEvent mes;
-        if (StringUtil.isInteger(value1) && StringUtil.isInteger(value2)) {
-            int prop = Integer.parseInt(value1);
-            int val = Integer.parseInt(value2);
-            if (prop > val) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-                return mes;
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-                return mes;
-            }
+    private MessageEvent evaluateControl_ifNumericXXX(String control, String controlValue1, String controlValue2) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if Numeric Equals");
         }
-        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
-    }
+        MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_PENDING);
 
-    private MessageEvent verifyIntegerMinor(String value1, String value2) {
-        MessageEvent mes;
-        if (StringUtil.isInteger(value1) && StringUtil.isInteger(value2)) {
-            int prop = Integer.parseInt(value1);
-            int val = Integer.parseInt(value2);
-            if (prop < val) {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-                return mes;
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
-                mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
-                return mes;
-            }
-        }
-        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
-    }
+        // We first prepare the string for nueric conversion to replace , by .
+        String newControlValue1 = StringUtil.prepareToNumeric(controlValue1);
+        String newControlValue2 = StringUtil.prepareToNumeric(controlValue2);
 
-    private MessageEvent verifyIntegerEquals(String property, String value) {
-        if (StringUtil.isInteger(property) && StringUtil.isInteger(value)) {
-            MessageEvent mes = Integer.parseInt(property) == Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+        // We try to convert the strings value1 to numeric.
+        Double value1 = 0.0;
+        try {
+            value1 = Double.valueOf(newControlValue1);
+        } catch (NumberFormatException nfe) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", control)
+                    .replace("%STRINGVALUE%", newControlValue1));
             return mes;
         }
-        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
-    }
 
-    private MessageEvent verifyIntegerDifferent(String property, String value) {
-        if (StringUtil.isInteger(property) && StringUtil.isInteger(value)) {
-            MessageEvent mes = Integer.parseInt(property) != Integer.parseInt(value) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", property));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", value));
+        // We try to convert the strings value2 to numeric.
+        Double value2 = 0.0;
+        try {
+            value2 = Double.valueOf(newControlValue2);
+        } catch (NumberFormatException nfe) {
+            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_VALUES_NOTNUMERIC);
+            mes.setDescription(mes.getDescription()
+                    .replace("%COND%", control)
+                    .replace("%STRINGVALUE%", newControlValue2));
             return mes;
         }
-        return new MessageEvent(MessageEventEnum.CONTROL_FAILED_PROPERTY_NOTNUMERIC);
+
+        // Now that both values are converted to double we ceck the operator here.
+        boolean execute_Action = true;
+        switch (control) {
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICEQUALS:
+                if (Objects.equals(value1, value2)) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICDIFFERENT:
+                if (!(Objects.equals(value1, value2))) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATER:
+                if (value1 > value2) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATER);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATER);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICGREATEROREQUAL:
+                if (value1 >= value2) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_GREATEROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GREATEROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOR:
+                if (value1 < value2) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOR);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOR);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+            case TestCaseStepActionControl.CONTROL_VERIFYNUMERICMINOROREQUAL:
+                if (value1 <= value2) {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_MINOROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_MINOROREQUAL);
+                    mes.setDescription(mes.getDescription()
+                            .replace("%COND%", control)
+                            .replace("%STRING1%", value1.toString()).replace("%STRING2%", value2.toString())
+                    );
+                }
+                break;
+
+        }
+
+        return mes;
     }
 
     private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementPresent on : " + html);
+        LOG.debug("Control : verifyElementPresent on : " + html);
         MessageEvent mes;
 
         if (!StringUtil.isNull(html)) {
@@ -410,8 +485,6 @@ public class ControlService implements IControlService {
                     return parseWebDriverException(exception);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
-//                SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
-//                String xmlResponse = SoapUtil.convertSoapMessageToString(tCExecution.getLastServiceCalled().getResponseSOAPMessage());
                 if (tCExecution.getLastServiceCalled() != null) {
                     String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                     if (xmlUnitService.isElementPresent(xmlResponse, html)) {
@@ -445,7 +518,7 @@ public class ControlService implements IControlService {
             LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
         }
         MessageEvent mes;
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI) 
+        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                 || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
             if (!StringUtil.isNull(element) && !StringUtil.isNull(childElement)) {
                 try {
@@ -477,7 +550,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotPresent on : " + html);
+        LOG.debug("Control : verifyElementNotPresent on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
@@ -509,7 +582,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementVisible(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementVisible on : " + html);
+        LOG.debug("Control : verifyElementVisible on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
@@ -532,7 +605,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementNotVisible(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotVisible on : " + html);
+        LOG.debug("Control : verifyElementNotVisible on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             try {
@@ -628,7 +701,7 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplicationObj().getType();
 
-            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType) 
+            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)
                     || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -691,7 +764,7 @@ public class ControlService implements IControlService {
             Identifier identifier = identifierService.convertStringToIdentifier(path);
             String applicationType = tCExecution.getApplicationObj().getType();
 
-            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType) 
+            if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)) {
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
 
@@ -742,11 +815,11 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup against value : " + value);
+        LOG.debug("Control : verifyTextInAlertPopup against value : " + value);
         MessageEvent mes;
         try {
             String str = this.webdriverService.getAlertText(tCExecution.getSession());
-            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInAlertPopup has value : " + str);
+            LOG.debug("Control : verifyTextInAlertPopup has value : " + str);
             if (str != null) {
                 String valueToTest = property;
                 if (valueToTest == null || "".equals(valueToTest.trim())) {
@@ -774,12 +847,12 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String html, String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement on : " + html + " element against value : " + regex);
+        LOG.debug("Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
         try {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
             String str = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
-            MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
+            LOG.debug("Control : verifyRegexInElement element : " + html + " has value : " + StringUtil.sanitize(str));
             if (html != null && str != null) {
                 try {
                     Pattern pattern = Pattern.compile(regex);
@@ -812,7 +885,7 @@ public class ControlService implements IControlService {
                 return mes;
             }
         } catch (NoSuchElementException exception) {
-            MyLogger.log(ControlService.class.getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_REGEXINELEMENT_NO_SUCH_ELEMENT);
             mes.setDescription(mes.getDescription().replace("%ELEMENT%", html));
             return mes;
@@ -822,7 +895,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent VerifyTextInPage(TestCaseExecution tCExecution, String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTextInPage on : " + regex);
+        LOG.debug("Control : verifyTextInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
@@ -854,7 +927,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent VerifyTextNotInPage(TestCaseExecution tCExecution, String regex) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : VerifyTextNotInPage on : " + regex);
+        LOG.debug("Control : VerifyTextNotInPage on : " + regex);
         MessageEvent mes;
         String pageSource;
         try {
@@ -886,7 +959,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyUrl(TestCaseExecution tCExecution, String value1) throws CerberusEventException {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyUrl on : " + value1);
+        LOG.debug("Control : verifyUrl on : " + value1);
         MessageEvent mes;
         try {
             String url = this.webdriverService.getCurrentUrl(tCExecution.getSession(), tCExecution.getUrl());
@@ -910,7 +983,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyTitle(TestCaseExecution tCExecution, String title) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyTitle on : " + title);
+        LOG.debug("Control : verifyTitle on : " + title);
         MessageEvent mes;
         try {
             String pageTitle = this.webdriverService.getTitle(tCExecution.getSession());
@@ -944,7 +1017,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyXmlTreeStructure(TestCaseExecution tCExecution, String controlProperty, String controlValue) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyXmlTreeStructure on : " + controlProperty);
+        LOG.debug("Control : verifyXmlTreeStructure on : " + controlProperty);
         MessageEvent mes;
         try {
 //            SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
@@ -976,7 +1049,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementClickable(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementClickable : " + html);
+        LOG.debug("Control : verifyElementClickable : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);
@@ -1007,7 +1080,7 @@ public class ControlService implements IControlService {
     }
 
     private MessageEvent verifyElementNotClickable(TestCaseExecution tCExecution, String html) {
-        MyLogger.log(ControlService.class.getName(), Level.DEBUG, "Control : verifyElementNotClickable on : " + html);
+        LOG.debug("Control : verifyElementNotClickable on : " + html);
         MessageEvent mes;
         if (!StringUtil.isNull(html)) {
             Identifier identifier = identifierService.convertStringToIdentifier(html);

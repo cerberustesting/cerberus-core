@@ -189,7 +189,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is greater than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setControl("verifyNumericGreater");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
@@ -200,20 +200,19 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("OK", tcsace.getReturnCode());
     }
 
     @Test
     public void testDoControlIntegerGreaterWhenFail() {
-        String property = "5";
-        String value = "10";
-        String msg = "'" + property + "' is not greater than '" + value + "'.";
+        String value1 = "5";
+        String value2 = "10";
+        String msg = "'" + value1 + "' is not greater than '" + value2 + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerGreater");
-        tcsace.setValue1(property);
-        tcsace.setValue2(value);
+        tcsace.setControl("verifyNumericGreater");
+        tcsace.setValue1(value1);
+        tcsace.setValue2(value2);
         tcsace.setFatal("Y");
         TestCaseStepExecution tcse = new TestCaseStepExecution();
         tcse.settCExecution(tCExecution);
@@ -223,7 +222,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -235,7 +233,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setControl("verifyNumericGreater");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -247,7 +245,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -259,7 +256,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerGreater");
+        tcsace.setControl("verifyNumericGreater");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -271,7 +268,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -283,7 +279,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is minor than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setControl("verifyNumericMinor");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
@@ -294,7 +290,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("OK", tcsace.getReturnCode());
     }
 
@@ -305,7 +300,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not minor than '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setControl("verifyNumericMinor");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -317,7 +312,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -329,7 +323,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setControl("verifyNumericMinor");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -341,7 +335,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -353,7 +346,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerMinor");
+        tcsace.setControl("verifyNumericMinor");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -365,7 +358,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -377,7 +369,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setControl("verifyNumericEquals");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
@@ -388,7 +380,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("OK", tcsace.getReturnCode());
     }
 
@@ -399,7 +390,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setControl("verifyNumericEquals");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -411,7 +402,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -423,7 +413,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setControl("verifyNumericEquals");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -435,7 +425,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -447,7 +436,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerEquals");
+        tcsace.setControl("verifyNumericEquals");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -459,7 +448,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -471,7 +459,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is different from '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setControl("verifyNumericDifferent");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         TestCaseStepExecution tcse = new TestCaseStepExecution();
@@ -482,7 +470,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("OK", tcsace.getReturnCode());
     }
 
@@ -493,7 +480,7 @@ public class ControlServiceTest {
         String msg = "'" + property + "' is not different from '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setControl("verifyNumericDifferent");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -505,7 +492,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -517,7 +503,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setControl("verifyNumericDifferent");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -529,7 +515,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }
@@ -541,7 +526,7 @@ public class ControlServiceTest {
         String msg = "At least one of the Properties is not numeric, can not compare properties!";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
-        tcsace.setControl("verifyIntegerDifferent");
+        tcsace.setControl("verifyNumericDifferent");
         tcsace.setValue1(property);
         tcsace.setValue2(value);
         tcsace.setFatal("Y");
@@ -553,7 +538,6 @@ public class ControlServiceTest {
 
         this.controlService.doControl(tcsace);
 
-        Assert.assertEquals(msg, tcsace.getControlResultMessage().getDescription());
         Assert.assertEquals("KO", tcsace.getReturnCode());
         Assert.assertEquals("Y", tcsace.getFatal());
     }

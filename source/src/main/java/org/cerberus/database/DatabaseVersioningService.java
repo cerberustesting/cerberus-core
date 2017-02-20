@@ -8426,6 +8426,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcasecountryproperties` DROP COLUMN `valueTemp` ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Added invariant for Content and Header service.
+        //-- ------------------------ 1093
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` VALUES ");
         SQLS.append("('APPSERVICECONTENTACT', 'Y', 100, 'Yes', '', '', '', '')");
@@ -8435,8 +8437,40 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICECONTENTACT', '620', '', '', '', '', '')");
         SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICEHEADERACT', '630', '', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
-        
-        
+
+        // Changed control from Integer to Numeric..
+        //-- ------------------------ 1094-1104
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericEquals' where Control in ('verifyIntegerEquals');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericDifferent' where Control in ('verifyIntegerDifferent');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericGreater' where Control in ('verifyIntegerGreater');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericMinor' where Control in ('verifyIntegerMinor');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericEquals', `description`='verifyNumericEquals' WHERE `idname`='CONTROL' and`value`='verifyIntegerEquals';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericDifferent', `description`='verifyNumericDifferent' WHERE `idname`='CONTROL' and`value`='verifyIntegerDifferent';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericGreater', `description`='verifyNumericGreater' WHERE `idname`='CONTROL' and`value`='verifyIntegerGreater';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericMinor', `description`='verifyNumericMinor' WHERE `idname`='CONTROL' and`value`='verifyIntegerMinor';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericGreaterOrEqual', '1610', 'verifyNumericGreaterOrEqual');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericMinorOrEqual', '1710', 'verifyNumericMinorOrEqual');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

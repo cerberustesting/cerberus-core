@@ -80,6 +80,13 @@ public final class StringUtil {
         return true;
     }
 
+    /**
+     * This method just reformat a string in order to increase the change it can
+     * get converted to float. For ex, it replace , with .
+     *
+     * @param str
+     * @return
+     */
     public static String prepareToNumeric(String str) {
         if (str.contains(",")) {
             return str.replace(",", ".");
