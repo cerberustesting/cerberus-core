@@ -19,23 +19,23 @@ package org.cerberus.crud.service.impl;
 
 import java.util.List;
 import java.util.Map;
-
 import org.cerberus.crud.dao.impl.AppServiceDAO;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceContent;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.service.IAppServiceContentService;
 import org.cerberus.crud.service.IAppServiceHeaderService;
+import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.cerberus.crud.service.IAppServiceService;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.enums.MessageGeneralEnum;
 
 /**
  *
@@ -43,6 +43,8 @@ import org.cerberus.enums.MessageGeneralEnum;
  */
 @Service
 public class AppServiceService implements IAppServiceService {
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(AppServiceService.class);
 
     @Autowired
     AppServiceDAO appServiceDao;
@@ -127,6 +129,33 @@ public class AppServiceService implements IAppServiceService {
             return;
         }
         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+    }
+
+    @Override
+    public String guessContentType(AppService service, String defaultValue) {
+        String result = defaultValue;
+        for (AppServiceHeader object : service.getResponseHeaderList()) {
+            if (object.getKey().equalsIgnoreCase("Content-Type")) {
+                if (object.getValue().contains("application/json")) {
+                    LOG.debug("JSON format guessed from header : " + object.getKey() + " : " + object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+                } else if (object.getValue().contains("application/xml")) {
+                    LOG.debug("XML format guessed from header : " + object.getKey() + " : " + object.getValue());
+                    return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+                }
+            }
+        }
+        if (service.getResponseHTTPBody().startsWith("<")) { // TODO find a better solution to guess the format of the request.
+            LOG.debug("XML format guessed from 1st caracter of body.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_XML;
+        } else if (service.getResponseHTTPBody().startsWith("{")) {
+            LOG.debug("JSON format guessed from 1st caracter of body.");
+            return AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON;
+        }
+        if (StringUtil.isNullOrEmpty(result)) {
+            result = AppService.RESPONSEHTTPBODYCONTENTTYPE_TXT;
+        }
+        return result;
     }
 
 }

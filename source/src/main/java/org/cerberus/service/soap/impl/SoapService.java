@@ -19,8 +19,6 @@
  */
 package org.cerberus.service.soap.impl;
 
-import org.cerberus.engine.execution.impl.RecorderService;
-import com.mysql.jdbc.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,14 +45,16 @@ import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
+import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.util.SoapUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,9 +73,9 @@ public class SoapService implements ISoapService {
     private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
 
     @Autowired
-    RecorderService recorderService;
-    @Autowired
     private IFactoryAppService factoryAppService;
+    @Autowired
+    private IAppServiceService appServiceService;
     @Autowired
     private IFactoryAppServiceHeader factoryAppServiceHeader;
 
@@ -84,10 +84,7 @@ public class SoapService implements ISoapService {
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
-
         MimeHeaders headers = new MimeHeaders();
-//        headers.addHeader("SOAPAction", "\"" + method + "\"");
-//        headers.addHeader("Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE);
         for (AppServiceHeader appServiceHeader : header) {
             headers.addHeader(appServiceHeader.getKey(), appServiceHeader.getValue());
         }
@@ -125,22 +122,22 @@ public class SoapService implements ISoapService {
         AnswerItem result = new AnswerItem();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
-        
+
         AppService serviceSOAP = factoryAppService.create("", "", "", "", "", envelope, "", servicePath, "", method, "", null, "", null);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
-        if (StringUtils.isNullOrEmpty(servicePath)) {
+        if (StringUtil.isNullOrEmpty(servicePath)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_SERVICEPATHMISSING);
             result.setResultMessage(message);
             return result;
         }
-        if (StringUtils.isNullOrEmpty(method)) {
+        if (StringUtil.isNullOrEmpty(method)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_METHODMISSING);
             result.setResultMessage(message);
             return result;
         }
-        if (StringUtils.isNullOrEmpty(envelope)) {
+        if (StringUtil.isNullOrEmpty(envelope)) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP_ENVELOPEMISSING);
             result.setResultMessage(message);
             return result;
@@ -157,7 +154,7 @@ public class SoapService implements ISoapService {
         header.add(factoryAppServiceHeader.create(null, "SOAPAction", "\"" + method + "\"", "Y", 0, "", "", null, "", null));
         header.add(factoryAppServiceHeader.create(null, "Content-Type", is12SoapVersion ? SOAPConstants.SOAP_1_2_CONTENT_TYPE : SOAPConstants.SOAP_1_1_CONTENT_TYPE, "Y", 0, "", "", null, "", null));
         serviceSOAP.setHeaderList(header);
-        
+
         SOAPConnectionFactory soapConnectionFactory;
         SOAPConnection soapConnection = null;
         try {
@@ -172,7 +169,7 @@ public class SoapService implements ISoapService {
 
             //Add attachment File if specified
             //TODO: this feature is not implemented yet therefore is always empty!
-            if (!StringUtils.isNullOrEmpty(attachmentUrl)) {
+            if (!StringUtil.isNullOrEmpty(attachmentUrl)) {
                 this.addAttachmentPart(input, attachmentUrl);
             }
 
@@ -180,7 +177,6 @@ public class SoapService implements ISoapService {
             out = new ByteArrayOutputStream();
             input.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
-            serviceSOAP.setRequestSOAPMessage(input);
             // We already set the item in order to keep the request message in case of failure of SOAP calls.
             result.setItem(serviceSOAP);
 
@@ -194,7 +190,6 @@ public class SoapService implements ISoapService {
             soapResponse.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
-            serviceSOAP.setResponseSOAPMessage(soapResponse);
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
             message.setDescription(message.getDescription()
@@ -203,6 +198,9 @@ public class SoapService implements ISoapService {
 
             // We save convert to string the final response from SOAP request.
             serviceSOAP.setResponseHTTPBody(SoapUtil.convertSoapMessageToString(soapResponse));
+
+            // Get result Content Type.
+            serviceSOAP.setResponseHTTPBodyContentType(appServiceService.guessContentType(serviceSOAP, AppService.RESPONSEHTTPBODYCONTENTTYPE_XML));
 
             result.setItem(serviceSOAP);
 

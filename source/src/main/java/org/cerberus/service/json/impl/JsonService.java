@@ -64,7 +64,8 @@ public class JsonService implements IJsonService {
     }
 
     /**
-     * Get element value from Json file
+     * Get element (from attributeToFind) from Json file either from the url
+     * called or jsonmessage.
      *
      * @param jsonMessage
      * @param url URL of the Json file to parse

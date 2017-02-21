@@ -60,7 +60,8 @@ public interface IAppServiceService {
      * Get the {@link AppService} of the given key
      *
      * @param key the key of the {@link AppService} to get
-     * @param activeDetail Y will load detail only with Active data on header and content. null wil load all data.
+     * @param activeDetail Y will load detail only with Active data on header
+     * and content. null wil load all data.
      * @return
      */
     AnswerItem readByKeyWithDependency(String key, String activeDetail);
@@ -115,5 +116,15 @@ public interface IAppServiceService {
      * @throws CerberusException
      */
     void convert(Answer answer) throws CerberusException;
+
+    /**
+     * This method return the Content-type of the service. Content Type is
+     * calculated from the responseHeaderList or responseHTTPBody itself.
+     *
+     * @param service
+     * @param defaultValue
+     * @return
+     */
+    String guessContentType(AppService service, String defaultValue);
 
 }

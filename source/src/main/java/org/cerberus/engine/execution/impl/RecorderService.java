@@ -340,13 +340,22 @@ public class RecorderService implements IRecorderService {
             if (!(StringUtil.isNullOrEmpty(se.getResponseHTTPBody()))) {
                 String messageFormatExt = "txt";
                 String messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
-                if (se.getResponseHTTPBody().startsWith("{")) { // TODO find a better solution to guess the format of the request.
-                    messageFormatExt = "json";
-                    messageFormat = TestCaseExecutionFile.FILETYPE_JSON;
-                } else if (se.getResponseHTTPBody().startsWith("<")) {
-                    messageFormatExt = "xml";
-                    messageFormat = TestCaseExecutionFile.FILETYPE_XML;
+
+                switch (se.getResponseHTTPBodyContentType()) {
+                    case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                        messageFormatExt = "json";
+                        messageFormat = TestCaseExecutionFile.FILETYPE_JSON;
+                        break;
+                    case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                        messageFormatExt = "xml";
+                        messageFormat = TestCaseExecutionFile.FILETYPE_XML;
+                        break;
+                    default:
+                        messageFormatExt = "txt";
+                        messageFormat = TestCaseExecutionFile.FILETYPE_TXT;
+                        break;
                 }
+
                 Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "response", messageFormatExt);
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
 
@@ -391,6 +400,8 @@ public class RecorderService implements IRecorderService {
             // Response Information.
             jsonMyResponse.put("HTTP-ReturnCode", se.getResponseHTTPCode());
             jsonMyResponse.put("HTTP-Version", se.getResponseHTTPVersion());
+            jsonMyResponse.put("HTTP-ResponseBody", se.getResponseHTTPBody());
+            jsonMyResponse.put("HTTP-ResponseContentType", se.getResponseHTTPBodyContentType());
             if (!(se.getResponseHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : se.getResponseHeaderList()) {
@@ -404,39 +415,6 @@ public class RecorderService implements IRecorderService {
             Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
         }
         return jsonResponse;
-    }
-
-    @Override
-    public List<TestCaseExecutionFile> recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPMessage request, SOAPMessage response) {
-        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
-        TestCaseExecutionFile object = null;
-        // Used for logging purposes
-        String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
-
-        try {
-
-            // REQUEST.
-            Recorder recorderRequest = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "request", "xml");
-            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), SoapUtil.convertSoapMessageToString(request));
-
-            // Index file created to database.
-            object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "SOAP Request", recorderRequest.getRelativeFilenameURL(), "XML", "", null, "", null);
-            testCaseExecutionFileService.save(object);
-            objectFileList.add(object);
-
-            // RESPONSE.
-            Recorder recorderResponse = this.initFilenames(runId, null, null, null, null, null, null, property, propertyIndex, "response", "xml");
-            recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), SoapUtil.convertSoapMessageToString(response));
-
-            // Index file created to database.
-            object = testCaseExecutionFileFactory.create(0, runId, recorderResponse.getLevel(), "SOAP Response", recorderResponse.getRelativeFilenameURL(), "XML", "", null, "", null);
-            testCaseExecutionFileService.save(object);
-            objectFileList.add(object);
-
-        } catch (CerberusException ex) {
-            LOG.error(logPrefix + "SOAP XML file was not saved due to unexpected error." + ex.toString());
-        }
-        return objectFileList;
     }
 
     @Override

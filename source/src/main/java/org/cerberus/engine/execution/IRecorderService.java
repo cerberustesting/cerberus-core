@@ -71,16 +71,6 @@ public interface IRecorderService {
      */
     List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService service);
 
-    /**
-     *
-     * @param runId
-     * @param property
-     * @param propertyIndex
-     * @param request
-     * @param response
-     * @return
-     */
-    List<TestCaseExecutionFile> recordSOAPProperty(Long runId, String property, int propertyIndex, SOAPMessage request, SOAPMessage response);
 
     /**
      *

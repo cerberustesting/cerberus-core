@@ -104,7 +104,6 @@ public class TestCaseExecution {
     private String executionUUID;
     private Session session;
     private long idFromQueue;
-//    private AnswerItem lastSOAPCalled; // DEPRECATED will be soon replaced by last Service Called.
     private AppService lastServiceCalled;
     private List<RobotCapability> capabilities;
     // Global parameters.

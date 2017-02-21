@@ -19,7 +19,6 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 import java.util.List;
-import javax.xml.soap.SOAPMessage;
 
 /**
  * Map la table Service
@@ -52,9 +51,8 @@ public class AppService {
     private String responseHTTPVersion;
     private int responseHTTPCode;
     private String responseHTTPBody;
+    private String responseHTTPBodyContentType;
     private List<AppServiceHeader> responseHeaderList;
-    private SOAPMessage reponseSOAPMessage;
-    private SOAPMessage requestSOAPMessage;
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -63,6 +61,17 @@ public class AppService {
     public static final String TYPE_REST = "REST";
     public static final String METHOD_HTTPPOST = "POST";
     public static final String METHOD_HTTPGET = "GET";
+    public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
+    public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
+    public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
+
+    public String getResponseHTTPBodyContentType() {
+        return responseHTTPBodyContentType;
+    }
+
+    public void setResponseHTTPBodyContentType(String responseHTTPBodyContentType) {
+        this.responseHTTPBodyContentType = responseHTTPBodyContentType;
+    }
 
     public String getResponseHTTPVersion() {
         return responseHTTPVersion;
@@ -82,30 +91,6 @@ public class AppService {
 
     public void addResponseHeaderList(AppServiceHeader object) {
         this.responseHeaderList.add(object);
-    }
-
-    public SOAPMessage getReponseSOAPMessage() {
-        return reponseSOAPMessage;
-    }
-
-    public void setReponseSOAPMessage(SOAPMessage reponseSOAPMessage) {
-        this.reponseSOAPMessage = reponseSOAPMessage;
-    }
-
-    public SOAPMessage getRequestSOAPMessage() {
-        return requestSOAPMessage;
-    }
-
-    public void setRequestSOAPMessage(SOAPMessage requestSOAPMessage) {
-        this.requestSOAPMessage = requestSOAPMessage;
-    }
-
-    public SOAPMessage getResponseSOAPMessage() {
-        return reponseSOAPMessage;
-    }
-
-    public void setResponseSOAPMessage(SOAPMessage responseSOAPMessage) {
-        this.reponseSOAPMessage = responseSOAPMessage;
     }
 
     public String getResponseHTTPBody() {

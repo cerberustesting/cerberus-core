@@ -927,10 +927,6 @@ public class PropertyService implements IPropertyService {
                 AppService se1 = (AppService) soapCall.getItem();
 //                tCExecution.setLastSOAPCalled(soapCall);
 
-                //Record the Request and Response.
-//                SOAPExecution se = (SOAPExecution) soapCall.getItem();
-                recorderService.recordSOAPProperty(tCExecution.getId(), testCaseExecutionData.getProperty(), 1, se1.getRequestSOAPMessage(), se1.getResponseSOAPMessage());
-
                 if (soapCall.isCodeEquals(200)) {
 //                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                     String xmlResponse = se1.getResponseHTTPBody();

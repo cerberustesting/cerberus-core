@@ -25,7 +25,19 @@ package org.cerberus.service.json;
  */
 public interface IJsonService {
 
+    /**
+     *
+     * @param url
+     * @return
+     */
     String callUrlAndGetJsonResponse(String url);
 
+    /**
+     *
+     * @param jsonMessage
+     * @param url
+     * @param attribute
+     * @return
+     */
     String getFromJson(String jsonMessage, String url, String attribute);
 }
