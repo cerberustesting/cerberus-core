@@ -529,6 +529,40 @@ public class ControlService implements IControlService {
         }
     }
 
+    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {
+        LOG.debug("Control : verifyElementNotPresent on : " + html);
+        MessageEvent mes;
+        if (!StringUtil.isNull(html)) {
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        return mes;
+                    }
+                } catch (WebDriverException exception) {
+                    return parseWebDriverException(exception);
+                }
+
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+                return mes;
+            }
+        } else {
+            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT_NULL);
+        }
+    }
+
     private MessageEvent verifyElementInElement(TestCaseExecution tCExecution, String element, String childElement) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Control : verifyElementInElement on : '" + element + "' is child of '" + childElement + "'");
@@ -565,40 +599,6 @@ public class ControlService implements IControlService {
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementInElement"));
             mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
-        }
-    }
-
-    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {
-        LOG.debug("Control : verifyElementNotPresent on : " + html);
-        MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
-            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-
-                try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(html);
-                    if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                        return mes;
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
-                        return mes;
-                    }
-                } catch (WebDriverException exception) {
-                    return parseWebDriverException(exception);
-                }
-
-            } else {
-                mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-                mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
-                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-                return mes;
-            }
-        } else {
-            return new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT_NULL);
         }
     }
 
@@ -783,6 +783,7 @@ public class ControlService implements IControlService {
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
                             actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+                            break;
                         default:
                             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
@@ -853,6 +854,7 @@ public class ControlService implements IControlService {
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
                             actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
+                            break;
                         default:
                             MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
@@ -893,51 +895,6 @@ public class ControlService implements IControlService {
         mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
         mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
         return mes;
-    }
-
-    private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
-        LOG.debug("Control : verifyTextInDialog against value : " + value);
-        MessageEvent mes;
-
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
-
-            try {
-                String str = this.webdriverService.getAlertText(tCExecution.getSession());
-                LOG.debug("Control : verifyTextInAlertPopup has value : " + str);
-                if (str != null) {
-                    String valueToTest = property;
-                    if (valueToTest == null || "".equals(valueToTest.trim())) {
-                        valueToTest = value;
-                    }
-
-                    if (str.trim().equalsIgnoreCase(valueToTest)) {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINALERT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
-                        return mes;
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
-                        return mes;
-                    }
-                } else {
-                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT_NULL);
-                    return mes;
-                }
-            } catch (WebDriverException exception) {
-                return parseWebDriverException(exception);
-            }
-
-        } else {
-
-            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
-            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInDialog"));
-            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
-            return mes;
-
-        }
-
     }
 
     private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String html, String regex) {
@@ -994,6 +951,51 @@ public class ControlService implements IControlService {
 
             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyRegexInElement"));
+            mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            return mes;
+
+        }
+
+    }
+
+    private MessageEvent verifyTextInDialog(TestCaseExecution tCExecution, String property, String value) {
+        LOG.debug("Control : verifyTextInDialog against value : " + value);
+        MessageEvent mes;
+
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+
+            try {
+                String str = this.webdriverService.getAlertText(tCExecution.getSession());
+                LOG.debug("Control : verifyTextInAlertPopup has value : " + str);
+                if (str != null) {
+                    String valueToTest = property;
+                    if (valueToTest == null || "".equals(valueToTest.trim())) {
+                        valueToTest = value;
+                    }
+
+                    if (str.trim().equalsIgnoreCase(valueToTest)) {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINALERT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
+                        return mes;
+                    } else {
+                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", str));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", valueToTest));
+                        return mes;
+                    }
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINALERT_NULL);
+                    return mes;
+                }
+            } catch (WebDriverException exception) {
+                return parseWebDriverException(exception);
+            }
+
+        } else {
+
+            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
+            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInDialog"));
             mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
             return mes;
 
@@ -1165,17 +1167,27 @@ public class ControlService implements IControlService {
             try {
 
                 if (tCExecution.getLastServiceCalled() != null) {
-                    String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                    if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
-                        return mes;
-                    } else {
-                        mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
-                        mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
-                        return mes;
+
+                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+
+                            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                            if (this.xmlUnitService.isSimilarTree(xmlResponse, controlProperty, controlValue)) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_SIMILARTREE);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
+                                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                                return mes;
+                            } else {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_SIMILARTREE);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", StringUtil.sanitize(controlProperty)));
+                                mes.setDescription(mes.getDescription().replace("%STRING2%", StringUtil.sanitize(controlValue)));
+                                return mes;
+                            }
+                        default:
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyXmlTreeStructure"));
+                            return mes;
                     }
                 } else {
                     mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
