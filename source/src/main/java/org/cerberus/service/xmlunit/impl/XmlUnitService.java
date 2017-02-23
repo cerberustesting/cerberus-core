@@ -275,6 +275,7 @@ public class XmlUnitService implements IXmlUnitService {
 
         try {
             NodeList candidates = XmlUtil.evaluate(lastSOAPResponse, xpath);
+            LOG.debug(candidates.toString());
             for (Document candidate : XmlUtil.fromNodeList(candidates)) {
                 if (Differences.fromString(getDifferencesFromXml(XmlUtil.toString(candidate), expectedElement)).isEmpty()) {
                     return true;
@@ -300,4 +301,4 @@ public class XmlUnitService implements IXmlUnitService {
         }
         return document;
     }
-    }
+}
