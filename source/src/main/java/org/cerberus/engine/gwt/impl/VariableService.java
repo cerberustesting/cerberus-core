@@ -59,16 +59,21 @@ public class VariableService implements IVariableService {
             return result;
         }
 
+        int count_decode = 1;
+        while (result.contains("%") && count_decode <= 2) {
+            /**
+             * We iterate the property decode because properties names could be inside other properties.
+             */
         /**
          * Decode System Variables.
          */
         if (result.contains("%")) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (system variable) string : " + result);
+                LOG.debug("Starting to decode (system variable) string iteration#" + count_decode + ": " + result);
             }
             result = this.decodeStringWithSystemVariable(result, testCaseExecution);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (system variable). Result : " + result);
+                LOG.debug("Finished to decode (system variable) iteration#" + count_decode + ". Result : " + result);
             }
         } else {
             return result;
@@ -79,11 +84,11 @@ public class VariableService implements IVariableService {
          */
         if (result.contains("%")) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (Application Object) string : " + result);
+                LOG.debug("Starting to decode (Application Object) string iteration#" + count_decode + ": " + result);
             }
             result = applicationObjectVariableService.decodeStringWithApplicationObject(result, testCaseExecution, forceCalculation);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (Application Object). Result : " + result);
+                LOG.debug("Finished to decode (Application Object) iteration#" + count_decode + ". Result : " + result);
             }
         } else {
             return result;
@@ -92,16 +97,15 @@ public class VariableService implements IVariableService {
         /**
          * Decode Properties.
          */
-        if (result.contains("%")) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (Properties) string : " + result);
+                LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + result);
             }
             result = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (Properties). Result : " + result);
+                LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + result);
             }
-        } else {
-            return result;
+            
+            count_decode++;
         }
 
         return result;

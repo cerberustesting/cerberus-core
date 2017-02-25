@@ -663,7 +663,8 @@ public class ExecutionRunService implements IExecutionRunService {
 
             // Execute or not the action here.
             if (execute_Action) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Executing action : " + testCaseStepActionExecution.getAction() + " with property : " + testCaseStepActionExecution.getPropertyName());
+                LOG.debug("Executing action : " + testCaseStepActionExecution.getAction() + " with val1 : " + testCaseStepActionExecution.getValue1()
+                        + " and val2 : " + testCaseStepActionExecution.getValue2());
 
                 /**
                  * We execute the Action

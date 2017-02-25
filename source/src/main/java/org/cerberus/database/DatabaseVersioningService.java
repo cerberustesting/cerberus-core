@@ -6458,7 +6458,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // New updated Documentation.
-        //-- ------------------------ 1063-1065
+        //-- ------------------------ 1064-1065
         SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
@@ -8352,7 +8352,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Add the mass action on the execution pending page
-        //-- ------------------------ 1083-1085
+        //-- ------------------------ 1083-1084
         SQLS = new StringBuilder();
         SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='en';\n");
         SQLInstruction.add(SQLS.toString());
@@ -8361,7 +8361,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Add missing documentation on execution pending table
-        //-- ------------------------ 1086
+        //-- ------------------------ 1085
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
         SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'en', 'Request date', ''),");
@@ -8403,13 +8403,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Remove the unecessary TestCaseExecutionQueue's Proceeded column
-        //-- ------------------------ 1087
+        //-- ------------------------ 1086
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `Proceeded`;");
         SQLInstruction.add(SQLS.toString());
 
         // Invert Value1 and Value2 from 'getFromJSON' and 'getFromXML' Properties.
-        //-- ------------------------ 1088-1092
+        //-- ------------------------ 1087-1091
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `valueTemp` TEXT NULL AFTER `last_modified`;");
         SQLInstruction.add(SQLS.toString());
@@ -8427,7 +8427,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Added invariant for Content and Header service.
-        //-- ------------------------ 1093
+        //-- ------------------------ 1092
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` VALUES ");
         SQLS.append("('APPSERVICECONTENTACT', 'Y', 100, 'Yes', '', '', '', '')");
@@ -8439,7 +8439,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Changed control from Integer to Numeric..
-        //-- ------------------------ 1094-1104
+        //-- ------------------------ 1093-1102
         SQLS = new StringBuilder();
         SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericEquals' where Control in ('verifyIntegerEquals');");
         SQLInstruction.add(SQLS.toString());
@@ -8469,6 +8469,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericMinorOrEqual', '1710', 'verifyNumericMinorOrEqual');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Service Columns to testdatalib table.
+        //-- ------------------------ 1103-1105
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD COLUMN `Service` VARCHAR(255) NULL DEFAULT null AFTER `DatabaseUrl`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD INDEX `IX_testdatalib_02` (`Service` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

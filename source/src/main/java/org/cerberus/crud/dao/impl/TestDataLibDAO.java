@@ -635,8 +635,13 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
         query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
-                + "`script`, `databaseUrl`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                + "`script`, `databaseUrl`, `service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        } else {
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
+
+        }
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -648,23 +653,27 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
             try {
-                preStat.setString(1, testDataLib.getName());
-                preStat.setString(2, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSystem()));
-                preStat.setString(3, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getEnvironment()));
-                preStat.setString(4, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCountry()));
-                preStat.setString(5, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getGroup()));
-                preStat.setString(6, testDataLib.getType());
-                preStat.setString(7, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
-                preStat.setString(8, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getScript()));
-                preStat.setString(9, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseUrl()));
-                preStat.setString(10, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
-                preStat.setString(11, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
-                preStat.setString(12, testDataLib.getEnvelope()); //is the one that allows null values
-                preStat.setString(13, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseCsv()));
-                preStat.setString(14, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCsvUrl()));
-                preStat.setString(15, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSeparator()));
-                preStat.setString(16, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
-                preStat.setString(17, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
+                int i = 1;
+                preStat.setString(i++, testDataLib.getName());
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSystem()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getEnvironment()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCountry()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getGroup()));
+                preStat.setString(i++, testDataLib.getType());
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabase()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getScript()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseUrl()));
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                    preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getService()));
+                }
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getServicePath()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getMethod()));
+                preStat.setString(i++, testDataLib.getEnvelope()); //is the one that allows null values
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDatabaseCsv()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCsvUrl()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getSeparator()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getDescription()));
+                preStat.setString(i++, ParameterParserUtil.returnEmptyStringIfNull(testDataLib.getCreator()));
 
                 preStat.executeUpdate();
 
@@ -780,36 +789,47 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new Answer();
         MessageEvent msg;
         String query = "UPDATE testdatalib SET `type`=?, `group`= ?, `system`=?, `environment`=?, `country`=?, `database`= ? , `script`= ? , "
-                + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() WHERE "
-                + "`TestDataLibID`= ?";
+                + "`databaseUrl`= ? , `servicepath`= ? , `method`= ? , `envelope`= ? , `DatabaseCsv` = ? , `csvUrl` = ? ,`separator`= ?,  `description`= ? , `LastModifier`= ?, `LastModified` = NOW() ";
+        if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+            query += " ,`service` = ? ";
+        } else {
+            query += " ,`service` = null ";
+        }
+        query += "WHERE `TestDataLibID`= ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.service : " + testDataLib.getService());
+            LOG.debug("SQL.param.servicePath : " + testDataLib.getServicePath());
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
+                int i = 1;
                 //name is not editable
-                preStat.setString(1, testDataLib.getType());
-                preStat.setString(2, testDataLib.getGroup());
-                preStat.setString(3, testDataLib.getSystem());
-                preStat.setString(4, testDataLib.getEnvironment());
-                preStat.setString(5, testDataLib.getCountry());
-                preStat.setString(6, testDataLib.getDatabase());
-                preStat.setString(7, testDataLib.getScript());
-                preStat.setString(8, testDataLib.getDatabaseUrl());
-                preStat.setString(9, testDataLib.getServicePath());
-                preStat.setString(10, testDataLib.getMethod());
-                preStat.setString(11, testDataLib.getEnvelope());
-                preStat.setString(12, testDataLib.getDatabaseCsv());
-                preStat.setString(13, testDataLib.getCsvUrl());
-                preStat.setString(14, testDataLib.getSeparator());
-                preStat.setString(15, testDataLib.getDescription());
-                preStat.setString(16, testDataLib.getLastModifier());
-                preStat.setInt(17, testDataLib.getTestDataLibID());
+                preStat.setString(i++, testDataLib.getType());
+                preStat.setString(i++, testDataLib.getGroup());
+                preStat.setString(i++, testDataLib.getSystem());
+                preStat.setString(i++, testDataLib.getEnvironment());
+                preStat.setString(i++, testDataLib.getCountry());
+                preStat.setString(i++, testDataLib.getDatabase());
+                preStat.setString(i++, testDataLib.getScript());
+                preStat.setString(i++, testDataLib.getDatabaseUrl());
+                preStat.setString(i++, testDataLib.getServicePath());
+                preStat.setString(i++, testDataLib.getMethod());
+                preStat.setString(i++, testDataLib.getEnvelope());
+                preStat.setString(i++, testDataLib.getDatabaseCsv());
+                preStat.setString(i++, testDataLib.getCsvUrl());
+                preStat.setString(i++, testDataLib.getSeparator());
+                preStat.setString(i++, testDataLib.getDescription());
+                preStat.setString(i++, testDataLib.getLastModifier());
+                if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
+                    preStat.setString(i++, testDataLib.getService());
+                }
+                preStat.setInt(i++, testDataLib.getTestDataLibID());
 
                 int rowsUpdated = preStat.executeUpdate();
 
@@ -863,6 +883,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         String database = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.database"));
         String script = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.script"));
         String databaseUrl = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.databaseUrl"));
+        String service = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.service"));
         String servicePath = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.servicePath"));
         String method = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.method"));
         String envelope = ParameterParserUtil.returnEmptyStringIfNull(resultSet.getString("tdl.envelope"));
@@ -887,7 +908,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             LOG.warn(ex.toString());
         }
 
-        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, databaseUrl, servicePath,
+        return factoryTestDataLib.create(testDataLibID, name, system, environment, country, group, type, database, script, databaseUrl, service, servicePath,
                 method, envelope, databaseCsv, csvUrl, separator, description, creator, created, lastModifier, lastModified, subDataValue, subDataColumn, subDataParsingAnswer, subDataColumnPosition);
     }
 

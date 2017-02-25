@@ -92,6 +92,7 @@ public class CreateTestDataLib extends HttpServlet {
             String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), null, charset);
             String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
             String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+            String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
             // Parameter that we cannot secure as we need the html --> We DECODE them
             String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
             String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
@@ -118,7 +119,7 @@ public class CreateTestDataLib extends HttpServlet {
                 IFactoryTestDataLib factoryLibService = appContext.getBean(IFactoryTestDataLib.class);
 
                 TestDataLib lib = factoryLibService.create(0, name, system, environment, country, group,
-                        type, database, script, databaseUrl, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
+                        type, database, script, databaseUrl, service, servicePath, method, envelope, databaseCsv, csvUrl, separator, description,
                         request.getRemoteUser(), null, "", null, null, null, null, null);
 
                 // Getting list of application from JSON Call

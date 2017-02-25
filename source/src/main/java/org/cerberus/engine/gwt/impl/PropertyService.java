@@ -31,6 +31,7 @@ import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
@@ -122,7 +123,7 @@ public class PropertyService implements IPropertyService {
         String stringToDecodeInit = stringToDecode;
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting to decode string : : " + stringToDecode);
+            LOG.debug("Starting to decode string : " + stringToDecode);
         }
 
         /**
@@ -227,7 +228,7 @@ public class PropertyService implements IPropertyService {
              * TestCaseExecution
              */
             tCExecution.getTestCaseExecutionDataList().add(tecd);
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Adding into Execution data list: " + eachTccp.getProperty() + " : " + eachTccp.getValue1() + " : " + tecd.getValue());
+            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Adding into Execution data list. Property : " + eachTccp.getProperty() + " Value1 : " + eachTccp.getValue1() + " Value : " + tecd.getValue());
 
             /**
              * After calculation, replace properties by value calculated
@@ -774,24 +775,35 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        try {
-            Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
-            String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
-            if (valueFromHTML != null) {
-                testCaseExecutionData.setValue(valueFromHTML);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+        if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)
+                || tCExecution.getApplicationObj().getType().equals(Application.TYPE_IPA)
+                || tCExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
+            
+            try {
+                Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
+                String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                if (valueFromHTML != null) {
+                    testCaseExecutionData.setValue(valueFromHTML);
+                    MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_HTML);
+                    res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
+                    res.setDescription(res.getDescription().replace("%VALUE%", valueFromHTML));
+                    testCaseExecutionData.setPropertyResultMessage(res);
+
+                }
+            } catch (NoSuchElementException exception) {
+                MyLogger.log(PropertyService.class
+                        .getName(), Level.DEBUG, exception.toString());
+                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
                 res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromHTML));
                 testCaseExecutionData.setPropertyResultMessage(res);
-
             }
-        } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, exception.toString());
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
 
-            res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
-            testCaseExecutionData.setPropertyResultMessage(res);
+        } else {
+            
+            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
+            res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
+            res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
+
         }
         return testCaseExecutionData;
     }
