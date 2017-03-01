@@ -19,6 +19,8 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -35,6 +37,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.cerberus.crud.service.IRobotCapabilityService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.enums.MessageEventEnum;
@@ -45,13 +48,18 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.json.ObjectMapperUtil;
 import org.cerberus.util.servlet.ServletUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
@@ -200,7 +208,7 @@ public class ReadRobot extends HttpServlet {
 
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
-        robotService = appContext.getBean(RobotService.class);
+        robotService = appContext.getBean(IRobotService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
         int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
@@ -213,7 +221,7 @@ public class ReadRobot extends HttpServlet {
         String columnName = columnToSort[columnToSortParameter];
         String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
         
-        Map<String, List<String>> individualSearch = new HashMap<>();
+        Map<String, List<?>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
@@ -288,9 +296,13 @@ public class ReadRobot extends HttpServlet {
 
     private JSONObject convertRobotToJSONObject(Robot robot) throws JSONException {
 
-        Gson gson = new Gson();
-        JSONObject result = new JSONObject(gson.toJson(robot));
-        return result;
+        try {
+            ObjectMapper objectMapper = ObjectMapperUtil.newDefaultInstance();
+            JSONObject result = new JSONObject(objectMapper.writeValueAsString(robot));
+            return result;
+        } catch (JsonProcessingException e) {
+            throw new JSONException(e);
+        }
     }
 
     private AnswerItem findDistinctValuesOfColumn(ApplicationContext appContext, HttpServletRequest request, String columnName) throws JSONException {
@@ -303,7 +315,7 @@ public class ReadRobot extends HttpServlet {
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "test,testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");
         String columnToSort[] = sColumns.split(",");
 
-        Map<String, List<String>> individualSearch = new HashMap<>();
+        Map<String, List<?>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {
             if (null!=request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
                 List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));

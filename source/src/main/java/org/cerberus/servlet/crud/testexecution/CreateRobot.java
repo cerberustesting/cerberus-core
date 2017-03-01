@@ -82,6 +82,9 @@ public class CreateRobot extends HttpServlet {
         response.setContentType("application/json");
         String charset = request.getCharacterEncoding();
 
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -95,22 +98,14 @@ public class CreateRobot extends HttpServlet {
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
         String userAgent = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("useragent"), "", charset);
         String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screensize"), "", charset);
+        Robot robotObject = robotFactory.create(robot, host, port, platform, browser, version, active, description, userAgent, screenSize);
         List<RobotCapability> capabilities = (List<RobotCapability>) (request.getParameter("capabilities") == null ? Collections.emptyList() : gson.fromJson(request.getParameter("capabilities"), new TypeToken<List<RobotCapability>>(){}.getType()));
         // Securing capabilities by setting them the associated robot name
         // Check also if there is no duplicated capability
-        Map<String, Object> capabilityMap = new HashMap<String, Object>();
+        Map<String, Object> capabilityMap = new HashMap<>();
         for (RobotCapability capability : capabilities) {
             capabilityMap.put(capability.getCapability(), null);
-            capability.setRobot(robot);
-        }
-        Integer robotid = 0;
-        boolean robotid_error = false;
-        try {
-            if (request.getParameter("robotid") != null && !request.getParameter("robotid").equals("")) {
-                robotid = Integer.valueOf(policy.sanitize(request.getParameter("robotid")));
-            }
-        } catch (Exception ex) {
-            robotid_error = true;
+            capability.setRobot(robotObject);
         }
 
         /**
@@ -140,12 +135,6 @@ public class CreateRobot extends HttpServlet {
                     .replace("%OPERATION%", "Create")
                     .replace("%REASON%", "Robot platform is missing."));
             ans.setResultMessage(msg);
-        } else if (robotid_error) {
-            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
-            msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
-                    .replace("%OPERATION%", "Create")
-                    .replace("%REASON%", "Could not manage to convert robotid to an integer value or robotid is missing."));
-            ans.setResultMessage(msg);
         } else if (capabilityMap.size() != capabilities.size()) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "Robot")
@@ -154,15 +143,11 @@ public class CreateRobot extends HttpServlet {
             ans.setResultMessage(msg);
         }
         else {
-            /**
-             * All data seems cleans so we can call the services.
-             */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-            IRobotService robotService = appContext.getBean(IRobotService.class);
-            IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
 
-            Robot robotData = robotFactory.create(robotid, robot, host, port, platform, browser, version, active, description, userAgent, screenSize, capabilities);
-            ans = robotService.create(robotData);
+            IRobotService robotService = appContext.getBean(IRobotService.class);
+
+            robotObject.setCapabilities(capabilities);
+            ans = robotService.create(robotObject);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                 /**

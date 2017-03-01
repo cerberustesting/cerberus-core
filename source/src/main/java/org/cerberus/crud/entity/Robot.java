@@ -19,14 +19,24 @@
  */
 package org.cerberus.crud.entity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.List;
 
 /**
  *
  * @author bcivel
  */
+@Entity
 public class Robot {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer robotID;
     private String robot;
     private String host;
@@ -38,10 +48,8 @@ public class Robot {
     private String description;
     private String userAgent;
     private String screenSize;
-    
-    /**
-     * From here are data outside database model.
-     */
+
+    @OneToMany(mappedBy = "robot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RobotCapability> capabilities;
 
     public String getScreenSize() {
@@ -139,5 +147,21 @@ public class Robot {
 	public void setCapabilities(List<RobotCapability> capabilities) {
 		this.capabilities = capabilities;
 	}
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Robot robot = (Robot) o;
+
+        return robotID.equals(robot.robotID);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return robotID.hashCode();
+    }
 
 }

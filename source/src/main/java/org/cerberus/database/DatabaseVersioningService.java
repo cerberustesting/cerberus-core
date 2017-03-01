@@ -8471,6 +8471,33 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericMinorOrEqual', '1710', 'verifyNumericMinorOrEqual');");
         SQLInstruction.add(SQLS.toString());
 
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "DROP FOREIGN KEY `FK_robotcapability_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "UPDATE `robotcapability`\n" +
+                        "SET `robotcapability`.`robot` = (\n" +
+                        "\tSELECT `robotID`\n" +
+                        "    FROM `robot`\n" +
+                        "    WHERE `robotcapability`.`robot` = `robot`.`robot`\n" +
+                        ");");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "MODIFY COLUMN `robot` INT(10);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "ADD CONSTRAINT `FK_robotcapability_01`\n" +
+                        "FOREIGN KEY (`robot`)\n" +
+                        "REFERENCES `robot`(`robotID`);");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

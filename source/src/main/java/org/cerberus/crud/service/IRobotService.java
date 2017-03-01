@@ -63,7 +63,7 @@ public interface IRobotService {
      * @param string
      * @return
      */
-    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<Robot> readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<?>> individualSearch);
 
     /**
      *
@@ -116,5 +116,5 @@ public interface IRobotService {
      * @param columnName
      * @return 
      */
-    public AnswerList<List<String>> readDistinctValuesByCriteria(String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String searchParameter, Map<String, List<?>> individualSearch, String columnName);
 }

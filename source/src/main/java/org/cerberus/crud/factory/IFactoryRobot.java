@@ -48,4 +48,7 @@ public interface IFactoryRobot {
     Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description, String userAgent, String screenSize, List<RobotCapability> capabilities);
 
+    Robot create(String robot, String host, String port, String platform ,
+                 String browser, String version, String active, String description, String userAgent, String screenSize);
+
 }

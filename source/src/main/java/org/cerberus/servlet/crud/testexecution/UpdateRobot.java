@@ -33,6 +33,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.cerberus.crud.factory.IFactoryRobot;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
@@ -81,6 +83,9 @@ public class UpdateRobot extends HttpServlet {
         response.setContentType("application/json");
         String charset = request.getCharacterEncoding();
 
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
+        IFactoryRobot robotFactory = appContext.getBean(IFactoryRobot.class);
+
         /**
          * Parsing and securing all required parameters.
          */
@@ -100,7 +105,6 @@ public class UpdateRobot extends HttpServlet {
         Map<String, Object> capabilityMap = new HashMap<String, Object>();
         for (RobotCapability capability : capabilities) {
             capabilityMap.put(capability.getCapability(), null);
-            capability.setRobot(robot);
         }
         Integer robotid = 0;
         boolean robotid_error = true;
@@ -156,7 +160,6 @@ public class UpdateRobot extends HttpServlet {
             /**
              * All data seems cleans so we can call the services.
              */
-            ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IRobotService robotService = appContext.getBean(IRobotService.class);
 
             AnswerItem resp = robotService.readByKeyTech(robotid);
@@ -176,6 +179,11 @@ public class UpdateRobot extends HttpServlet {
                  * object exist, then we can update it.
                  */
                 Robot robotData = (Robot) resp.getItem();
+
+                for (RobotCapability capability : capabilities) {
+                    capability.setRobot(robotData);
+                }
+
                 robotData.setRobot(robot);
                 robotData.setHost(host);
                 robotData.setPort(port);
