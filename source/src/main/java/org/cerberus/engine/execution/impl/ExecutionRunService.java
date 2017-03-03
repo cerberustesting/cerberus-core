@@ -525,12 +525,6 @@ public class ExecutionRunService implements IExecutionRunService {
                         "[DEBUG] Exception cleaning Memory:" + ex.getMessage());
             }
 
-            if (tCExecution.getNumberOfRetries() > 0 && !tCExecution.getResultMessage().getCodeString().equals("OK")) {
-                tCExecution.decreaseNumberOfRetries();
-                IRunTestCaseService runTestCaseService = new RunTestCaseService();
-                runTestCaseService.runTestCase(tCExecution);
-            }
-
             MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."

@@ -20,10 +20,12 @@
 package org.cerberus.engine.execution.impl;
 
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IExecutionRunService;
 import org.cerberus.engine.execution.IExecutionStartService;
 import org.cerberus.engine.execution.IRunTestCaseService;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,6 +76,9 @@ public class RunTestCaseService implements IRunTestCaseService {
                 }
             } catch (CerberusException ex) {
                 tCExecution.setResultMessage(ex.getMessageError());
+            } catch (Exception ex) {
+                LOG.warn("Execution stopped due to exception : UUID=" + tCExecution.getExecutionUUID() + "__causedBy=" + ex.toString());
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.GENERIC_ERROR));
             }
         }
         /**

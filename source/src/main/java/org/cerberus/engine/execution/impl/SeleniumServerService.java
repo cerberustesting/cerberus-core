@@ -374,7 +374,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             URL sessionURL = new URL("http://" + session.getHost() + ":" + session.getPort() + "/grid/api/testsession?session=" + sessionId);
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
-            if (!response.getStatusLine().toString().contains("403")) {
+            if (!response.getStatusLine().toString().contains("403")
+                    && !response.getEntity().getContentType().getValue().contains("text/html")) {
                 InputStream contents = response.getEntity().getContent();
                 StringWriter writer = new StringWriter();
                 IOUtils.copy(contents, writer, "UTF8");
@@ -405,7 +406,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     }
 
     private String getScreenSize(WebDriver driver) {
-        return driver.manage().window().getSize().toString();
+        return driver.manage().window().getSize().width+"*"+driver.manage().window().getSize().height;
     }
 
     private Integer getTimeoutSetInParameterTable(String system, String parameter, Integer defaultWait, String logPrefix) {
