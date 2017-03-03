@@ -501,8 +501,15 @@ public class ExecutionRunService implements IExecutionRunService {
                         .replace("%MES%", conditionAnswerTc.getResultMessage().getDescription()));
                 tCExecution.setResultMessage(mes);
             }
-//                tCExecution.setControlMessage("toto");
-            //                tCExecution.setControlStatus(conditionAnswerTc.getResultMessage().getCodeString());
+        } catch (Exception ex) {
+            /**
+             * If an exception is found, set the execution to FA and print the exception
+             */
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
+            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: "+ ex);
+            LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
+        } finally {
+            
             /**
              * We stop the server session here (selenium for ex.).
              */
@@ -512,34 +519,25 @@ public class ExecutionRunService implements IExecutionRunService {
                 LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
             }
 
-        } finally {
-
+            /**
+             * Clean memory
+             */
             try {
                 executionUUID.removeExecutionUUID(tCExecution.getExecutionUUID());
-                MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
-
+                LOG.debug("Clean ExecutionUUID");
             } catch (Exception ex) {
-                MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception cleaning Memory: " + ex.toString());
-                //TODO:FN debug messages to be removed
-                org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
-                        "[DEBUG] Exception cleaning Memory:" + ex.getMessage());
+                LOG.error("Exception cleaning Memory: " + ex.toString());
             }
 
-            MyLogger.log(ExecutionRunService.class.getName(), Level.INFO, "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
+            /**
+             * Log execution is finished
+             */
+            LOG.info("Execution Finished : UUID=" + tCExecution.getExecutionUUID()
                     + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
                     + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
                     + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
                     + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
 
-        }
-        //TODO:FN debug messages to be removed
-        if (tCExecution.getControlStatus().equals("PE")) {
-            org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG,
-                    "[DEBUG] EXECUTION FINISHED WITH PE ? " + "Execution Finished : UUID=" + tCExecution.getExecutionUUID()
-                    + "__ID=" + tCExecution.getId() + "__RC=" + tCExecution.getControlStatus() + "__"
-                    + "TestName=" + tCExecution.getEnvironment() + "." + tCExecution.getCountry() + "."
-                    + tCExecution.getBuild() + "." + tCExecution.getRevision() + "." + tCExecution.getTest() + "_"
-                    + tCExecution.getTestCase() + "_" + tCExecution.getTestCaseObj().getDescription().replace(".", ""));
         }
 
         return tCExecution;
@@ -552,13 +550,13 @@ public class ExecutionRunService implements IExecutionRunService {
         /**
          * Stop Execution
          */
-        MyLogger.log(ExecutionRunService.class.getName(), Level.DEBUG, tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
+        LOG.debug(tCExecution.getId() + " - Stop the execution " + tCExecution.getId() + " UUID:" + tCExecution.getExecutionUUID());
         try {
             //TODO:FN debug messages to be removed
-            org.apache.log4j.Logger.getLogger(ExecutionRunService.class.getName()).log(org.apache.log4j.Level.DEBUG, "[DEBUG] STOP " + "__ID=" + tCExecution.getId());
+            LOG.debug("[DEBUG] STOP " + "__ID=" + tCExecution.getId());
             this.stopRunTestCase(tCExecution);
         } catch (Exception ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
+            LOG.warn("Exception Stopping Execution " + tCExecution.getId() + " Exception :" + ex.toString());
         }
 
         /**
@@ -567,7 +565,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
 //            this.collectExecutionStats(tCExecution);
         } catch (Exception ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception collecting stats for execution " + tCExecution.getId() + " Exception:" + ex.toString());
+            LOG.warn("Exception collecting stats for execution " + tCExecution.getId() + " Exception:" + ex.toString());
         }
 
         /**
@@ -578,7 +576,7 @@ public class ExecutionRunService implements IExecutionRunService {
         try {
             testCaseExecutionService.updateTCExecution(tCExecution);
         } catch (CerberusException ex) {
-            MyLogger.log(ExecutionRunService.class.getName(), Level.FATAL, "Exception updating Execution :" + tCExecution.getId() + " Exception:" + ex.toString());
+            LOG.warn("Exception updating Execution :" + tCExecution.getId() + " Exception:" + ex.toString());
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
