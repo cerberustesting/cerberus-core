@@ -52,7 +52,7 @@
 }
 
 .pie:hover {
-    background-color: #fcfcfc;
+    background-color: #fbfbfb;
     z-index: -1;
     border-radius: 100%;
 }
