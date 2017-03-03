@@ -852,7 +852,7 @@ Action.prototype.draw = function () {
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.show();
+        content.hide();
     }
 
     // Starting to reduce the size of the row by the length of elements.
@@ -1147,7 +1147,7 @@ Control.prototype.draw = function () {
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.show();
+        content.hide();
     }
 
 
