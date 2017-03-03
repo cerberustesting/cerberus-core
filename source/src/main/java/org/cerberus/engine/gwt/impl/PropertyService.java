@@ -24,12 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.log4j.Level;
-import org.cerberus.engine.entity.Identifier;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -38,22 +32,30 @@ import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
-import org.cerberus.crud.service.*;
+import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ISqlLibraryService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
+import org.cerberus.crud.service.ITestDataLibService;
+import org.cerberus.crud.service.ITestDataService;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.execution.IIdentifierService;
+import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
-import org.cerberus.engine.execution.IIdentifierService;
-import org.cerberus.service.json.IJsonService;
-import org.cerberus.engine.gwt.IPropertyService;
-import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.service.sql.ISQLService;
-import org.cerberus.service.soap.ISoapService;
-import org.cerberus.service.webdriver.IWebDriverService;
-import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.groovy.IGroovyService;
+import org.cerberus.service.json.IJsonService;
+import org.cerberus.service.soap.ISoapService;
+import org.cerberus.service.sql.ISQLService;
+import org.cerberus.service.webdriver.IWebDriverService;
+import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -110,11 +112,6 @@ public class PropertyService implements IPropertyService {
     private ILogEventService logEventService;
     @Autowired
     private IVariableService variableService;
-
-    /**
-     * The property variable {@link Pattern}
-     */
-    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
 
     @Override
     public String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
@@ -228,8 +225,7 @@ public class PropertyService implements IPropertyService {
              * TestCaseExecution
              */
             tCExecution.getTestCaseExecutionDataList().add(tecd);
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Adding into Execution data list. Property : " + eachTccp.getProperty() + " Value1 : " + eachTccp.getValue1() + " Value : " + tecd.getValue());
-
+            LOG.debug("Adding into Execution data list. Property : " + eachTccp.getProperty() + " Value1 : " + eachTccp.getValue1() + " Value : " + tecd.getValue());
             /**
              * After calculation, replace properties by value calculated
              */
@@ -420,7 +416,6 @@ public class PropertyService implements IPropertyService {
      * A property is defined by including its name between two '%' character.
      * </p>
      *
-     * @see #PROPERTY_VARIABLE_PATTERN
      * @param str the {@link String} to get all properties
      * @return a list of properties contained into the given {@link String}
      */
@@ -430,19 +425,19 @@ public class PropertyService implements IPropertyService {
             return properties;
         }
 
-        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
-        while (propertyMatcher.find()) {
-            String rawProperty = propertyMatcher.group();
-            // Removes the first and last '%' character to only get the property name
-            rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
-            // Replace Property. if it exist and is in start
+        String[] text1 = str.split("%");
+        for (String rawProperty : text1) {
+            // Removes "property." string.
             rawProperty = rawProperty.replaceFirst("^property\\.", "");
             // Removes the variable part of the property eg : (subdata)
             String[] ramProp1 = rawProperty.split("\\(");
             // Removes the variable part of the property eg : .subdata
             String[] ramProp2 = ramProp1[0].split("\\.");
-            properties.add(ramProp2[0]);
+            if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim()))) {
+                properties.add(ramProp2[0]);
+            }
         }
+
         return properties;
     }
 
@@ -736,8 +731,7 @@ public class PropertyService implements IPropertyService {
 
             }
         } else {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, "Setting value : " + testCaseExecutionData.getValue1());
+            LOG.debug("Setting value : " + testCaseExecutionData.getValue1());
             String value = testCaseExecutionData.getValue1();
 
             testCaseExecutionData.setValue(value);
@@ -765,7 +759,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
 
             res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
@@ -778,7 +772,7 @@ public class PropertyService implements IPropertyService {
         if (tCExecution.getApplicationObj().getType().equals(Application.TYPE_APK)
                 || tCExecution.getApplicationObj().getType().equals(Application.TYPE_IPA)
                 || tCExecution.getApplicationObj().getType().equals(Application.TYPE_GUI)) {
-            
+
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(testCaseExecutionData.getValue1());
                 String valueFromHTML = this.webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
@@ -791,15 +785,14 @@ public class PropertyService implements IPropertyService {
 
                 }
             } catch (NoSuchElementException exception) {
-                MyLogger.log(PropertyService.class
-                        .getName(), Level.DEBUG, exception.toString());
+                LOG.debug(exception.toString());
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTML_ELEMENTDONOTEXIST);
                 res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
 
         } else {
-            
+
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_FEATURENOTSUPPORTED);
             res.setDescription(res.getDescription().replace("%APPTYPE%", tCExecution.getApplicationObj().getType()));
             res.setDescription(res.getDescription().replace("%PROPTYPE%", testCaseExecutionData.getType()));
@@ -817,7 +810,7 @@ public class PropertyService implements IPropertyService {
             valueFromJS = this.webdriverService.getValueFromJS(tCExecution.getSession(), script);
         } catch (Exception e) {
             message = e.getMessage().split("\n")[0];
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running JS Script :" + message);
+            LOG.debug("Exception Running JS Script :" + message);
             valueFromJS = null;
         }
         if (valueFromJS != null) {
@@ -850,7 +843,7 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMGROOVY)
                     .resolveDescription("VALUE", valueFromGroovy));
         } catch (IGroovyService.IGroovyServiceException e) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, "Exception Running Grrovy Script :" + e.getMessage());
+            LOG.debug("Exception Running Grrovy Script :" + e.getMessage());
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_EXCEPTION).resolveDescription("REASON", e.getMessage()));
         }
 
@@ -872,8 +865,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, "Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
+            LOG.debug("Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
 
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
@@ -898,8 +890,7 @@ public class PropertyService implements IPropertyService {
             res.setDescription(res.getDescription().replace("%ATTRIBUTE%", testCaseExecutionData.getValue2()));
 
         } catch (NoSuchElementException exception) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_HTMLVISIBLE_ELEMENTDONOTEXIST);
 
             res.setDescription(res.getDescription().replace("%ELEMENT%", testCaseExecutionData.getValue1()));
@@ -954,14 +945,13 @@ public class PropertyService implements IPropertyService {
                 }
             }
         } catch (CerberusException exception) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.ERROR, exception.toString());
+            LOG.error(exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
 
             res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
             testCaseExecutionData.setPropertyResultMessage(res);
         } catch (CerberusEventException ex) {
-            MyLogger.log(PropertyService.class.getName(), Level.ERROR, ex.toString());
+            LOG.error(ex.toString());
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription().replace("%SOAPNAME%", testCaseExecutionData.getValue1()));
             message.setDescription(message.getDescription().replace("%DESCRIPTION%", ex.getMessageError().getDescription()));
@@ -998,7 +988,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
-            MyLogger.log(PropertyService.class.getName(), Level.DEBUG, ex.toString());
+            LOG.debug(ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML);
 
             res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
@@ -1033,8 +1023,7 @@ public class PropertyService implements IPropertyService {
 
             }
         } catch (Exception exception) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.DEBUG, exception.toString());
+            LOG.debug(exception.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMCOOKIE_COOKIENOTFOUND);
 
             res.setDescription(res.getDescription().replace("%COOKIE%", testCaseExecutionData.getValue1()));
@@ -1047,27 +1036,24 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_getDifferencesFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         try {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.INFO, "Computing differences between " + testCaseExecutionData.getValue1() + " and " + testCaseExecutionData.getValue2());
+            LOG.debug("Computing differences between " + testCaseExecutionData.getValue1() + " and " + testCaseExecutionData.getValue2());
             String differences = xmlUnitService.getDifferencesFromXml(testCaseExecutionData.getValue1(), testCaseExecutionData.getValue2());
-            if (differences
-                    != null) {
-                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing done.");
+            if (differences != null) {
+                LOG.debug("Computing done.");
                 testCaseExecutionData.setValue(differences);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETDIFFERENCESFROMXML);
                 res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             } else {
-                MyLogger.log(PropertyService.class.getName(), Level.INFO, "Computing failed.");
+                LOG.debug("Computing failed.");
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
                 res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));
                 res.setDescription(res.getDescription().replace("%VALUE2%", testCaseExecutionData.getValue2()));
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
-            MyLogger.log(PropertyService.class
-                    .getName(), Level.INFO, ex.toString());
+            LOG.debug( ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
 
             res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));

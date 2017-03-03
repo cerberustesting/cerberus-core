@@ -238,14 +238,17 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
         if (!(StringUtil.isNullOrEmpty(test))) {
             query.append("and test = ? ");
         }
-        if (!(StringUtil.isNullOrEmpty(test))) {
+        if (!(StringUtil.isNullOrEmpty(testcase))) {
             query.append("and testcase = ? ");
         }
-            query.append(" order by start ");
+        query.append(" order by start ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.id : " + executionId);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testcase);
         }
         Connection connection = this.databaseSpring.connect();
         try {
@@ -256,7 +259,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 if (!(StringUtil.isNullOrEmpty(test))) {
                     preStat.setString(i++, test);
                 }
-                if (!(StringUtil.isNullOrEmpty(test))) {
+                if (!(StringUtil.isNullOrEmpty(testcase))) {
                     preStat.setString(i++, testcase);
                 }
                 ResultSet resultSet = preStat.executeQuery();
