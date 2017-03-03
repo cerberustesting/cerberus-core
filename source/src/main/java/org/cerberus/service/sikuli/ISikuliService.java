@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.sikuli;
 
-import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.Session;
 
@@ -29,5 +28,13 @@ import org.cerberus.engine.entity.Session;
  */
 public interface ISikuliService {
     
+    /**
+     *
+     * @param session
+     * @param action
+     * @param locator
+     * @param text
+     * @return
+     */
     public MessageEvent doSikuliAction(Session session, String action, String locator, String text);
 }

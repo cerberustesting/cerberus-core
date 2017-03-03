@@ -70,7 +70,7 @@
                                                 <span class="sr-only">Toggle Dropdown</span>
                                             </a>
                                             <ul class="dropdown-menu">
-                                                <li><a href="#" id="rerunTestCase"><span class="glyphicon glyphicon-forward"></span> ReRun</a></li>
+                                                <li><a href="#"><button class="btn btn-default pull-right" id="rerunTestCase" style="margin-left: 0px; margin-right: 0px;"><span class="glyphicon glyphicon-forward"></span> ReRun</button></a></li>
                                             </ul>
                                         </div>
                                         <a><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>

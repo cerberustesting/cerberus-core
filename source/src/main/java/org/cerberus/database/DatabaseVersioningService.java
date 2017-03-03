@@ -8483,6 +8483,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding new Element present Condition.
+        //-- ------------------------ 1106
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTIONCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
