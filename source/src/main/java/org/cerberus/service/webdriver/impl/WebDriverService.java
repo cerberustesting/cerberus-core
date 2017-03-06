@@ -30,6 +30,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -437,18 +442,44 @@ public class WebDriverService implements IWebDriverService {
     }
 
     @Override
-    public MessageEvent doSeleniumActionClick(Session session, Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
+    public MessageEvent doSeleniumActionClick(Session session, final Identifier identifier, boolean waitForVisibility, boolean waitForClickability) {
         MessageEvent message;
         try {
 
             AnswerItem answer = this.getSeleniumElement(session, identifier, waitForVisibility, waitForClickability);
             if (answer.isCodeEquals(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT.getCode())) {
-                WebElement webElement = (WebElement) answer.getItem();
+                final WebElement webElement = (WebElement) answer.getItem();
+
                 if (webElement != null) {
-                    webElement.click();
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-                    message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-                    return message;
+                    // We noticed that sometimes, webelement.click never finished whatever the timeout set.
+                    // Below is an implementation to secure timeout on thread before calling selenium.
+                    // This is a test that can be extended or clean depending on the result.
+                    ExecutorService executor = Executors.newCachedThreadPool();
+                    Callable<MessageEvent> task = new Callable<MessageEvent>() {
+                        public MessageEvent call() {
+                            MessageEvent message;
+                            webElement.click();
+                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
+                            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
+                            return message;
+                        }
+                    };
+                    Future<MessageEvent> future = executor.submit(task);
+                    try {
+                        MessageEvent result = future.get(session.getCerberus_selenium_action_click_timeout(), TimeUnit.MILLISECONDS);
+                        return result;
+                    } catch (java.util.concurrent.TimeoutException ex) {
+                        // handle the timeout
+                        MyLogger.log(WebDriverService.class.getName(), Level.FATAL, "Exception clicking on element :" + ex);
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
+                        message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
+                    } catch (InterruptedException e) {
+                        // handle the interrupts
+                    } catch (ExecutionException e) {
+                        // handle other exceptions
+                    } finally {
+                        future.cancel(true);
+                    }
                 }
             }
 
@@ -458,11 +489,11 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
-        } catch (TimeoutException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
-            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
-            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
-            return message;
+//        } catch (TimeoutException exception) {
+//            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_TIMEOUT);
+//            message.setDescription(message.getDescription().replace("%TIMEOUT%", String.valueOf(session.getCerberus_selenium_wait_element())));
+//            MyLogger.log(WebDriverService.class.getName(), Level.WARN, exception.toString());
+//            return message;
         } catch (WebDriverException exception) {
             MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
             return parseWebDriverException(exception);

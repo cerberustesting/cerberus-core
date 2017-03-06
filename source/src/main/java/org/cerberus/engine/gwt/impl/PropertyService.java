@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -113,6 +115,8 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private IVariableService variableService;
 
+    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
+    
     @Override
     public String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         String country = tCExecution.getCountry();
@@ -424,19 +428,33 @@ public class PropertyService implements IPropertyService {
         if (str == null) {
             return properties;
         }
-
-        String[] text1 = str.split("%");
-        for (String rawProperty : text1) {
-            // Removes "property." string.
+        
+        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
+        while (propertyMatcher.find()) {
+            String rawProperty = propertyMatcher.group();
+            // Removes the first and last '%' character to only get the property name
+            rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
+            // Replace Property. if it exist and is in start
             rawProperty = rawProperty.replaceFirst("^property\\.", "");
             // Removes the variable part of the property eg : (subdata)
             String[] ramProp1 = rawProperty.split("\\(");
             // Removes the variable part of the property eg : .subdata
             String[] ramProp2 = ramProp1[0].split("\\.");
-            if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim()))) {
-                properties.add(ramProp2[0]);
-            }
+            properties.add(ramProp2[0]);
         }
+        
+//        String[] text1 = str.split("%");
+//        for (String rawProperty : text1) {
+//            // Removes "property." string.
+//            rawProperty = rawProperty.replaceFirst("^property\\.", "");
+//            // Removes the variable part of the property eg : (subdata)
+//            String[] ramProp1 = rawProperty.split("\\(");
+//            // Removes the variable part of the property eg : .subdata
+//            String[] ramProp2 = ramProp1[0].split("\\.");
+//            if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim()))) {
+//                properties.add(ramProp2[0]);
+//            }
+//        }
 
         return properties;
     }

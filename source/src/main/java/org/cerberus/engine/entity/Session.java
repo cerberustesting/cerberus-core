@@ -38,6 +38,7 @@ public class Session {
     private Integer cerberus_selenium_setScriptTimeout;
     private Integer cerberus_selenium_wait_element;
     private Integer cerberus_appium_wait_element;
+    private Integer cerberus_selenium_action_click_timeout;
     private boolean started;
     private DesiredCapabilities desiredCapabilities;
 
@@ -136,6 +137,14 @@ public class Session {
         if (appiumDriver != null) {
             appiumDriver.closeApp();
         }
+    }
+
+    public Integer getCerberus_selenium_action_click_timeout() {
+        return cerberus_selenium_action_click_timeout;
+    }
+
+    public void setCerberus_selenium_action_click_timeout(Integer cerberus_selenium_action_click_timeout) {
+        this.cerberus_selenium_action_click_timeout = cerberus_selenium_action_click_timeout;
     }
     
 }
