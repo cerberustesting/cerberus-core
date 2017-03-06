@@ -61,6 +61,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -181,11 +182,13 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             /**
              * If Gui application, maximize window Get IP of Node in case of
-             * remote Server
+             * remote Server. Maximize does not work for chrome browser
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID)) {
-                driver.manage().window().maximize();
+                if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
+                    driver.manage().window().maximize();
+                }
                 getIPOfNode(tCExecution);
 
                 /**
@@ -224,6 +227,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     /**
      * Set DesiredCapabilities
+     *
      * @param tCExecution
      * @return
      * @throws CerberusException
@@ -270,21 +274,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
         }
 
-        /**
-         * Add custom capabilities
-         */
-        // Maximize windows for chrome browser
-        if ("chrome".equals(caps.getBrowserName())) {
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--kiosk");
-            caps.setCapability(ChromeOptions.CAPABILITY, options);
-        }
-
         return caps;
     }
 
     /**
      * Instanciate DesiredCapabilities regarding the browser
+     *
      * @param capabilities
      * @param browser
      * @param tCExecution
@@ -316,11 +311,31 @@ public class SeleniumServerService implements ISeleniumServerService {
                 capabilities.setCapability("acceptInsecureCerts", true);
                 capabilities.setCapability("acceptSslCerts", true);
                 //capabilities.setCapability("marionette", true);
+
+                // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
+                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
+                        || !tCExecution.getUserAgent().isEmpty()) {
+                    profile.setPreference("general.useragent.override", getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
+                /**
+                 * Add custom capabilities
+                 */
+                ChromeOptions options = new ChromeOptions();
+                // Maximize windows for chrome browser
+                options.addArguments("--start-fullscreen");
+                // Set UserAgent if necessary
+                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
+                        || !tCExecution.getUserAgent().isEmpty()) {
+                    options.addArguments("--user-agent=" + getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                }
+
+                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
             } else if (browser.contains("android")) {
                 capabilities = DesiredCapabilities.android();
             } else if (browser.contains("ipad")) {
@@ -344,6 +359,17 @@ public class SeleniumServerService implements ISeleniumServerService {
             throw new CerberusException(mes);
         }
         return capabilities;
+    }
+
+    /**
+     * This method determine which user agent to use.
+     *
+     * @param userAgentTestCase
+     * @param userAgentRobot
+     * @return String containing the userAgent to use
+     */
+    private String getUserAgentToUse(String userAgentTestCase, String userAgentRobot) {
+        return userAgentTestCase.isEmpty() ? userAgentRobot : userAgentTestCase;
     }
 
     @Override
@@ -406,7 +432,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     }
 
     private String getScreenSize(WebDriver driver) {
-        return driver.manage().window().getSize().width+"*"+driver.manage().window().getSize().height;
+        return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
 
     private Integer getTimeoutSetInParameterTable(String system, String parameter, Integer defaultWait, String logPrefix) {
