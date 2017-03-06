@@ -107,7 +107,7 @@ public class SeleniumServerService implements ISeleniumServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
@@ -119,7 +119,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
             cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
             cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
-
+            cerberus_selenium_action_click_timeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_action_click_timeout", 90000, logPrefix);
+            
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
@@ -128,6 +129,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
+            session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             tCExecution.setSession(session);

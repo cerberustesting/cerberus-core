@@ -8492,6 +8492,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('CONTROLCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
         SQLInstruction.add(SQLS.toString());
 
+        // Parameter in order to tune the timeout on click action
+        //-- ------------------------ 1107
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_selenium_action_click_timeout','90000','timeout in ms second used during selenium click action.')");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
