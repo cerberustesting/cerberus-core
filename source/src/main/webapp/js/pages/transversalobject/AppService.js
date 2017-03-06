@@ -202,7 +202,7 @@ function confirmAppServiceModalHandler(mode) {
 
     //Add envelope, not in the form
     data.srvRequest = encodeURIComponent($("#editSoapLibraryModal #srvRequest").text());
-    
+
     // Getting Data from Content TAB
     var table1 = $("#contentTableBody tr");
     var table_content = [];
@@ -215,7 +215,7 @@ function confirmAppServiceModalHandler(mode) {
     for (var i = 0; i < table2.length; i++) {
         table_header.push($(table2[i]).data("header"));
     }
-    
+
 
     showLoaderInModal('#editTestCaseModal');
     $.ajax({
@@ -374,6 +374,12 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
         formEdit.find("#description").prop("value", service.description);
+
+        // Feed the content table.
+        feedAppServiceModalDataContent(service.contentList);
+
+        // Feed the header table.
+        feedAppServiceModalDataHeader(service.headerList);
     }
 
     // Authorities
@@ -403,11 +409,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#description").removeProp("disabled");
     }
 
-    // Feed the content table.
-    feedAppServiceModalDataContent(service.contentList);
 
-    // Feed the header table.
-    feedAppServiceModalDataHeader(service.headerList);
 }
 
 function feedAppServiceModalDataContent(ContentList) {
@@ -421,7 +423,7 @@ function feedAppServiceModalDataContent(ContentList) {
 
 function appendContentRow(content) {
     var doc = new Doc();
-    
+
     var deleteBtn = $("<button type=\"button\"></button>").addClass("btn btn-default btn-xs").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
     var activeSelect = getSelectInvariant("APPSERVICECONTENTACT", false);
     var sortInput = $("<input  maxlength=\"4\" placeholder=\"-- " + doc.getDocLabel("appservicecontent", "Sort") + " --\">").addClass("form-control input-sm").val(content.sort);
