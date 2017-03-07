@@ -35,6 +35,7 @@ import org.cerberus.service.xmlunit.InputTranslator;
 import org.cerberus.service.xmlunit.InputTranslatorException;
 import org.cerberus.service.xmlunit.InputTranslatorManager;
 import org.cerberus.service.xmlunit.InputTranslatorUtil;
+import org.cerberus.util.StringUtil;
 import org.cerberus.util.XmlUtil;
 import org.cerberus.util.XmlUtilException;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -171,15 +172,15 @@ public class XmlUnitService implements IXmlUnitService {
     }
 
     @Override
-    public String getFromXml(String lastSOAPResponse, String url, String xpath) {
+    public String getFromXml(final String xmlToParse, final String xpath) {
         if (xpath == null) {
             LOG.warn("Null argument");
             return DEFAULT_GET_FROM_XML_VALUE;
         }
 
         try {
-            Document document = url == null ? XmlUtil.fromString(lastSOAPResponse) : XmlUtil.fromURL(new URL(url));
-            String result = XmlUtil.evaluateString(document, xpath);
+            final Document document = StringUtil.isURL(xmlToParse) ? XmlUtil.fromURL(new URL(xmlToParse)) : XmlUtil.fromString(xmlToParse);
+            final String result = XmlUtil.evaluateString(document, xpath);
             // Not that in case of multiple values then send the first one
             return result != null && result.length() > 0 ? result : DEFAULT_GET_FROM_XML_VALUE;
         } catch (XmlUtilException e) {

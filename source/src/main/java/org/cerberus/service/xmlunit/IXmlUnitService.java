@@ -55,16 +55,13 @@ public interface IXmlUnitService {
     boolean isSimilarTree(String SOAPResponse, String xpath, String tree);
 
     /**
-     * Gets a text value contained from the given URL or last SOAP call
+     * Apply the given XPath to the given XML value to parse
      *
-     * @param SOAPResponse - String of the xml soap response
-     * @param url if not <code>null</code> then use this URL to get the value.
-     * If <code>null</code> then use the last SOAP call
+     * @param xmlToParse the XML value to parse. Can be either a plain XML text or an URL from which getting the XML value
      * @param xpath to the element to get text value
-     * @return the text value from the given URL or last SOAP call which is
-     * located to the given xpath
+     * @return the result for XPath search from the given XML value or {@link org.cerberus.service.xmlunit.impl.XmlUnitService#DEFAULT_GET_FROM_XML_VALUE} if an error occurred
      */
-    String getFromXml(String SOAPResponse, String url, String xpath);
+    String getFromXml(String xmlToParse, String xpath);
 
     /**
      * Gets differences from XML representations given in argument.

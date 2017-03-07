@@ -324,8 +324,10 @@ public final class StringUtil {
      * @return true is URL looks OK and false on any other cases.
      */
     public static boolean isURL(String url) {
-        return url.startsWith("http://") || url.startsWith("https://");
-
+        return url.startsWith("http://")
+                || url.startsWith("https://")
+                // File scheme can have no authority component, then only one slash is necessary
+                || url.startsWith("file:/");
     }
 
     /**
@@ -337,6 +339,7 @@ public final class StringUtil {
      * in stead of www.laredoute.fr//fr//toto.jsp<br>
      * host = www.laredoute.fr, contextroot = fr, uri = toto.jsp will provide
      * the result : www.laredoute.fr/fr/toto.jsp<br>
+     *
      * in stead of www.laredoute.frfrtoto.jsp<br>
      * Protocol will be added in case host did not already have the protocol.
      *
