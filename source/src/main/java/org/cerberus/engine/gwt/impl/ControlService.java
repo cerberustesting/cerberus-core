@@ -847,7 +847,7 @@ public class ControlService implements IControlService {
                                 return mes;
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                            actual = xmlUnitService.getFromXml(responseBody, null, newPath);
+                            actual = xmlUnitService.getFromXml(responseBody, newPath);
                             // In case of null actual value then we alert user
                             if (actual == null) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
@@ -947,7 +947,7 @@ public class ControlService implements IControlService {
                                 throw new NoSuchElementException("Unable to find element " + path);
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                            actual = xmlUnitService.getFromXml(responseBody, null, newPath);
+                            actual = xmlUnitService.getFromXml(responseBody, newPath);
                             // In case of null actual value then we alert user
                             if (actual == null) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
