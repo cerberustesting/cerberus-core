@@ -116,7 +116,7 @@ public class PropertyService implements IPropertyService {
     private IVariableService variableService;
 
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
-    
+
     @Override
     public String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         String country = tCExecution.getCountry();
@@ -428,7 +428,7 @@ public class PropertyService implements IPropertyService {
         if (str == null) {
             return properties;
         }
-        
+
         Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
         while (propertyMatcher.find()) {
             String rawProperty = propertyMatcher.group();
@@ -442,18 +442,26 @@ public class PropertyService implements IPropertyService {
             String[] ramProp2 = ramProp1[0].split("\\.");
             properties.add(ramProp2[0]);
         }
-        
+
 //        String[] text1 = str.split("%");
+//        int i = 0;
 //        for (String rawProperty : text1) {
-//            // Removes "property." string.
-//            rawProperty = rawProperty.replaceFirst("^property\\.", "");
-//            // Removes the variable part of the property eg : (subdata)
-//            String[] ramProp1 = rawProperty.split("\\(");
-//            // Removes the variable part of the property eg : .subdata
-//            String[] ramProp2 = ramProp1[0].split("\\.");
-//            if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim()))) {
-//                properties.add(ramProp2[0]);
+//            if ((i > 0) && (i < (text1.length - 1))) { // First and last string from split is not to be considered.
+//                // Removes "property." string.
+//                rawProperty = rawProperty.replaceFirst("^property\\.", "");
+//                // Removes the variable part of the property eg : (subdata)
+//                String[] ramProp1 = rawProperty.split("\\(");
+//                // Removes the variable part of the property eg : .subdata
+//                String[] ramProp2 = ramProp1[0].split("\\.");
+//                if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim())) // Avoid getting empty Property names.
+//                        && ramProp2[0].trim().length() <= TestCaseCountryProperties.MAX_PROPERTY_LENGTH // Properties cannot be bigger than n caracters.
+//                        && !ramProp2[0].trim().contains("\n")) { // Properties cannot contain \n.
+//                    properties.add(ramProp2[0].trim());
+//                    LOG.debug("getPropertiesListFromString TO " + ramProp2[0].trim());
+//                }
+//                // Avoid getting empty Property names.
 //            }
+//            i++;
 //        }
 
         return properties;
@@ -1071,7 +1079,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
-            LOG.debug( ex.toString());
+            LOG.debug(ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
 
             res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));

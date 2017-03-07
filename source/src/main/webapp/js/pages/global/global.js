@@ -553,7 +553,12 @@ function getSelectDeployType(forceReload) {
 
 
 /**
- *
+ * Get and cache a parameter value.
+ * The forceReload boolean can force the refresh of the list from the server.
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbbuildhistorydetail"
+ * @param {string} sys system that will be used to get the parameter
+ * @param {boolean} forceReload true if we want to force the reload on cache from the server
+ * 
  */
 function getParameter(param, sys, forceReload) {
     var result;
@@ -1131,8 +1136,8 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
                 for (var f = 0; f < filters.length; f++) {
                     aoData.push(filters[f]);
                 }
-                aoData.push({name: "iSortCol_0",value: configs["aaSorting"][0][0]});
-                aoData.push({name: "sSortDir_0",value: configs["aaSorting"][0][1]});
+                aoData.push({name: "iSortCol_0", value: configs["aaSorting"][0][0]});
+                aoData.push({name: "sSortDir_0", value: configs["aaSorting"][0][1]});
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
