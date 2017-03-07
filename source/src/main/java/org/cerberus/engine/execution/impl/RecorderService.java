@@ -209,7 +209,7 @@ public class RecorderService implements IRecorderService {
         File newImage = this.webdriverService.takeScreenShotFile(testCaseExecution.getSession());
         if (newImage != null) {
             try {
-                Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "jpg");
+                Recorder recorder = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "screenshot", "png");
                 LOG.debug(logPrefix + "FullPath " + recorder.getFullPath());
 
                 File dir = new File(recorder.getFullPath());
@@ -227,7 +227,7 @@ public class RecorderService implements IRecorderService {
                 LOG.debug(logPrefix + "Copy file finished with success - source: " + newImage.getName() + " destination: " + recorder.getRelativeFilenameURL());
 
                 // Index file created to database.
-                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Screenshot", recorder.getRelativeFilenameURL(), "JPG", "", null, "", null);
+                object = testCaseExecutionFileFactory.create(0, testCaseExecution.getId(), recorder.getLevel(), "Screenshot", recorder.getRelativeFilenameURL(), "PNG", "", null, "", null);
                 testCaseExecutionFileService.save(object);
 
                 //deletes the temporary file
