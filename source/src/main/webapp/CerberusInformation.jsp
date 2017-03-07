@@ -113,20 +113,20 @@
                                     </table>
                                 </div>
                             </div>
-<!--                            <div class="row">
-                                <div class="form-group col-xs-12">
-                                    <table class="table table-bordered table-hover nomarginbottom dataTable" id="threadTable">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center" id="systemHeader" name="systemHeader">Number of Current and Pending Executions / Size of Execution Queue</th>
-                                                <th class="text-center" id="systemHeader" name="systemHeader">Number of Workers in Execution</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="threadTableBody">
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>-->
+                            <!--                            <div class="row">
+                                                            <div class="form-group col-xs-12">
+                                                                <table class="table table-bordered table-hover nomarginbottom dataTable" id="threadTable">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Current and Pending Executions / Size of Execution Queue</th>
+                                                                            <th class="text-center" id="systemHeader" name="systemHeader">Number of Workers in Execution</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="threadTableBody">
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>-->
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,24 @@
                                             </table>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-12">
+                                            <table class="table table-bordered table-hover nomarginbottom dataTable" id="jvmMemTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center" id="systemHeader" name="systemHeader">Total Memory (Mb)</th>
+                                                        <th class="text-center" id="systemHeader" name="systemHeader">Used Memory (Mb)</th>
+                                                        <th class="text-center" id="systemHeader" name="systemHeader">Free Memory (Mb)</th>
+                                                        <th class="text-center" id="systemHeader" name="systemHeader">Max Memory (Mb)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="jvmMemTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>   
                                 </div>
+
                             </div>
                         </div>
                     </div>
