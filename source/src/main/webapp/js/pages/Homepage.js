@@ -159,7 +159,7 @@ function readStatus() {
 function readLastTagExec() {
     var tagList = [];
 
-    var nbExe = getParameter("cerberus_homepage_nbbuildhistorydetail", getUser().defaultSystem, false);
+    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, false);
 
     $.ajax({
         type: "GET",

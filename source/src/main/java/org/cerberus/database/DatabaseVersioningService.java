@@ -8497,7 +8497,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_selenium_action_click_timeout','90000','timeout in ms second used during selenium click action.')");
         SQLInstruction.add(SQLS.toString());
-        
+
+        // Parameter in order to tune the number of tag displayed inside the homepage.
+        //-- ------------------------ 1108
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_homepage_nbdisplayedtag','5','Number of tag summary displayed inside homepage.')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
