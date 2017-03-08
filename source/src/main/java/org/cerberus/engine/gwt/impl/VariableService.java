@@ -60,7 +60,7 @@ public class VariableService implements IVariableService {
         }
 
         int count_decode = 1;
-        while (result.contains("%") && count_decode <= 2) {
+        while (result.contains("%") && count_decode <= 1) {
             /**
              * We iterate the property decode because properties names could be inside other properties.
              */

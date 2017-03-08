@@ -116,7 +116,7 @@ public class PropertyService implements IPropertyService {
     private IVariableService variableService;
 
     public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
-    
+
     @Override
     public String decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         String country = tCExecution.getCountry();
@@ -428,7 +428,7 @@ public class PropertyService implements IPropertyService {
         if (str == null) {
             return properties;
         }
-        
+
         Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
         while (propertyMatcher.find()) {
             String rawProperty = propertyMatcher.group();
@@ -442,18 +442,26 @@ public class PropertyService implements IPropertyService {
             String[] ramProp2 = ramProp1[0].split("\\.");
             properties.add(ramProp2[0]);
         }
-        
+
 //        String[] text1 = str.split("%");
+//        int i = 0;
 //        for (String rawProperty : text1) {
-//            // Removes "property." string.
-//            rawProperty = rawProperty.replaceFirst("^property\\.", "");
-//            // Removes the variable part of the property eg : (subdata)
-//            String[] ramProp1 = rawProperty.split("\\(");
-//            // Removes the variable part of the property eg : .subdata
-//            String[] ramProp2 = ramProp1[0].split("\\.");
-//            if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim()))) {
-//                properties.add(ramProp2[0]);
+//            if ((i > 0) && (i < (text1.length - 1))) { // First and last string from split is not to be considered.
+//                // Removes "property." string.
+//                rawProperty = rawProperty.replaceFirst("^property\\.", "");
+//                // Removes the variable part of the property eg : (subdata)
+//                String[] ramProp1 = rawProperty.split("\\(");
+//                // Removes the variable part of the property eg : .subdata
+//                String[] ramProp2 = ramProp1[0].split("\\.");
+//                if (!(StringUtil.isNullOrEmpty(ramProp2[0].trim())) // Avoid getting empty Property names.
+//                        && ramProp2[0].trim().length() <= TestCaseCountryProperties.MAX_PROPERTY_LENGTH // Properties cannot be bigger than n caracters.
+//                        && !ramProp2[0].trim().contains("\n")) { // Properties cannot contain \n.
+//                    properties.add(ramProp2[0].trim());
+//                    LOG.debug("getPropertiesListFromString TO " + ramProp2[0].trim());
+//                }
+//                // Avoid getting empty Property names.
 //            }
+//            i++;
 //        }
 
         return properties;
@@ -951,7 +959,7 @@ public class PropertyService implements IPropertyService {
                 if (soapCall.isCodeEquals(200)) {
 //                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                     String xmlResponse = se1.getResponseHTTPBody();
-                    result = xmlUnitService.getFromXml(xmlResponse, null, appService.getParsingAnswer());
+                    result = xmlUnitService.getFromXml(xmlResponse, appService.getParsingAnswer());
                 }
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
@@ -979,20 +987,29 @@ public class PropertyService implements IPropertyService {
     }
 
     private TestCaseExecutionData property_getFromXml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        String xmlResponse = "";
+        // 1. Get XML value to parse
+
+        String xmlToParse = null;
+        // If value2 is defined, then take it as XML value to parse
+        if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
+            xmlToParse = testCaseExecutionData.getValue2();
+        }
+        // Else try to get the last known response from service call
+        else if (tCExecution.getLastServiceCalled() != null) {
+            xmlToParse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+        }
+        // If XML to parse is still null, then there is an error in XML value definition
+        else if (xmlToParse == null) {
+            testCaseExecutionData.setPropertyResultMessage(
+                    new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
+                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+            return testCaseExecutionData;
+        }
+        // Else we can try to parse it thanks to the dedicated service
+
         try {
-            /**
-             * If tCExecution LastServiceCalled exist, get the response;
-             */
-            if (null != tCExecution.getLastServiceCalled()) {
-                xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-            }
-            // If value1 has no value defined, we force the new url to null.
-            String newUrl = null;
-            if (!(StringUtil.isNullOrEmpty(testCaseExecutionData.getValue2()))) {
-                newUrl = testCaseExecutionData.getValue2();
-            }
-            String valueFromXml = xmlUnitService.getFromXml(xmlResponse, newUrl, testCaseExecutionData.getValue1());
+            String valueFromXml = xmlUnitService.getFromXml(xmlToParse, testCaseExecutionData.getValue1());
             if (valueFromXml != null) {
                 testCaseExecutionData.setValue(valueFromXml);
                 MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMXML);
@@ -1071,7 +1088,7 @@ public class PropertyService implements IPropertyService {
                 testCaseExecutionData.setPropertyResultMessage(res);
             }
         } catch (Exception ex) {
-            LOG.debug( ex.toString());
+            LOG.debug(ex.toString());
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETDIFFERENCESFROMXML);
 
             res.setDescription(res.getDescription().replace("%VALUE1%", testCaseExecutionData.getValue1()));

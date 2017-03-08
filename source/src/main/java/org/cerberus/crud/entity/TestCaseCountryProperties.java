@@ -75,6 +75,9 @@ public class TestCaseCountryProperties {
     public static final String NATURE_RANDOM = "RANDOM";
     public static final String NATURE_RANDOMNEW = "RANDOMNEW";
     public static final String NATURE_NOTINUSE = "NOTINUSE";
+    // Others
+    public static final int MAX_PROPERTY_LENGTH = 160;
+    
 
     public List<TestCaseCountry> getTccList() {
         return tccList;

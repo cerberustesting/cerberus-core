@@ -156,9 +156,22 @@ public class ReadTestCaseExecutionMedia extends HttpServlet {
             String pathString = parameterService.getParameterStringByKey("cerberus_mediastorage_path", "", "");
             switch (tceFile.getFileType()) {
                 case "JPG":
-                case "PNG":
-                case "GIF":
                 case "JPEG":
+                    if (autoContentType) {
+                        response.setContentType("image/jpeg");
+                    }
+                    returnImage(request, response, tceFile, pathString);
+                    break;
+                case "PNG":
+                    if (autoContentType) {
+                        response.setContentType("image/png");
+                    }
+                    returnImage(request, response, tceFile, pathString);
+                    break;
+                case "GIF":
+                    if (autoContentType) {
+                        response.setContentType("image/gif");
+                    }
                     returnImage(request, response, tceFile, pathString);
                     break;
                 case "HTML":

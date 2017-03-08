@@ -34,7 +34,7 @@
             <div id="change-password-box" class="login-box" >
                 <form id="changePasswordForm" title="Change Password" method="post">
                     <H3>Password Recovery</H3>
-                    <br><br>
+
                     Dear,<br><br> 
                     A request password request has been submitted to your account.
                     Please feed the reset password formulary to acheive the change.
@@ -42,25 +42,35 @@
                     <input type="hidden" name="login" id="login" value="<%=request.getUserPrincipal() == null ? request.getParameter("login") : request.getUserPrincipal().getName()%>">
                     <input type="hidden" name="resetPasswordToken" id="resetPasswordToken"/>
 
-                    <div id="currentPasswordLabel" class="form-group col-xs-5" style="margin-top:10px;">
-                        Current Password:
+                    <div class="row">
+                        <div id="currentPasswordLabel" class="form-group col-xs-5" style="margin-top:10px;">
+                            Current Password:
+                        </div>
+                        <div id="currentPasswordDiv" class="form-group col-xs-7">
+                            <input class="form-login" type="password" name="currentPassword" id="currentPassword" maxlength="20"/>
+                        </div>
                     </div>
-                    <div id="currentPasswordDiv" class="form-group col-xs-7">
-                        <input class="form-login" type="password" name="currentPassword" id="currentPassword" maxlength="20"/>
+
+                    <div class="row">
+                        <div class="form-group col-xs-5" style="margin-top:10px;">
+                            New password:
+                        </div>
+                        <div class="form-group col-xs-7">
+                            <input class="form-login" type="password" name="newPassword" id="newPassword" maxlength="20"/>
+                        </div>
                     </div>
-                    <div class="form-group col-xs-5" style="margin-top:10px;">
-                        New password:
+
+                    <div class="row">
+                        <div class="form-group col-xs-5" style="margin-top:10px;">
+                            New password confirmation:
+                        </div>
+                        <div class="form-group col-xs-7">
+                            <input class="form-login" type="password" name="confirmPassword" id="confirmPassword" maxlength="20"/>
+                        </div>
                     </div>
-                    <div class="form-group col-xs-7">
-                        <input class="form-login" type="password" name="newPassword" id="newPassword" maxlength="20"/>
+                    <div class="row">
+                        <button type ="button" class="btn btn-primary col-xs-12" id="changePassword">Change Password</button>
                     </div>
-                    <div class="form-group col-xs-5" style="margin-top:10px;">
-                        New password confirmation:
-                    </div>
-                    <div class="form-group col-xs-7">
-                        <input class="form-login" type="password" name="confirmPassword" id="confirmPassword" maxlength="20"/>
-                    </div>
-                    <button type ="button" class="btn btn-primary col-xs-6" id="changePassword">Change Password</button>
                 </form>
                 <div class="col-xs-12">
                     <a href="./">homepage</a>

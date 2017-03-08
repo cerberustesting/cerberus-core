@@ -113,14 +113,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
             } else {
-                cerberus_selenium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_wait_element", 90000, logPrefix);
-                cerberus_appium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_appium_wait_element", 90000, logPrefix);;
+                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
+                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
             }
-            cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
-            cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
-            cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
-            cerberus_selenium_action_click_timeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_action_click_timeout", 90000, logPrefix);
-            
+
+            cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
+            cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
+            cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
+            cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
+
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
 
             Session session = new Session();
@@ -437,21 +438,4 @@ public class SeleniumServerService implements ISeleniumServerService {
         return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
 
-    private Integer getTimeoutSetInParameterTable(String system, String parameter, Integer defaultWait, String logPrefix) {
-        try {
-            AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", parameter, system);
-            if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
-                if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
-                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue());
-                } else {
-                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value());
-                }
-            } else {
-                LOG.warn(logPrefix + "Parameter (" + parameter + ") not set in Parameter table, default value set to " + defaultWait + " milliseconds. ");
-            }
-        } catch (NumberFormatException ex) {
-            LOG.warn(logPrefix + "Parameter (" + parameter + ") must be an integer, default value set to " + defaultWait + " milliseconds. " + ex.toString());
-        }
-        return defaultWait;
-    }
 }

@@ -140,60 +140,65 @@ public class XmlUnitServiceTest {
 
     @Test
     public void testGetFromXmlWithValidURLAndExistingElement() {
-        Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a[2]/text()"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a[2]/text()"));
     }
 
     @Test
     public void testGetFromXmlWithValidURLAndExistingElementJustTheFirstOne() {
-        Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a/text()"));
+        Assert.assertEquals("1", xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/a/text()"));
     }
 
     @Test
     public void testGetFromXmlWithValidURLAndExistingElementWithNamespace() {
-        Assert.assertEquals("2", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data-namespaces.xml").toString(), "/:root/prefix:a[2]/text()"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data-namespaces.xml").toString(), "/:root/prefix:a[2]/text()"));
     }
 
     @Test
     public void testGetFromXmlWithValidURLAndNotExistingElement() {
-        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/b"));
+        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/b"));
     }
     
     @Test
     public void testGetSubstringFromXmlWithValidURLAndExistingElement() {
-        Assert.assertEquals("1234", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "substring(/root/a[3], 1, 4)"));
+        Assert.assertEquals("1234", xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "substring(/root/a[3], 1, 4)"));
     }
     
     @Test
     public void testGetFromXmlWithValidURLAndExistingMultipleElement() {
-        Assert.assertEquals("1", xmlUnitService.getFromXml("1234", getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/c"));
+        Assert.assertEquals("1", xmlUnitService.getFromXml(getClass().getResource("/org/cerberus/serviceEngine/impl/data.xml").toString(), "/root/c"));
     }
 
     @Test
-    public void testGetFromXmlWithNullURLAndExistingElement() {
+    public void testGetFromXmlWithNonValidURL() {
+        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml("file:/non-valid-url", "/foo/bar"));
+    }
+
+    @Test
+    public void testGetFromXmlWithValidXMLTextAndExistingElement() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
 
-        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/a[2]/text()"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, "/root/a[2]/text()"));
     }
 
     @Test
-    public void testGetFromXmlWithNullURLAndExistingElementJustTheFirstOne() {
+    public void testGetFromXmlWithValidXMLTextAndExistingElementJustTheFirstOne() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
 
-        Assert.assertEquals("1", xmlUnitService.getFromXml(xmlResponse, null, "/root/a/text()"));
+        Assert.assertEquals("1", xmlUnitService.getFromXml(xmlResponse, "/root/a/text()"));
     }
 
     @Test
-    public void testGetFromXmlWithNullURLAndExistingElementWithNamespace() {
+    public void testGetFromXmlWithValidXMLTextAndExistingElementWithNamespace() {
         String xmlResponse = "<root xmlns:prefix=\"http://prefix\"><prefix:a>1</prefix:a><prefix:a>2</prefix:a></root>";
 
-        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, null, "/root/prefix:a[2]/text()"));
+        Assert.assertEquals("2", xmlUnitService.getFromXml(xmlResponse, "/root/prefix:a[2]/text()"));
     }
 
     @Test
-    public void testGetFromXmlWithNullURLAndNotExistingElement() {
+    public void testGetFromXmlWithValidXMLTextAndNotExistingElement() {
         String xmlResponse = "<root><a>1</a><a>2</a></root>";
 
-        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml(xmlResponse, null, "/root/b"));
+        Assert.assertEquals(XmlUnitService.DEFAULT_GET_FROM_XML_VALUE, xmlUnitService.getFromXml(xmlResponse, "/root/b"));
     }
 
     @Test

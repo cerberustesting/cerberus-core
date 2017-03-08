@@ -65,6 +65,20 @@ function feedContent() {
         row.append(cel1);
         table.append(row);
 
+        var table = $("#jvmMemTableBody");
+        table.empty();
+        var row = $("<tr></tr>");
+        var cel1 = $("<td></td>").append(data.javaTotalMemory);
+        var cel2 = $("<td></td>").append(data.javaUsedMemory);
+        var cel3 = $("<td></td>").append(data.javaFreeMemory);
+        var cel4 = $("<td></td>").append(data.javaMaxMemory);
+        row.append(cel1);
+        row.append(cel2);
+        row.append(cel3);
+        row.append(cel4);
+        table.append(row);
+
+
         var table = $("#sessionNbTableBody");
         table.empty();
         var row = $("<tr></tr>");
@@ -168,9 +182,9 @@ function FormatedExeId(id) {
         return id
     } else {
         var data = getParameter("cerberus_executiondetail_use");
-        if(data.value == "N"){
+        if (data.value == "N") {
             return "<a href='ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
-        }else{
+        } else {
             return "<a href='ExecutionDetail2.jsp?executionId=" + id + "'>" + id + "</a>";
         }
     }
