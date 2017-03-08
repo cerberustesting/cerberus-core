@@ -98,6 +98,8 @@ public interface ITestCaseExecutionInQueueService {
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
 
+    public AnswerList readByTag(String tag) throws CerberusException;
+
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 
     public AnswerList readDistinctEnvCoutnryBrowserByTag(String tag);

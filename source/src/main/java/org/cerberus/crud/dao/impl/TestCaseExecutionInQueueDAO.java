@@ -805,6 +805,79 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         answer.setResultMessage(msg);
         return answer;
     }
+    
+    @Override
+    public AnswerList readByTag(String tag) throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+        
+        final StringBuilder query = new StringBuilder();
+
+        query.append("SELECT * FROM testcaseexecutionqueue exq ");
+        query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
+        query.append("left join application app on tec.application = app.application ");
+        query.append("where exq.tag = ? ");
+        
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+        }
+
+        List<TestCaseExecutionInQueue> testCaseExecutionInQueueList = new ArrayList<TestCaseExecutionInQueue>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+
+            preStat.setString(1, tag);
+            
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionInQueueList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                    }
+
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecutionInQueue").replace("%OPERATION%", "SELECT"));
+                    answer = new AnswerList(testCaseExecutionInQueueList, testCaseExecutionInQueueList.size());
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionInQueueList = null;
+                } catch (FactoryCreationException ex) {
+                    LOG.error("Unable to execute query : " + ex.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionInQueueList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionInQueueList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+        answer.setResultMessage(msg);
+        return answer;
+    }
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {

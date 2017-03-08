@@ -1140,7 +1140,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if (objectWaitingLayer !== undefined) {
                 showLoader(objectWL);
             }
-            console.log(aoData);
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",

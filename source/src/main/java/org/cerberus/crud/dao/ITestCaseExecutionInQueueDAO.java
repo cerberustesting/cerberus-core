@@ -95,6 +95,14 @@ public interface ITestCaseExecutionInQueueDAO {
     List<Long> toCancelled(List<Long> ids) throws CerberusException;
 
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException;
+    
+    /**
+     * Read TestCaseExecutionInQueue By Tag
+     * @param tag Tag used to filter execution
+     * @return AnswerList that contains a list of TestCaseExecutionInQueue object enriched with TestCase and Application objects
+     * @throws CerberusException
+     */
+    public AnswerList readByTag(String tag) throws CerberusException;
 
     public AnswerList readByCriteria(int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch);
 

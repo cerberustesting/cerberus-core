@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="css/pages/ReportingExecutionByTag.css" type="text/css"/>
         <script type="text/javascript" src="dependencies/D3js-3.x.x/js/d3.min.js"></script>
         <script type="text/javascript" src="dependencies/D3-tip-0.6.7/js/index.js"></script>
-        <script type="text/javascript" src="js/pages/ReportingExecutionByTag2.js"></script>
+        <script type="text/javascript" src="js/pages/ReportingExecutionByTag.js"></script>
         <title id="pageTitle">Campaign Reporting</title>
     </head>
     <body>
@@ -40,44 +40,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <label id="countryLabel" class="bold">Country :</label>
-                            <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
-                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
-                            <div class="form-group" id="countryFilter">
-                            </div>
-                            <label id="statusLabel" class="bold">Status :</label>
-                            <button id="statusSelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
-                            <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
-                            <div class="form-group marginBottom20" id="statusFilter">
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="OK" checked/>
-                                    OK
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="KO" checked/>
-                                    KO
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="FA" checked/>
-                                    FA
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="NA" checked/>
-                                    NA
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="NE" checked/>
-                                    NE
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="PE" checked/>
-                                    PE
-                                </label>
-                                <label class="checkbox-inline">
-                                    <input type="checkbox" name="CA" checked/>
-                                    CA
-                                </label>
-                            </div>
                                     <label for="selectTag">Start :</label>
                                     <input type="text" class="form-control" name="startExe" id="startExe" readonly aria-describedby="basic-addon1" >
                                     <label for="selectTag">End :</label>
@@ -95,6 +57,7 @@
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="ReportByStatus">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadByStatusAndByfunctionReports()" id="reloadByStatusAndByfunctionbutton1">Reload</button>
                             <div class="row">
                                 <div class="col-xs-6" id="ReportByStatusTable"></div>
                                 <div class="col-xs-6" id="statusChart"></div>
@@ -112,6 +75,7 @@
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="functionChart">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadByStatusAndByfunctionReports()" id="reloadByStatusAndByfunctionbutton2">Reload</button>
                             <div class="row">
                                 <div class="col-xs-12" id="ReportByfunctionChart"></div>
                             </div>
@@ -132,6 +96,7 @@
                         </div>
                         <div class="panel-body collapse in" id="reportEnvCountryBrowser">
                             <label id="splitLabel" class="bold">Split by :</label>
+                            <button type="button" class="btn btn-default pull-right" onclick="loadEnvCountryBrowserReport()" id="reloadSplit">Reload</button>
                             <div class="form-group marginBottom20" id="splitFilter">
                                 <label class="checkbox-inline">
                                     <input type="checkbox" name="env" checked/>
@@ -197,6 +162,45 @@
                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                         </div>
                         <div class="panel-body collapse in" id="listReport">
+                            <button type="button" class="btn btn-default pull-right" onclick="loadReportList()" id="reloadbutton">Reload</button>
+                            <label id="countryLabel" class="bold">Country :</label>
+                            <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                            <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
+                            <div class="form-group" id="countryFilter">
+                            </div>
+                            <label id="statusLabel" class="bold">Status :</label>
+                            <button id="statusSelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
+                            <button id="statusUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
+                            <div class="form-group marginBottom20" id="statusFilter">
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="OK" checked/>
+                                    OK
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="KO" checked/>
+                                    KO
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="FA" checked/>
+                                    FA
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="NA" checked/>
+                                    NA
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="NE" checked/>
+                                    NE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="PE" checked/>
+                                    PE
+                                </label>
+                                <label class="checkbox-inline">
+                                    <input type="checkbox" name="CA" checked/>
+                                    CA
+                                </label>
+                            </div>
                             <div id="tableArea">
                                 <table id="listTable" class="table display" name="listTable"></table>
                                 <div class="marginBottom20"></div>

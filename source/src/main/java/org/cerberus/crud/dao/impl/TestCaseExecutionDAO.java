@@ -1039,6 +1039,76 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         answer.setDataList(testCaseExecutionList);
         return answer;
     }
+    
+    @Override
+    public AnswerList readByTag(String tag) throws CerberusException {
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+        AnswerList answer = new AnswerList();
+        
+        final StringBuffer query = new StringBuffer();
+
+        query.append("SELECT * FROM testcaseexecution exe ");
+        query.append("left join testcase tec on exe.Test = tec.Test and exe.TestCase = tec.TestCase ");
+        query.append("left join application as app on tec.application = app.application ");
+        query.append("where 1=1 and exe.tag = ? ");
+        
+        
+    // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query.toString());
+            LOG.debug("SQL.param.tag : " + tag);
+        }
+        List<TestCaseExecution> testCaseExecutionList = new ArrayList<TestCaseExecution>();
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query.toString());
+            preStat.setString(1, tag);
+            
+            try {
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    while (resultSet.next()) {
+                        testCaseExecutionList.add(this.loadWithDependenciesFromResultSet(resultSet));
+                    }
+                    msg.setDescription(msg.getDescription().replace("%ITEM%", "TestCaseExecution").replace("%OPERATION%", "SELECT"));
+                    answer.setTotalRows(testCaseExecutionList.size());
+                } catch (SQLException exception) {
+                    MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                    testCaseExecutionList = null;
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+                testCaseExecutionList = null;
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            testCaseExecutionList = null;
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                MyLogger.log(TestCaseExecutionDAO.class.getName(), Level.WARN, e.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to retrieve the list of entries!"));
+            }
+        }
+
+        answer.setResultMessage(msg);
+        answer.setDataList(testCaseExecutionList);
+        return answer;
+    }
 
     @Override
     public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
@@ -1802,6 +1872,13 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         testCaseExecution = this.loadFromResultSet(resultSet);
         testCaseExecution.setTestCaseObj(testCaseDAO.loadFromResultSet(resultSet));
         testCaseExecution.setApplicationObj(applicationDAO.loadFromResultSet(resultSet));
+        return testCaseExecution;
+    }
+    
+    private TestCaseExecution loadWithTestCaseFromResultSet(ResultSet resultSet) throws SQLException {
+        TestCaseExecution testCaseExecution = new TestCaseExecution();
+        testCaseExecution = this.loadFromResultSet(resultSet);
+        testCaseExecution.setTestCaseObj(testCaseDAO.loadFromResultSet(resultSet));
         return testCaseExecution;
     }
 
