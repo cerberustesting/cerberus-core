@@ -202,7 +202,7 @@ function loadTagFilters(urlTag) {
 function loadAllReports() {
     var selectTag = $("#selectTag option:selected").text();
 
-    InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(selectTag));
+    InsertURLInHistory('ReportingExecutionByTag1.jsp?Tag=' + encodeURIComponent(selectTag));
 
     if (selectTag !== "") {
         //handle the test case execution list display

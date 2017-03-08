@@ -206,7 +206,7 @@ function loadAllReports(urlTag) {
     
     if (urlTag === undefined) {
     urlTag = $('#selectTag').val();
-    InsertURLInHistory('ReportingExecutionByTag2.jsp?Tag=' + encodeURIComponent(urlTag)+'');
+    InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(urlTag)+'');
     }
     
     if (urlTag !== "") {
