@@ -1010,7 +1010,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(html);
@@ -1116,7 +1118,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control : verifyTextInPage on : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             String pageSource;
             try {
@@ -1160,7 +1164,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control : VerifyTextNotInPage on : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             String pageSource;
             try {
