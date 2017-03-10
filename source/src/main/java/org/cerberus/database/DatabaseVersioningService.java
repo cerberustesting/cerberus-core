@@ -8505,7 +8505,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Modification of the size of the Port.
-        //-- ------------------------ 1109 - 1110
+        //-- ------------------------ 1109 - 1111
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecution` ");
         SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
@@ -8513,6 +8513,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `robot` ");
         SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
