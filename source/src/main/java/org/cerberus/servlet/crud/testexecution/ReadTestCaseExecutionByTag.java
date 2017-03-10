@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -369,12 +370,12 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             }
             if (testCaseExecution.getStart() != 0) {
                 if ((globalStart.isEmpty()) || (globalStart.compareTo(String.valueOf(testCaseExecution.getStart())) > 0)) {
-                    globalStart = String.valueOf(testCaseExecution.getStart());
+                    globalStart = String.valueOf(new Date(testCaseExecution.getStart()));
                 }
             }
             if (!testCaseExecution.getControlStatus().equalsIgnoreCase("PE") && testCaseExecution.getEnd() != 0) {
                 if ((globalEnd.isEmpty()) || (globalEnd.compareTo(String.valueOf(testCaseExecution.getEnd())) < 0)) {
-                    globalEnd = String.valueOf(testCaseExecution.getEnd());
+                    globalEnd = String.valueOf(new Date(testCaseExecution.getEnd()));
                 }
             }
             if (testCaseExecution.getControlStatus().equalsIgnoreCase("PE")) {

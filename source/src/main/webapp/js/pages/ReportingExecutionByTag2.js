@@ -243,8 +243,8 @@ function loadByStatusAndByfunctionReports(data) {
     $("#ReportByfunctionChart").empty();
     loadReportByStatusTable(data);
     loadReportByFunctionChart(data);
-    $("#startExe").val(new Date(data.globalStart*1000));
-    $("#endExe").val(new Date(data.globalEnd*1000));
+    $("#startExe").val(data.globalStart);
+    $("#endExe").val(data.globalEnd);
 
 }
 
