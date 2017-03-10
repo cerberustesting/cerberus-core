@@ -8504,6 +8504,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_homepage_nbdisplayedtag','5','Number of tag summary displayed inside homepage.')");
         SQLInstruction.add(SQLS.toString());
 
+        // Modification of the size of the Port.
+        //-- ------------------------ 1109 - 1110
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
