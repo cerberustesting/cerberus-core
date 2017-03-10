@@ -759,8 +759,8 @@ function aoColumnsFunc(Columns) {
 
         var col = {
             "title": title,
-            "bSortable": false,
-            "bSearchable": false,
+            "bSortable": true,
+            "bSearchable": true,
             "sWidth": testExecWidth + "%",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;

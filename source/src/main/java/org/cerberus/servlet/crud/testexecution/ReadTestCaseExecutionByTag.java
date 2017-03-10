@@ -319,11 +319,11 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                     columnMap.put(testCaseExecution.getBrowser() + "_" + testCaseExecution.getCountry() + "_" + testCaseExecution.getEnvironment(), column);
 
                 }
-
+                Map<String, JSONObject> treeMap = new TreeMap<String, JSONObject>(columnMap);
                 testCaseExecutionTable.put("tableContent", ttc.values());
                 testCaseExecutionTable.put("iTotalRecords", ttc.size());
                 testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
-                testCaseExecutionTable.put("tableColumns", columnMap.values());
+                testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
                 Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
             }
