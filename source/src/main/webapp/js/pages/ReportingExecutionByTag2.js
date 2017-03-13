@@ -174,7 +174,6 @@ function displayPageLabel(doc) {
 
 function loadTagFilters(urlTag) {
     var jqxhr = $.get("ReadTag", "", "json");
-    console.log("callTag");
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         if (messageType === "success") {
@@ -203,12 +202,12 @@ function loadTagFilters(urlTag) {
 }
 
 function loadAllReports(urlTag) {
-    
+
     if (urlTag === undefined) {
-    urlTag = $('#selectTag').val();
-    InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(urlTag)+'');
+        urlTag = $('#selectTag').val();
+        InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(urlTag) + '');
     }
-    
+
     if (urlTag !== "") {
         loadReportingData(urlTag);
     }
@@ -223,14 +222,13 @@ function loadReportingData(selectTag) {
     var params = $("#splitFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
-    
+
     //Retrieve data for charts and draw them
-    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag="+selectTag+"&"+statusFilter.serialize() + "&" + countryFilter.serialize() + "&" +params.serialize(), null, "json");
-    console.log("call");
+    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
         loadByStatusAndByfunctionReports(data.functionChart);
         loadEnvCountryBrowserReport(data.statsChart);
-        loadReportList(data.table);
+        loadReportList(data.table, selectTag);
     });
 
 }
@@ -299,7 +297,7 @@ function loadEnvCountryBrowserReport(data) {
     //adds a loader to a table 
     showLoader($("#reportEnvCountryBrowser"));
     $("#progressEnvCountryBrowser").empty();
-    
+
 
     var len = data.contentTable.split.length;
     createSummaryTable(data.contentTable);
@@ -311,9 +309,8 @@ function loadEnvCountryBrowserReport(data) {
 
 }
 
-function loadReportList(data2) {
+function loadReportList(data2, selectTag) {
     showLoader($("#listReport"));
-    var selectTag = $("#selectTag option:selected").text();
     
     if (selectTag !== "") {
         if ($("#listTable_wrapper").hasClass("initialized")) {
@@ -323,11 +320,10 @@ function loadReportList(data2) {
         }
 
         var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns));
-        customConfig(config);
-        console.log(data2);
-        createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
-        $('#listTable_wrapper').not('.initialized').addClass('initialized');
-        hideLoader($("#listReport"));
+            customConfig(config);
+            createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
+            $('#listTable_wrapper').not('.initialized').addClass('initialized');
+            hideLoader($("#listReport"));
 
         //});
     }
@@ -586,7 +582,6 @@ function exportReport() {
 
 function controlExportRadioButtons() {
     //control radiobuttons
-    console.log("mudou ");
     var isChecked = $(this).prop("checked");
     if (isChecked) {
         $("input[name='exportOption']").prop("disabled", false);
