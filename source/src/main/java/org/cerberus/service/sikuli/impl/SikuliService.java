@@ -61,25 +61,25 @@ public class SikuliService implements ISikuliService {
         /**
          * Get Picture from URL and convert to Base64
          */
-        if (locator!=null){
-        URL url = new URL(locator);
-        URLConnection connection = url.openConnection();
-        
-        InputStream istream = new BufferedInputStream(connection.getInputStream());
-        
-        /**
-         * Get the MimeType and the extension
-         */
-        String mimeType = URLConnection.guessContentTypeFromStream(istream);
-        MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
-        MimeType mt = allTypes.forName(mimeType);
-        extension = mt.getExtension(); 
-  
-        /**
-         * Encode in Base64
-         */
-        byte[] bytes = IOUtils.toByteArray(istream);
-        picture = Base64.encodeBase64URLSafeString(bytes);
+        if (locator != null) {
+            URL url = new URL(locator);
+            URLConnection connection = url.openConnection();
+
+            InputStream istream = new BufferedInputStream(connection.getInputStream());
+
+            /**
+             * Get the MimeType and the extension
+             */
+            String mimeType = URLConnection.guessContentTypeFromStream(istream);
+            MimeTypes allTypes = MimeTypes.getDefaultMimeTypes();
+            MimeType mt = allTypes.forName(mimeType);
+            extension = mt.getExtension();
+
+            /**
+             * Encode in Base64
+             */
+            byte[] bytes = IOUtils.toByteArray(istream);
+            picture = Base64.encodeBase64URLSafeString(bytes);
         }
         /**
          * Build JSONObject with parameters action : Action expected to be done
@@ -139,15 +139,15 @@ public class SikuliService implements ISikuliService {
              * If response contains Failed, return failed message
              */
             if (response.toString().contains("Failed")) {
-                if (!action.equals("verifyElementPresent")){
-                MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
-                mes.setDescription(mes.getDescription().replace("%ACTION%", action));
-                mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
-                return mes;
+                if (!action.equals("verifyElementPresent")) {
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND);
+                    mes.setDescription(mes.getDescription().replace("%ACTION%", action));
+                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", locator));
+                    return mes;
                 } else {
-                MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
-                return mes;
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", locator));
+                    return mes;
                 }
             }
             in.close();
@@ -182,23 +182,23 @@ public class SikuliService implements ISikuliService {
         if (action.equals(TestCaseStepAction.ACTION_CLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals( TestCaseStepAction.ACTION_RIGHTCLICK)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_RIGHTCLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_RIGHTCLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals( TestCaseStepAction.ACTION_DOUBLECLICK)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_DOUBLECLICK)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_DOUBLECLICK);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals( TestCaseStepAction.ACTION_TYPE)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_TYPE)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_TYPE);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
             message.setDescription(message.getDescription().replace("%DATA%", text));
-        } else if (action.equals( TestCaseStepAction.ACTION_MOUSEOVER)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_MOUSEOVER)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_MOUSEOVER);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals( TestCaseStepAction.ACTION_KEYPRESS)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_KEYPRESS)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_KEYPRESS);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
-        } else if (action.equals( TestCaseStepAction.ACTION_WAIT)) {
+        } else if (action.equals(TestCaseStepAction.ACTION_WAIT)) {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", locator));
         } else if (action.equals(TestCaseStepActionControl.CONTROL_VERIFYELEMENTPRESENT)) {

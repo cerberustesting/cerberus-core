@@ -966,6 +966,10 @@
         <servlet-name>SaveTestCaseLabel</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.SaveTestCaseLabel</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ReadTestCaseExecutionByTag</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionByTag</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1910,6 +1914,10 @@
         <servlet-name>SaveTestCaseLabel</servlet-name>
         <url-pattern>/SaveTestCaseLabel</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ReadTestCaseExecutionByTag</servlet-name>
+        <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2032,6 +2040,7 @@
             <url-pattern>/ReadTestCase</url-pattern>
             <url-pattern>/ReadTest</url-pattern>
             <url-pattern>/GetReportTest</url-pattern>
+            <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>TestRO</description>

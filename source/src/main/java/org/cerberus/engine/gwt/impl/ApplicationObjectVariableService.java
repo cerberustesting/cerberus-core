@@ -64,7 +64,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         String stringToDecodeInit = stringToDecode;
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting to decode string : : " + stringToDecode);
+            LOG.debug("Starting to decode string : " + stringToDecode);
         }
 
         /**
@@ -78,7 +78,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
 
         if (internalPropertiesFromStringToDecode.isEmpty()) { // We escape if no property found on the string to decode
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (no properties detected in string) : . result : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+                LOG.debug("Finished to decode (no properties detected in string). Result : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
             }
             return stringToDecode;
         }

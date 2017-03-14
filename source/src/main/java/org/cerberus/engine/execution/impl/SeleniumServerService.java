@@ -61,6 +61,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -106,18 +107,20 @@ public class SeleniumServerService implements ISeleniumServerService {
              * level, set the selenium & appium wait element with this value,
              * else, take the one from parameter
              */
-            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element;
+            Integer cerberus_selenium_pageLoadTimeout, cerberus_selenium_implicitlyWait, cerberus_selenium_setScriptTimeout, cerberus_selenium_wait_element, cerberus_appium_wait_element, cerberus_selenium_action_click_timeout;
 
             if (!tCExecution.getTimeout().isEmpty()) {
                 cerberus_selenium_wait_element = Integer.valueOf(tCExecution.getTimeout());
                 cerberus_appium_wait_element = Integer.valueOf(tCExecution.getTimeout());
             } else {
-                cerberus_selenium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_wait_element", 90000, logPrefix);
-                cerberus_appium_wait_element = this.getTimeoutSetInParameterTable(system, "cerberus_appium_wait_element", 90000, logPrefix);;
+                cerberus_selenium_wait_element = parameterService.getParameterIntegerByKey("cerberus_selenium_wait_element", system, 90000);
+                cerberus_appium_wait_element = parameterService.getParameterIntegerByKey("cerberus_appium_wait_element", system, 90000);
             }
-            cerberus_selenium_pageLoadTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_pageLoadTimeout", 90000, logPrefix);
-            cerberus_selenium_implicitlyWait = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_implicitlyWait", 0, logPrefix);
-            cerberus_selenium_setScriptTimeout = this.getTimeoutSetInParameterTable(system, "cerberus_selenium_setScriptTimeout", 90000, logPrefix);
+
+            cerberus_selenium_pageLoadTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_pageLoadTimeout", system, 90000);
+            cerberus_selenium_implicitlyWait = parameterService.getParameterIntegerByKey("cerberus_selenium_implicitlyWait", system, 0);
+            cerberus_selenium_setScriptTimeout = parameterService.getParameterIntegerByKey("cerberus_selenium_setScriptTimeout", system, 90000);
+            cerberus_selenium_action_click_timeout = parameterService.getParameterIntegerByKey("cerberus_selenium_action_click_timeout", system, 90000);
 
             LOG.debug(logPrefix + "TimeOut defined on session : " + cerberus_selenium_wait_element);
 
@@ -127,6 +130,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             session.setCerberus_selenium_setScriptTimeout(cerberus_selenium_setScriptTimeout);
             session.setCerberus_selenium_wait_element(cerberus_selenium_wait_element);
             session.setCerberus_appium_wait_element(cerberus_appium_wait_element);
+            session.setCerberus_selenium_action_click_timeout(cerberus_selenium_action_click_timeout);
             session.setHost(tCExecution.getSeleniumIP());
             session.setPort(tCExecution.getPort());
             tCExecution.setSession(session);
@@ -148,19 +152,19 @@ public class SeleniumServerService implements ISeleniumServerService {
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
-                    appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    appiumDriver = new AndroidDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
                 } else if (caps.getPlatform().is(Platform.MAC)) {
-                    appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    appiumDriver = new IOSDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                     driver = (WebDriver) appiumDriver;
                 } else {
-                    driver = new RemoteWebDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    driver = new RemoteWebDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                appiumDriver = new AndroidDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new AndroidDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                appiumDriver = new IOSDriver(new URL("http://" + tCExecution.getSession().getHost() + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                appiumDriver = new IOSDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
@@ -181,11 +185,13 @@ public class SeleniumServerService implements ISeleniumServerService {
 
             /**
              * If Gui application, maximize window Get IP of Node in case of
-             * remote Server
+             * remote Server. Maximize does not work for chrome browser
              */
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     && !caps.getPlatform().equals(Platform.ANDROID)) {
-                driver.manage().window().maximize();
+                if (!caps.getBrowserName().equals(BrowserType.CHROME)) {
+                    driver.manage().window().maximize();
+                }
                 getIPOfNode(tCExecution);
 
                 /**
@@ -224,6 +230,7 @@ public class SeleniumServerService implements ISeleniumServerService {
 
     /**
      * Set DesiredCapabilities
+     *
      * @param tCExecution
      * @return
      * @throws CerberusException
@@ -270,21 +277,12 @@ public class SeleniumServerService implements ISeleniumServerService {
             }
         }
 
-        /**
-         * Add custom capabilities
-         */
-        // Maximize windows for chrome browser
-        if ("chrome".equals(caps.getBrowserName())) {
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--kiosk");
-            caps.setCapability(ChromeOptions.CAPABILITY, options);
-        }
-
         return caps;
     }
 
     /**
      * Instanciate DesiredCapabilities regarding the browser
+     *
      * @param capabilities
      * @param browser
      * @param tCExecution
@@ -316,11 +314,31 @@ public class SeleniumServerService implements ISeleniumServerService {
                 capabilities.setCapability("acceptInsecureCerts", true);
                 capabilities.setCapability("acceptSslCerts", true);
                 //capabilities.setCapability("marionette", true);
+
+                // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
+                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
+                        || !tCExecution.getUserAgent().isEmpty()) {
+                    profile.setPreference("general.useragent.override", getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
+                /**
+                 * Add custom capabilities
+                 */
+                ChromeOptions options = new ChromeOptions();
+                // Maximize windows for chrome browser
+                options.addArguments("--start-fullscreen");
+                // Set UserAgent if necessary
+                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
+                        || !tCExecution.getUserAgent().isEmpty()) {
+                    options.addArguments("--user-agent=" + getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                }
+
+                capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
             } else if (browser.contains("android")) {
                 capabilities = DesiredCapabilities.android();
             } else if (browser.contains("ipad")) {
@@ -344,6 +362,17 @@ public class SeleniumServerService implements ISeleniumServerService {
             throw new CerberusException(mes);
         }
         return capabilities;
+    }
+
+    /**
+     * This method determine which user agent to use.
+     *
+     * @param userAgentTestCase
+     * @param userAgentRobot
+     * @return String containing the userAgent to use
+     */
+    private String getUserAgentToUse(String userAgentTestCase, String userAgentRobot) {
+        return userAgentTestCase.isEmpty() ? userAgentRobot : userAgentTestCase;
     }
 
     @Override
@@ -374,7 +403,8 @@ public class SeleniumServerService implements ISeleniumServerService {
             URL sessionURL = new URL("http://" + session.getHost() + ":" + session.getPort() + "/grid/api/testsession?session=" + sessionId);
             BasicHttpEntityEnclosingRequest r = new BasicHttpEntityEnclosingRequest("POST", sessionURL.toExternalForm());
             HttpResponse response = client.execute(host, r);
-            if (!response.getStatusLine().toString().contains("403")) {
+            if (!response.getStatusLine().toString().contains("403")
+                    && !response.getEntity().getContentType().getValue().contains("text/html")) {
                 InputStream contents = response.getEntity().getContent();
                 StringWriter writer = new StringWriter();
                 IOUtils.copy(contents, writer, "UTF8");
@@ -405,24 +435,7 @@ public class SeleniumServerService implements ISeleniumServerService {
     }
 
     private String getScreenSize(WebDriver driver) {
-        return driver.manage().window().getSize().toString();
+        return driver.manage().window().getSize().width + "*" + driver.manage().window().getSize().height;
     }
 
-    private Integer getTimeoutSetInParameterTable(String system, String parameter, Integer defaultWait, String logPrefix) {
-        try {
-            AnswerItem timeoutParameter = parameterService.readWithSystem1ByKey("", parameter, system);
-            if (timeoutParameter != null && timeoutParameter.isCodeStringEquals(MessageEventEnum.DATA_OPERATION_OK.getCodeString())) {
-                if (((Parameter) timeoutParameter.getItem()).getSystem1value().isEmpty()) {
-                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getValue());
-                } else {
-                    return Integer.valueOf(((Parameter) timeoutParameter.getItem()).getSystem1value());
-                }
-            } else {
-                LOG.warn(logPrefix + "Parameter (" + parameter + ") not set in Parameter table, default value set to " + defaultWait + " milliseconds. ");
-            }
-        } catch (NumberFormatException ex) {
-            LOG.warn(logPrefix + "Parameter (" + parameter + ") must be an integer, default value set to " + defaultWait + " milliseconds. " + ex.toString());
-        }
-        return defaultWait;
-    }
 }

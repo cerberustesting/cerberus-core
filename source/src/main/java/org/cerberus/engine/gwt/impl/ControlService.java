@@ -43,6 +43,7 @@ import org.cerberus.engine.gwt.IControlService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
+import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
@@ -68,6 +69,8 @@ public class ControlService implements IControlService {
     private IWebDriverService webdriverService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private IJsonService jsonService;
     @Autowired
     private IIdentifierService identifierService;
     @Autowired
@@ -460,12 +463,12 @@ public class ControlService implements IControlService {
         return mes;
     }
 
-    private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String html) {
-        LOG.debug("Control : verifyElementPresent on : " + html);
+    private MessageEvent verifyElementPresent(TestCaseExecution tCExecution, String elementPath) {
+        LOG.debug("Control : verifyElementPresent on : " + elementPath);
         MessageEvent mes;
 
-        if (!StringUtil.isNull(html)) {
-            Identifier identifier = identifierService.convertStringToIdentifier(html);
+        if (!StringUtil.isNull(elementPath)) {
+            Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
 
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
@@ -476,11 +479,11 @@ public class ControlService implements IControlService {
                         return sikuliService.doSikuliAction(tCExecution.getSession(), "verifyElementPresent", identifier.getLocator(), "");
                     } else if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                         return mes;
                     }
                 } catch (WebDriverException exception) {
@@ -490,17 +493,27 @@ public class ControlService implements IControlService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
 
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                            if (xmlUnitService.isElementPresent(xmlResponse, html)) {
+                            if (xmlUnitService.isElementPresent(responseBody, elementPath)) {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                                 return mes;
                             } else {
                                 mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            }
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            if (jsonService.getFromJson(responseBody, null, elementPath) != null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            } else {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                                 return mes;
                             }
                         default:
@@ -529,27 +542,64 @@ public class ControlService implements IControlService {
         }
     }
 
-    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String html) {
-        LOG.debug("Control : verifyElementNotPresent on : " + html);
+    private MessageEvent verifyElementNotPresent(TestCaseExecution tCExecution, String elementPath) {
+        LOG.debug("Control : verifyElementNotPresent on : " + elementPath);
         MessageEvent mes;
-        if (!StringUtil.isNull(html)) {
+        if (!StringUtil.isNull(elementPath)) {
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
                     || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
 
                 try {
-                    Identifier identifier = identifierService.convertStringToIdentifier(html);
+                    Identifier identifier = identifierService.convertStringToIdentifier(elementPath);
                     if (!this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                         return mes;
                     } else {
                         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                        mes.setDescription(mes.getDescription().replace("%STRING1%", html));
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                         return mes;
                     }
                 } catch (WebDriverException exception) {
                     return parseWebDriverException(exception);
+                }
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+
+                if (tCExecution.getLastServiceCalled() != null) {
+
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                            if (!(xmlUnitService.isElementPresent(responseBody, elementPath))) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            } else {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            }
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            if (jsonService.getFromJson(responseBody, null, elementPath) == null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            } else {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                return mes;
+                            }
+                        default:
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                            mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyElementNotPresent"));
+                            return mes;
+                    }
+
+                } else {
+                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOOBJECTINMEMORY);
+                    return mes;
                 }
 
             } else {
@@ -695,9 +745,9 @@ public class ControlService implements IControlService {
         // Check if element on the given xpath is equal to the given expected element
         if (tCExecution.getLastServiceCalled() != null) {
 
+            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
             switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                 case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                    String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                     mes = xmlUnitService.isElementEquals(xmlResponse, xpath, expectedElement) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_ELEMENTEQUALS) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_ELEMENTEQUALS);
                     mes.setDescription(mes.getDescription().replace("%XPATH%", xpath));
                     mes.setDescription(mes.getDescription().replace("%EXPECTED_ELEMENT%", expectedElement));
@@ -769,23 +819,63 @@ public class ControlService implements IControlService {
             if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
                     || Application.TYPE_APK.equalsIgnoreCase(applicationType)
                     || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
+
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                // In case of null actual value then we alert user
+                if (actual == null) {
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                    return mes;
+                }
+                // Construct the message from the actual response
+                MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {
-
+                    MessageEvent mes;
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                            if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
-                                throw new NoSuchElementException("Unable to find element " + path);
+                            if (!xmlUnitService.isElementPresent(responseBody, path)) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                return mes;
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                            actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
-                            break;
+                            actual = xmlUnitService.getFromXml(responseBody, newPath);
+                            // In case of null actual value then we alert user
+                            if (actual == null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                                return mes;
+                            }
+                            // Construct the message from the actual response
+                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            return mes;
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            actual = jsonService.getFromJson(responseBody, null, path);
+                            // In case of null actual value then we alert user
+                            if (actual == null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                return mes;
+                            }
+                            // Construct the message from the actual response
+                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            return mes;
                         default:
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
                             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
                             return mes;
@@ -798,6 +888,7 @@ public class ControlService implements IControlService {
                 }
 
             } else {
+
                 MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION);
                 mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextInElement"));
                 mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
@@ -812,19 +903,6 @@ public class ControlService implements IControlService {
             return parseWebDriverException(exception);
         }
 
-        // In case of null actual value then we alert user
-        if (actual == null) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NULL);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-            return mes;
-        }
-
-        // Construct the message from the actual response
-        MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-        return mes;
     }
 
     private MessageEvent verifyTextNotInElement(TestCaseExecution tCExecution, String path, String expected) {
@@ -839,24 +917,68 @@ public class ControlService implements IControlService {
             String applicationType = tCExecution.getApplicationObj().getType();
 
             if (Application.TYPE_GUI.equalsIgnoreCase(applicationType)
-                    || Application.TYPE_APK.equalsIgnoreCase(applicationType)) {
+                    || Application.TYPE_APK.equalsIgnoreCase(applicationType)
+                    || Application.TYPE_IPA.equalsIgnoreCase(applicationType)) {
+
                 actual = webdriverService.getValueFromHTML(tCExecution.getSession(), identifier);
+                // In case of null actual value then we alert user
+                if (actual == null) {
+                    MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
+                    mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                    return mes;
+                }
+                // Construct the message from the actual response
+                MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                return mes;
 
             } else if (Application.TYPE_SRV.equalsIgnoreCase(applicationType)) {
 
                 if (tCExecution.getLastServiceCalled() != null) {
 
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+                    MessageEvent mes;
+
                     switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
                         case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
-                            String xmlResponse = tCExecution.getLastServiceCalled().getResponseHTTPBody();
-                            if (!xmlUnitService.isElementPresent(xmlResponse, path)) {
+                            if (!xmlUnitService.isElementPresent(responseBody, path)) {
                                 throw new NoSuchElementException("Unable to find element " + path);
                             }
                             String newPath = StringUtil.addSuffixIfNotAlready(path, "/text()");
-                            actual = xmlUnitService.getFromXml(xmlResponse, null, newPath);
-                            break;
+                            actual = xmlUnitService.getFromXml(responseBody, newPath);
+                            // In case of null actual value then we alert user
+                            if (actual == null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
+                                mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                                return mes;
+                            }
+
+                            // Construct the message from the actual response
+                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            return mes;
+
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            actual = jsonService.getFromJson(responseBody, null, path);
+                            // In case of null actual value then we alert user
+                            if (actual == null) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                                return mes;
+                            }
+                            // Construct the message from the actual response
+                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                            return mes;
+
                         default:
-                            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
                             mes.setDescription(mes.getDescription().replace("%CONTROL%", "verifyTextNotInElement"));
                             return mes;
@@ -882,26 +1004,15 @@ public class ControlService implements IControlService {
             return parseWebDriverException(exception);
         }
 
-        // In case of null actual value then we alert user
-        if (actual == null) {
-            MessageEvent mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT_NULL);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-            return mes;
-        }
-
-        // Construct the message from the actual response
-        MessageEvent mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
-        mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
-        return mes;
     }
 
     private MessageEvent VerifyRegexInElement(TestCaseExecution tCExecution, String html, String regex) {
         LOG.debug("Control : verifyRegexInElement on : " + html + " element against value : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             try {
                 Identifier identifier = identifierService.convertStringToIdentifier(html);
@@ -1007,7 +1118,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control : verifyTextInPage on : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             String pageSource;
             try {
@@ -1051,7 +1164,9 @@ public class ControlService implements IControlService {
         LOG.debug("Control : VerifyTextNotInPage on : " + regex);
         MessageEvent mes;
 
-        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
+        if (Application.TYPE_GUI.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_APK.equalsIgnoreCase(tCExecution.getApplicationObj().getType())
+                || Application.TYPE_IPA.equalsIgnoreCase(tCExecution.getApplicationObj().getType())) {
 
             String pageSource;
             try {

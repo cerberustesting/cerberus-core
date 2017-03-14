@@ -52,7 +52,20 @@ public interface ITestCaseStepExecutionDAO {
      */
     List<TestCaseStepExecution> findTestCaseStepExecutionById(long id);
 
+    /**
+     *
+     * @param executionId
+     * @param test
+     * @param testcase
+     * @return
+     */
     public AnswerList readByVarious1(long executionId, String test, String testcase);
     
+    /**
+     *
+     * @param resultSet
+     * @return
+     * @throws SQLException
+     */
     public TestCaseStepExecution loadFromResultSet(ResultSet resultSet) throws SQLException;
 }

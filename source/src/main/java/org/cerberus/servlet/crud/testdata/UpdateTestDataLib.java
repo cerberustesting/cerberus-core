@@ -98,6 +98,7 @@ public class UpdateTestDataLib extends HttpServlet {
         String name = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("name"), "", charset); //this is mandatory
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("libdescription"), "", charset);
+        String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String script = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("script"), "", charset);
         String servicePath = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("servicepath"), "", charset);
@@ -172,6 +173,7 @@ public class UpdateTestDataLib extends HttpServlet {
                     lib.setScript(script);
                     lib.setDatabaseUrl(databaseUrl);
                     lib.setServicePath(servicePath);
+                    lib.setService(service);
                     lib.setMethod(method);
                     lib.setEnvelope(envelope);
                     lib.setDatabaseCsv(databaseCsv);

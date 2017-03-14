@@ -50,6 +50,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
         var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
+        if (urlTag !== null) {
+            loadAllReports(urlTag);
+        }
         $('body').tooltip({
             selector: '[data-toggle="tooltip"]'
         });
@@ -148,7 +151,6 @@ function displaySummaryTableLabel(doc) {
     $("#summaryTableHeaderEnvironment").html(doc.getDocOnline("invariant", "ENVIRONMENT"));
 
     $("#selectTableButtonText").html(doc.getDocOnline("page_reportbytag", "btn_select_table"));
-
 }
 
 function displayExportDataLabel(doc) {
@@ -191,7 +193,7 @@ function loadTagFilters(urlTag) {
             //if the tag is passed as a url parameter, then it loads the report from this tag
             if (urlTag !== null) {
                 $('#selectTag').val(urlTag).trigger("change");
-                loadAllReports();
+                //loadAllReports();
             }
         } else {
             showMessageMainPage(messageType, data.message);
@@ -199,39 +201,52 @@ function loadTagFilters(urlTag) {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-function loadAllReports() {
-    var selectTag = $("#selectTag option:selected").text();
+function loadAllReports(urlTag) {
 
-    InsertURLInHistory('ReportingExecutionByTag1.jsp?Tag=' + encodeURIComponent(selectTag));
+    if (urlTag === undefined) {
+        urlTag = $('#selectTag').val();
+        InsertURLInHistory('ReportingExecutionByTag.jsp?Tag=' + encodeURIComponent(urlTag) + '');
+    }
 
-    if (selectTag !== "") {
-        //handle the test case execution list display
-        loadEnvCountryBrowserReport();
-        loadReportList();
-        loadByStatusAndByfunctionReports(selectTag);
+    if (urlTag !== "") {
+        loadReportingData(urlTag);
     }
 }
 
-function loadByStatusAndByfunctionReports() {
-    var selectTag = $("#selectTag option:selected").text();
+function loadReportingData(selectTag) {
+    //var selectTag = $("#selectTag option:selected").text();
     showLoader($("#ReportByStatus"));
     showLoader($("#functionChart"));
+    var statusFilter = $("#statusFilter input");
+    var countryFilter = $("#countryFilter input");
+    var params = $("#splitFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
+
     //Retrieve data for charts and draw them
-    var jqxhr = $.get("GetReportData", {CampaignName: "null", Tag: selectTag}, "json");
+    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
-        //clear the old report content before redrawing it
-        $("#ReportByStatusTable").empty();
-        $("#statusChart").empty();
-        $("#ReportByfunctionChart").empty();
-        loadReportByStatusTable(data);
-        loadReportByFunctionChart(data);
-        $("#startExe").val(data.start);
-        $("#endExe").val(data.end);
+        loadByStatusAndByfunctionReports(data.functionChart);
+        loadEnvCountryBrowserReport(data.statsChart);
+        loadReportList(data.table, selectTag);
     });
 
 }
+
+function loadByStatusAndByfunctionReports(data) {
+
+    //clear the old report content before redrawing it
+    $("#ReportByStatusTable").empty();
+    $("#statusChart").empty();
+    $("#ReportByfunctionChart").empty();
+    loadReportByStatusTable(data);
+    loadReportByFunctionChart(data);
+    $("#startExe").val(data.globalStart);
+    $("#endExe").val(data.globalEnd);
+
+}
+
+
 
 
 
@@ -278,72 +293,39 @@ function buildBar(obj) {
     $("#progressEnvCountryBrowser").append(buildBar);
 }
 
-function loadEnvCountryBrowserReport() {
+function loadEnvCountryBrowserReport(data) {
     //adds a loader to a table 
     showLoader($("#reportEnvCountryBrowser"));
-    var tag = GetURLParameter('Tag');
     $("#progressEnvCountryBrowser").empty();
-    var params = convertSerialToJSONObject($("#splitFilter input").serialize());
 
-    //turns checkbox status too boolean
-    if (params.env === "on") {
-        params.env = true;
-    }
-    if (params.country === "on") {
-        params.country = true;
-    }
-    if (params.browser === "on") {
-        params.browser = true;
-    }
-    if (params.app === "on") {
-        params.app = true;
+
+    var len = data.contentTable.split.length;
+    createSummaryTable(data.contentTable);
+    for (var index = 0; index < len; index++) {
+        //draw a progress bar for each combo retrieved
+        buildBar(data.contentTable.split[index]);
+        hideLoader($("#reportEnvCountryBrowser"));
     }
 
-    $.ajax({
-        type: "GET",
-        url: "GetReportData",
-        data: {split: true, Tag: tag, env: params.env, country: params.country, browser: params.browser, app: params.app},
-        async: true,
-        dataType: 'json',
-        success: function (json) {
-            var len = json.contentTable.split.length;
-            createSummaryTable(json.contentTable);
-            for (var index = 0; index < len; index++) {
-                //draw a progress bar for each combo retrieved
-                buildBar(json.contentTable.split[index]);
-                hideLoader($("#reportEnvCountryBrowser"));
-            }
-        },
-        error: showUnexpectedError
-    });
 }
 
-function loadReportList() {
+function loadReportList(data2, selectTag) {
     showLoader($("#listReport"));
-    var selectTag = $("#selectTag option:selected").text();
-    var statusFilter = $("#statusFilter input");
-    var countryFilter = $("#countryFilter input");
-
+    
     if (selectTag !== "") {
-        //configure and create the dataTable
-        var jqxhr = $.getJSON("ReadTestCaseExecution", "byColumns=Y&" + "Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize());
-        $.when(jqxhr).then(function (data) {
-            if ($("#listTable_wrapper").hasClass("initialized")) {
-                $("#tableArea").empty();
-                $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
+        if ($("#listTable_wrapper").hasClass("initialized")) {
+            $("#tableArea").empty();
+            $("#tableArea").html('<table id="listTable" class="table display" name="listTable">\n\
                                             </table><div class="marginBottom20"></div>');
-            }
+        }
 
-            var request = "ReadTestCaseExecution?Tag=" + encodeURIComponent(selectTag) + "&" + statusFilter.serialize() + "&" + countryFilter.serialize();
-
-            var config = new TableConfigurationsServerSide("listTable", request, "testList", aoColumnsFunc(data.Columns), [0, 'asc']);
+        var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns));
             customConfig(config);
-
             createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
             $('#listTable_wrapper').not('.initialized').addClass('initialized');
             hideLoader($("#listReport"));
 
-        });
+        //});
     }
 }
 
@@ -473,7 +455,7 @@ function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
     var margin = {top: 20, right: 20, bottom: 200, left: 150},
-    width = 1200 - margin.left - margin.right,
+            width = 1200 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
@@ -600,7 +582,6 @@ function exportReport() {
 
 function controlExportRadioButtons() {
     //control radiobuttons
-    console.log("mudou ");
     var isChecked = $(this).prop("checked");
     if (isChecked) {
         $("input[name='exportOption']").prop("disabled", false);
@@ -773,8 +754,8 @@ function aoColumnsFunc(Columns) {
 
         var col = {
             "title": title,
-            "bSortable": false,
-            "bSearchable": false,
+            "bSortable": true,
+            "bSearchable": true,
             "sWidth": testExecWidth + "%",
             "data": function (row, type, val, meta) {
                 var dataTitle = meta.settings.aoColumns[meta.col].sTitle;

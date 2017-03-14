@@ -17,24 +17,19 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.service.sikuli;
 
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.Session;
+$.when($.getScript("js/pages/global/global.js")).then(function () {
+    $(document).ready(function () {
+        initPage();
+    });
+});
 
 /**
- *
- * @author bcivel
+ * 
+ * @returns {undefined}
  */
-public interface ISikuliService {
-    
-    /**
-     *
-     * @param session
-     * @param action
-     * @param locator
-     * @param text
-     * @return
-     */
-    public MessageEvent doSikuliAction(Session session, String action, String locator, String text);
+function initPage() {
+
 }
+
+

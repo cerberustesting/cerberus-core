@@ -36,6 +36,7 @@ public class TestDataLib {
     private String database;
     private String script;
     private String databaseUrl;
+    private String service;
     private String servicePath;
     private String method;
     private String envelope;
@@ -61,6 +62,14 @@ public class TestDataLib {
     public static final String TYPE_SOAP = "SOAP";
     public static final String TYPE_CSV = "CSV";
 
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
     public List<TestDataLibData> getSubDataLib() {
         return subDataLib;
     }
@@ -76,7 +85,7 @@ public class TestDataLib {
     public void setDatabaseCsv(String databaseCsv) {
         this.databaseCsv = databaseCsv;
     }
-    
+
     public String getDatabaseUrl() {
         return databaseUrl;
     }
@@ -268,5 +277,5 @@ public class TestDataLib {
     public void setSeparator(String separator) {
         this.separator = separator;
     }
-    
+
 }

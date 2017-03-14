@@ -39,7 +39,7 @@ public class JsonService implements IJsonService {
 
     public static final String DEFAULT_GET_FROM_JSON_VALUE = null;
 
-    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ExecutionRunService.class);
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(JsonService.class);
 
     /**
      * Get Json from URL and convert it into JSONObject format
@@ -70,7 +70,7 @@ public class JsonService implements IJsonService {
      * @param jsonMessage
      * @param url URL of the Json file to parse
      * @param attributeToFind
-     * @return Value of the element from the Json File
+     * @return Value of the element from the Json File or null if the element is not found.
      */
     @Override
     public String getFromJson(String jsonMessage, String url, String attributeToFind) {
@@ -79,7 +79,7 @@ public class JsonService implements IJsonService {
             return DEFAULT_GET_FROM_JSON_VALUE;
         }
 
-        String result;
+        String result = null;
         /**
          * Get the Json File in string format
          */
@@ -89,13 +89,17 @@ public class JsonService implements IJsonService {
         } else {
             json = this.callUrlAndGetJsonResponse(url);
         }
-        /**
-         * Get the value
-         */
-        Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
-        String jsonPath = StringUtil.addPrefixIfNotAlready(attributeToFind, "$.");
-        LOG.debug("JSON PATH : " + jsonPath);
-        result = JsonPath.read(document, jsonPath);
+        try {
+            /**
+             * Get the value
+             */
+            Object document = Configuration.defaultConfiguration().jsonProvider().parse(json);
+            String jsonPath = StringUtil.addPrefixIfNotAlready(attributeToFind, "$.");
+            LOG.debug("JSON PATH : " + jsonPath);
+            result = JsonPath.read(document, jsonPath);
+        } catch (Exception ex) {
+            LOG.debug("Error getting path '" + attributeToFind + "'from Json " + json + " - Exception : " + ex.toString());
+        }
 
         return result;
     }

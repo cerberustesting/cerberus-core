@@ -21,14 +21,24 @@ package org.cerberus.engine.execution.impl;
 
 import java.util.Objects;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepAction;
+import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IConditionService;
+import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.json.IJsonService;
+import org.cerberus.service.sikuli.ISikuliService;
+import org.cerberus.service.webdriver.IWebDriverService;
+import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
+import org.openqa.selenium.WebDriverException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,6 +48,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ConditionService implements IConditionService {
+
+    @Autowired
+    private IXmlUnitService xmlUnitService;
+    @Autowired
+    private IJsonService jsonService;
+    @Autowired
+    private IIdentifierService identifierService;
+    @Autowired
+    private ISikuliService sikuliService;
+    @Autowired
+    private IWebDriverService webdriverService;
 
     /**
      * The associated {@link org.apache.log4j.Logger} to this class
@@ -62,6 +83,11 @@ public class ConditionService implements IConditionService {
             case TestCaseStepAction.CONDITIONOPER_ALWAYS:
             case "": // In case condition is not defined, it is considered as always.
                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_ALWAYS);
+                break;
+
+            case TestCaseStepAction.CONDITIONOPER_IFELEMENTPRESENT:
+                ans = evaluateCondition_ifElementPresent(conditionOper, conditionValue1, tCExecution);
+                mes = ans.getResultMessage();
                 break;
 
             case TestCaseStepAction.CONDITIONOPER_IFPROPERTYEXIST:
@@ -159,6 +185,91 @@ public class ConditionService implements IConditionService {
                 mes.setDescription(mes.getDescription().replace("%PROP%", conditionValue1));
                 mes.setDescription(mes.getDescription().replace("%COUNTRY%", tCExecution.getCountry()));
             }
+        }
+        ans.setResultMessage(mes);
+        return ans;
+    }
+
+    private AnswerItem<Boolean> evaluateCondition_ifElementPresent(String conditionOper, String conditionValue1, TestCaseExecution tCExecution) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Checking if Element Present");
+        }
+        AnswerItem ans = new AnswerItem();
+        MessageEvent mes;
+
+        if (StringUtil.isNullOrEmpty(conditionValue1)) {
+            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_IFELEMENTPRESENT_MISSINGPARAMETER);
+            mes.setDescription(mes.getDescription().replace("%COND%", conditionOper));
+
+        } else {
+
+            boolean condition_result = false;
+
+            Identifier identifier = identifierService.convertStringToIdentifier(conditionValue1);
+
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
+
+                try {
+                    if (this.webdriverService.isElementPresent(tCExecution.getSession(), identifier)) {
+                        condition_result = true;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                    } else {
+                        condition_result = false;
+                        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                        mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                    }
+                } catch (WebDriverException exception) {
+                    condition_result = false;
+                    mes = parseWebDriverException(exception);
+                }
+
+            } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_SRV)) {
+
+                if (tCExecution.getLastServiceCalled() != null) {
+                    String responseBody = tCExecution.getLastServiceCalled().getResponseHTTPBody();
+
+                    switch (tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()) {
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_XML:
+                            if (xmlUnitService.isElementPresent(responseBody, conditionValue1)) {
+                                condition_result = true;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                            } else {
+                                condition_result = false;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                            }
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+                            if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
+                                condition_result = true;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                            } else {
+                                condition_result = false;
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                            }
+                        default:
+                            condition_result = false;
+                            mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);
+                            mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
+                            mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOper));
+                    }
+
+                } else {
+                    condition_result = false;
+                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOOBJECTINMEMORY);
+                }
+
+            } else {
+                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_APPLICATION);
+                mes.setDescription(mes.getDescription().replace("%CONDITION%", conditionOper));
+                mes.setDescription(mes.getDescription().replace("%APPLICATIONTYPE%", tCExecution.getApplicationObj().getType()));
+            }
+
         }
         ans.setResultMessage(mes);
         return ans;
@@ -436,6 +547,19 @@ public class ConditionService implements IConditionService {
         ans.setItem(execute_Action);
         ans.setResultMessage(mes);
         return ans;
+    }
+
+    /**
+     * @author memiks
+     * @param exception the exception need to be parsed by Cerberus
+     * @return A new Event Message with selenium related description
+     */
+    private MessageEvent parseWebDriverException(WebDriverException exception) {
+        MessageEvent mes;
+        LOG.fatal(exception.toString());
+        mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_SELENIUM_CONNECTIVITY);
+        mes.setDescription(mes.getDescription().replace("%ERROR%", exception.getMessage().split("\n")[0]));
+        return mes;
     }
 
 }

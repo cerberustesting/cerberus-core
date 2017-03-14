@@ -190,14 +190,14 @@ function updatePage(data, stepList) {
     $("#editTcToggleButton").click(function () {
         setLinkOnEditTCStepInfoButton();
     });
-    
+
     $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#editTcInfo").attr("href", "TestCaseScript.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#runTestCase").attr("href", "RunTests1.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&browser=" + data.browser + "&tag=" + data.tag);
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
     $("#lastExecution").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
-    
+
     var configPanel = $("#testCaseConfig");
     configPanel.find("#idlabel").text(data.id);
     configPanel.find("#test").text(data.test);
@@ -296,7 +296,7 @@ function updatePage(data, stepList) {
     updateLoadBar(data);
 }
 
-function setLinkOnEditTCStepInfoButton(){
+function setLinkOnEditTCStepInfoButton() {
     var currentStep = $('#stepInfo');
     $("#editTcStepInfo").attr("href", "TestCaseScript.jsp?test=" + currentStep.attr('test') + "&testcase=" + currentStep.attr('testcase') + "&step=" + currentStep.attr('step'));
 }
@@ -600,8 +600,12 @@ function Step(json, stepList) {
     this.toDelete = false;
 
     this.html = $("<a href='#'></a>").addClass("list-group-item row").css("margin-left", "0px").css("margin-right", "0px");
-    this.textArea = $("<div></div>").addClass("col-lg-10")
-            .text("[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")");
+    if (this.test === "Pre Testing") {
+        var stepDesc = "[PRE]  " + this.description + "  (" + this.timeElapsed + ")";
+    } else {
+        var stepDesc = "[" + this.sort + "." + +this.index + "]  " + this.description + "  (" + this.timeElapsed + ")";
+    }
+    this.textArea = $("<div></div>").addClass("col-lg-10").text(stepDesc);
 
 }
 
@@ -637,7 +641,7 @@ Step.prototype.show = function () {
     var stepButton = $("<div id='stepPlus'></a>").addClass("col-sm-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 //    var stepButton1 = $("<div id='stepPlus'></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 //    stepButton.append(stepButton1);
-    
+
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
 
@@ -848,7 +852,7 @@ Action.prototype.draw = function () {
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.show();
+        content.hide();
     }
 
     // Starting to reduce the size of the row by the length of elements.
@@ -1143,7 +1147,7 @@ Control.prototype.draw = function () {
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
-        content.show();
+        content.hide();
     }
 
 
@@ -1329,7 +1333,7 @@ Control.prototype.getJsonData = function () {
 function addFileLink(fileList, container) {
     $(container).find($("div[name='mediaMiniature']")).remove();
     for (var i = 0; i < fileList.length; i++) {
-        if (fileList[i].fileType === "JPG") {
+        if ((fileList[i].fileType === "JPG") || (fileList[i].fileType === "PNG")) {
             var urlImage = "ReadTestCaseExecutionMedia?filename=" + fileList[i].fileName + "&filetype=" + fileList[i].fileType + "&filedesc=" + fileList[i].fileDesc;
             var fileDesc = fileList[i].fileDesc;
             var linkBox = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")

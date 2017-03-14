@@ -159,10 +159,12 @@ function readStatus() {
 function readLastTagExec() {
     var tagList = [];
 
+    var nbExe = getParameter("cerberus_homepage_nbdisplayedtag", getUser().defaultSystem, false);
+
     $.ajax({
         type: "GET",
         url: "ReadTag",
-        data: {tagNumber: "5"},
+        data: {tagNumber: nbExe.value},
         async: false,
         dataType: 'json',
         success: function (data) {

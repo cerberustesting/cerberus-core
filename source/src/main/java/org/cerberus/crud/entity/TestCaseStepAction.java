@@ -100,6 +100,7 @@ public class TestCaseStepAction {
      * Invariant CONDITIONOPER String.
      */
     public static final String CONDITIONOPER_ALWAYS = "always";
+    public static final String CONDITIONOPER_IFELEMENTPRESENT = "ifElementPresent";
     public static final String CONDITIONOPER_IFPROPERTYEXIST = "ifPropertyExist";
     public static final String CONDITIONOPER_IFNUMERICEQUAL = "ifNumericEqual";
     public static final String CONDITIONOPER_IFNUMERICDIFFERENT = "ifNumericDifferent";
