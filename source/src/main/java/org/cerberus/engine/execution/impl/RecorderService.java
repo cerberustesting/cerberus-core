@@ -143,7 +143,9 @@ public class RecorderService implements IRecorderService {
          */
         if ((myExecution.getPageSource() == 2) || ((myExecution.getPageSource() == 1) && (getPageSource))) {
 
-            if (applicationType.equals(Application.TYPE_GUI)) {
+            if (applicationType.equals(Application.TYPE_GUI)
+                    || applicationType.equals(Application.TYPE_APK)
+                    || applicationType.equals(Application.TYPE_IPA)) {
                 /**
                  * Only if the return code is not equal to Cancel, meaning lost
                  * connectivity with selenium.
