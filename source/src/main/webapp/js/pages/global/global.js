@@ -1277,7 +1277,7 @@ function showTitleWhenTextOverflow() {
     $('pre').each(function () {
         var $ele = $(this);
         if (this.offsetWidth < this.scrollWidth) {
-            $ele.attr('title', '<div><pre><code class="language-markup">' + $ele.html() + '</code></pre></div>');
+            $ele.attr('title', '<div><pre style="min-height:150px; width:800px">' + $ele.html() + '</pre></div>');
             $ele.attr('data-html', true);
             $ele.attr('data-toggle', 'tooltip');
         }
@@ -1287,11 +1287,17 @@ function showTitleWhenTextOverflow() {
         container: 'body'
     });
 
-    $('[data-toggle="tooltip"]').on('inserted.bs.tooltip', function () {
-        if ($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("code").get(0) !== undefined) {
-            Prism.highlightElement($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("code").get(0));
-        }
-    });
+//    $('[data-toggle="tooltip"]').on('inserted.bs.tooltip', function () {
+//        if ($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("pre").get(0) !== undefined) {
+//            //Highlight envelop on modal loading
+//            var editor = ace.edit($($("#" + $($(this).get(0)).attr("aria-describedby")).get(0)).find("pre").get(0));
+//            editor.setTheme("ace/theme/chrome");
+//            editor.getSession().setMode("ace/mode/xml");
+//            editor.setOptions({
+//                maxLines: 15
+//            });
+//        }
+//    });
 
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -2345,4 +2351,41 @@ var DEFAULT_LINKIFY_OPTIONS = {
  */
 function safeLinkify(str, options) {
     return str == undefined ? str : str.linkify(options == undefined ? DEFAULT_LINKIFY_OPTIONS : options);
+}
+
+/**
+ * Determine if a text is a Json
+ * @param {type} str The String to check
+ * @returns {Boolean} True if str is a valid JSON
+ */
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Determine if a text is a HTML or XML
+ * @param {type} str The string to check
+ * @returns {Boolean} True if str is a HTML or a XML
+ */
+function isHTMLorXML(str) {
+    var doc = new DOMParser().parseFromString(str, "text/html");
+    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+}
+
+/**
+ * Return the Ace mode to use regarding the type of the text
+ * @param {type} text The text that will help to determine the Ace mode
+ * @returns {String} The Ace mode
+ */
+function defineAceMode(text) {
+    if (isHTMLorXML(text)) {
+        return "ace/mode/xml";
+    } else if (isJson(text)) {
+        return "ace/mode/json";
+    }
 }

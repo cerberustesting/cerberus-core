@@ -159,7 +159,7 @@ function aoColumnsFunc(tableId) {
             "title": doc.getDocLabel("appservice", "srvRequest"),
             "sWidth": "350px",
             "mRender": function (data, type, obj) {
-                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['serviceRequest']))).html();
+                return $("<div></div>").append($("<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['serviceRequest'])).html();
             }
         },
         {
@@ -219,8 +219,20 @@ function aoColumnsFunc(tableId) {
  * @returns {undefined}
  */
 function afterTableLoad() {
-    $.each($("code[name='envelopeField']"), function (i, e) {
-        Prism.highlightElement($(e).get(0));
+    $.each($("pre[name='envelopeField']"), function (i, e) {
+        //Highlight envelop on modal loading
+        var editor = ace.edit($(e).get(0));
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+        editor.setOptions({
+            maxLines: 1,
+            showLineNumbers: false,
+            showGutter: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false,
+            readOnly: true
+        });
+        editor.renderer.$cursorLayer.element.style.opacity = 0;
     });
 }
 
