@@ -19,11 +19,34 @@
  */
 package org.cerberus.engine.entity;
 
+import java.util.regex.Pattern;
+
 /**
  *
  * @author bcivel
  */
 public class Identifier {
+
+    /**
+     * The list of identifiers that can be used with its allowed pattern value if necessary
+     */
+    public interface Identifiers {
+        /**
+         * The coordinates key
+         */
+        String COORDINATE = "coord";
+
+        /**
+         * The coordinate value pattern
+         */
+        Pattern COORDINATE_VALUE_PATTERN = Pattern.compile(
+                "x:(?<xCoordinate>\\d+),y:(?<yCoordinate>\\d+)",
+                        // Can be used either as x:10,y:20 or as X:10,Y:20
+                        Pattern.CASE_INSENSITIVE
+                        // Just to allow unclosed spaces (even if # start-character is also allowed but not relevant here)
+                        | Pattern.COMMENTS
+        );
+    }
 
     private String identifier;
     private String locator;
@@ -42,6 +65,16 @@ public class Identifier {
 
     public void setLocator(String locator) {
         this.locator = locator;
+    }
+
+    /**
+     * Check if the current {@link Identifier} is equal to the given identifier key (the {@link Identifier#getIdentifier()}
+     *
+     * @param identifier the identifier key to check
+     * @return <code>true</code> if the current {@link Identifier}'s identifier key is equal to the given one, <code>false</code> otherwise
+     */
+    public boolean isIdentifier(final String identifier) {
+        return identifier != null && identifier.equals(identifier);
     }
 
     @Override

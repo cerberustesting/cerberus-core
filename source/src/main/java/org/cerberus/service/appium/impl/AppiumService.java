@@ -45,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.awt.geom.Line2D;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
 /**
  * @author bcivel
@@ -117,24 +118,24 @@ public abstract class AppiumService implements IAppiumService {
     }
 
     @Override
-    public MessageEvent click(Session session, Identifier identifier) {
-        MessageEvent message;
+    public MessageEvent click(final Session session, final Identifier identifier) {
         try {
-            TouchAction action = new TouchAction(session.getAppiumDriver());
-            action.press(this.getElement(session, identifier, false, false))
-                    .release()
-                    .perform();
-            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            return message;
-        } catch (NoSuchElementException exception) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT);
-            message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
-            LOG.debug(exception.toString());
-            return message;
-        } catch (WebDriverException exception) {
-            LOG.fatal(exception.toString());
-            return parseWebDriverException(exception);
+            final TouchAction action = new TouchAction(session.getAppiumDriver());
+            if (identifier.isIdentifier(Identifier.Identifiers.COORDINATE)) {
+                final Coordinates coordinates = getCoordinates(identifier);
+                action.tap(coordinates.getX(), coordinates.getY()).perform();
+            } else {
+                action.tap(getElement(session, identifier, false, false)).perform();
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CLICK).resolveDescription("ELEMENT", identifier.toString());
+        } catch (NoSuchElementException e) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e.getMessage());
+            }
+            return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLICK_NO_SUCH_ELEMENT).resolveDescription("ELEMENT", identifier.toString());
+        } catch (WebDriverException e) {
+            LOG.warn(e.getMessage());
+            return parseWebDriverException(e);
         }
 
     }
@@ -152,6 +153,30 @@ public abstract class AppiumService implements IAppiumService {
         return mes;
     }
 
+    /**
+     * Get the {@link Coordinates} represented by the given {@link Identifier}
+     *
+     * @param identifier the {@link Identifier} to parse to get the {@link Coordinates}
+     * @return the {@link Coordinates} represented by the given {@link Identifier}
+     * @throws NoSuchElementException if no {@link Coordinates} can be found inside the given {@link Identifier}
+     */
+    private Coordinates getCoordinates(final Identifier identifier) {
+        if (identifier == null || !identifier.isIdentifier(Identifier.Identifiers.COORDINATE)) {
+            throw new NoSuchElementException("Unable to get coordinates from a non coordinates identifier");
+        }
+        final Matcher coordinates = Identifier.Identifiers.COORDINATE_VALUE_PATTERN.matcher(identifier.getLocator());
+        if (!coordinates.find()) {
+            throw new NoSuchElementException("Bad coordinates format");
+        }
+        try {
+            return new Coordinates(
+                    Integer.valueOf(coordinates.group("xCoordinate")),
+                    Integer.valueOf(coordinates.group("yCoordinate"))
+            );
+        } catch (NumberFormatException e) {
+            throw new NoSuchElementException("Bad coordinates format", e);
+        }
+    }
     
     private By getBy(Identifier identifier) {
 

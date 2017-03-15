@@ -76,7 +76,7 @@ public class IdentifierService implements IIdentifierService {
 
     @Override
     public void checkWebElementIdentifier(String identifier) throws CerberusEventException {
-        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "picture"};
+        String[] selectOptionAttributes = {"id", "name", "class", "css", "xpath", "link", "data-cerberus", "picture", "coord"};
 
         if (!Arrays.asList(selectOptionAttributes).contains(identifier)) {
             MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_NO_SUCH_ELEMENT);
