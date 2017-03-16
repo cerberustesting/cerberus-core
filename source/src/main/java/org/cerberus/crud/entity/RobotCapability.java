@@ -19,6 +19,14 @@
  */
 package org.cerberus.crud.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.util.Objects;
 
 /**
@@ -30,17 +38,23 @@ import java.util.Objects;
  *
  * @author Aurelien Bourdon
  */
+@Entity
 public class RobotCapability {
 
     /**
      * The {@link RobotCapability}'s technical identifier
      */
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     /**
      * The {@link Robot}'s name
      */
-    private String robot;
+    @ManyToOne
+    @JoinColumn(name = "robot")
+    @JsonIgnore
+    private Robot robot;
 
     /**
      * The capability key
@@ -57,7 +71,7 @@ public class RobotCapability {
      *
      * @return the technical identifier from this {@link RobotCapability}
      */
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -66,7 +80,7 @@ public class RobotCapability {
      *
      * @param id the new technical identifier of this {@link RobotCapability}
      */
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -76,7 +90,7 @@ public class RobotCapability {
      * @return the {@link Robot}'s name associated to this
      * {@link RobotCapability}
      */
-    public String getRobot() {
+    public Robot getRobot() {
         return robot;
     }
 
@@ -86,7 +100,7 @@ public class RobotCapability {
      * @param robot the new {@link Robot}'s name associated to this
      * {@link RobotCapability}
      */
-    public void setRobot(String robot) {
+    public void setRobot(Robot robot) {
         this.robot = robot;
     }
 

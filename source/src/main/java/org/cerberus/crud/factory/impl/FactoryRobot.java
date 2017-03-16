@@ -32,6 +32,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class FactoryRobot implements IFactoryRobot {
 
+    public static final int NO_ROBOTID_DEFINED = -1;
+
     @Override
     public Robot create(Integer robotID, String robot, String host, String port, String platform ,
     String browser, String version, String active, String description, String userAgent, String screenSize) {
@@ -41,7 +43,9 @@ public class FactoryRobot implements IFactoryRobot {
     @Override
     public Robot create(Integer robotID, String robot, String host, String port, String platform, String browser, String version, String active, String description, String userAgent, String screenSize, List<RobotCapability> capabilities) {
         Robot newRobot = new Robot();
-        newRobot.setRobotID(robotID);
+        if (robotID != NO_ROBOTID_DEFINED) {
+            newRobot.setRobotID(robotID);
+        }
         newRobot.setRobot(robot);
         newRobot.setHost(host);
         newRobot.setPort(port);
@@ -56,5 +60,10 @@ public class FactoryRobot implements IFactoryRobot {
         return newRobot;
     }
 
-    
+    @Override
+    public Robot create(final String robot, final String host, final String port, final String platform, final String browser, final String version, final String active, final String description, final String userAgent, final String screenSize) {
+        return create(NO_ROBOTID_DEFINED, robot, host, port, platform, browser, version, active, description, userAgent, screenSize);
+    }
+
+
 }

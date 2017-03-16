@@ -19,6 +19,7 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import org.cerberus.crud.entity.Robot;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.factory.IFactoryRobotCapability;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class FactoryRobotCapability implements IFactoryRobotCapability {
 
 	@Override
-	public RobotCapability create(int id, String robot, String capability, String value) {
+	public RobotCapability create(int id, Robot robot, String capability, String value) {
 		RobotCapability robotCapability = new RobotCapability();
 		robotCapability.setId(id);
 		robotCapability.setRobot(robot);

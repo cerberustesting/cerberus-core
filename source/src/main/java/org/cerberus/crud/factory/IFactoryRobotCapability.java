@@ -35,7 +35,7 @@ public interface IFactoryRobotCapability {
 	 * @param id
 	 *            the {@link RobotCapability}'s technical identifier
 	 * @param robot
-	 *            the {@link RobotCapability}'s associated {@link Robot} name
+	 *            the {@link RobotCapability}'s associated {@link Robot}
 	 * @param capability
 	 *            the {@link RobotCapability}' capability key
 	 * @param value
@@ -43,6 +43,6 @@ public interface IFactoryRobotCapability {
 	 * @return a new {@link RobotCapability} instance based on the given
 	 *         attributes
 	 */
-	RobotCapability create(int id, String robot, String capability, String value);
+	RobotCapability create(int id, Robot robot, String capability, String value);
 
 }

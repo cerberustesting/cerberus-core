@@ -8519,6 +8519,34 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Update Robot capability table to fit with JPA foreign key constraint
+        //-- ------------------------ 1110 - 1114
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "DROP FOREIGN KEY `FK_robotcapability_01`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "UPDATE `robotcapability`\n" +
+                        "SET `robotcapability`.`robot` = (\n" +
+                        "\tSELECT `robotID`\n" +
+                        "    FROM `robot`\n" +
+                        "    WHERE `robotcapability`.`robot` = `robot`.`robot`\n" +
+                        ");");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "MODIFY COLUMN `robot` INT(10);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append(
+                "ALTER TABLE `robotcapability`\n" +
+                        "ADD CONSTRAINT `FK_robotcapability_01`\n" +
+                        "FOREIGN KEY (`robot`)\n" +
+                        "REFERENCES `robot`(`robotID`);");
+
         return SQLInstruction;
     }
 
