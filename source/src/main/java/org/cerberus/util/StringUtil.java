@@ -79,6 +79,16 @@ public final class StringUtil {
         }
         return true;
     }
+    
+    /**
+     * Check for boolean data type
+     *
+     * @param str
+     * @return true if str is "true" or "false"
+     */
+    public static boolean isBoolean(String str) {
+        return (str.equalsIgnoreCase("false") || str.equalsIgnoreCase("true"));
+    }
 
     /**
      * This method just reformat a string in order to increase the change it can

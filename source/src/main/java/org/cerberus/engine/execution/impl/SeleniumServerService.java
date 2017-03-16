@@ -255,11 +255,18 @@ public class SeleniumServerService implements ISeleniumServerService {
 
         /**
          * Loop on RobotCapabilities to feed DesiredCapabilities
+         * Capability must be  String, Integer or Boolean
          */
         List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
+                if (StringUtil.isBoolean(additionalCapability.getValue())){
+                caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
+                } else if (StringUtil.isInteger(additionalCapability.getValue())) {
+                caps.setCapability(additionalCapability.getCapability(), Integer.valueOf(additionalCapability.getValue()));
+                } else {
                 caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
+                }
             }
         }
 
@@ -294,8 +301,6 @@ public class SeleniumServerService implements ISeleniumServerService {
             if (browser.equalsIgnoreCase("firefox")) {
                 capabilities = DesiredCapabilities.firefox();
                 FirefoxProfile profile = new FirefoxProfile();
-                profile.setAcceptUntrustedCertificates(true);
-                profile.setAssumeUntrustedCertificateIssuer(true);
                 profile.setPreference("app.update.enabled", false);
                 profile.setEnableNativeEvents(true);
                 try {
@@ -311,9 +316,6 @@ public class SeleniumServerService implements ISeleniumServerService {
                     profile.setPreference("intl.accept_languages", "en");
                 }
 
-                capabilities.setCapability("acceptInsecureCerts", true);
-                capabilities.setCapability("acceptSslCerts", true);
-                //capabilities.setCapability("marionette", true);
 
                 // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
                 if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
