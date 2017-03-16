@@ -375,6 +375,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="userAgent">User Agent</label>
+                                        <input type="text" class="form-control" id="userAgent" placeholder="userAgent" readonly>
+                                    </div>
+                                </div>
+                        </div>
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">
                                 <div class="col-sm-3">

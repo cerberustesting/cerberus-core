@@ -8538,6 +8538,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appWaitActivity');");
         SQLInstruction.add(SQLS.toString());
         
+        //Add userAgent in TestCaseExecution Table and documentation Table
+        //-- ------------------------ 1116 - 1117
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `UserAgent` VARCHAR(250) NULL DEFAULT NULL AFTER `screensize`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('page_executiondetail', 'userAgent', '', 'fr', 'UserAgent', 'User Agent envoyé au navigateur web pour cette execution'),");
+        SQLS.append("('page_executiondetail', 'userAgent', '', 'en', 'UserAgent', 'User Agent required for this execution');");
+        SQLInstruction.add(SQLS.toString());
         return SQLInstruction;
     }
 

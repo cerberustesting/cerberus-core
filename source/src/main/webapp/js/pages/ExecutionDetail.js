@@ -166,6 +166,7 @@ function displayPageLabel(doc) {
     $("#testCaseDetails label[for='id']").text(doc.getDocLabel("page_executiondetail", "id"));
     $("#testCaseDetails label[for='revision']").text(doc.getDocLabel("page_executiondetail", "revision"));
     $("#testCaseDetails label[for='screenSize']").text(doc.getDocLabel("page_executiondetail", "screensize"));
+    $("#testCaseDetails label[for='userAgent']").text(doc.getDocLabel("page_executiondetail", "userAgent"));
     $("#testCaseDetails label[for='tag']").text(doc.getDocLabel("page_executiondetail", "tag"));
     $("#testCaseDetails label[for='verbose']").text(doc.getDocLabel("page_executiondetail", "verbose"));
     $("#testCaseDetails label[for='build']").text(doc.getDocLabel("page_executiondetail", "build"));
@@ -237,6 +238,7 @@ function updatePage(data, stepList) {
     configPanel.find("input#cerberusversion").val(data.crbVersion);
     configPanel.find("input#executor").val(data.executor);
     configPanel.find("input#screenSize").val(data.screenSize);
+    configPanel.find("input#userAgent").val(data.userAgent);
     configPanel.find("input#start").val(new Date(data.start));
     configPanel.find("input#tag").val(data.tag);
     configPanel.find("input#url").val(data.url);

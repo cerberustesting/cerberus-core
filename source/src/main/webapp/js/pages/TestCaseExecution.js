@@ -322,6 +322,14 @@ function aoColumnsFunc() {
             "title": doc.getDocOnline("page_executiondetail", "screensize"),
             "sWidth": "70px",
             "sDefaultContent": ""
+        },
+        {
+            "data": "userAgent",
+            "sName": "exe.userAgent",
+            "bSearchable": false,
+            "title": doc.getDocOnline("page_executiondetail", "userAgent"),
+            "sWidth": "130px",
+            "sDefaultContent": ""
         }
     ];
     return aoColumns;

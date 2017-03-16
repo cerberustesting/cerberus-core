@@ -320,7 +320,9 @@ public class SeleniumServerService implements ISeleniumServerService {
                 // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
                 if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
                         || !tCExecution.getUserAgent().isEmpty()) {
-                    profile.setPreference("general.useragent.override", getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                    String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                    profile.setPreference("general.useragent.override", usedUserAgent );
+                    tCExecution.setUserAgent(usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
             } else if (browser.equalsIgnoreCase("IE")) {

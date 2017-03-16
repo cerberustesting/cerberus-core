@@ -309,13 +309,8 @@ public class RunTestCase extends HttpServlet {
                         0, 0, "", "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), request.getRemoteUser(), numberOfRetries, screenSize, capabilities,
-                        "", "", "", "", "", manualExecution);
+                        "", "", "", "", "", manualExecution, userAgent);
                 
-                /**
-                 * Set UserAgent
-                 */
-                tCExecution.setUserAgent(userAgent);
-
                 /**
                  * Set UUID
                  */
