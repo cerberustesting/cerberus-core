@@ -8549,6 +8549,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('page_executiondetail', 'userAgent', '', 'fr', 'UserAgent', 'User Agent envoyé au navigateur web pour cette execution'),");
         SQLS.append("('page_executiondetail', 'userAgent', '', 'en', 'UserAgent', 'User Agent required for this execution');");
         SQLInstruction.add(SQLS.toString());
+        
+        //Add OutputFormat verbose-json
+        //-- ------------------------ 1118
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

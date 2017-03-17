@@ -466,6 +466,9 @@ public class RunTestCase extends HttpServlet {
                     out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                     out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                     out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
+                } else if (outputFormat.equalsIgnoreCase("verbose-json")) { // JSON verbose output.
+                    response.setContentType("application/json");
+                    out.print(tCExecution.toJson().toString());
                 } else { // Default behaviour when not outputformat is defined : compact mode.
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);
