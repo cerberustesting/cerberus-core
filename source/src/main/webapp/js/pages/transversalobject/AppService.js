@@ -128,44 +128,6 @@ function prepareAppServiceModal() {
         refreshDisplayOnTypeChange($(this).val());
     });
 
-    //Highlight envelop on modal loading
-    Prism.highlightElement($("#srvRequest")[0]);
-
-    /**
-     * On edition, get the caret position, refresh the envelope to have 
-     * syntax coloration in real time, then set the caret position.
-     */
-    $('#editSoapLibraryModal #srvRequest').off("keyup");
-    $('#editSoapLibraryModal #srvRequest').on("keyup", function (e) {
-        //Get the position of the carret
-        var pos = $(this).caret('pos');
-
-        //On Firefox only, when pressing enter, it create a <br> tag.
-        //So, if the <br> tag is present, replace it with <span>&#13;</span>
-        if ($("#editSoapLibraryModal #srvRequest br").length !== 0) {
-            $("#editSoapLibraryModal #srvRequest br").replaceWith("<span>&#13;</span>");
-            pos++;
-        }
-        //Apply syntax coloration
-        Prism.highlightElement($("#editSoapLibraryModal #srvRequest")[0]);
-        //Set the caret position to the initia one.
-        $(this).caret('pos', pos);
-    });
-
-    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-    //Add class on container to highlight field
-    $('#editSoapLibraryModal #srvRequestContainer').off("click");
-    $('#editSoapLibraryModal #srvRequestContainer').on("click", function (e) {
-        $('#editSoapLibraryModal #srvRequestContainer').addClass('highlightedContainer');
-        $('#editSoapLibraryModal #srvRequest').focus();
-    });
-
-    //Remove class to stop highlight envelop field
-    $('#editSoapLibraryModal #srvRequest').off("blur");
-    $('#editSoapLibraryModal #srvRequest').on('blur', function () {
-        $('#editSoapLibraryModal #srvRequestContainer').removeClass('highlightedContainer');
-    });
-
     // Adding rows in edit Modal.
     $('#addContent').off("click");
     $("#addContent").click(addNewContentRow);
@@ -201,7 +163,8 @@ function confirmAppServiceModalHandler(mode) {
     var data = convertSerialToJSONObject(formEdit.serialize());
 
     //Add envelope, not in the form
-    data.srvRequest = encodeURIComponent($("#editSoapLibraryModal #srvRequest").text());
+    var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
+    data.srvRequest = encodeURIComponent(editor.getSession().getDocument().getValue());
 
     // Getting Data from Content TAB
     var table1 = $("#contentTableBody tr");
@@ -333,6 +296,9 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
+    //Destroy the previous Ace object.
+    ace.edit($("#editSoapLibraryModal #srvRequest")[0]).destroy();
+
     // Data Feed.
     if (mode === "EDIT") {
         $("[name='editSoapLibraryField']").html(doc.getDocOnline("page_appservice", "button_edit"));
@@ -380,6 +346,23 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
 
         // Feed the header table.
         feedAppServiceModalDataHeader(service.headerList);
+    }
+    //Highlight envelop on modal loading
+    var editor = ace.edit($("#editSoapLibraryModal #srvRequest")[0]);
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+    editor.setOptions({
+        maxLines: Infinity
+    });
+
+    //On ADD, try to autodetect Ace mode until it is defined
+    if (mode === "ADD") {
+        $($("#editSoapLibraryModal #srvRequest").get(0)).keyup(function () {
+            if (editor.getSession().getMode().$id === "ace/mode/text") {
+                editor.getSession().setMode(defineAceMode(editor.getSession().getDocument().getValue()));
+            }
+        });
+
     }
 
     // Authorities

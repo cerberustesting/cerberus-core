@@ -8518,7 +8518,45 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
         SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
-
+        
+        // Insert invariants CAPABILITIES if not already defined.
+        //-- ------------------------ 1112 - 1115
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) SELECT 'CAPABILITY', 'acceptInsecureCerts', 10, 'Whether the session should accept insecure SSL certs by default.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptInsecureCerts');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'acceptSslCerts', 10,'Whether the session should accept all SSL certs by default.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptSslCerts');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appActivity', 10,'Activity name for the Android activity you want to launch from your package. This often needs to be preceded by a . (e.g., .MainActivity instead of MainActivity).' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appActivity');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appWaitActivity', 10,'Activity name for the Android activity you want to wait for.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appWaitActivity');");
+        SQLInstruction.add(SQLS.toString());
+        
+        //Add userAgent in TestCaseExecution Table and documentation Table
+        //-- ------------------------ 1116 - 1117
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `UserAgent` VARCHAR(250) NULL DEFAULT NULL AFTER `screensize`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
+        SQLS.append("VALUES ('page_executiondetail', 'userAgent', '', 'fr', 'UserAgent', 'User Agent envoyé au navigateur web pour cette execution'),");
+        SQLS.append("('page_executiondetail', 'userAgent', '', 'en', 'UserAgent', 'User Agent required for this execution');");
+        SQLInstruction.add(SQLS.toString());
+        
+        //Add OutputFormat verbose-json
+        //-- ------------------------ 1118
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

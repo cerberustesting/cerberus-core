@@ -778,15 +778,12 @@ public class WebDriverService implements IWebDriverService {
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_WAIT_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             return message;
-        } catch (NoSuchElementException exception) {
+        } catch (TimeoutException exception) {
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_WAIT_NO_SUCH_ELEMENT);
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
-        } catch (WebDriverException exception) {
-            MyLogger.log(WebDriverService.class.getName(), Level.FATAL, exception.toString());
-            return parseWebDriverException(exception);
-        }
+        } 
     }
 
     @Override

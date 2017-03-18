@@ -66,7 +66,8 @@ public class TestCaseExecution {
     private String conditionVal1;
     private String conditionVal2;
     private boolean manualExecution;
-
+    private String userAgent;
+    
     /**
      * From here are data outside database model.
      */
@@ -82,7 +83,6 @@ public class TestCaseExecution {
     private Integer pageSource;
     private Integer seleniumLog;
     private Integer numberOfRetries;
-    private String userAgent;
     private boolean synchroneous;
     private String timeout;
     // Objects.
@@ -762,6 +762,7 @@ public class TestCaseExecution {
             result.put("conditionVal2Init", this.getConditionVal2Init());
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
+            result.put("userAgent", this.getUserAgent());
 
             // Looping on ** Step **
             JSONArray array = new JSONArray();

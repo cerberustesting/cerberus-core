@@ -309,13 +309,8 @@ public class RunTestCase extends HttpServlet {
                         0, 0, "", "", "", null, ss_ip, null, ss_p, tag, "N", verbose, screenshot, getPageSource, getSeleniumLog, synchroneous, timeout, outputFormat, null,
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), request.getRemoteUser(), numberOfRetries, screenSize, capabilities,
-                        "", "", "", "", "", manualExecution);
+                        "", "", "", "", "", manualExecution, userAgent);
                 
-                /**
-                 * Set UserAgent
-                 */
-                tCExecution.setUserAgent(userAgent);
-
                 /**
                  * Set UUID
                  */
@@ -471,6 +466,9 @@ public class RunTestCase extends HttpServlet {
                     out.println("ReturnCode" + separator + tCExecution.getResultMessage().getCode());
                     out.println("ReturnCodeDescription" + separator + tCExecution.getResultMessage().getDescription());
                     out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
+                } else if (outputFormat.equalsIgnoreCase("verbose-json")) { // JSON verbose output.
+                    response.setContentType("application/json");
+                    out.print(tCExecution.toJson().toString());
                 } else { // Default behaviour when not outputformat is defined : compact mode.
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);

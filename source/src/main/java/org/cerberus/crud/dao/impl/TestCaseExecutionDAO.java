@@ -78,8 +78,8 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         boolean throwEx = false;
         final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, environmentData, country, browser, application, ip, "
                 + "url, port, tag, verbose, status, start, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize,"
-                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -115,6 +115,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
                 preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
+                preStat.setString(i++, tCExecution.getUserAgent());
 
                 preStat.executeUpdate();
                 ResultSet resultSet = preStat.getGeneratedKeys();
@@ -160,7 +161,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? "
                 + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
-                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ? WHERE id = ?";
+                + ", ConditionOper = ?, ConditionVal1Init = ?, ConditionVal2Init = ?, ConditionVal1 = ?, ConditionVal2 = ?, ManualExecution = ?, UserAgent = ? WHERE id = ?";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -203,6 +204,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 preStat.setString(i++, tCExecution.getConditionVal1());
                 preStat.setString(i++, tCExecution.getConditionVal2());
                 preStat.setString(i++, tCExecution.isManualExecution() ? "Y" : "N");
+                preStat.setString(i++, tCExecution.getUserAgent());
                 preStat.setLong(i++, tCExecution.getId());
 
                 preStat.executeUpdate();
@@ -1148,6 +1150,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`crbversion` like ? ");
             query.append(" or exe.`executor` like ? ");
             query.append(" or exe.`screensize` like ? )");
+            query.append(" or exe.`userAgent` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             query.append(" and ( 1=1 ");
@@ -1179,6 +1182,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             int i = 1;
             if (!Strings.isNullOrEmpty(searchTerm)) {
+                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
@@ -1848,11 +1852,12 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal2 = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2"), "");
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
         boolean manualExecution = ParameterParserUtil.parseBooleanParam(resultSet.getString("exe.manualExecution"), false);
+        String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
         TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,
-                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution);
+                conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, userAgent);
         return result;
     }
 

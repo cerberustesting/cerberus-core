@@ -76,7 +76,7 @@ function displayPageLabel() {
     $("[name='editCapabilityHeader']").html(doc.getDocOnline("robot", "capabilityCapability"));
     $("[name='editValueHeader']").html(doc.getDocOnline("robot", "capabilityValue"));
     displayInvariantList("active", "ROBOTACTIVE", false);
-    displayInvariantList("browser", "BROWSER", false);
+    displayInvariantList("browser", "BROWSER", false, undefined, "");
     displayInvariantList("platform", "PLATFORM", false, undefined, "");
     
     displayFooter(doc);
