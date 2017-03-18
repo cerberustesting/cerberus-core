@@ -195,6 +195,7 @@ public class SoapService implements ISoapService {
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
                     .replace("%SOAPMETHOD%", method));
+            result.setResultMessage(message);
 
             // We save convert to string the final response from SOAP request.
             serviceSOAP.setResponseHTTPBody(SoapUtil.convertSoapMessageToString(soapResponse));

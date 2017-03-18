@@ -78,7 +78,7 @@ public class GetCampaignExecutionsCommand extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetCampaignExecutionsCommand", "CALL", "GetCampaignExecutionsCommandV0 called : " + request.getRequestURL(), request);
 
         campaignService = appContext.getBean(ICampaignService.class);
         testBatteryService = appContext.getBean(ITestBatteryService.class);

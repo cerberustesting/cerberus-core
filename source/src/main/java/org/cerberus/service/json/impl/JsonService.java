@@ -19,7 +19,6 @@
  */
 package org.cerberus.service.json.impl;
 
-import org.cerberus.engine.execution.impl.ExecutionRunService;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import java.io.BufferedReader;
@@ -70,7 +69,8 @@ public class JsonService implements IJsonService {
      * @param jsonMessage
      * @param url URL of the Json file to parse
      * @param attributeToFind
-     * @return Value of the element from the Json File or null if the element is not found.
+     * @return Value of the element from the Json File or null if the element is
+     * not found.
      */
     @Override
     public String getFromJson(String jsonMessage, String url, String attributeToFind) {
@@ -101,6 +101,7 @@ public class JsonService implements IJsonService {
             LOG.debug("Error getting path '" + attributeToFind + "'from Json " + json + " - Exception : " + ex.toString());
         }
 
+        LOG.debug("JSON RESULT : " + result);
         return result;
     }
 }

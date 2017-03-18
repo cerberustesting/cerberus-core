@@ -104,7 +104,7 @@ public class UpdateMyUser extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
+                logEventService.createForPrivateCalls("/UpdateMyUser", "UPDATE", "Updated user : " + login, request);
 
                 jsonResponse.put("messageType", MessageEventEnum.GENERIC_OK.getCodeString());
                 jsonResponse.put("message", MessageEventEnum.GENERIC_OK.getDescription());

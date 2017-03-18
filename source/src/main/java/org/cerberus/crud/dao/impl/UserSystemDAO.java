@@ -49,8 +49,8 @@ import org.springframework.stereotype.Repository;
  * @author bcivel
  */
 @Repository
-public class UserSystemDAO implements IUserSystemDAO{
-    
+public class UserSystemDAO implements IUserSystemDAO {
+
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
@@ -109,17 +109,17 @@ public class UserSystemDAO implements IUserSystemDAO{
                         result = this.loadUserSystemFromResultSet(resultSet);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -149,17 +149,17 @@ public class UserSystemDAO implements IUserSystemDAO{
                         list.add(user);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -182,7 +182,7 @@ public class UserSystemDAO implements IUserSystemDAO{
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, login);
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<UserSystem>();
@@ -191,17 +191,17 @@ public class UserSystemDAO implements IUserSystemDAO{
                         list.add(user);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -224,7 +224,7 @@ public class UserSystemDAO implements IUserSystemDAO{
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 preStat.setString(1, system);
-                
+
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     list = new ArrayList<UserSystem>();
@@ -233,17 +233,17 @@ public class UserSystemDAO implements IUserSystemDAO{
                         list.add(user);
                     }
                 } catch (SQLException exception) {
-                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                    MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 } finally {
                     resultSet.close();
                 }
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
         } finally {
             try {
                 if (connection != null) {
@@ -266,16 +266,16 @@ public class UserSystemDAO implements IUserSystemDAO{
             try {
                 preStat.setString(1, userSystem.getLogin());
                 preStat.setString(2, userSystem.getSystem());
-                
+
                 preStat.execute();
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         } finally {
             try {
@@ -302,13 +302,13 @@ public class UserSystemDAO implements IUserSystemDAO{
 
                 preStat.execute();
             } catch (SQLException exception) {
-                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+                MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
                 throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
             } finally {
                 preStat.close();
             }
         } catch (SQLException exception) {
-            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : "+exception.toString());
+            MyLogger.log(UserSystemDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.CANNOT_UPDATE_TABLE));
         } finally {
             try {
@@ -333,7 +333,7 @@ public class UserSystemDAO implements IUserSystemDAO{
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-            PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.READ_BY_USER)) {
             // Prepare and execute query
             preStat.setString(1, login);
             ResultSet resultSet = preStat.executeQuery();
@@ -365,7 +365,7 @@ public class UserSystemDAO implements IUserSystemDAO{
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.CREATE)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());
@@ -391,7 +391,7 @@ public class UserSystemDAO implements IUserSystemDAO{
         MessageEvent msg = null;
 
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
+                PreparedStatement preStat = connection.prepareStatement(Query.DELETE)) {
             // Prepare and execute query
             preStat.setString(1, sys.getLogin());
             preStat.setString(2, sys.getSystem());
@@ -416,5 +416,5 @@ public class UserSystemDAO implements IUserSystemDAO{
         String system = ParameterParserUtil.parseStringParam(rs.getString("system"), "");
         return factoryUserSystem.create(login, system);
     }
-    
+
 }

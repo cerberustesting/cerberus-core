@@ -142,7 +142,7 @@ public class ImportPropertyOfATestCaseToAnOtherTestCase extends HttpServlet {
                         if(answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
                             //  Adding Log entry.
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createPrivateCalls( "/ImportPropertyOfATestCaseToAnOtherTestCase", "CREATE", "Override from imported test step: " + propertyName, request);
+                            logEventService.createForPrivateCalls( "/ImportPropertyOfATestCaseToAnOtherTestCase", "CREATE", "Override from imported test step: " + propertyName, request);
                         }                        
                     }
                 }else{

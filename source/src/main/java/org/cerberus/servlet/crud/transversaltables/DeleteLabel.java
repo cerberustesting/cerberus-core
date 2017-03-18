@@ -122,7 +122,7 @@ public class DeleteLabel extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteLabel", "DELETE", "Delete Label : ['" + key + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteLabel", "DELETE", "Delete Label : ['" + key + "']", request);
                 }
             }
         }

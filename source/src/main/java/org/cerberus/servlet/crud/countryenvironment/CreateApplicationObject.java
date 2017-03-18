@@ -163,7 +163,7 @@ public class CreateApplicationObject extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
+                logEventService.createForPrivateCalls("/CreateApplicationObject", "CREATE", "Create Application Object: ['" + application + "','" + object + "']", request);
 
             if (file != null) {
                     AnswerItem an = applicationobjectService.readByKey(application,object);

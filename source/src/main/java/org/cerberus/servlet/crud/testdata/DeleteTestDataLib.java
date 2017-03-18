@@ -128,7 +128,7 @@ public class DeleteTestDataLib extends HttpServlet {
                  */
                 if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + key, request);
+                    logEventService.createForPrivateCalls("/DeleteTestDataLib", "DELETE", "Delete TestDataLib : " + key, request);
                 }
 
             }

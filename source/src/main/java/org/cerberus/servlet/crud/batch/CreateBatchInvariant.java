@@ -114,7 +114,7 @@ public class CreateBatchInvariant extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateBatchInvariant", "CREATE", "Create BatchInvariant : ['" + batch + "']", request);
+                logEventService.createForPrivateCalls("/CreateBatchInvariant", "CREATE", "Create BatchInvariant : ['" + batch + "']", request);
             }
         }
 

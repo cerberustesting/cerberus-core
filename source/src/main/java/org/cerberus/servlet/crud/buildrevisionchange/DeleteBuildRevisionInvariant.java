@@ -148,7 +148,7 @@ public class DeleteBuildRevisionInvariant extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteBuildRevisionInvariant", "DELETE", "Delete BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteBuildRevisionInvariant", "DELETE", "Delete BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
                 }
             }
         }

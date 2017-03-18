@@ -890,7 +890,7 @@ public class UpdateTestCaseDetail extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", request);
+                logEventService.createForPrivateCalls("/UpdateTestCaseDetail", "UPDATE", "Update testcase detail : ['" + test_testcase_format_prop[0] + "'|'" + test_testcase_format_prop[1] + "']", request);
 
 
                 /*

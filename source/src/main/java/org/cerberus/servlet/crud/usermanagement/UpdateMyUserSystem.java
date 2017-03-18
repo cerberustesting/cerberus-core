@@ -74,7 +74,7 @@ public class UpdateMyUserSystem extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateMyUserSystem", "UPDATE", "Updated user : " + login, request);
+                logEventService.createForPrivateCalls("/UpdateMyUserSystem", "UPDATE", "Updated user : " + login, request);
                 response.getWriter().print(value);
             } catch (CerberusException ex) {
                 response.getWriter().print(ex.getMessageError().getDescription());

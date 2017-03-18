@@ -106,7 +106,7 @@ public class DeleteTestBattery2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/DeleteTestBattery2", "DELETE", "Delete TestBattery : " + key, request);
+                        logEventService.createForPrivateCalls("/DeleteTestBattery2", "DELETE", "Delete TestBattery : " + key, request);
 
                     }
                 }

@@ -146,7 +146,7 @@ public class UpdateMyUserReporting1 extends HttpServlet {
 
 
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/UpdateMyUserReporting1", "UPDATE", "Update user reporting preference for user: " + login, request);
+                logEventService.createForPrivateCalls("/UpdateMyUserReporting1", "UPDATE", "Update user reporting preference for user: " + login, request);
             }else{
                 msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", "Unable to update User was not found!"));               
             }

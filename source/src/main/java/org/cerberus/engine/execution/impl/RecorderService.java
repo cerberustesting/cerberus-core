@@ -173,7 +173,7 @@ public class RecorderService implements IRecorderService {
             AppService se = (AppService) testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getLastServiceCalled();
             if (se != null) { // No Calls were performed previously
                 List<TestCaseExecutionFile> objectFileSOAPList = new ArrayList<TestCaseExecutionFile>();
-                objectFileSOAPList = this.recordServiceCall(myExecution, testCaseStepActionExecution, controlNumber, se);
+                objectFileSOAPList = this.recordServiceCall(myExecution, testCaseStepActionExecution, controlNumber, null, se);
                 if (objectFileSOAPList.isEmpty() != true) {
                     for (TestCaseExecutionFile testCaseExecutionFile : objectFileSOAPList) {
                         objectFileList.add(testCaseExecutionFile);
@@ -293,24 +293,34 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService se) {
+    public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService se) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         TestCaseExecutionFile object = null;
-        String test = testCaseExecution.getTest();
-        String testCase = testCaseExecution.getTestCase();
-        String step = String.valueOf(testCaseStepActionExecution.getStep());
-        String index = String.valueOf(testCaseStepActionExecution.getIndex());
-        String sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        String test = null;
+        String testCase = null;
+        String step = null;
+        String index = null;
+        String sequence = null;
+        if (testCaseStepActionExecution != null) {
+            test = testCaseExecution.getTest();
+            testCase = testCaseExecution.getTestCase();
+            step = String.valueOf(testCaseStepActionExecution.getStep());
+            index = String.valueOf(testCaseStepActionExecution.getIndex());
+            sequence = String.valueOf(testCaseStepActionExecution.getSequence());
+        }
         String controlString = control.equals(0) ? null : String.valueOf(control);
         long runId = testCaseExecution.getId();
-
+        int propertyIndex = 0;
+        if (!(StringUtil.isNullOrEmpty(property))) {
+            propertyIndex = 1;
+        }
         try {
 
             // Service Call META data information.
-            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "call", "json");
+            Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json");
             recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), convertToJSON(se).toString());
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
@@ -328,7 +338,7 @@ public class RecorderService implements IRecorderService {
                     messageFormatExt = "xml";
                     messageFormat = TestCaseExecutionFile.FILETYPE_XML;
                 }
-                recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "request", messageFormatExt);
+                recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "request", messageFormatExt);
                 recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.getServiceRequest());
                 // Index file created to database.
                 object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Request", recorderRequest.getRelativeFilenameURL(), messageFormat, "", null, "", null);
@@ -356,7 +366,7 @@ public class RecorderService implements IRecorderService {
                         break;
                 }
 
-                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, null, 0, "response", messageFormatExt);
+                Recorder recorderResponse = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "response", messageFormatExt);
                 recordFile(recorderResponse.getFullPath(), recorderResponse.getFileName(), se.getResponseHTTPBody());
 
                 // Index file created to database.
@@ -365,7 +375,7 @@ public class RecorderService implements IRecorderService {
                 objectFileList.add(object);
             }
 
-        } catch (CerberusException ex) {
+        } catch (Exception ex) {
             LOG.error(logPrefix + ex.toString());
         }
         return objectFileList;
@@ -544,95 +554,100 @@ public class RecorderService implements IRecorderService {
     }
 
     private Recorder initFilenames(long exeID, String test, String testCase, String step, String index, String sequence, String controlString, String property, int propertyIndex, String filename, String extention) throws CerberusException {
-
         Recorder newRecorder = new Recorder();
 
-        /**
-         * Root folder initialisation. The root folder is confugures from the
-         * parameter cerberus_mediastorage_path.
-         */
-        String rootFolder = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
-        rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
-        newRecorder.setRootFolder(rootFolder);
+        try {
 
-        /**
-         * SubFolder. Subfolder is split in order to reduce the nb of folder
-         * within a folder. 2 levels of 2 digits each. he last level is the
-         * execution id.
-         */
-        String subFolder = getStorageSubFolder(exeID);
-        newRecorder.setSubFolder(subFolder);
-        String subFolderURL = getStorageSubFolderURL(exeID);
-        newRecorder.setSubFolder(subFolderURL);
+            /**
+             * Root folder initialisation. The root folder is confugures from
+             * the parameter cerberus_mediastorage_path.
+             */
+            String rootFolder = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
+            rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
+            newRecorder.setRootFolder(rootFolder);
 
-        /**
-         * FullPath. Concatenation of the rootfolder and subfolder.
-         */
-        String fullPath = rootFolder + subFolder;
-        newRecorder.setFullPath(fullPath);
+            /**
+             * SubFolder. Subfolder is split in order to reduce the nb of folder
+             * within a folder. 2 levels of 2 digits each. he last level is the
+             * execution id.
+             */
+            String subFolder = getStorageSubFolder(exeID);
+            newRecorder.setSubFolder(subFolder);
+            String subFolderURL = getStorageSubFolderURL(exeID);
+            newRecorder.setSubFolder(subFolderURL);
 
-        /**
-         * Filename. If filename is not define, we assign it from the test,
-         * testcase, step action and control.
-         */
-        StringBuilder sbfileName = new StringBuilder();
-        if (!StringUtil.isNullOrEmpty(test)) {
-            sbfileName.append(test).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(testCase)) {
-            sbfileName.append(testCase).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(step)) {
-            sbfileName.append("S").append(step).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(index)) {
-            sbfileName.append("I").append(index).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(sequence)) {
-            sbfileName.append("A").append(sequence).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(controlString)) {
-            sbfileName.append("C").append(controlString).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(property)) {
-            sbfileName.append(property).append("-");
-        }
-        if (propertyIndex != 0) {
-            sbfileName.append(propertyIndex).append("-");
-        }
-        if (!StringUtil.isNullOrEmpty(filename)) {
-            sbfileName.append(filename).append("-");
-        }
-        String fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
-        fileName = fileName.replace(" ", "");
-        newRecorder.setFileName(fileName);
+            /**
+             * FullPath. Concatenation of the rootfolder and subfolder.
+             */
+            String fullPath = rootFolder + subFolder;
+            newRecorder.setFullPath(fullPath);
 
-        /**
-         * Level. 5 levels possible. Keys are defined seperated by -. 1/
-         * Execution level --> emptyString. 2/ Step level --> test+testcase+Step
-         * 3/ Action level --> test+testcase+Step+action 4/ Control level -->
-         * test+testcase+Step+action+control 5/ Property level -->
-         * property+index
-         */
-        String level = "";
-        if (!(StringUtil.isNullOrEmpty(controlString))) {
-            level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence + "-" + controlString;
-        } else if (!(StringUtil.isNullOrEmpty(sequence))) {
-            level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence;
-        } else if (!(StringUtil.isNullOrEmpty(step))) {
-            level = test + "-" + testCase + "-" + step + "-" + index;
-        } else if (!(StringUtil.isNullOrEmpty(property))) {
-            level = property + "-" + propertyIndex;
-        }
-        newRecorder.setLevel(level);
+            /**
+             * Filename. If filename is not define, we assign it from the test,
+             * testcase, step action and control.
+             */
+            StringBuilder sbfileName = new StringBuilder();
+            if (!StringUtil.isNullOrEmpty(test)) {
+                sbfileName.append(test).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(testCase)) {
+                sbfileName.append(testCase).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(step)) {
+                sbfileName.append("S").append(step).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(index)) {
+                sbfileName.append("I").append(index).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(sequence)) {
+                sbfileName.append("A").append(sequence).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(controlString)) {
+                sbfileName.append("C").append(controlString).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(property)) {
+                sbfileName.append(property).append("-");
+            }
+            if (propertyIndex != 0) {
+                sbfileName.append(propertyIndex).append("-");
+            }
+            if (!StringUtil.isNullOrEmpty(filename)) {
+                sbfileName.append(filename).append("-");
+            }
+            String fileName = StringUtil.removeLastChar(sbfileName.toString(), 1) + "." + extention;
+            fileName = fileName.replace(" ", "");
+            newRecorder.setFileName(fileName);
 
-        /**
-         * Final Filename with full path.
-         */
-        String fullFilename = rootFolder + File.separator + subFolder + File.separator + fileName;
-        newRecorder.setFullFilename(fullFilename);
-        String relativeFilenameURL = subFolderURL + "/" + fileName;
-        newRecorder.setRelativeFilenameURL(relativeFilenameURL);
+            /**
+             * Level. 5 levels possible. Keys are defined seperated by -. 1/
+             * Execution level --> emptyString. 2/ Step level -->
+             * test+testcase+Step 3/ Action level --> test+testcase+Step+action
+             * 4/ Control level --> test+testcase+Step+action+control 5/
+             * Property level --> property+index
+             */
+            String level = "";
+            if (!(StringUtil.isNullOrEmpty(controlString))) {
+                level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence + "-" + controlString;
+            } else if (!(StringUtil.isNullOrEmpty(sequence))) {
+                level = test + "-" + testCase + "-" + step + "-" + index + "-" + sequence;
+            } else if (!(StringUtil.isNullOrEmpty(step))) {
+                level = test + "-" + testCase + "-" + step + "-" + index;
+            } else if (!(StringUtil.isNullOrEmpty(property))) {
+                level = property + "-" + propertyIndex;
+            }
+            newRecorder.setLevel(level);
+
+            /**
+             * Final Filename with full path.
+             */
+            String fullFilename = rootFolder + File.separator + subFolder + File.separator + fileName;
+            newRecorder.setFullFilename(fullFilename);
+            String relativeFilenameURL = subFolderURL + "/" + fileName;
+            newRecorder.setRelativeFilenameURL(relativeFilenameURL);
+
+        } catch (Exception ex) {
+            LOG.error("Error on data init. " + ex.toString());
+        }
 
         return newRecorder;
     }

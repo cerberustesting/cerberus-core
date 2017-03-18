@@ -137,7 +137,7 @@ public class AddUser extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/AddUser", "CREATE", "Insert user : " + login, request);
+            logEventService.createForPrivateCalls("/AddUser", "CREATE", "Insert user : " + login, request);
 
             response.getWriter().print(myUser.getLogin());
         } catch (CerberusException myexception) {

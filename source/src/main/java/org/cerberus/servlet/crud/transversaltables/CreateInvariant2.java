@@ -125,7 +125,7 @@ public class CreateInvariant2 extends HttpServlet {
                  * Object updated. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
+                logEventService.createForPrivateCalls("/CreateInvariant2", "CREATE", "Create Invariant : ['" + id + "']", request);
             }
         }
 

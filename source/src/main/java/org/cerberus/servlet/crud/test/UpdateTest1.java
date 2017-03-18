@@ -128,7 +128,7 @@ public class UpdateTest1 extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateTest", "UPDATE", "Updated Test : ['" + test + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateTest", "UPDATE", "Updated Test : ['" + test + "']", request);
                 }
             }
 

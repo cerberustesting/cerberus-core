@@ -109,7 +109,7 @@ public class UpdateTestBattery2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test Battery : " + testBattery, request);
+                        logEventService.createForPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test Battery : " + testBattery, request);
                     }
                 }
 
@@ -130,7 +130,7 @@ public class UpdateTestBattery2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test battery : " + test.getTestbattery(), request);
+                        logEventService.createForPrivateCalls("/UpdateTestBattery2", "UPDATE", "Update Test battery : " + test.getTestbattery(), request);
                     }
                 }
 

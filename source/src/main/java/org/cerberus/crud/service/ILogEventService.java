@@ -69,7 +69,7 @@ public interface ILogEventService {
      * @param request
      * @param log
      */
-    void createPrivateCalls(String page, String action, String log, HttpServletRequest request);
+    void createForPrivateCalls(String page, String action, String log, HttpServletRequest request);
 
     /**
      * This method is to be used when log is done from a private Servlet. In
@@ -79,7 +79,7 @@ public interface ILogEventService {
      * @param action
      * @param log
      */
-    void createPrivateCalls(String page, String action, String log);
+    void createForPrivateCalls(String page, String action, String log);
 
     /**
      * This method is to be used when log is done from a public Servlet. It will
@@ -91,7 +91,7 @@ public interface ILogEventService {
      * @param request
      * @param log
      */
-    void createPublicCalls(String page, String action, String log, HttpServletRequest request);
+    void createForPublicCalls(String page, String action, String log, HttpServletRequest request);
 
     /**
      * 

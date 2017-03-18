@@ -79,7 +79,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createPublicCalls("/NewBuildRevisionV000", "CALL", "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewBuildRevisionV000", "CALL", "NewBuildRevisionV000 called : " + request.getRequestURL(), request);
 
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
@@ -202,7 +202,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createPrivateCalls("/NewBuildRevisionV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+                    logEventService.createForPrivateCalls("/NewBuildRevisionV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), build, revision, "New Build Revision.", "PublicCall");
@@ -224,7 +224,7 @@ public class NewBuildRevisionV000 extends HttpServlet {
 
                     } catch (Exception e) {
                         Logger.getLogger(NewBuildRevisionV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                        logEventService.createForPrivateCalls("/NewBuildRevisionV000", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
                         OutputMessage = e.getMessage();
                     }
 

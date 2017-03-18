@@ -49,6 +49,8 @@ public class UserGroupService implements IUserGroupService {
     @Autowired
     private IUserGroupDAO userGroupDAO;
 
+    private final String OBJECT_NAME = "UserGroup";
+    
     @Override
     public void updateUserGroups(User user, List<UserGroup> newGroups) throws CerberusException {
 
@@ -99,7 +101,8 @@ public class UserGroupService implements IUserGroupService {
 
     @Override
     public Answer updateGroupsByUser(User user, List<UserGroup> newGroups) {
-        Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                .resolveDescription("OPERATION", "UPDATE"));
         AnswerList an = this.readByUser(user.getLogin());
         if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserGroup> oldGroups = an.getDataList();

@@ -119,7 +119,7 @@ public class CreateLabel extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateLabel", "CREATE", "Create Label : ['" + label + "'] for System : ["+system+"]", request);
+                logEventService.createForPrivateCalls("/CreateLabel", "CREATE", "Create Label : ['" + label + "'] for System : ["+system+"]", request);
             }
         }
 

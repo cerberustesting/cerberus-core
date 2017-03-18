@@ -271,7 +271,7 @@ public class DuplicateTestCase extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DuplicateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testCase + "']", request);
+                    logEventService.createForPrivateCalls("/DuplicateTestCase", "CREATE", "Create testcase : ['" + test + "'|'" + testCase + "']", request);
                 }
 
             }

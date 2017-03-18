@@ -118,7 +118,7 @@ public class DeleteProject extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteProject", "DELETE", "Delete Project : ['" + key + "']", request);
                 }
             }
         }

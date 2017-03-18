@@ -110,7 +110,7 @@ public class DeleteAppService extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteAppService", "DELETE", "Delete AppService : " + service, request);
+                    logEventService.createForPrivateCalls("/DeleteAppService", "DELETE", "Delete AppService : " + service, request);
                 }
             }
         }

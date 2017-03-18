@@ -141,7 +141,7 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
                         /**
                          * Delete was successful. Adding Log entry.
                          */
-                        logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease() + "']", request);
+                        logEventService.createForPrivateCalls("/DeleteBuildRevisionParameters", "DELETE", "Delete BuildRevisionParameters : ['" + brpid + "'|'" + brpData.getRelease() + "']", request);
                     } else {
                         massErrorCounter++;
                         output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());
@@ -170,7 +170,7 @@ public class DeleteBuildRevisionParameters extends HttpServlet {
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");
                 ans.setResultMessage(msg);
             }
-            logEventService.createPrivateCalls("/DeleteBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
+            logEventService.createForPrivateCalls("/DeleteBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
         }
 
         /**

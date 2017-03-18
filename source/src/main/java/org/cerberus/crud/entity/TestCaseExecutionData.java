@@ -76,6 +76,20 @@ public class TestCaseExecutionData {
         this.fileList = fileList;
     }
 
+    public void addFileList(TestCaseExecutionFile file) {
+        if (file != null) {
+            this.fileList.add(file);
+        }
+    }
+
+    public void addFileList(List<TestCaseExecutionFile> fileList) {
+        if (fileList != null) {
+            for (TestCaseExecutionFile testCaseExecutionFile : fileList) {
+                this.fileList.add(testCaseExecutionFile);
+            }
+        }
+    }
+
     public String getDatabase() {
         return database;
     }
@@ -123,6 +137,7 @@ public class TestCaseExecutionData {
     public void setNature(String nature) {
         this.nature = nature;
     }
+
     public int getRetryNb() {
         return retryNb;
     }
@@ -310,7 +325,7 @@ public class TestCaseExecutionData {
         return "TestCaseExecutionData{" + "id=" + id + ", property=" + property + ", value=" + value + ", type=" + type + ", value1=" + value1 + ", value2=" + value2 + ", RC=" + RC + ", rMessage=" + rMessage + ", start=" + start + ", end=" + end + ", startLong=" + startLong + ", endLong=" + endLong + ", propertyResultMessage=" + propertyResultMessage.toString() + ", executionResultMessage=" + executionResultMessage + ", stopExecution=" + stopExecution + '}';
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
             result.put("id", this.getId());
@@ -335,16 +350,15 @@ public class TestCaseExecutionData {
             result.put("RC", this.getRC());
             result.put("rMessage", this.getrMessage());
             result.put("description", this.getDescription());
-            
+
             JSONArray array = new JSONArray();
-            if (this.getFileList()!= null) {
+            if (this.getFileList() != null) {
                 for (Object dataFileList : this.getFileList()) {
                     array.put(((TestCaseExecutionFile) dataFileList).toJson());
                 }
             }
             result.put("fileList", array);
-            
-            
+
         } catch (JSONException ex) {
             LOG.error(ex.toString());
         }

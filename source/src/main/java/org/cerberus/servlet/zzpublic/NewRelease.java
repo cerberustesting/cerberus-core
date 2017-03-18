@@ -81,7 +81,7 @@ public class NewRelease extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewRelease", "CALL", "NewReleaseV0 called : " + request.getRequestURL(), request);
 
         IApplicationService MyApplicationService = appContext.getBean(ApplicationService.class);
         IUserService MyUserService = appContext.getBean(UserService.class);

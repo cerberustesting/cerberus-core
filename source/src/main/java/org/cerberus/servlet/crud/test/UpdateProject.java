@@ -123,7 +123,7 @@ public class UpdateProject extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateProject", "UPDATE", "Updated Project : ['" + idProject + "']", request);
                 }
             }
         }

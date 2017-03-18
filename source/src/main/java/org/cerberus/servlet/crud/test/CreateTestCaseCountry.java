@@ -148,7 +148,7 @@ public class CreateTestCaseCountry extends HttpServlet {
                      * Object created. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/CreateTestCaseCountry", "CREATE", "Create TestCaseCountry : ['" + test + "'|'" + testcase + "'|'" + country + "']", request);
+                    logEventService.createForPrivateCalls("/CreateTestCaseCountry", "CREATE", "Create TestCaseCountry : ['" + test + "'|'" + testcase + "'|'" + country + "']", request);
                 }
             }
         }

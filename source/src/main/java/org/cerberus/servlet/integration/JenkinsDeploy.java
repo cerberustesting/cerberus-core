@@ -105,7 +105,7 @@ public class JenkinsDeploy extends HttpServlet {
                  * Jenkins was called successfuly. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-                logEventService.createPrivateCalls("/JenkinsDeploy", "DEPLOY", "JenkinsDeploy Triggered : ['" + final_url + "']", request);
+                logEventService.createForPrivateCalls("/JenkinsDeploy", "DEPLOY", "JenkinsDeploy Triggered : ['" + final_url + "']", request);
                 out.print("Sent request : " + url);
             }
 

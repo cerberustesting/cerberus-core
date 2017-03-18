@@ -159,7 +159,7 @@ public class UpdateInvariant2 extends HttpServlet {
                              * Object updated. Adding Log entry.
                              */
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createPrivateCalls("/UpdateInvariant2", "UPDATE", "Update Invariant : ['" + id + "']", request);
+                            logEventService.createForPrivateCalls("/UpdateInvariant2", "UPDATE", "Update Invariant : ['" + id + "']", request);
                         }
                     } else {
                         msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

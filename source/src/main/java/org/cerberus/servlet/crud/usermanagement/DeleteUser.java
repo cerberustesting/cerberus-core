@@ -64,7 +64,7 @@ public class DeleteUser extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/DeleteUser", "DELETE", "Delete user : " + login, request);
+            logEventService.createForPrivateCalls("/DeleteUser", "DELETE", "Delete user : " + login, request);
 
         } catch (CerberusException ex) {
             response.getWriter().print(ex.getMessageError().getDescription());

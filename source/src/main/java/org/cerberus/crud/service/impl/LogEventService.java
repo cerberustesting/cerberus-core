@@ -68,23 +68,32 @@ public class LogEventService implements ILogEventService {
     }
 
     @Override
-    public void createPrivateCalls(String page, String action, String log, HttpServletRequest request) {
+    public void createForPrivateCalls(String page, String action, String log, HttpServletRequest request) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         String myUser = "";
-        if (!(request.getUserPrincipal() == null)) {
-            myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+        String remoteIP = "";
+        String localIP = "";
+        if (request != null) {
+            remoteIP = request.getRemoteAddr();
+            if (request.getHeader("x-forwarded-for") != null) {
+                remoteIP = request.getHeader("x-forwarded-for");
+            }
+            if (!(request.getUserPrincipal() == null)) {
+                myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");
+            }
+            localIP = request.getLocalAddr();
         }
-        this.create(factoryLogEvent.create(0, 0, myUser, null, page, action, log, request.getRemoteAddr(), request.getLocalAddr()));
+        this.create(factoryLogEvent.create(0, 0, myUser, null, page, action, log, remoteIP, localIP));
     }
 
     @Override
-    public void createPrivateCalls(String page, String action, String log) {
+    public void createForPrivateCalls(String page, String action, String log) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         this.create(factoryLogEvent.create(0, 0, "", null, page, action, log, null, null));
     }
 
     @Override
-    public void createPublicCalls(String page, String action, String log, HttpServletRequest request) {
+    public void createForPublicCalls(String page, String action, String log, HttpServletRequest request) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
         String doit = "";
         try {
@@ -98,7 +107,7 @@ public class LogEventService implements ILogEventService {
                 doit = "Y";
                 Logger.getLogger(LogEventService.class.getName()).log(Level.WARNING, "Parameter is not available: cerberus_log_publiccalls", "");
             }
-            
+
         } catch (CerberusException ex) {
             Logger.getLogger(LogEventService.class.getName()).log(Level.SEVERE, null, ex);
         }

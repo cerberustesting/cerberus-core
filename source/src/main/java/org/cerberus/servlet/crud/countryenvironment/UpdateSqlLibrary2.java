@@ -123,7 +123,7 @@ public class UpdateSqlLibrary2 extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateSqlLibrary", "UPDATE", "Updated SqlLibrary : ['" + name + "']", request);
                 }
 
             }

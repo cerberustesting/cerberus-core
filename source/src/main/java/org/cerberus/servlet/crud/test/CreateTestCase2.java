@@ -153,7 +153,7 @@ public class CreateTestCase2 extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateTestCase", "CREATE", "Create TestCase : ['" + testcase + "']", request);
+                logEventService.createForPrivateCalls("/CreateTestCase", "CREATE", "Create TestCase : ['" + testcase + "']", request);
 
                 // Update labels
                 if (request.getParameter("labelList") != null) {

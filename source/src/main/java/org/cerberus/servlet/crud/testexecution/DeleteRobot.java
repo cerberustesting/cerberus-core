@@ -122,7 +122,7 @@ public class DeleteRobot extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : ['" + robotid + "'|'" + robotData.getRobot() + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteRobot", "DELETE", "Delete Robot : ['" + robotid + "'|'" + robotData.getRobot() + "']", request);
                 }
             }
         }

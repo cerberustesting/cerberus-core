@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cerberus.version.Infos;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -74,7 +75,29 @@ public class DummyRESTCall extends HttpServlet {
             jsonResponse.put("RemoteUser", request.getRemoteUser());
             jsonResponse.put("AuthType", request.getAuthType());
             jsonResponse.put("Method", request.getMethod());
+            jsonResponse.put("RemoteAddr", request.getRemoteAddr());
+            jsonResponse.put("RemoteHost", request.getRemoteHost());
+            jsonResponse.put("RemotePort", request.getRemotePort());
+            jsonResponse.put("LocalAddr", request.getLocalAddr());
+            jsonResponse.put("LocalName", request.getLocalName());
+            jsonResponse.put("LocalPort", request.getLocalPort());
             jsonResponse.put("QueryString", request.getQueryString());
+
+            String remoteIP = request.getRemoteAddr();
+            if (request.getHeader("x-forwarded-for") != null) {
+                remoteIP = request.getHeader("x-forwarded-for");
+            }
+            jsonResponse.put("RemoteIP", remoteIP);
+
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < 10; i++) {
+                JSONObject tempJsonResponse = new JSONObject();
+                tempJsonResponse.put("integer", i);
+                tempJsonResponse.put("val1", "AAA" + i);
+                tempJsonResponse.put("val2", "BBB");
+                jsonArray.put(tempJsonResponse);
+            }
+            jsonResponse.put("myArray", jsonArray);
 
             // Extract headers.
             JSONObject jsonHeaders = new JSONObject();

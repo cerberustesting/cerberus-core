@@ -71,7 +71,7 @@ public class RunTestCaseManually extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPublicCalls("/RunTestCaseManually", "CALL", "RunTestCaseManuallyV0 called : " + request.getRequestURL(), request);
+            logEventService.createForPublicCalls("/RunTestCaseManually", "CALL", "RunTestCaseManuallyV0 called : " + request.getRequestURL(), request);
 
             ILoadTestCaseService loadTestCaseService = appContext.getBean(ILoadTestCaseService.class);
 

@@ -315,7 +315,7 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+        logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
 
         String encodedTest = URLEncoder.encode(tc.getTest(), "UTF-8");
         String encodedTestCase = URLEncoder.encode(tc.getTestCase(), "UTF-8");

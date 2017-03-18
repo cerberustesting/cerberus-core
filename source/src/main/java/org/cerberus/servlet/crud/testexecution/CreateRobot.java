@@ -169,7 +169,7 @@ public class CreateRobot extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + robot + "']", request);
+                logEventService.createForPrivateCalls("/CreateRobot", "CREATE", "Create Robot : ['" + robot + "']", request);
             }
         }
 

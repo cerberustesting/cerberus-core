@@ -23,11 +23,13 @@ import java.util.Date;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
+import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,72 +44,103 @@ public class VariableService implements IVariableService {
     private static final String VALUE_WHEN_NULL = "<null>";
 
     @Autowired
-    PropertyService propertyService;
+    private PropertyService propertyService;
     @Autowired
-    ApplicationObjectVariableService applicationObjectVariableService;
+    private ApplicationObjectVariableService applicationObjectVariableService;
     @Autowired
     private IRecorderService recorderService;
 
     @Override
-    public String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+    public String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
         String result = stringToDecode;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Start Decoding : " + result);
+        }
 
         /**
          * Nothing to decode if null or empty string.
          */
         if (StringUtil.isNullOrEmpty(result)) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Stop Decoding : Nothing to decode on : " + result);
+            }
             return result;
         }
 
         int count_decode = 1;
-        while (result.contains("%") && count_decode <= 1) {
+        while (result.contains("%") && count_decode <= 2) {
             /**
-             * We iterate the property decode because properties names could be inside other properties.
+             * We iterate the property decode because properties names could be
+             * inside other properties.
              */
-        /**
-         * Decode System Variables.
-         */
-        if (result.contains("%")) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (system variable) string iteration#" + count_decode + ": " + result);
+            /**
+             * Decode System Variables.
+             */
+            if (result.contains("%")) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Starting to decode (system variable) string iteration#" + count_decode + ": " + result);
+                }
+                result = this.decodeStringWithSystemVariable(result, testCaseExecution);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Finished to decode (system variable) iteration#" + count_decode + ". Result : " + result);
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode System variable) : " + result);
+                }
+                return result;
             }
-            result = this.decodeStringWithSystemVariable(result, testCaseExecution);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (system variable) iteration#" + count_decode + ". Result : " + result);
-            }
-        } else {
-            return result;
-        }
 
-        /**
-         * Decode ApplicationObject.
-         */
-        if (result.contains("%")) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Starting to decode (Application Object) string iteration#" + count_decode + ": " + result);
+            /**
+             * Decode ApplicationObject.
+             */
+            if (result.contains("%")) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Starting to decode (Application Object) string iteration#" + count_decode + ": " + result);
+                }
+                result = applicationObjectVariableService.decodeStringWithApplicationObject(result, testCaseExecution, forceCalculation);
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Finished to decode (Application Object) iteration#" + count_decode + ". Result : " + result);
+                }
+            } else {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationObject variable) : " + result);
+                }
+                return result;
             }
-            result = applicationObjectVariableService.decodeStringWithApplicationObject(result, testCaseExecution, forceCalculation);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (Application Object) iteration#" + count_decode + ". Result : " + result);
-            }
-        } else {
-            return result;
-        }
 
-        /**
-         * Decode Properties.
-         */
+            /**
+             * Decode Properties.
+             */
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + result);
             }
-            result = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
+            AnswerItem<String> answerProp;
+            answerProp = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
+            result = answerProp.getItem();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + result);
+                LOG.debug("   Result Message : " + answerProp.getResultMessage().getCodeString() + " - " + answerProp.getResultMessage().getDescription());
             }
-            
+
+            //if the property result message indicates that we need to stop the test action, then the action is notified               
+            //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
+            //then we notify the execution
+            if (answerProp.getResultMessage().getCodeString().equals("FA")
+                    || answerProp.getResultMessage().getCodeString().equals("NA")) {
+                if (!(testCaseStepActionExecution == null)) {
+                    testCaseStepActionExecution.setStopExecution(answerProp.getResultMessage().isStopTest());
+                    testCaseStepActionExecution.setActionResultMessage(answerProp.getResultMessage());
+                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerProp.getResultMessage().getMessage()));
+                }
+            }
             count_decode++;
         }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Stop Decoding : All iteration finished : " + result);
+        }
         return result;
     }
 
