@@ -49,6 +49,11 @@ GRANT ALL PRIVILEGES ON `cerberus` . * TO 'cerberus'@'%';
 Before starting a test case, you need a selenium server running. 
 You can get the selenium jar file from http://docs.seleniumhq.org/download/
 You can use the start-selenium.sh script in tools/selenium/ folder. Update it in order to use the proper jvm and selenium jar.
+Here is the configuration we could see that provide the best stability :
+Firefox 45.4.0ESR and Selenium 2.45
+Other earlier configuration that should provide good result are :
+Firefox 52.0ESR and selenium 3.3.1 (with Gecko driver 0.15).
+
 
 Script execution automation can be done using the scripts located in tools/batchexecution/.
  
