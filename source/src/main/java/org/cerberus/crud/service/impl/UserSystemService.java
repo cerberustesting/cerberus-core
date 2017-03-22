@@ -41,7 +41,9 @@ public class UserSystemService implements IUserSystemService {
 
     @Autowired
     private IUserSystemDAO userSystemDAO;
-    
+
+    private final String OBJECT_NAME = "UserSystem";
+
     @Override
     public UserSystem findUserSystemByKey(String login, String system) throws CerberusException {
         return userSystemDAO.findUserSystemByKey(login, system);
@@ -107,15 +109,17 @@ public class UserSystemService implements IUserSystemService {
 
     @Override
     public Answer updateSystemsByUser(User user, List<UserSystem> newGroups) {
-        Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
+        Answer a = new Answer(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK).resolveDescription("ITEM", OBJECT_NAME)
+                .resolveDescription("OPERATION", "UPDATE"));
+
         AnswerList an = this.readByUser(user.getLogin());
-        if(an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+        if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             List<UserSystem> oldGroups = an.getDataList();
             //delete if don't exist in new
             for (UserSystem old : oldGroups) {
                 if (!newGroups.contains(old)) {
                     Answer del = userSystemDAO.remove(old);
-                    if(!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    if (!del.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = del;
                     }
                 }
@@ -124,7 +128,7 @@ public class UserSystemService implements IUserSystemService {
             for (UserSystem group : newGroups) {
                 if (!oldGroups.contains(group)) {
                     Answer add = userSystemDAO.create(group);
-                    if(!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())){
+                    if (!add.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         a = add;
                     }
                 }

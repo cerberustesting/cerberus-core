@@ -137,7 +137,7 @@ public class UpdateBatchInvariant extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateBatchInvariant", "UPDATE", "Updated BatchInvariant : ['" + batch + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateBatchInvariant", "UPDATE", "Updated BatchInvariant : ['" + batch + "']", request);
                 }
             }
         }

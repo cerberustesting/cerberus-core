@@ -134,7 +134,7 @@ public class DeleteCountryEnvParam extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteCountryEnvParam", "DELETE", "Delete CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteCountryEnvParam", "DELETE", "Delete CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
                 }
             }
         }

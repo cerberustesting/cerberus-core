@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestDataLib;
 import org.cerberus.util.answer.AnswerList;
 import org.json.JSONArray;
@@ -41,7 +42,7 @@ public interface IDataLibService {
      * @param tCExecution
      * @return
      */
-    AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution);
+    AnswerList<HashMap<String, String>> getFromDataLib(TestDataLib lib, TestCaseCountryProperties testCaseCountryProperty, TestCaseExecution tCExecution, TestCaseExecutionData testCaseExecutionData);
 
     /**
      * This method return the first ObjectData from DataSet

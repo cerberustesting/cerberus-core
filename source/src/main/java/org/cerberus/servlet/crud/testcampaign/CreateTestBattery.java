@@ -101,7 +101,7 @@ public class CreateTestBattery extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateTestBattery", "CREATE", "Create Test Battery : " + testbattery, request);
+                logEventService.createForPrivateCalls("/CreateTestBattery", "CREATE", "Create Test Battery : " + testbattery, request);
 
                 if (batteryContent != null) {
 
@@ -120,7 +120,7 @@ public class CreateTestBattery extends HttpServlet {
                         /**
                          * Adding Log entry.
                          */
-                        logEventService.createPrivateCalls("/CreateTestBattery", "Create", "Create Test battery : " + te.getTestbattery(), request);
+                        logEventService.createForPrivateCalls("/CreateTestBattery", "Create", "Create Test battery : " + te.getTestbattery(), request);
                     }
                 }
             }

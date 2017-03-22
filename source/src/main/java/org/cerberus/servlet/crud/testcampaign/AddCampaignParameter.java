@@ -75,7 +75,7 @@ public class AddCampaignParameter extends HttpServlet {
 
             response.getWriter().append(newCampaignParameterId).close();
 
-            logEventService.createPrivateCalls("/AddCampaignParameter", "CREATE", "Create Campaign Parameter : " + campaignId + "/" + parameter + "/" + value, request);
+            logEventService.createForPrivateCalls("/AddCampaignParameter", "CREATE", "Create Campaign Parameter : " + campaignId + "/" + parameter + "/" + value, request);
         } catch (CerberusException ex) {
             response.setContentType("text/html");
             Logger.getLogger(AddCampaignParameter.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);

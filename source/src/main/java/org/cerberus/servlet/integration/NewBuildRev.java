@@ -174,7 +174,7 @@ public class NewBuildRev extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createPrivateCalls("/NewBuildRev", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
+                    logEventService.createForPrivateCalls("/NewBuildRev", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(system, country, env, build, revision, "New Build Revision.", request.getUserPrincipal().getName());
@@ -195,7 +195,7 @@ public class NewBuildRev extends HttpServlet {
                         sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
                     } catch (Exception e) {
                         Logger.getLogger(NewBuildRev.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
+                        logEventService.createForPrivateCalls("/NewBuildRev", "NEWBUILDREV", "Warning on New Build/Revision environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
                         OutputMessage = e.getMessage();
                     }
 

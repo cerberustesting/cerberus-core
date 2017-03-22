@@ -71,6 +71,7 @@ public interface IUserSystemDAO {
     void updateUserSystem(UserSystem userSystem) throws CerberusException;
 
     /**
+     * @param login
      * @return a list of all the userSystem of a user
      */
     AnswerList<UserSystem> readByUser(String login);

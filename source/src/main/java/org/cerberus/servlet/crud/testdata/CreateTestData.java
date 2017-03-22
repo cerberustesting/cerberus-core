@@ -75,7 +75,7 @@ public class CreateTestData extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/CreateTestData", "CREATE", "Create TestData : " + key, request);
+            logEventService.createForPrivateCalls("/CreateTestData", "CREATE", "Create TestData : " + key, request);
 
             response.sendRedirect("TestData.jsp");
         } finally {

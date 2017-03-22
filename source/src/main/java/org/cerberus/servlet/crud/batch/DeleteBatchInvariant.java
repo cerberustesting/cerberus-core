@@ -120,7 +120,7 @@ public class DeleteBatchInvariant extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteBatchInvariant", "DELETE", "Delete BatchInvariant : ['" + batch + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteBatchInvariant", "DELETE", "Delete BatchInvariant : ['" + batch + "']", request);
                 }
             }
         }

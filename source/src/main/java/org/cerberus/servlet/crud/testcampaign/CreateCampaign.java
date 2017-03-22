@@ -100,7 +100,7 @@ public class CreateCampaign extends HttpServlet {
                  * Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
+                logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign : " + camp.getCampaign(), request);
 
                 if (battery != null) {
                     JSONArray batteries = new JSONArray(battery);
@@ -117,7 +117,7 @@ public class CreateCampaign extends HttpServlet {
                             /**
                              * Adding Log entry.
                              */
-                            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
+                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Content : " + co.getCampaign() + ", " + co.getTestbattery(), request);
                         }
                     }
                 }
@@ -137,7 +137,7 @@ public class CreateCampaign extends HttpServlet {
                             /**
                              * Adding Log entry.
                              */
-                            logEventService.createPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
+                            logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
                         }
                     }
                 }

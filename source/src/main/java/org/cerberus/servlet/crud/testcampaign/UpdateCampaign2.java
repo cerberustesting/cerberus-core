@@ -122,7 +122,7 @@ public class UpdateCampaign2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign : " + c, request);
                     }
                 }
 
@@ -143,7 +143,7 @@ public class UpdateCampaign2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Content : " + camp.getCampaign(), request);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Content : " + camp.getCampaign(), request);
                     }
                 }
 
@@ -164,7 +164,7 @@ public class UpdateCampaign2 extends HttpServlet {
                          * Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
                     }
                 }
             }

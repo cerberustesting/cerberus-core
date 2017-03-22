@@ -85,7 +85,7 @@ public class AddCampaignContent2 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPrivateCalls("/AddCampaignContent2", "CREATE", "Create CampaignContent : " + campaign, request);
+        logEventService.createForPrivateCalls("/AddCampaignContent2", "CREATE", "Create CampaignContent : " + campaign, request);
 
 
         /**

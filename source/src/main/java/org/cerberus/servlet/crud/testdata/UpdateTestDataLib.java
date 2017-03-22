@@ -190,7 +190,7 @@ public class UpdateTestDataLib extends HttpServlet {
                          * logging entry must be added.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
+                        logEventService.createForPrivateCalls("/UpdateTestDataLib", "UPDATE", "Update TestDataLib - id: " + testdatalibid + " name: " + name + " system: "
                                 + system + " environment: " + environment + " country: " + country, request);
                     }
 

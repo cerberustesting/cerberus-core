@@ -134,7 +134,7 @@ public class UpdateLabel extends HttpServlet {
                      * Delete was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateLabel", "UPDATE", "Update Label : ['" + id + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateLabel", "UPDATE", "Update Label : ['" + id + "']", request);
                 }
 
             }

@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.factory.IFactoryUserGroup;
+import org.cerberus.util.answer.AnswerUtil;
 
 /**
  * @author bcivel
@@ -60,10 +61,10 @@ public class CreateUser2 extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -121,11 +122,11 @@ public class CreateUser2 extends HttpServlet {
             IUserSystemService userSystemService = appContext.getBean(IUserSystemService.class);
 
             LinkedList<UserGroup> newGroups = new LinkedList<>();
-            for(int i = 0; i < JSONGroups.length(); i++){
+            for (int i = 0; i < JSONGroups.length(); i++) {
                 newGroups.add(factoryGroup.create(login, JSONGroups.getString(i)));
             }
             LinkedList<UserSystem> newSystems = new LinkedList<>();
-            for(int i = 0; i < JSONSystems.length(); i++){
+            for (int i = 0; i < JSONSystems.length(); i++) {
                 newSystems.add(userSystemFactory.create(login, JSONSystems.getString(i)));
             }
             User userData = factoryUser.create(0, login, password, "", newPassword, name, team, "en", "", "", "", "", "", "", "", defaultSystem, email, null, null);
@@ -137,23 +138,10 @@ public class CreateUser2 extends HttpServlet {
                  * Object updated. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateUser2", "CREATE", "Create User : ['" + login + "']", request);
+                logEventService.createForPrivateCalls("/CreateUser2", "CREATE", "Create User : ['" + login + "']", request);
 
-
-                ans = userGroupService.updateGroupsByUser(userData, newGroups);
-                if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                    /**
-                     * Object updated. Adding Log entry.
-                     */
-                    logEventService.createPrivateCalls("/CreateUser2", "UPDATE", "Update UserGroup : ['" + login + "']", request);
-                    ans = userSystemService.updateSystemsByUser(userData, newSystems);
-                    if(ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-                        /**
-                         * Object updated. Adding Log entry.
-                         */
-                        logEventService.createPrivateCalls("/CreateUser2", "UPDATE", "Update UserSystem : ['" + login + "']", request);
-                    }
-                }
+                ans = AnswerUtil.agregateAnswer(ans, userGroupService.updateGroupsByUser(userData, newGroups));
+                ans = AnswerUtil.agregateAnswer(ans, userSystemService.updateSystemsByUser(userData, newSystems));
             }
         }
 
@@ -168,14 +156,13 @@ public class CreateUser2 extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -192,10 +179,10 @@ public class CreateUser2 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

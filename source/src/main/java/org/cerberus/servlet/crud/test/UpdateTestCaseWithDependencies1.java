@@ -84,7 +84,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
 
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
-        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
         ans.setResultMessage(msg);
         PolicyFactory policy = Sanitizers.FORMATTING.and(Sanitizers.LINKS);
@@ -221,7 +221,7 @@ public class UpdateTestCaseWithDependencies1 extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateTestCaseWithDependencies1", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
                 }
 
             }

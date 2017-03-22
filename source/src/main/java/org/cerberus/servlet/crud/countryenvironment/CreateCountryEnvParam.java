@@ -143,7 +143,7 @@ public class CreateCountryEnvParam extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
+                logEventService.createForPrivateCalls("/CreateCountryEnvParam", "CREATE", "Create CountryEnvParam : ['" + system + "'|'" + country + "'|'" + environment + "']", request);
             }
         }
 

@@ -89,7 +89,7 @@ public class GetNumberOfExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
 
         IApplicationService myApplicationService = appContext.getBean(ApplicationService.class);
         IInvariantService myInvariantService = appContext.getBean(InvariantService.class);

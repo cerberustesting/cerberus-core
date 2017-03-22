@@ -52,6 +52,7 @@ public interface IUserGroupService {
     List<UserGroup> findGroupByKey(String login) throws CerberusException;
 
     /**
+     * @param login
      * @return a list of all the userSystem of a user
      */
     AnswerList<UserGroup> readByUser(String login);
@@ -59,6 +60,7 @@ public interface IUserGroupService {
     /**
      * @param user the user to update the group
      * @param newGroups the user list of Groups
+     * @return 
      */
     Answer updateGroupsByUser(User user, List<UserGroup> newGroups);
 

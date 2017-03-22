@@ -150,7 +150,7 @@ public class UpdateAppService extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     logEventService = appContext.getBean(ILogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateAppService", "UPDATE", "Updated AppService : ['" + service + "']", request);
                 }
 
                 // Update content

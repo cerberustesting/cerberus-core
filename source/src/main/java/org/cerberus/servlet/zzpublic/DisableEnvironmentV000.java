@@ -79,7 +79,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
 
         // Loading Services.
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
@@ -171,7 +171,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createPrivateCalls("/DisableEnvironmentV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
+                    logEventService.createForPrivateCalls("/DisableEnvironmentV000", "UPDATE", "Updated CountryEnvParam : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(cepData.getSystem(), cepData.getCountry(), cepData.getEnvironment(), "", "", "Disabled.", "PublicCall");
@@ -203,7 +203,7 @@ public class DisableEnvironmentV000 extends HttpServlet {
 
                     } catch (Exception e) {
                         Logger.getLogger(DisableEnvironmentV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createPrivateCalls("/DisableEnvironmentV000", "DISABLE", "Warning on Disable environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                        logEventService.createForPrivateCalls("/DisableEnvironmentV000", "DISABLE", "Warning on Disable environment : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
                         OutputMessage = e.getMessage();
                     }
 

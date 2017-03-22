@@ -141,7 +141,7 @@ public class CreateBuildRevisionInvariant extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateBuildRevisionInvariant", "CREATE", "Create BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
+                logEventService.createForPrivateCalls("/CreateBuildRevisionInvariant", "CREATE", "Create BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
             }
         }
 

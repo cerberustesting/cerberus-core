@@ -195,7 +195,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                             /**
                              * Update was successful. Adding Log entry.
                              */
-                            logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
+                            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "UPDATE", "Updated BuildRevisionParameters : ['" + brpid + "'|'" + build + "'|'" + revision + "'|'" + release + "']", request);
                         } else {
                             massErrorCounter++;
                             output_message.append("<br>id : ").append(myId1).append(" - ").append(ans.getResultMessage().getDescription());
@@ -224,7 +224,7 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
                         .replace("%OPERATION%", "Mass Update") + "\n\nAll " + myId.length + " object(s) updated successfuly.");
                 ans.setResultMessage(msg);
             }
-            logEventService.createPrivateCalls("/UpdateBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
+            logEventService.createForPrivateCalls("/UpdateBuildRevisionParameters", "MASSUPDATE", msg.getDescription(), request);
         }
 
         /**

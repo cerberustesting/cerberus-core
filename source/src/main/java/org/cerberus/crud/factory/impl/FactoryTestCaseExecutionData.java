@@ -19,8 +19,11 @@
  */
 package org.cerberus.crud.factory.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCaseExecutionData;
+import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +62,9 @@ public class FactoryTestCaseExecutionData implements IFactoryTestCaseExecutionDa
         testCaseExecutionData.setrMessage(rMessage);
         testCaseExecutionData.setDescription(description);
         testCaseExecutionData.setPropertyResultMessage(message);
+        // List objects
+        List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
+        testCaseExecutionData.setFileList(objectFileList);
 
         return testCaseExecutionData;
 

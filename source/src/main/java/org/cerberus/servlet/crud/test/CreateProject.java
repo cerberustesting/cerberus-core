@@ -112,7 +112,7 @@ public class CreateProject extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                logEventService.createPrivateCalls("/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", request);
+                logEventService.createForPrivateCalls("/CreateProject", "CREATE", "Create Project : ['" + idProject + "']", request);
             }
         }
 

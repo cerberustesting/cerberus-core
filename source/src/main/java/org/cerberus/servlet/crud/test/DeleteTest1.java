@@ -121,7 +121,7 @@ public class DeleteTest1 extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteTest", "DELETE", "Delete Test : ['" + key + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteTest", "DELETE", "Delete Test : ['" + key + "']", request);
                 }
             }
         }

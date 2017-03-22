@@ -106,7 +106,7 @@ public class CreateDeployType extends HttpServlet {
                  * Object created. Adding Log entry.
                  */
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                logEventService.createPrivateCalls("/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", request);
+                logEventService.createForPrivateCalls("/CreateDeployType", "CREATE", "Create DeployType : ['" + deploytype + "']", request);
             }
         }
 

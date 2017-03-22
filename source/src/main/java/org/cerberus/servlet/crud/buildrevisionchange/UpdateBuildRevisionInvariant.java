@@ -160,7 +160,7 @@ public class UpdateBuildRevisionInvariant extends HttpServlet {
                      * Update was succesfull. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateBuildRevisionInvariant", "UPDATE", "Updated BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateBuildRevisionInvariant", "UPDATE", "Updated BuildRevisionInvariant : ['" + system + "'|'" + level + "'|'" + seq + "']", request);
                 }
             }
         }

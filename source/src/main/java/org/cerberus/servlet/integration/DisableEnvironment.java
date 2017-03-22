@@ -149,7 +149,7 @@ public class DisableEnvironment extends HttpServlet {
                      * Update was successful.
                      */
                     // Adding Log entry.
-                    logEventService.createPrivateCalls("/DisableEnvironment", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
+                    logEventService.createForPrivateCalls("/DisableEnvironment", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + env + "']", request);
 
                     // Adding CountryEnvParam Log entry.
                     countryEnvParam_logService.createLogEntry(system, country, env, "","", "Disabled.", request.getUserPrincipal().getName());
@@ -179,7 +179,7 @@ public class DisableEnvironment extends HttpServlet {
                         sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
                     } catch (Exception e) {
                         Logger.getLogger(DisableEnvironment.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                        logEventService.createPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
+                        logEventService.createForPrivateCalls("/DisableEnvironment", "DISABLE", "Warning on Disable environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
                         OutputMessage = e.getMessage();
                     }
 

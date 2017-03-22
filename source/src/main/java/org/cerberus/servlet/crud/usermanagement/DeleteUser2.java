@@ -104,7 +104,7 @@ public class DeleteUser2 extends HttpServlet {
                          * Object updated. Adding Log entry.
                          */
                         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                        logEventService.createPrivateCalls("/DeleteUser2", "DELETE", "Delete User : ['" + login + "']", request);
+                        logEventService.createForPrivateCalls("/DeleteUser2", "DELETE", "Delete User : ['" + login + "']", request);
                     }
                 }else{
                     msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);

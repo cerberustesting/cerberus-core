@@ -66,10 +66,11 @@ public interface IRecorderService {
      * @param testCaseExecution
      * @param testCaseStepActionExecution
      * @param control
+     * @param property
      * @param service
      * @return
      */
-    List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, AppService service);
+    List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService service);
 
 
     /**

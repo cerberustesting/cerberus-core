@@ -124,7 +124,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user groups : " + login, request);
+                    logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user groups : " + login, request);
 
                 } else if (newSystems != null) {
                     userSystemService.updateUserSystems(myUser, newSystems);
@@ -133,7 +133,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user system : " + login, request);
+                    logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user system : " + login, request);
 
                 } else {
                     userService.updateUser(myUser);
@@ -142,7 +142,7 @@ public class UpdateUser extends HttpServlet {
                      * Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);
+                    logEventService.createForPrivateCalls("/UpdateUser", "UPDATE", "Updated user : " + login, request);
                 }
                 response.getWriter().print(value);
             } catch (CerberusException ex) {

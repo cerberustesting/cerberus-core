@@ -118,7 +118,7 @@ public class DeleteDeployType extends HttpServlet {
                      * Delete was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", request);
+                    logEventService.createForPrivateCalls("/DeleteDeployType", "DELETE", "Delete Deploy Type : ['" + key + "']", request);
                 }
             }
         }

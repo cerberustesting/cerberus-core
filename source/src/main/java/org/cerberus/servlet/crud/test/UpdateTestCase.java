@@ -72,7 +72,7 @@ public class UpdateTestCase extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
+            logEventService.createForPrivateCalls("/UpdateTestCase", "UPDATE", "Update testcase : ['" + tc.getTest() + "'|'" + tc.getTestCase() + "']", request);
 
             response.sendRedirect(response.encodeRedirectURL("TestCase.jsp?Tinf=Y&Load=Load&Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase()));
         } else {

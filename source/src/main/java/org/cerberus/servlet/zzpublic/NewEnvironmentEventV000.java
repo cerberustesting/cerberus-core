@@ -81,7 +81,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createPublicCalls("/NewEnvironmentEventV000", "CALL", "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/NewEnvironmentEventV000", "CALL", "NewEnvironmentEventV000 called : " + request.getRequestURL(), request);
 
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
@@ -198,7 +198,7 @@ public class NewEnvironmentEventV000 extends HttpServlet {
 
                 } catch (Exception e) {
                     Logger.getLogger(NewEnvironmentEventV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                    logEventService.createPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
+                    logEventService.createForPrivateCalls("/NewEnvironmentEventV000", "NEW", "Warning on New environment event : ['" + cepData.getSystem() + "','" + cepData.getCountry() + "','" + cepData.getEnvironment() + "'] " + e.getMessage(), request);
                     OutputMessage = e.getMessage();
                 }
 

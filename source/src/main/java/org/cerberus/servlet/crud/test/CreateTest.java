@@ -178,7 +178,7 @@ public class CreateTest extends HttpServlet {
                              * Adding Log entry.
                              */
                             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                            logEventService.createPrivateCalls("/CreateTest", "CREATE", "Create test : " + test, request);
+                            logEventService.createForPrivateCalls("/CreateTest", "CREATE", "Create test : " + test, request);
                         } else {
                             out.print("The test already exists. Please, go back to the previous page and choose another test name");
                         }

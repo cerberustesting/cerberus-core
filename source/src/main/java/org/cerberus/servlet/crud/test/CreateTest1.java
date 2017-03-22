@@ -112,7 +112,7 @@ public class CreateTest1 extends HttpServlet {
                 ILogEventService logEventService = appContext.getBean(LogEventService.class);
                 IFactoryLogEvent factoryLogEvent = appContext.getBean(FactoryLogEvent.class);
 
-                logEventService.createPrivateCalls("/CreateTest", "CREATE", "Create Test : ['" + test + "']", request);
+                logEventService.createForPrivateCalls("/CreateTest", "CREATE", "Create Test : ['" + test + "']", request);
             }
         }
 

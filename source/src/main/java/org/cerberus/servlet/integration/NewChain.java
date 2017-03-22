@@ -168,7 +168,7 @@ public class NewChain extends HttpServlet {
                     sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
                 } catch (Exception e) {
                     Logger.getLogger(NewChain.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
-                    logEventService.createPrivateCalls("/NewChain", "NEWCHAIN", "Warning on registering new event on environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
+                    logEventService.createForPrivateCalls("/NewChain", "NEWCHAIN", "Warning on registering new event on environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
                     OutputMessage = e.getMessage();
                 }
 

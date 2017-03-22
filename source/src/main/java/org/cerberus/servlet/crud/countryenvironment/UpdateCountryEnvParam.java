@@ -213,7 +213,7 @@ public class UpdateCountryEnvParam extends HttpServlet {
                      * Update was successful. Adding Log entry.
                      */
                     ILogEventService logEventService = appContext.getBean(LogEventService.class);
-                    logEventService.createPrivateCalls("/UpdateCountryEnvParam", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
+                    logEventService.createForPrivateCalls("/UpdateCountryEnvParam", "UPDATE", "Updated CountryEnvParam : ['" + system + "','" + country + "','" + environment + "']", request);
                 }
 
                 // Update the Database with the new list.

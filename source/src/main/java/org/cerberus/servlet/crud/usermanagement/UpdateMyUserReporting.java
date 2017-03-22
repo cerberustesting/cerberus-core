@@ -55,7 +55,7 @@ public class UpdateMyUserReporting extends HttpServlet {
             userService.updateUser(user);
             
             ILogEventService logEventService = appContext.getBean(LogEventService.class);
-            logEventService.createPrivateCalls("/UpdateMyUserReporting", "UPDATE", "Update user reporting preference for user: " + login, request);
+            logEventService.createForPrivateCalls("/UpdateMyUserReporting", "UPDATE", "Update user reporting preference for user: " + login, request);
             
         } catch (CerberusException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -123,7 +123,7 @@ public class ForgotPassword extends HttpServlet {
              * Adding Log entry.
              */
             ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-            logEventService.createPrivateCalls("/ForgotPassword", "CREATE", "User : " + login + " asked for password recovery", request);
+            logEventService.createForPrivateCalls("/ForgotPassword", "CREATE", "User : " + login + " asked for password recovery", request);
 
             /**
              * Build Response Message

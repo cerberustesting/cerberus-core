@@ -61,6 +61,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.rest.IRestService;
 
 /**
@@ -70,8 +71,6 @@ import org.cerberus.service.rest.IRestService;
 @Service
 public class ActionService implements IActionService {
 
-    @Autowired
-    private IPropertyService propertyService;
     @Autowired
     private IParameterService parameterService;
     @Autowired
@@ -102,6 +101,8 @@ public class ActionService implements IActionService {
     private ILogEventService logEventService;
     @Autowired
     private IVariableService variableService;
+    @Autowired
+    private IServiceService serviceService;
 
     private static final Logger LOG = Logger.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
@@ -251,32 +252,32 @@ public class ActionService implements IActionService {
             case TestCaseStepAction.ACTION_GETPAGESOURCE:
                 res = this.doActionGetPageSource(testCaseStepActionExecution);
                 res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                logEventService.createForPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                 LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
             case TestCaseStepAction.ACTION_TAKESCREENSHOT:
                 res = this.doActionTakeScreenshot(testCaseStepActionExecution);
                 res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                logEventService.createForPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                 LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
             case TestCaseStepAction.ACTION_CLICKANDWAIT:
                 res = this.doActionClickWait(tCExecution, value1, value2);
                 res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                logEventService.createForPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                 LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
             case TestCaseStepAction.ACTION_ENTER:
                 res = this.doActionKeyPress(tCExecution, value1, "RETURN");
                 res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                logEventService.createForPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                 LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
             case TestCaseStepAction.ACTION_SELECTANDWAIT:
                 res = this.doActionSelect(tCExecution, value1, value2);
                 this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
                 res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                logEventService.createForPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
                 LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
                 break;
             default:
@@ -881,182 +882,26 @@ public class ActionService implements IActionService {
     }
 
     private MessageEvent doActionCallService(TestCaseStepActionExecution testCaseStepActionExecution, String value1) {
+
         MessageEvent message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-        String decodedRequest;
-        String decodedServicePath = null;
-        String decodedOperation;
-        AnswerItem lastSoapCalled;
-        AnswerItem lastServiceCalled;
+        AnswerItem lastServiceCalledAnswer;
 
-        try {
-            AppService appService = appServiceService.convert(appServiceService.readByKeyWithDependency(value1, "Y"));
-            String servicePath;
+        lastServiceCalledAnswer = serviceService.callService(value1, null, null, null, null, tCExecution);
+        message = lastServiceCalledAnswer.getResultMessage();
 
-            if (appService == null) {
+        if (lastServiceCalledAnswer.getItem() != null) {
+            AppService lastServiceCalled = (AppService) lastServiceCalledAnswer.getItem();
+            tCExecution.setLastServiceCalled(lastServiceCalled);
 
-                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service does not exist !!"));
-
-            } else {
-
-                // We start by calculating the servicePath and decode it.
-                servicePath = appService.getServicePath();
-                if (!(StringUtil.isURL(servicePath))) {
-                    // If appService value does not look like an URL, it means it is relative and we add the application host and context root.
-                    servicePath = StringUtil.getURLFromString(tCExecution.getCountryEnvironmentParameters().getIp(),
-                            tCExecution.getCountryEnvironmentParameters().getUrl(), appService.getServicePath(), "http://");
-                }
-                decodedServicePath = servicePath;
-                decodedRequest = appService.getServiceRequest();
-                try {
-                    // Decode Service Path
-                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, testCaseStepActionExecution, false);
-                    // Decode Request
-                    decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, testCaseStepActionExecution, false);
-                    // Decode Header List
-                    List<AppServiceHeader> objectResponseHeaderList = new ArrayList<>();
-                    for (AppServiceHeader object : appService.getHeaderList()) {
-                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
-                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
-                        objectResponseHeaderList.add(object);
-                    }
-                    // Decode ContentDetail List
-                    appService.setResponseHeaderList(objectResponseHeaderList);
-                    List<AppServiceContent> objectResponseContentList = new ArrayList<>();
-                    for (AppServiceContent object : appService.getContentList()) {
-                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, testCaseStepActionExecution, false));
-                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, testCaseStepActionExecution, false));
-                        objectResponseContentList.add(object);
-                    }
-                    appService.setContentList(objectResponseContentList);
-                    //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
-                    if (testCaseStepActionExecution.isStopExecution()) {
-                        return testCaseStepActionExecution.getActionResultMessage();
-                    }
-                } catch (CerberusEventException cee) {
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICEWITHPATH);
-                    message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                    message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
-                    message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
-                    return message;
-                }
-
-                // Get from parameter whether we define a token or not (in order to trace the cerberus calls in http header)
-                String token = null;
-                if (parameterService.getParameterBooleanByKey("cerberus_callservice_enablehttpheadertoken", tCExecution.getApplicationObj().getSystem(), true)) {
-                    token = String.valueOf(tCExecution.getId());
-                }
-                // Get from parameter the call timeout to be used.
-                int timeOutMs = parameterService.getParameterIntegerByKey("cerberus_callservice_timeoutms", tCExecution.getApplicationObj().getSystem(), 60000);
-                // The rest of the data will be prepared depending on the TYPE and METHOD used.
-                switch (appService.getType()) {
-                    case AppService.TYPE_SOAP:
-
-                        /**
-                         * SOAP. Decode Envelope and Operation replacing
-                         * properties encapsulated with %
-                         */
-                        decodedOperation = appService.getOperation();
-                        try {
-                            decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, testCaseStepActionExecution, false);
-
-                            //if the process of decoding originates a message that isStopExecution then we will stop the current action execution
-                            if (testCaseStepActionExecution.isStopExecution()) {
-                                return testCaseStepActionExecution.getActionResultMessage();
-                            }
-                        } catch (CerberusEventException cee) {
-                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
-                            message.setDescription(message.getDescription().replace("%SOAPNAME%", value1));
-                            message.setDescription(message.getDescription().replace("%SERVICEPATH%", decodedServicePath));
-                            message.setDescription(message.getDescription().replace("%DESCRIPTION%", cee.getMessageError().getDescription()));
-                            return message;
-                        }
-
-                        /**
-                         * Add attachment.
-                         */
-                        String attachement = "";
-                        //TODO: the picture url should be used instead of the property value
-                        //the database does not include the attachmentURL field 
-                        /*if (!property.isEmpty()) {
-                        attachement = property; 
-                    } else {
-                        attachement = soapLibrary.getAttachmentUrl();
-                    }*/
-
-                        /**
-                         * Call SOAP and store it into the execution.
-                         */
-                        lastSoapCalled = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
-                                appService.getHeaderList(), token, timeOutMs);
-                        AppService lsoapc = (AppService) lastSoapCalled.getItem();
-                        tCExecution.setLastServiceCalled(lsoapc);
-
-                        /**
-                         * Record the Request and Response in filesystem.
-                         */
-                        testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lsoapc));
-                        message = lastSoapCalled.getResultMessage();
-
-                        break;
-
-                    case AppService.TYPE_REST:
-
-                        /**
-                         * REST.
-                         */
-                        switch (appService.getMethod()) {
-                            case AppService.METHOD_HTTPGET:
-                            case AppService.METHOD_HTTPPOST:
-
-                                /**
-                                 * Call REST and store it into the execution.
-                                 */
-                                lastServiceCalled = restService.callREST(decodedServicePath, decodedRequest, appService.getMethod(),
-                                        appService.getHeaderList(), appService.getContentList(), token, timeOutMs);
-                                AppService lservicec = (AppService) lastServiceCalled.getItem();
-                                tCExecution.setLastServiceCalled(lservicec);
-
-                                /**
-                                 * Record the Request and Response in
-                                 * filesystem.
-                                 */
-                                testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, lservicec));
-                                message = lastServiceCalled.getResultMessage();
-                                break;
-
-                            default:
-                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                                message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                                message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Method : '" + appService.getMethod() + "' for REST Service is not supported by the engine."));
-                        }
-
-                        break;
-
-                    default:
-                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-                        message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-                        message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service Type : '" + appService.getType() + "' is not supported by the engine."));
-                }
-            }
-
-        } catch (CerberusException ex) {
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Cerberus exception on CallService : " + ex.getMessageError().getDescription()));
-            return message;
-        } catch (Exception ex) {
-            LOG.error("Exception when performing CallService Action. " + ex.toString());
-            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
-            message.setDescription(message.getDescription().replace("%SERVICE%", value1));
-            message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Error on CallService : " + ex.toString()));
-            return message;
+            /**
+             * Record the Request and Response in filesystem.
+             */
+            testCaseStepActionExecution.addFileList(recorderService.recordServiceCall(tCExecution, testCaseStepActionExecution, 0, null, lastServiceCalled));
         }
 
-        message.setDescription(message.getDescription().replace("%SERVICENAME%", value1));
         return message;
+
     }
 
     private MessageEvent doActionTakeScreenshot(TestCaseStepActionExecution testCaseStepActionExecution) {
@@ -1133,10 +978,10 @@ public class ActionService implements IActionService {
                 String propertyValueResult = "";
                 // if value2 is not defined, then decode the property defined in value1.
                 if (StringUtil.isNullOrEmpty(value2)) {
-                    propertyValueResult = variableService.decodeStringCompletly("%" + value1 + "%", tCExecution, testCaseStepActionExecution, true);
+                    propertyValueResult = variableService.decodeStringCompletly("%property." + value1 + "%", tCExecution, testCaseStepActionExecution, true);
                 } // If not, then set value1 property to the decoded value2 property
                 else {
-                    propertyValueResult = variableService.decodeStringCompletly("%" + value2 + "%", tCExecution, testCaseStepActionExecution, true);
+                    propertyValueResult = variableService.decodeStringCompletly("%property." + value2 + "%", tCExecution, testCaseStepActionExecution, true);
                     for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
                         if (value1.equals(property.getProperty())) {
                             property.setValue(propertyValueResult);
@@ -1161,7 +1006,7 @@ public class ActionService implements IActionService {
         if (!StringUtil.isNullOrEmpty(value1)) {
             return value1;
         } else if (!StringUtil.isNullOrEmpty(value2)) {
-            logEventService.createPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + value2);
+            logEventService.createForPrivateCalls("ENGINE", action, MESSAGE_DEPRECATED + " Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + value2);
             LOG.warn(MESSAGE_DEPRECATED + " Action : " + action + ". Beware, in future release, it won't be allowed to use action without using field value1. Triggered by TestCase : ['" + tCExecution.getTest() + "'|'" + tCExecution.getTestCase() + "'] Property : " + value2);
             return value2;
         }

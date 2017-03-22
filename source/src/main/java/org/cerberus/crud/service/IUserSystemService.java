@@ -41,12 +41,14 @@ public interface IUserSystemService {
     List<UserSystem> findallUser() throws CerberusException;
 
     /**
+     * @param login
      * @return a list of all the userSystem of a user
      * @throws CerberusException
      */
     List<UserSystem> findUserSystemByUser(String login) throws CerberusException;
     
     /**
+     * @param system
      * @return a list of all the userSystem of a system
      * @throws CerberusException
      */
@@ -72,8 +74,8 @@ public interface IUserSystemService {
     void updateUserSystems(User user, List<UserSystem> newSystems) throws CerberusException;
 
     /**
+     * @param login
      * @return a list of all the userSystem of a user
-     * @throws CerberusException
      */
     AnswerList<UserSystem> readByUser(String login);
 

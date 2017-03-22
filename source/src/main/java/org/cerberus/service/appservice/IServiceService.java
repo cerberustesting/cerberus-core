@@ -17,32 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.engine.gwt;
+package org.cerberus.service.appservice;
 
+import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseStepActionExecution;
-import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.answer.AnswerItem;
 
 /**
- * {Insert class description here}
  *
- * @author Tiago Bernardes
- * @version 1.0, 10/01/2013
- * @since 2.0.0
+ * @author bcivel
  */
-public interface IPropertyService {
+public interface IServiceService {
 
     /**
+     * Perform a service call and feed the AppService object in return. If URL
+     * coming from service object is enriched from the context of either the
+     * database or the tCExecution. service is defined, If database is defined
+     * the URL is enriched from context is coming from database if not, context
+     * will be taken from tCExecution.
      *
-     * @param stringToDecode
-     * @param testCaseExecution
-     * @param testCaseStepActionExecution
-     * @param forceCalculation
+     * @param service
+     * @param database
+     * @param request
+     * @param servicePath
+     * @param operation
+     * @param tCExecution
      * @return
-     * @throws CerberusEventException
      */
-    AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution,
-            TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    AnswerItem<AppService> callService(String service, String database, String request, String servicePath, String operation, TestCaseExecution tCExecution);
 
 }
