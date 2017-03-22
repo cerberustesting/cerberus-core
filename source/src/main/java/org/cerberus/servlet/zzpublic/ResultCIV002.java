@@ -306,7 +306,7 @@ public class ResultCIV002 extends HttpServlet {
             response.setCharacterEncoding("utf8");
             response.getWriter().print(jsonResponse.toString());
         } else {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType("image/svg+xml");
             try (PrintWriter out = response.getWriter()){
             String responseSvg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"350\" height=\"20\">"
             
