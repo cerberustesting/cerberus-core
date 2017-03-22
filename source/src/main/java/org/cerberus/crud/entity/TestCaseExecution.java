@@ -121,6 +121,7 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+    public static final String CONTROLSTATUS_NE = "NE";
 
     public AppService getLastServiceCalled() {
         return lastServiceCalled;
