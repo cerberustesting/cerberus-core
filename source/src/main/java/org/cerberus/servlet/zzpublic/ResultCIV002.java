@@ -69,7 +69,7 @@ public class ResultCIV002 extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createPublicCalls("/ResultCIV002", "CALL", "ResultCIV002 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/ResultCIV002", "CALL", "ResultCIV002 called : " + request.getRequestURL(), request);
 
         try {
             JSONObject jsonResponse = new JSONObject();
@@ -242,7 +242,7 @@ public class ResultCIV002 extends HttpServlet {
                 generateResponse(response, outputFormat, jsonResponse, false);
 
                 // Log the result with calculation detail.
-                logEventService.createPublicCalls("/ResultCIV001", "CALLRESULT", "ResultCIV002 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
+                logEventService.createForPublicCalls("/ResultCIV001", "CALLRESULT", "ResultCIV002 calculated with result [" + result + "] : " + nbkop1 + "*" + pond1 + " + " + nbkop2 + "*" + pond2 + " + " + nbkop3 + "*" + pond3 + " + " + nbkop4 + "*" + pond4 + " = " + resultCal, request);
 
             } else {
 
