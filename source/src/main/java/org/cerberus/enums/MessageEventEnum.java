@@ -239,6 +239,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_SIKULI_FILE_NOT_FOUND(289, "FA", "File %FILE% not found. Please verify that url defined in object field is correct and accessible from Cerberus Server.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SIKULI_ELEMENT_NOT_FOUND(289, "FA", "Failed to perform the action %ACTION% probably due to Element %ELEMENT% not found.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY(289, "FA", "Failed to perform the action %ACTION% due to missing property to calculate.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND(289, "FA", "Failed to perform the action %ACTION% bacause property %PROP% does not exist on the country %COUNTRY%.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION(290, "NA", "Not executed because Property '%PROP%' is not defined for the country '%COUNTRY%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     ACTION_NOTEXECUTED_NOTSUPPORTED_FOR_APPLICATION(291, "FA", "Not executed because Action '%ACTION%' is not supported for application type '%APPLICATIONTYPE%'.", true, true, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_SQL_GENERIC(292, "FA", "An unknown error occur when connecting to %JDBC%.", true, false, false, MessageGeneralEnum.EXECUTION_FA_ACTION),
@@ -380,6 +381,9 @@ public enum MessageEventEnum {
     CONDITION_TESTCASESTEP_NOTEXECUTED(1280, "NA", "Testcase Step not executed with loop '%LOOP%' following condition '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_TESTCASEACTION_NOTEXECUTED(1280, "NA", "Action not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_TESTCASECONTROL_NOTEXECUTED(1280, "NA", "Control not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    // *********** DATA OPERATION ***********
+    DECODE_SUCCESS(600, "OK", "Decode successful.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    DECODE_FAILED_VARIABLENOTDECODED(650, "FA", "Error on decoding %FIELD% because %NB% variable(s) is (are) unknown : (%VAR%). Please change the %FIELD% value with the correct syntax.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
     // *********** DATA OPERATION ***********
     DATA_OPERATION_OK(500, MessageCodeEnum.GENERIC_CODE_SUCCESS.getCodeString(), "%ITEM% - %OPERATION% was finished with success!", false, false, false, MessageGeneralEnum.DATA_OPERATION_SUCCESS),
     DATA_OPERATION_WARNING_PARTIAL_RESULT(500, MessageCodeEnum.GENERIC_CODE_WARNING.getCodeString(), "Result may contain partial result. %DESCRIPTION%", false, false, false, MessageGeneralEnum.DATA_OPERATION_WARNING),

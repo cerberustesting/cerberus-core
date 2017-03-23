@@ -189,26 +189,83 @@ public class ServiceService implements IServiceService {
                 decodedServicePath = servicePath;
                 decodedRequest = appService.getServiceRequest();
                 LOG.debug("AppService with correct path is  now OK : " + servicePath);
+                AnswerItem<String> answerDecode = new AnswerItem();
 
                 try {
 
                     // Decode Service Path
-                    decodedServicePath = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(decodedServicePath, tCExecution, null, false);
+                    decodedServicePath = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        message = answerDecode.getResultMessage().resolveDescription("FIELD", "Service Path");
+                        LOG.debug("Property interupted due to decode 'Service Path'.");
+                        result.setResultMessage(message);
+                        return result;
+                    }
                     // Decode Request
-                    decodedRequest = variableService.decodeStringCompletly(decodedRequest, tCExecution, null, false);
+                    answerDecode = variableService.decodeStringCompletly(decodedRequest, tCExecution, null, false);
+                    decodedRequest = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        message = answerDecode.getResultMessage().resolveDescription("FIELD", "Service Request");
+                        LOG.debug("Property interupted due to decode 'Service Request'.");
+                        result.setResultMessage(message);
+                        return result;
+                    }
                     // Decode Header List
                     List<AppServiceHeader> objectResponseHeaderList = new ArrayList<>();
                     for (AppServiceHeader object : appService.getHeaderList()) {
-                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false));
-                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false));
+                        answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
+                        object.setKey((String) answerDecode.getItem());
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            String field = "Header Key " + object.getKey();
+                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            result.setResultMessage(message);
+                            return result;
+                        }
+
+                        answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
+                        object.setValue((String) answerDecode.getItem());
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            String field = "Header Value " + object.getKey();
+                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            result.setResultMessage(message);
+                            return result;
+                        }
+
                         objectResponseHeaderList.add(object);
                     }
                     // Decode ContentDetail List
                     appService.setResponseHeaderList(objectResponseHeaderList);
                     List<AppServiceContent> objectResponseContentList = new ArrayList<>();
                     for (AppServiceContent object : appService.getContentList()) {
-                        object.setKey(variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false));
-                        object.setValue(variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false));
+                        answerDecode = variableService.decodeStringCompletly(object.getKey(), tCExecution, null, false);
+                        object.setKey((String) answerDecode.getItem());
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            String field = "Content Key " + object.getKey();
+                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            result.setResultMessage(message);
+                            return result;
+                        }
+
+                        answerDecode = variableService.decodeStringCompletly(object.getValue(), tCExecution, null, false);
+                        object.setValue((String) answerDecode.getItem());
+                        if (!(answerDecode.isCodeStringEquals("OK"))) {
+                            // If anything wrong with the decode --> we stop here with decode message in the action result.
+                            String field = "Content Value " + object.getKey();
+                            message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                            LOG.debug("Property interupted due to decode '" + field + "'.");
+                            result.setResultMessage(message);
+                            return result;
+                        }
+
                         objectResponseContentList.add(object);
                     }
                     appService.setContentList(objectResponseContentList);
@@ -241,7 +298,16 @@ public class ServiceService implements IServiceService {
                         decodedOperation = appService.getOperation();
                         try {
 
-                            decodedOperation = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
+                            answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
+                            decodedOperation = (String) answerDecode.getItem();
+                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                String field = "Operation";
+                                message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                LOG.debug("Property interupted due to decode '" + field + "'.");
+                                result.setResultMessage(message);
+                                return result;
+                            }
 
                         } catch (CerberusEventException cee) {
                             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);

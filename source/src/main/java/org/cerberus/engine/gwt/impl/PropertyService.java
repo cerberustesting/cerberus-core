@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
@@ -43,7 +42,6 @@ import org.cerberus.crud.service.ITestDataLibService;
 import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.execution.IIdentifierService;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IPropertyService;
@@ -170,18 +168,18 @@ public class PropertyService implements IPropertyService {
          * For all linked properties, calculate it if needed.
          */
         for (TestCaseCountryProperties eachTccp : linkedProperties) {
-            TestCaseExecutionData tecd;
+            TestCaseExecutionData tcExeData;
             /**
              * First create testCaseExecutionData object
              */
             now = new Date().getTime();
-            tecd = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
+            tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), eachTccp.getProperty(), 1, eachTccp.getDescription(), null, eachTccp.getType(),
                     eachTccp.getValue1(), eachTccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
                     eachTccp.getRowLimit(), eachTccp.getNature());
-            tecd.setTestCaseCountryProperties(eachTccp);
+            tcExeData.setTestCaseCountryProperties(eachTccp);
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Trying to calculate Property : '" + tecd.getProperty() + "' " + tecd);
+                LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
             }
 
             List<TestCaseExecutionData> dataList = tCExecution.getTestCaseExecutionDataList();
@@ -189,31 +187,44 @@ public class PropertyService implements IPropertyService {
             /*  First check if property has already been calculated 
              *  if action is calculateProperty, then set isKnownData to false. 
              */
-            tecd = getExecutionDataFromList(dataList, eachTccp, forceCalculation, tecd);
+            tcExeData = getExecutionDataFromList(dataList, eachTccp, forceCalculation, tcExeData);
 
             /**
              * If testcasecountryproperty not defined, set ExecutionData with
              * the same resultMessage
              */
             if (eachTccp.getResult() != null) {
-                tecd.setPropertyResultMessage(eachTccp.getResult());
+                tcExeData.setPropertyResultMessage(eachTccp.getResult());
             }
             /*
              * If not already calculated, or calculateProperty, then calculate it and insert or update it.
              */
-            if (MessageEventEnum.PROPERTY_PENDING.equals(tecd.getPropertyResultMessage().getSource())) {
-                calculateProperty(tecd, tCExecution, testCaseStepActionExecution, eachTccp, forceCalculation);
-                msg = tecd.getPropertyResultMessage();
+            if (MessageEventEnum.PROPERTY_PENDING.equals(tcExeData.getPropertyResultMessage().getSource())) {
+                calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, eachTccp, forceCalculation);
+                msg = tcExeData.getPropertyResultMessage();
                 //saves the result 
                 try {
-                    testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tecd));
-                    if (tecd.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
-                        for (int i = 1; i < (tecd.getDataLibRawData().size()); i++) {
+                    testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcExeData));
+                    /**
+                     * Add TestCaseExecutionData in TestCaseExecutionData List
+                     * of the TestCaseExecution
+                     */
+                    LOG.debug("Adding into Execution data list. Property : " + tcExeData.getProperty() + " Value : " + tcExeData.getValue());
+                    tCExecution.getTestCaseExecutionDataList().add(tcExeData);
+                    if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
+                        for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
-                            TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tecd.getId(), tecd.getProperty(), (i + 1),
-                                    tecd.getDescription(), tecd.getDataLibRawData().get(i).get(""), tecd.getType(), "", "",
-                                    tecd.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
+                            TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
+                                    tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
+                                    tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
+                            /**
+                             * Add TestCaseExecutionData in
+                             * TestCaseExecutionData List of the
+                             * TestCaseExecution
+                             */
+                            LOG.debug("Adding into Execution data list. Property : " + tcedS.getProperty() + " Value : " + tcedS.getValue());
+                            tCExecution.getTestCaseExecutionDataList().add(tcedS);
                         }
                     }
                 } catch (CerberusException cex) {
@@ -233,18 +244,12 @@ public class PropertyService implements IPropertyService {
 //                }
 //            }
             /**
-             * Add TestCaseExecutionData in TestCaseExecutionData List of the
-             * TestCaseExecution
-             */
-            LOG.debug("Adding into Execution data list. Property : " + eachTccp.getProperty() + " Value1 : " + eachTccp.getValue1() + " Value : " + tecd.getValue());
-            tCExecution.getTestCaseExecutionDataList().add(tecd);
-            /**
              * After calculation, replace properties by value calculated
              */
             stringToDecode = decodeStringWithAlreadyCalculatedProperties(stringToDecode, tCExecution);
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Property " + eachTccp.getProperty() + " calculated with Value = " + tecd.getValue() + ", Value1 = " + tecd.getValue1() + ", Value2 = " + tecd.getValue2());
+                LOG.debug("Property " + eachTccp.getProperty() + " calculated with Value = " + tcExeData.getValue() + ", Value1 = " + tcExeData.getValue1() + ", Value2 = " + tcExeData.getValue2());
             }
         }
 
@@ -289,8 +294,10 @@ public class PropertyService implements IPropertyService {
     }
 
     /**
-     * Method that takes the potencial @param property, finds it (or not if it is not a existing property) inside the
-     * existing property list @param propertiesOfTestcase and gets the list of all other properties required (contained inside value1 or value2).
+     * Method that takes the potencial @param property, finds it (or not if it
+     * is not a existing property) inside the existing property list @param
+     * propertiesOfTestcase and gets the list of all other properties required
+     * (contained inside value1 or value2).
      *
      * @param country country used to filter property from propertiesOfTestcase
      * @param property property to be calculated
@@ -445,11 +452,14 @@ public class PropertyService implements IPropertyService {
      * </p>
      *
      * @param str the {@link String} to get all properties
+     * @param variableType
      * @return a list of properties contained into the given {@link String}
      */
     private List<String> getPropertiesListFromString(String str) {
         List<String> properties = new ArrayList<String>();
+        LOG.debug("Starting to guess properties from string : " + str);
         if (str == null) {
+            LOG.debug("Stoping to guess properties - Empty String ");
             return properties;
         }
 
@@ -469,7 +479,6 @@ public class PropertyService implements IPropertyService {
         String[] text1 = str.split("%");
         int i = 0;
         for (String rawProperty : text1) {
-            LOG.debug("Potential property : " + rawProperty);
             if (((i > 0) || (str.startsWith("%"))) && ((i < (text1.length - 1)) || str.endsWith("%"))) { // First and last string from split is not to be considered.
                 // Removes "property." string.
                 rawProperty = rawProperty.replaceFirst("^property\\.", "");
@@ -481,13 +490,18 @@ public class PropertyService implements IPropertyService {
                         && ramProp2[0].trim().length() <= TestCaseCountryProperties.MAX_PROPERTY_LENGTH // Properties cannot be bigger than n caracters.
                         && !ramProp2[0].trim().contains("\n")) { // Properties cannot contain \n.
                     properties.add(ramProp2[0].trim());
-                    LOG.debug("getPropertiesListFromString TO " + ramProp2[0].trim());
+                    LOG.debug("Adding string to result " + ramProp2[0].trim());
+                } else {
+                    LOG.debug("Discarding string (empty or too big or contains cariage return).");
                 }
                 // Avoid getting empty Property names.
+            } else {
+                LOG.debug("Discarding string (first or last split).");
             }
             i++;
         }
 
+        LOG.debug("Stopping to guess properties - Finished.");
         return properties;
     }
 
@@ -545,181 +559,211 @@ public class PropertyService implements IPropertyService {
         return item;
     }
 
-    private void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution,
+    @Override
+    public void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution,
             TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation) {
         testCaseExecutionData.setStart(new Date().getTime());
         MessageEvent res;
         String test = tCExecution.getTest();
         String testCase = tCExecution.getTestCase();
+        AnswerItem<String> answerDecode = new AnswerItem();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
         }
 
-        /**
-         * Decode Property replacing properties encapsulated with %
-         */
-        if (testCaseCountryProperty.getValue1().contains("%")) {
-            String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue1(), tCExecution);
-            decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
-            testCaseExecutionData.setValue1(decodedValue);
-        }
+        try {
+            /**
+             * Decode Property replacing properties encapsulated with %
+             */
+            if (testCaseCountryProperty.getValue1().contains("%")) {
 
-        if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
-            String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue2(), tCExecution);
-            decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
-            testCaseExecutionData.setValue2(decodedValue);
-        }
-
-        int execution_count = 0;
-        int retries = testCaseCountryProperty.getRetryNb();
-        int periodms = testCaseCountryProperty.getRetryPeriod();
-        LOG.debug("Init Retries : " + retries + " Period : " + periodms);
-
-        /**
-         * Controling that retrynb and retryperiod are correctly feeded. <br>
-         * This is to avoid that <br>
-         * 1/ retry is greater than cerberus_property_maxretry <br>
-         * 2/ total duration of property calculation is longuer than
-         * cerberus_property_maxretrytotalduration
-         */
-        boolean forced_retry = false;
-        String forced_retry_message = "";
-        if (!(retries == 0)) {
-            int maxretry = parameterService.getParameterIntegerByKey("cerberus_property_maxretry", "", 50);
-            if (retries > maxretry) {
-                retries = maxretry;
-                forced_retry = true;
-            }
-            int maxtotalduration = parameterService.getParameterIntegerByKey("cerberus_property_maxretrytotalduration", "", 1800000);
-            if (periodms > maxtotalduration) {
-                periodms = maxtotalduration;
-                forced_retry = true;
-            }
-            if (retries * periodms > maxtotalduration) {
-                retries = (int) maxtotalduration / periodms;
-                forced_retry = true;
-            }
-            if (forced_retry) {
-                forced_retry_message = "WARNING : Forced Retries : " + testCaseCountryProperty.getRetryNb() + "-->" + retries + " and Period : " + testCaseCountryProperty.getRetryPeriod() + "-->" + periodms + " (in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration + ")";
-                LOG.debug("Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration);
-            }
-
-        }
-
-        /**
-         * Looping on calculating the action until result is OK or reach the max
-         * retry.
-         */
-        while (execution_count <= retries && !(testCaseExecutionData.getPropertyResultMessage().getCodeString().equals("OK"))) {
-            LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1());
-
-            if (execution_count >= 1) { // We only wait the period if not on the very first calculation.
-                try {
-                    Thread.sleep(periodms);
-                    LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1() + " Waiting " + periodms + " ms");
-                } catch (InterruptedException ex) {
-                    LOG.error(ex.toString());
+                answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue1(), tCExecution, null, false);
+                testCaseExecutionData.setValue1((String) answerDecode.getItem());
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the property result.
+                    testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value1"));
+                    testCaseExecutionData.setEnd(new Date().getTime());
+                    return;
                 }
+
+//            String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue1(), tCExecution);
+//            decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
+//            testCaseExecutionData.setValue1(decodedValue);
+            }
+
+            if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
+
+                answerDecode = variableService.decodeStringCompletly(testCaseCountryProperty.getValue2(), tCExecution, null, false);
+                testCaseExecutionData.setValue2((String) answerDecode.getItem());
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the property result.
+                    testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value2"));
+                    testCaseExecutionData.setEnd(new Date().getTime());
+                    return;
+                }
+
+//                String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue2(), tCExecution);
+//                decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
+//                testCaseExecutionData.setValue2(decodedValue);
+            }
+
+            int execution_count = 0;
+            int retries = testCaseCountryProperty.getRetryNb();
+            int periodms = testCaseCountryProperty.getRetryPeriod();
+            LOG.debug("Init Retries : " + retries + " Period : " + periodms);
+
+            /**
+             * Controling that retrynb and retryperiod are correctly feeded.
+             * <br>
+             * This is to avoid that <br>
+             * 1/ retry is greater than cerberus_property_maxretry <br>
+             * 2/ total duration of property calculation is longuer than
+             * cerberus_property_maxretrytotalduration
+             */
+            boolean forced_retry = false;
+            String forced_retry_message = "";
+            if (!(retries == 0)) {
+                int maxretry = parameterService.getParameterIntegerByKey("cerberus_property_maxretry", "", 50);
+                if (retries > maxretry) {
+                    retries = maxretry;
+                    forced_retry = true;
+                }
+                int maxtotalduration = parameterService.getParameterIntegerByKey("cerberus_property_maxretrytotalduration", "", 1800000);
+                if (periodms > maxtotalduration) {
+                    periodms = maxtotalduration;
+                    forced_retry = true;
+                }
+                if (retries * periodms > maxtotalduration) {
+                    retries = (int) maxtotalduration / periodms;
+                    forced_retry = true;
+                }
+                if (forced_retry) {
+                    forced_retry_message = "WARNING : Forced Retries : " + testCaseCountryProperty.getRetryNb() + "-->" + retries + " and Period : " + testCaseCountryProperty.getRetryPeriod() + "-->" + periodms + " (in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration + ")";
+                    LOG.debug("Forced Retries : " + retries + " Period : " + periodms + " in order to respect the constrains cerberus_property_maxretry " + maxretry + " & cerberus_property_maxtotalduration " + maxtotalduration);
+                }
+
             }
 
             /**
-             * Calculate Property regarding the type
+             * Looping on calculating the action until result is OK or reach the
+             * max retry.
              */
-            switch (testCaseCountryProperty.getType()) {
-                case TestCaseCountryProperties.TYPE_TEXT:
-                    testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
-                    break;
+            while (execution_count <= retries && !(testCaseExecutionData.getPropertyResultMessage().getCodeString().equals("OK"))) {
+                LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1());
 
-                case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
-                    testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                if (execution_count >= 1) { // We only wait the period if not on the very first calculation.
+                    try {
+                        Thread.sleep(periodms);
+                        LOG.debug("Attempt #" + execution_count + " " + testCaseCountryProperty.getProperty() + " " + testCaseCountryProperty.getValue1() + " Waiting " + periodms + " ms");
+                    } catch (InterruptedException ex) {
+                        LOG.error(ex.toString());
+                    }
+                }
 
-                case TestCaseCountryProperties.TYPE_EXECUTESQL:
-                    testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                /**
+                 * Calculate Property regarding the type
+                 */
+                switch (testCaseCountryProperty.getType()) {
+                    case TestCaseCountryProperties.TYPE_TEXT:
+                        testCaseExecutionData = this.property_calculateText(testCaseExecutionData, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMHTML:
-                    testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMDATALIB:
+                        testCaseExecutionData = this.property_getFromDataLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
-                    testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_EXECUTESQL:
+                        testCaseExecutionData = this.property_executeSql(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMJS:
-                    testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMHTML:
+                        testCaseExecutionData = this.property_getFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
-                    testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMHTMLVISIBLE:
+                        testCaseExecutionData = this.property_getFromHtmlVisible(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMCOOKIE:
-                    testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMJS:
+                        testCaseExecutionData = this.property_getFromJS(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMXML:
-                    testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETATTRIBUTEFROMHTML:
+                        testCaseExecutionData = this.property_getAttributeFromHtml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
-                    testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMCOOKIE:
+                        testCaseExecutionData = this.property_getFromCookie(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMJSON:
-                    testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMXML:
+                        testCaseExecutionData = this.property_getFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
-                    testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETDIFFERENCESFROMXML:
+                        testCaseExecutionData = this.property_getDifferencesFromXml(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
-                    testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
-                    res = testCaseExecutionData.getPropertyResultMessage();
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                    logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMJSON:
+                        testCaseExecutionData = this.property_getFromJson(testCaseExecutionData, tCExecution, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
-                    testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
-                    res = testCaseExecutionData.getPropertyResultMessage();
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                    logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                    break;
+                    case TestCaseCountryProperties.TYPE_GETFROMGROOVY:
+                        testCaseExecutionData = this.property_getFromGroovy(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        break;
 
-                case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
-                    testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                    res = testCaseExecutionData.getPropertyResultMessage();
-                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                    testCaseExecutionData.setPropertyResultMessage(res);
-                    logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                    break;
+                    case TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB: // DEPRECATED
+                        testCaseExecutionData = this.property_executeSoapFromLib(testCaseExecutionData, tCExecution, testCaseStepActionExecution, testCaseCountryProperty, forceRecalculation);
+                        res = testCaseExecutionData.getPropertyResultMessage();
+                        res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                        testCaseExecutionData.setPropertyResultMessage(res);
+                        logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
+                        LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESOAPFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
+                        break;
 
-                default:
-                    res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
-                    res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
-                    testCaseExecutionData.setPropertyResultMessage(res);
+                    case TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB: // DEPRECATED
+                        testCaseExecutionData = this.property_executeSqlFromLib(testCaseExecutionData, testCaseCountryProperty, tCExecution, forceRecalculation);
+                        res = testCaseExecutionData.getPropertyResultMessage();
+                        res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                        testCaseExecutionData.setPropertyResultMessage(res);
+                        logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
+                        LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
+                        break;
+
+                    case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
+                        testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
+                        res = testCaseExecutionData.getPropertyResultMessage();
+                        res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                        testCaseExecutionData.setPropertyResultMessage(res);
+                        logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
+                        LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
+                        break;
+
+                    default:
+                        res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
+                        res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
+                        testCaseExecutionData.setPropertyResultMessage(res);
+                }
+                execution_count++;
+
             }
-            execution_count++;
 
-        }
+            if (execution_count >= 2) { // If there were at least 1 retry, we notify it in the result message.
+                res = testCaseExecutionData.getPropertyResultMessage();
+                res.setDescription("Retried " + (execution_count - 1) + " time(s) with " + periodms + "ms period - " + res.getDescription());
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
+            if (forced_retry) { // If the retry and period parameter was changed, we notify it in the result message.
+                res = testCaseExecutionData.getPropertyResultMessage();
+                res.setDescription(forced_retry_message + " - " + res.getDescription());
+                testCaseExecutionData.setPropertyResultMessage(res);
+            }
 
-        if (execution_count >= 2) { // If there were at least 1 retry, we notify it in the result message.
-            res = testCaseExecutionData.getPropertyResultMessage();
-            res.setDescription("Retried " + (execution_count - 1) + " time(s) with " + periodms + "ms period - " + res.getDescription());
-            testCaseExecutionData.setPropertyResultMessage(res);
-        }
-        if (forced_retry) { // If the retry and period parameter was changed, we notify it in the result message.
-            res = testCaseExecutionData.getPropertyResultMessage();
-            res.setDescription(forced_retry_message + " - " + res.getDescription());
-            testCaseExecutionData.setPropertyResultMessage(res);
+        } catch (CerberusEventException ex) {
+            LOG.error(ex.toString());
+            testCaseExecutionData.setEnd(new Date().getTime());
+            testCaseExecutionData.setPropertyResultMessage(ex.getMessageError());
         }
 
         testCaseExecutionData.setEnd(new Date().getTime());
@@ -951,6 +995,8 @@ public class PropertyService implements IPropertyService {
 
     private TestCaseExecutionData property_executeSoapFromLib(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         String result = null;
+        AnswerItem<String> answerDecode = new AnswerItem();
+
         try {
             AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
             if (appService != null) {
@@ -966,13 +1012,34 @@ public class PropertyService implements IPropertyService {
                 String decodedMethod = appService.getOperation();
 
                 if (appService.getServiceRequest().contains("%")) {
-                    decodedEnveloppe = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
+                    decodedEnveloppe = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Request"));
+                        LOG.debug("Property interupted due to decode 'SOAP Service Request' Error.");
+                        return testCaseExecutionData;
+                    }
                 }
                 if (appService.getServicePath().contains("%")) {
-                    decodedServicePath = variableService.decodeStringCompletly(appService.getServicePath(), tCExecution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(appService.getServicePath(), tCExecution, testCaseStepActionExecution, false);
+                    decodedServicePath = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Service Path"));
+                        LOG.debug("Property interupted due to decode 'SOAP Service Path.");
+                        return testCaseExecutionData;
+                    }
                 }
                 if (appService.getOperation().contains("%")) {
-                    decodedMethod = variableService.decodeStringCompletly(appService.getOperation(), tCExecution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(appService.getOperation(), tCExecution, testCaseStepActionExecution, false);
+                    decodedMethod = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Operation"));
+                        LOG.debug("Property interupted due to decode 'SOAP Operation.");
+                        return testCaseExecutionData;
+                    }
                 }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
@@ -1176,6 +1243,7 @@ public class PropertyService implements IPropertyService {
 
         TestDataLib testDataLib;
         List<HashMap<String, String>> result = null;
+        AnswerItem<String> answerDecode = new AnswerItem();
 
         // We get here the correct TestDataLib entry from the Value1 (name) that better match the context on system, environment and country.
         AnswerItem<TestDataLib> answer = testDataLibService.readByNameBySystemByEnvironmentByCountry(testCaseExecutionData.getValue1(),
@@ -1189,21 +1257,17 @@ public class PropertyService implements IPropertyService {
 
             //check if there are properties defined in the data specification
             try {
-                if (testDataLib.getType().equals(TestDataLib.TYPE_SERVICE)) {
-                    //check if the servicepath contains properties that neeed to be calculated
-                    String decodedServicePath = variableService.decodeStringCompletly(testDataLib.getServicePath(), tCExecution, testCaseStepActionExecution, false);
-                    testDataLib.setServicePath(decodedServicePath);
-                    //check if the method contains properties that neeed to be calculated
-                    String decodedMethod = variableService.decodeStringCompletly(testDataLib.getMethod(), tCExecution, testCaseStepActionExecution, false);
-                    testDataLib.setMethod(decodedMethod);
-                    //check if the envelope contains properties that neeed to be calculated
-                    String decodedEnvelope = variableService.decodeStringCompletly(testDataLib.getEnvelope(), tCExecution, testCaseStepActionExecution, false);
-                    testDataLib.setEnvelope(decodedEnvelope);
-
-                } else if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
+                if (testDataLib.getType().equals(TestDataLib.TYPE_SQL)) {
                     //check if the script contains properties that neeed to be calculated
-                    String decodedScript = variableService.decodeStringCompletly(testDataLib.getScript(), tCExecution, testCaseStepActionExecution, false);
+                    answerDecode = variableService.decodeStringCompletly(testDataLib.getScript(), tCExecution, testCaseStepActionExecution, false);
+                    String decodedScript = (String) answerDecode.getItem();
                     testDataLib.setScript(decodedScript);
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SQL Script"));
+                        LOG.debug("Property interupted due to decode 'SQL Script'.");
+                        return testCaseExecutionData;
+                    }
 
                 }
             } catch (CerberusEventException cex) {

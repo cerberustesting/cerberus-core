@@ -47,7 +47,7 @@ public class Answer {
         return this.resultMessage.getDescription();
     }
     
-    public String getMessageType(){
+    public String getMessageCodeString(){
         return this.resultMessage.getCodeString();
     }
     

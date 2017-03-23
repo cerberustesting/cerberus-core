@@ -19,13 +19,18 @@
 package org.cerberus.engine.gwt.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.crud.entity.TestCaseStepExecution;
-import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.engine.gwt.IVariableService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.DateUtil;
 import org.cerberus.util.StringUtil;
@@ -51,8 +56,14 @@ public class VariableService implements IVariableService {
     private IRecorderService recorderService;
 
     @Override
-    public String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
+    public AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {
+
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DECODE_SUCCESS);
+        AnswerItem<String> answer = new AnswerItem();
+        answer.setResultMessage(msg);
+        answer.setItem(stringToDecode);
+
         String result = stringToDecode;
         if (LOG.isDebugEnabled()) {
             LOG.debug("Start Decoding : " + result);
@@ -65,7 +76,7 @@ public class VariableService implements IVariableService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Stop Decoding : Nothing to decode on : " + result);
             }
-            return result;
+            return answer;
         }
 
         int count_decode = 1;
@@ -89,7 +100,8 @@ public class VariableService implements IVariableService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode System variable) : " + result);
                 }
-                return result;
+                answer.setItem(result);
+                return answer;
             }
 
             /**
@@ -107,7 +119,8 @@ public class VariableService implements IVariableService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Stop Decoding : No more things to decode on (exit when trying to decode ApplicationObject variable) : " + result);
                 }
-                return result;
+                answer.setItem(result);
+                return answer;
             }
 
             /**
@@ -116,32 +129,67 @@ public class VariableService implements IVariableService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Starting to decode (Properties) string  iteration#" + count_decode + " : " + result);
             }
-            AnswerItem<String> answerProp;
-            answerProp = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
-            result = answerProp.getItem();
+            answer = propertyService.decodeStringWithExistingProperties(result, testCaseExecution, testCaseStepActionExecution, forceCalculation);
+            result = answer.getItem();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Finished to decode (Properties) iteration#" + count_decode + ". Result : " + result);
-                LOG.debug("   Result Message : " + answerProp.getResultMessage().getCodeString() + " - " + answerProp.getResultMessage().getDescription());
+                LOG.debug("   Result Message : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
             }
 
             //if the property result message indicates that we need to stop the test action, then the action is notified               
             //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
             //then we notify the execution
-            if (answerProp.getResultMessage().getCodeString().equals("FA")
-                    || answerProp.getResultMessage().getCodeString().equals("NA")) {
-                if (!(testCaseStepActionExecution == null)) {
-                    testCaseStepActionExecution.setStopExecution(answerProp.getResultMessage().isStopTest());
-                    testCaseStepActionExecution.setActionResultMessage(answerProp.getResultMessage());
-                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerProp.getResultMessage().getMessage()));
-                }
+            if (answer.getResultMessage().getCodeString().equals("FA")
+                    || answer.getResultMessage().getCodeString().equals("NA")) {
+                answer.setItem(result);
+                return answer;
+//                if (!(testCaseStepActionExecution == null)) {
+//                    testCaseStepActionExecution.setStopExecution(answerProp.getResultMessage().isStopTest());
+//                    testCaseStepActionExecution.setActionResultMessage(answerProp.getResultMessage());
+//                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerProp.getResultMessage().getMessage()));
+//                }
             }
             count_decode++;
+        }
+
+        // Checking if after the decode we still have some variable not decoded.
+        LOG.debug("Checking If after decode we still have uncoded variable.");
+        List<String> variableList = getVariableListFromString(result);
+        if (variableList.size() > 0) {
+            String messageList = "";
+            for (String var : variableList) {
+                messageList += var + " ,";
+            }
+            messageList = StringUtil.removeLastChar(messageList, 2);
+            answer.setResultMessage(new MessageEvent(MessageEventEnum.DECODE_FAILED_VARIABLENOTDECODED)
+                    .resolveDescription("NB", String.valueOf(variableList.size()))
+                    .resolveDescription("VAR", messageList));
+            answer.setItem(result);
+            LOG.debug("Stop Decoding with error : " + answer.getResultMessage().getCodeString() + " - " + answer.getResultMessage().getDescription());
+            return answer;
         }
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Stop Decoding : All iteration finished : " + result);
         }
-        return result;
+        answer.setItem(result);
+        return answer;
+    }
+
+    private List<String> getVariableListFromString(String str) {
+        List<String> variable = new ArrayList<String>();
+
+        final String regex = "%(property|system|object)\\..*?%";
+
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(str);
+
+        while (matcher.find()) {
+            LOG.debug("Full match: " + matcher.group());
+            variable.add(matcher.group());
+        }
+
+        return variable;
     }
 
     @Override

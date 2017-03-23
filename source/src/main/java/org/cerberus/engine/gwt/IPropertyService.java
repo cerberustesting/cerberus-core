@@ -19,7 +19,9 @@
  */
 package org.cerberus.engine.gwt;
 
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.answer.AnswerItem;
@@ -44,5 +46,7 @@ public interface IPropertyService {
      */
     AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
-
+    
+    void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution,
+            TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation);
 }

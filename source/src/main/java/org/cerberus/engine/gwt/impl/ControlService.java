@@ -48,6 +48,7 @@ import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,7 @@ public class ControlService implements IControlService {
     public TestCaseStepActionControlExecution doControl(TestCaseStepActionControlExecution testCaseStepActionControlExecution) {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionControlExecution.getTestCaseStepActionExecution().getTestCaseStepExecution().gettCExecution();
+        AnswerItem<String> answerDecode = new AnswerItem();
 
         /**
          * Decode the 2 fields property and values before doing the control.
@@ -95,21 +97,41 @@ public class ControlService implements IControlService {
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
-                testCaseStepActionControlExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(),
-                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(), tCExecution,
+                        testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+                testCaseStepActionControlExecution.setValue1((String) answerDecode.getItem());
 
-                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the control result.
+                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value1"));
+                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    LOG.debug("Control interupted due to decode 'Control Value1' Error.");
                     return testCaseStepActionControlExecution;
                 }
+
+//                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
+//                    return testCaseStepActionControlExecution;
+//                }
             }
 
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
-                testCaseStepActionControlExecution.setValue2(variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
-                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false));
+                answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
+                        tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
+                testCaseStepActionControlExecution.setValue2((String) answerDecode.getItem());
 
-                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
+                if (!(answerDecode.isCodeStringEquals("OK"))) {
+                    // If anything wrong with the decode --> we stop here with decode message in the control result.
+                    testCaseStepActionControlExecution.setControlResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Control Value2"));
+                    testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                    testCaseStepActionControlExecution.setEnd(new Date().getTime());
+                    LOG.debug("Control interupted due to decode 'Control Value2' Error.");
                     return testCaseStepActionControlExecution;
                 }
+
+//                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
+//                    return testCaseStepActionControlExecution;
+//                }
             }
         } catch (CerberusEventException cex) {
             testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());

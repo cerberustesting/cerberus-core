@@ -456,7 +456,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#bugId").prop("value", testCase.bugID);
         formEdit.find("#conditionOper").prop("value", testCase.conditionOper);
         formEdit.find("#conditionVal1").prop("value", testCase.conditionVal1);
-        formEdit.find("#conditionVal2").prop("value", testCase.conditionVal1);
+        formEdit.find("#conditionVal2").prop("value", testCase.conditionVal2);
         formEdit.find("#comment").prop("value", testCase.comment);
     }
 

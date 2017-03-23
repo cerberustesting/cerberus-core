@@ -21,6 +21,7 @@ package org.cerberus.engine.gwt;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
 import org.cerberus.exception.CerberusEventException;
+import org.cerberus.util.answer.AnswerItem;
 
 /**
  * {Insert class description here}
@@ -47,7 +48,7 @@ public interface IVariableService {
      * @return
      * @throws CerberusEventException
      */
-    String decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
     /**
      *

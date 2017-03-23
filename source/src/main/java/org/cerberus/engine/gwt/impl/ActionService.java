@@ -19,39 +19,42 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import java.util.ArrayList;
-import org.cerberus.engine.execution.impl.RunTestCaseService;
 import java.util.Date;
-import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.cerberus.engine.entity.Identifier;
-import org.cerberus.engine.entity.MessageEvent;
-import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.AppServiceContent;
-import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.entity.Application;
-import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.crud.entity.TestCaseCountryProperties;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionExecution;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
+import org.cerberus.crud.service.IAppServiceService;
 import org.cerberus.crud.service.ILogEventService;
+import org.cerberus.crud.service.IParameterService;
+import org.cerberus.crud.service.ITestCaseExecutionDataService;
+import org.cerberus.engine.entity.Identifier;
+import org.cerberus.engine.entity.MessageEvent;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.SwipeAction;
+import org.cerberus.engine.execution.IIdentifierService;
+import org.cerberus.engine.execution.IRecorderService;
+import org.cerberus.engine.execution.impl.RunTestCaseService;
+import org.cerberus.engine.gwt.IActionService;
+import org.cerberus.engine.gwt.IPropertyService;
 import org.cerberus.engine.gwt.IVariableService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
-import org.cerberus.engine.gwt.IActionService;
 import org.cerberus.service.appium.IAppiumService;
-import org.cerberus.engine.execution.IIdentifierService;
-import org.cerberus.engine.gwt.IPropertyService;
-import org.cerberus.engine.execution.IRecorderService;
-import org.cerberus.enums.MessageGeneralEnum;
-import org.cerberus.service.sql.ISQLService;
+import org.cerberus.service.appservice.IServiceService;
+import org.cerberus.service.rest.IRestService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.service.soap.ISoapService;
+import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.webdriver.IWebDriverService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
 import org.cerberus.util.StringUtil;
@@ -59,10 +62,6 @@ import org.cerberus.util.answer.AnswerItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.cerberus.crud.service.IAppServiceService;
-import org.cerberus.crud.service.IParameterService;
-import org.cerberus.service.appservice.IServiceService;
-import org.cerberus.service.rest.IRestService;
 
 /**
  *
@@ -102,7 +101,13 @@ public class ActionService implements IActionService {
     @Autowired
     private IVariableService variableService;
     @Autowired
+    private IPropertyService propertyService;
+    @Autowired
     private IServiceService serviceService;
+    @Autowired
+    private IFactoryTestCaseExecutionData factoryTestCaseExecutionData;
+    @Autowired
+    private ITestCaseExecutionDataService testCaseExecutionDataService;
 
     private static final Logger LOG = Logger.getLogger(ActionService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
@@ -111,50 +116,48 @@ public class ActionService implements IActionService {
     public TestCaseStepActionExecution doAction(TestCaseStepActionExecution testCaseStepActionExecution) {
         MessageEvent res;
         TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
+        AnswerItem<String> answerDecode = new AnswerItem();
 
         /**
          * Decode the object field before doing the action.
          */
-        if (false) {
-            if (testCaseStepActionExecution.getValue1().contains("%")) {
-                boolean isCalledFromCalculateProperty = false;
-                if (testCaseStepActionExecution.getAction().equals("calculateProperty")) {
-                    isCalledFromCalculateProperty = true;
-                }
-                try {
-                    // We decode here the object with any potencial variables (ex : %TOTO%). If the Current action if calculateProperty, we force a new calculation of the Property.
-                    testCaseStepActionExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
-                            tCExecution, testCaseStepActionExecution, isCalledFromCalculateProperty));
-                    //if the getvalue() indicates that the execution should stop then we stop it before the doAction 
-                    //or if the property service was unable to decode the property that is specified in the object, 
-                    //then the execution of this action should not performed
-                    if (testCaseStepActionExecution.isStopExecution()
-                            || (testCaseStepActionExecution.getActionResultMessage().getCode()
-                            == MessageEventEnum.PROPERTY_FAILED_NO_PROPERTY_DEFINITION.getCode())) {
-                        return testCaseStepActionExecution;
-                    }
-                } catch (CerberusEventException cex) {
-                    testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-                    return testCaseStepActionExecution;
-                }
+        try {
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
+                    tCExecution, testCaseStepActionExecution, false);
+            testCaseStepActionExecution.setValue1((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value1"));
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Action Value1' Error.");
+                return testCaseStepActionExecution;
             }
+        } catch (CerberusEventException cex) {
+            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
+            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            testCaseStepActionExecution.setEnd(new Date().getTime());
+            return testCaseStepActionExecution;
         }
 
         try {
-            testCaseStepActionExecution.setValue1(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
-                    tCExecution, testCaseStepActionExecution, false));
+            answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
+                    tCExecution, testCaseStepActionExecution, false);
+            testCaseStepActionExecution.setValue2((String) answerDecode.getItem());
+
+            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                testCaseStepActionExecution.setActionResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Action Value2"));
+                testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(answerDecode.getResultMessage().getMessage()));
+                testCaseStepActionExecution.setEnd(new Date().getTime());
+                LOG.debug("Action interupted due to decode 'Action Value2' Error.");
+                return testCaseStepActionExecution;
+            }
         } catch (CerberusEventException cex) {
             testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
             testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
-            return testCaseStepActionExecution;
-        }
-        try {
-            testCaseStepActionExecution.setValue2(variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
-                    tCExecution, testCaseStepActionExecution, false));
-        } catch (CerberusEventException cex) {
-            testCaseStepActionExecution.setActionResultMessage(cex.getMessageError());
-            testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(cex.getMessageError().getMessage()));
+            testCaseStepActionExecution.setEnd(new Date().getTime());
             return testCaseStepActionExecution;
         }
 
@@ -244,7 +247,7 @@ public class ActionService implements IActionService {
                 res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
                 break;
             case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
-                res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2, propertyName);
+                res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
                 break;
             case TestCaseStepAction.ACTION_DONOTHING:
                 res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
@@ -967,33 +970,127 @@ public class ActionService implements IActionService {
         return message;
     }
 
-    private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2, String propertyName) {
+    private MessageEvent doActionCalculateProperty(TestCaseStepActionExecution testCaseStepActionExecution, String value1, String value2) {
         MessageEvent message;
-        if (StringUtil.isNullOrEmpty(value1)) { // Value1 is a mandatory parameter.
+        AnswerItem<String> answerDecode = new AnswerItem();
+        if (StringUtil.isNullOrEmpty(value1)) {
+
+            // Value1 is a mandatory parameter.
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_MISSINGPROPERTY);
             message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY));
+
         } else {
             try {
+
                 TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
-                String propertyValueResult = "";
-                // if value2 is not defined, then decode the property defined in value1.
-                if (StringUtil.isNullOrEmpty(value2)) {
-                    propertyValueResult = variableService.decodeStringCompletly("%property." + value1 + "%", tCExecution, testCaseStepActionExecution, true);
-                } // If not, then set value1 property to the decoded value2 property
-                else {
-                    propertyValueResult = variableService.decodeStringCompletly("%property." + value2 + "%", tCExecution, testCaseStepActionExecution, true);
-                    for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
-                        if (value1.equals(property.getProperty())) {
-                            property.setValue(propertyValueResult);
-                        }
+                // Getting the Country property definition.
+                TestCaseCountryProperties tccp = null;
+                for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
+                    if ((object.getProperty().equalsIgnoreCase(value1)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
+                        tccp = object;
                     }
                 }
-                if ((testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("FA"))
-                        || (testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("NA"))) {
-                    message = testCaseStepActionExecution.getActionResultMessage();
+                if (tccp == null) { // Could not find a country property inside the existing execution.
+                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
+                    message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                            .replace("%PROP%", value1)
+                            .replace("%COUNTRY%", tCExecution.getCountry()));
+                    return message;
+
                 } else {
-                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-                    message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
+                    if (!(StringUtil.isNullOrEmpty(value2))) {
+                        // If value2 is fed with something, we control here that value is a valid property name and gets its defintion.
+                        tccp = null;
+                        for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
+                            if ((object.getProperty().equalsIgnoreCase(value2)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
+                                tccp = object;
+                            }
+                        }
+                        if (tccp == null) { // Could not find a country property inside the existing execution.
+                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
+                            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                                    .replace("%PROP%", value2)
+                                    .replace("%COUNTRY%", tCExecution.getCountry()));
+                            return message;
+                        }
+                    }
+
+                    // We calculate the property here.
+                    long now = new Date().getTime();
+                    TestCaseExecutionData tcExeData;
+                    tcExeData = factoryTestCaseExecutionData.create(tCExecution.getId(), tccp.getProperty(), 1, tccp.getDescription(), null, tccp.getType(),
+                            tccp.getValue1(), tccp.getValue2(), null, null, now, now, now, now, new MessageEvent(MessageEventEnum.PROPERTY_PENDING),
+                            tccp.getRetryNb(), tccp.getRetryPeriod(), tccp.getDatabase(), tccp.getValue1(), tccp.getValue2(), tccp.getLength(),
+                            tccp.getRowLimit(), tccp.getNature());
+                    tcExeData.setTestCaseCountryProperties(tccp);
+                    propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
+                    message = tcExeData.getPropertyResultMessage();
+
+                    if (!(StringUtil.isNullOrEmpty(value2))) {
+                        // If value2 is fed we force the result to value1.
+                        tcExeData.setProperty(value1);
+                    }
+                    //saves the result 
+                    try {
+                        testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcExeData));
+                        LOG.debug("Adding into Execution data list. Property : " + tcExeData.getProperty() + " Value : " + tcExeData.getValue());
+                        tCExecution.getTestCaseExecutionDataList().add(tcExeData);
+                        if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
+                            for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
+                                now = new Date().getTime();
+                                TestCaseExecutionData tcedS = factoryTestCaseExecutionData.create(tcExeData.getId(), tcExeData.getProperty(), (i + 1),
+                                        tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
+                                        tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
+                                testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
+                                LOG.debug("Adding into Execution data list. Property : " + tcedS.getProperty() + " Value : " + tcedS.getValue());
+                                tCExecution.getTestCaseExecutionDataList().add(tcedS);
+                            }
+                        }
+                    } catch (CerberusException cex) {
+                        LOG.error(cex.getMessage(), cex);
+                    }
+
+                }
+
+                if (false) {
+                    String propertyValueResult = "";
+                    // if value2 is not defined, then decode the property defined in value1.
+                    if (StringUtil.isNullOrEmpty(value2)) {
+                        answerDecode = variableService.decodeStringCompletly("%property." + value1 + "%", tCExecution, testCaseStepActionExecution, true);
+                        propertyValueResult = (String) answerDecode.getItem();
+                        if ((answerDecode.getResultMessage().getCodeString().equals("FA"))
+                                || (answerDecode.getResultMessage().getCodeString().equals("NA"))) {
+                            message = answerDecode.getResultMessage();
+                        } else {
+                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
+                            message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
+                        }
+
+                    } // If not, then set value1 property to the decoded value2 property
+                    else {
+                        answerDecode = variableService.decodeStringCompletly("%property." + value2 + "%", tCExecution, testCaseStepActionExecution, true);
+                        propertyValueResult = (String) answerDecode.getItem();
+                        for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
+                            if (value1.equals(property.getProperty())) {
+                                property.setValue(propertyValueResult);
+                            }
+                        }
+                        if ((answerDecode.getResultMessage().getCodeString().equals("FA"))
+                                || (answerDecode.getResultMessage().getCodeString().equals("NA"))) {
+                            message = answerDecode.getResultMessage();
+                        } else {
+                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
+                            message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
+                        }
+                    }
+//                if ((testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("FA"))
+//                        || (testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("NA"))) {
+//                    message = testCaseStepActionExecution.getActionResultMessage();
+//                } else {
+//                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
+//                    message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
+//                }
+
                 }
             } catch (CerberusEventException cex) {
                 message = cex.getMessageError();
