@@ -273,7 +273,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
+        
         <!-- Provided scope -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

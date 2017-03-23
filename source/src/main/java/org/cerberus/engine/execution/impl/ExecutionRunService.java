@@ -79,6 +79,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.engine.execution.IRunTestCaseService;
+import org.jfree.util.Log;
 
 /**
  *
@@ -456,6 +457,13 @@ public class ExecutionRunService implements IExecutionRunService {
 
                         }
 
+                        /**
+                         * Log TestCaseStepExecution
+                         */
+                        if (tCExecution.getVerbose() > 0) {
+                        LOG.info(testCaseStepExecution.toJson(false, true));
+                        }
+
                         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
                         if (tCExecution.isCerberus_featureflipping_activatewebsocketpush()) {
                             TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
@@ -503,13 +511,14 @@ public class ExecutionRunService implements IExecutionRunService {
             }
         } catch (Exception ex) {
             /**
-             * If an exception is found, set the execution to FA and print the exception
+             * If an exception is found, set the execution to FA and print the
+             * exception
              */
             tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
-            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: "+ ex);
+            tCExecution.setControlMessage(tCExecution.getControlMessage() + " Exception: " + ex);
             LOG.error(logPrefix + "Exception found Executing Test " + tCExecution.getId() + " Exception :" + ex.toString());
         } finally {
-            
+
             /**
              * We stop the server session here (selenium for ex.).
              */
@@ -518,6 +527,11 @@ public class ExecutionRunService implements IExecutionRunService {
             } catch (Exception ex) {
                 LOG.error(logPrefix + "Exception Stopping Test " + tCExecution.getId() + " Exception :" + ex.toString());
             }
+
+            /**
+             * Log Execution
+             */
+            LOG.info(tCExecution.toJson(false));
 
             /**
              * Clean memory
@@ -701,6 +715,13 @@ public class ExecutionRunService implements IExecutionRunService {
 
             }
 
+            /**
+             * Log TestCaseStepActionExecution
+             */
+            if (tcExecution.getVerbose() > 0) {
+            LOG.info(testCaseStepActionExecution.toJson(false, true));
+            }
+
         }
         testCaseStepExecution.setEnd(new Date().getTime());
         this.testCaseStepExecutionService.updateTestCaseStepExecution(testCaseStepExecution);
@@ -850,6 +871,13 @@ public class ExecutionRunService implements IExecutionRunService {
 
             }
 
+            /**
+             * Log TestCaseStepActionControlExecution
+             */
+            if (tcExecution.getVerbose() > 0) {
+                LOG.info(testCaseStepActionControlExecution.toJson(false, true));
+            }
+
         }
 
         // Websocket --> we refresh the corresponding Detail Execution pages attached to this execution.
@@ -903,13 +931,6 @@ public class ExecutionRunService implements IExecutionRunService {
             TestCaseExecutionEndPoint.getInstance().send(tCExecution, false);
         }
 
-        return tCExecution;
-    }
-
-    private TestCaseExecution collectExecutionStats(TestCaseExecution tCExecution) {
-        if (tCExecution.getVerbose() > 0) {
-            this.testCaseExecutionwwwSumService.registerSummary(tCExecution.getId());
-        }
         return tCExecution;
     }
 

@@ -366,9 +366,23 @@ public class TestCaseStepExecution {
         this.description = description;
     }
 
-    public JSONObject toJson() {
+    /**
+     * Convert the current TestCaseStepExecution into JSON format
+     * Note that if withChilds and withParents are both set to true, only the
+     * child will be included to avoid loop.
+     *
+     * @param withChilds boolean that define if childs should be included
+     * @param withParents boolean that define if parents should be included
+     * @return TestCaseStepExecution in JSONObject format
+     */
+    public JSONObject toJson(boolean withChilds, boolean withParents) {
         JSONObject result = new JSONObject();
+        // Check if both parameter are not set to true
+        if (withChilds == true && withParents == true) {
+            withParents = false;
+        }
         try {
+            result.put("type", "testCaseStepExecution");
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
@@ -395,10 +409,11 @@ public class TestCaseStepExecution {
             result.put("conditionVal1", this.getConditionVal1());
             result.put("conditionVal2", this.getConditionVal2());
 
+            if (withChilds){
             JSONArray array = new JSONArray();
             if (this.getTestCaseStepActionExecutionList() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStepActionExecutionList()) {
-                    array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson());
+                    array.put(((TestCaseStepActionExecution) testCaseStepExecution).toJson(true, false));
                 }
             }
             result.put("testCaseStepActionExecutionList", array);
@@ -410,6 +425,11 @@ public class TestCaseStepExecution {
                 }
             }
             result.put("fileList", array);
+            }
+            
+            if (withParents){
+            result.put("testCaseExecution", this.gettCExecution().toJson(false));
+            }
 
         } catch (JSONException ex) {
             Logger.getLogger(TestCaseStepExecution.class.getName()).log(Level.SEVERE, null, ex);

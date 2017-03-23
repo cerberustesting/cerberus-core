@@ -38,7 +38,6 @@ import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.entity.Parameter;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.crud.entity.TestCaseExecution;
@@ -169,7 +168,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
             }
-
+            
             /**
              * Defining the timeout at the driver level. Only in case of not
              * Appium Driver (see

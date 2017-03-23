@@ -67,7 +67,7 @@ public class TestCaseExecution {
     private String conditionVal2;
     private boolean manualExecution;
     private String userAgent;
-    
+
     /**
      * From here are data outside database model.
      */
@@ -718,7 +718,6 @@ public class TestCaseExecution {
 //    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
 //        this.lastSOAPCalled = lastSOAPCalled;
 //    }
-
     public List<RobotCapability> getCapabilities() {
         return capabilities;
     }
@@ -727,9 +726,15 @@ public class TestCaseExecution {
         this.capabilities = capabilities;
     }
 
-    public JSONObject toJson() {
+    /**
+     * Convert the current TestCaseExecution into JSON format
+     * @param withChilds boolean that define if childs should be included
+     * @return TestCaseExecution in JSONObject format
+     */
+    public JSONObject toJson(boolean withChilds) {
         JSONObject result = new JSONObject();
         try {
+            result.put("type", "testCaseExecution");
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
@@ -765,38 +770,41 @@ public class TestCaseExecution {
             result.put("conditionVal2", this.getConditionVal2());
             result.put("userAgent", this.getUserAgent());
 
-            // Looping on ** Step **
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepExecutionList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
-                    array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
+            if (withChilds) {
+                // Looping on ** Step **
+                JSONArray array = new JSONArray();
+                if (this.getTestCaseStepExecutionList() != null) {
+                    for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
+                        array.put(((TestCaseStepExecution) testCaseStepExecution).toJson(true, false));
+                    }
                 }
-            }
-            result.put("testCaseStepExecutionList", array);
+                result.put("testCaseStepExecutionList", array);
 
-            // ** TestCase **
-            if (this.getTestCaseObj() != null) {
-                TestCase tc = this.getTestCaseObj();
-                result.put("testCaseObj", tc.toJson());
-            }
-
-            // Looping on ** Execution Data **
-            array = new JSONArray();
-            if (this.getTestCaseExecutionDataList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
-                    array.put(((TestCaseExecutionData) testCaseStepExecution).toJson());
+                // ** TestCase **
+                if (this.getTestCaseObj() != null) {
+                    TestCase tc = this.getTestCaseObj();
+                    result.put("testCaseObj", tc.toJson());
                 }
-            }
-            result.put("testCaseExecutionDataList", array);
 
-            // Looping on ** Media File Execution **
-            array = new JSONArray();
-            if (this.getFileList() != null) {
-                for (Object testCaseFileExecution : this.getFileList()) {
-                    array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                // Looping on ** Execution Data **
+                array = new JSONArray();
+                if (this.getTestCaseExecutionDataList() != null) {
+                    for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
+                        array.put(((TestCaseExecutionData) testCaseStepExecution).toJson());
+                    }
                 }
+                result.put("testCaseExecutionDataList", array);
+
+                // Looping on ** Media File Execution **
+                array = new JSONArray();
+                if (this.getFileList() != null) {
+                    for (Object testCaseFileExecution : this.getFileList()) {
+                        array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                    }
+                }
+                result.put("fileList", array);
+
             }
-            result.put("fileList", array);
 
         } catch (JSONException ex) {
             LOG.error(ex.toString());
