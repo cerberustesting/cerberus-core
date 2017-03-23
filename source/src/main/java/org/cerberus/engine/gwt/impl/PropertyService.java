@@ -180,6 +180,7 @@ public class PropertyService implements IPropertyService {
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
                     eachTccp.getRowLimit(), eachTccp.getNature());
             tecd.setTestCaseCountryProperties(eachTccp);
+            tecd.settCExecution(tCExecution);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tecd.getProperty() + "' " + tecd);
             }
@@ -246,6 +247,12 @@ public class PropertyService implements IPropertyService {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + eachTccp.getProperty() + " calculated with Value = " + tecd.getValue() + ", Value1 = " + tecd.getValue1() + ", Value2 = " + tecd.getValue2());
             }
+            /**
+             * Log TestCaseExecutionData
+             */
+            if (tCExecution.getVerbose() > 0) {
+                LOG.info(tecd.toJson(false, true));
+            }
         }
 
         if (LOG.isDebugEnabled()) {
@@ -289,8 +296,10 @@ public class PropertyService implements IPropertyService {
     }
 
     /**
-     * Method that takes the potencial @param property, finds it (or not if it is not a existing property) inside the
-     * existing property list @param propertiesOfTestcase and gets the list of all other properties required (contained inside value1 or value2).
+     * Method that takes the potencial @param property, finds it (or not if it
+     * is not a existing property) inside the existing property list @param
+     * propertiesOfTestcase and gets the list of all other properties required
+     * (contained inside value1 or value2).
      *
      * @param country country used to filter property from propertiesOfTestcase
      * @param property property to be calculated
@@ -1024,8 +1033,8 @@ public class PropertyService implements IPropertyService {
         else if (xmlToParse == null) {
             testCaseExecutionData.setPropertyResultMessage(
                     new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
-                    .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
-                    .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
             return testCaseExecutionData;
         }
         // Else we can try to parse it thanks to the dedicated service

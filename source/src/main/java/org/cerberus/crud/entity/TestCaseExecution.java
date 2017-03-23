@@ -790,7 +790,7 @@ public class TestCaseExecution {
                 array = new JSONArray();
                 if (this.getTestCaseExecutionDataList() != null) {
                     for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
-                        array.put(((TestCaseExecutionData) testCaseStepExecution).toJson());
+                        array.put(((TestCaseExecutionData) testCaseStepExecution).toJson(true, false));
                     }
                 }
                 result.put("testCaseExecutionDataList", array);
