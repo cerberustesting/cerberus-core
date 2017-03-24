@@ -19,22 +19,22 @@
  */
 package org.cerberus.engine.gwt.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.cerberus.crud.entity.ApplicationObject;
+import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.service.IApplicationObjectService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.gwt.IApplicationObjectVariableService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.crud.entity.ApplicationObject;
-import org.cerberus.crud.entity.Parameter;
-import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.service.IApplicationObjectService;
-import org.cerberus.crud.service.IParameterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * {Insert class description here}
@@ -64,26 +64,26 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         String stringToDecodeInit = stringToDecode;
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting to decode string : " + stringToDecode);
+            LOG.debug("Starting to decode string (application Object) : " + stringToDecode);
         }
 
         /**
          * Look at all the potencial properties still contained in
          * StringToDecode (considering that properties are between %).
          */
-        List<String> internalPropertiesFromStringToDecode = this.getPropertiesListFromString(stringToDecode);
+        List<String> internalAppObjectsFromStringToDecode = this.getApplicationObjectsStringListFromString(stringToDecode);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Internal potencial properties still found inside property '" + stringToDecode + "' : " + internalPropertiesFromStringToDecode);
+            LOG.debug("Internal potencial application objects still found inside String '" + stringToDecode + "' : " + internalAppObjectsFromStringToDecode);
         }
 
-        if (internalPropertiesFromStringToDecode.isEmpty()) { // We escape if no property found on the string to decode
+        if (internalAppObjectsFromStringToDecode.isEmpty()) { // We escape if no property found on the string to decode
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Finished to decode (no properties detected in string). Result : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+                LOG.debug("Finished to decode (no application objects detected in string). Result : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
             }
             return stringToDecode;
         }
 
-        Iterator i = internalPropertiesFromStringToDecode.iterator();
+        Iterator i = internalAppObjectsFromStringToDecode.iterator();
         while (i.hasNext()) {
             String value = (String) i.next();
             String[] valueA = value.split("\\.");
@@ -93,21 +93,9 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
                     ApplicationObject ao = (ApplicationObject) ans.getItem();
                     String val = null;
                     if ("picturepath".equals(valueA[2])) {
-                        AnswerItem an = parameterService.readByKey("", "cerberus_applicationobject_path");
-                        if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
-                            Parameter url = (Parameter) an.getItem();
-                            val = url.getValue() + "/" + ao.getID() + "/" + ao.getScreenShotFileName();
-                        } else if (LOG.isDebugEnabled()) {
-                            LOG.debug("Cannot find the parameter that point the Application Object image folder");
-                        }
+                        val = parameterService.getParameterStringByKey("cerberus_applicationobject_path", "", "") + File.separator + ao.getID() + File.separator + ao.getScreenShotFileName();
                     } else if ("pictureurl".equals(valueA[2])) {
-                        AnswerItem an = parameterService.readByKey("", "cerberus_url");
-                        if (an.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && an.getItem() != null) {
-                            Parameter url = (Parameter) an.getItem();
-                            val = url.getValue() + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
-                        } else if (LOG.isDebugEnabled()) {
-                            LOG.debug("Cannot find the parameter that point the Application Object image folder");
-                        }
+                        val = parameterService.getParameterStringByKey("cerberus_url", "", "") + "/ReadApplicationObjectImage?application=" + ao.getApplication() + "&object=" + ao.getObject();
                     } else if ("value".equals(valueA[2])) {
                         val = ao.getValue();
                     }
@@ -119,7 +107,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Finished to decode String : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+            LOG.debug("Finished to decode String (application Object) : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
         }
         return stringToDecode;
     }
@@ -135,7 +123,7 @@ public class ApplicationObjectVariableService implements IApplicationObjectVaria
      * @param str the {@link String} to get all properties
      * @return a list of properties contained into the given {@link String}
      */
-    private List<String> getPropertiesListFromString(String str) {
+    private List<String> getApplicationObjectsStringListFromString(String str) {
         List<String> properties = new ArrayList<String>();
         if (str == null) {
             return properties;

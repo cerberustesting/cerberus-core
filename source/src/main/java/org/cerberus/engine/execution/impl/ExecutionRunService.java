@@ -290,9 +290,6 @@ public class ExecutionRunService implements IExecutionRunService {
                 TestCaseExecutionEndPoint.getInstance().send(tCExecution, true);
             }
 
-            List<TestCaseExecutionData> myExecutionDataList = new ArrayList<TestCaseExecutionData>();
-            tCExecution.setTestCaseExecutionDataList(myExecutionDataList);
-
             // Evaluate the condition at the control level.
             AnswerItem<Boolean> conditionAnswerTc;
             AnswerItem<String> answerDecode = new AnswerItem();
@@ -627,7 +624,6 @@ public class ExecutionRunService implements IExecutionRunService {
         List<TestCaseExecutionData> myStepDataList = new ArrayList<TestCaseExecutionData>();
         testCaseStepExecution.setTestCaseExecutionDataList(myStepDataList);
         // Initialise the Data List used to enter the action.
-        List<TestCaseExecutionData> myActionDataList = new ArrayList<TestCaseExecutionData>();
         /**
          * Iterate Actions
          */
@@ -658,15 +654,6 @@ public class ExecutionRunService implements IExecutionRunService {
              */
             testCaseStepExecution.addTestCaseStepActionExecutionList(testCaseStepActionExecution);
 
-            /**
-             * Preparing the previously calculated data coming from 1/ the other
-             * steps 2/ the one current step. Attaching them to the current
-             * action execution.
-             */
-            myActionDataList.clear();
-            myActionDataList.addAll(testCaseStepExecution.gettCExecution().getTestCaseExecutionDataList());
-            myActionDataList.addAll(testCaseStepExecution.getTestCaseExecutionDataList());
-            testCaseStepActionExecution.setTestCaseExecutionDataList(myActionDataList);
 
             // Evaluate the condition at the action level.
             AnswerItem<Boolean> conditionAnswer;

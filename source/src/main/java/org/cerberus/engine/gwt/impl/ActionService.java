@@ -1033,8 +1033,8 @@ public class ActionService implements IActionService {
                     //saves the result 
                     try {
                         testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcExeData));
-                        LOG.debug("Adding into Execution data list. Property : " + tcExeData.getProperty() + " Value : " + tcExeData.getValue());
-                        tCExecution.getTestCaseExecutionDataList().add(tcExeData);
+                        LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + tcExeData.getIndex() + "' Value : '" + tcExeData.getValue() + "'");
+                        tCExecution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
                         if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                             for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                                 now = new Date().getTime();
@@ -1042,8 +1042,6 @@ public class ActionService implements IActionService {
                                         tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
                                         tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
                                 testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
-                                LOG.debug("Adding into Execution data list. Property : " + tcedS.getProperty() + " Value : " + tcedS.getValue());
-                                tCExecution.getTestCaseExecutionDataList().add(tcedS);
                             }
                         }
                     } catch (CerberusException cex) {
@@ -1052,48 +1050,9 @@ public class ActionService implements IActionService {
 
                 }
 
-                if (false) {
-                    String propertyValueResult = "";
-                    // if value2 is not defined, then decode the property defined in value1.
-                    if (StringUtil.isNullOrEmpty(value2)) {
-                        answerDecode = variableService.decodeStringCompletly("%property." + value1 + "%", tCExecution, testCaseStepActionExecution, true);
-                        propertyValueResult = (String) answerDecode.getItem();
-                        if ((answerDecode.getResultMessage().getCodeString().equals("FA"))
-                                || (answerDecode.getResultMessage().getCodeString().equals("NA"))) {
-                            message = answerDecode.getResultMessage();
-                        } else {
-                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-                            message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
-                        }
-
-                    } // If not, then set value1 property to the decoded value2 property
-                    else {
-                        answerDecode = variableService.decodeStringCompletly("%property." + value2 + "%", tCExecution, testCaseStepActionExecution, true);
-                        propertyValueResult = (String) answerDecode.getItem();
-                        for (TestCaseExecutionData property : tCExecution.getTestCaseExecutionDataList()) {
-                            if (value1.equals(property.getProperty())) {
-                                property.setValue(propertyValueResult);
-                            }
-                        }
-                        if ((answerDecode.getResultMessage().getCodeString().equals("FA"))
-                                || (answerDecode.getResultMessage().getCodeString().equals("NA"))) {
-                            message = answerDecode.getResultMessage();
-                        } else {
-                            message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-                            message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
-                        }
-                    }
-//                if ((testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("FA"))
-//                        || (testCaseStepActionExecution.getActionResultMessage().getCodeString().equals("NA"))) {
-//                    message = testCaseStepActionExecution.getActionResultMessage();
-//                } else {
-//                    message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_PROPERTYCALCULATED);
-//                    message.setDescription(message.getDescription().replace("%PROP%", value1).replace("%VALUE%", propertyValueResult));
-//                }
-
-                }
-            } catch (CerberusEventException cex) {
-                message = cex.getMessageError();
+            } catch (Exception ex) {
+                LOG.error(ex.toString());
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC).resolveDescription("DETAIL", ex.toString());
             }
         }
         return message;

@@ -31,6 +31,7 @@ import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
@@ -175,7 +176,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public AnswerList readByTagByCriteria(String tag, int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByTagByCriteria(tag, start, amount, sort, searchTerm, individualSearch);
     }
-    
+
     @Override
     public AnswerList readByCriteria(int start, int amount, String sort, String searchTerm, Map<String, List<String>> individualSearch) throws CerberusException {
         return testCaseExecutionDao.readByCriteria(start, amount, sort, searchTerm, individualSearch);
@@ -245,7 +246,12 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         testCaseExecution.setTestCaseObj(ai.getItem());
 
         AnswerList a = testCaseExecutionDataService.readByIdWithDependency(executionId);
-        testCaseExecution.setTestCaseExecutionDataList(a.getDataList());
+        for (Object object : a.getDataList()) {
+            TestCaseExecutionData tced = (TestCaseExecutionData) object;
+            if (tced.getIndex() == 1) {
+                testCaseExecution.getTestCaseExecutionDataMap().put(tced.getProperty(), tced);
+            }
+        }
 
         // We frist add the 'Pres Testing' testcase execution steps.
         AnswerList preTestCaseSteps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, "Pre Testing", null);
@@ -253,7 +259,7 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
         // Then we add the steps from the main testcase.
         AnswerList steps = testCaseStepExecutionService.readByVarious1WithDependency(executionId, testCaseExecution.getTest(), testCaseExecution.getTestCase());
         testCaseExecution.addTestCaseStepExecutionList(steps.getDataList());
-        
+
         AnswerList files = testCaseExecutionFileService.readByVarious(executionId, "");
         testCaseExecution.setFileList((List<TestCaseExecutionFile>) files.getDataList());
 

@@ -129,7 +129,7 @@ public class PropertyService implements IPropertyService {
         String stringToDecodeInit = stringToDecode;
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Starting to decode string : " + stringToDecode);
+            LOG.debug("Starting to decode string (Property) : " + stringToDecode);
         }
 
         /**
@@ -182,12 +182,10 @@ public class PropertyService implements IPropertyService {
                 LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
             }
 
-            List<TestCaseExecutionData> dataList = tCExecution.getTestCaseExecutionDataList();
-
             /*  First check if property has already been calculated 
              *  if action is calculateProperty, then set isKnownData to false. 
              */
-            tcExeData = getExecutionDataFromList(dataList, eachTccp, forceCalculation, tcExeData);
+            tcExeData = getExecutionDataFromList(tCExecution.getTestCaseExecutionDataMap(), eachTccp, forceCalculation, tcExeData);
 
             /**
              * If testcasecountryproperty not defined, set ExecutionData with
@@ -209,8 +207,8 @@ public class PropertyService implements IPropertyService {
                      * Add TestCaseExecutionData in TestCaseExecutionData List
                      * of the TestCaseExecution
                      */
-                    LOG.debug("Adding into Execution data list. Property : " + tcExeData.getProperty() + " Value : " + tcExeData.getValue());
-                    tCExecution.getTestCaseExecutionDataList().add(tcExeData);
+                    LOG.debug("Adding into Execution data list. Property : '" + tcExeData.getProperty() + "' Index : '" + String.valueOf(tcExeData.getIndex()) + "' Value : '" + tcExeData.getValue() + "'");
+                    tCExecution.getTestCaseExecutionDataMap().put(tcExeData.getProperty(), tcExeData);
                     if (tcExeData.getDataLibRawData() != null) { // If the property is a TestDataLib, we same all rows retreived in order to support nature such as NOTINUSe or RANDOMNEW.
                         for (int i = 1; i < (tcExeData.getDataLibRawData().size()); i++) {
                             now = new Date().getTime();
@@ -218,13 +216,6 @@ public class PropertyService implements IPropertyService {
                                     tcExeData.getDescription(), tcExeData.getDataLibRawData().get(i).get(""), tcExeData.getType(), "", "",
                                     tcExeData.getRC(), "", now, now, now, now, null, 0, 0, "", "", "", 0, 0, "");
                             testCaseExecutionDataService.convert(testCaseExecutionDataService.save(tcedS));
-                            /**
-                             * Add TestCaseExecutionData in
-                             * TestCaseExecutionData List of the
-                             * TestCaseExecution
-                             */
-                            LOG.debug("Adding into Execution data list. Property : " + tcedS.getProperty() + " Value : " + tcedS.getValue());
-                            tCExecution.getTestCaseExecutionDataList().add(tcedS);
                         }
                     }
                 } catch (CerberusException cex) {
@@ -232,17 +223,6 @@ public class PropertyService implements IPropertyService {
                 }
             }
 
-//            //if the property result message indicates that we need to stop the test action, then the action is notified               
-//            //or if the property was not successfully calculated, either because it was not defined for the country or because it does not exist
-//            //then we notify the execution
-//            if (tecd.getPropertyResultMessage().getCodeString().equals("FA")
-//                    || tecd.getPropertyResultMessage().getCodeString().equals("NA")) {
-//                if (!(testCaseStepActionExecution == null)) {
-//                    testCaseStepActionExecution.setStopExecution(tecd.isStopExecution());
-//                    testCaseStepActionExecution.setActionResultMessage(tecd.getPropertyResultMessage());
-//                    testCaseStepActionExecution.setExecutionResultMessage(new MessageGeneral(tecd.getPropertyResultMessage().getMessage()));
-//                }
-//            }
             /**
              * After calculation, replace properties by value calculated
              */
@@ -254,7 +234,7 @@ public class PropertyService implements IPropertyService {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Finished to decode String : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
+            LOG.debug("Finished to decode String (property) : '" + stringToDecodeInit + "' to :'" + stringToDecode + "'");
         }
 
         answer.setResultMessage(msg);
@@ -272,22 +252,26 @@ public class PropertyService implements IPropertyService {
      * @param tecd execution data for the property
      * @return the updated execution data for the property
      */
-    private TestCaseExecutionData getExecutionDataFromList(List<TestCaseExecutionData> dataList, TestCaseCountryProperties eachTccp, boolean forceCalculation, TestCaseExecutionData tecd) {
+    private TestCaseExecutionData getExecutionDataFromList(HashMap<String, TestCaseExecutionData> hashTemp1, TestCaseCountryProperties eachTccp, boolean forceCalculation, TestCaseExecutionData tecd) {
+        LOG.debug("Searching " + eachTccp.getProperty() + " Into list of " + hashTemp1.size());
+        try {
 
-        for (int iterator = 0; iterator < dataList.size(); iterator++) {
-            if (dataList.get(iterator).getProperty().equalsIgnoreCase(eachTccp.getProperty())) {
-                if (!forceCalculation) {
-                    //If Calculation not forced , set tecd to the previous property already calculated.
-                    tecd = dataList.get(iterator);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("Property has already been calculated : " + tecd);
-                    }
-                } else if (LOG.isDebugEnabled()) {
-                    LOG.debug("Property has already been calculated but we will force a new calculation : " + eachTccp);
+            if (hashTemp1.containsKey(eachTccp.getProperty())) {
+                if (forceCalculation) {
+                    LOG.debug("Property has already been calculated but forcing new calculation by removing it : " + hashTemp1.get(eachTccp.getProperty()));
+                    hashTemp1.remove(eachTccp.getProperty());
+                    return tecd;
+                } else {
+                    LOG.debug("Property has already been calculated : " + hashTemp1.get(eachTccp.getProperty()));
+                    return hashTemp1.get(eachTccp.getProperty());
                 }
-                dataList.remove(iterator);
-                break;
+            } else {
+                LOG.debug("Property was never calculated.");
+                return tecd;
             }
+
+        } catch (Exception ex) {
+            LOG.error("Exception catched inside getExecutionDataFromList : " + ex);
         }
         return tecd;
 
@@ -325,19 +309,7 @@ public class PropertyService implements IPropertyService {
         testCaseCountryProperty = (TestCaseCountryProperties) ansSearch.getItem();
 
         if (testCaseCountryProperty == null) {
-            //if the property does not exists, then a dummy property with the error message is defined and returned to the TC's execution
-//            MessageEvent msg = ansSearch.getResultMessage();
-//            TestCaseCountryProperties tccpToReturn = new TestCaseCountryProperties();
-//            tccpToReturn.setProperty(property);
-//            tccpToReturn.setType("");
-//            tccpToReturn.setResult(msg);
-//            result.add(tccpToReturn);
-//
-//            if (LOG.isDebugEnabled()) {
-//                LOG.debug("Property " + property + " not defined : " + msg.getDescription());
-//            }
             return result;
-//        } else {
         }
 
         /* 
@@ -383,9 +355,9 @@ public class PropertyService implements IPropertyService {
         String variableValue = "";
         String variableString1 = "";
         String variableString2 = "";
-
-        for (TestCaseExecutionData tced : tCExecution.getTestCaseExecutionDataList()) {
-
+        TestCaseExecutionData tced;
+        for (String key1 : tCExecution.getTestCaseExecutionDataMap().keySet()) {
+            tced = tCExecution.getTestCaseExecutionDataMap().get(key1);
             if ((tced.getType() != null) && (tced.getType().equals(TestCaseCountryProperties.TYPE_GETFROMDATALIB))) { // Type could be null in case property do not exist.
                 /* Replacement in case of TestDataLib */
 
@@ -463,19 +435,6 @@ public class PropertyService implements IPropertyService {
             return properties;
         }
 
-//        Matcher propertyMatcher = PROPERTY_VARIABLE_PATTERN.matcher(str);
-//        while (propertyMatcher.find()) {
-//            String rawProperty = propertyMatcher.group();
-//            // Removes the first and last '%' character to only get the property name
-//            rawProperty = rawProperty.substring(1, rawProperty.length() - 1);
-//            // Replace Property. if it exist and is in start
-//            rawProperty = rawProperty.replaceFirst("^property\\.", "");
-//            // Removes the variable part of the property eg : (subdata)
-//            String[] ramProp1 = rawProperty.split("\\(");
-//            // Removes the variable part of the property eg : .subdata
-//            String[] ramProp2 = ramProp1[0].split("\\.");
-//            properties.add(ramProp2[0]);
-//        }
         String[] text1 = str.split("%");
         int i = 0;
         for (String rawProperty : text1) {
@@ -587,9 +546,6 @@ public class PropertyService implements IPropertyService {
                     return;
                 }
 
-//            String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue1(), tCExecution);
-//            decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
-//            testCaseExecutionData.setValue1(decodedValue);
             }
 
             if (testCaseCountryProperty.getValue2() != null && testCaseCountryProperty.getValue2().contains("%")) {
@@ -603,9 +559,6 @@ public class PropertyService implements IPropertyService {
                     return;
                 }
 
-//                String decodedValue = variableService.decodeStringWithSystemVariable(testCaseCountryProperty.getValue2(), tCExecution);
-//                decodedValue = this.decodeStringWithAlreadyCalculatedProperties(decodedValue, tCExecution);
-//                testCaseExecutionData.setValue2(decodedValue);
             }
 
             int execution_count = 0;

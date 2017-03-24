@@ -17,14 +17,18 @@
  */
 package org.cerberus.crud.entity;
 
+import java.util.HashMap;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.engine.entity.Session;
 import org.cerberus.engine.entity.Selenium;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.factory.IFactoryTestCase;
+import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author bcivel
@@ -67,7 +71,7 @@ public class TestCaseExecution {
     private String conditionVal2;
     private boolean manualExecution;
     private String userAgent;
-    
+
     /**
      * From here are data outside database model.
      */
@@ -96,7 +100,7 @@ public class TestCaseExecution {
     private Invariant environmentDataObj;
     private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at execution level
     private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
-    private List<TestCaseExecutionData> testCaseExecutionDataList; // Host the full list of data calculated during the execution.
+    private HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap; // Host the full list of data calculated during the execution.
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     // Others
     private MessageGeneral resultMessage;
@@ -121,6 +125,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+
+    public HashMap<String, TestCaseExecutionData> getTestCaseExecutionDataMap() {
+        return testCaseExecutionDataMap;
+    }
+
+    public void setTestCaseExecutionDataMap(HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
+        this.testCaseExecutionDataMap = testCaseExecutionDataMap;
+    }
 
     public AppService getLastServiceCalled() {
         return lastServiceCalled;
@@ -686,14 +698,6 @@ public class TestCaseExecution {
         this.preTestCaseList = PreTCase;
     }
 
-    public List<TestCaseExecutionData> getTestCaseExecutionDataList() {
-        return testCaseExecutionDataList;
-    }
-
-    public void setTestCaseExecutionDataList(List<TestCaseExecutionData> testCaseExecutionDataList) {
-        this.testCaseExecutionDataList = testCaseExecutionDataList;
-    }
-
     public String getExecutor() {
         return executor;
     }
@@ -709,14 +713,6 @@ public class TestCaseExecution {
     public void setScreenSize(String screenSize) {
         this.screenSize = screenSize;
     }
-
-//    public AnswerItem getLastSOAPCalled() {
-//        return lastSOAPCalled;
-//    }
-//
-//    public void setLastSOAPCalled(AnswerItem lastSOAPCalled) {
-//        this.lastSOAPCalled = lastSOAPCalled;
-//    }
 
     public List<RobotCapability> getCapabilities() {
         return capabilities;
@@ -781,10 +777,9 @@ public class TestCaseExecution {
 
             // Looping on ** Execution Data **
             array = new JSONArray();
-            if (this.getTestCaseExecutionDataList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseExecutionDataList()) {
-                    array.put(((TestCaseExecutionData) testCaseStepExecution).toJson());
-                }
+            for (String key1 : this.getTestCaseExecutionDataMap().keySet()) {
+                TestCaseExecutionData tced = (TestCaseExecutionData) this.getTestCaseExecutionDataMap().get(key1);
+                array.put((tced).toJson());
             }
             result.put("testCaseExecutionDataList", array);
 

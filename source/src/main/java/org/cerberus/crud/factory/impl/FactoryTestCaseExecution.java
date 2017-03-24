@@ -20,6 +20,7 @@
 package org.cerberus.crud.factory.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.cerberus.crud.entity.Application;
@@ -29,6 +30,7 @@ import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.crud.entity.RobotCapability;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCase;
+import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
 import org.cerberus.crud.entity.TestCaseStepExecution;
 import org.cerberus.crud.factory.IFactoryTestCaseExecution;
@@ -87,7 +89,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setSeleniumIP(seleniumIP);
         newTce.setSeleniumPort(seleniumPort);
         if (testCaseStepExecution == null) {
-         testCaseStepExecution = new ArrayList<>();
+            testCaseStepExecution = new ArrayList<>();
         }
         newTce.setTestCaseStepExecutionList(testCaseStepExecution);
         newTce.setResultMessage(resultMessage);
@@ -111,6 +113,8 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         newTce.setFileList(objectFileList);
+        HashMap<String, TestCaseExecutionData> hashTemp1 = new HashMap<>();
+        newTce.setTestCaseExecutionDataMap(hashTemp1);
         return newTce;
     }
 
