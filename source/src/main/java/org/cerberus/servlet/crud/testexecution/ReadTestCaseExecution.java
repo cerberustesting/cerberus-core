@@ -151,7 +151,7 @@ public class ReadTestCaseExecution extends HttpServlet {
             } else if (executionId != 0 && !executionWithDependency) {
                 answer = testCaseExecutionService.readByKeyWithDependency(executionId);
                 TestCaseExecution tce = (TestCaseExecution) answer.getItem();
-                jsonResponse.put("testCaseExecution", tce.toJson());
+                jsonResponse.put("testCaseExecution", tce.toJson(true));
             } else if (executionId != 0 && executionWithDependency) {
 
             } else {
@@ -453,7 +453,7 @@ public class ReadTestCaseExecution extends HttpServlet {
         JSONArray jsonArray = new JSONArray();
         if (testCaseExecutionList.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
             for (TestCaseExecution testCaseExecution : (List<TestCaseExecution>) testCaseExecutionList.getDataList()) {
-                jsonArray.put(testCaseExecution.toJson().put("hasPermissions", userHasPermissions));
+                jsonArray.put(testCaseExecution.toJson(true).put("hasPermissions", userHasPermissions));
             }
         }
 

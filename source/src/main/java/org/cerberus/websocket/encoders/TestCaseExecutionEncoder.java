@@ -18,7 +18,7 @@ public class TestCaseExecutionEncoder  implements Encoder.Text<TestCaseExecution
 
     @Override
     public String encode(TestCaseExecution testCaseExecution) throws EncodeException {
-        return  testCaseExecution.toJson().toString();
+        return  testCaseExecution.toJson(true).toString();
     }
 
     @Override

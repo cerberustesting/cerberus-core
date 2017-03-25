@@ -178,6 +178,7 @@ public class PropertyService implements IPropertyService {
                     eachTccp.getRetryNb(), eachTccp.getRetryPeriod(), eachTccp.getDatabase(), eachTccp.getValue1(), eachTccp.getValue2(), eachTccp.getLength(),
                     eachTccp.getRowLimit(), eachTccp.getNature());
             tcExeData.setTestCaseCountryProperties(eachTccp);
+            tcExeData.settCExecution(tCExecution);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Trying to calculate Property : '" + tcExeData.getProperty() + "' " + tcExeData);
             }
@@ -230,6 +231,12 @@ public class PropertyService implements IPropertyService {
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Property " + eachTccp.getProperty() + " calculated with Value = " + tcExeData.getValue() + ", Value1 = " + tcExeData.getValue1() + ", Value2 = " + tcExeData.getValue2());
+            }
+            /**
+             * Log TestCaseExecutionData
+             */
+            if (tCExecution.getVerbose() > 0) {
+                LOG.info(tcExeData.toJson(false, true));
             }
         }
 
@@ -1044,8 +1051,8 @@ public class PropertyService implements IPropertyService {
         else if (xmlToParse == null) {
             testCaseExecutionData.setPropertyResultMessage(
                     new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
-                    .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
-                    .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
             return testCaseExecutionData;
         }
         // Else we can try to parse it thanks to the dedicated service

@@ -345,14 +345,6 @@ public class RunTestCase extends HttpServlet {
                 }
 
                 /**
-                 * If execution happened, we Log the Execution.
-                 */
-                if (tCExecution.getId() != 0) {
-                    TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
-                    LOG.info(t.toJson());
-                }
-
-                /**
                  * Clean memory in case testcase has not been launched(Remove
                  * all object put in memory)
                  */
@@ -468,7 +460,8 @@ public class RunTestCase extends HttpServlet {
                     out.println("ControlStatus" + separator + tCExecution.getResultMessage().getCodeString());
                 } else if (outputFormat.equalsIgnoreCase("verbose-json")) { // JSON verbose output.
                     response.setContentType("application/json");
-                    out.print(tCExecution.toJson().toString());
+                    TestCaseExecution t = (TestCaseExecution) tces.readByKeyWithDependency(tCExecution.getId()).getItem();
+                    out.print(tCExecution.toJson(true).toString());
                 } else { // Default behaviour when not outputformat is defined : compact mode.
                     response.setContentType("text/plain");
                     DateFormat df = new SimpleDateFormat(DateUtil.DATE_FORMAT_DISPLAY);

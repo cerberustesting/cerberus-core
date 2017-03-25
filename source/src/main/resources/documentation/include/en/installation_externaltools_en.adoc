@@ -22,4 +22,5 @@ Hereafter the list of compatible application types and their associated external
 |Cerberus internal implementation
 |===
 
-The following sections will cover installation and configuration procedures for each associated external tool.
+The following sections will cover installation and configuration procedures for each associated external tool, and 
+interface description with cloud-based cross-browser testing tools.

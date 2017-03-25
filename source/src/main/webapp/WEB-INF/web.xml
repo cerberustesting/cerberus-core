@@ -970,6 +970,10 @@
         <servlet-name>ReadTestCaseExecutionByTag</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.testexecution.ReadTestCaseExecutionByTag</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ResultCIV002</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.ResultCIV002</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1918,6 +1922,10 @@
         <servlet-name>ReadTestCaseExecutionByTag</servlet-name>
         <url-pattern>/ReadTestCaseExecutionByTag</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ResultCIV002</servlet-name>
+        <url-pattern>/ResultCIV002</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
@@ -2367,6 +2375,7 @@
             <url-pattern>/GetNumberOfExecutions</url-pattern>
             <url-pattern>/ResultCI</url-pattern>
             <url-pattern>/ResultCIV001</url-pattern>
+            <url-pattern>/ResultCIV002</url-pattern>
             <url-pattern>/GetConnectionPoolName</url-pattern>
             <url-pattern>/SaveManualExecution</url-pattern>
             <url-pattern>/SaveManualExecutionPicture</url-pattern>

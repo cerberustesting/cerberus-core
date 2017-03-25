@@ -133,6 +133,7 @@ public class TestCaseExecution {
     public void setTestCaseExecutionDataMap(HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap) {
         this.testCaseExecutionDataMap = testCaseExecutionDataMap;
     }
+    public static final String CONTROLSTATUS_NE = "NE";
 
     public AppService getLastServiceCalled() {
         return lastServiceCalled;
@@ -722,9 +723,16 @@ public class TestCaseExecution {
         this.capabilities = capabilities;
     }
 
-    public JSONObject toJson() {
+    /**
+     * Convert the current TestCaseExecution into JSON format
+     *
+     * @param withChilds boolean that define if childs should be included
+     * @return TestCaseExecution in JSONObject format
+     */
+    public JSONObject toJson(boolean withChilds) {
         JSONObject result = new JSONObject();
         try {
+            result.put("type", "testCaseExecution");
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
@@ -760,39 +768,44 @@ public class TestCaseExecution {
             result.put("conditionVal2", this.getConditionVal2());
             result.put("userAgent", this.getUserAgent());
 
-            // Looping on ** Step **
-            JSONArray array = new JSONArray();
-            if (this.getTestCaseStepExecutionList() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
-                    array.put(((TestCaseStepExecution) testCaseStepExecution).toJson());
+            if (withChilds) {
+                // Looping on ** Step **
+                JSONArray array = new JSONArray();
+                if (this.getTestCaseStepExecutionList() != null) {
+                    for (Object testCaseStepExecution : this.getTestCaseStepExecutionList()) {
+                        array.put(((TestCaseStepExecution) testCaseStepExecution).toJson(true, false));
+                    }
                 }
-            }
-            result.put("testCaseStepExecutionList", array);
+                result.put("testCaseStepExecutionList", array);
 
-            // ** TestCase **
-            if (this.getTestCaseObj() != null) {
-                TestCase tc = this.getTestCaseObj();
-                result.put("testCaseObj", tc.toJson());
-            }
-
-            // Looping on ** Execution Data **
-            array = new JSONArray();
-            for (String key1 : this.getTestCaseExecutionDataMap().keySet()) {
-                TestCaseExecutionData tced = (TestCaseExecutionData) this.getTestCaseExecutionDataMap().get(key1);
-                array.put((tced).toJson());
-            }
-            result.put("testCaseExecutionDataList", array);
-
-            // Looping on ** Media File Execution **
-            array = new JSONArray();
-            if (this.getFileList() != null) {
-                for (Object testCaseFileExecution : this.getFileList()) {
-                    array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                // ** TestCase **
+                if (this.getTestCaseObj() != null) {
+                    TestCase tc = this.getTestCaseObj();
+                    result.put("testCaseObj", tc.toJson());
                 }
+
+                // Looping on ** Execution Data **
+                array = new JSONArray();
+                for (String key1 : this.getTestCaseExecutionDataMap().keySet()) {
+                    TestCaseExecutionData tced = (TestCaseExecutionData) this.getTestCaseExecutionDataMap().get(key1);
+                    array.put((tced).toJson(true, false));
+                }
+                result.put("testCaseExecutionDataList", array);
+
+                // Looping on ** Media File Execution **
+                array = new JSONArray();
+                if (this.getFileList() != null) {
+                    for (Object testCaseFileExecution : this.getFileList()) {
+                        array.put(((TestCaseExecutionFile) testCaseFileExecution).toJson());
+                    }
+                }
+                result.put("fileList", array);
+
             }
-            result.put("fileList", array);
 
         } catch (JSONException ex) {
+            LOG.error(ex.toString());
+        } catch (Exception ex) {
             LOG.error(ex.toString());
         }
         return result;

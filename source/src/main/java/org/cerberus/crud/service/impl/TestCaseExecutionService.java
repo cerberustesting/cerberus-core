@@ -19,7 +19,9 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +35,11 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.crud.entity.TestCaseExecutionData;
 import org.cerberus.crud.entity.TestCaseExecutionFile;
+import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestCaseExecutionFileService;
+import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseExecutionService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlExecutionService;
@@ -51,6 +55,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 /**
@@ -75,6 +80,9 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     ITestCaseStepActionControlExecutionService testCaseStepActionControlExecutionService;
     @Autowired
     ITestCaseService testCaseService;
+    @Autowired
+    ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
+
 
     private static final Logger LOG = Logger.getLogger(TestCaseExecutionService.class);
 
@@ -297,6 +305,57 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     @Override
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName) {
         return testCaseExecutionDao.readDistinctValuesByCriteria(system, test, searchParameter, individualSearch, columnName);
+    }
+
+    @Override
+    public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException {
+        AnswerList<TestCaseExecution> testCaseExecution;
+        AnswerList<TestCaseExecutionInQueue> testCaseExecutionInQueue;
+
+        /**
+         * Get list of execution by tag
+         */
+        testCaseExecution = this.readByTag(tag);
+        List<TestCaseExecution> testCaseExecutions = testCaseExecution.getDataList();
+        /**
+         * Get list of Execution in Queue by Tag
+         */
+        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTag(tag);
+        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
+        /**
+         * Feed hash map with execution from the two list (to get only one by
+         * test,testcase,country,env,browser)
+         */
+        testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
+        return testCaseExecutions;
+    }
+
+    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionInQueue> testCaseExecutionsInQueue) throws ParseException {
+        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
+        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
+            String key = testCaseExecution.getBrowser() + "_"
+                    + testCaseExecution.getCountry() + "_"
+                    + testCaseExecution.getEnvironment() + "_"
+                    + testCaseExecution.getTest() + "_"
+                    + testCaseExecution.getTestCase();
+            testCaseExecutionsList.put(key, testCaseExecution);
+        }
+        for (TestCaseExecutionInQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
+            TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
+            String key = testCaseExecution.getBrowser() + "_"
+                    + testCaseExecution.getCountry() + "_"
+                    + testCaseExecution.getEnvironment() + "_"
+                    + testCaseExecution.getTest() + "_"
+                    + testCaseExecution.getTestCase();
+            if ((testCaseExecutionsList.containsKey(key)
+                    && testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime())
+                    || !testCaseExecutionsList.containsKey(key)) {
+                testCaseExecutionsList.put(key, testCaseExecution);
+            }
+        }
+        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
+
+        return result;
     }
 
 }

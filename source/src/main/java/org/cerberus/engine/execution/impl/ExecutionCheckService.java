@@ -23,10 +23,8 @@ import org.cerberus.enums.MessageGeneralEnum;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.BuildRevisionInvariant;
 import org.cerberus.crud.entity.CountryEnvParam;
 import org.cerberus.engine.entity.MessageGeneral;
@@ -34,7 +32,6 @@ import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.Test;
 import org.cerberus.crud.entity.TestCaseExecution;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.crud.service.IApplicationService;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.engine.execution.IExecutionCheckService;
@@ -58,8 +55,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
      */
     private static final Logger LOG = Logger.getLogger(ExecutionCheckService.class);
 
-    @Autowired
-    private IApplicationService applicationService;
     @Autowired
     private ITestCaseCountryService testCaseCountryService;
     @Autowired
@@ -93,7 +88,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)
-                    && this.checkVerboseIsNotZeroForFirefoxOnly(tCExecution)
                     && this.checkUserAgentConsistent(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
@@ -379,16 +373,6 @@ public class ExecutionCheckService implements IExecutionCheckService {
             }
             message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_UNDER_MAINTENANCE);
             return false;
-        }
-        return true;
-    }
-
-    private boolean checkVerboseIsNotZeroForFirefoxOnly(TestCaseExecution tCExecution) {
-        if ((!tCExecution.getBrowser().equalsIgnoreCase("firefox")) && (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI))) {
-            if (tCExecution.getVerbose() > 0) {
-                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_USED_WITH_INCORRECT_BROWSER);
-                return false;
-            }
         }
         return true;
     }

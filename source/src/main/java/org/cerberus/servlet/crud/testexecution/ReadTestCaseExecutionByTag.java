@@ -103,7 +103,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             JSONObject countryFilter = getCountryList(request, appContext);
 
             //Get Data from database
-            List<TestCaseExecution> testCaseExecutions = readExecutionByTagList(appContext, Tag);
+            List<TestCaseExecution> testCaseExecutions = testCaseExecutionService.readLastExecutionAndExecutionInQueueByTag(Tag);
 
             if (outputReport.isEmpty() || outputReport.contains("table")) {
                 jsonResponse.put("table", generateTestCaseExecutionTable(appContext, testCaseExecutions, statusFilter, countryFilter));
@@ -130,59 +130,6 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         } catch (JSONException ex) {
             Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private List<TestCaseExecution> readExecutionByTagList(ApplicationContext appContext, String Tag) throws ParseException, CerberusException {
-        AnswerList<TestCaseExecution> testCaseExecution;
-        AnswerList<TestCaseExecutionInQueue> testCaseExecutionInQueue;
-
-        testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
-
-        testCaseExecutionInQueueService = appContext.getBean(ITestCaseExecutionInQueueService.class);
-        /**
-         * Get list of execution by tag
-         */
-        testCaseExecution = testCaseExecutionService.readByTag(Tag);
-        List<TestCaseExecution> testCaseExecutions = testCaseExecution.getDataList();
-        /**
-         * Get list of Execution in Queue by Tag
-         */
-        testCaseExecutionInQueue = testCaseExecutionInQueueService.readByTag(Tag);
-        List<TestCaseExecutionInQueue> testCaseExecutionsInQueue = testCaseExecutionInQueue.getDataList();
-        /**
-         * Feed hash map with execution from the two list (to get only one by
-         * test,testcase,country,env,browser)
-         */
-        testCaseExecutions = hashExecution(testCaseExecutions, testCaseExecutionsInQueue);
-        return testCaseExecutions;
-    }
-
-    private List<TestCaseExecution> hashExecution(List<TestCaseExecution> testCaseExecutions, List<TestCaseExecutionInQueue> testCaseExecutionsInQueue) throws ParseException {
-        LinkedHashMap<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
-        for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-            String key = testCaseExecution.getBrowser() + "_"
-                    + testCaseExecution.getCountry() + "_"
-                    + testCaseExecution.getEnvironment() + "_"
-                    + testCaseExecution.getTest() + "_"
-                    + testCaseExecution.getTestCase();
-            testCaseExecutionsList.put(key, testCaseExecution);
-        }
-        for (TestCaseExecutionInQueue testCaseExecutionInQueue : testCaseExecutionsInQueue) {
-            TestCaseExecution testCaseExecution = testCaseExecutionInQueueService.convertToTestCaseExecution(testCaseExecutionInQueue);
-            String key = testCaseExecution.getBrowser() + "_"
-                    + testCaseExecution.getCountry() + "_"
-                    + testCaseExecution.getEnvironment() + "_"
-                    + testCaseExecution.getTest() + "_"
-                    + testCaseExecution.getTestCase();
-            if ((testCaseExecutionsList.containsKey(key)
-                    && testCaseExecutionsList.get(key).getStart() < testCaseExecutionInQueue.getRequestDate().getTime())
-                    || !testCaseExecutionsList.containsKey(key)) {
-                testCaseExecutionsList.put(key, testCaseExecution);
-            }
-        }
-        List<TestCaseExecution> result = new ArrayList<TestCaseExecution>(testCaseExecutionsList.values());
-
-        return result;
     }
 
     private JSONObject testCaseExecutionToJSONObject(TestCaseExecution testCaseExecution) throws JSONException {

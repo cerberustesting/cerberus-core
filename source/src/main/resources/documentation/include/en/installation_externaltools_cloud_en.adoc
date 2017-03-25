@@ -1,0 +1,9 @@
+For Web and Mobile testing, Cerberus can be intefaced with cloud-based testing tool to avoid to manage complexity of robot farm management. 
+Multiple combination of operating system, browser and version are available.
+
+In the Cerberus demo integration chain, functionnal tests are executed through BrowserStack, 
+that allow to validate the regression for each commit.
+
+http://browserstack.com/[image:browserstack-logo.png[Browserstack,200,100]]
+
+To run your tests on BrowserStack Automate, you must configure a Robot in Cerberus with your BrowserStack account information.  
