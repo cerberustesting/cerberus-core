@@ -89,11 +89,13 @@ function displayPageLabel() {
 
 function renderOptionsForCampaign(data) {
     var doc = new Doc();
-    if ($("#createTestcampaignButton").length === 0) {
-        var contentToAdd = "<div class='marginBottom10'><button id='createTestcampaignButton' type='button' class='btn btn-default'>\n\
+    if (data["hasPermissions"]) {
+        if ($("#createTestcampaignButton").length === 0) {
+            var contentToAdd = "<div class='marginBottom10'><button id='createTestcampaignButton' type='button' class='btn btn-default'>\n\
             <span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_testcampaign", "button_create") + "</button></div>";
-        $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before(contentToAdd);
-        $('#testcampaignList #createTestcampaignButton').click(addEntryClick);
+            $("#testcampaignsTable_wrapper div#testcampaignsTable_length").before(contentToAdd);
+            $('#testcampaignList #createTestcampaignButton').click(addEntryClick);
+        }
     }
 }
 
@@ -102,22 +104,22 @@ function renderOptionsForCampaign2(id) {
     var data = getSelectTestBattery(false, true);
     $("#" + id + "_wrapper #addBatteryTestcampaign").remove();
     var contentToAdd =
-        "<div class='marginBottom10 form-inline' id='addBatteryTestcampaign'>" +
-        "<div class='form-group marginRight10 col-sm-6' style='padding-right: 0px; padding-left: 0px;'>" +
-        "<select id='batteryTestSelect' class='form-control' style='width:100%;'>";
+            "<div class='marginBottom10 form-inline' id='addBatteryTestcampaign'>" +
+            "<div class='form-group marginRight10 col-sm-6' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='batteryTestSelect' class='form-control' style='width:100%;'>";
     for (var i = 0; i < data.find("option").length; i++) {
         if (!findValueTableDataByCol(id, 0, data.find("option")[i].value)) {
             contentToAdd +=
-                "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
+                    "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
         }
     }
     contentToAdd +=
-        "</select>" +
-        "</div>" +
-        "<div class='form-group'>" +
-        "<button type='button' id='addBatteryTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addBatteryEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
-        "</div>" +
-        "</div>";
+            "</select>" +
+            "</div>" +
+            "<div class='form-group'>" +
+            "<button type='button' id='addBatteryTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addBatteryEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "</div>" +
+            "</div>";
     $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
     $("#" + id + "_wrapper #batteryTestSelect").select2();
     if ($("#" + id + '_wrapper #batteryTestSelect option').size() <= 0) {
@@ -132,24 +134,24 @@ function renderOptionsForCampaign3(id) {
     var data = getSelectInvariant("CAMPAIGN_PARAMETER", false, true);
     $("#" + id + "_wrapper #addParameterTestcampaign").remove();
     var contentToAdd =
-        "<div class='marginBottom10 form-inline' id='addParameterTestcampaign'>" +
-        "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-        "<select id='parameterTestSelect' class='form-control' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
+            "<div class='marginBottom10 form-inline' id='addParameterTestcampaign'>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='parameterTestSelect' class='form-control' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
     for (var i = 0; i < data.find("option").length; i++) {
         contentToAdd +=
-            "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+                "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
     }
     contentToAdd +=
-        "</select>" +
-        "</div>" +
-        "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
-        "<select id='parameterTestSelect2' class='form-control' style='width:100%;'>" +
-        "</select>" +
-        "</div>" +
-        "<div class='form-group'>" +
-        "<button type='button' id='addParameterTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addParameterEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
-        "</div>" +
-        "</div>";
+            "</select>" +
+            "</div>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='parameterTestSelect2' class='form-control' style='width:100%;'>" +
+            "</select>" +
+            "</div>" +
+            "<div class='form-group'>" +
+            "<button type='button' id='addParameterTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addParameterEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "</div>" +
+            "</div>";
     $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
     $("#" + id + "_wrapper #parameterTestSelect").select2();
     $("#" + id + "_wrapper #parameterTestSelect2").select2();
@@ -227,8 +229,8 @@ function editEntryClick(param) {
 
         $.each(obj.battery, function (e) {
             array.push(
-                [obj.battery[e].testbattery,obj.battery[e].campaign,obj.battery[e].campaigncontentID]
-            );
+                    [obj.battery[e].testbattery, obj.battery[e].campaign, obj.battery[e].campaigncontentID]
+                    );
         });
 
         if ($("#editTestcampaignModal #batteryTestcampaignsTable_wrapper").length > 0) {
@@ -246,7 +248,7 @@ function editEntryClick(param) {
         var array = [];
 
         $.each(obj.parameter, function (e) {
-            array.push([obj.parameter[e].campaignparameterID,obj.parameter[e].parameter,obj.parameter[e].campaign,obj.parameter[e].value])
+            array.push([obj.parameter[e].campaignparameterID, obj.parameter[e].parameter, obj.parameter[e].campaign, obj.parameter[e].value])
         });
 
         if ($("#editTestcampaignModal #parameterTestcampaignsTable_wrapper").length > 0) {
@@ -487,7 +489,7 @@ function updateSelectParameter(id) {
     for (var i = 0; i < data.find("option").length; i++) {
         if (!(findValueTableDataByCol(id, 1, val) && findValueTableDataByCol(id, 3, data.find("option")[i].value)))
             optionList +=
-                "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+                    "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
     }
     $("#" + id + "_wrapper #parameterTestSelect2").append(optionList);
     if ($("#" + id + '_wrapper #parameterTestSelect2 option').size() <= 0) {

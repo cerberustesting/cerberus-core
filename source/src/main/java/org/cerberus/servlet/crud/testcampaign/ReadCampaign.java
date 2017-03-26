@@ -81,18 +81,21 @@ public class ReadCampaign extends HttpServlet {
         // Calling Servlet Transversal Util.
         ServletUtil.servletStart(request);
 
+        // Global boolean on the servlet that define if the user has permition to edit and delete object.
+        boolean userHasPermissions = request.isUserInRole("RunTest");
+        
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
             if (request.getParameter("param") == null && Strings.isNullOrEmpty(columnName)) {
-                answer = findCampaignList(appContext, request);
+                answer = findCampaignList(userHasPermissions, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(columnName)) {
                 answer = findDistinctValuesOfColumn(appContext, request, columnName);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
-                answer = findCampaignByKey(request.getParameter("param"), true, appContext, request);
+                answer = findCampaignByKey(request.getParameter("param"), userHasPermissions, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -147,7 +150,7 @@ public class ReadCampaign extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    private AnswerItem findCampaignList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findCampaignList(Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         AnswerList answer = new AnswerList();
         JSONObject resp = new JSONObject();
@@ -183,7 +186,7 @@ public class ReadCampaign extends HttpServlet {
         }
 
         resp.put("contentTable", jsonArray);
-        resp.put("hasPermissions", true);
+        resp.put("hasPermissions", userHasPermissions);
         resp.put("iTotalRecords", answer.getTotalRows());
         resp.put("iTotalDisplayRecords", answer.getTotalRows());
 
