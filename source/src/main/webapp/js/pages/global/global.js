@@ -2081,6 +2081,16 @@ function isEmptyorALL(val) {
     return (val === undefined || val === null || val.length <= 0 || val === 'ALL') ? true : false;
 }
 
+/**
+ * Method that return a date object from a timestamp input in format : YYYYMMDDHHMMSSsss ex : 20170326183605616
+ * @param {integer} timestamp value in format YYYYMMDDHHMMSSsss
+ * @returns {date} date object
+ */
+function convToDate(timestamp) {
+    var str = "" + timestamp;
+    strDateObj = new Date(str.substring(0, 4), str.substring(4, 6), str.substring(6, 8), str.substring(8, 10), str.substring(10, 12), str.substring(12, 14), str.substring(14, 17));
+    return strDateObj;
+}
 
 /**
  * Method used to restrict usage of some specific caracters.

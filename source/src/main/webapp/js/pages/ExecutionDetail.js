@@ -398,6 +398,43 @@ function sortProperties(identifier) {
     container.append(list);
 }
 
+function createPropertiesV2(propList) {
+    $("#propTable").empty();
+
+    var doc = new Doc();
+    var propertyArray = [];
+
+    for (var ind = 0; ind < propList.length; ind++) {
+        var property = propList[ind];
+        propertyArray.push(propList[ind].property);
+
+        var scope = this;
+        var content = $("<div></div>").addClass("content");
+        var firstRow = $("<div></div>").addClass("row ");
+        var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
+        var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+        var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+        var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+
+        returnMessageField.append(safeLinkify(this.rMessage));
+        descriptionField.append(this.description);
+
+        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
+            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
+        } else {
+            elapsedTime.append("...");
+        }
+
+        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+        contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
+
+        firstRow.append(contentField);
+
+        content.append(firstRow);
+    }
+    return content;
+}
+
 function createProperties(propList) {
     $("#propTable").empty();
 
@@ -914,7 +951,7 @@ Action.prototype.generateHeader = function () {
     descriptionField.append(this.description);
 
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        elapsedTime.append((this.endlong - this.startlong) + " ms");
+        elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
         elapsedTime.append("...");
     }
@@ -986,7 +1023,7 @@ Action.prototype.generateContent = function () {
     value2Field.val(this.value2);
     value2InitField.val(this.value2init);
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        timeField.val((this.endlong - this.startlong) + " ms");
+        timeField.val((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
         timeField.val("...");
     }
@@ -1197,7 +1234,7 @@ Control.prototype.generateHeader = function () {
     descriptionField.append(this.description);
 
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        elapsedTime.append((this.endlong - this.startlong) + " ms");
+        elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
         elapsedTime.append("...");
     }
@@ -1266,7 +1303,7 @@ Control.prototype.generateContent = function () {
     returnMessageField.val(this.returnMessage);
     controlTypeField.val(this.controlType);
     if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-        timeField.val((this.endlong - this.startlong) + " ms");
+        timeField.val((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
     } else {
         timeField.val("...");
     }
