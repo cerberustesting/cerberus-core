@@ -8567,7 +8567,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         
         
         // Parameter in order to tune the timeout on click action
-        //-- ------------------------ 1107
+        //-- ------------------------ 1120
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO `parameter` ");
         SQLS.append("VALUES ('','integration_smtp_username','','Username to be used in case of SMTP with Authentication. Empty if no authentication required.')");
