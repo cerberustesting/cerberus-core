@@ -46,7 +46,7 @@
                                     <span class="sr-only"></span>
                                 </div>
                             </div>
-                            <div class="col-lg-4 pull-left">
+                            <div class="col-lg-6 pull-left">
                                 <div class="">
                                     <span id="idlabel"></span>
                                     <span> - </span>
@@ -54,12 +54,17 @@
                                     <span> - </span>
                                     <span id="testcase"></span>
                                     <span> - </span>
+                                    <span id="country"></span>
+                                    <span> - </span>
                                     <span id="environment"></span>
                                     <span> - </span>
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
+                                <div class="">
+                                    <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
+                                </div>
                             </div>
-                            <div class="col-lg-8" style="padding: 0px;">
+                            <div class="col-lg-6" style="padding: 0px;">
                                 <div id="TestCaseButton">
                                     <a href="#" class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</a>
                                     <div class="btn-group pull-right">
@@ -331,6 +336,8 @@
                                         <input type="text" class="form-control" id="port" placeholder="Port" readonly>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="platform">Platform</label>
@@ -343,8 +350,6 @@
                                         <input type="text" class="form-control" id="browser" placeholder="Browser" readonly>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-sm-3">
                                     <div class="form-group">
                                         <label for="version">Version</label>
@@ -355,6 +360,14 @@
                                     <div class="form-group">
                                         <label for="browserfull">Browser Full Version</label>
                                         <input type="text" class="form-control" id="browserfull" placeholder="Browser Full Version" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <label for="userAgent">User Agent</label>
+                                        <input type="text" class="form-control" id="userAgent" placeholder="userAgent" readonly>
                                     </div>
                                 </div>
                                 <div class="col-sm-3">
@@ -371,17 +384,9 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-12" id="tcFileContentField">
+                                <div class="col-sm-6" id="tcFileContentField">
                                 </div>
                             </div>
-                        </div>
-                        <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="userAgent">User Agent</label>
-                                        <input type="text" class="form-control" id="userAgent" placeholder="userAgent" readonly>
-                                    </div>
-                                </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabEnv">
                             <div class="row">

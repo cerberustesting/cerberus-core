@@ -205,6 +205,8 @@ function updatePage(data, stepList) {
     configPanel.find("#testcase").text(data.testcase);
     configPanel.find("#controlstatus").text(data.controlStatus);
     configPanel.find("#environment").text(data.environment);
+    configPanel.find("#country").text(data.country);
+    configPanel.find("#exReturnMessage").text(data.controlMessage);
     configPanel.find("#controlstatus").removeClass("text-primary");
     if (data.controlStatus === "PE") {
         configPanel.find("#controlstatus").addClass("text-primary");
@@ -398,44 +400,199 @@ function sortProperties(identifier) {
     container.append(list);
 }
 
-function createPropertiesV2(propList) {
+function createProperties(propList) {
     $("#propTable").empty();
 
     var doc = new Doc();
-    var propertyArray = [];
+
+    var table = $("#propTable");
 
     for (var ind = 0; ind < propList.length; ind++) {
         var property = propList[ind];
-        propertyArray.push(propList[ind].property);
-
-        var scope = this;
-        var content = $("<div></div>").addClass("content");
-        var firstRow = $("<div></div>").addClass("row ");
-        var contentField = $("<div></div>").addClass("col-sm-12").attr("id", "contentField");
-        var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-        var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-        var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-
-        returnMessageField.append(safeLinkify(this.rMessage));
-        descriptionField.append(this.description);
-
-        if (this.endlong !== 19700101010000000 && this.endlong !== 0) {
-            elapsedTime.append((convToDate(this.endlong) - convToDate(this.startlong)) + " ms");
-        } else {
-            elapsedTime.append("...");
-        }
-
-        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
-        contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
-
-        firstRow.append(contentField);
-
-        content.append(firstRow);
+        drawProperty(property, table);
     }
-    return content;
 }
 
-function createProperties(propList) {
+function drawProperty(property, table) {
+    var generateHeaderContent = $("<div></div>").addClass("content");
+    var firstRow = $("<div></div>").addClass("row");
+    var contentField = $("<div></div>").addClass("col-sm-12");
+    var contentfirstRow = $("<div></div>").addClass("row").attr("id", "contentRow");
+    var propertyName = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+    var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
+
+    returnMessageField.append(safeLinkify(property.rMessage));
+    descriptionField.append(property.value);
+
+    propertyName.append(property.property);
+
+    contentfirstRow.append($("<div class='col-sm-2'>").append(propertyName));
+    contentfirstRow.append($("<div class='col-sm-10'>").attr("id", "contentField").append(descriptionField).append(returnMessageField));
+
+    contentField.append(contentfirstRow);
+    firstRow.append(contentField);
+    generateHeaderContent.append(firstRow);
+
+    var idname = 'PROPERTY-' + property.property;
+    var htmlElement = $("<a href='#' id ='" + idname + "'></a>").addClass("action-group action");
+    var row = $("<div></div>").addClass("col-sm-10");
+    row.append(generateHeaderContent);
+    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+
+    var propContent = getPropertyContent(property);
+
+    if (property.RC === "OK") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-success");
+        propContent.hide();
+    } else if (property.RC === "PE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-refresh spin").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        propContent.hide();
+    } else if (property.RC === "KO") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-danger");
+        propContent.hide();
+    } else if (property.RC === "NA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        propContent.hide();
+    } else { // FA
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-warning");
+        propContent.hide();
+    }
+
+    // Starting to reduce the size of the row by the length of elements.
+    $(row).find("#contentField").removeClass("col-sm-10").addClass("col-sm-" + (10 - property.fileList.length));
+    // Adding all media attached to action execution.
+    addFileLink(property.fileList, $(row).find("#contentRow"));
+
+    htmlElement.prepend(button);
+    htmlElement.prepend(row);
+
+
+    table.append(htmlElement);
+    table.append(propContent);
+
+    var container1 = $("#PROPERTY-" + property.property);
+    var container2 = $("#content-container-" + property.property);
+    container1.click(function () {
+        if (container1.find(".glyphicon-chevron-down").length > 0) {
+            container1.find(".glyphicon-chevron-down").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        } else {
+            container1.find(".glyphicon-chevron-up").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+        }
+        container2.toggle();
+        return false;
+    });
+
+}
+
+function getPropertyContent(property) {
+    var obj = this;
+    var doc = new Doc();
+
+    var row1 = $("<div></div>").addClass("row");
+    var row2 = $("<div></div>").addClass("row");
+    var row3 = $("<div></div>").addClass("row");
+    var row4 = $("<div></div>").addClass("row");
+    var row5 = $("<div></div>").addClass("row");
+    var row6 = $("<div></div>").addClass("row");
+    var row7 = $("<div></div>").addClass("row");
+    var container = $("<div id='content-container-" + property.property + "'></div>").addClass("action-group row list-group-item");
+
+    var typeField = $("<input type='text' class='form-control' id='type'>").prop("readonly", true);
+    var descField = $("<textarea type='text' rows='1' class='form-control' id='description'>").prop("readonly", true);
+    var value1Field = $("<textarea type='text' rows='1' class='form-control' id='value1'>").prop("readonly", true);
+    var value1InitField = $("<textarea type='text' rows='1' class='form-control' id='value1init'>").prop("readonly", true);
+    var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
+    var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
+    var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
+    var valueField = $("<textarea type='text' rows='1' class='form-control' id='value'>").prop("readonly", true);
+    var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    var indexField = $("<input type='text' class='form-control' id='index'>").prop("readonly", true);
+    var natureField = $("<input type='text' class='form-control' id='nature'>").prop("readonly", true);
+    var databaseField = $("<input type='text' class='form-control' id='database'>").prop("readonly", true);
+    var lengthField = $("<input type='text' class='form-control' id='length'>").prop("readonly", true);
+    var rowLimitField = $("<input type='text' class='form-control' id='rowLimit'>").prop("readonly", true);
+    var retryNbField = $("<input type='text' class='form-control' id='retryNb'>").prop("readonly", true);
+    var retryPeriodField = $("<input type='text' class='form-control' id='retryPeriod'>").prop("readonly", true);
+
+    var typeGroup = $("<div class='form-group'></div>").append($("<label for='action'>" + doc.getDocLabel("page_executiondetail", "type") + "</label>")).append(typeField);
+    var descGroup = $("<div class='form-group'></div>").append($("<label for='description'>" + doc.getDocLabel("page_executiondetail", "description") + "</label>")).append(descField);
+    var value1Group = $("<div class='form-group'></div>").append($("<label for='value1'>" + doc.getDocLabel("page_executiondetail", "value1") + "</label>")).append(value1Field);
+    var value1InitGroup = $("<div class='form-group'></div>").append($("<label for='value1init'>" + doc.getDocLabel("page_executiondetail", "value1init") + "</label>")).append(value1InitField);
+    var timeGroup = $("<div class='form-group'></div>").append($("<label for='time'>" + doc.getDocLabel("page_executiondetail", "time") + "</label>")).append(timeField);
+    var valueGroup = $("<div class='form-group'></div>").append($("<label for='forceexec'>" + doc.getDocLabel("page_executiondetail", "value") + "</label>")).append(valueField);
+    var value2Group = $("<div class='form-group'></div>").append($("<label for='value2'>" + doc.getDocLabel("page_executiondetail", "value2") + "</label>")).append(value2Field);
+    var value2InitGroup = $("<div class='form-group'></div>").append($("<label for='value2init'>" + doc.getDocLabel("page_executiondetail", "value2init") + "</label>")).append(value2InitField);
+    var returncodeGroup = $("<div class='form-group'></div>").append($("<label for='returncode'>" + doc.getDocLabel("page_executiondetail", "return_code") + "</label>")).append(returnCodeField);
+    var returnmessageGroup = $("<div class='form-group'></div>").append($("<label for='returnmessage'>" + doc.getDocLabel("page_executiondetail", "return_message") + "</label>")).append(returnMessageField);
+    var indexGroup = $("<div class='form-group'></div>").append($("<label for='sort'>" + doc.getDocLabel("page_executiondetail", "index") + "</label>")).append(indexField);
+    var natureGroup = $("<div class='form-group'></div>").append($("<label for='conditionOper'>" + doc.getDocLabel("page_executiondetail", "nature") + "</label>")).append(natureField);
+    var lengthGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "length") + "</label>")).append(lengthField);
+    var databaseGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1Init'>" + doc.getDocLabel("page_executiondetail", "database") + "</label>")).append(databaseField);
+    var rowLimitGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2Init'>" + doc.getDocLabel("page_executiondetail", "rowLimit") + "</label>")).append(rowLimitField);
+    var retryNbGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal1'>" + doc.getDocLabel("page_executiondetail", "retryNb") + "</label>")).append(retryNbField);
+    var retryPeriodGroup = $("<div class='form-group'></div>").append($("<label for='conditionVal2'>" + doc.getDocLabel("page_executiondetail", "retryPeriod") + "</label>")).append(retryPeriodField);
+
+    databaseField.val(property.database);
+    descField.val(property.description);
+    typeField.val(property.type);
+    value1Field.val(property.value1);
+    value1InitField.val(property.value1init);
+    value2Field.val(property.value2);
+    value2InitField.val(property.value2init);
+    if (property.endlong !== 19700101010000000 && property.endlong !== 0) {
+        timeField.val((convToDate(property.endLong) - convToDate(property.startLong)) + " ms");
+    } else {
+        timeField.val("...");
+    }
+    valueField.val(property.value);
+    returnCodeField.val(property.RC);
+    returnMessageField.val(property.rMessage);
+    indexField.val(property.index);
+    natureField.val(property.nature);
+    lengthField.val(property.length);
+    rowLimitField.val(property.rowLimit);
+    retryNbField.val(property.retryNb);
+    retryPeriodField.val(property.retryPeriod);
+
+    row1.append($("<div></div>").addClass("col-sm-2").append(returncodeGroup));
+    row1.append($("<div></div>").addClass("col-sm-10").append(descGroup));
+    row2.append($("<div></div>").addClass("col-sm-2"));
+    row2.append($("<div></div>").addClass("col-sm-5").append(value1InitGroup));
+    row2.append($("<div></div>").addClass("col-sm-5").append(value2InitGroup));
+    row3.append($("<div></div>").addClass("col-sm-2").append(typeGroup));
+    row3.append($("<div></div>").addClass("col-sm-5").append(value1Group));
+    row3.append($("<div></div>").addClass("col-sm-5").append(value2Group));
+    row4.append($("<div></div>").addClass("col-sm-2").append(indexGroup));
+    row4.append($("<div></div>").addClass("col-sm-8").append(valueGroup));
+    row4.append($("<div></div>").addClass("col-sm-2").append(timeGroup));
+    row5.append($("<div></div>").addClass("col-sm-12").append(returnmessageGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(databaseGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(lengthGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(rowLimitGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(natureGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(retryNbGroup));
+    row6.append($("<div></div>").addClass("col-sm-2").append(retryPeriodGroup));
+
+    container.append(row1);
+    container.append(row2);
+    container.append(row3);
+    container.append(row4);
+    container.append(row5);
+    container.append(row6);
+//    container.append(row7);
+
+    return container;
+
+}
+
+function createPropertiesOld(propList) {
     $("#propTable").empty();
 
     var doc = new Doc();
@@ -664,6 +821,9 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "KO") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-remove pull-left"));
         object.html.addClass("list-group-item-danger");
+    } else if (object.returnCode === "NA") {
+        htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
+        object.html.addClass("list-group-item-info");
     } else {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
@@ -887,6 +1047,10 @@ Action.prototype.draw = function () {
     } else if (action.returnCode === "KO") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-danger");
+        content.hide();
+    } else if (action.returnCode === "NA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
@@ -1183,6 +1347,10 @@ Control.prototype.draw = function () {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-remove").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-danger");
         content.hide();
+    } else if (this.returnCode === "NA") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-warning");
@@ -1389,23 +1557,30 @@ function addFileLink(fileList, container) {
             var filetypetxt = fileList[i].fileType.toLowerCase();
             if (i === 0) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[0].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[0].fileName + "&filetype=" + fileList[0].fileType + "&filedesc=" + fileList[0].fileDesc);
                     return false;
                 }));
             } else if (i === 1) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[1].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[1].fileName + "&filetype=" + fileList[1].fileType + "&filedesc=" + fileList[1].fileDesc);
                     return false;
                 }));
             } else if (i === 2) {
                 var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
-                        .append(fileList[i].fileDesc).append($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
                         .css("height", "30px").click(function (f) {
                     showTextArea(fileList[2].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[2].fileName + "&filetype=" + fileList[2].fileType + "&filedesc=" + fileList[2].fileDesc);
+                    return false;
+                }));
+            } else if (i === 3) {
+                var linkBoxtxt = $("<div name='mediaMiniature'>").addClass("col-sm-1").css("padding", "0px 7px 0px 7px")
+                        .append(fileList[i].fileDesc).prepend("<br>").prepend($("<img>").attr("src", "images/f-" + filetypetxt + ".svg")
+                        .css("height", "30px").click(function (f) {
+                    showTextArea(fileList[3].fileDesc, "", "ReadTestCaseExecutionMedia?filename=" + fileList[3].fileName + "&filetype=" + fileList[3].fileType + "&filedesc=" + fileList[3].fileDesc);
                     return false;
                 }));
             }
