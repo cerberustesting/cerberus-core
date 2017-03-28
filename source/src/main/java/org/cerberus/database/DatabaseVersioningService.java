@@ -8556,6 +8556,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
         SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
         SQLInstruction.add(SQLS.toString());
+
+        // Let testcaseexecutionqueue's Browser column be null
+        //-- ------------------------ 1119
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `Browser` `Browser` VARCHAR(45) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
     }
