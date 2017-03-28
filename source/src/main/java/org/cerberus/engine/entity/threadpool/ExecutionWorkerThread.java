@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
@@ -82,7 +83,32 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
      */
     private static Set<Integer> RETURN_CODES_IN_ERROR = new HashSet<Integer>() {
         {
+            // Pre execution checks (from ExecutionStartService#startExecution())
+            add(MessageGeneralEnum.VALIDATION_FAILED_OUTPUTFORMAT_INVALID.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_VERBOSE_INVALID.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_SCREENSHOT_INVALID.getCode());
+            add(MessageGeneralEnum.NO_DATA_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_TESTCASE_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_TEST_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_APPLICATION_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRY_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_MANUALURL_INVALID.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENVAPP_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST_MAN.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_ENVIRONMENT_DOESNOTEXIST.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_COUNTRYENV_NOT_FOUND.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_BROWSER_NOT_SUPPORTED.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT.getCode());
+            add(MessageGeneralEnum.VALIDATION_FAILED_COULDNOTCREATE_RUNID.getCode());
+
+            // Pre-execution checks (from SeleniumServerService#startServer())
+            add(MessageGeneralEnum.VALIDATION_FAILED_URL_MALFORMED.getCode());
             add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode());
+            add(MessageGeneralEnum.EXECUTION_FA_SELENIUM.getCode());
+
+            // Pre-execution checks (from SikuliService)
+            add(MessageEventEnum.ACTION_FAILED_SIKULI_SERVER_NOT_REACHABLE.getCode());
         }
     };
 

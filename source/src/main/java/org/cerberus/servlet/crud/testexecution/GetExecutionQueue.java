@@ -309,68 +309,75 @@ public class GetExecutionQueue extends HttpServlet {
                 if (toAdd.getString("env").equals("MANUAL")) {
                     manualURL = true;
                 }
-                /**
-                 * Creating executions for each browser
-                 */
-                for (int iterBrowser = 0; iterBrowser < browsers.length(); iterBrowser++) {
-                    String browser = browsers.getString(iterBrowser);
 
-                    try {
-                        TestCaseExecutionInQueue tceiq = inQueueFactoryService.create(toAdd.getString("test"),
-                                toAdd.getString("testcase"),
-                                toAdd.getString("country"),
-                                toAdd.getString("env"),
-                                robot,
-                                robotIP,
-                                robotPort,
-                                browser,
-                                browserVersion,
-                                platform,
-                                manualURL,
-                                manualHost,
-                                manualContextRoot,
-                                manualLoginRelativeURL,
-                                manualEnvData,
-                                tag,
-                                outputFormat,
-                                screenshot,
-                                verbose,
-                                timeout,
-                                synchroneous,
-                                pageSource,
-                                seleniumLog,
-                                requestDate,
-                                retries,
-                                manualExecution);
-                        /**
-                         * Insert the Execution in the Queue
-                         */
+                try {
+                    // Create the template
+                    TestCaseExecutionInQueue tceiq = inQueueFactoryService.create(
+                            toAdd.getString("test"),
+                            toAdd.getString("testcase"),
+                            toAdd.getString("country"),
+                            toAdd.getString("env"),
+                            robot,
+                            robotIP,
+                            robotPort,
+                            null,
+                            browserVersion,
+                            platform,
+                            manualURL,
+                            manualHost,
+                            manualContextRoot,
+                            manualLoginRelativeURL,
+                            manualEnvData,
+                            tag,
+                            outputFormat,
+                            screenshot,
+                            verbose,
+                            timeout,
+                            synchroneous,
+                            pageSource,
+                            seleniumLog,
+                            requestDate,
+                            retries,
+                            manualExecution);
+
+                    // Then fill it with either no browser
+                    if (browsers.length() == 0) {
                         inQueueService.insert(tceiq);
                         addedToQueue++;
-                    } catch (FactoryCreationException ex) {
-                        String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                        LOG.error("Unable to create TestCaseExecutionInQueue : " + ex.toString());
-                        answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-                        answer.getResultMessage().setDescription(errorMessage);
                     }
+                    // Or with required browsers
+                    else {
+                        for (int iterBrowser = 0; iterBrowser < browsers.length(); iterBrowser++) {
+                            tceiq.setBrowser(browsers.getString(iterBrowser));
+                            try {
+                                inQueueService.insert(tceiq);
+                                addedToQueue++;
+                            } catch (CerberusException e) {
+                                LOG.warn("Unable to insert execution in queue " + tceiq, e);
+                            }
+                        }
+                    }
+                } catch (FactoryCreationException e) {
+                    LOG.warn("Unable to create the execution queue template", e);
                 }
             }
 
-            /**
-             * Trigger the execution
-             */
-            try {
-                executionThreadService.executeNextInQueue();
-            } catch (CerberusException ex) {
-                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-                LOG.warn(errorMessage);
-                answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
-                answer.getResultMessage().setDescription(errorMessage);
+            // Trigger execution if necessary
+            if (addedToQueue > 0) {
+                try {
+                    executionThreadService.executeNextInQueue();
+                } catch (CerberusException ex) {
+                    String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
+                    LOG.warn(errorMessage);
+                    answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
+                    answer.getResultMessage().setDescription(errorMessage);
+                }
+
+                jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
+                jsonResponse.put("message", answer.getResultMessage().getDescription());
+                jsonResponse.put("addedToQueue", addedToQueue);
+                jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
             }
-            jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
-            jsonResponse.put("message", answer.getResultMessage().getDescription());
-            jsonResponse.put("addedToQueue", addedToQueue);
-            jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
         }
 
         response.setContentType("application/json");

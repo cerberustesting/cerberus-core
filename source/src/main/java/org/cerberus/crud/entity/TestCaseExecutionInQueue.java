@@ -197,16 +197,10 @@ public class TestCaseExecutionInQueue {
     }
 
     public String getBrowser() {
-        if (browser == null) {
-            throw new IllegalStateException("browser must not be null");
-        }
         return browser;
     }
 
     public void setBrowser(String browser) {
-        if (country == null) {
-            throw new IllegalArgumentException("browser must not be null");
-        }
         this.browser = browser;
     }
 

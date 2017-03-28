@@ -157,11 +157,7 @@ public class RunTestCase extends HttpServlet {
         robot = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("robot"), "");
         ss_ip = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_ip"), "");
         ss_p = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("ss_p"), "");
-        if (request.getParameter("Browser") != null && !"".equals(request.getParameter("Browser"))) {
-            browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Browser"), "firefox");
-        } else {
-            browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("browser"), "firefox");
-        }
+        browser = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("Browser"), ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("browser"), ""));
         version = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("version"), "");
         platform = ParameterParserUtil.parseStringParamAndSanitize(request.getParameter("platform"), "");
 
