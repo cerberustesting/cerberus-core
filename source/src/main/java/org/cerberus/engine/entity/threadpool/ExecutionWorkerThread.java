@@ -32,8 +32,8 @@ import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,11 +78,11 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     private static final Pattern RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCodeDescription = (.*)$", Pattern.MULTILINE);
 
     /**
-     * The set of return code to be considered as technical error
+     * The set of return codes to be considered as technical errors
      */
-    private static Map<Integer, Void> RETURN_CODES_IN_ERROR = new HashMap<Integer, Void>() {
+    private static Set<Integer> RETURN_CODES_IN_ERROR = new HashSet<Integer>() {
         {
-            put(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode(), null);
+            add(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT.getCode());
         }
     };
 
@@ -369,7 +369,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         Matcher matcher = RETURN_CODE_FROM_ANSWER_PATTERN.matcher(answer);
         if (!matcher.find()) {
             LOG.warn("Bad answer format: " + answer);
-            throw new RunProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Check server logs");
+            throw new RunProcessException("Bad answer format. Expected " + PARAMETER_OUTPUT_FORMAT_VALUE + ". Probably due to bad cerberus_url value. Check server logs");
         }
 
         // Extract the return code
@@ -381,7 +381,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
         }
 
         // Check if return code is in error
-        if (RETURN_CODES_IN_ERROR.containsKey(returnCode)) {
+        if (RETURN_CODES_IN_ERROR.contains(returnCode)) {
             Matcher descriptionMatcher = RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN.matcher(answer);
             if (!descriptionMatcher.find()) {
                 LOG.warn("Bad return code description format: " + answer);
