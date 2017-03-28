@@ -543,10 +543,10 @@ function getPropertyContent(property) {
     descField.val(property.description);
     typeField.val(property.type);
     value1Field.val(property.value1);
-    value1InitField.val(property.value1init);
+    value1InitField.val(property.value1Init);
     value2Field.val(property.value2);
-    value2InitField.val(property.value2init);
-    if (property.endlong !== 19700101010000000 && property.endlong !== 0) {
+    value2InitField.val(property.value2Init);
+    if (property.endLong !== 19700101010000000 && property.endLong !== 0) {
         timeField.val((convToDate(property.endLong) - convToDate(property.startLong)) + " ms");
     } else {
         timeField.val("...");
