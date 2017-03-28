@@ -50,6 +50,8 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.cerberus.crud.factory.IFactoryUserGroup;
+import org.cerberus.service.email.IEmailGeneration;
+import org.cerberus.service.email.impl.EmailGeneration;
 import org.cerberus.util.answer.AnswerUtil;
 
 /**
@@ -78,6 +80,7 @@ public class CreateUser2 extends HttpServlet {
         String charset = request.getCharacterEncoding();
 
         IParameterService parameterService = appContext.getBean(ParameterService.class);
+        IEmailGeneration generateEmailService = appContext.getBean(EmailGeneration.class);
         String system = "";
 
         String password = parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue();
@@ -134,6 +137,15 @@ public class CreateUser2 extends HttpServlet {
             ans = userService.create(userData);
 
             if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                /**
+                 * Send Email to explain how to connect Cerberus if
+                 * activateNotification is set to Y
+                 */
+                String sendNotification = parameterService.findParameterByKey("cerberus_notification_accountcreation_activatenotification", system).getValue();
+
+                if (sendNotification.equalsIgnoreCase("Y")) {
+                    generateEmailService.BuildAndSendAccountCreationEmail(userData);
+                }
                 /**
                  * Object updated. Adding Log entry.
                  */
