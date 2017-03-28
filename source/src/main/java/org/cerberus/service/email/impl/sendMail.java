@@ -19,6 +19,7 @@
  */
 package org.cerberus.service.email.impl;
 
+import com.mysql.jdbc.StringUtils;
 import org.apache.commons.mail.HtmlEmail;
 
 /**
@@ -27,7 +28,7 @@ import org.apache.commons.mail.HtmlEmail;
  */
 public class sendMail {
 
-    public static void sendHtmlMail(String host, int port, String body, String subject, String from, String to, String cc) throws Exception {
+    public static void sendHtmlMail(String host, int port, String userName, String password, String body, String subject, String from, String to, String cc) throws Exception {
 
         HtmlEmail email = new HtmlEmail();
         email.setSmtpPort(port);
@@ -36,6 +37,10 @@ public class sendMail {
         email.setFrom(from);
         email.setSubject(subject);
         email.setHtmlMsg(body);
+
+        if (!StringUtils.isNullOrEmpty(userName) || !StringUtils.isNullOrEmpty(password)) {
+            email.setAuthentication(userName, password);
+        }
 
         String[] destinataire = to.split(";");
 

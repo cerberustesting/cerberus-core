@@ -8557,6 +8557,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
         SQLInstruction.add(SQLS.toString());
         
+        
+        
+        // Parameter in order to tune the timeout on click action
+        //-- ------------------------ 1107
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','integration_smtp_username','','Username to be used in case of SMTP with Authentication. Empty if no authentication required.')");
+        SQLS.append(",('','integration_smtp_password','','Password to be used in case of SMTP with Authentication. Empty if no authentication required.')");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 

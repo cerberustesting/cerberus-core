@@ -230,6 +230,8 @@ public class EmailGeneration implements IEmailGeneration {
         String to;
         String from;
         String host;
+        String userName;
+        String password;
         int port;
         String cc;
         String subject;
@@ -241,6 +243,8 @@ public class EmailGeneration implements IEmailGeneration {
             from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
             host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
             port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+            userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+            password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
             cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
             subject = parameterService.findParameterByKey("cerberus_notification_accountcreation_subject", system).getValue();
             body = parameterService.findParameterByKey("cerberus_notification_accountcreation_body", system).getValue();
@@ -248,7 +252,7 @@ public class EmailGeneration implements IEmailGeneration {
             body = body.replace("%LOGIN%", user.getLogin());
             body = body.replace("%DEFAULT_PASSWORD%", parameterService.findParameterByKey("cerberus_accountcreation_defaultpassword", system).getValue());
             
-            sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+            sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
             
         } catch (CerberusException ex) {
             Logger.getLogger(EmailGeneration.class.getName()).log(Level.SEVERE, null, ex);
@@ -266,6 +270,8 @@ public class EmailGeneration implements IEmailGeneration {
         String from;
         String host;
         int port;
+        String userName;
+        String password;
         String cc;
         String subject;
         String body;
@@ -276,6 +282,8 @@ public class EmailGeneration implements IEmailGeneration {
             from = parameterService.findParameterByKey("cerberus_notification_accountcreation_from", system).getValue();
             host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
             port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+            userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+            password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
             cc = parameterService.findParameterByKey("cerberus_notification_accountcreation_cc", system).getValue();
             subject = parameterService.findParameterByKey("cerberus_notification_forgotpassword_subject", system).getValue();
             body = parameterService.findParameterByKey("cerberus_notification_forgotpassword_body", system).getValue();
@@ -293,7 +301,7 @@ public class EmailGeneration implements IEmailGeneration {
             
             body = body.replace("%LINK%", sb.toString());
             
-            sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+            sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
             
             answer.setResultMessage(new MessageEvent(MessageEventEnum.GENERIC_OK));
             return answer;

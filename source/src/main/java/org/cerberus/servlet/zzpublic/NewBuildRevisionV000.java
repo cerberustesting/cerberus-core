@@ -214,13 +214,17 @@ public class NewBuildRevisionV000 extends HttpServlet {
                     String from;
                     String host;
                     int port;
+                    String userName;
+                    String password;
                     try {
                         from = parameterService.findParameterByKey("integration_smtp_from", cepData.getSystem()).getValue();
                         host = parameterService.findParameterByKey("integration_smtp_host", cepData.getSystem()).getValue();
                         port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", cepData.getSystem()).getValue());
+                        userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+                        password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
 
                         //Sending the email
-                        sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+                        sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
 
                     } catch (Exception e) {
                         Logger.getLogger(NewBuildRevisionV000.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);

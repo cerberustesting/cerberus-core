@@ -159,13 +159,17 @@ public class NewChain extends HttpServlet {
                 String from;
                 String host;
                 int port;
+                String userName;
+                String password;
                 try {
                     from = parameterService.findParameterByKey("integration_smtp_from", system).getValue();
                     host = parameterService.findParameterByKey("integration_smtp_host", system).getValue();
                     port = Integer.valueOf(parameterService.findParameterByKey("integration_smtp_port", system).getValue());
+                    userName = parameterService.findParameterByKey("integration_smtp_username", system).getValue();
+                    password = parameterService.findParameterByKey("integration_smtp_password", system).getValue();
 
                     //Sending the email
-                    sendMail.sendHtmlMail(host, port, body, subject, from, to, cc);
+                    sendMail.sendHtmlMail(host, port, userName, password, body, subject, from, to, cc);
                 } catch (Exception e) {
                     Logger.getLogger(NewChain.class.getName()).log(Level.SEVERE, Infos.getInstance().getProjectNameAndVersion() + " - Exception catched.", e);
                     logEventService.createForPrivateCalls("/NewChain", "NEWCHAIN", "Warning on registering new event on environment : ['" + system + "','" + country + "','" + env + "'] " + e.getMessage(), request);
