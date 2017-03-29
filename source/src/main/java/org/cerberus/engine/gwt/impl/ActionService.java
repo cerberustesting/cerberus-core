@@ -985,33 +985,59 @@ public class ActionService implements IActionService {
                 TestCaseExecution tCExecution = testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution();
                 // Getting the Country property definition.
                 TestCaseCountryProperties tccp = null;
+                boolean propertyExistOnAnyCountry = false;
                 for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
                     if ((object.getProperty().equalsIgnoreCase(value1)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
                         tccp = object;
                     }
+                    if ((object.getProperty().equalsIgnoreCase(value1))) {
+                        propertyExistOnAnyCountry = true;
+                    }
                 }
                 if (tccp == null) { // Could not find a country property inside the existing execution.
-                    message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
-                    message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
-                            .replace("%PROP%", value1)
-                            .replace("%COUNTRY%", tCExecution.getCountry()));
-                    return message;
+                    if (propertyExistOnAnyCountry) {
+                        message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
+                        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                                .replace("%PROP%", value1)
+                                .replace("%COUNTRY%", tCExecution.getCountry()));
+                        return message;
+                    } else {
+                        message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
+                        message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                                .replace("%PROP%", value1)
+                                .replace("%COUNTRY%", tCExecution.getCountry()));
+                        return message;
+                    }
 
                 } else {
                     if (!(StringUtil.isNullOrEmpty(value2))) {
                         // If value2 is fed with something, we control here that value is a valid property name and gets its defintion.
                         tccp = null;
+                        propertyExistOnAnyCountry = false;
                         for (TestCaseCountryProperties object : tCExecution.getTestCaseCountryPropertyList()) {
                             if ((object.getProperty().equalsIgnoreCase(value2)) && (object.getCountry().equalsIgnoreCase(tCExecution.getCountry()))) {
                                 tccp = object;
                             }
+                            if ((object.getProperty().equalsIgnoreCase(value2))) {
+                                propertyExistOnAnyCountry = true;
+                            }
                         }
                         if (tccp == null) { // Could not find a country property inside the existing execution.
-                            message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
-                            message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
-                                    .replace("%PROP%", value2)
-                                    .replace("%COUNTRY%", tCExecution.getCountry()));
-                            return message;
+                            if (propertyExistOnAnyCountry) {
+                                message = new MessageEvent(MessageEventEnum.ACTION_NOTEXECUTED_NO_PROPERTY_DEFINITION);
+                                message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                                        .replace("%PROP%", value2)
+                                        .replace("%COUNTRY%", tCExecution.getCountry()));
+                                return message;
+
+                            } else {
+                                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALCULATEPROPERTY_PROPERTYNOTFOUND);
+                                message.setDescription(message.getDescription().replace("%ACTION%", TestCaseStepAction.ACTION_CALCULATEPROPERTY)
+                                        .replace("%PROP%", value2)
+                                        .replace("%COUNTRY%", tCExecution.getCountry()));
+                                return message;
+
+                            }
                         }
                     }
 
