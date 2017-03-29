@@ -130,7 +130,7 @@ public class ServiceService implements IServiceService {
                             countryEnvironmentDatabase = countryEnvironmentDatabaseService.convert(this.countryEnvironmentDatabaseService.readByKey(system,
                                     country, environment, database));
                             if (countryEnvironmentDatabase == null) {
-                                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
+                                message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
                                 message.setDescription(message.getDescription()
                                         .replace("%SERVICEURL%", appService.getServicePath())
                                         .replace("%SYSTEM%", system)
@@ -143,7 +143,7 @@ public class ServiceService implements IServiceService {
                             } else {
                                 String soapURL = countryEnvironmentDatabase.getSoapUrl();
                                 if (StringUtil.isNullOrEmpty(soapURL)) {
-                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLEMPTY);
+                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLEMPTY);
                                     message.setDescription(message.getDescription()
                                             .replace("%SERVICEURL%", appService.getServicePath())
                                             .replace("%SYSTEM%", system)
@@ -157,7 +157,7 @@ public class ServiceService implements IServiceService {
                                 servicePath = StringUtil.getURLFromString(soapURL, "", servicePath, "");
 
                                 if (!StringUtil.isURL(servicePath)) {
-                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKO);
+                                    message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKO);
                                     message.setDescription(message.getDescription()
                                             .replace("%SERVICEURL%", servicePath)
                                             .replace("%SOAPURL%", soapURL)
@@ -170,7 +170,7 @@ public class ServiceService implements IServiceService {
                             }
 
                         } catch (CerberusException ex) {
-                            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_URLKOANDDATABASESOAPURLNOTEXIST);
+                            message = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_URLKOANDDATABASESOAPURLNOTEXIST);
                             message.setDescription(message.getDescription()
                                     .replace("%SERVICEURL%", servicePath)
                                     .replace("%SYSTEM%", system)

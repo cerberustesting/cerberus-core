@@ -242,16 +242,22 @@ public class ConditionService implements IConditionService {
                                 mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
                                 mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
-                                condition_result = true;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
-                            } else {
-                                condition_result = false;
-                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            try {
+                                if (jsonService.getFromJson(responseBody, null, conditionValue1) != null) {
+                                    condition_result = true;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_TRUE_IFELEMENTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                } else {
+                                    condition_result = false;
+                                    mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FALSE_IFELEMENTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%ELEMENT%", conditionValue1));
+                                }
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                             }
+                        }
                         default:
                             condition_result = false;
                             mes = new MessageEvent(MessageEventEnum.CONDITIONEVAL_FAILED_NOTSUPPORTED_FOR_MESSAGETYPE);

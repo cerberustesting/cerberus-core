@@ -19,6 +19,8 @@
  */
 package org.cerberus.service.json;
 
+import java.util.List;
+
 /**
  *
  * @author bcivel
@@ -38,6 +40,16 @@ public interface IJsonService {
      * @param url
      * @param attribute
      * @return
+     * @throws java.lang.Exception
      */
-    String getFromJson(String jsonMessage, String url, String attribute);
+    String getFromJson(String jsonMessage, String url, String attribute) throws Exception;
+
+    /**
+     *
+     * @param jsonMessage
+     * @param attribute
+     * @return
+     * @throws java.lang.Exception
+     */
+    List<String> getFromJson(String jsonMessage, String attribute) throws Exception;
 }
