@@ -555,6 +555,9 @@
                         <include>**/*.xml</include>
                         <include>**/*.xsd</include>
                     </includes>
+                    <excludes>
+                        <exclude>src/main/webapp/dependencies/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
