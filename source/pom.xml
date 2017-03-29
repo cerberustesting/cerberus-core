@@ -1,3 +1,24 @@
+<!--
+
+    Cerberus Copyright (C) 2013 - 2017 cerberustesting
+    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+
+    This file is part of Cerberus.
+
+    Cerberus is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Cerberus is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -64,6 +85,7 @@
         <jsch.version>0.1.42</jsch.version>
         <ant-jsch.version>1.8.2</ant-jsch.version>
         <jackson.version>2.8.5</jackson.version>
+        <license-maven-plugin.version>3.0</license-maven-plugin.version>
 
         <!-- Additional properties -->
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -517,6 +539,32 @@
                     <backend>html</backend>
                     <doctype>book</doctype>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <configuration>
+                    <failIfMissing>true</failIfMissing>
+                    <strictCheck>true</strictCheck>
+                    <header>${basedir}/licenseheader.txt</header>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/*.jsp</include>
+                        <include>**/*.js</include>
+                        <include>**/*.xml</include>
+                        <include>**/*.xsd</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

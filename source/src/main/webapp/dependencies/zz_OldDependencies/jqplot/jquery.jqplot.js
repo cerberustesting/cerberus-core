@@ -1,86 +1,22 @@
-/**
- * Title: jqPlot Charts
- * 
- * Pure JavaScript plotting plugin for jQuery.
- * 
- * About: Version
- * 
- * 1.0.0b2_r1012 
- * 
- * About: Copyright & License
- * 
- * Copyright (c) 2009-2011 Chris Leonello
- * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
- * choose the license that best suits your project and use it accordingly.
- * 
- * See <GPL Version 2> and <MIT License> contained within this distribution for further information. 
+/*
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php.  This is, of course, not required.
+ * This file is part of Cerberus.
  *
- * If you are feeling kind and generous, consider supporting the project by
- * making a donation at: http://www.jqplot.com/donate.php.
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
- * 
- *     version 2007.04.27
- *     author Ash Searle
- *     http://hexmen.com/blog/2007/03/printf-sprintf/
- *     http://hexmen.com/js/sprintf.js
- *     The author (Ash Searle) has placed this code in the public domain:
- *     "This code is unrestricted: you are free to use it however you like."
- * 
- * 
- * About: Introduction
- * 
- * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.2 is included in the distribution.  
- * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
- * the excanvas script for IE support in your web page:
- * 
- * > <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
- * > <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
- * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
- * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
- * 
- * jqPlot can be customized by overriding the defaults of any of the objects which make
- * up the plot. The general usage of jqplot is:
- * 
- * > chart = $.jqplot('targetElemId', [dataArray,...], {optionsObject});
- * 
- * The options available to jqplot are detailed in <jqPlot Options> in the jqPlotOptions.txt file.
- * 
- * An actual call to $.jqplot() may look like the 
- * examples below:
- * 
- * > chart = $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
- * 
- * or
- * 
- * > dataArray = [34,12,43,55,77];
- * > chart = $.jqplot('targetElemId', [dataArray, ...], {title:'My Plot', axes:{yaxis:{min:20, max:100}}});
- * 
- * For more inforrmation, see <jqPlot Usage>.
- * 
- * About: Usage
- * 
- * See <jqPlot Usage>
- * 
- * About: Available Options 
- * 
- * See <jqPlot Options> for a list of options available thorugh the options object (not complete yet!)
- * 
- * About: Options Usage
- * 
- * See <Options Tutorial>
- * 
- * About: Changes
- * 
- * See <Change Log>
- * 
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 (function($) {
     // make sure undefined is undefined
     var undefined;

@@ -1,5 +1,5 @@
-/*
- * Cerberus  Copyright (C) 2013  vertigo17
+/**
+ * Cerberus Copyright (C) 2013 - 2017 cerberustesting
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This file is part of Cerberus.
@@ -316,15 +316,8 @@ public final class XmlUtil {
         }
 
         try {
-            InputSource sourceInput = new InputSource(new StringReader(xml));
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(namespaceAwareness);
-            return factory.newDocumentBuilder().parse(sourceInput);
-        } catch (ParserConfigurationException e) {
-            throw new XmlUtilException(e);
-        } catch (SAXException e) {
-            throw new XmlUtilException(e);
-        } catch (IOException e) {
+            return newDocumentBuilder(namespaceAwareness, true).parse(new InputSource(new StringReader(xml)));
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             throw new XmlUtilException(e);
         }
     }
@@ -356,15 +349,8 @@ public final class XmlUtil {
         }
 
         try {
-            BufferedInputStream streamInput = new BufferedInputStream(url.openStream());
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(namespaceAwareness);
-            return factory.newDocumentBuilder().parse(streamInput);
-        } catch (ParserConfigurationException e) {
-            throw new XmlUtilException(e);
-        } catch (SAXException e) {
-            throw new XmlUtilException(e);
-        } catch (IOException e) {
+            return newDocumentBuilder(namespaceAwareness, true).parse(new BufferedInputStream(url.openStream()));
+        } catch (SAXException | IOException | ParserConfigurationException e) {
             throw new XmlUtilException(e);
         }
     }
@@ -491,6 +477,20 @@ public final class XmlUtil {
             result.add(fromNode(node));
         }
         return result;
+    }
+
+    /**
+     * Create a new {@link DocumentBuilder} according to the given configuration parameters
+     *
+     * @param namespaceAwareness if the created {@link DocumentBuilder} has to be aware of namespaces
+     * @param ignoringComment    if the created {@link DocumentBuilder} has to ignore comments
+     * @return a new {@link DocumentBuilder} configured by the given configuration parameters
+     */
+    private static DocumentBuilder newDocumentBuilder(final boolean namespaceAwareness, final boolean ignoringComment) throws ParserConfigurationException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(namespaceAwareness);
+        factory.setIgnoringComments(ignoringComment);
+        return factory.newDocumentBuilder();
     }
 
     /**
