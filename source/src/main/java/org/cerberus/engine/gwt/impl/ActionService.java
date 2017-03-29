@@ -19,6 +19,7 @@
  */
 package org.cerberus.engine.gwt.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -122,6 +123,10 @@ public class ActionService implements IActionService {
          * Decode the object field before doing the action.
          */
         try {
+
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue1(),
                     tCExecution, testCaseStepActionExecution, false);
             testCaseStepActionExecution.setValue1((String) answerDecode.getItem());
@@ -142,6 +147,10 @@ public class ActionService implements IActionService {
         }
 
         try {
+
+            // When starting a new action, we reset the property list that was already calculated.
+            tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+
             answerDecode = variableService.decodeStringCompletly(testCaseStepActionExecution.getValue2(),
                     tCExecution, testCaseStepActionExecution, false);
             testCaseStepActionExecution.setValue2((String) answerDecode.getItem());
@@ -171,6 +180,9 @@ public class ActionService implements IActionService {
         String value2 = testCaseStepActionExecution.getValue2();
         String propertyName = testCaseStepActionExecution.getPropertyName();
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Doing Action : " + testCaseStepActionExecution.getAction() + " with value1 : " + value1 + " and value2 : " + value2);
+
+        // When starting a new action, we reset the property list that was already calculated.
+        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
 
         switch (testCaseStepActionExecution.getAction()) {
             case TestCaseStepAction.ACTION_KEYPRESS:

@@ -78,15 +78,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Logger;
-import org.cerberus.crud.entity.Application;
-import org.cerberus.engine.execution.IRunTestCaseService;
-import org.jfree.util.Log;
-
 /**
  *
  * @author bcivel

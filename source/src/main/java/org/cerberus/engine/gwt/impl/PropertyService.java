@@ -327,10 +327,10 @@ public class PropertyService implements IPropertyService {
         // Value1 treatment
         List<String> propertiesValue1 = new ArrayList();
         //check the properties specified in the test
-        for (String propSqlName : this.getPropertiesListFromString(testCaseCountryProperty.getValue1())) {
+        for (String propNameFromValue1 : this.getPropertiesListFromString(testCaseCountryProperty.getValue1())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
-                if (pr.getProperty().equals(propSqlName)) {
-                    propertiesValue1.add(propSqlName);
+                if (pr.getProperty().equals(propNameFromValue1)) {
+                    propertiesValue1.add(propNameFromValue1);
                     break;
                 }
             }
@@ -340,10 +340,10 @@ public class PropertyService implements IPropertyService {
         // Value2 treatment :
         List<String> propertiesValue2 = new ArrayList();
         //check the properties specified in the test
-        for (String propSqlName : this.getPropertiesListFromString(testCaseCountryProperty.getValue2())) {
+        for (String propNameFromValue2 : this.getPropertiesListFromString(testCaseCountryProperty.getValue2())) {
             for (TestCaseCountryProperties pr : propertiesOfTestcase) {
-                if (pr.getProperty().equals(propSqlName)) {
-                    propertiesValue2.add(propSqlName);
+                if (pr.getProperty().equals(propNameFromValue2)) {
+                    propertiesValue2.add(propNameFromValue2);
                     break;
                 }
             }
@@ -538,6 +538,20 @@ public class PropertyService implements IPropertyService {
             LOG.debug("Starting to calculate Property : '" + testCaseCountryProperty.getProperty() + "'");
         }
 
+        // Checking recursive decode.
+        if ((tCExecution.getRecursiveAlreadyCalculatedPropertiesList() != null) && (tCExecution.getRecursiveAlreadyCalculatedPropertiesList().contains(testCaseCountryProperty.getProperty()))) {
+            res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_RECURSIVE);
+            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getProperty())
+                    .replace("%HISTO%", tCExecution.getRecursiveAlreadyCalculatedPropertiesList().toString()));
+            testCaseExecutionData.setPropertyResultMessage(res);
+            testCaseExecutionData.setEnd(new Date().getTime());
+            LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
+            return;
+        }
+        if (tCExecution.getRecursiveAlreadyCalculatedPropertiesList() != null) {
+            tCExecution.getRecursiveAlreadyCalculatedPropertiesList().add(testCaseCountryProperty.getProperty());
+        }
+
         try {
             /**
              * Decode Property replacing properties encapsulated with %
@@ -550,6 +564,7 @@ public class PropertyService implements IPropertyService {
                     // If anything wrong with the decode --> we stop here with decode message in the property result.
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value1"));
                     testCaseExecutionData.setEnd(new Date().getTime());
+                    LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
                     return;
                 }
 
@@ -563,6 +578,7 @@ public class PropertyService implements IPropertyService {
                     // If anything wrong with the decode --> we stop here with decode message in the property result.
                     testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "Property Value2"));
                     testCaseExecutionData.setEnd(new Date().getTime());
+                    LOG.debug("Finished to calculate Property (interupted) : '" + testCaseCountryProperty.getProperty() + "' : " + testCaseExecutionData.getPropertyResultMessage().getDescription());
                     return;
                 }
 
@@ -1051,8 +1067,8 @@ public class PropertyService implements IPropertyService {
         else if (xmlToParse == null) {
             testCaseExecutionData.setPropertyResultMessage(
                     new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMXML)
-                            .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
-                            .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
+                    .resolveDescription("VALUE1", testCaseExecutionData.getValue1())
+                    .resolveDescription("VALUE2", testCaseExecutionData.getValue2()));
             return testCaseExecutionData;
         }
         // Else we can try to parse it thanks to the dedicated service

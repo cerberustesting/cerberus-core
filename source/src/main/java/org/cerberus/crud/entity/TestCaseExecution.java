@@ -20,17 +20,14 @@
 package org.cerberus.crud.entity;
 
 import java.util.HashMap;
-import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.engine.entity.Session;
-import org.cerberus.engine.entity.Selenium;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.factory.IFactoryTestCase;
-import org.cerberus.crud.factory.IFactoryTestCaseExecutionData;
+import org.cerberus.engine.entity.MessageGeneral;
+import org.cerberus.engine.entity.Selenium;
+import org.cerberus.engine.entity.Session;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author bcivel
@@ -100,9 +97,14 @@ public class TestCaseExecution {
     private CountryEnvParam countryEnvParam;
     private CountryEnvironmentParameters countryEnvironmentParameters;
     private Invariant environmentDataObj;
-    private List<TestCaseExecutionFile> fileList; // Host the list of the files stored at execution level
-    private List<TestCaseStepExecution> testCaseStepExecutionList; // Host the list of Steps that will be executed (both pre tests and main test)
-    private HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap; // Host the full list of data calculated during the execution.
+    // Host the list of the files stored at execution level
+    private List<TestCaseExecutionFile> fileList;
+    // Host the list of Steps that will be executed (both pre tests and main test)
+    private List<TestCaseStepExecution> testCaseStepExecutionList;
+    // Host the full list of data calculated during the execution.
+    private HashMap<String, TestCaseExecutionData> testCaseExecutionDataMap;
+    // This is used to keep track of all property calculated within a step/action/control. It is reset each time we enter a step/action/control and the property name is added to the list each time it gets calculated. In case it was already asked for calculation, we stop the execution with FA message.
+    private List<String> recursiveAlreadyCalculatedPropertiesList; 
     private List<TestCaseCountryProperties> testCaseCountryPropertyList;
     // Others
     private MessageGeneral resultMessage;
@@ -127,6 +129,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+
+    public List<String> getRecursiveAlreadyCalculatedPropertiesList() {
+        return recursiveAlreadyCalculatedPropertiesList;
+    }
+
+    public void setRecursiveAlreadyCalculatedPropertiesList(List<String> recursiveAlreadyCalculatedPropertiesList) {
+        this.recursiveAlreadyCalculatedPropertiesList = recursiveAlreadyCalculatedPropertiesList;
+    }
 
     public HashMap<String, TestCaseExecutionData> getTestCaseExecutionDataMap() {
         return testCaseExecutionDataMap;

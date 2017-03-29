@@ -47,6 +47,14 @@ public interface IPropertyService {
     AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution testCaseExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
     
+    /**
+     *
+     * @param testCaseExecutionData
+     * @param tCExecution
+     * @param testCaseStepActionExecution
+     * @param testCaseCountryProperty
+     * @param forceRecalculation
+     */
     void calculateProperty(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseStepActionExecution testCaseStepActionExecution,
             TestCaseCountryProperties testCaseCountryProperty, boolean forceRecalculation);
 }

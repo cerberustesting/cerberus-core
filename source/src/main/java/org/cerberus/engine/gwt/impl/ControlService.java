@@ -97,6 +97,10 @@ public class ControlService implements IControlService {
             //if the property service was unable to decode the property that is specified in the object, 
             //then the execution of this control should not performed
             if (testCaseStepActionControlExecution.getValue1().contains("%")) {
+
+                // When starting a new control, we reset the property list that was already calculated.
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue1(), tCExecution,
                         testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
                 testCaseStepActionControlExecution.setValue1((String) answerDecode.getItem());
@@ -110,12 +114,13 @@ public class ControlService implements IControlService {
                     return testCaseStepActionControlExecution;
                 }
 
-//                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
-//                    return testCaseStepActionControlExecution;
-//                }
             }
 
             if (testCaseStepActionControlExecution.getValue2().contains("%")) {
+
+                // When starting a new control, we reset the property list that was already calculated.
+                tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
+
                 answerDecode = variableService.decodeStringCompletly(testCaseStepActionControlExecution.getValue2(),
                         tCExecution, testCaseStepActionControlExecution.getTestCaseStepActionExecution(), false);
                 testCaseStepActionControlExecution.setValue2((String) answerDecode.getItem());
@@ -129,9 +134,6 @@ public class ControlService implements IControlService {
                     return testCaseStepActionControlExecution;
                 }
 
-//                if (!isPropertyGetValueSucceed(testCaseStepActionControlExecution)) {
-//                    return testCaseStepActionControlExecution;
-//                }
             }
         } catch (CerberusEventException cex) {
             testCaseStepActionControlExecution.setControlResultMessage(cex.getMessageError());
@@ -144,6 +146,9 @@ public class ControlService implements IControlService {
          * null.
          */
         testCaseStepActionControlExecution.setStart(new Date().getTime());
+
+        // When starting a new control, we reset the property list that was already calculated.
+        tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
 
         try {
 

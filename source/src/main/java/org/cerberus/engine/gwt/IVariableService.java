@@ -49,7 +49,8 @@ public interface IVariableService {
      * @return
      * @throws CerberusEventException
      */
-    AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
+    AnswerItem<String> decodeStringCompletly(String stringToDecode, TestCaseExecution testCaseExecution,
+            TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException;
 
     /**
      *
