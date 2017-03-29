@@ -72,6 +72,10 @@ function loadExecutionInformation(executionId, stepList, sockets) {
             $("#seeProperties").click(function () {
                 $("#propertiesModal").modal('show');
             });
+            //disable list-group expansion in case of clicking on link
+            $('.linkified').on('click', function (e) {
+                e.stopPropagation();
+            });
         }
     });
 }
