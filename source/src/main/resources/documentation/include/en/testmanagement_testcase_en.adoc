@@ -79,7 +79,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 
 | *Action* | *Description* | *Example* 
 | Unknown | Unknown action. Default Action when creating a new action | 
-| keypress | will allow you to press any key in the current web page. *[red]#Value1#*	: Keycode of the key to press Example : ENTER | 
+| keypress | will allow you to press any key in the current web page. *[red]#Value1#* : Location of the element from which press the key. *[red]#Value2#* : Keycode of the key to press Example : ENTER |
 | hidekeyboard | Hide the currently visible keyboard | 
 | swipe | TBD | 
 | click | will allow you to click on an element inside the current page. 
