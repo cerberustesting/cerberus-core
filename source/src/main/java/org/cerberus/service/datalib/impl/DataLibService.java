@@ -47,6 +47,7 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.service.appservice.IServiceService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.file.IFileService;
+import org.cerberus.service.json.IJsonService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
@@ -98,6 +99,8 @@ public class DataLibService implements IDataLibService {
     private IFactoryAppService factoryAppService;
     @Autowired
     private IXmlUnitService xmlUnitService;
+    @Autowired
+    private IJsonService jsonService;
     @Autowired
     private IRecorderService recorderService;
 
@@ -753,7 +756,7 @@ public class DataLibService implements IDataLibService {
                 List<String> listTemp1 = null;
 
                 // String containing the XML
-                String xmlResponseString = "";
+                String responseString = "";
 
                 /**
                  * Before making the call we check if the Service Path is
@@ -771,7 +774,7 @@ public class DataLibService implements IDataLibService {
                 msg = ai.getResultMessage();
 
                 //if the call returns success then we can process the soap ressponse
-                if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
+                if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
 
                     appService = (AppService) ai.getItem();
                     
@@ -791,7 +794,7 @@ public class DataLibService implements IDataLibService {
                         HashMap<String, List<String>> hashTemp1 = new HashMap<>();
 
                         if (columnList.isEmpty()) { // No subdata could be found on the testdatalib.
-                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_NOSUBDATA);
+                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_NOSUBDATA);
                             msg.setDescription(msg.getDescription()
                                     .replace("%ENTRY%", lib.getName())
                                     .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
@@ -802,7 +805,7 @@ public class DataLibService implements IDataLibService {
 
                                     Document xmlDocument = xmlUnitService.getXmlDocument(appService.getResponseHTTPBody());
                                     // We get the content of the XML in order to report it log messages.
-                                    xmlResponseString = appService.getResponseHTTPBody();
+                                    responseString = appService.getResponseHTTPBody();
 
                                     for (Map.Entry<String, String> entry : columnList.entrySet()) {
                                         String subDataColumnToTreat = entry.getKey(); // SubData
@@ -823,7 +826,7 @@ public class DataLibService implements IDataLibService {
 
                                                     if (value == null) { // No value found.
                                                         if (candidates.item(i) != null) {
-                                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_CHECK_XPATH);
+                                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_CHECK_XPATH);
                                                             msg.setDescription(msg.getDescription()
                                                                     .replace("%XPATH%", subDataParsingAnswer)
                                                                     .replace("%SUBDATA%", subDataColumnToTreat)
@@ -831,12 +834,12 @@ public class DataLibService implements IDataLibService {
                                                                     .replace("%ENTRYID%", lib.getTestDataLibID().toString()));
                                                         } else {
                                                             //no elements were returned by the XPATH expression
-                                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
+                                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
                                                             msg.setDescription(msg.getDescription()
                                                                     .replace("%XPATH%", subDataParsingAnswer)
                                                                     .replace("%SUBDATA%", subDataColumnToTreat)
                                                                     .replace("%ENTRY%", lib.getName())
-                                                                    .replace("%XMLCONTENT%", xmlResponseString)
+                                                                    .replace("%XMLCONTENT%", responseString)
                                                                     .replace("%ENTRYID%", lib.getTestDataLibID().toString())
                                                             );
                                                         }
@@ -857,25 +860,25 @@ public class DataLibService implements IDataLibService {
 
                                             } else {
                                                 //no elements were returned by the XPATH expression
-                                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XML_NOTFOUND);
+                                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XML_NOTFOUND);
                                                 msg.setDescription(msg.getDescription()
                                                         .replace("%XPATH%", subDataParsingAnswer)
                                                         .replace("%SUBDATA%", subDataColumnToTreat)
                                                         .replace("%ENTRY%", lib.getName())
-                                                        .replace("%XMLCONTENT%", xmlResponseString)
+                                                        .replace("%XMLCONTENT%", responseString)
                                                         .replace("%ENTRYID%", lib.getTestDataLibID().toString())
                                                 );
                                             }
                                         } catch (XmlUtilException ex) {
-                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
+                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION);
                                             msg.setDescription(msg.getDescription()
                                                     .replace("%XPATH%", subDataParsingAnswer)
                                                     .replace("%SUBDATA%", subDataColumnToTreat)
                                                     .replace("%ENTRY%", lib.getName())
                                                     .replace("%ENTRYID%", lib.getTestDataLibID().toString())
-                                                    .replace("%REASON%", ex.toString() + " Detail answer " + xmlResponseString));
+                                                    .replace("%REASON%", ex.toString() + " Detail answer " + responseString));
                                         } catch (Exception ex) {
-                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_XMLEXCEPTION);
+                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_XMLEXCEPTION);
                                             msg.setDescription(msg.getDescription()
                                                 .replace("%XPATH%", lib.getSubDataParsingAnswer())
                                                 .replace("%SUBDATA%", "")
@@ -888,7 +891,7 @@ public class DataLibService implements IDataLibService {
                                      * List) to target listResult (list of
                                      * Hash).
                                      */
-                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
+                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
                                         for (int i = 0; i < finalnbRow; i++) { // Loop on all Values that match in XML.
                                             resultHash = new HashMap<String, String>();
                                             for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all SubData of the TestDataLib.
@@ -910,7 +913,87 @@ public class DataLibService implements IDataLibService {
                                      * listResult (list of Hash) from the type
                                      * of Property.
                                      */
-                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSOAP.getCode()) {
+                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
+                                        result.setDataList(listResult);
+                                        msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP);
+                                        msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size()))
+                                                .replace("%URL%", servicePath).replace("%OPER%", lib.getMethod()));
+
+                                    }
+                                    break;
+                                case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
+
+                                    // We get the content of the XML in order to report it log messages.
+                                    responseString = appService.getResponseHTTPBody();
+
+                                    for (Map.Entry<String, String> entry : columnList.entrySet()) {
+                                        String subDataColumnToTreat = entry.getKey(); // SubData
+                                        String subDataParsingAnswer = entry.getValue(); // Parsing Answer
+                                        listTemp1 = new ArrayList<>();
+
+                                        try {
+
+                                            // We try to parse the XML with the subdata Parsing Answer.
+                                            listTemp1 = jsonService.getFromJson(responseString, subDataParsingAnswer);
+
+                                            if (listTemp1.size()> 0) {
+
+                                                // Add the Subdata with associated list in the HashMap.
+                                                hashTemp1.put(subDataColumnToTreat, listTemp1);
+
+                                                // Getting the nb of row of the final result. (Max of all the Subdata retrieved from the XML)
+                                                if (listTemp1.size() > finalnbRow) {
+                                                    finalnbRow = listTemp1.size();
+                                                }
+
+                                            } else {
+                                                //no elements were returned by the XPATH expression
+                                                msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSON_NOTFOUND);
+                                                msg.setDescription(msg.getDescription()
+                                                        .replace("%XPATH%", subDataParsingAnswer)
+                                                        .replace("%SUBDATA%", subDataColumnToTreat)
+                                                        .replace("%ENTRY%", lib.getName())
+                                                        .replace("%XMLCONTENT%", responseString)
+                                                        .replace("%ENTRYID%", lib.getTestDataLibID().toString())
+                                                );
+                                            }
+                                        } catch (Exception ex) {
+                                            msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_JSONEXCEPTION);
+                                            msg.setDescription(msg.getDescription()
+                                                .replace("%XPATH%", lib.getSubDataParsingAnswer())
+                                                .replace("%SUBDATA%", "")
+                                                .replace("%REASON%", ex.toString()));
+                                        }
+                                    }
+
+                                    /**
+                                     * This Step will convert hashTemp1 (Hash of
+                                     * List) to target listResult (list of
+                                     * Hash).
+                                     */
+                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
+                                        for (int i = 0; i < finalnbRow; i++) { // Loop on all Values that match in XML.
+                                            resultHash = new HashMap<String, String>();
+                                            for (Map.Entry<String, String> entry : columnList.entrySet()) { // Loop on all SubData of the TestDataLib.
+                                                listTemp1 = hashTemp1.get(entry.getKey());
+                                                if (listTemp1 != null) {
+                                                    if (i < listTemp1.size()) {
+                                                        resultHash.put(entry.getKey(), listTemp1.get(i));
+                                                    } else {
+                                                        resultHash.put(entry.getKey(), "");
+                                                    }
+                                                }
+                                            }
+                                            listResult.add(resultHash);
+                                        }
+                                    }
+
+                                    /**
+                                     * This Step will pick the correct
+                                     * listResult (list of Hash) from the type
+                                     * of Property.
+                                     */
+                                    if (msg.getCode() == MessageEventEnum.ACTION_SUCCESS_CALLSERVICE.getCode()) {
                                         result.setDataList(listResult);
                                         msg = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_GETFROMDATALIB_SOAP);
                                         msg.setDescription(msg.getDescription().replace("%NBROW%", String.valueOf(result.getDataList().size()))
@@ -930,7 +1013,7 @@ public class DataLibService implements IDataLibService {
 
                 } else {
                     String soapError = msg.getDescription();
-                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SOAP_SOAPCALLFAILED);
+                    msg = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMDATALIB_SERVICE_SOAPCALLFAILED);
                     msg.setDescription(msg.getDescription()
                             .replace("%SOAPERROR%", soapError));
 

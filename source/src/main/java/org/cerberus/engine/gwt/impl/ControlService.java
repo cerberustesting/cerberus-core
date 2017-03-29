@@ -528,16 +528,23 @@ public class ControlService implements IControlService {
                                 mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                                 return mes;
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            if (jsonService.getFromJson(responseBody, null, elementPath) != null) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
-                                return mes;
-                            } else {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            try {
+                                if (jsonService.getFromJson(responseBody, null, elementPath) != null) {
+                                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_PRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    return mes;
+                                } else {
+                                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_PRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    return mes;
+                                }
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                                 return mes;
                             }
+                        }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
@@ -602,16 +609,23 @@ public class ControlService implements IControlService {
                                 mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
                                 return mes;
                             }
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            if (jsonService.getFromJson(responseBody, null, elementPath) == null) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
-                                return mes;
-                            } else {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
-                                mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            try {
+                                if (jsonService.getFromJson(responseBody, null, elementPath) == null) {
+                                    mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_NOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    return mes;
+                                } else {
+                                    mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_NOTPRESENT);
+                                    mes.setDescription(mes.getDescription().replace("%STRING1%", elementPath));
+                                    return mes;
+                                }
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                                 return mes;
                             }
+                        }
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
@@ -882,20 +896,27 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
                             return mes;
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            actual = jsonService.getFromJson(responseBody, null, path);
-                            // In case of null actual value then we alert user
-                            if (actual == null) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            try {
+                                actual = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                                 return mes;
                             }
-                            // Construct the message from the actual response
-                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
-                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        }
+                        // In case of null actual value then we alert user
+                        if (actual == null) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
                             return mes;
+                        }
+                        // Construct the message from the actual response
+                        mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                        mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        return mes;
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);
                             mes.setDescription(mes.getDescription().replace("%TYPE%", tCExecution.getLastServiceCalled().getResponseHTTPBodyContentType()));
@@ -984,20 +1005,27 @@ public class ControlService implements IControlService {
                             mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
                             return mes;
 
-                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON:
-                            actual = jsonService.getFromJson(responseBody, null, path);
-                            // In case of null actual value then we alert user
-                            if (actual == null) {
-                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
-                                mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
+                        case AppService.RESPONSEHTTPBODYCONTENTTYPE_JSON: {
+                            try {
+                                actual = jsonService.getFromJson(responseBody, null, path);
+                            } catch (Exception ex) {
+                                mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC);
+                                mes.setDescription(mes.getDescription().replace("%ERROR%", ex.toString()));
                                 return mes;
                             }
-                            // Construct the message from the actual response
-                            mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
-                            mes.setDescription(mes.getDescription().replace("%STRING1%", path));
-                            mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
-                            mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        }
+                        // In case of null actual value then we alert user
+                        if (actual == null) {
+                            mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTINELEMENT_NO_SUCH_ELEMENT);
+                            mes.setDescription(mes.getDescription().replace("%ELEMENT%", path));
                             return mes;
+                        }
+                        // Construct the message from the actual response
+                        mes = actual.equalsIgnoreCase(expected) ? new MessageEvent(MessageEventEnum.CONTROL_FAILED_TEXTNOTINELEMENT) : new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_TEXTNOTINELEMENT);
+                        mes.setDescription(mes.getDescription().replace("%STRING1%", path));
+                        mes.setDescription(mes.getDescription().replace("%STRING2%", actual));
+                        mes.setDescription(mes.getDescription().replace("%STRING3%", expected));
+                        return mes;
 
                         default:
                             mes = new MessageEvent(MessageEventEnum.CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE);

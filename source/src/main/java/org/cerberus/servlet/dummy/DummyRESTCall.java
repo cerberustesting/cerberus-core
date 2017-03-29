@@ -82,6 +82,7 @@ public class DummyRESTCall extends HttpServlet {
             jsonResponse.put("LocalName", request.getLocalName());
             jsonResponse.put("LocalPort", request.getLocalPort());
             jsonResponse.put("QueryString", request.getQueryString());
+            jsonResponse.put("Boolean", true);
 
             String remoteIP = request.getRemoteAddr();
             if (request.getHeader("x-forwarded-for") != null) {
@@ -95,6 +96,8 @@ public class DummyRESTCall extends HttpServlet {
                 tempJsonResponse.put("integer", i);
                 tempJsonResponse.put("val1", "AAA" + i);
                 tempJsonResponse.put("val2", "BBB");
+                tempJsonResponse.put("val3", true);
+                tempJsonResponse.put("val4", false);
                 jsonArray.put(tempJsonResponse);
             }
             jsonResponse.put("myArray", jsonArray);

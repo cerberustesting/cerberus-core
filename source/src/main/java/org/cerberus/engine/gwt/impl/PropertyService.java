@@ -1188,9 +1188,9 @@ public class PropertyService implements IPropertyService {
                 LOG.error(exception.toString());
             }
             MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMJSON_PARAMETERNOTFOUND);
-
             res.setDescription(res.getDescription().replace("%URL%", testCaseExecutionData.getValue2()));
             res.setDescription(res.getDescription().replace("%PARAM%", testCaseExecutionData.getValue1()));
+            res.setDescription(res.getDescription().replace("%ERROR%", exception.toString()));
             testCaseExecutionData.setPropertyResultMessage(res);
         }
         return testCaseExecutionData;
