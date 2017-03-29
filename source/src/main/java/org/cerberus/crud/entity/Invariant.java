@@ -32,6 +32,12 @@ public class Invariant {
     private String gp1;
     private String gp2;
     private String gp3;
+    private String gp4;
+    private String gp5;
+    private String gp6;
+    private String gp7;
+    private String gp8;
+    private String gp9;
 
     public String getDescription() {
         return description;
@@ -71,6 +77,54 @@ public class Invariant {
 
     public void setGp3(String gp3) {
         this.gp3 = gp3;
+    }
+
+    public String getGp4() {
+        return gp4;
+    }
+
+    public void setGp4(String gp4) {
+        this.gp4 = gp4;
+    }
+
+    public String getGp5() {
+        return gp5;
+    }
+
+    public void setGp5(String gp5) {
+        this.gp5 = gp5;
+    }
+
+    public String getGp6() {
+        return gp6;
+    }
+
+    public void setGp6(String gp6) {
+        this.gp6 = gp6;
+    }
+
+    public String getGp7() {
+        return gp7;
+    }
+
+    public void setGp7(String gp7) {
+        this.gp7 = gp7;
+    }
+
+    public String getGp8() {
+        return gp8;
+    }
+
+    public void setGp8(String gp8) {
+        this.gp8 = gp8;
+    }
+
+    public String getGp9() {
+        return gp9;
+    }
+
+    public void setGp9(String gp9) {
+        this.gp9 = gp9;
     }
 
     public String getIdName() {

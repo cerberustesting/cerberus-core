@@ -77,6 +77,12 @@ function displayPageLabel() {
     $("[name='gp1Field']").html(doc.getDocLabel("page_invariant", "gp1"));
     $("[name='gp2Field']").html(doc.getDocLabel("page_invariant", "gp2"));
     $("[name='gp3Field']").html(doc.getDocLabel("page_invariant", "gp3"));
+    $("[name='gp4Field']").html(doc.getDocLabel("page_invariant", "gp4"));
+    $("[name='gp5Field']").html(doc.getDocLabel("page_invariant", "gp5"));
+    $("[name='gp6Field']").html(doc.getDocLabel("page_invariant", "gp6"));
+    $("[name='gp7Field']").html(doc.getDocLabel("page_invariant", "gp7"));
+    $("[name='gp8Field']").html(doc.getDocLabel("page_invariant", "gp8"));
+    $("[name='gp9Field']").html(doc.getDocLabel("page_invariant", "gp9"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_invariant", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_invariant", "save_btn"));
     $("#invariantListLabel").html("<span class='glyphicon glyphicon-list'></span> " + doc.getDocLabel("page_invariant", "public_invariant"))
@@ -139,6 +145,12 @@ function editEntryClick(param, value) {
                 formEdit.find("#gp1").prop("value", data.invariant.gp1);
                 formEdit.find("#gp2").prop("value", data.invariant.gp2);
                 formEdit.find("#gp3").prop("value", data.invariant.gp3);
+                formEdit.find("#gp4").prop("value", data.invariant.gp4);
+                formEdit.find("#gp5").prop("value", data.invariant.gp5);
+                formEdit.find("#gp6").prop("value", data.invariant.gp6);
+                formEdit.find("#gp7").prop("value", data.invariant.gp7);
+                formEdit.find("#gp8").prop("value", data.invariant.gp8);
+                formEdit.find("#gp9").prop("value", data.invariant.gp9);
 
                 formEdit.modal('show');
             } else {
@@ -166,6 +178,12 @@ function viewEntryClick(param, value) {
                 formEdit.find("#gp1").prop("value", data.invariant.gp1);
                 formEdit.find("#gp2").prop("value", data.invariant.gp2);
                 formEdit.find("#gp3").prop("value", data.invariant.gp3);
+                formEdit.find("#gp4").prop("value", data.invariant.gp4);
+                formEdit.find("#gp5").prop("value", data.invariant.gp5);
+                formEdit.find("#gp6").prop("value", data.invariant.gp6);
+                formEdit.find("#gp7").prop("value", data.invariant.gp7);
+                formEdit.find("#gp8").prop("value", data.invariant.gp8);
+                formEdit.find("#gp9").prop("value", data.invariant.gp9);
 
                 formEdit.find("#idname").prop("readonly", "readonly");
                 formEdit.find("#value").prop("readonly", "readonly");
@@ -242,7 +260,13 @@ function editEntryModalSaveHandler() {
             veryShortDesc: data.veryShortDesc,
             gp1: data.gp1,
             gp2: data.gp2,
-            gp3: data.gp3
+            gp3: data.gp3,
+            gp4: data.gp4,
+            gp5: data.gp5,
+            gp6: data.gp6,
+            gp7: data.gp7,
+            gp8: data.gp8,
+            gp9: data.gp9
         },
         success: function (data) {
             data = JSON.parse(data);
@@ -284,7 +308,13 @@ function addEntryModalSaveHandler() {
             VeryShortDesc: data.veryShortDesc,
             gp1: data.gp1,
             gp2: data.gp2,
-            gp3: data.gp3
+            gp3: data.gp3,
+            gp4: data.gp4,
+            gp5: data.gp5,
+            gp6: data.gp6,
+            gp7: data.gp7,
+            gp8: data.gp8,
+            gp9: data.gp9
         },
         success: function (data) {
             data = JSON.parse(data);
@@ -359,7 +389,13 @@ function aoColumnsFunc(tableId) {
         {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
         {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")}
+        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "sName": "gp4", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "sName": "gp5", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "sName": "gp6", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "sName": "gp7", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "sName": "gp8", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "sName": "gp9", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }
@@ -389,7 +425,13 @@ function aoColumnsFunc2(tableId) {
         {"data": "veryShortDesc", "sName": "VeryShortDesc", "title": doc.getDocLabel("page_invariant", "veryShortDesc")},
         {"data": "gp1", "sName": "gp1", "title": doc.getDocLabel("page_invariant", "gp1")},
         {"data": "gp2", "sName": "gp2", "title": doc.getDocLabel("page_invariant", "gp2")},
-        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")}
+        {"data": "gp3", "sName": "gp3", "title": doc.getDocLabel("page_invariant", "gp3")},
+        {"data": "gp4", "sName": "gp4", "title": doc.getDocLabel("page_invariant", "gp4")},
+        {"data": "gp5", "sName": "gp5", "title": doc.getDocLabel("page_invariant", "gp5")},
+        {"data": "gp6", "sName": "gp6", "title": doc.getDocLabel("page_invariant", "gp6")},
+        {"data": "gp7", "sName": "gp7", "title": doc.getDocLabel("page_invariant", "gp7")},
+        {"data": "gp8", "sName": "gp8", "title": doc.getDocLabel("page_invariant", "gp8")},
+        {"data": "gp9", "sName": "gp9", "title": doc.getDocLabel("page_invariant", "gp9")}
     ];
     return aoColumns;
 }

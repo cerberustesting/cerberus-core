@@ -30,7 +30,8 @@ import org.springframework.stereotype.Service;
 public class FactoryInvariant implements IFactoryInvariant {
 
     @Override
-    public Invariant create(String idName, String value, Integer sort, String description, String veryShortDesc, String gp1, String gp2, String gp3) {
+    public Invariant create(String idName, String value, Integer sort, String description, String veryShortDesc, String gp1, String gp2, String gp3,
+            String gp4, String gp5, String gp6, String gp7, String gp8, String gp9) {
         Invariant invariant = new Invariant();
         invariant.setIdName(idName);
         invariant.setSort(sort);
@@ -40,6 +41,12 @@ public class FactoryInvariant implements IFactoryInvariant {
         invariant.setGp1(gp1);
         invariant.setGp2(gp2);
         invariant.setGp3(gp3);
+        invariant.setGp4(gp4);
+        invariant.setGp5(gp5);
+        invariant.setGp6(gp6);
+        invariant.setGp7(gp7);
+        invariant.setGp8(gp8);
+        invariant.setGp9(gp9);
         return invariant;
     }
 

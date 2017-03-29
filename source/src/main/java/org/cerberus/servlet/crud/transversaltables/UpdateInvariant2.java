@@ -80,6 +80,12 @@ public class UpdateInvariant2 extends HttpServlet {
         String gp1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp1"), "", charset);
         String gp2 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp2"), "", charset);
         String gp3 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp3"), "", charset);
+        String gp4 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp4"), "", charset);
+        String gp5 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp5"), "", charset);
+        String gp6 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp6"), "", charset);
+        String gp7 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp7"), "", charset);
+        String gp8 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp8"), "", charset);
+        String gp9 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp9"), "", charset);
 
         Integer sort = 10;
         boolean sort_error = false;
@@ -150,6 +156,12 @@ public class UpdateInvariant2 extends HttpServlet {
                         invariantData.setGp1(gp1);
                         invariantData.setGp2(gp2);
                         invariantData.setGp3(gp3);
+                        invariantData.setGp4(gp4);
+                        invariantData.setGp5(gp5);
+                        invariantData.setGp6(gp6);
+                        invariantData.setGp7(gp7);
+                        invariantData.setGp8(gp8);
+                        invariantData.setGp9(gp9);
 
                         ans = invariantService.update(invariantData);
                         finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);

@@ -833,8 +833,8 @@ public class InvariantDAO implements IInvariantDAO {
     public Answer create2(Invariant object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO invariant (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`) ");
-        query.append("VALUES (?,?,?,?,?,?,?,?)");
+        query.append("INSERT INTO invariant (`idname`, `value`, `sort`, `description`, `VeryShortDesc`, `gp1`, `gp2`, `gp3`, `gp4`, `gp5`, `gp6`, `gp7`, `gp8`, `gp9`) ");
+        query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -844,14 +844,21 @@ public class InvariantDAO implements IInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
-                preStat.setString(1, object.getIdName());
-                preStat.setString(2, object.getValue());
-                preStat.setInt(3, object.getSort());
-                preStat.setString(4, object.getDescription());
-                preStat.setString(5, object.getVeryShortDesc());
-                preStat.setString(6, object.getGp1());
-                preStat.setString(7, object.getGp2());
-                preStat.setString(8, object.getGp3());
+                int i=1;
+                preStat.setString(i++, object.getIdName());
+                preStat.setString(i++, object.getValue());
+                preStat.setInt(i++, object.getSort());
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getVeryShortDesc());
+                preStat.setString(i++, object.getGp1());
+                preStat.setString(i++, object.getGp2());
+                preStat.setString(i++, object.getGp3());
+                preStat.setString(i++, object.getGp4());
+                preStat.setString(i++, object.getGp5());
+                preStat.setString(i++, object.getGp6());
+                preStat.setString(i++, object.getGp7());
+                preStat.setString(i++, object.getGp8());
+                preStat.setString(i++, object.getGp9());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -932,7 +939,7 @@ public class InvariantDAO implements IInvariantDAO {
     @Override
     public Answer update2(Invariant object) {
         MessageEvent msg = null;
-        final String query = "UPDATE invariant SET sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?  WHERE idname = ? and `value` = ?";
+        final String query = "UPDATE invariant SET sort = ?, Description = ?, VeryShortDesc = ?, gp1 = ?, gp2 = ?, gp3 = ?, gp4 = ?, gp5 = ?, gp6 = ?, gp7 = ?, gp8 = ?, gp9 = ?  WHERE idname = ? and `value` = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -942,14 +949,21 @@ public class InvariantDAO implements IInvariantDAO {
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setInt(1, object.getSort());
-                preStat.setString(2, object.getDescription());
-                preStat.setString(3, object.getVeryShortDesc());
-                preStat.setString(4, object.getGp1());
-                preStat.setString(5, object.getGp2());
-                preStat.setString(6, object.getGp3());
-                preStat.setString(7, object.getIdName());
-                preStat.setString(8, object.getValue());
+                int i=1;
+                preStat.setInt(i++, object.getSort());
+                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getVeryShortDesc());
+                preStat.setString(i++, object.getGp1());
+                preStat.setString(i++, object.getGp2());
+                preStat.setString(i++, object.getGp3());
+                preStat.setString(i++, object.getGp4());
+                preStat.setString(i++, object.getGp5());
+                preStat.setString(i++, object.getGp6());
+                preStat.setString(i++, object.getGp7());
+                preStat.setString(i++, object.getGp8());
+                preStat.setString(i++, object.getGp9());
+                preStat.setString(i++, object.getIdName());
+                preStat.setString(i++, object.getValue());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -985,8 +999,14 @@ public class InvariantDAO implements IInvariantDAO {
         String gp1 = (resultSet.getString("gp1") != null) ? resultSet.getString("gp1") : "";
         String gp2 = (resultSet.getString("gp2") != null) ? resultSet.getString("gp2") : "";
         String gp3 = (resultSet.getString("gp3") != null) ? resultSet.getString("gp3") : "";
+        String gp4 = (resultSet.getString("gp4") != null) ? resultSet.getString("gp4") : "";
+        String gp5 = (resultSet.getString("gp5") != null) ? resultSet.getString("gp5") : "";
+        String gp6 = (resultSet.getString("gp6") != null) ? resultSet.getString("gp6") : "";
+        String gp7 = (resultSet.getString("gp7") != null) ? resultSet.getString("gp7") : "";
+        String gp8 = (resultSet.getString("gp8") != null) ? resultSet.getString("gp8") : "";
+        String gp9 = (resultSet.getString("gp9") != null) ? resultSet.getString("gp9") : "";
         String value = (resultSet.getString("value") != null) ? resultSet.getString("value") : "";
-        return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3);
+        return factoryInvariant.create(idName, value, sort, description, veryShortDesc, gp1, gp2, gp3, gp4, gp5, gp6, gp7, gp8, gp9);
     }
 
     private String getSearchString(String searchTerm) {

@@ -8520,7 +8520,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
         SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Insert invariants CAPABILITIES if not already defined.
         //-- ------------------------ 1112 - 1115
         SQLS = new StringBuilder();
@@ -8539,7 +8539,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appWaitActivity', 10,'Activity name for the Android activity you want to wait for.' FROM DUAL");
         SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appWaitActivity');");
         SQLInstruction.add(SQLS.toString());
-        
+
         //Add userAgent in TestCaseExecution Table and documentation Table
         //-- ------------------------ 1116 - 1117
         SQLS = new StringBuilder();
@@ -8551,7 +8551,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('page_executiondetail', 'userAgent', '', 'fr', 'UserAgent', 'User Agent envoyé au navigateur web pour cette execution'),");
         SQLS.append("('page_executiondetail', 'userAgent', '', 'en', 'UserAgent', 'User Agent required for this execution');");
         SQLInstruction.add(SQLS.toString());
-        
+
         //Add OutputFormat verbose-json
         //-- ------------------------ 1118
         SQLS = new StringBuilder();
@@ -8565,9 +8565,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
         SQLS.append("CHANGE COLUMN `Browser` `Browser` VARCHAR(45) NULL DEFAULT NULL ;");
         SQLInstruction.add(SQLS.toString());
-        
-        
-        
+
         // Parameter smtp username and password
         //-- ------------------------ 1120
         SQLS = new StringBuilder();
@@ -8575,7 +8573,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('','integration_smtp_username','','Username to be used in case of SMTP with Authentication. Empty if no authentication required.')");
         SQLS.append(",('','integration_smtp_password','','Password to be used in case of SMTP with Authentication. Empty if no authentication required.')");
         SQLInstruction.add(SQLS.toString());
-        
+
+        //Add gp4 to gp9 group in invariant table.
+        //-- ------------------------ 1121
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` ");
+        SQLS.append(" ADD COLUMN `gp4` VARCHAR(45) NULL DEFAULT NULL AFTER `gp3`, ");
+        SQLS.append(" ADD COLUMN `gp5` VARCHAR(45) NULL DEFAULT NULL AFTER `gp4`, ");
+        SQLS.append(" ADD COLUMN `gp6` VARCHAR(45) NULL DEFAULT NULL AFTER `gp5`, ");
+        SQLS.append(" ADD COLUMN `gp7` VARCHAR(45) NULL DEFAULT NULL AFTER `gp6`, ");
+        SQLS.append(" ADD COLUMN `gp8` VARCHAR(45) NULL DEFAULT NULL AFTER `gp7`, ");
+        SQLS.append(" ADD COLUMN `gp9` VARCHAR(45) NULL DEFAULT NULL AFTER `gp8` ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

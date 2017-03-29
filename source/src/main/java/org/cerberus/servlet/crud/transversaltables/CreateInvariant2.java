@@ -76,6 +76,12 @@ public class CreateInvariant2 extends HttpServlet {
         String gp1 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp1"), "", charset);
         String gp2 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp2"), "", charset);
         String gp3 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp3"), "", charset);
+        String gp4 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp4"), "", charset);
+        String gp5 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp5"), "", charset);
+        String gp6 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp6"), "", charset);
+        String gp7 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp7"), "", charset);
+        String gp8 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp8"), "", charset);
+        String gp9 = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("gp9"), "", charset);
 
         Integer sort = 10;
         boolean sort_error = false;
@@ -118,7 +124,7 @@ public class CreateInvariant2 extends HttpServlet {
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
             IFactoryInvariant factoryInvariant = appContext.getBean(IFactoryInvariant.class);
-            Invariant invariantData = factoryInvariant.create(id, value, sort, description, veryShortDescField, gp1, gp2, gp3);
+            Invariant invariantData = factoryInvariant.create(id, value, sort, description, veryShortDescField, gp1, gp2, gp3, gp4, gp5, gp6, gp7, gp8, gp9);
 
             ans = invariantService.create(invariantData);
 

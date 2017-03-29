@@ -27,5 +27,6 @@ import org.cerberus.crud.entity.Invariant;
 public interface IFactoryInvariant {
 
     Invariant create(String idName, String value, Integer sort, String description,
-                     String veryShortDesc, String gp1, String gp2, String gp3);
+                     String veryShortDesc, String gp1, String gp2, String gp3, String gp4, String gp5, String gp6,
+                     String gp7, String gp8, String gp9);
 }
