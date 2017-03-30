@@ -49,57 +49,57 @@ function initPage() {
         console.debug("expand");
         if ($(this).val() === "SQL") {
             $("#panelSQL").collapse("show");
-            $("#panelSOAP").collapse("hide");
+            $("#panelSERVICE").collapse("hide");
             $("#panelCSV").collapse("hide");
-        } else if ($(this).val() === "SOAP") {
+        } else if ($(this).val() === "SERVICE") {
             $("#panelSQL").collapse("hide");
-            $("#panelSOAP").collapse("show");
+            $("#panelSERVICE").collapse("show");
             $("#panelCSV").collapse("hide");
         } else if ($(this).val() === "CSV") {
             $("#panelSQL").collapse("hide");
-            $("#panelSOAP").collapse("hide");
+            $("#panelSERVICE").collapse("hide");
             $("#panelCSV").collapse("show");
         } else {
             $("#panelSQL").collapse("hide");
-            $("#panelSOAP").collapse("hide");
+            $("#panelSERVICE").collapse("hide");
             $("#panelCSV").collapse("hide");
         }
     });
     $('#editTestDataLibModal #type').change(function () {
         if ($(this).val() === "SQL") {
             $("#panelSQLEdit").collapse("show");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
-        } else if ($(this).val() === "SOAP") {
+        } else if ($(this).val() === "SERVICE") {
             $("#panelSQLEdit").collapse("hide");
-            $("#panelSOAPEdit").collapse("show");
+            $("#panelSERVICEEdit").collapse("show");
             $("#panelCSVEdit").collapse("hide");
         } else if ($(this).val() === "CSV") {
             $("#panelSQLEdit").collapse("hide");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("show");
         } else {
             $("#panelSQLEdit").collapse("hide");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
         }
     });
     $('#duplicateTestDataLibModal #type').change(function () {
         if ($(this).val() === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
-            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("hide");
-        } else if ($(this).val() === "SOAP") {
+        } else if ($(this).val() === "SERVICE") {
             $("#panelSQLDuplicate").collapse("hide");
-            $("#panelSOAPDuplicate").collapse("show");
+            $("#panelSERVICEDuplicate").collapse("show");
             $("#panelCSVDuplicate").collapse("hide");
         } else if ($(this).val() === "CSV") {
             $("#panelSQLDuplicate").collapse("hide");
-            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("show");
         } else {
             $("#panelSQLDuplicate").collapse("hide");
-            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("hide");
         }
     });
@@ -112,6 +112,19 @@ function initPage() {
     displayInvariantList("databaseUrl", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("databaseCsv", "PROPERTYDATABASE", false, "", "");
     displayInvariantList("type", "TESTDATATYPE", false, "INTERNAL");
+
+    $("select[id='service']").append($('<option></option>').text("").val(""));
+    displayAppServiceList("service", "");
+
+    $("#addTestDataLibModal #service").change(function () {
+        activateSOAPServiceFields("#addTestDataLibModal", $(this).val());
+    });
+    $("#editTestDataLibModal #service").change(function () {
+        activateSOAPServiceFields("#editTestDataLibModal", $(this).val());
+    });
+    $("#duplicateTestDataLibModal #service").change(function () {
+        activateSOAPServiceFields("#duplicateTestDataLibModal", $(this).val());
+    });
 
 
     // Click on add row button adds a Subdata entry.
@@ -132,6 +145,18 @@ function initPage() {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
 
+}
+
+function activateSOAPServiceFields(modal, serviceValue) {
+    if (serviceValue === "") {
+        $(modal + " #servicepath").prop("readonly", false);
+        $(modal + " #method").prop("readonly", false);
+        $(modal + " #envelope").prop("contenteditable", true);
+    } else {
+        $(modal + " #servicepath").prop("readonly", true);
+        $(modal + " #method").prop("readonly", true);
+        $(modal + " #envelope").prop("contenteditable", false);
+    }
 }
 
 /**
@@ -174,6 +199,7 @@ function displayPageLabel() {
     $("[name='lbl_script']").html(doc.getDocOnline("testdatalib", "script"));
     $("[name='lbl_databaseUrl']").html(doc.getDocOnline("testdatalib", "databaseUrl"));
     $("[name='lbl_service_path']").html(doc.getDocOnline("testdatalib", "servicepath"));
+    $("[name='lbl_service']").html(doc.getDocOnline("testdatalib", "service"));
     $("[name='lbl_method']").html(doc.getDocOnline("testdatalib", "method"));
     $("[name='lbl_envelope']").html(doc.getDocOnline("testdatalib", "envelope"));
     $("[name='lbl_databaseCsv']").html(doc.getDocOnline("testdatalib", "databaseCsv"));
@@ -193,9 +219,9 @@ function displayPageLabel() {
     $("[name='lbl_lastModified']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_lastModifier']").html(doc.getDocOnline("transversal", "UsrModif"));
 
-    //soap and sql specific configurations
+    //service and sql specific configurations
     $("[name='sqlConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_sql_configurations"));
-    $("[name='soapConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_soap_configurations"));
+    $("[name='serviceConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_service_configurations"));
     $("[name='csvConfigurationsLbl']").html(doc.getDocOnline("page_testdatalib", "title_csv_configurations"));
 
     //buttons
@@ -362,6 +388,7 @@ function addTestDataLibModalSaveHandler() {
             script: data.script,
             separator: data.separator,
             servicepath: data.servicepath,
+            service: data.service,
             testdatalibid: data.testdatalibid,
             type: data.type,
             subDataList: JSON.stringify(table_subdata)},
@@ -461,6 +488,7 @@ function addTestDataLibClick() {
         $('#addTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
     });
 
+    activateSOAPServiceFields("#addTestDataLibModal", "");
 
     $('#addTestDataLibModal').modal('show');
 }
@@ -528,6 +556,7 @@ function duplicateTestDataLibModalSaveHandler() {
             script: data.script,
             separator: data.separator,
             servicepath: data.servicepath,
+            service: data.service,
             testdatalibid: data.testdatalibid,
             type: data.type,
             subDataList: JSON.stringify(table_subdata)},
@@ -566,9 +595,11 @@ function duplicateTestDataLibClick(testDataLibID) {
 
         //loads the information for entries
         $('#duplicateTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+        $('#duplicateTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
         $('#duplicateTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#duplicateTestDataLibModal #method').prop("value", obj.method);
         $('#duplicateTestDataLibModal #envelope').text(obj.envelope);
+        activateSOAPServiceFields("#duplicateTestDataLibModal", obj.service);
         $('#duplicateTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#duplicateTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#duplicateTestDataLibModal #separator').prop("value", obj.separator);
@@ -581,20 +612,20 @@ function duplicateTestDataLibClick(testDataLibID) {
 
         if (obj.type === "SQL") {
             $("#panelSQLDuplicate").collapse("show");
-            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("hide");
-        } else if (obj.type === "SOAP") {
-            $("#panelSOAPDuplicate").collapse("show");
+        } else if (obj.type === "SERVICE") {
             $("#panelSQLDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("show");
             $("#panelCSVDuplicate").collapse("hide");
         } else if (obj.type === "CSV") {
-            $("#panelSOAPDuplicate").collapse("hide");
             $("#panelSQLDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("show");
         } else {
-            //hide all if the type is static
+            //hide all if the type is internal
             $("#panelSQLDuplicate").collapse("hide");
-            $("#panelSOAPDuplicate").collapse("hide");
+            $("#panelSERVICEDuplicate").collapse("hide");
             $("#panelCSVDuplicate").collapse("hide");
         }
 
@@ -727,6 +758,7 @@ function editTestDataLibModalSaveHandler() {
             script: data.script,
             separator: data.separator,
             servicepath: data.servicepath,
+            service: data.service,
             testdatalibid: data.testdatalibid,
             type: data.type,
             subDataList: JSON.stringify(table_subdata)},
@@ -767,9 +799,11 @@ function editTestDataLibClick(testDataLibID) {
 
         //loads the information for the entries
         $('#editTestDataLibModal #databaseUrl').find('option[value="' + obj.databaseUrl + '"]:first').prop("selected", "selected");
+        $('#editTestDataLibModal #service').find('option[value="' + obj.service + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #servicepath').prop("value", obj.servicePath);
         $('#editTestDataLibModal #method').prop("value", obj.method);
         $('#editTestDataLibModal #envelope').text(obj.envelope);
+        activateSOAPServiceFields("#editTestDataLibModal", obj.service);
         $('#editTestDataLibModal #databaseCsv').find('option[value="' + obj.databaseCsv + '"]:first').prop("selected", "selected");
         $('#editTestDataLibModal #csvUrl').prop("value", obj.csvUrl);
         $('#editTestDataLibModal #separator').prop("value", obj.separator);
@@ -786,20 +820,20 @@ function editTestDataLibClick(testDataLibID) {
 
         if (obj.type === "SQL") {
             $("#panelSQLEdit").collapse("show");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
-        } else if (obj.type === "SOAP") {
-            $("#panelSOAPEdit").collapse("show");
+        } else if (obj.type === "SERVICE") {
+            $("#panelSERVICEEdit").collapse("show");
             $("#panelSQLEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
         } else if (obj.type === "CSV") {
             $("#panelCSVEdit").collapse("show");
             $("#panelSQLEdit").collapse("hide");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
         } else {
             //hide all if the type is static
             $("#panelSQLEdit").collapse("hide");
-            $("#panelSOAPEdit").collapse("hide");
+            $("#panelSERVICEEdit").collapse("hide");
             $("#panelCSVEdit").collapse("hide");
         }
 
@@ -1248,6 +1282,12 @@ function aoColumnsFuncTestDataLib(tableId) {
             "data": "databaseUrl",
             "sWidth": "70px",
             "title": doc.getDocOnline("testdatalib", "databaseUrl")
+        },
+        {
+            "sName": "tdl.Service",
+            "data": "service",
+            "sWidth": "150px",
+            "title": doc.getDocOnline("testdatalib", "service")
         },
         {
             "sName": "tdl.ServicePath",

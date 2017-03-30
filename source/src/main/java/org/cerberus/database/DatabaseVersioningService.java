@@ -6462,6 +6462,332 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1064-1065
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Update DateCreated from appservice to remove Zero Date
+        //-- ------------------------ 1066
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE appservice SET DateCreated = '1970-01-01 01:01:01' WHERE DateCreated = '0000-00-00 00:00:00'");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added content and header Service tables.
+        //-- ------------------------ 1067-1070
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `appservicecontent` (");
+        SQLS.append("  `Service` VARCHAR(255) NOT NULL ,");
+        SQLS.append("  `Key` VARCHAR(255) NOT NULL ,");
+        SQLS.append("  `Value` TEXT NULL ,");
+        SQLS.append("  `Sort` INT NULL DEFAULT 0 ,");
+        SQLS.append("  `Active` VARCHAR(45) NULL DEFAULT 'Y' ,");
+        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,");
+        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '' ,");
+        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,");
+        SQLS.append("  PRIMARY KEY (`Service`, `Key`), ");
+        SQLS.append("   CONSTRAINT `FK_appservicecontent_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE)");
+        SQLS.append("  ENGINE=InnoDB DEFAULT CHARSET=utf8; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `appserviceheader` (");
+        SQLS.append("  `Service` VARCHAR(255) NOT NULL ,");
+        SQLS.append("  `Key` VARCHAR(255) NOT NULL ,");
+        SQLS.append("  `Value` TEXT NULL ,");
+        SQLS.append("  `Sort` INT NULL DEFAULT 0 ,");
+        SQLS.append("  `Active` VARCHAR(45) NULL DEFAULT 'Y' ,");
+        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' ,");
+        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,");
+        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '' ,");
+        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,");
+        SQLS.append("  PRIMARY KEY (`Service`, `Key`), ");
+        SQLS.append("  CONSTRAINT `FK_appserviceheader_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE)");
+        SQLS.append("  ENGINE=InnoDB DEFAULT CHARSET=utf8; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appserviceheader` ");
+        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservicecontent` ");
+        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added tracability on application table.
+        //-- ------------------------ 1071
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `application` ");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `mavengroupid`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // 2 new Parameters used for CallService Action.
+        //-- ------------------------ 1072
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ");
+        SQLS.append(" ('','cerberus_callservice_enablehttpheadertoken','Y','Boolean that activate the addition of a header entry cerberus_token with execution id value on every serice call.'), ");
+        SQLS.append(" ('','cerberus_callservice_timeoutms','60000','timeout in ms second used for any service call.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Remove WS type of application and convert it to SRV + Reorder Application Type in menu.
+        //-- ------------------------ 1073-1078
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE application SET `Type` = 'SRV' WHERE `Type` = 'WS'; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='APPLITYPE' and`value`='WS'; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='900' WHERE `idname`='APPLITYPE' and`value`='NONE';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='800' WHERE `idname`='APPLITYPE' and`value`='BAT';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `description`='Web GUI application' WHERE `idname`='APPLITYPE' and`value`='GUI';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `description`='Service Application (REST or SOAP)' WHERE `idname`='APPLITYPE' and`value`='SRV';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Documentation on executions in queue page.
+        //-- ------------------------ 1079-1082
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add the mass action on the execution pending page
+        //-- ------------------------ 1083-1084
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Add missing documentation on execution pending table
+        //-- ------------------------ 1085
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Remove the unecessary TestCaseExecutionQueue's Proceeded column
+        //-- ------------------------ 1086
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `Proceeded`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Invert Value1 and Value2 from 'getFromJSON' and 'getFromXML' Properties.
+        //-- ------------------------ 1087-1091
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `valueTemp` TEXT NULL AFTER `last_modified`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET valueTemp=Value2 where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET Value2=Value1 where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties  SET Value1=valueTemp where `Type` in ('getFromJSON', 'getFromXML');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcasecountryproperties` DROP COLUMN `valueTemp` ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Added invariant for Content and Header service.
+        //-- ------------------------ 1092
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('APPSERVICECONTENTACT', 'Y', 100, 'Yes', '', '', '', '')");
+        SQLS.append(",('APPSERVICECONTENTACT', 'N', 200, 'No', '', '', '', '')");
+        SQLS.append(",('APPSERVICEHEADERACT', 'Y', 100, 'Yes', '', '', '', '')");
+        SQLS.append(",('APPSERVICEHEADERACT', 'N', 200, 'No', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICECONTENTACT', '620', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICEHEADERACT', '630', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Changed control from Integer to Numeric..
+        //-- ------------------------ 1093-1102
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericEquals' where Control in ('verifyIntegerEquals');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericDifferent' where Control in ('verifyIntegerDifferent');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericGreater' where Control in ('verifyIntegerGreater');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericMinor' where Control in ('verifyIntegerMinor');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericEquals', `description`='verifyNumericEquals' WHERE `idname`='CONTROL' and`value`='verifyIntegerEquals';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericDifferent', `description`='verifyNumericDifferent' WHERE `idname`='CONTROL' and`value`='verifyIntegerDifferent';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericGreater', `description`='verifyNumericGreater' WHERE `idname`='CONTROL' and`value`='verifyIntegerGreater';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericMinor', `description`='verifyNumericMinor' WHERE `idname`='CONTROL' and`value`='verifyIntegerMinor';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericGreaterOrEqual', '1610', 'verifyNumericGreaterOrEqual');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericMinorOrEqual', '1710', 'verifyNumericMinorOrEqual');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding Service Columns to testdatalib table.
+        //-- ------------------------ 1103-1105
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD COLUMN `Service` VARCHAR(255) NULL DEFAULT null AFTER `DatabaseUrl`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD INDEX `IX_testdatalib_02` (`Service` ASC);");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Adding new Element present Condition.
+        //-- ------------------------ 1106
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('ACTIONCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLS.append(",('STEPCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLS.append(",('CONTROLCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to tune the timeout on click action
+        //-- ------------------------ 1107
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_selenium_action_click_timeout','90000','timeout in ms second used during selenium click action.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter in order to tune the number of tag displayed inside the homepage.
+        //-- ------------------------ 1108
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_homepage_nbdisplayedtag','5','Number of tag summary displayed inside homepage.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Modification of the size of the Port.
+        //-- ------------------------ 1109 - 1111
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `robot` ");
+        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Insert invariants CAPABILITIES if not already defined.
+        //-- ------------------------ 1112 - 1115
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) SELECT 'CAPABILITY', 'acceptInsecureCerts', 10, 'Whether the session should accept insecure SSL certs by default.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptInsecureCerts');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'acceptSslCerts', 10,'Whether the session should accept all SSL certs by default.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptSslCerts');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appActivity', 10,'Activity name for the Android activity you want to launch from your package. This often needs to be preceded by a . (e.g., .MainActivity instead of MainActivity).' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appActivity');");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appWaitActivity', 10,'Activity name for the Android activity you want to wait for.' FROM DUAL");
+        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appWaitActivity');");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add userAgent in TestCaseExecution Table and documentation Table
+        //-- ------------------------ 1116 - 1117
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append("ADD COLUMN `UserAgent` VARCHAR(250) NULL DEFAULT NULL AFTER `screensize`;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add OutputFormat verbose-json
+        //-- ------------------------ 1118
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
+        SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Let testcaseexecutionqueue's Browser column be null
+        //-- ------------------------ 1119
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("CHANGE COLUMN `Browser` `Browser` VARCHAR(45) NULL DEFAULT NULL ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter smtp username and password
+        //-- ------------------------ 1120
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','integration_smtp_username','','Username to be used in case of SMTP with Authentication. Empty if no authentication required.')");
+        SQLS.append(",('','integration_smtp_password','','Password to be used in case of SMTP with Authentication. Empty if no authentication required.')");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add gp4 to gp9 group in invariant table.
+        //-- ------------------------ 1121
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `invariant` ");
+        SQLS.append(" ADD COLUMN `gp4` VARCHAR(45) NULL DEFAULT NULL AFTER `gp3`, ");
+        SQLS.append(" ADD COLUMN `gp5` VARCHAR(45) NULL DEFAULT NULL AFTER `gp4`, ");
+        SQLS.append(" ADD COLUMN `gp6` VARCHAR(45) NULL DEFAULT NULL AFTER `gp5`, ");
+        SQLS.append(" ADD COLUMN `gp7` VARCHAR(45) NULL DEFAULT NULL AFTER `gp6`, ");
+        SQLS.append(" ADD COLUMN `gp8` VARCHAR(45) NULL DEFAULT NULL AFTER `gp7`, ");
+        SQLS.append(" ADD COLUMN `gp9` VARCHAR(45) NULL DEFAULT NULL AFTER `gp8` ;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Parameter proxy for callService in rest
+        //-- ------------------------ 1122
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_callservicerest_proxyactive','N','Y if you want to activate proxy for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyhost','proxy','Hostname of the proxy that will be used for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyport','80','Port Number of the proxy that will be used for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyauthentificationactive','N','Y if you want to activate proxy authentification for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyuser','user','Username to be used in case of REST Call Service with Authentication.')");
+        SQLS.append(",('','cerberus_callservicerest_proxypassword','password','Password to be used in case of REST Call Service with Authentication.')");
+        SQLInstruction.add(SQLS.toString());
+
+        // Rename TestDataLib Type from SOAP to SERVICE.
+        //-- ------------------------ 1123-1124
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `value`='SERVICE', `description`='Dynamic test data from SERVICE Webservice call.' WHERE `idname`='TESTDATATYPE' and`value`='SOAP'; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testdatalib` SET `Type`='SERVICE' WHERE `Type`='SOAP'; ");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1125-1126
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -6871,8 +7197,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_buildcontent','message_instruction','','fr','Merci de specifier un build et une revision avant d\\'obtenir les instructions d\\'installation! ',NULL)");
         SQLS.append(",('page_buildcontent','message_massAction','','en','Massively update the selected release',NULL)");
         SQLS.append(",('page_buildcontent','message_massAction','','fr','Mettre à jours en masse les releases selectionnées',NULL)");
-        SQLS.append(",('page_buildcontent','message_massActionError1','','en','Please select at least 1 line before trying to perform a mass action!',NULL)");
-        SQLS.append(",('page_buildcontent','message_massActionError1','','fr','Merci de selection 1 élément au minimum avant de faire une action en masse !',NULL)");
         SQLS.append(",('page_buildcontent','standardfilters','','en','Standard Filters','')");
         SQLS.append(",('page_buildcontent','standardfilters','','fr','Standard Filters','')");
         SQLS.append(",('page_buildcontent','title','','en','BUILD CONTENT','This page can be used to manage the Build Content.')");
@@ -7054,6 +7378,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_executiondetail','title','','fr','Detail de l Execution','')");
         SQLS.append(",('page_executiondetail','url','','en','URL','')");
         SQLS.append(",('page_executiondetail','url','','fr','URL','')");
+        SQLS.append(",('page_executiondetail','userAgent','','en','UserAgent','User Agent required for this execution')");
+        SQLS.append(",('page_executiondetail','userAgent','','fr','UserAgent','User Agent envoyé au navigateur web pour cette execution')");
         SQLS.append(",('page_executiondetail','value1','','en','Value 1','')");
         SQLS.append(",('page_executiondetail','value1','','fr','Valeur 1','')");
         SQLS.append(",('page_executiondetail','value1init','','en','Value 1 Initial','')");
@@ -7120,6 +7446,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_global','lbl_all','','fr','Tous','')");
         SQLS.append(",('page_global','message_delete','','en','Do you want to delete <b>\\'%ENTRY%\\'</b> %TABLE% ?','')");
         SQLS.append(",('page_global','message_delete','','fr','Voulez vous supprimer le %TABLE% <b>\\'%ENTRY%\\'</b> ?','')");
+        SQLS.append(",('page_global','message_massActionError','','en','Please select at least 1 line before trying to perform a mass action!',NULL)");
+        SQLS.append(",('page_global','message_massActionError','','fr','Merci de selectionner au moins 1 élément avant de faire une action en masse !',NULL)");
         SQLS.append(",('page_global','old_page','','en','Old Page','')");
         SQLS.append(",('page_global','old_page','','fr','Ancienne Page','')");
         SQLS.append(",('page_global','processing','','en','Processing…','')");
@@ -7228,8 +7556,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_header','menuRunTest','','fr','Executer un Cas de Test','')");
         SQLS.append(",('page_header','menuRunTestCase','','en','Run Test Case','')");
         SQLS.append(",('page_header','menuRunTestCase','','fr','Executer un Cas de Test','')");
-        SQLS.append(",('page_header','menuRunTestSeePendingExecution','','en','See Execution In Queue','')");
-        SQLS.append(",('page_header','menuRunTestSeePendingExecution','','fr','Execution en Attente','')");
+        SQLS.append(",('page_header','menuRunTestSeePendingExecution','','en','Executions in queue','')");
+        SQLS.append(",('page_header','menuRunTestSeePendingExecution','','fr','Fil d\\'exécutions','')");
         SQLS.append(",('page_header','menuRunTestTriggerBatchExecution','','en','Run Multiple Test','')");
         SQLS.append(",('page_header','menuRunTestTriggerBatchExecution','','fr','Executer plusieurs Cas de Test','')");
         SQLS.append(",('page_header','menuSearchTestCase','','en','Search TestCase','')");
@@ -7714,8 +8042,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcase','undefined_error_message','','en','There are undefined properties! Please check them before proceed.','')");
         SQLS.append(",('page_testcaseexecution','title','','en','Test Case Execution','')");
         SQLS.append(",('page_testcaseexecution','title','','fr','Execution des Cas de Test','')");
-        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','en','Execution Queue','')");
-        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d exécution','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','en','Executions in queue','')");
+        SQLS.append(",('page_testcaseexecutionqueue','allExecution','','fr','File d\\'exécutions','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browserVersion_col','','en','Browser version','')");
+        SQLS.append(",('page_testcaseexecutionqueue','browserVersion_col','','fr','Version du navigateur','')");
         SQLS.append(",('page_testcaseexecutionqueue','browser_col','','en','Browser','')");
         SQLS.append(",('page_testcaseexecutionqueue','browser_col','','fr','Navigateur','')");
         SQLS.append(",('page_testcaseexecutionqueue','comment_col','','en','Comment','')");
@@ -7726,8 +8056,38 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','environment_col','','fr','Environement','')");
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','en','ID','')");
         SQLS.append(",('page_testcaseexecutionqueue','id_col','','fr','ID','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualContextRoot_col','','en','Manual execution context root','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualContextRoot_col','','fr','Contexte racine de l\\'execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualEnvData_col','','en','Manual execution environment data','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualEnvData_col','','fr','Données d\\'environnement de l\\'execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualExecution_col','','en','Manual execution','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualExecution_col','','fr','Execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualHost_col','','en','Manual execution host','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualHost_col','','fr','Domaine de l\\'execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualLoginRelativeURL_col','','en','Manual execution login relative URL','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualLoginRelativeURL_col','','fr','URL relative de connexion pour l\\'execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualURL_col','','en','Manual execution URL','')");
+        SQLS.append(",('page_testcaseexecutionqueue','manualURL_col','','fr','URL de l\\'execution manuelle','')");
+        SQLS.append(",('page_testcaseexecutionqueue','pageSource_col','','en','Page source','')");
+        SQLS.append(",('page_testcaseexecutionqueue','pageSource_col','','fr','Code source','')");
+        SQLS.append(",('page_testcaseexecutionqueue','platform_col','','en','Platform','')");
+        SQLS.append(",('page_testcaseexecutionqueue','platform_col','','fr','Plateforme','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','en','Proceeded','')");
         SQLS.append(",('page_testcaseexecutionqueue','processed_col','','fr','Traité','')");
+        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','en','Request date','')");
+        SQLS.append(",('page_testcaseexecutionqueue','requestDate_col','','fr','Date d\\'insertion','')");
+        SQLS.append(",('page_testcaseexecutionqueue','retries_col','','en','Retries','')");
+        SQLS.append(",('page_testcaseexecutionqueue','retries_col','','fr','Tentatives','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robotIP_col','','en','Robot host','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robotIP_col','','fr','Domaine du Robot','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robotPort_col','','en','Robot port','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robotPort_col','','fr','Port du Robot','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robot_col','','en','Robot','')");
+        SQLS.append(",('page_testcaseexecutionqueue','robot_col','','fr','Robot','')");
+        SQLS.append(",('page_testcaseexecutionqueue','screenshot_col','','en','Screenshots','')");
+        SQLS.append(",('page_testcaseexecutionqueue','screenshot_col','','fr','Captures d\\'écrans','')");
+        SQLS.append(",('page_testcaseexecutionqueue','seleniumLog_col','','en','Selenium logs','')");
+        SQLS.append(",('page_testcaseexecutionqueue','seleniumLog_col','','fr','Journalisation Selenium','')");
         SQLS.append(",('page_testcaseexecutionqueue','state_col','','en','State','')");
         SQLS.append(",('page_testcaseexecutionqueue','state_col','','fr','Etat','')");
         SQLS.append(",('page_testcaseexecutionqueue','tag_col','','en','Tag','')");
@@ -7736,6 +8096,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaseexecutionqueue','testcase_col','','fr','Cas de Test','')");
         SQLS.append(",('page_testcaseexecutionqueue','test_col','','en','Test','')");
         SQLS.append(",('page_testcaseexecutionqueue','test_col','','fr','Test','')");
+        SQLS.append(",('page_testcaseexecutionqueue','timeout_col','','en','Timeout','')");
+        SQLS.append(",('page_testcaseexecutionqueue','timeout_col','','fr','Dépassement de temps','')");
+        SQLS.append(",('page_testcaseexecutionqueue','verbose_col','','en','Verbose','')");
+        SQLS.append(",('page_testcaseexecutionqueue','verbose_col','','fr','Verbeux','')");
         SQLS.append(",('page_testcaselist','activationCriteria','','en','Activation Criteria','')");
         SQLS.append(",('page_testcaselist','activationCriteria','','fr','Critères d\\'activation','')");
         SQLS.append(",('page_testcaselist','btn_create','','en','Create Test Case',NULL)");
@@ -7890,10 +8254,10 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testdatalib','m_tab3_text','','en','Tracability','')");
         SQLS.append(",('page_testdatalib','m_tab3_text','','fr','Traçabité','')");
         SQLS.append(",('page_testdatalib','page_title','','en','Test Data Library','')");
-        SQLS.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SOAP</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>')");
+        SQLS.append(",('page_testdatalib','title','','en','Test Data Library','<p>The <u>Test Data Library</u> is a repository of test data that centralises and eases the Test Data Management process. Additionally, it eases the creation of test cases because it allows the reuse of data that is recurrently defined. </p> <p>Cerberus allows the definition of three types of entries: <b>STATIC</b>, <b>SQL</b> and <b>SERVICE</b>.</p><p>The definition of each library entry comprises two steps: <ul><li>The definition of the library entry. </li><li>The definition of its sub-data entries.</li></ul></p>')");
         SQLS.append(",('page_testdatalib','title_csv_configurations','','en','CSV configurations','')");
         SQLS.append(",('page_testdatalib','title_csv_configurations','','fr','Configuration CSV','')");
-        SQLS.append(",('page_testdatalib','title_soap_configurations','','en','SOAP configurations','')");
+        SQLS.append(",('page_testdatalib','title_service_configurations','','en','SERVICE configurations','')");
         SQLS.append(",('page_testdatalib','title_sql_configurations','','en','SQL configurations','')");
         SQLS.append(",('page_testdatalib','tooltip_delete','','en','Delete entry.','')");
         SQLS.append(",('page_testdatalib','tooltip_duplicateEntry','','en','Duplicate this entry.','')");
@@ -8228,15 +8592,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('testdatalib','script','','en','Script','<p>SQL commands that should be executed to retrieve test data.</p><p>Examples:</p><table><tr><td>select * from table;</td></tr><tr><td>select * from table where column = %COLUMN%;</td></tr></table>')");
         SQLS.append(",('testdatalib','separator','','en','Separator','<p>Separator used parsing a CSV.</p>')");
         SQLS.append(",('testdatalib','separator','','fr','Séparateur','<p>Séparateur à utiliser pour le décryptage du CSV.</p>')");
+        SQLS.append(",('testdatalib','service','','en','Service','')");
         SQLS.append(",('testdatalib','servicepath','','en','Service Path','<p>Location of the service.</p><p>Examples:</p><table><tr><td>http://mydomain/mywebservicelocation</td></tr><tr><td>mywebservicelocation</td></tr><tr><td>http://%MY_DYNAMIC_IP%/mywebservicelocation</td></tr><tr><td>%LOCATION%</td></tr></table>')");
         SQLS.append(",('testdatalib','system','','en','System','<p>System where the entry is available. If not specified, then the data entry apply to ALL systems.</p>')");
         SQLS.append(",('testdatalib','testdatalibid','','en','ID','<p>Unique identifier of the test data library entry</p>')");
-        SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SOAP.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>INTERNAL</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr><tr><td>SOAP</td><td>Test data obtained from a SOAP call – values depend on the result of the web service call.</td></tr><tr><td>CSV</td><td>Test data obtained from a CSV file structure privided by a URL. Values depend on the result of the service call to CSV file.</td></tr></table>')");
+        SQLS.append(",('testdatalib','type','','en','Type','<p>Entry Type - Cerberus allows the definition of 4 types: INTERNAL, SQL, CSV and SERVICE.</p><table border=\\'1\\'> <tr><th class=\\'ex\\'>Type</th><th class=\\'ex\\'>Description</th></tr> <tr><td>INTERNAL</td><td>Static test data - in each execution the values used by the test cases are statically definied directly in Cerberus.</td></tr> <tr><td>SQL</td><td> Test data obtained from a SQL execution – values depend on what the SQL return on the corresponding environment.</td></tr><tr><td>SERVICE</td><td>Test data obtained from a SERVICE call – values depend on the result of the service call. Service needs to be configured on Service screen inside application menu.</td></tr><tr><td>CSV</td><td>Test data obtained from a CSV file structure privided by a URL. Values depend on the result of the service call to CSV file.</td></tr></table>')");
         SQLS.append(",('testdatalibdata','column','','en','Column','<p>Column name representing the value that should be obtained after executing a SQL instruction (select).</p>')");
         SQLS.append(",('testdatalibdata','columnPosition','','en','Column Position','<p>Column position [1,2,3…] representing the value that should be obtained after parsing a CSV file.</p>')");
         SQLS.append(",('testdatalibdata','columnPosition','','fr','Position','<p>Position [1,2,3…] de la valeur à obtenir lors du décryptage du CSV.</p>')");
         SQLS.append(",('testdatalibdata','description','','en','Description','<p>Textual description for the sub-data entry.</p>')");
-        SQLS.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath expression that allows the user to parse data from the SOAP response.</p>')");
+        SQLS.append(",('testdatalibdata','parsingAnswer','','en','Parsing Answer','<p>XPath or JsonPath expression that allows the user to parse data from the SERVICE response.</p>')");
         SQLS.append(",('testdatalibdata','subData','','en','Sub-data ','<p>Unique name for a sub-data entry. For a test data library entry, this value should be unique.</p>')");
         SQLS.append(",('testdatalibdata','value','','en','Value','<p>STATIC value.</p>')");
         SQLS.append(",('transversal','DateCreated','','en','Creation Date','Date of the creation of the object.')");
@@ -8250,352 +8615,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Update DateCreated from appservice to remove Zero Date
-        //-- ------------------------ 1066
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE appservice SET DateCreated = '1970-01-01 01:01:01' WHERE DateCreated = '0000-00-00 00:00:00'");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added content and header Service tables.
-        //-- ------------------------ 1067-1070
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `appservicecontent` (");
-        SQLS.append("  `Service` VARCHAR(255) NOT NULL ,");
-        SQLS.append("  `Key` VARCHAR(255) NOT NULL ,");
-        SQLS.append("  `Value` TEXT NULL ,");
-        SQLS.append("  `Sort` INT NULL DEFAULT 0 ,");
-        SQLS.append("  `Active` VARCHAR(45) NULL DEFAULT 'Y' ,");
-        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' ,");
-        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,");
-        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '' ,");
-        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,");
-        SQLS.append("  PRIMARY KEY (`Service`, `Key`), ");
-        SQLS.append("   CONSTRAINT `FK_appservicecontent_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE)");
-        SQLS.append("  ENGINE=InnoDB DEFAULT CHARSET=utf8; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("CREATE TABLE `appserviceheader` (");
-        SQLS.append("  `Service` VARCHAR(255) NOT NULL ,");
-        SQLS.append("  `Key` VARCHAR(255) NOT NULL ,");
-        SQLS.append("  `Value` TEXT NULL ,");
-        SQLS.append("  `Sort` INT NULL DEFAULT 0 ,");
-        SQLS.append("  `Active` VARCHAR(45) NULL DEFAULT 'Y' ,");
-        SQLS.append("  `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' ,");
-        SQLS.append("  `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,");
-        SQLS.append("  `UsrModif` VARCHAR(45) NULL DEFAULT '' ,");
-        SQLS.append("  `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ,");
-        SQLS.append("  PRIMARY KEY (`Service`, `Key`), ");
-        SQLS.append("  CONSTRAINT `FK_appserviceheader_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE)");
-        SQLS.append("  ENGINE=InnoDB DEFAULT CHARSET=utf8; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `appserviceheader` ");
-        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `appservicecontent` ");
-        SQLS.append("  ADD COLUMN `Description` VARCHAR(255) NOT NULL DEFAULT '' AFTER `Active`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added tracability on application table.
-        //-- ------------------------ 1071
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `application` ");
-        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `mavengroupid`,");
-        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
-        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
-        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // 2 new Parameters used for CallService Action.
-        //-- ------------------------ 1072
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ");
-        SQLS.append(" ('','cerberus_callservice_enablehttpheadertoken','Y','Boolean that activate the addition of a header entry cerberus_token with execution id value on every serice call.'), ");
-        SQLS.append(" ('','cerberus_callservice_timeoutms','60000','timeout in ms second used for any service call.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Remove WS type of application and convert it to SRV + Reorder Application Type in menu.
-        //-- ------------------------ 1073-1078
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE application SET `Type` = 'SRV' WHERE `Type` = 'WS'; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("DELETE FROM `invariant` WHERE `idname`='APPLITYPE' and`value`='WS'; ");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='900' WHERE `idname`='APPLITYPE' and`value`='NONE';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `sort`='800' WHERE `idname`='APPLITYPE' and`value`='BAT';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `description`='Web GUI application' WHERE `idname`='APPLITYPE' and`value`='GUI';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `description`='Service Application (REST or SOAP)' WHERE `idname`='APPLITYPE' and`value`='SRV';");
-        SQLInstruction.add(SQLS.toString());
-
-        // Documentation on executions in queue page.
-        //-- ------------------------ 1079-1082
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Executions in queue' WHERE `DocTable`='page_testcaseexecutionqueue' and`DocField`='allExecution' and`DocValue`='' and`Lang`='en';\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='File d\\'exécutions' WHERE `DocTable`='page_testcaseexecutionqueue' and`DocField`='allExecution' and`DocValue`='' and`Lang`='fr';\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Executions in queue' WHERE `DocTable`='page_header' and`DocField`='menuRunTestSeePendingExecution' and`DocValue`='' and`Lang`='en';\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocLabel`='Fil d\\'exécutions' WHERE `DocTable`='page_header' and`DocField`='menuRunTestSeePendingExecution' and`DocValue`='' and`Lang`='fr';\n");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add the mass action on the execution pending page
-        //-- ------------------------ 1083-1084
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='en';\n");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `documentation` SET `DocTable`='page_global', `DocField`='message_massActionError', `DocLabel`='Merci de selectionner au moins 1 élément avant de faire une action en masse !' WHERE `DocTable`='page_buildcontent' and`DocField`='message_massActionError1' and`DocValue`='' and`Lang`='fr';\n");
-        SQLInstruction.add(SQLS.toString());
-
-        // Add missing documentation on execution pending table
-        //-- ------------------------ 1085
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) VALUES ");
-        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'en', 'Request date', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'requestDate_col', '', 'fr', 'Date d\\'insertion', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'en', 'Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robot_col', '', 'fr', 'Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'en', 'Robot host', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotIP_col', '', 'fr', 'Domaine du Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'en', 'Robot port', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'robotPort_col', '', 'fr', 'Port du Robot', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'en', 'Browser version', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'browserVersion_col', '', 'fr', 'Version du navigateur', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'en', 'Platform', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'platform_col', '', 'fr', 'Plateforme', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'en', 'Manual execution', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualExecution_col', '', 'fr', 'Execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'en', 'Manual execution URL', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualURL_col', '', 'fr', 'URL de l\\'execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'en', 'Manual execution host', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualHost_col', '', 'fr', 'Domaine de l\\'execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'en', 'Manual execution context root', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualContextRoot_col', '', 'fr', 'Contexte racine de l\\'execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'en', 'Manual execution login relative URL', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualLoginRelativeURL_col', '', 'fr', 'URL relative de connexion pour l\\'execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'en', 'Manual execution environment data', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'manualEnvData_col', '', 'fr', 'Données d\\'environnement de l\\'execution manuelle', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'en', 'Screenshots', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'screenshot_col', '', 'fr', 'Captures d\\'écrans', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'en', 'Page source', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'pageSource_col', '', 'fr', 'Code source', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'en', 'Selenium logs', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'seleniumLog_col', '', 'fr', 'Journalisation Selenium', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'en', 'Verbose', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'verbose_col', '', 'fr', 'Verbeux', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'en', 'Retries', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'retries_col', '', 'fr', 'Tentatives', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'en', 'Timeout', ''),");
-        SQLS.append("('page_testcaseexecutionqueue', 'timeout_col', '', 'fr', 'Dépassement de temps', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Remove the unecessary TestCaseExecutionQueue's Proceeded column
-        //-- ------------------------ 1086
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` DROP COLUMN `Proceeded`;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Invert Value1 and Value2 from 'getFromJSON' and 'getFromXML' Properties.
-        //-- ------------------------ 1087-1091
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountryproperties` ADD COLUMN `valueTemp` TEXT NULL AFTER `last_modified`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasecountryproperties  SET valueTemp=Value2 where `Type` in ('getFromJSON', 'getFromXML');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasecountryproperties  SET Value2=Value1 where `Type` in ('getFromJSON', 'getFromXML');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasecountryproperties  SET Value1=valueTemp where `Type` in ('getFromJSON', 'getFromXML');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcasecountryproperties` DROP COLUMN `valueTemp` ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Added invariant for Content and Header service.
-        //-- ------------------------ 1092
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('APPSERVICECONTENTACT', 'Y', 100, 'Yes', '', '', '', '')");
-        SQLS.append(",('APPSERVICECONTENTACT', 'N', 200, 'No', '', '', '', '')");
-        SQLS.append(",('APPSERVICEHEADERACT', 'Y', 100, 'Yes', '', '', '', '')");
-        SQLS.append(",('APPSERVICEHEADERACT', 'N', 200, 'No', '', '', '', '')");
-        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICECONTENTACT', '620', '', '', '', '', '')");
-        SQLS.append(",('INVARIANTPRIVATE', 'APPSERVICEHEADERACT', '630', '', '', '', '', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Changed control from Integer to Numeric..
-        //-- ------------------------ 1093-1102
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericEquals' where Control in ('verifyIntegerEquals');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericDifferent' where Control in ('verifyIntegerDifferent');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericGreater' where Control in ('verifyIntegerGreater');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE testcasestepactioncontrol SET Control = 'verifyNumericMinor' where Control in ('verifyIntegerMinor');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericEquals', `description`='verifyNumericEquals' WHERE `idname`='CONTROL' and`value`='verifyIntegerEquals';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericDifferent', `description`='verifyNumericDifferent' WHERE `idname`='CONTROL' and`value`='verifyIntegerDifferent';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericGreater', `description`='verifyNumericGreater' WHERE `idname`='CONTROL' and`value`='verifyIntegerGreater';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `invariant` SET `value`='verifyNumericMinor', `description`='verifyNumericMinor' WHERE `idname`='CONTROL' and`value`='verifyIntegerMinor';");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericGreaterOrEqual', '1610', 'verifyNumericGreaterOrEqual');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) VALUES ('CONTROL', 'verifyNumericMinorOrEqual', '1710', 'verifyNumericMinorOrEqual');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding Service Columns to testdatalib table.
-        //-- ------------------------ 1103-1105
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ADD COLUMN `Service` VARCHAR(255) NULL DEFAULT null AFTER `DatabaseUrl`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ADD INDEX `IX_testdatalib_02` (`Service` ASC);");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testdatalib` ADD CONSTRAINT `FK_testdatalib_01` FOREIGN KEY (`Service`) REFERENCES `appservice` (`Service`) ON DELETE CASCADE ON UPDATE CASCADE;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Adding new Element present Condition.
-        //-- ------------------------ 1106
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` VALUES ");
-        SQLS.append("('ACTIONCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
-        SQLS.append(",('STEPCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
-        SQLS.append(",('CONTROLCONDITIONOPER', 'ifElementPresent', 250, 'Only execute if Element is present.', '', '', '', '')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter in order to tune the timeout on click action
-        //-- ------------------------ 1107
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_selenium_action_click_timeout','90000','timeout in ms second used during selenium click action.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter in order to tune the number of tag displayed inside the homepage.
-        //-- ------------------------ 1108
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` VALUES ('','cerberus_homepage_nbdisplayedtag','5','Number of tag summary displayed inside homepage.')");
-        SQLInstruction.add(SQLS.toString());
-
-        // Modification of the size of the Port.
-        //-- ------------------------ 1109 - 1111
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `robot` ");
-        SQLS.append("CHANGE COLUMN `Port` `Port` VARCHAR(150) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
-        SQLS.append("CHANGE COLUMN `RobotPort` `RobotPort` VARCHAR(150) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Insert invariants CAPABILITIES if not already defined.
-        //-- ------------------------ 1112 - 1115
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`) SELECT 'CAPABILITY', 'acceptInsecureCerts', 10, 'Whether the session should accept insecure SSL certs by default.' FROM DUAL");
-        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptInsecureCerts');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'acceptSslCerts', 10,'Whether the session should accept all SSL certs by default.' FROM DUAL");
-        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'acceptSslCerts');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appActivity', 10,'Activity name for the Android activity you want to launch from your package. This often needs to be preceded by a . (e.g., .MainActivity instead of MainActivity).' FROM DUAL");
-        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appActivity');");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`,`description`) SELECT 'CAPABILITY', 'appWaitActivity', 10,'Activity name for the Android activity you want to wait for.' FROM DUAL");
-        SQLS.append(" WHERE NOT EXISTS (SELECT * FROM `invariant` where `idname`='CAPABILITY' AND `value` = 'appWaitActivity');");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add userAgent in TestCaseExecution Table and documentation Table
-        //-- ------------------------ 1116 - 1117
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append("ADD COLUMN `UserAgent` VARCHAR(250) NULL DEFAULT NULL AFTER `screensize`;");
-        SQLInstruction.add(SQLS.toString());
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `documentation` (`DocTable`, `DocField`, `DocValue`, `Lang`, `DocLabel`, `DocDesc`) ");
-        SQLS.append("VALUES ('page_executiondetail', 'userAgent', '', 'fr', 'UserAgent', 'User Agent envoyé au navigateur web pour cette execution'),");
-        SQLS.append("('page_executiondetail', 'userAgent', '', 'en', 'UserAgent', 'User Agent required for this execution');");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add OutputFormat verbose-json
-        //-- ------------------------ 1118
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) ");
-        SQLS.append("VALUES ('OUTPUTFORMAT', 'verbose-json', '5', 'Verbose json format', '');");
-        SQLInstruction.add(SQLS.toString());
-
-        // Let testcaseexecutionqueue's Browser column be null
-        //-- ------------------------ 1119
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
-        SQLS.append("CHANGE COLUMN `Browser` `Browser` VARCHAR(45) NULL DEFAULT NULL ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter smtp username and password
-        //-- ------------------------ 1120
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` ");
-        SQLS.append("VALUES ('','integration_smtp_username','','Username to be used in case of SMTP with Authentication. Empty if no authentication required.')");
-        SQLS.append(",('','integration_smtp_password','','Password to be used in case of SMTP with Authentication. Empty if no authentication required.')");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add gp4 to gp9 group in invariant table.
-        //-- ------------------------ 1121
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `invariant` ");
-        SQLS.append(" ADD COLUMN `gp4` VARCHAR(45) NULL DEFAULT NULL AFTER `gp3`, ");
-        SQLS.append(" ADD COLUMN `gp5` VARCHAR(45) NULL DEFAULT NULL AFTER `gp4`, ");
-        SQLS.append(" ADD COLUMN `gp6` VARCHAR(45) NULL DEFAULT NULL AFTER `gp5`, ");
-        SQLS.append(" ADD COLUMN `gp7` VARCHAR(45) NULL DEFAULT NULL AFTER `gp6`, ");
-        SQLS.append(" ADD COLUMN `gp8` VARCHAR(45) NULL DEFAULT NULL AFTER `gp7`, ");
-        SQLS.append(" ADD COLUMN `gp9` VARCHAR(45) NULL DEFAULT NULL AFTER `gp8` ;");
-        SQLInstruction.add(SQLS.toString());
-
-        // Parameter proxy for callService in rest
-        //-- ------------------------ 1122
-        SQLS = new StringBuilder();
-        SQLS.append("INSERT INTO `parameter` ");
-        SQLS.append("VALUES ('','cerberus_callservicerest_proxyactive','N','Y if you want to activate proxy for REST CallService.')");
-        SQLS.append(",('','cerberus_callservicerest_proxyhost','proxy','Hostname of the proxy that will be used for REST CallService.')");
-        SQLS.append(",('','cerberus_callservicerest_proxyport','80','Port Number of the proxy that will be used for REST CallService.')");
-        SQLS.append(",('','cerberus_callservicerest_proxyauthentificationactive','N','Y if you want to activate proxy authentification for REST CallService.')");
-        SQLS.append(",('','cerberus_callservicerest_proxyuser','user','Username to be used in case of REST Call Service with Authentication.')");
-        SQLS.append(",('','cerberus_callservicerest_proxypassword','password','Password to be used in case of REST Call Service with Authentication.')");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

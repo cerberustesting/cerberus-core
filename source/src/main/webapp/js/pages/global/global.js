@@ -161,6 +161,24 @@ function displayDeployTypeList(selectName, defaultValue) {
 }
 
 /**
+ * Method that display a combo box in all the selectName tags with the value retrieved from the DeployType list
+ * @param {String} selectName value name of the select tag in the html
+ * @param {String} defaultValue to be selected
+ * @returns {void}
+ */
+function displayAppServiceList(selectName, defaultValue) {
+    $.when($.getJSON("ReadAppService", "")).then(function (data) {
+        for (var option in data.contentTable) {
+            $("select[id='" + selectName + "']").append($('<option></option>').text(data.contentTable[option].service).val(data.contentTable[option].service));
+        }
+
+        if (defaultValue !== undefined) {
+            $("[name='" + selectName + "']").val(defaultValue);
+        }
+    });
+}
+
+/**
  * Method that display a combo box in all the selectName tags with the value retrieved from the Application list
  * @param {String} selectName value name of the select tag in the html
  * @param {String} system [optional] value name of the system in order to filter the application list

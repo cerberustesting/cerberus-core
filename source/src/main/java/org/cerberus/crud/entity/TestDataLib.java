@@ -61,7 +61,7 @@ public class TestDataLib {
 
     public static final String TYPE_INTERNAL = "INTERNAL";
     public static final String TYPE_SQL = "SQL";
-    public static final String TYPE_SERVICE = "SOAP";
+    public static final String TYPE_SERVICE = "SERVICE";
     public static final String TYPE_CSV = "CSV";
 
     public String getService() {

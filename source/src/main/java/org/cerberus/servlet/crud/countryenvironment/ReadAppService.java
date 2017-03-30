@@ -133,7 +133,7 @@ public class ReadAppService extends HttpServlet {
         /*int sEcho  = Integer.valueOf(request.getParameter("sEcho"));*/
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "2"));
+        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "service,type,method,description");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];

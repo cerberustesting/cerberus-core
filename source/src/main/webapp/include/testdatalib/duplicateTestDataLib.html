@@ -72,22 +72,29 @@
                     <div class="tab-content">   
                         <div class="center marginTop25 tab-pane fade in active" id="tabsdup-1">
 
-                            <!--SOAP-->
+                            <!--SERVICE-->
                             <div class="row" >
                                 <div class="col-xs-12" id="soapConfigurationsPanelEdit">
                                     <div class="panel panel-default">
-                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSOAPDuplicate">
-                                            <label name="soapConfigurationsLbl">SOAP Configurations </label>
+                                        <div class="panel-heading card" data-toggle="collapse" data-target="#panelSERVICEDuplicate">
+                                            <label name="serviceConfigurationsLbl">SERVICE Configurations </label>
                                             <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                         </div>
-                                        <div id="panelSOAPDuplicate" class="panel-body collapse">
+                                        <div id="panelSERVICEDuplicate" class="panel-body collapse">
                                             <div class="row">
-                                                <div class="form-group  col-xs-3"> 
+                                                <div class="form-group  col-xs-4"> 
                                                     <label name="lbl_databaseUrl" for="databaseUrl">Database URL</label> 
                                                     <select class="form-control" id="databaseUrl" name="databaseUrl">
                                                     </select> 
                                                 </div>    
-                                                <div class="form-group col-xs-5" >
+                                                <div class="form-group  col-xs-8"> 
+                                                    <label name="lbl_service" for="service">Service</label> 
+                                                    <select class="form-control" id="service" name="service">
+                                                    </select> 
+                                                </div>
+                                            </div>    
+                                            <div class="row">
+                                                <div class="form-group col-xs-8" >
                                                     <label name="lbl_service_path" for="servicepath">Service Path</label>
                                                     <input id="servicepath" name="servicepath"  class="form-control" maxlength="250"  />  
                                                 </div>

@@ -396,6 +396,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             searchSQL.append(" or tdl.`database` like ?");
             searchSQL.append(" or tdl.`databaseUrl` like ?");
             searchSQL.append(" or tdl.`script` like ?");
+            searchSQL.append(" or tdl.`service` like ?");
             searchSQL.append(" or tdl.`servicepath` like ?");
             searchSQL.append(" or tdl.`method` like ?");
             searchSQL.append(" or tdl.`envelope` like ?");
@@ -459,6 +460,7 @@ public class TestDataLibDAO implements ITestDataLibDAO {
             try {
                 int i = 1;
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -636,10 +638,10 @@ public class TestDataLibDAO implements ITestDataLibDAO {
         Answer answer = new AnswerItem();
         StringBuilder query = new StringBuilder();
         TestDataLib createdTestDataLib;
-        query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, "
-                + "`script`, `databaseUrl`, `service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
+        query.append("INSERT INTO testdatalib (`name`, `system`, `environment`, `country`, `group`, `type`, `database`, `script`, `databaseUrl`, ");
+        query.append("`service`, `servicePath`, `method`, `envelope`, `databaseCsv`, `csvUrl`,`separator`, `description`, `creator`) ");
         if ((testDataLib.getService() != null) && (!testDataLib.getService().equals(""))) {
-            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         } else {
             query.append("VALUES (?,?,?,?,?,?,?,?,?,null,?,?,?,?,?,?,?,?)");
 
