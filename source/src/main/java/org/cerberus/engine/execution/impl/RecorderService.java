@@ -295,7 +295,8 @@ public class RecorderService implements IRecorderService {
     }
 
     @Override
-    public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution, Integer control, String property, AppService se) {
+    public List<TestCaseExecutionFile> recordServiceCall(TestCaseExecution testCaseExecution, TestCaseStepActionExecution testCaseStepActionExecution,
+            Integer control, String property, AppService se) {
         // Used for logging purposes
         String logPrefix = Infos.getInstance().getProjectNameAndVersion() + " - ";
 
@@ -407,6 +408,11 @@ public class RecorderService implements IRecorderService {
                 jsonMyRequest.put("Content", jsonContent);
             }
             jsonMyRequest.put("HTTP-Request", se.getServiceRequest());
+            jsonMyRequest.put("HTTP-Proxy", se.isProxy());
+            jsonMyRequest.put("HTTP-ProxyHost", se.getProxyHost());
+            jsonMyRequest.put("HTTP-ProxyPort", se.getProxyPort());
+            jsonMyRequest.put("HTTP-ProxyAuthentification", se.isProxyWithCredential());
+            jsonMyRequest.put("HTTP-ProxyUser", se.getProxyUser());
             jsonResponse.put("Request", jsonMyRequest);
 
             // Response Information.
@@ -564,7 +570,7 @@ public class RecorderService implements IRecorderService {
              * Root folder initialisation. The root folder is confugures from
              * the parameter cerberus_mediastorage_path.
              */
-            String rootFolder = parameterService.findParameterByKey("cerberus_mediastorage_path", "").getValue();
+            String rootFolder = parameterService.getParameterStringByKey("cerberus_mediastorage_path", "", "");
             rootFolder = StringUtil.addSuffixIfNotAlready(rootFolder, File.separator);
             newRecorder.setRootFolder(rootFolder);
 

@@ -211,17 +211,13 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Parameter environment is mandatory (or use the manualURL parameter).");
             error = true;
         }
-        
+
         // We check that execution is not desactivated by cerberus_automaticexecution_enable parameter.
         IParameterService parameterService = appContext.getBean(IParameterService.class);
-        try {
-            if (!("Y".equals(parameterService.findParameterByKey("cerberus_automaticexecution_enable", "").getValue()))) {
-                out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable <> Y).");
-                error = true;
-                LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
-            }
-        } catch (CerberusException ex) {
-            LOG.error("Parameter cerberus_automaticexecution_enable not found on Cerberus database. Please make sure database is up to date.");
+        if (!(parameterService.getParameterBooleanByKey("cerberus_automaticexecution_enable", "", true))) {
+            out.println("Error - Execution disable by configuration (cerberus_automaticexecution_enable <> Y).");
+            error = true;
+            LOG.info("Execution request ignored by cerberus_automaticexecution_enable parameter. " + test + " / " + testCase);
         }
 
         // If Robot is feeded, we check it exist. If it exist, we overwrite the associated parameters.
@@ -249,7 +245,7 @@ public class RunTestCase extends HttpServlet {
             out.println("Error - Robot is not Active.");
             error = true;
         }
-        
+
         //verify the format of the ScreenSize. It must be 2 integer separated by a *. For example : 1024*768
         if (!"".equals(screenSize)) {
             if (!screenSize.contains("*")) {
@@ -267,7 +263,6 @@ public class RunTestCase extends HttpServlet {
                 }
             }
         }
-        
 
         if (!error) {
             //check if the test case is to be executed in the specific parameters            
@@ -306,7 +301,7 @@ public class RunTestCase extends HttpServlet {
                         Infos.getInstance().getProjectNameAndVersion(), tCase, null, null, manualURL, myHost, myContextRoot, myLoginRelativeURL, myEnvData, ss_ip, ss_p,
                         null, new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_TESTSTARTED), request.getRemoteUser(), numberOfRetries, screenSize, capabilities,
                         "", "", "", "", "", manualExecution, userAgent);
-                
+
                 /**
                  * Set UUID
                  */
@@ -329,7 +324,7 @@ public class RunTestCase extends HttpServlet {
                     try {
                         LOG.debug("Start execution " + tCExecution.getId());
                         tCExecution = runTestCaseService.runTestCase(tCExecution);
-                        if (!synchroneous && tCExecution.getNumberOfRetries() > 0){
+                        if (!synchroneous && tCExecution.getNumberOfRetries() > 0) {
                             LOG.error("Retries is not activated for asynchroneous execution! Testcase will be executed once.");
                             break;
                         }
@@ -360,15 +355,15 @@ public class RunTestCase extends HttpServlet {
                 long runID = tCExecution.getId();
                 if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
                     if (runID > 0) { // Execution has been created.
-                        AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
-                        if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                            Parameter p = (Parameter)a.getItem();
-                            if(!p.getValue().equals("N")) {
+                        AnswerItem a = parameterService.readByKey("", "cerberus_executiondetail_use");
+                        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
+                            Parameter p = (Parameter) a.getItem();
+                            if (!p.getValue().equals("N")) {
                                 response.sendRedirect("ExecutionDetail2.jsp?executionId=" + runID);
-                            }else{
+                            } else {
                                 response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
                             }
-                        }else{
+                        } else {
                             response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
                         }
                     } else { // Execution was not even created.

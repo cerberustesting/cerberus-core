@@ -41,9 +41,10 @@ public interface IRestService {
      * @param contentList
      * @param token if != null the token will be added to http header 'cerberus-token'
      * @param timeOutMs
+     * @param system
      * @return
      */
     AnswerItem<AppService> callREST(String servicePath, String queryString, String method, 
-            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs);
+            List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs, String system);
 
 }

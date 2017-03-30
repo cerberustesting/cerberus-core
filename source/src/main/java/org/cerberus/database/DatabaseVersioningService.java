@@ -8586,6 +8586,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(" ADD COLUMN `gp9` VARCHAR(45) NULL DEFAULT NULL AFTER `gp8` ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Parameter proxy for callService in rest
+        //-- ------------------------ 1122
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_callservicerest_proxyactive','N','Y if you want to activate proxy for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyhost','proxy','Hostname of the proxy that will be used for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyport','80','Port Number of the proxy that will be used for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyauthentificationactive','N','Y if you want to activate proxy authentification for REST CallService.')");
+        SQLS.append(",('','cerberus_callservicerest_proxyuser','user','Username to be used in case of REST Call Service with Authentication.')");
+        SQLS.append(",('','cerberus_callservicerest_proxypassword','password','Password to be used in case of REST Call Service with Authentication.')");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

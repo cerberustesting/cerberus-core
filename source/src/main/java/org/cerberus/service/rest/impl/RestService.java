@@ -29,9 +29,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -39,6 +43,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -50,6 +55,7 @@ import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.impl.RecorderService;
 import org.cerberus.enums.MessageEventEnum;
@@ -71,11 +77,19 @@ public class RestService implements IRestService {
     @Autowired
     IFactoryAppServiceHeader factoryAppServiceHeader;
     @Autowired
+    IParameterService parameterService;
+    @Autowired
     IFactoryAppService factoryAppService;
     @Autowired
     IAppServiceService AppServiceService;
 
     private static final Logger LOG = Logger.getLogger(RestService.class);
+    private static final boolean DEFAULT_ACTIVATE_PROXY = false;
+    private static final boolean DEFAULT_ACTIVATE_PROXY_AUTHENT = false;
+    private static final String DEFAULT_ACTIVATE_PROXY_HOST = "proxy";
+    private static final int DEFAULT_ACTIVATE_PROXY_PORT = 80;
+    private static final String DEFAULT_ACTIVATE_PROXY_USER = "squid";
+    private static final String DEFAULT_ACTIVATE_PROXY_PASSWORD = "squid";
 
     private AppService executeHTTPCall(CloseableHttpClient httpclient, HttpRequestBase httpget) throws Exception {
         try {
@@ -111,9 +125,15 @@ public class RestService implements IRestService {
     }
 
     @Override
-    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, List<AppServiceHeader> headerList, List<AppServiceContent> contentList, String token, int timeOutMs) {
+    public AnswerItem<AppService> callREST(String servicePath, String requestString, String method, List<AppServiceHeader> headerList,
+            List<AppServiceContent> contentList, String token, int timeOutMs, String system) {
         AnswerItem result = new AnswerItem();
         AppService serviceREST = factoryAppService.create("", AppService.TYPE_REST, method, "", "", "", "", "", "", "", "", null, "", null);
+        serviceREST.setProxy(false);
+        serviceREST.setProxyHost(null);
+        serviceREST.setProxyPort(0);
+        serviceREST.setProxyWithCredential(false);
+        serviceREST.setProxyUser(null);
         MessageEvent message = null;
 
         if (StringUtils.isNullOrEmpty(servicePath)) {
@@ -130,12 +150,54 @@ public class RestService implements IRestService {
         if (token != null) {
             headerList.add(factoryAppServiceHeader.create(null, "cerberus-token", token, "Y", 0, "", "", null, "", null));
         }
+
         CloseableHttpClient httpclient;
-        httpclient = HttpClients.createDefault();
+        if ((parameterService.getParameterBooleanByKey("cerberus_callservicerest_proxyactive", system, DEFAULT_ACTIVATE_PROXY))
+                && (parameterService.getParameterBooleanByKey("cerberus_callservicerest_proxyauthentificationactive", system, DEFAULT_ACTIVATE_PROXY_AUTHENT))) {
+
+            CredentialsProvider credsProvider = new BasicCredentialsProvider();
+            String proxyUser = parameterService.getParameterStringByKey("cerberus_callservicerest_proxyuser", system, DEFAULT_ACTIVATE_PROXY_USER);
+            String proxyPassword = parameterService.getParameterStringByKey("cerberus_callservicerest_proxypassword", system, DEFAULT_ACTIVATE_PROXY_PASSWORD);
+            String proxyHost = parameterService.getParameterStringByKey("cerberus_callservicerest_proxyhost", system, DEFAULT_ACTIVATE_PROXY_HOST);
+            int proxyPort = parameterService.getParameterIntegerByKey("cerberus_callservicerest_proxyport", system, DEFAULT_ACTIVATE_PROXY_PORT);
+
+            serviceREST.setProxy(true);
+            serviceREST.setProxyHost(proxyHost);
+            serviceREST.setProxyPort(proxyPort);
+            serviceREST.setProxyWithCredential(true);
+            serviceREST.setProxyUser(proxyUser);
+
+            credsProvider.setCredentials(
+                    new AuthScope(proxyHost, proxyPort),
+                    new UsernamePasswordCredentials(proxyUser, proxyPassword));
+            LOG.debug("Activating Proxy Anthentification.");
+            httpclient = HttpClients.custom().setDefaultCredentialsProvider(credsProvider).build();
+        } else {
+            httpclient = HttpClients.createDefault();
+
+        }
+
         try {
 
-            // Timeout setup.
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).build();
+            RequestConfig requestConfig;
+            if ((parameterService.getParameterBooleanByKey("cerberus_callservicerest_proxyactive", system, DEFAULT_ACTIVATE_PROXY))) {
+
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_callservicerest_proxyhost", system, DEFAULT_ACTIVATE_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_callservicerest_proxyport", system, DEFAULT_ACTIVATE_PROXY_PORT);
+
+                serviceREST.setProxy(true);
+                serviceREST.setProxyHost(proxyHost);
+                serviceREST.setProxyPort(proxyPort);
+
+                HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+                LOG.debug("Activating Proxy Anthentification.");
+                requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).setProxy(proxy).build();
+
+            } else {
+                // Timeout setup.
+                requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).build();
+
+            }
 
             AppService responseHttp = null;
 

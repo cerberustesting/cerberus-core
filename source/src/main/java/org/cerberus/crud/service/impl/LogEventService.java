@@ -95,24 +95,8 @@ public class LogEventService implements ILogEventService {
     @Override
     public void createForPublicCalls(String page, String action, String log, HttpServletRequest request) {
         // Only log if cerberus_log_publiccalls parameter is equal to Y.
-        String doit = "";
-        try {
-            Parameter p = parameterService.findParameterByKey("cerberus_log_publiccalls", "");
-            //p can be null if the DAO fail to obain the parameter
-            if (p != null) {
-                doit = p.getValue();
-            } else {
-                //if some exception occurrs while accessing the parameter then we will activate the logs in order to 
-                //Check if there are more problems
-                doit = "Y";
-                Logger.getLogger(LogEventService.class.getName()).log(Level.WARNING, "Parameter is not available: cerberus_log_publiccalls", "");
-            }
 
-        } catch (CerberusException ex) {
-            Logger.getLogger(LogEventService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        if (doit.equalsIgnoreCase("Y")) { // The parameter cerberus_log_publiccalls is activated so we log all Public API calls.
+        if (parameterService.getParameterBooleanByKey("cerberus_log_publiccalls", "", false)) { // The parameter cerberus_log_publiccalls is activated so we log all Public API calls.
             String myUser = "";
             if (!(request.getUserPrincipal() == null)) {
                 myUser = ParameterParserUtil.parseStringParam(request.getUserPrincipal().getName(), "");

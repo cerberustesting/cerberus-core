@@ -49,6 +49,11 @@ public class AppService {
     private String attachmentUrl;
     private List<AppServiceContent> contentList;
     private List<AppServiceHeader> headerList;
+    private String proxyHost;
+    private int proxyPort;
+    private boolean proxy;
+    private boolean proxyWithCredential;
+    private String proxyUser;
     // Result from call.
     private String responseHTTPVersion;
     private int responseHTTPCode;
@@ -66,6 +71,46 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+
+    public int getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public boolean isProxy() {
+        return proxy;
+    }
+
+    public void setProxy(boolean proxy) {
+        this.proxy = proxy;
+    }
+
+    public boolean isProxyWithCredential() {
+        return proxyWithCredential;
+    }
+
+    public void setProxyWithCredential(boolean proxyWithCredential) {
+        this.proxyWithCredential = proxyWithCredential;
+    }
+
+    public String getProxyUser() {
+        return proxyUser;
+    }
+
+    public void setProxyUser(String proxyUser) {
+        this.proxyUser = proxyUser;
+    }
 
     public String getResponseHTTPBodyContentType() {
         return responseHTTPBodyContentType;
