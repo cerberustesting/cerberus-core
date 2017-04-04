@@ -121,7 +121,7 @@ public abstract class AppiumService implements IAppiumService {
     public MessageEvent click(final Session session, final Identifier identifier) {
         try {
             final TouchAction action = new TouchAction(session.getAppiumDriver());
-            if (identifier.isIdentifier(Identifier.Identifiers.COORDINATE)) {
+            if (identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
                 final Coordinates coordinates = getCoordinates(identifier);
                 action.tap(coordinates.getX(), coordinates.getY()).perform();
             } else {
@@ -161,7 +161,7 @@ public abstract class AppiumService implements IAppiumService {
      * @throws NoSuchElementException if no {@link Coordinates} can be found inside the given {@link Identifier}
      */
     private Coordinates getCoordinates(final Identifier identifier) {
-        if (identifier == null || !identifier.isIdentifier(Identifier.Identifiers.COORDINATE)) {
+        if (identifier == null || !identifier.isSameIdentifier(Identifier.Identifiers.COORDINATE)) {
             throw new NoSuchElementException("Unable to get coordinates from a non coordinates identifier");
         }
         final Matcher coordinates = Identifier.Identifiers.COORDINATE_VALUE_PATTERN.matcher(identifier.getLocator());
