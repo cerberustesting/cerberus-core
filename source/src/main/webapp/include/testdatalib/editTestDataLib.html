@@ -95,14 +95,16 @@
                                                     <label name="lbl_method" for="method">Method</label>
                                                     <input id="method" name="method" class="form-control" maxlength="45"  />
                                                 </div>
-                                            </div>    
-                                            <div class="col-xs-12">
-                                                <label name="lbl_envelope" for="envelope">Envelope</label> 
-                                                <div name="envelopeContainer" id="envelopeContainer"
-                                                     aria-describedby="basic-editon1">
-                                                    <pre><code id='envelope' name='envelope' contentEditable='true' class='language-markup'></code></pre>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <label name="lbl_envelope" for="envelope">Envelope</label> 
+                                                    <div name="envelopeContainer" id="envelopeContainer"
+                                                         aria-describedby="basic-editon1">
+                                                        <pre style="min-height:150px" id="envelope" name="envelope"></pre>
+                                                    </div>
                                                 </div>
-                                            </div> 
+                                            </div>
                                         </div> 
                                     </div>
                                 </div>
@@ -125,7 +127,7 @@
                                                 <div class="col-xs-12"> 
                                                     <label name="lbl_script" for="script">Script</label> 
                                                     <div name="scriptContainer" id="scriptContainer" aria-describedby="basic-editon1">
-                                                        <pre style="min-height:150px"><code id='script' name='script' contentEditable='true' class='language-sql'></code></pre>
+                                                        <pre style="min-height:150px" id="script" name="script"></pre>
                                                     </div>  
                                                 </div>                       
                                             </div>
@@ -172,7 +174,7 @@
                                     <input id="group" name="group" class="form-control" />     
                                 </div>                  
                             </div>
-                            
+
                             <!--description-->
                             <div class="row">
                                 <div class="form-group col-xs-12">

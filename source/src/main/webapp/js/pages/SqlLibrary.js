@@ -44,8 +44,20 @@ function initPage() {
  * @returns {undefined}
  */
 function afterTableLoad() {
-    $.each($("code[name='scriptField']"), function (i, e) {
-        Prism.highlightElement($(e).get(0));
+    $.each($("pre[name='scriptField']"), function (i, e) {
+        //Highlight envelop on modal loading
+        var editor = ace.edit($(e).get(0));
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/sql");
+        editor.setOptions({
+            maxLines: 1,
+            showLineNumbers: false,
+            showGutter: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false,
+            readOnly: true
+        });
+        editor.renderer.$cursorLayer.element.style.opacity = 0;
     });
 }
 
@@ -97,11 +109,25 @@ function editEntryClick(name) {
         method: "GET",
         success: function (data) {
             if (data.messageType === "OK") {
+                
+                //Destroy the previous Ace object.
+                ace.edit($("#editSqlLibraryModalForm #script")[0]).destroy();
+
                 formEdit.find("#name").prop("value", data.name);
                 formEdit.find("#type").prop("value", $('<div/>').html(data.type).text());
                 formEdit.find("#script").text(data.script);
                 formEdit.find("#description").prop("value", $('<div/>').html(data.description).text());
+                formEdit.find("#database").find("option").removeAttr("selected");
                 formEdit.find("#database").find("option[value='" + data.database + "']").attr("selected", "selected");
+                
+                //Highlight envelop on modal loading
+                var editor = ace.edit($("#editSqlLibraryModalForm #script")[0]);
+                editor.setTheme("ace/theme/chrome");
+                editor.getSession().setMode("ace/mode/sql");
+                editor.setOptions({
+                    maxLines: Infinity
+                });
+                
                 if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
                     formEdit.find("#name").prop("readonly", "readonly");
                     formEdit.find("#type").prop("readonly", "readonly");
@@ -112,41 +138,6 @@ function editEntryClick(name) {
                     $('#editSqlLibraryButton').attr('class', '');
                     $('#editSqlLibraryButton').attr('hidden', 'hidden');
                 }
-
-                //Highlight envelop on modal loading
-                Prism.highlightElement($("#script")[0]);
-
-                /**
-                 * On edition, get the caret position, refresh the envelope to have 
-                 * syntax coloration in real time, then set the caret position.
-                 */
-                $('#editSqlLibraryModal #script').on("keyup", function (e) {
-                    //Get the position of the carret
-                    var pos = $(this).caret('pos');
-
-                    //On Firefox only, when pressing enter, it create a <br> tag.
-                    //So, if the <br> tag is present, replace it with <span>&#13;</span>
-                    if ($("#editSqlLibraryModal #script br").length !== 0) {
-                        $("#editSqlLibraryModal #script br").replaceWith("<span>&#13;</span>");
-                        pos++;
-                    }
-                    //Apply syntax coloration
-                    Prism.highlightElement($("#editSqlLibraryModal #script")[0]);
-                    //Set the caret position to the initia one.
-                    $(this).caret('pos', pos);
-                });
-
-                //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-                //Add class on container to highlight field
-                $('#editSqlLibraryModal #scriptContainer').on("click", function (e) {
-                    $('#editSqlLibraryModal #scriptContainer').addClass('highlightedContainer');
-                    $('#editSqlLibraryModal #script').focus();
-                });
-
-                //Remove class to stop highlight envelop field
-                $('#editSqlLibraryModal #script').on('blur', function () {
-                    $('#editSqlLibraryModal #scriptContainer').removeClass('highlightedContainer');
-                });
 
                 formEdit.modal('show');
             } else {
@@ -163,8 +154,9 @@ function editEntryModalSaveHandler() {
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
-    //Add envelope and script, not in the form
-    data.script = encodeURI($("#editSqlLibraryModalForm #script").text());
+    //Add script, not in the form
+    var editor = ace.edit($("#editSqlLibraryModalForm #script")[0]);
+    data.script = encodeURIComponent(editor.getSession().getDocument().getValue());
 
     showLoaderInModal('#editSqlLibraryModal');
     $.ajax({
@@ -212,40 +204,15 @@ function addEntryClick() {
      */
     $("#addSqlLibraryModal #idname").empty();
     $('#addSqlLibraryModal #envelope').empty();
-
-    /**
-     * On edition, get the caret position, refresh the envelope to have 
-     * syntax coloration in real time, then set the caret position.
-     */
-
-    $('#addSqlLibraryModal #script').on("keyup", function (e) {
-        //Get the position of the carret
-        var pos = $(this).caret('pos');
-
-        //On Firefox only, when pressing enter, it create a <br> tag.
-        //So, if the <br> tag is present, replace it with <span>&#13;</span>
-        if ($("#addSqlLibraryModal #script br").length !== 0) {
-            $("#addSqlLibraryModal #script br").replaceWith("<span>&#13;</span>");
-            pos++;
-        }
-        //Apply syntax coloration
-        Prism.highlightElement($("#addSqlLibraryModal #script")[0]);
-        //Set the caret position to the initia one.
-        $(this).caret('pos', pos);
+    
+    //Highlight envelop on modal loading
+    var editor = ace.edit($("#addSqlLibraryModalForm #script")[0]);
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode("ace/mode/sql");
+    editor.setOptions({
+        maxLines: Infinity
     });
-
-    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-    //Add class on container to highlight field
-    $('#addSqlLibraryModal #scriptContainer').on("click", function (e) {
-        $('#addSqlLibraryModal #scriptContainer').addClass('highlightedContainer');
-        $('#addSqlLibraryModal #script').focus();
-    });
-
-    //Remove class to stop highlight envelop field
-    $('#addSqlLibraryModal #script').on('blur', function () {
-        $('#addSqlLibraryModal #scriptContainer').removeClass('highlightedContainer');
-    });
-
+    
 
     $('#addSqlLibraryModal').modal('show');
 }
@@ -256,8 +223,9 @@ function addEntryModalSaveHandler() {
 
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
-    //Add envelope and script, not in the form
-    data.script = encodeURI($("#addSqlLibraryModalForm #script").text());
+    //Add script, not in the form
+    var editor = ace.edit($("#addSqlLibraryModalForm #script")[0]);
+    data.script = encodeURIComponent(editor.getSession().getDocument().getValue());
 
     showLoaderInModal('#addSqlLibraryModal');
     $.ajax({
@@ -356,7 +324,7 @@ function aoColumnsFunc(tableId) {
         {"data": "database", "sName": "Database", "title": doc.getDocLabel("page_sqlLibrary", "database_col")},
         {"data": "script", "sName": "Script", "sWidth": "450px", "title": doc.getDocLabel("page_sqlLibrary", "script_col"),
             "mRender": function (data, type, obj) {
-                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='scriptField' class='language-sql'></code>").text(obj['script']))).html();
+                return $("<div></div>").append($("<pre name='scriptField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['script'])).html();
             }},
         {"data": "description", "sName": "Description", "title": doc.getDocLabel("page_sqlLibrary", "description_col")}
     ];

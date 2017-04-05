@@ -1291,14 +1291,14 @@ function showTitleWhenTextOverflow() {
     /**
      * for PRE, create PRE and CODE tag into tooltip
      */
-    $('pre').each(function () {
-        var $ele = $(this);
-        if (this.offsetWidth < this.scrollWidth) {
-            $ele.attr('title', '<div><pre style="min-height:150px; width:800px">' + $ele.html() + '</pre></div>');
-            $ele.attr('data-html', true);
-            $ele.attr('data-toggle', 'tooltip');
-        }
-    });
+//    $('pre').each(function () {
+//        var $ele = $(this);
+//        if (this.offsetWidth < this.scrollWidth) {
+//            $ele.attr('title', '<div><pre style="min-height:150px; width:800px">' + $ele.html() + '</pre></div>');
+//            $ele.attr('data-html', true);
+//            $ele.attr('data-toggle', 'tooltip');
+//        }
+//    });
 
     $('[data-toggle="tooltip"]').tooltip({
         container: 'body'
