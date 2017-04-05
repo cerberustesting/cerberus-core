@@ -2341,7 +2341,27 @@ function showTextArea(title, text, fileUrl) {
 
     var jqxhr = $.get(fileUrl, "&autoContentType=N");
     $.when(jqxhr).then(function (data) {
-        $('#modalContent').append($("<div>").addClass("form-group").append($("<textarea>").addClass("form-control").attr("rows", "10").val(data)));
+        $('#modalContent').append($("<div>").addClass("form-group").append($("<pre id='previewContent'></pre>").addClass("form-control").attr("style", "min-height:15px").text(data)));
+        //Highlight content on modal loading
+        var editor = ace.edit($("#previewContent")[0]);
+        editor.setTheme("ace/theme/chrome");
+        var textMode = defineAceMode(editor.getSession().getDocument().getValue());
+        editor.getSession().setMode(textMode);
+        editor.setOptions({
+            maxLines: Infinity
+        });
+
+        //Autoindentation
+        var jsbOpts = {
+            indent_size: 2
+        };
+        var session = editor.getSession();
+
+        if (textMode.endsWith("json")) {
+            session.setValue(js_beautify(session.getValue(), jsbOpts));
+        } else if (textMode.endsWith("xml")) {
+            session.setValue(html_beautify(session.getValue(), jsbOpts));
+        }
     });
 
     $('#modal-footer #btnFullPicture').remove();
@@ -2410,9 +2430,9 @@ function isHTMLorXML(str) {
  * @returns {String} The Ace mode
  */
 function defineAceMode(text) {
-    if (isHTMLorXML(text)) {
-        return "ace/mode/xml";
-    } else if (isJson(text)) {
+    if (isJson(text)) {
         return "ace/mode/json";
+    } else if (isHTMLorXML(text)) {
+        return "ace/mode/xml";
     }
 }
