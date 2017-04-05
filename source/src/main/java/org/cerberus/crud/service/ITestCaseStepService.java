@@ -89,6 +89,8 @@ public interface ITestCaseStepService {
 
     List<TestCaseStep> getTestCaseStepUsingTestCaseInParamter(String test, String testCase) throws CerberusException;
 
+    List<TestCaseStep> getTestCaseStepsUsingTestInParameter(String test) throws CerberusException;
+
     public void compareListAndUpdateInsertDeleteElements(List<TestCaseStep> newList, List<TestCaseStep> oldList, boolean duplicate) throws CerberusException;
 
     List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException;

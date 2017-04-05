@@ -188,6 +188,11 @@ public class TestCaseStepService implements ITestCaseStepService {
     }
 
     @Override
+    public List<TestCaseStep> getTestCaseStepsUsingTestInParameter(final String test) throws CerberusException {
+        return testCaseStepDAO.getTestCaseStepsUsingTestInParameter(test);
+    }
+
+    @Override
     public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException {
         return testCaseStepDAO.getStepUsedAsLibraryInOtherTestCaseByApplication(application);
     }
