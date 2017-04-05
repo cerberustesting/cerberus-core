@@ -442,6 +442,26 @@ public class TestCaseStepDAO implements ITestCaseStepDAO {
     }
 
     @Override
+    public List<TestCaseStep> getTestCaseStepsUsingTestInParameter(final String test) throws CerberusException {
+        try (
+                final Connection connection = databaseSpring.connect();
+                final PreparedStatement statement = connection.prepareStatement("SELECT * FROM testcasestep WHERE usestep='Y' AND usesteptest = ?")
+        ) {
+            statement.setString(1, test);
+
+            final ResultSet resultSet = statement.executeQuery();
+            final List<TestCaseStep> steps = new ArrayList<>();
+            while (resultSet.next()) {
+                steps.add(loadFromResultSet(resultSet));
+            }
+            return steps;
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
+        }
+    }
+
+    @Override
     public List<TestCaseStep> getStepUsedAsLibraryInOtherTestCaseByApplication(String application) throws CerberusException {
         List<TestCaseStep> list = null;
         StringBuilder query = new StringBuilder();

@@ -108,6 +108,8 @@ public class ServiceService implements IServiceService {
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE);
                 message.setDescription(message.getDescription().replace("%DESCRIPTION%", "Service does not exist !!"));
 
+            } else if (StringUtil.isNullOrEmpty(appService.getServicePath())) {
+                message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSERVICE).resolveDescription("DESCRIPTION", "Service path is not defined");
             } else {
 
                 // We start by calculating the servicePath and decode it.
