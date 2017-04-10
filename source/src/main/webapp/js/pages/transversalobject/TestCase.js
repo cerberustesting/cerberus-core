@@ -277,7 +277,7 @@ function confirmTestCaseModalHandler(mode) {
             if (getAlertType(data.messageType) === "success") {
                 var oTable = $("#testCaseTable").dataTable();
                 oTable.fnDraw(true);
-                $('#editTestCaseModal').data("Saved",true);
+                $('#editTestCaseModal').data("Saved", true);
                 $('#editTestCaseModal').modal('hide');
                 showMessage(data);
             } else {
@@ -307,7 +307,7 @@ function feedNewTestCaseModal(modalId) {
 
     feedTestCaseData(undefined, modalId, "ADD", true);
     // Labels
-    loadLabel(undefined, undefined);
+    loadLabel(undefined, undefined, "#selectLabel");
     //Application Combo
     appendApplicationList(undefined, undefined);
 
@@ -341,7 +341,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(appData.contentTable.system, testCase);
             // Loading the labl list from aplication of the testcase.
-            loadLabel(testCase.labelList, appData.contentTable.system);
+            loadLabel(testCase.labelList, appData.contentTable.system, "#selectLabel");
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, appData.contentTable.system);
 
@@ -670,24 +670,26 @@ function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
 
 /***
  * Build the list of label and flag them from the testcase values..
- * @param {String} labelList - list of labels from the testcase to flag.
+ * @param {String} labelList - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
+ * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
  * @returns {null}
  */
-function loadLabel(labelList, mySystem) {
+function loadLabel(labelList, mySystem, myLabelDiv) {
 
+    var labelDiv = myLabelDiv;
     var targetSystem = mySystem;
     if (isEmpty(targetSystem)) {
         targetSystem = getUser().defaultSystem;
     }
-    
+
     var jqxhr = $.get("ReadLabel?system=" + targetSystem, "", "json");
 
     $.when(jqxhr).then(function (data) {
         var messageType = getAlertType(data.messageType);
         //DRAW LABEL LIST
         if (messageType === "success") {
-            $('#selectLabel').empty();
+            $(labelDiv).empty();
             var index;
             for (index = 0; index < data.contentTable.length; index++) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
@@ -695,7 +697,7 @@ function loadLabel(labelList, mySystem) {
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
                 var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-2 list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
-                $('#selectLabel').append(option);
+                $(labelDiv).append(option);
             }
         } else {
             showMessageMainPage(messageType, data.message);
@@ -707,12 +709,12 @@ function loadLabel(labelList, mySystem) {
                 //For each testcaselabel, put at the top of the list and check them
                 var element = $("#itemLabelId" + labelList[index].label.id);
                 element.remove();
-                $("#selectLabel").prepend(element);
+                $(labelDiv).prepend(element);
                 $("#labelId" + labelList[index].label.id).prop("checked", true);
             }
         }
         //ADD CLICK EVENT ON LABEL
-        $('#selectLabel').find('span').click(function () {
+        $(labelDiv).find('span').click(function () {
             var status = $(this).parent().find("input").prop('checked');
             $(this).parent().find("input").prop('checked', !status);
         });
@@ -722,7 +724,7 @@ function loadLabel(labelList, mySystem) {
 function appendApplicationList(defautValue, mySystem) {
 
     $("[name=application]").empty();
-    
+
     var targetSystem = mySystem;
     if (isEmpty(targetSystem)) {
         targetSystem = getUser().defaultSystem;

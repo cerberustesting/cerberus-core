@@ -88,25 +88,12 @@ public class UpdateBuildRevisionParameters extends HttpServlet {
         String build = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("build"), "", charset);
         String revision = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("revision"), "", charset);
         String release = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("release"), "", charset);
-        String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), "", charset);
-        String project = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("project"), "", charset);
-        String ticketidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("ticketidfixed"), "", charset);
-        String bugidfixed = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("bugidfixed"), "", charset);
-        String releaseowner = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("releaseowner"), "", charset);
-        String subject = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("subject"), "", charset);
-        String jenkinsbuildid = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("jenkinsbuildid"), "", charset);
-        String mavenGroupID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavengroupid"), "", charset);
-        String mavenArtifactID = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenartifactid"), "", charset);
-        String mavenVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("mavenversion"), "", charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
-        String link = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("link"), "", charset);
-        String repositoryUrl = ParameterParserUtil.parseStringParamAndDecode(request.getParameter("repositoryurl"), "", charset);
         
         Integer brpid = 0;
 
         String[] myId = request.getParameterValues("id");
         StringBuilder output_message = new StringBuilder();
-        MessageEvent final_msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         int massErrorCounter = 0;
         for (String myId1 : myId) {
 

@@ -54,8 +54,13 @@ public class TestCaseLabelService implements ITestCaseLabelService {
     private final String OBJECT_NAME = "TestCaseLabel";
 
     @Override
-    public AnswerItem readByKey(Integer id) {
-        return testCaseLabelDAO.readByKey(id);
+    public AnswerItem readByKeyTech(Integer id) {
+        return testCaseLabelDAO.readByKeyTech(id);
+    }
+
+    @Override
+    public AnswerItem readByKey(String test, String testCase, Integer id) {
+        return testCaseLabelDAO.readByKey(test, testCase, id);
     }
 
     @Override
@@ -75,7 +80,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
 
     @Override
     public boolean exist(Integer id) {
-        AnswerItem objectAnswer = readByKey(id);
+        AnswerItem objectAnswer = readByKeyTech(id);
         return (objectAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) && (objectAnswer.getItem() != null); // Call was successfull and object was found.
     }
 

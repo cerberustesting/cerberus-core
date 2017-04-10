@@ -68,7 +68,7 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem<TestCaseLabel> readByKey(Integer id) {
+    public AnswerItem<TestCaseLabel> readByKeyTech(Integer id) {
         AnswerItem<TestCaseLabel> ans = new AnswerItem();
         TestCaseLabel result = null;
         final String query = "SELECT * FROM `testcaselabel` tel WHERE `id` = ?";
@@ -85,6 +85,50 @@ public class TestCaseLabelDAO implements ITestCaseLabelDAO {
                 PreparedStatement preStat = connection.prepareStatement(query)) {
             //prepare and execute query
             preStat.setInt(1, id);
+            ResultSet resultSet = preStat.executeQuery();
+            //parse query
+            if (resultSet.first()) {
+                result = loadFromResultSet(resultSet, null);
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                ans.setItem(result);
+            } else {
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+            }
+
+        } catch (Exception e) {
+            LOG.warn("Unable to readByKey TestCaseLabel: " + e.getMessage());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED).resolveDescription("DESCRIPTION",
+                    e.toString());
+        } finally {
+            ans.setResultMessage(msg);
+        }
+
+        return ans;
+    }
+
+    @Override
+    public AnswerItem<TestCaseLabel> readByKey(String test, String testCase, Integer labelId) {
+        AnswerItem<TestCaseLabel> ans = new AnswerItem();
+        TestCaseLabel result = null;
+        final String query = "SELECT * FROM `testcaselabel` tel WHERE `labelid` = ? and `test` = ? and `testcase` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.label : " + labelId);
+            LOG.debug("SQL.param.test : " + test);
+            LOG.debug("SQL.param.testcase : " + testCase);
+        }
+
+        try (Connection connection = databaseSpring.connect();
+                PreparedStatement preStat = connection.prepareStatement(query)) {
+            //prepare and execute query
+            preStat.setInt(1, labelId);
+            preStat.setString(2, test);
+            preStat.setString(3, testCase);
             ResultSet resultSet = preStat.executeQuery();
             //parse query
             if (resultSet.first()) {

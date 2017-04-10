@@ -220,7 +220,7 @@ public class ReadTestCaseLabel extends HttpServlet {
         ITestCaseLabelService labelService = appContext.getBean(ITestCaseLabelService.class);
 
         //finds the project     
-        AnswerItem answer = labelService.readByKey(id);
+        AnswerItem answer = labelService.readByKeyTech(id);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             //if the service returns an OK message then we can get the item and convert it to JSONformat

@@ -106,6 +106,7 @@ function aoColumnsFunc() {
                 return '<div class="center btn-group width150">' + editEntry + '</div>';
             }
         },
+        {"data": "LogEventID", "sName": "LogEventID", "title": doc.getDocOnline("logevent", "logeventid")},
         {"data": "time", "sName": "Time", "title": doc.getDocOnline("logevent", "time")},
         {"data": "login", "sName": "Login", "title": doc.getDocOnline("logevent", "login")},
         {"data": "page", "sName": "Page", "title": doc.getDocOnline("logevent", "page")},

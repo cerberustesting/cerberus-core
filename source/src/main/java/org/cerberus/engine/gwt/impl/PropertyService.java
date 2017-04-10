@@ -113,8 +113,6 @@ public class PropertyService implements IPropertyService {
     @Autowired
     private IVariableService variableService;
 
-    public static final Pattern PROPERTY_VARIABLE_PATTERN = Pattern.compile("%[^%]+%");
-
     @Override
     public AnswerItem<String> decodeStringWithExistingProperties(String stringToDecode, TestCaseExecution tCExecution,
             TestCaseStepActionExecution testCaseStepActionExecution, boolean forceCalculation) throws CerberusEventException {

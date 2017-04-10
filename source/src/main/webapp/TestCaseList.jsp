@@ -43,7 +43,6 @@
             <%@ include file="include/utils/modal-confirmation.html"%>
             <%@ include file="include/transversalobject/TestCase.html"%>
             <%@ include file="include/testcaselist/massActionTestCase.html"%>
-            <%@ include file="include/testcasescript/manageLabel.html"%>
 
             <h1 class="page-title-line" id="title">Test Case List</h1>
 
@@ -52,15 +51,18 @@
                     <span class="glyphicon glyphicon-list"></span>
                     <label id="testCaseListLabel">Test Case List</label>
                 </div>
-                <div class="panel-body" id="testCaseList">
-                    <table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable"></table>
-                    <div class="marginBottom20"></div>
-                </div>
+                <form id="massActionForm" name="massActionForm"  title="" role="form">
+                    <div class="panel-body" id="testCaseList">
+                        <table id="testCaseTable" class="table table-bordered table-hover display" name="testCaseTable"></table>
+                        <div class="marginBottom20"></div>
+                    </div>
+                </form>
             </div>
-
-            <footer class="footer">
-                <div class="container-fluid" id="footer"></div>
-            </footer>
         </div>
-    </body>
+
+        <footer class="footer">
+            <div class="container-fluid" id="footer"></div>
+        </footer>
+    </div>
+</body>
 </html>

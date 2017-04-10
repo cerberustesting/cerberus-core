@@ -59,8 +59,6 @@ function initPage() {
     displayUserList("releaseowner");
 
     var table = loadBCTable(urlBuild, urlRevision, urlApplication);
-
-    console.log(table);
     // React on table redraw
     table.on(
         'draw.dt',
@@ -198,8 +196,8 @@ function renderOptionsForBrp(data) {
 
         if ($("#createBrpButton").length === 0) {
             var contentToAdd = "<div class='marginBottom10'>";
-            contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
             contentToAdd += "<button id='createBrpButton' type='button' class='btn btn-default' ><span class='glyphicon glyphicon-plus-sign'></span> " + doc.getDocLabel("page_buildcontent", "button_create") + "</button>";
+            contentToAdd += "<button id='createBrpMassButton' type='button' class='btn btn-default'><span class='glyphicon glyphicon-th-list'></span> " + doc.getDocLabel("page_global", "button_massAction") + "</button>";
             contentToAdd += "</div>";
 
             $("#buildrevisionparametersTable_wrapper #buildrevisionparametersTable_length").before(contentToAdd);

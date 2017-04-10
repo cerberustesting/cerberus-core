@@ -39,7 +39,16 @@ public interface ITestCaseLabelService {
      * @param id
      * @return
      */
-    AnswerItem readByKey(Integer id);
+    AnswerItem readByKeyTech(Integer id);
+
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param id
+     * @return
+     */
+    AnswerItem readByKey(String test, String testCase, Integer id);
 
     /**
      *

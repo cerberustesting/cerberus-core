@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ILogEventDAO;
@@ -274,7 +275,7 @@ public class LogEventDAO implements ILogEventDAO {
                 preStat.setString(2, logevent.getLogin());
                 preStat.setString(3, logevent.getPage());
                 preStat.setString(4, logevent.getAction());
-                preStat.setString(5, logevent.getLog());
+                preStat.setString(5, StringUtils.left(logevent.getLog(), 500));
                 preStat.setString(6, logevent.getremoteIP());
                 preStat.setString(7, logevent.getLocalIP());
 

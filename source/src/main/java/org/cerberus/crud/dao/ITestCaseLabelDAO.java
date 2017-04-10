@@ -43,7 +43,16 @@ public interface ITestCaseLabelDAO {
      * @param id
      * @return
      */
-    AnswerItem<TestCaseLabel> readByKey(Integer id);
+    AnswerItem<TestCaseLabel> readByKeyTech(Integer id);
+    
+    /**
+     *
+     * @param test
+     * @param testCase
+     * @param id
+     * @return
+     */
+    AnswerItem<TestCaseLabel> readByKey(String test, String testCase, Integer id);
 
     /**
      *

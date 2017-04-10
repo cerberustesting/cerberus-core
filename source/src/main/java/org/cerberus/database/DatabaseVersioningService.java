@@ -6788,6 +6788,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1125-1126
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1127-1128
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -8122,6 +8131,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_testcaselist','filters','','fr','Filtres','Filtre des tests')");
         SQLS.append(",('page_testcaselist','link','','en','Bug Link','')");
         SQLS.append(",('page_testcaselist','link','','fr','Lien vers le Bug','')");
+        SQLS.append(",('page_testcaselist','massAction','','en','Massively update the selected test cases','')");
+        SQLS.append(",('page_testcaselist','massAction','','fr','Mise à jour en masse des testcase selectionnés','')");
         SQLS.append(",('page_testcaselist','testCaseInfo','','en','Test Case Info','')");
         SQLS.append(",('page_testcaselist','testCaseInfo','','fr','Test Case Info','')");
         SQLS.append(",('page_testcaselist','testcaselist','','en','Test Case List','List of all the test case of the selected test')");
