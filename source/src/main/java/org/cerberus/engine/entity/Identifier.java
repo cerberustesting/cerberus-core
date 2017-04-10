@@ -73,8 +73,8 @@ public class Identifier {
      * @param identifier the identifier key to check
      * @return <code>true</code> if the current {@link Identifier}'s identifier key is equal to the given one, <code>false</code> otherwise
      */
-    public boolean isIdentifier(final String identifier) {
-        return identifier != null && identifier.equals(identifier);
+    public boolean isSameIdentifier(final String identifier) {
+        return identifier != null && identifier.equals(this.getIdentifier());
     }
 
     @Override

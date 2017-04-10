@@ -164,12 +164,37 @@ function activateSOAPServiceFields(modal, serviceValue) {
  * @returns {undefined}
  */
 function afterTableLoad() {
-    $.each($("code[name='envelopeField']"), function (i, e) {
-        Prism.highlightElement($(e).get(0));
+    $.each($("pre[name='envelopeField']"), function (i, e) {
+        //Highlight envelop on modal loading
+        var editor = ace.edit($(e).get(0));
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/xml");
+        editor.setOptions({
+            maxLines: 1,
+            showLineNumbers: false,
+            showGutter: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false,
+            readOnly: true
+        });
+        editor.renderer.$cursorLayer.element.style.opacity = 0;
     });
-    $.each($("code[name='scriptField']"), function (i, e) {
-        Prism.highlightElement($(e).get(0));
+    $.each($("pre[name='scriptField']"), function (i, e) {
+        //Highlight envelop on modal loading
+        var editor = ace.edit($(e).get(0));
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/sql");
+        editor.setOptions({
+            maxLines: 1,
+            showLineNumbers: false,
+            showGutter: false,
+            highlightActiveLine: false,
+            highlightGutterLine: false,
+            readOnly: true
+        });
+        editor.renderer.$cursorLayer.element.style.opacity = 0;
     });
+
 }
 
 function displayPageLabel() {
@@ -366,8 +391,10 @@ function addTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURIComponent($("#addTestDataLibModalForm #envelope").text());
-    data.script = encodeURIComponent($("#addTestDataLibModalForm #script").text());
+    var editorEnv = ace.edit($("#addTestDataLibModalForm #envelope")[0]);
+    data.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
+    var editorScr = ace.edit($("#addTestDataLibModalForm #script")[0]);
+    data.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -431,61 +458,24 @@ function addTestDataLibClick() {
     };
     appendSubDataRow(newSubData, "subdataTableBody");
 
-    $('#addTestDataLibModal #envelope').on("keyup", function (e) {
-        //Get the position of the carret
-        var pos = $(this).caret('pos');
+//Destroy the previous Ace object.
+    //ace.edit($("#addTestDataLibModal #envelope")[0]).destroy();
+    //ace.edit($("#addTestDataLibModal #script")[0]).destroy();
 
-        //On Firefox only, when pressing enter, it create a <br> tag.
-        //So, if the <br> tag is present, replace it with <span>&#13;</span>
-        if ($("#addTestDataLibModal #envelope br").length !== 0) {
-            $("#addTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
-            pos++;
-        }
-        //Apply syntax coloration
-        Prism.highlightElement($("#addTestDataLibModal #envelope")[0]);
-        //Set the caret position to the initia one.
-        $(this).caret('pos', pos);
+//Highlight envelop on modal loading
+    var editor = ace.edit($("#addTestDataLibModal #envelope")[0]);
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode("ace/mode/xml");
+    editor.setOptions({
+        maxLines: Infinity
     });
 
-    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-    //Add class on container to highlight field
-    $('#addTestDataLibModal #envelopeContainer').on("click", function (e) {
-        $('#addTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
-        $('#addTestDataLibModal #envelope').focus();
-    });
-
-    //Remove class to stop highlight envelop field
-    $('#addTestDataLibModal #envelope').on('blur', function () {
-        $('#addTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
-    });
-
-
-    $('#addTestDataLibModal #script').on("keyup", function (e) {
-        //Get the position of the carret
-        var pos = $(this).caret('pos');
-
-        //On Firefox only, when pressing enter, it create a <br> tag.
-        //So, if the <br> tag is present, replace it with <span>&#13;</span>
-        if ($("#addTestDataLibModal #script br").length !== 0) {
-            $("#addTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
-            pos++;
-        }
-        //Apply syntax coloration
-        Prism.highlightElement($("#addTestDataLibModal #script")[0]);
-        //Set the caret position to the initia one.
-        $(this).caret('pos', pos);
-    });
-
-    //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-    //Add class on container to highlight field
-    $('#addTestDataLibModal #scriptContainer').on("click", function (e) {
-        $('#addTestDataLibModal #scriptContainer').addClass('highlightedContainer');
-        $('#addTestDataLibModal #script').focus();
-    });
-
-    //Remove class to stop highlight envelop field
-    $('#addTestDataLibModal #script').on('blur', function () {
-        $('#addTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+//Highlight envelop on modal loading
+    var editor = ace.edit($("#addTestDataLibModal #script")[0]);
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode("ace/mode/sql");
+    editor.setOptions({
+        maxLines: Infinity
     });
 
     activateSOAPServiceFields("#addTestDataLibModal", "");
@@ -534,8 +524,10 @@ function duplicateTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURIComponent($("#duplicateTestDataLibModal #envelope").text());
-    data.script = encodeURIComponent($("#duplicateTestDataLibModal #script").text());
+    var editorEnv = ace.edit($("#duplicateTestDataLibModal #envelope")[0]);
+    data.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
+    var editorScr = ace.edit($("#duplicateTestDataLibModal #script")[0]);
+    data.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
 
     $.ajax({
         url: "CreateTestDataLib",
@@ -582,6 +574,10 @@ function duplicateTestDataLibClick(testDataLibID) {
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
     $.when(jqxhr).then(function (data) {
+        
+        //Destroy the previous Ace object.
+        ace.edit($("#duplicateTestDataLibModal #envelope")[0]).destroy();
+        ace.edit($("#duplicateTestDataLibModal #script")[0]).destroy();
 
         var obj = data["testDataLib"];
 
@@ -645,69 +641,22 @@ function duplicateTestDataLibClick(testDataLibID) {
 
         loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_dup");
 
-        //Highlight envelop on modal loading
-        Prism.highlightElement($("#duplicateTestDataLibModal #envelope")[0]);
-        Prism.highlightElement($("#duplicateTestDataLibModal #script")[0]);
 
-        /**
-         * On edition, get the caret position, refresh the envelope to have 
-         * syntax coloration in real time, then set the caret position.
-         */
-        $('#duplicateTestDataLibModal #envelope').on("keyup", function (e) {
-            //Get the position of the carret
-            var pos = $(this).caret('pos');
 
-            //On Firefox only, when pressing enter, it create a <br> tag.
-            //So, if the <br> tag is present, replace it with <span>&#13;</span>
-            if ($("#duplicateTestDataLibModal #envelope br").length !== 0) {
-                $("#duplicateTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
-                pos++;
-            }
-            //Apply syntax coloration
-            Prism.highlightElement($("#duplicateTestDataLibModal #envelope")[0]);
-            //Set the caret position to the initia one.
-            $(this).caret('pos', pos);
+//Highlight envelop on modal loading
+        var editor = ace.edit($("#duplicateTestDataLibModal #envelope")[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/xml");
+        editor.setOptions({
+            maxLines: Infinity
         });
 
-        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-        //Add class on container to highlight field
-        $('#duplicateTestDataLibModal #envelopeContainer').on("click", function (e) {
-            $('#duplicateTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
-            $('#duplicateTestDataLibModal #envelope').focus();
-        });
-
-        //Remove class to stop highlight envelop field
-        $('#duplicateTestDataLibModal #envelope').on('blur', function () {
-            $('#duplicateTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
-        });
-
-
-        $('#duplicateTestDataLibModal #script').on("keyup", function (e) {
-            //Get the position of the carret
-            var pos = $(this).caret('pos');
-
-            //On Firefox only, when pressing enter, it create a <br> tag.
-            //So, if the <br> tag is present, replace it with <span>&#13;</span>
-            if ($("#duplicateTestDataLibModal #script br").length !== 0) {
-                $("#duplicateTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
-                pos++;
-            }
-            //Apply syntax coloration
-            Prism.highlightElement($("#duplicateTestDataLibModal #script")[0]);
-            //Set the caret position to the initia one.
-            $(this).caret('pos', pos);
-        });
-
-        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-        //Add class on container to highlight field
-        $('#duplicateTestDataLibModal #scriptContainer').on("click", function (e) {
-            $('#duplicateTestDataLibModal #scriptContainer').addClass('highlightedContainer');
-            $('#duplicateTestDataLibModal #script').focus();
-        });
-
-        //Remove class to stop highlight envelop field
-        $('#duplicateTestDataLibModal #script').on('blur', function () {
-            $('#duplicateTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+//Highlight envelop on modal loading
+        var editor = ace.edit($("#duplicateTestDataLibModal #script")[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/sql");
+        editor.setOptions({
+            maxLines: Infinity
         });
 
         //after everything. then shows the modal
@@ -736,8 +685,10 @@ function editTestDataLibModalSaveHandler() {
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     //Add envelope and script, not in the form
-    data.envelope = encodeURIComponent($("form#editTestLibData #envelope").text());
-    data.script = encodeURIComponent($("form#editTestLibData #script").text());
+    var editorEnv = ace.edit($("form#editTestLibData #envelope")[0]);
+    data.envelope = encodeURIComponent(editorEnv.getSession().getDocument().getValue());
+    var editorScr = ace.edit($("form#editTestLibData #script")[0]);
+    data.script = encodeURIComponent(editorScr.getSession().getDocument().getValue());
 
     $.ajax({
         url: "UpdateTestDataLib",
@@ -785,6 +736,10 @@ function editTestDataLibClick(testDataLibID) {
     var jqxhr = $.getJSON("ReadTestDataLib", "testdatalibid=" + testDataLibID);
 
     $.when(jqxhr).then(function (data) {
+        
+        //Destroy the previous Ace object.
+        ace.edit($("#editTestDataLibModal #envelope")[0]).destroy();
+        ace.edit($("#editTestDataLibModal #script")[0]).destroy();
 
         var obj = data["testDataLib"];
 
@@ -860,69 +815,20 @@ function editTestDataLibClick(testDataLibID) {
         // Loading the list of subdata.
         loadTestDataLibSubdataTable(testDataLibID, "subdataTableBody_edit");
 
-        //Highlight envelop on modal loading
-        Prism.highlightElement($("#editTestDataLibModal #envelope")[0]);
-        Prism.highlightElement($("#editTestDataLibModal #script")[0]);
-
-        /**
-         * On edition, get the caret position, refresh the envelope to have 
-         * syntax coloration in real time, then set the caret position.
-         */
-        $('#editTestDataLibModal #envelope').on("keyup", function (e) {
-            //Get the position of the carret
-            var pos = $(this).caret('pos');
-
-            //On Firefox only, when pressing enter, it create a <br> tag.
-            //So, if the <br> tag is present, replace it with <span>&#13;</span>
-            if ($("#editTestDataLibModal #envelope br").length !== 0) {
-                $("#editTestDataLibModal #envelope br").replaceWith("<span>&#13;</span>");
-                pos++;
-            }
-            //Apply syntax coloration
-            Prism.highlightElement($("#editTestDataLibModal #envelope")[0]);
-            //Set the caret position to the initia one.
-            $(this).caret('pos', pos);
+//Highlight envelop on modal loading
+        var editor = ace.edit($("#editTestDataLibModal #envelope")[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/xml");
+        editor.setOptions({
+            maxLines: Infinity
         });
 
-        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-        //Add class on container to highlight field
-        $('#editTestDataLibModal #envelopeContainer').on("click", function (e) {
-            $('#editTestDataLibModal #envelopeContainer').addClass('highlightedContainer');
-            $('#editTestDataLibModal #envelope').focus();
-        });
-
-        //Remove class to stop highlight envelop field
-        $('#editTestDataLibModal #envelope').on('blur', function () {
-            $('#editTestDataLibModal #envelopeContainer').removeClass('highlightedContainer');
-        });
-
-
-        $('#editTestDataLibModal #script').on("keyup", function (e) {
-            //Get the position of the carret
-            var pos = $(this).caret('pos');
-
-            //On Firefox only, when pressing enter, it create a <br> tag.
-            //So, if the <br> tag is present, replace it with <span>&#13;</span>
-            if ($("#editTestDataLibModal #script br").length !== 0) {
-                $("#editTestDataLibModal #script br").replaceWith("<span>&#13;</span>");
-                pos++;
-            }
-            //Apply syntax coloration
-            Prism.highlightElement($("#editTestDataLibModal #script")[0]);
-            //Set the caret position to the initia one.
-            $(this).caret('pos', pos);
-        });
-
-        //On click on <pre> tag, focus on <code> tag to make the modification into this element,
-        //Add class on container to highlight field
-        $('#editTestDataLibModal #scriptContainer').on("click", function (e) {
-            $('#editTestDataLibModal #scriptContainer').addClass('highlightedContainer');
-            $('#editTestDataLibModal #script').focus();
-        });
-
-        //Remove class to stop highlight envelop field
-        $('#editTestDataLibModal #script').on('blur', function () {
-            $('#editTestDataLibModal #scriptContainer').removeClass('highlightedContainer');
+//Highlight envelop on modal loading
+        var editor = ace.edit($("#editTestDataLibModal #script")[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/sql");
+        editor.setOptions({
+            maxLines: Infinity
         });
 
         //after everything. then shows the modal
@@ -1275,7 +1181,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         },
         {"data": "script", "sName": "tdl.Script", "sWidth": "450px", "title": doc.getDocLabel("testdatalib", "script"),
             "mRender": function (data, type, obj) {
-                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='scriptField' class='language-sql'></code>").text(obj['script']))).html();
+                return $("<div></div>").append($("<pre name='scriptField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['script'])).html();
             }},
         {
             "sName": "tdl.DatabaseUrl",
@@ -1304,7 +1210,7 @@ function aoColumnsFuncTestDataLib(tableId) {
         {
             "data": "envelope", "sName": "tdl.envelope", "title": doc.getDocLabel("testdatalib", "envelope"), "sWidth": "350px",
             "mRender": function (data, type, obj) {
-                return $("<div></div>").append($("<pre style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").append($("<code name='envelopeField' class='language-markup'></code>").text(obj['envelope']))).html();
+                return $("<div></div>").append($("<pre name='envelopeField' style='height:20px; overflow:hidden; text-overflow:clip; border: 0px; padding:0; margin:0'></pre>").text(obj['envelope'])).html();
             }
         },
         {
