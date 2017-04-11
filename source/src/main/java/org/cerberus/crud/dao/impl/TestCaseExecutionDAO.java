@@ -1151,7 +1151,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             query.append(" or exe.`status` like ? ");
             query.append(" or exe.`crbversion` like ? ");
             query.append(" or exe.`executor` like ? ");
-            query.append(" or exe.`screensize` like ? )");
+            query.append(" or exe.`screensize` like ? ");
             query.append(" or exe.`userAgent` like ? )");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
