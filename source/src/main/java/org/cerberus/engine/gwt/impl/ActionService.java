@@ -1062,7 +1062,20 @@ public class ActionService implements IActionService {
                             tccp.getRowLimit(), tccp.getNature());
                     tcExeData.setTestCaseCountryProperties(tccp);
                     propertyService.calculateProperty(tcExeData, tCExecution, testCaseStepActionExecution, tccp, true);
+                    // Property message goes to Action message.
                     message = tcExeData.getPropertyResultMessage();
+                    if (message.getCodeString().equals("OK")) {
+                        // If Property calculated successfully we summarize the message to a shorter version.
+                        message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALCULATEPROPERTY);
+                        message.setDescription(message.getDescription()
+                                .replace("%PROP%", value1)
+                                .replace("%VALUE%", tcExeData.getValue()));
+                        if (tcExeData.getDataLibRawData() != null) {
+                            message.setDescription(message.getDescription() + " %NBROWS% row(s) with %NBSUBDATA% Subdata(s) calculated."
+                                    .replace("%NBROWS%", String.valueOf(tcExeData.getDataLibRawData().size()))
+                                    .replace("%NBSUBDATA%", String.valueOf(tcExeData.getDataLibRawData().get(0).size())));
+                        }
+                    }
 
                     if (!(StringUtil.isNullOrEmpty(value2))) {
                         // If value2 is fed we force the result to value1.
