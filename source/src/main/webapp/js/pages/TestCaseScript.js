@@ -247,17 +247,17 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                         autocompleteAllFields(Tags, data.info, test, testcase);
 
-                    });
+                        // Manage authorities when data is fully lodade.
+                        $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
+                        $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
+                        $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
+                        $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
+                        $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
+                        $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
+                        //$("#saveProperty1").attr("disabled", !data.hasPermissionsUpdate);
+                        //$("#saveProperty2").attr("disabled", !data.hasPermissionsUpdate);
 
-                    // Manage Authoritise.
-                    $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
-                    $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#saveScript").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#addActionBottom").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#addProperty").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#saveProperty1").attr("disabled", !data.hasPermissionsUpdate);
-                    $("#saveProperty2").attr("disabled", !data.hasPermissionsUpdate);
+                    });
 
                     // Building full list of country from testcase.
                     var myCountry = [];
@@ -271,6 +271,10 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     // Button Add Property insert a new Property
                     $("#addProperty").click(function () {
+                        // Store the current saveScript button status and disable it
+                        var saveScriptOldStatus = $("#saveScript").attr("disabled");
+                        $("#saveScript").attr("disabled", true);
+
                         var newProperty = {
                             property: "",
                             description: "",
@@ -289,6 +293,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                         drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
+
+                        // Restore the saveScript button status
+                        $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
                     });
 
                     $('[data-toggle="tooltip"]').tooltip();
@@ -296,7 +303,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                         initModification();
                     });
-
 
                 },
                 error: showUnexpectedError
@@ -306,7 +312,17 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
             $("#propertiesModal [name='buttonSave']").click(editPropertiesModalSaveHandler);
 
-            $("#addStep").click({stepList: stepList}, addStep);
+            $("#addStep").click({stepList: stepList}, function (event) {
+                // Store the current saveScript button status and disable it
+                var saveScriptOldStatus = $("#saveScript").attr("disabled");
+                $("#saveScript").attr("disabled", true);
+
+                // Really do add step action
+                addStep(event);
+
+                // Restore the saveScript button status
+                $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+            });
             $('#addStepModal').on('hidden.bs.modal', function () {
                 $("#importInfo").removeData("stepInfo");
                 $("#importInfo").empty();

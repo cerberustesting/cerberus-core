@@ -54,7 +54,7 @@
                                 <div class="col-lg-8" style="padding: 0px;">
                                     <div id="TestCaseButton" style="display:none;">
                                         <div class="btn-group pull-right">
-                                            <button class="btn btn-default" id="saveScript" style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
+                                            <button class="btn btn-default" id="saveScript" disabled style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</button>
                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <span class="caret"></span>
                                                 <span class="sr-only">Toggle Dropdown</span>
@@ -76,7 +76,7 @@
                                         <a><button class="btn btn-default pull-right" id="seeLastExec" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</button></a>
                                         <a><button class="btn btn-default pull-right" id="seeLogs" style="margin-left: 1px; margin-right: 1px;"><span class="glyphicon glyphicon-book"></span> Logs</button></a>
                                         <button class="btn btn-default pull-right" id="editTcInfo"> Edit Test Case</button>
-                                        <button class="btn btn-default pull-right" id="deleteTestCase"> Delete Test Case</button>
+                                        <button class="btn btn-default pull-right" id="deleteTestCase" disabled> Delete Test Case</button>
                                         <div class="side-item pull-right"></div>
 
                                     </div>
@@ -107,7 +107,7 @@
                                     </div>
                                     <div id="tcButton">
                                         <!--<h4>Actions</h4>-->
-                                        <button class="btn btn-info btn-block marginTop25" id="addStep">Add Step</button>
+                                        <button class="btn btn-info btn-block marginTop25" id="addStep" disabled>Add Step</button>
                                         <!--                                        <div id="manageProperties" style="margin-bottom: 5px; margin-top: 5px;">
                                                                                     <button class="btn btn-warning btn-block" id="manageProp">Manage Properties</button>
                                                                                 </div>-->
@@ -157,7 +157,7 @@
                                                 <button class="btn btn-default" id="stepPlus">
                                                     <span class="glyphicon glyphicon-chevron-down"></span>
                                                 </button>
-                                                <button class="btn btn-danger" id="deleteStep">
+                                                <button class="btn btn-danger" id="deleteStep" disabled>
                                                     <span class="glyphicon glyphicon-trash"></span>
                                                 </button>
                                             </div>
@@ -166,7 +166,7 @@
                                 </div>
                                 <div id="actionContainer"></div>
                                 <div style="margin-left: -15px; margin-right: -15px; margin-top: 15px; display: none;" id="addActionBottomBtn">
-                                    <button id="addActionBottom" class="btn btn-block btn-primary" onclick="addActionAndFocus()">Add Action</button>
+                                    <button id="addActionBottom" class="btn btn-block btn-primary" disabled onclick="addActionAndFocus()">Add Action</button>
                                 </div>
                             </div>
                         </div>
@@ -179,7 +179,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button class="btn btn-default" id="addProperty">Add Property</button>
+                                    <button class="btn btn-default" id="addProperty" disabled>Add Property</button>
                                 </div>
                             </div>
                         </div>
