@@ -184,121 +184,126 @@ public class ActionService implements IActionService {
         // When starting a new action, we reset the property list that was already calculated.
         tCExecution.setRecursiveAlreadyCalculatedPropertiesList(new ArrayList());
 
-        switch (testCaseStepActionExecution.getAction()) {
-            case TestCaseStepAction.ACTION_KEYPRESS:
-                res = this.doActionKeyPress(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_HIDEKEYBOARD:
-                res = this.doActionHideKeyboard(tCExecution);
-                break;
-            case TestCaseStepAction.ACTION_SWIPE:
-                res = this.doActionSwipe(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_CLICK:
-                res = this.doActionClick(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
-                res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
-                res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_DOUBLECLICK:
-                res = this.doActionDoubleClick(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_RIGHTCLICK:
-                res = this.doActionRightClick(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
-                res = this.doActionFocusToIframe(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME:
-                res = this.doActionFocusDefaultIframe(tCExecution);
-                break;
-            case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
-                res = this.doActionSwitchToWindow(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_MANAGEDIALOG:
-                res = this.doActionManageDialog(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_MOUSEOVER:
-                res = this.doActionMouseOver(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
-                res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_OPENURLWITHBASE:
-                res = this.doActionOpenURL(tCExecution, value1, value2, true);
-                break;
-            case TestCaseStepAction.ACTION_OPENURLLOGIN:
-                testCaseStepActionExecution.setValue1(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
-                res = this.doActionUrlLogin(tCExecution);
-                break;
-            case TestCaseStepAction.ACTION_OPENURL:
-                res = this.doActionOpenURL(tCExecution, value1, value2, false);
-                break;
-            case TestCaseStepAction.ACTION_SELECT:
-                res = this.doActionSelect(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_TYPE:
-                res = this.doActionType(tCExecution, value1, value2, propertyName);
-                break;
-            case TestCaseStepAction.ACTION_WAIT:
-                res = this.doActionWait(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_CALLSERVICE:
-                res = this.doActionCallService(testCaseStepActionExecution, value1);
-                break;
-            case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
-                res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
-                res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
-                res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
-                res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
-                break;
-            case TestCaseStepAction.ACTION_DONOTHING:
-                res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
-                break;
-            case TestCaseStepAction.ACTION_GETPAGESOURCE:
-                res = this.doActionGetPageSource(testCaseStepActionExecution);
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createForPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
-            case TestCaseStepAction.ACTION_TAKESCREENSHOT:
-                res = this.doActionTakeScreenshot(testCaseStepActionExecution);
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createForPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
-            case TestCaseStepAction.ACTION_CLICKANDWAIT:
-                res = this.doActionClickWait(tCExecution, value1, value2);
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createForPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
-            case TestCaseStepAction.ACTION_ENTER:
-                res = this.doActionKeyPress(tCExecution, value1, "RETURN");
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createForPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
-            case TestCaseStepAction.ACTION_SELECTANDWAIT:
-                res = this.doActionSelect(tCExecution, value1, value2);
-                this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
-                res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                logEventService.createForPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
-                LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
-                break;
-            default:
-                res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
-                res.setDescription(res.getDescription().replace("%ACTION%", testCaseStepActionExecution.getAction()));
+        try {
+            switch (testCaseStepActionExecution.getAction()) {
+                case TestCaseStepAction.ACTION_KEYPRESS:
+                    res = this.doActionKeyPress(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_HIDEKEYBOARD:
+                    res = this.doActionHideKeyboard(tCExecution);
+                    break;
+                case TestCaseStepAction.ACTION_SWIPE:
+                    res = this.doActionSwipe(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_CLICK:
+                    res = this.doActionClick(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_MOUSELEFTBUTTONPRESS:
+                    res = this.doActionMouseLeftButtonPress(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_MOUSELEFTBUTTONRELEASE:
+                    res = this.doActionMouseLeftButtonRelease(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_DOUBLECLICK:
+                    res = this.doActionDoubleClick(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_RIGHTCLICK:
+                    res = this.doActionRightClick(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_FOCUSTOIFRAME:
+                    res = this.doActionFocusToIframe(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_FOCUSDEFAULTIFRAME:
+                    res = this.doActionFocusDefaultIframe(tCExecution);
+                    break;
+                case TestCaseStepAction.ACTION_SWITCHTOWINDOW:
+                    res = this.doActionSwitchToWindow(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_MANAGEDIALOG:
+                    res = this.doActionManageDialog(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_MOUSEOVER:
+                    res = this.doActionMouseOver(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_MOUSEOVERANDWAIT:
+                    res = this.doActionMouseOverAndWait(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_OPENURLWITHBASE:
+                    res = this.doActionOpenURL(tCExecution, value1, value2, true);
+                    break;
+                case TestCaseStepAction.ACTION_OPENURLLOGIN:
+                    testCaseStepActionExecution.setValue1(testCaseStepActionExecution.getTestCaseStepExecution().gettCExecution().getCountryEnvironmentParameters().getUrlLogin());
+                    res = this.doActionUrlLogin(tCExecution);
+                    break;
+                case TestCaseStepAction.ACTION_OPENURL:
+                    res = this.doActionOpenURL(tCExecution, value1, value2, false);
+                    break;
+                case TestCaseStepAction.ACTION_SELECT:
+                    res = this.doActionSelect(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_TYPE:
+                    res = this.doActionType(tCExecution, value1, value2, propertyName);
+                    break;
+                case TestCaseStepAction.ACTION_WAIT:
+                    res = this.doActionWait(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_CALLSERVICE:
+                    res = this.doActionCallService(testCaseStepActionExecution, value1);
+                    break;
+                case TestCaseStepAction.ACTION_REMOVEDIFFERENCE:
+                    res = this.doActionRemoveDifference(testCaseStepActionExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_EXECUTESQLUPDATE:
+                    res = this.doActionExecuteSQLUpdate(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_EXECUTESQLSTOREPROCEDURE:
+                    res = this.doActionExecuteSQLStoredProcedure(tCExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_CALCULATEPROPERTY:
+                    res = this.doActionCalculateProperty(testCaseStepActionExecution, value1, value2);
+                    break;
+                case TestCaseStepAction.ACTION_DONOTHING:
+                    res = new MessageEvent(MessageEventEnum.ACTION_SUCCESS);
+                    break;
+                case TestCaseStepAction.ACTION_GETPAGESOURCE:
+                    res = this.doActionGetPageSource(testCaseStepActionExecution);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "getPageSource", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action getPageSource triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                case TestCaseStepAction.ACTION_TAKESCREENSHOT:
+                    res = this.doActionTakeScreenshot(testCaseStepActionExecution);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "takeScreenshot", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action takeScreenshot triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                case TestCaseStepAction.ACTION_CLICKANDWAIT:
+                    res = this.doActionClickWait(tCExecution, value1, value2);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "clickAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action clickAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                case TestCaseStepAction.ACTION_ENTER:
+                    res = this.doActionKeyPress(tCExecution, value1, "RETURN");
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "enter", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action enter triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                case TestCaseStepAction.ACTION_SELECTANDWAIT:
+                    res = this.doActionSelect(tCExecution, value1, value2);
+                    this.doActionWait(tCExecution, StringUtil.NULL, StringUtil.NULL);
+                    res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
+                    logEventService.createForPrivateCalls("ENGINE", "selectAndWait", MESSAGE_DEPRECATED + " Deprecated Action triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "|" + testCaseStepActionExecution.getTestCase() + "']");
+                    LOG.warn(MESSAGE_DEPRECATED + " Deprecated Action selectAndWait triggered by TestCase : ['" + testCaseStepActionExecution.getTest() + "'|'" + testCaseStepActionExecution.getTestCase() + "']");
+                    break;
+                default:
+                    res = new MessageEvent(MessageEventEnum.ACTION_FAILED_UNKNOWNACTION);
+                    res.setDescription(res.getDescription().replace("%ACTION%", testCaseStepActionExecution.getAction()));
 
+            }
+        } catch (final Exception unexpected) {
+            LOG.error("Unexpected exception: " + unexpected.getMessage(), unexpected);
+            res = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC).resolveDescription("DETAIL", unexpected.getMessage());
         }
 
         MyLogger.log(RunTestCaseService.class.getName(), Level.DEBUG, "Result of the action : " + res.getCodeString() + " " + res.getDescription());

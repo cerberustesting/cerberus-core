@@ -247,30 +247,32 @@ public class ControlService implements IControlService {
                     res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_UNKNOWNCONTROL);
                     res.setDescription(res.getDescription().replace("%CONTROL%", testCaseStepActionControlExecution.getControl()));
             }
+        } catch (final CerberusEventException exception) {
+            res = exception.getMessageError();
+        } catch (final Exception unexpected) {
+            LOG.error("Unexpected exception: " + unexpected.getMessage(), unexpected);
+            res = new MessageEvent(MessageEventEnum.CONTROL_FAILED_GENERIC).resolveDescription("ERROR", unexpected.getMessage());
+        }
 
-            testCaseStepActionControlExecution.setControlResultMessage(res);
-            /**
-             * Updating Control result message only if control is not
-             * successful. This is to keep the last KO information and
-             * preventing KO to be transformed to OK.
-             */
-            if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
-                testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+        testCaseStepActionControlExecution.setControlResultMessage(res);
+        /**
+         * Updating Control result message only if control is not
+         * successful. This is to keep the last KO information and
+         * preventing KO to be transformed to OK.
+         */
+        if (!(res.equals(new MessageEvent(MessageEventEnum.CONTROL_SUCCESS)))) {
+            testCaseStepActionControlExecution.setExecutionResultMessage(new MessageGeneral(res.getMessage()));
+        }
+
+        /**
+         * We only stop the test if Control Event message is in stop status
+         * AND the control is FATAL. If control is not fatal, we continue
+         * the test but refresh the Execution status.
+         */
+        if (res.isStopTest()) {
+            if (testCaseStepActionControlExecution.getFatal().equals("Y")) {
+                testCaseStepActionControlExecution.setStopExecution(true);
             }
-
-            /**
-             * We only stop the test if Control Event message is in stop status
-             * AND the control is FATAL. If control is not fatal, we continue
-             * the test but refresh the Execution status.
-             */
-            if (res.isStopTest()) {
-                if (testCaseStepActionControlExecution.getFatal().equals("Y")) {
-                    testCaseStepActionControlExecution.setStopExecution(true);
-                }
-            }
-
-        } catch (CerberusEventException exception) {
-            testCaseStepActionControlExecution.setControlResultMessage(exception.getMessageError());
         }
 
         testCaseStepActionControlExecution.setEnd(new Date().getTime());
