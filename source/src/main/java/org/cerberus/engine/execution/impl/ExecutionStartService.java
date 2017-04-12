@@ -136,6 +136,7 @@ public class ExecutionStartService implements IExecutionStartService {
             TestCase tCase = testCaseService.convert(testCaseService.readByKey(tCExecution.getTest(), tCExecution.getTestCase()));
             if (tCase != null) {
                 tCExecution.setTestCaseObj(tCase);
+                tCExecution.setDescription(tCase.getDescription());
                 tCExecution.setConditionOper(tCase.getConditionOper());
                 tCExecution.setConditionVal1(tCase.getConditionVal1());
                 tCExecution.setConditionVal1Init(tCase.getConditionVal1());

@@ -39,6 +39,7 @@ public class TestCaseExecution {
     private long id;
     private String test;
     private String testCase;
+    private String description;
     private String build;
     private String revision;
     private String environment;
@@ -129,6 +130,14 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public List<String> getRecursiveAlreadyCalculatedPropertiesList() {
         return recursiveAlreadyCalculatedPropertiesList;
@@ -748,6 +757,7 @@ public class TestCaseExecution {
             result.put("id", this.getId());
             result.put("test", this.getTest());
             result.put("testcase", this.getTestCase());
+            result.put("description", this.getDescription());
             result.put("build", this.getBuild());
             result.put("revision", this.getRevision());
             result.put("environment", this.getEnvironment());

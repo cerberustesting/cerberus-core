@@ -43,7 +43,7 @@ import org.springframework.stereotype.Service;
 public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
 
     @Override
-    public TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment, String country,
+    public TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment, String country,
             String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog,
             boolean synchroneous, String timeout, String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,
@@ -110,6 +110,7 @@ public class FactoryTestCaseExecution implements IFactoryTestCaseExecution {
         newTce.setConditionVal2Init(conditionVal2Init);
         newTce.setManualExecution(manualExecution);
         newTce.setUserAgent(userAgent);
+        newTce.setDescription(description);
         // List objects
         List<TestCaseExecutionFile> objectFileList = new ArrayList<TestCaseExecutionFile>();
         newTce.setFileList(objectFileList);

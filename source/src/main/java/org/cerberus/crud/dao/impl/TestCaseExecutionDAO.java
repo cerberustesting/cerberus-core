@@ -78,10 +78,10 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public long insertTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
-        final String query = "INSERT INTO testcaseexecution(test, testcase, build, revision, environment, environmentData, country, browser, application, ip, "
+        final String query = "INSERT INTO testcaseexecution(test, testcase, description, build, revision, environment, environmentData, country, browser, application, ip, "
                 + "url, port, tag, verbose, status, start, controlstatus, controlMessage, crbversion, finished, browserFullVersion, executor, screensize,"
                 + "conditionOper, conditionVal1Init, conditionVal2Init, conditionVal1, conditionVal2, manualExecution, UserAgent) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         Connection connection = this.databaseSpring.connect();
         try {
@@ -90,6 +90,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 int i = 1;
                 preStat.setString(i++, tCExecution.getTest());
                 preStat.setString(i++, tCExecution.getTestCase());
+                preStat.setString(i++, tCExecution.getDescription());
                 preStat.setString(i++, tCExecution.getBuild());
                 preStat.setString(i++, tCExecution.getRevision());
                 preStat.setString(i++, tCExecution.getEnvironment());
@@ -159,7 +160,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
     @Override
     public void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         boolean throwEx = false;
-        final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, build = ?, revision = ?, environment = ?, environmentData = ?, country = ?"
+        final String query = "UPDATE testcaseexecution SET test = ?, testcase = ?, description = ?, build = ?, revision = ?, environment = ?, environmentData = ?, country = ?"
                 + ", browser = ?, application = ?, ip = ?, url = ?, port = ?, tag = ?, verbose = ?, status = ?"
                 + ", start = ?, end = ? , controlstatus = ?, controlMessage = ?, crbversion = ?, finished = ? "
                 + ", browserFullVersion = ?, version = ?, platform = ?, executor = ?, screensize = ? "
@@ -172,6 +173,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
                 int i = 1;
                 preStat.setString(i++, tCExecution.getTest());
                 preStat.setString(i++, tCExecution.getTestCase());
+                preStat.setString(i++, tCExecution.getDescription());
                 preStat.setString(i++, tCExecution.getBuild());
                 preStat.setString(i++, tCExecution.getRevision());
                 preStat.setString(i++, tCExecution.getEnvironment());
@@ -1824,6 +1826,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         long id = ParameterParserUtil.parseLongParam(resultSet.getString("exe.ID"), 0);
         String test = ParameterParserUtil.parseStringParam(resultSet.getString("exe.test"), "");
         String testcase = ParameterParserUtil.parseStringParam(resultSet.getString("exe.testcase"), "");
+        String description = ParameterParserUtil.parseStringParam(resultSet.getString("exe.description"), "");
         String build = ParameterParserUtil.parseStringParam(resultSet.getString("exe.build"), "");
         String revision = ParameterParserUtil.parseStringParam(resultSet.getString("exe.revision"), "");
         String environment = ParameterParserUtil.parseStringParam(resultSet.getString("exe.environment"), "");
@@ -1855,7 +1858,7 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
         String conditionVal2Init = ParameterParserUtil.parseStringParam(resultSet.getString("exe.conditionVal2Init"), "");
         boolean manualExecution = ParameterParserUtil.parseBooleanParam(resultSet.getString("exe.manualExecution"), false);
         String userAgent = ParameterParserUtil.parseStringParam(resultSet.getString("exe.userAgent"), "");
-        TestCaseExecution result = factoryTCExecution.create(id, test, testcase, build, revision, environment,
+        TestCaseExecution result = factoryTCExecution.create(id, test, testcase, description, build, revision, environment,
                 country, browser, version, platform, browserFullVersion, start, end, controlStatus, controlMessage, application, null, ip, url,
                 port, tag, finished, verbose, 0, 0, 0, true, "", "", status, crbVersion, null, null, null,
                 false, null, null, null, environmentData, null, null, null, null, executor, 0, screenSize, null,

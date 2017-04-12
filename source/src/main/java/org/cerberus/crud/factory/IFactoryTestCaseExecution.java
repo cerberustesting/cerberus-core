@@ -40,6 +40,7 @@ public interface IFactoryTestCaseExecution {
      * @param id
      * @param test
      * @param testCase
+     * @param description
      * @param build
      * @param revision
      * @param environment
@@ -90,9 +91,10 @@ public interface IFactoryTestCaseExecution {
      * @param conditionVal1
      * @param conditionVal2
      * @param manualExecution
+     * @param userAgent
      * @return
      */
-    TestCaseExecution create(long id, String test, String testCase, String build, String revision, String environment,
+    TestCaseExecution create(long id, String test, String testCase, String description, String build, String revision, String environment,
             String country, String browser, String version, String platform, String browserFullVersion, long start, long end, String controlStatus, String controlMessage,
             String application, Application applicationObj, String ip, String url, String port, String tag, String finished, int verbose, int screenshot, int pageSource, int seleniumLog, boolean synchroneous, String timeout,
             String outputFormat, String status, String crbVersion, TestCase tCase, CountryEnvParam countryEnvParam,

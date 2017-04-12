@@ -61,6 +61,9 @@
                                     <span id="controlstatus" style="font-weight: 900"></span>
                                 </div>
                                 <div class="">
+                                    <span id="tcDescription" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
+                                </div>
+                                <div class="">
                                     <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
                                 </div>
                             </div>

@@ -210,18 +210,20 @@ function updatePage(data, stepList) {
     configPanel.find("#environment").text(data.environment);
     configPanel.find("#country").text(data.country);
     configPanel.find("#exReturnMessage").text(data.controlMessage);
+    configPanel.find("#tcDescription").text(data.description);
     configPanel.find("#controlstatus").removeClass("text-primary");
     if (data.controlStatus === "PE") {
         configPanel.find("#controlstatus").addClass("text-primary");
+        configPanel.find("#exReturnMessage").addClass("text-primary");
     } else if (data.controlStatus === "OK") {
         configPanel.find("#controlstatus").addClass("text-success");
-        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-success");
+        configPanel.find("#exReturnMessage").addClass("text-success");
     } else if (data.controlStatus === "KO") {
         configPanel.find("#controlstatus").addClass("text-danger");
-        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-danger");
+        configPanel.find("#exReturnMessage").addClass("text-danger");
     } else {
         configPanel.find("#controlstatus").addClass("text-warning");
-        //$("#testCaseConfig").removeClass("panel-default").addClass("panel-warning");
+        configPanel.find("#exReturnMessage").addClass("text-warning");
     }
     configPanel.find("input#application").val(data.application);
     configPanel.find("input#browser").val(data.browser);
