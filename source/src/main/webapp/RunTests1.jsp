@@ -43,12 +43,11 @@
             <div class="col-lg-9">
                 <div class="panel panel-default" id="environmentPanel">
                     <div class="panel-heading">
-                        Selection type
+                        Selection Type
                     </div>
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-4">
-                                <label class="bold">Environment :</label>
                                 <label class="radio-inline">
                                     <input name="typeSelect" value="filters" checked type="radio"><span>Select a list of test</span>
                                 </label>
@@ -70,14 +69,14 @@
                     </div>
                 </div>
                 <div class="panel panel-default" id="TestPanel">
-                    <div class="panel-heading">
-                        Choose Test
+                    <div class="panel-heading" id="ChooseTestHeader">
+                        Choose Test Case / Environment / Country
                     </div>
                     <div class="panel-body" id="chooseTest">
                         <div class="panel panel-default" id="filtersPanelContainer">
                             <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel">
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
-                                <span>Filters</span>
+                                <span id="FilterHeader">Extended Test Case Filters</span>
                             </div>
                             <div class="panel-body collapse" id="filtersPanel">
                                 <form id="filters">
@@ -146,25 +145,19 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-lg-11">
+                                <label for="testcaseList" id="testcaseListLabel" class="bold">Test Case :</label>
                                 <select multiple id="testCaseList" class="form-control" style="height: 300px;"></select>
                             </div>
                             <div class="col-lg-1">
                                 <div class="row" style="margin-top: 100px;">
                                     <button type="button" class="btn btn-default" id="selectAll"> Select All </button>
                                 </div>
-
-                                <!--                                <div class="row" style="margin-top: 100px;">
-                                                                    <button type="button" class="btn btn-default" id="addQueue"> > </button>
-                                                                </div>
-                                                                <div class="row" style="margin-top: 5px;">
-                                                                    <button type="button" class="btn btn-default" id="addAllQueue"> >> </button>
-                                                                </div>-->
                                 <div id="error" class="error-msg"></div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-lg-6">
-                                <label class="bold">Environment :</label>
+                                <label for="envList" id="envListLabel" class="bold">Environment :</label>
                                 <label class="radio-inline">
                                     <input name="envSettings" value="auto" checked type="radio"><span>Automatic</span>
                                 </label>
@@ -202,7 +195,7 @@
                                 </form>
                             </div>
                             <div class="col-lg-6">
-                                <label for="countryList" id="countryListLabel" class="bold">Country List :</label>
+                                <label for="countryList" id="countryListLabel" class="bold">Country :</label>
                                 <button id="countrySelectAll" class="glyphicon glyphicon-check" title="select all countries"></button>
                                 <button id="countryUnselectAll" class="glyphicon glyphicon-unchecked" title="unselect all countries"></button>
                                 <div id="countryList" name="countryList" style="padding-top: 4%;"></div>

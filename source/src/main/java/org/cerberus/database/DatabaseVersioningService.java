@@ -6797,6 +6797,37 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         // New updated Documentation.
         //-- ------------------------ 1127-1128
         SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("select 1 from DUAL;");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add testcase description to execution table.
+        //-- ------------------------ 1129
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` ");
+        SQLS.append(" ADD COLUMN `Description` VARCHAR(500) NULL DEFAULT NULL AFTER `testcase` ");
+        SQLInstruction.add(SQLS.toString());
+
+        //Add campaign content based on label.
+        //-- ------------------------ 1130
+        SQLS = new StringBuilder();
+        SQLS.append("CREATE TABLE `campaignlabel` (");
+        SQLS.append("  `campaignlabelID` int(10) unsigned NOT NULL AUTO_INCREMENT,");
+        SQLS.append("  `campaign` varchar(45) NOT NULL,");
+        SQLS.append("  `labelId` INT(11) ,");
+        SQLS.append("  PRIMARY KEY (`campaignlabelID`),");
+        SQLS.append("  UNIQUE KEY `IX_campaignlabel_01` (`campaign`, `labelId`),");
+        SQLS.append("  KEY `IX_campaignlabel_02` (`campaign`),");
+        SQLS.append("  CONSTRAINT `FK_campaignlabel_01` FOREIGN KEY (`campaign`) REFERENCES `campaign` (`campaign`) ON DELETE CASCADE ON UPDATE CASCADE,");
+        SQLS.append("  CONSTRAINT `FK_campaignlabel_02` FOREIGN KEY (`labelId`) REFERENCES `label` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE");
+        SQLS.append(") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;");
+        SQLInstruction.add(SQLS.toString());
+
+        // New updated Documentation.
+        //-- ------------------------ 1131-1132
+        SQLS = new StringBuilder();
         SQLS.append("DELETE FROM `documentation`;");
         SQLInstruction.add(SQLS.toString());
         SQLS = new StringBuilder();
@@ -7743,10 +7774,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','browser','','fr','Navigateur','')");
         SQLS.append(",('page_runtest','campaign','','en','Campaign','')");
         SQLS.append(",('page_runtest','campaign','','fr','Campagne','')");
+        SQLS.append(",('page_runtest','ChooseTest','','en','Choose Test Case / Environment / Country','')");
+        SQLS.append(",('page_runtest','ChooseTest','','fr','Selectionner Cas de test / Environnement / Pays','')");
         SQLS.append(",('page_runtest','choose_test','','en','Choose Test','')");
         SQLS.append(",('page_runtest','choose_test','','fr','Sélectionnez vos test','')");
-        SQLS.append(",('page_runtest','countryList','','en','Country List','')");
-        SQLS.append(",('page_runtest','countryList','','fr','Liste de pays','')");
+        SQLS.append(",('page_runtest','countryList','','en','Country :','')");
+        SQLS.append(",('page_runtest','countryList','','fr','Liste de pays :','')");
         SQLS.append(",('page_runtest','creator','','en','Creator','')");
         SQLS.append(",('page_runtest','creator','','fr','Créateur','')");
         SQLS.append(",('page_runtest','custom_config','','en','-- Custom Configuration --','')");
@@ -7756,11 +7789,13 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','default_full_screen','','en','Default - Full Screen','')");
         SQLS.append(",('page_runtest','default_full_screen','','fr','Defaut - Plein Ecran','')");
         SQLS.append(",('page_runtest','empty_queue','','en','The Execution Queue is empty !','')");
-        SQLS.append(",('page_runtest','empty_queue','','fr','La liste d execution est vide !','')");
+        SQLS.append(",('page_runtest','empty_queue','','fr','La liste d\\'execution est vide !','')");
+        SQLS.append(",('page_runtest','envList','','en','Environment :',NULL)");
+        SQLS.append(",('page_runtest','envList','','fr','Environnement : ',NULL)");
         SQLS.append(",('page_runtest','execution_settings','','en','Execution Settings','')");
-        SQLS.append(",('page_runtest','execution_settings','','fr','Paramètres d execution','')");
-        SQLS.append(",('page_runtest','filters','','en','Filters','')");
-        SQLS.append(",('page_runtest','filters','','fr','Filtres','')");
+        SQLS.append(",('page_runtest','execution_settings','','fr','Paramètres d\\'execution','')");
+        SQLS.append(",('page_runtest','filters','','en','Extended Test Case Filters','')");
+        SQLS.append(",('page_runtest','filters','','fr','Filtres Cas de test','')");
         SQLS.append(",('page_runtest','group','','en','Group','')");
         SQLS.append(",('page_runtest','group','','fr','Groupe','')");
         SQLS.append(",('page_runtest','implementer','','en','Implementer','')");
@@ -7772,17 +7807,17 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','manual_execution','','en','Manual Execution','')");
         SQLS.append(",('page_runtest','manual_execution','','fr','Execution Manuelle','')");
         SQLS.append(",('page_runtest','more_than_one_execution_requested','','en','More than 1 excution and no Tag specified','')");
-        SQLS.append(",('page_runtest','more_than_one_execution_requested','','fr','Plus d une execution séléctionnées et aucun tag n a été spécifié','')");
+        SQLS.append(",('page_runtest','more_than_one_execution_requested','','fr','Plus d\\'une execution séléctionnées et aucun tag n\\'a été spécifié','')");
         SQLS.append(",('page_runtest','mycontextroot','','en','My Context Root','')");
         SQLS.append(",('page_runtest','mycontextroot','','fr','Ma racine de contexte','')");
         SQLS.append(",('page_runtest','myenvdata','','en','My environment data','')");
-        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d environment','')");
+        SQLS.append(",('page_runtest','myenvdata','','fr','Mes données d\\'environment','')");
         SQLS.append(",('page_runtest','myhost','','en','My host','')");
         SQLS.append(",('page_runtest','myhost','','fr','Mon hôte','')");
         SQLS.append(",('page_runtest','myloginrelativeurl','','en','My login relative url','')");
         SQLS.append(",('page_runtest','myloginrelativeurl','','fr','Mon url de login relative','')");
-        SQLS.append(",('page_runtest','notValid','','en','Some executions couldn t be added to the queue','')");
-        SQLS.append(",('page_runtest','notValid','','fr','Des executions n ont pas pu être ajoutées à la liste','')");
+        SQLS.append(",('page_runtest','notValid','','en','Some executions couldn\\'t be added to the queue','')");
+        SQLS.append(",('page_runtest','notValid','','fr','Des executions n\\'ont pas pu être ajoutées à la liste','')");
         SQLS.append(",('page_runtest','outputformat','','en','Output Format','')");
         SQLS.append(",('page_runtest','outputformat','','fr','Format de sortie','')");
         SQLS.append(",('page_runtest','pagesource','','en','Page Source','')");
@@ -7808,11 +7843,11 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','saverobotpref','','en','Save Robot Preferencies','')");
         SQLS.append(",('page_runtest','saverobotpref','','fr','Enregistrer les préférences du robot','')");
         SQLS.append(",('page_runtest','save_execution_params','','en','Save Execution Parameters','')");
-        SQLS.append(",('page_runtest','save_execution_params','','fr','Sauvegarder les paramètres d execution','')");
+        SQLS.append(",('page_runtest','save_execution_params','','fr','Sauvegarder les paramètres d\\'execution','')");
         SQLS.append(",('page_runtest','screenshot','','en','Screenshot','')");
         SQLS.append(",('page_runtest','screenshot','','fr','Screenshot','')");
         SQLS.append(",('page_runtest','screensize','','en','Screen size','')");
-        SQLS.append(",('page_runtest','screensize','','fr','Taille d écran','')");
+        SQLS.append(",('page_runtest','screensize','','fr','Taille d\\'écran','')");
         SQLS.append(",('page_runtest','selection_type','','en','Selection type','')");
         SQLS.append(",('page_runtest','selection_type','','fr','Type de selection','')");
         SQLS.append(",('page_runtest','select_all','','en','Select All','')");
@@ -7851,6 +7886,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('page_runtest','test','','fr','Test','')");
         SQLS.append(",('page_runtest','testbattery','','en','Test Battery','')");
         SQLS.append(",('page_runtest','testbattery','','fr','Batterie de test','')");
+        SQLS.append(",('page_runtest','testcaseList','','en','Test Case :',NULL)");
+        SQLS.append(",('page_runtest','testcaseList','','fr','Cas de Test : ',NULL)");
         SQLS.append(",('page_runtest','timeout','','en','Timeout','')");
         SQLS.append(",('page_runtest','timeout','','fr','Temporisation','')");
         SQLS.append(",('page_runtest','title','','en','Run Test','')");
@@ -8626,13 +8663,6 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('user','DefaultSystem','','en','Default System','This is the default <code class=\\'doc-crbvvoca\\'>system</code> the user works on the most. It is used to default the perimeter of <code class=\\'doc-crbvvoca\\'>test case</code> or <code class=\\'doc-crbvvoca\\'>applications</code> displayed on some Cerberus pages.')");
         SQLS.append(",('user','Team','','en','Team','This is the team of the user.')");
         SQLS.append(",('usergroup','GroupName','','en','Group Name','Authorities are managed by group. In order to be granted to a set of feature, you must belong to the corresponding group.<br>Every user can of course belong to as many group as necessary in order to get access to as many feature as required.<br>In order to get the full access to the system you must belong to every group.<br>Some groups are linked together on the test perimeter and integration perimeter.<br><br><b>Test perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestRO</code>: Has read only access to the information related to test cases and also has access to execution reporting options.<br><br><code class=\\'doc-fixed\\'>Test</code>: Can modify non WORKING test cases but cannot delete test cases.<br><br><code class=\\'doc-fixed\\'>TestAdmin</code>: Can modify or delete any test case (including Pre Testing test cases). Can also create or delete a test.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>TestRO</code> that will give you access in read only to all test data (including its execution reporting page).<br>If you want to be able to modify the testcases (except the WORKING ones), you need <code class=\\'doc-fixed\\'>Test</code> group on top of <code class=\\'doc-fixed\\'>TestRO</code> group.<br>If you want the full access to all testcase (including beeing able to delete any testcase), you will need <code class=\\'doc-fixed\\'>TestAdmin</code> on top of <code class=\\'doc-fixed\\'>TestRO</code> and <code class=\\'doc-fixed\\'>Test</code> group.<br><br><b>Test Data perimeter :</b><br><br><code class=\\'doc-fixed\\'>TestDataManager</code>: Can modify the test data..<br><br><b>Test Execution perimeter :</b><br><br><code class=\\'doc-fixed\\'>RunTest</code>: Can run both Manual and Automated test cases from GUI.<br><br><b>Integration perimeter :</b><br><br><code class=\\'doc-fixed\\'>IntegratorRO</code>: Has access to the integration status.<br><br><code class=\\'doc-fixed\\'>Integrator</code>: Can add an application. Can change parameters of the environments.<br><br><code class=\\'doc-fixed\\'>IntegratorNewChain</code>: Can register the end of the chain execution. Has read only access to the other informations on the same page.<br><br><code class=\\'doc-fixed\\'>IntegratorDeploy</code>: Can disable or enable environments and register new build / revision.<br><br>The minimum group you need to belong is <code class=\\'doc-fixed\\'>IntegratorRO</code> that will give you access in read only to all environment data.<br>If you want to be able to modify the environment data, you need <code class=\\'doc-fixed\\'>Integrator</code> group on top of <code class=\\'doc-fixed\\'>IntegratorRO</code> group.<br><code class=\\'doc-fixed\\'>IntegratorNewChain</code> and <code class=\\'doc-fixed\\'>IntegratorDeploy</code> are used on top of <code class=\\'doc-fixed\\'>Integrator</code> Group to be able to create a new chain on an environment or perform a deploy operation.<br><br><b>Administration perimeter :</b><br><br><code class=\\'doc-fixed\\'>Administrator</code>: Can create, modify or delete users. Has access to log Event and Database Maintenance. Can change Parameter values.')");
-        SQLInstruction.add(SQLS.toString());
-
-        //Add testcase description to execution table.
-        //-- ------------------------ 1129
-        SQLS = new StringBuilder();
-        SQLS.append("ALTER TABLE `testcaseexecution` ");
-        SQLS.append(" ADD COLUMN `Description` VARCHAR(500) NULL DEFAULT NULL AFTER `testcase` ");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;

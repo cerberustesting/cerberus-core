@@ -1427,17 +1427,15 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         List<TestCase> list = null;
-        final StringBuilder query = new StringBuilder("select tec.* ")
-                .append("from testcase tec ")
-                .append("inner join testcasecountry tcc ")
-                .append("on tcc.Test = tec.Test ")
-                .append("and tcc.TestCase = tec.TestCase ")
-                .append("inner join testbatterycontent tbc ")
-                .append("on tbc.Test = tec.Test ")
-                .append("and tbc.TestCase = tec.TestCase ")
-                .append("inner join campaigncontent cc ")
-                .append("on cc.testbattery = tbc.testbattery ")
-                .append("where cc.campaign = ? ");
+        final StringBuilder query = new StringBuilder("SELECT tec.* ")
+                .append("FROM testcase tec ")
+                .append("INNER JOIN testcasecountry tcc ")
+                .append(" ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
+                .append("INNER JOIN testbatterycontent tbc ")
+                .append(" ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
+                .append("INNER JOIN campaigncontent cc ")
+                .append(" ON cc.testbattery = tbc.testbattery ")
+                .append("WHERE cc.campaign = ? ");
 
         query.append(" and tcc.Country in (");
         for (int i = 0; i < countries.length; i++) {

@@ -154,8 +154,8 @@ function displayPageLabel() {
     $("#environmentPanel input[value='filters']").next().text(doc.getDocLabel("page_runtest", "select_list_test"));
     $("#environmentPanel input[value='campaign']").next().text(doc.getDocLabel("page_runtest", "select_campaign"));
     $("#loadCampaignBtn").text(doc.getDocLabel("page_runtest", "load"));
-    $("#TestPanel .panel-heading").text(doc.getDocLabel("page_runtest", "choose_test"));
-    $("#TestPanel #filtersPanelContainer .panel-heading span:nth-child(2)").text(doc.getDocLabel("page_runtest", "filters"));
+    $("#ChooseTestHeader").text(doc.getDocLabel("page_runtest", "ChooseTest"));
+    $("#FilterHeader").text(doc.getDocLabel("page_runtest", "filters"));
     $("#lbl_test").text(doc.getDocLabel("page_runtest", "test"));
     $("#lbl_project").text(doc.getDocLabel("page_runtest", "project"));
     $("#lbl_application").text(doc.getDocLabel("page_runtest", "application"));
@@ -176,7 +176,9 @@ function displayPageLabel() {
     $("label[for='mycontextroot']").text(doc.getDocLabel("page_runtest", "mycontextroot"));
     $("label[for='myloginrelativeurl']").text(doc.getDocLabel("page_runtest", "myloginrelativeurl"));
     $("label[for='myenvdata']").text(doc.getDocLabel("page_runtest", "myenvdata"));
-    $("label[for='countryList']").text(doc.getDocLabel("page_runtest", "countryList"));
+    $("#testcaseListLabel").text(doc.getDocLabel("page_runtest", "testcaseList"));
+    $("#countryListLabel").text(doc.getDocLabel("page_runtest", "countryList"));
+    $("#envListLabel").text(doc.getDocLabel("page_runtest", "envList"));
     $("#potential span:nth-child(2)").text(doc.getDocLabel("page_runtest", "potential"));
     $("#addQueue").text(doc.getDocLabel("page_runtest", "addtoqueue"));
     $("#addQueueAndRun").text(doc.getDocLabel("page_runtest", "addtoqueueandrun"));
