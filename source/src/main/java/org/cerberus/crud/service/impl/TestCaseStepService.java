@@ -144,8 +144,6 @@ public class TestCaseStepService implements ITestCaseStepService {
                 }
             }
         }
-        this.insertListTestCaseStep(tcsToUpdateOrInsert);
-        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
 
         /**
          * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
@@ -168,6 +166,10 @@ public class TestCaseStepService implements ITestCaseStepService {
             this.deleteListTestCaseStep(tcsToDelete);
 
         }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        this.insertListTestCaseStep(tcsToUpdateOrInsert);
+        updateTestCaseStepUsingTestCaseStepInList(tcsToUpdateOrInsert);
     }
 
     private void updateTestCaseStepUsingTestCaseStepInList(List<TestCaseStep> testCaseStepList) throws CerberusException {

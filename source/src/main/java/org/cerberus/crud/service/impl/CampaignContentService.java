@@ -19,11 +19,13 @@
  */
 package org.cerberus.crud.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.cerberus.crud.dao.ICampaignContentDAO;
 import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
@@ -33,9 +35,6 @@ import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author cerberus
@@ -133,10 +132,6 @@ public class CampaignContentService implements ICampaignContentService {
                 }
             }
         }
-        if (!listToUpdateOrInsert.isEmpty()) {
-            ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
-        }
 
         /**
          * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
@@ -158,6 +153,13 @@ public class CampaignContentService implements ICampaignContentService {
             ans = this.deleteList(listToDelete);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
         return finalAnswer;
     }
 

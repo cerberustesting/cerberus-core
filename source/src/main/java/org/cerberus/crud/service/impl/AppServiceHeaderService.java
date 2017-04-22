@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.IAppServiceHeaderDAO;
-
 import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.service.IAppServiceHeaderService;
 import org.cerberus.engine.entity.MessageEvent;
@@ -157,8 +156,7 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
         } catch (CerberusException ex) {
             LOG.error(ex);
         }
-        LOG.debug("Size before : " + newList.size());
-        LOG.debug("Before : " + newList);
+
         /**
          * Update and Create all objects database Objects from newList
          */
@@ -174,13 +172,6 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
-        }
-        if (!listToUpdateOrInsert.isEmpty()) {
-            LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
-            LOG.debug("Create Before : " + listToUpdateOrInsert);
-
-            ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
 
         /**
@@ -201,6 +192,13 @@ public class AppServiceHeaderService implements IAppServiceHeaderService {
             ans = this.deleteList(listToDelete);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
         return finalAnswer;
     }
 

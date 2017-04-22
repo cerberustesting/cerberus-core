@@ -124,7 +124,6 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
                 }
             }
         }
-        this.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
 
         /**
          * Iterate on (TestCaseStep From Database - TestCaseStep From Page). If
@@ -145,6 +144,10 @@ public class TestCaseStepActionControlService implements ITestCaseStepActionCont
             }
             this.deleteListTestCaseStepActionControl(tcsacToDelete);
         }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        this.insertListTestCaseStepActionControl(tcsacToUpdateOrInsert);
+
     }
 
     @Override

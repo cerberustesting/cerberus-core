@@ -130,7 +130,6 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
                 }
             }
         }
-        this.insertListTestCaseStepAction(tcsaToUpdateOrInsert);
 
         /**
          * Iterate on (TestCaseStepAction From Database - TestCaseStepAction
@@ -151,11 +150,14 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
             }
             this.deleteListTestCaseStepAction(tcsaToDelete);
         }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        this.insertListTestCaseStepAction(tcsaToUpdateOrInsert);
     }
-    
+
     @Override
-    public AnswerList  readByTestTestCase(String test, String testcase) {
-       return testCaseStepActionDAO.readByTestTestCase(test, testcase);
+    public AnswerList readByTestTestCase(String test, String testcase) {
+        return testCaseStepActionDAO.readByTestTestCase(test, testcase);
     }
 
     @Override
@@ -173,12 +175,11 @@ public class TestCaseStepActionService implements ITestCaseStepActionService {
         return response;
     }
 
-    
     @Override
     public Answer create(TestCaseStepAction object) {
         return testCaseStepActionDAO.create(object);
     }
-    
+
     @Override
     public Answer createList(List<TestCaseStepAction> objectList) {
         Answer ans = new Answer(null);

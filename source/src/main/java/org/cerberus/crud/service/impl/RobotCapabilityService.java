@@ -168,15 +168,15 @@ public class RobotCapabilityService implements IRobotCapabilityService {
         }
         AnswerUtil.agregateAnswer(finalAnswer, update(toUpdate));
 
-        // Process create
-        List<RobotCapability> toCreate = new ArrayList<>(newCapabilities);
-        toCreate.removeAll(sameKeys);
-        AnswerUtil.agregateAnswer(finalAnswer, create(toCreate));
-
         // Process delete
         List<RobotCapability> toDelete = new ArrayList<>(oldCapabilities);
         toDelete.removeAll(sameKeys);
         AnswerUtil.agregateAnswer(finalAnswer, delete(toDelete));
+
+        // Process create
+        List<RobotCapability> toCreate = new ArrayList<>(newCapabilities);
+        toCreate.removeAll(sameKeys);
+        AnswerUtil.agregateAnswer(finalAnswer, create(toCreate));
 
         // Finally return the aggregated answer
         return finalAnswer;

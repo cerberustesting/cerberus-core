@@ -157,8 +157,7 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         } catch (CerberusException ex) {
             LOG.error(ex);
         }
-        LOG.debug("Size before : " + newList.size());
-        LOG.debug("Before : " + newList);
+
         /**
          * Update and Create all objects database Objects from newList
          */
@@ -174,13 +173,6 @@ public class TestCaseLabelService implements ITestCaseLabelService {
                     listToUpdateOrInsert.remove(objectDifference);
                 }
             }
-        }
-        if (!listToUpdateOrInsert.isEmpty()) {
-            LOG.debug("Create Size before : " + listToUpdateOrInsert.size());
-            LOG.debug("Create Before : " + listToUpdateOrInsert);
-
-            ans = this.createList(listToUpdateOrInsert);
-            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
 
         /**
@@ -199,6 +191,12 @@ public class TestCaseLabelService implements ITestCaseLabelService {
         }
         if (!listToDelete.isEmpty()) {
             ans = this.deleteList(listToDelete);
+            finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
+        }
+
+        // We insert only at the end (after deletion of all potencial enreg - linked with #1281)
+        if (!listToUpdateOrInsert.isEmpty()) {
+            ans = this.createList(listToUpdateOrInsert);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
         }
         return finalAnswer;
