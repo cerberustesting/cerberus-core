@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.soap.SOAPMessage;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.cerberus.crud.entity.AppService;
@@ -49,7 +48,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.service.datalib.IDataLibService;
 import org.cerberus.service.webdriver.impl.WebDriverService;
-import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.version.Infos;
 import org.json.JSONArray;
@@ -391,14 +389,16 @@ public class RecorderService implements IRecorderService {
         try {
             // Request Information.
             jsonMyRequest.put("CalledURL", se.getServicePath());
-            jsonMyRequest.put("HTTP-Method", se.getMethod());
+            if (!StringUtil.isNullOrEmpty(se.getMethod())) {
+                jsonMyRequest.put("HTTP-Method", se.getMethod());
+            }
             jsonMyRequest.put("ServiceType", se.getType());
             if (!(se.getHeaderList().isEmpty())) {
                 JSONObject jsonHeaders = new JSONObject();
                 for (AppServiceHeader header : se.getHeaderList()) {
                     jsonHeaders.put(header.getKey(), header.getValue());
                 }
-                jsonMyRequest.put("Header", jsonHeaders);
+                jsonMyRequest.put("HTTP-Header", jsonHeaders);
             }
             if (!(se.getContentList().isEmpty())) {
                 JSONObject jsonContent = new JSONObject();
@@ -410,7 +410,9 @@ public class RecorderService implements IRecorderService {
             jsonMyRequest.put("HTTP-Request", se.getServiceRequest());
             jsonMyRequest.put("HTTP-Proxy", se.isProxy());
             jsonMyRequest.put("HTTP-ProxyHost", se.getProxyHost());
-            jsonMyRequest.put("HTTP-ProxyPort", se.getProxyPort());
+            if (!(se.getProxyPort() == 0)) {
+                jsonMyRequest.put("HTTP-ProxyPort", se.getProxyPort());
+            }
             jsonMyRequest.put("HTTP-ProxyAuthentification", se.isProxyWithCredential());
             jsonMyRequest.put("HTTP-ProxyUser", se.getProxyUser());
             jsonResponse.put("Request", jsonMyRequest);

@@ -67,8 +67,9 @@ public interface ISoapService {
      * @param header
      * @param token
      * @param timeOutMs
+     * @param system
      * @return 
      */
-    AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs);
+    AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system);
     
 }

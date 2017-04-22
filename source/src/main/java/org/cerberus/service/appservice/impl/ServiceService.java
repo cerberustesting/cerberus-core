@@ -329,7 +329,7 @@ public class ServiceService implements IServiceService {
                          * Call SOAP and store it into the execution.
                          */
                         result = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
-                                appService.getHeaderList(), token, timeOutMs);
+                                appService.getHeaderList(), token, timeOutMs, system);
                         LOG.debug("SOAP Called done.");
 
                         LOG.debug("Result message." + result.getResultMessage());

@@ -33,6 +33,7 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.AppService;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestData;
@@ -81,6 +82,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
         String result = null;
         String description = null;
+        String system = "";
 
         String property = httpServletRequest.getParameter("property");
         String testName = policy.sanitize(httpServletRequest.getParameter("test"));
@@ -91,7 +93,8 @@ public class CalculatePropertyForTestCase extends HttpServlet {
             if (type.equals("getFromTestData")) {
                 ITestDataService testDataService = appContext.getBean(TestDataService.class);
 
-                String application = null;
+                String applicationName = null;
+                Application application = null;
 
                 try {
                     ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
@@ -99,7 +102,9 @@ public class CalculatePropertyForTestCase extends HttpServlet {
 
                     TestCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
                     if (testCase != null) {
-                        application = applicationService.convert(applicationService.readByKey(testCase.getApplication())).getApplication();
+                        application = applicationService.convert(applicationService.readByKey(testCase.getApplication()));
+                        applicationName = application.getApplication();
+                        system = application.getSystem();
                     } else {
                         throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
                     }
@@ -107,7 +112,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
                 }
 
-                TestData td = testDataService.findTestDataByKey(property, application, environment, country);
+                TestData td = testDataService.findTestDataByKey(property, applicationName, environment, country);
                 result = td.getValue();
                 description = td.getDescription();
 
@@ -121,14 +126,13 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), null);
                     String attachement = appService.getAttachmentUrl();
-                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement, null, null, 60000);
+                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement, null, null, 60000, system);
                     result = xmlUnitService.getFromXml(executionUUID.toString(), appService.getParsingAnswer());
                     description = appService.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
                     MyLogger.log(CalculatePropertyForTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");
                 }
             } else {
-                String system = null;
                 try {
                     ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
                     IApplicationService applicationService = appContext.getBean(ApplicationService.class);

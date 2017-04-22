@@ -46,10 +46,8 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.ISeleniumServerService;
-import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
-import org.cerberus.util.answer.AnswerItem;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
@@ -168,7 +166,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
             }
-            
+
             /**
              * Defining the timeout at the driver level. Only in case of not
              * Appium Driver (see
@@ -253,18 +251,18 @@ public class SeleniumServerService implements ISeleniumServerService {
         }
 
         /**
-         * Loop on RobotCapabilities to feed DesiredCapabilities
-         * Capability must be  String, Integer or Boolean
+         * Loop on RobotCapabilities to feed DesiredCapabilities Capability must
+         * be String, Integer or Boolean
          */
         List<RobotCapability> additionalCapabilities = tCExecution.getCapabilities();
         if (additionalCapabilities != null) {
             for (RobotCapability additionalCapability : additionalCapabilities) {
-                if (StringUtil.isBoolean(additionalCapability.getValue())){
-                caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
+                if (StringUtil.isBoolean(additionalCapability.getValue())) {
+                    caps.setCapability(additionalCapability.getCapability(), StringUtil.parseBoolean(additionalCapability.getValue()));
                 } else if (StringUtil.isInteger(additionalCapability.getValue())) {
-                caps.setCapability(additionalCapability.getCapability(), Integer.valueOf(additionalCapability.getValue()));
+                    caps.setCapability(additionalCapability.getCapability(), Integer.valueOf(additionalCapability.getValue()));
                 } else {
-                caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
+                    caps.setCapability(additionalCapability.getCapability(), additionalCapability.getValue());
                 }
             }
         }
@@ -315,12 +313,11 @@ public class SeleniumServerService implements ISeleniumServerService {
                     profile.setPreference("intl.accept_languages", "en");
                 }
 
-
                 // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
                 if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
                         || !tCExecution.getUserAgent().isEmpty()) {
                     String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
-                    profile.setPreference("general.useragent.override", usedUserAgent );
+                    profile.setPreference("general.useragent.override", usedUserAgent);
                     tCExecution.setUserAgent(usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);

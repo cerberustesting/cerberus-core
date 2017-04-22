@@ -23,8 +23,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.Proxy;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -46,6 +54,7 @@ import org.cerberus.crud.entity.AppServiceHeader;
 import org.cerberus.crud.factory.IFactoryAppService;
 import org.cerberus.crud.factory.IFactoryAppServiceHeader;
 import org.cerberus.crud.service.IAppServiceService;
+import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageEventEnum;
@@ -71,6 +80,17 @@ public class SoapService implements ISoapService {
      * The SOAP 1.2 namespace pattern
      */
     private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
+    /**
+     * Proxy default config. (Should never be used as default config is inserted into database)
+     */
+    private static final boolean DEFAULT_PROXY_ACTIVATE = false;
+    private static final String DEFAULT_PROXY_HOST = "proxy";
+    private static final int DEFAULT_PROXY_PORT = 80;
+    private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
+    private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
+    private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
+
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SoapService.class);
 
     @Autowired
     private IFactoryAppService factoryAppService;
@@ -78,6 +98,8 @@ public class SoapService implements ISoapService {
     private IAppServiceService appServiceService;
     @Autowired
     private IFactoryAppServiceHeader factoryAppServiceHeader;
+    @Autowired
+    private IParameterService parameterService;
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method, List<AppServiceHeader> header, String token) throws SOAPException, IOException, SAXException, ParserConfigurationException {
@@ -117,13 +139,67 @@ public class SoapService implements ISoapService {
 
     }
 
+    private static SOAPMessage sendSOAPMessage(SOAPMessage message, String url, final Proxy p) throws SOAPException, MalformedURLException {
+        SOAPConnectionFactory factory = SOAPConnectionFactory.newInstance();
+        SOAPConnection connection = factory.createConnection();
+
+        URL endpoint = new URL(null, url, new URLStreamHandler() {
+            protected URLConnection openConnection(URL url) throws IOException {
+                // The url is the parent of this stream handler, so must
+                // create clone
+                URL clone = new URL(url.toString());
+
+                URLConnection connection = null;
+                if (p.address().toString().equals("0.0.0.0/0.0.0.0:80")) {
+                    connection = clone.openConnection();
+                } else {
+                    connection = clone.openConnection(p);
+                }
+                connection.setConnectTimeout(5 * 1000); // 5 sec
+                connection.setReadTimeout(5 * 1000); // 5 sec
+                // Custom header
+                connection.addRequestProperty("Developer-Mood", "Happy");
+                return connection;
+            }
+        });
+
+        try {
+            SOAPMessage response = connection.call(message, endpoint);
+            connection.close();
+            return response;
+        } catch (Exception e) {
+            // Re-try if the connection failed
+            SOAPMessage response = connection.call(message, endpoint);
+            connection.close();
+            return response;
+        }
+    }
+
+    private void initializeProxyAuthenticator(final String proxyUser, final String proxyPassword) {
+
+        if (proxyUser != null && proxyPassword != null) {
+            Authenticator.setDefault(
+                    new Authenticator() {
+                @Override
+                public PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(
+                            proxyUser, proxyPassword.toCharArray()
+                    );
+                }
+            }
+            );
+            System.setProperty("http.proxyUser", proxyUser);
+            System.setProperty("http.proxyPassword", proxyPassword);
+        }
+    }
+
     @Override
-    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs) {
+    public AnswerItem<AppService> callSOAP(String envelope, String servicePath, String method, String attachmentUrl, List<AppServiceHeader> header, String token, int timeOutMs, String system) {
         AnswerItem result = new AnswerItem();
         String unescapedEnvelope = StringEscapeUtils.unescapeXml(envelope);
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
-        AppService serviceSOAP = factoryAppService.create("", "", "", "", "", envelope, "", servicePath, "", method, "", null, "", null);
+        AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", method, "", null, "", null);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
@@ -161,6 +237,7 @@ public class SoapService implements ISoapService {
             //Initialize SOAP Connection
             soapConnectionFactory = SOAPConnectionFactory.newInstance();
             soapConnection = soapConnectionFactory.createConnection();
+
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Connection opened");
 
             // Create SOAP Request
@@ -178,11 +255,64 @@ public class SoapService implements ISoapService {
             input.writeTo(out);
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
             // We already set the item in order to keep the request message in case of failure of SOAP calls.
+            serviceSOAP.setService(servicePath);
+
             result.setItem(serviceSOAP);
 
             // Call the WS
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
-            SOAPMessage soapResponse = soapConnection.call(input, servicePath);
+
+            // Reset previous Authentification.
+            Authenticator.setDefault(null);
+            serviceSOAP.setProxyWithCredential(false);
+            serviceSOAP.setProxyUser(null);
+
+            SOAPMessage soapResponse = null;
+            if (parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE)) {
+
+                // Get Proxy host and port from parameters.
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
+
+                serviceSOAP.setProxy(true);
+                serviceSOAP.setProxyHost(proxyHost);
+                serviceSOAP.setProxyPort(proxyPort);
+
+                // Create the Proxy.
+                Socket socket = null;
+                SocketAddress sockaddr = new InetSocketAddress(proxyHost, proxyPort);
+                socket = new Socket();
+                socket.connect(sockaddr, 10000);
+                Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(socket.getInetAddress(), proxyPort));
+
+                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+
+                    // Get the credentials from parameters.
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPass = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+
+                    serviceSOAP.setProxyWithCredential(true);
+                    serviceSOAP.setProxyUser(proxyUser);
+
+                    // Define the credential to the proxy.
+                    initializeProxyAuthenticator(proxyUser, proxyPass);
+
+                }
+
+                // Call with Proxy.
+                soapResponse = sendSOAPMessage(input, servicePath, proxy);
+
+            } else {
+
+                serviceSOAP.setProxy(false);
+                serviceSOAP.setProxyHost(null);
+                serviceSOAP.setProxyPort(0);
+
+                // Call without proxy.
+                soapResponse = soapConnection.call(input, servicePath);
+
+            }
+
             MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
             out = new ByteArrayOutputStream();
 
@@ -197,6 +327,7 @@ public class SoapService implements ISoapService {
                     .replace("%SOAPMETHOD%", method));
             result.setResultMessage(message);
 
+            //soapResponse.getSOAPPart().getEnvelope().getBody().getFault().getFaultCode();
             // We save convert to string the final response from SOAP request.
             serviceSOAP.setResponseHTTPBody(SoapUtil.convertSoapMessageToString(soapResponse));
 

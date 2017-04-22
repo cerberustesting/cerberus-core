@@ -1017,7 +1017,7 @@ public class PropertyService implements IPropertyService {
                 }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
-                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement, null, null, 60000);
+                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement, null, null, 60000, tCExecution.getApplicationObj().getSystem());
                 AppService se1 = (AppService) soapCall.getItem();
 //                tCExecution.setLastSOAPCalled(soapCall);
 
