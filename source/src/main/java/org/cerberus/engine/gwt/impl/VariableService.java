@@ -142,6 +142,9 @@ public class VariableService implements IVariableService {
             //then we notify the execution
             if (answer.getResultMessage().getCodeString().equals("FA")
                     || answer.getResultMessage().getCodeString().equals("NA")) {
+                String prop_message = answer.getResultMessage().getDescription();
+                answer.setResultMessage(new MessageEvent(MessageEventEnum.DECODE_FAILED_GENERIC)
+                        .resolveDescription("ERROR", prop_message));
                 answer.setItem(result);
                 return answer;
 //                if (!(testCaseStepActionExecution == null)) {
