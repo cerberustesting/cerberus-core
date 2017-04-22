@@ -135,7 +135,7 @@ public class JsonService implements IJsonService {
                         return toto.toJSONString();
 
                     } catch (Exception exArray) {
-                        throw exArray;
+                        return DEFAULT_GET_FROM_JSON_VALUE;
                     }
                 }
             }
