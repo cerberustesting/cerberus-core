@@ -207,10 +207,10 @@ public class ResultCIV002 extends HttpServlet {
                 float pond4 = parameterService.getParameterFloatByKey("CI_OK_prio4", "", 0);
                 String result;
                 float resultCal = (nbkop1 * pond1) + (nbkop2 * pond2) + (nbkop3 * pond3) + (nbkop4 * pond4);
-                if ((resultCal < 1) && (nbtotal > 0)) {
-                    result = "OK";
-                } else if ((nbtotal > 0) && nbne + nbpe > 0) {
+                if ((nbtotal > 0) && nbne + nbpe > 0) {
                     result = "PE";
+                } else if ((resultCal < 1) && (nbtotal > 0)) {
+                    result = "OK";
                 } else {
                     result = "KO";
                 }
