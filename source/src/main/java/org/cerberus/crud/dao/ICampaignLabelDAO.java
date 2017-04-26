@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.cerberus.crud.entity.AppServiceContent;
-
+import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -37,20 +37,26 @@ import org.cerberus.util.answer.AnswerList;
  * @version 1.0, 15/10/13
  * @since 0.9.0
  */
-public interface IAppServiceContentDAO {
+public interface ICampaignLabelDAO {
 
     /**
      *
-     * @param service
-     * @param key
+     * @param campaignLabelID
      * @return
      */
-    AnswerItem<AppServiceContent> readByKey(String service, String key);
+    AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID);
 
     /**
      *
-     * @param service
-     * @param active
+     * @param campaign
+     * @param LabelId
+     * @return
+     */
+    AnswerItem<CampaignLabel> readByKey(String campaign, Integer LabelId);
+
+    /**
+     *
+     * @param campaign
      * @param startPosition
      * @param length
      * @param columnName
@@ -59,28 +65,28 @@ public interface IAppServiceContentDAO {
      * @param individualSearch
      * @return
      */
-    AnswerList<AppServiceContent> readByVariousByCriteria(String service, String active, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
+    AnswerList<CampaignLabel> readByVariousByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer create(AppServiceContent object);
+    Answer create(CampaignLabel object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer delete(AppServiceContent object);
+    Answer delete(CampaignLabel object);
 
     /**
      *
      * @param object
      * @return
      */
-    Answer update(AppServiceContent object);
+    Answer update(CampaignLabel object);
 
     /**
      * Uses data of ResultSet to create object {@link AppServiceContent}
@@ -91,16 +97,16 @@ public interface IAppServiceContentDAO {
      * {@link java.sql.ResultSet#getString(String)}
      * @see FactoryApplication
      */
-    AppServiceContent loadFromResultSet(ResultSet rs) throws SQLException;
+    CampaignLabel loadFromResultSet(ResultSet rs) throws SQLException;
 
     /**
      *
-     * @param system
+     * @param service
      * @param searchParameter
      * @param individualSearch
      * @param columnName
      * @return
      */
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
+    public AnswerList<String> readDistinctValuesByCriteria(String service, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
 }

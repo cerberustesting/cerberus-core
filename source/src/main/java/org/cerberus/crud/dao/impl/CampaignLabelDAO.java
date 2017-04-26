@@ -27,15 +27,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-import org.cerberus.crud.dao.IAppServiceContentDAO;
-import org.cerberus.crud.entity.AppServiceContent;
+import org.cerberus.crud.dao.ICampaignLabelDAO;
+import org.cerberus.crud.entity.CampaignLabel;
+import org.cerberus.crud.factory.IFactoryCampaignLabel;
+import org.cerberus.crud.factory.impl.FactoryCampaignLabel;
 import org.cerberus.database.DatabaseSpring;
-import org.cerberus.crud.factory.IFactoryAppServiceContent;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
-import org.cerberus.crud.factory.impl.FactoryAppServiceContent;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.SqlUtil;
 import org.cerberus.util.StringUtil;
@@ -53,40 +52,38 @@ import org.springframework.stereotype.Repository;
  * @since 0.9.0
  */
 @Repository
-public class AppServiceContentDAO implements IAppServiceContentDAO {
+public class CampaignLabelDAO implements ICampaignLabelDAO {
 
     @Autowired
     private DatabaseSpring databaseSpring;
     @Autowired
-    private IFactoryAppServiceContent factoryAppServiceContent;
+    private IFactoryCampaignLabel factoryCampaignLabel;
 
-    private static final Logger LOG = Logger.getLogger(AppServiceContentDAO.class);
+    private static final Logger LOG = Logger.getLogger(CampaignLabelDAO.class);
 
-    private final String OBJECT_NAME = "Service Content";
+    private final String OBJECT_NAME = "Campaign Label";
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
     @Override
-    public AnswerItem<AppServiceContent> readByKey(String service, String key) {
+    public AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID) {
         AnswerItem ans = new AnswerItem();
-        AppServiceContent result = null;
-        final String query = "SELECT * FROM `appservicecontent` src WHERE `service` = ? and `key` = ?";
+        CampaignLabel result = null;
+        final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlavelid` = ? ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + service);
-            LOG.debug("SQL.param.key : " + key);
+            LOG.debug("SQL.param.campaignlabelid : " + campaignLabelID);
         }
 
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
-                preStat.setString(1, service);
-                preStat.setString(2, key);
+                preStat.setInt(1, campaignLabelID);
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.first()) {
@@ -131,32 +128,93 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public AnswerList<AppServiceContent> readByVariousByCriteria(String service, String active, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
+    public AnswerItem<CampaignLabel> readByKey(String campaign, Integer LabelId) {
+        AnswerItem ans = new AnswerItem();
+        CampaignLabel result = null;
+        final String query = "SELECT * FROM `campaignlabel` src WHERE `campaign` = ? and `labelid` = ?";
+        MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+        msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
+
+        // Debug message on SQL.
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SQL : " + query);
+            LOG.debug("SQL.param.campaign : " + campaign);
+            LOG.debug("SQL.param.labelid : " + LabelId);
+        }
+
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                preStat.setString(1, campaign);
+                preStat.setInt(2, LabelId);
+                ResultSet resultSet = preStat.executeQuery();
+                try {
+                    if (resultSet.first()) {
+                        result = loadFromResultSet(resultSet);
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                        msg.setDescription(msg.getDescription().replace("%ITEM%", OBJECT_NAME).replace("%OPERATION%", "SELECT"));
+                        ans.setItem(result);
+                    } else {
+                        msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND);
+                    }
+                } catch (SQLException exception) {
+                    LOG.error("Unable to execute query : " + exception.toString());
+                    msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                    msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+                } finally {
+                    resultSet.close();
+                }
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+                msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+                msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+            msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
+            msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", exception.toString()));
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException exception) {
+                LOG.warn("Unable to close connection : " + exception.toString());
+            }
+        }
+
+        //sets the message
+        ans.setResultMessage(msg);
+        return ans;
+    }
+
+    @Override
+    public AnswerList<CampaignLabel> readByVariousByCriteria(String campaign, int start, int amount, String column, String dir, String searchTerm, Map<String, List<String>> individualSearch) {
         AnswerList response = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
-        List<AppServiceContent> objectList = new ArrayList<AppServiceContent>();
+        List<CampaignLabel> objectList = new ArrayList<CampaignLabel>();
         StringBuilder searchSQL = new StringBuilder();
         List<String> individalColumnSearchValues = new ArrayList<String>();
 
         StringBuilder query = new StringBuilder();
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
-        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM appservicecontent src ");
+        query.append("SELECT SQL_CALC_FOUND_ROWS * FROM campaignlabel cpl ");
 
         searchSQL.append(" where 1=1 ");
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (src.`service` like ?");
-            searchSQL.append(" or src.`key` like ?");
-            searchSQL.append(" or src.`value` like ?");
-            searchSQL.append(" or src.`sort` like ?");
-            searchSQL.append(" or src.`active` like ?");
-            searchSQL.append(" or src.`usrCreated` like ?");
-            searchSQL.append(" or src.`usrModif` like ?");
-            searchSQL.append(" or src.`dateCreated` like ?");
-            searchSQL.append(" or src.`dateModif` like ?");
-            searchSQL.append(" or src.`description` like ?)");
+            searchSQL.append(" and (cpl.`campaignlabelid` like ?");
+            searchSQL.append(" or cpl.`campaign` like ?");
+            searchSQL.append(" or cpl.`labelid` like ?");
+            searchSQL.append(" or cpl.`usrCreated` like ?");
+            searchSQL.append(" or cpl.`usrModif` like ?");
+            searchSQL.append(" or cpl.`dateCreated` like ?");
+            searchSQL.append(" or cpl.`dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -168,11 +226,8 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             searchSQL.append(" )");
         }
 
-        if (!StringUtil.isNullOrEmpty(service)) {
-            searchSQL.append(" and (`service` = ? )");
-        }
-        if (!StringUtil.isNullOrEmpty(active)) {
-            searchSQL.append(" and (`active` = ? )");
+        if (!StringUtil.isNullOrEmpty(campaign)) {
+            searchSQL.append(" and (`campaign` = ? )");
         }
         query.append(searchSQL);
 
@@ -203,18 +258,12 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
-                    preStat.setString(i++, "%" + searchTerm + "%");
                 }
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-                if (!StringUtil.isNullOrEmpty(service)) {
-                    preStat.setString(i++, service);
-                }
-                if (!StringUtil.isNullOrEmpty(active)) {
-                    preStat.setString(i++, active);
+                if (!StringUtil.isNullOrEmpty(campaign)) {
+                    preStat.setString(i++, campaign);
                 }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -288,11 +337,11 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public Answer create(AppServiceContent object) {
+    public Answer create(CampaignLabel object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservicecontent (`service`, `key`, `value`, `sort`, `active`, `description`, `usrcreated`) ");
-        query.append("VALUES (?,?,?,?,?,?,?)");
+        query.append("INSERT INTO campaignlabel (`campaign`, `labelid`, `usrcreated`) ");
+        query.append("VALUES (?,?,?)");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -303,12 +352,8 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
             PreparedStatement preStat = connection.prepareStatement(query.toString());
             try {
                 int i = 1;
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getKey());
-                preStat.setString(i++, object.getValue());
-                preStat.setInt(i++, object.getSort());
-                preStat.setString(i++, object.getActive());
-                preStat.setString(i++, object.getDescription());
+                preStat.setString(i++, object.getCampaign());
+                preStat.setInt(i++, object.getLabelId());
                 preStat.setString(i++, object.getUsrCreated());
 
                 preStat.executeUpdate();
@@ -345,23 +390,21 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public Answer delete(AppServiceContent object) {
+    public Answer delete(CampaignLabel object) {
         MessageEvent msg = null;
-        final String query = "DELETE FROM appservicecontent WHERE `service` = ? and `key` = ? ";
+        final String query = "DELETE FROM campaignlabel WHERE `campaignlabelid` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + object.getService());
-            LOG.debug("SQL.param.key : " + object.getKey());
+            LOG.debug("SQL.param.campaignlabelid : " + object.getCampaignLabelID());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getKey());
+                preStat.setInt(i++, object.getCampaignLabelID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -390,29 +433,25 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public Answer update(AppServiceContent object) {
+    public Answer update(CampaignLabel object) {
         MessageEvent msg = null;
-        final String query = "UPDATE appservicecontent SET description = ?, sort = ?, `active` = ?, `value` = ?, "
-                + "dateModif = NOW(), usrModif= ?  WHERE `Service` = ? and `Key` = ?";
+        final String query = "UPDATE campaignlabel SET campaign = ?, labelid = ? "
+                + "dateModif = NOW(), usrModif= ?  WHERE `campaignlabelid` = ? ";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.service : " + object.getService());
-            LOG.debug("SQL.param.key : " + object.getKey());
+            LOG.debug("SQL.param.service : " + object.getCampaignLabelID());
         }
         Connection connection = this.databaseSpring.connect();
         try {
             PreparedStatement preStat = connection.prepareStatement(query);
             try {
                 int i = 1;
-                preStat.setString(i++, object.getDescription());
-                preStat.setInt(i++, object.getSort());
-                preStat.setString(i++, object.getActive());
-                preStat.setString(i++, object.getValue());
+                preStat.setString(i++, object.getCampaign());
+                preStat.setInt(i++, object.getLabelId());
                 preStat.setString(i++, object.getUsrModif());
-                preStat.setString(i++, object.getService());
-                preStat.setString(i++, object.getKey());
+                preStat.setInt(i++, object.getCampaignLabelID());
 
                 preStat.executeUpdate();
                 msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
@@ -441,26 +480,22 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
     }
 
     @Override
-    public AppServiceContent loadFromResultSet(ResultSet rs) throws SQLException {
-        String service = ParameterParserUtil.parseStringParam(rs.getString("src.service"), "");
-        String key = ParameterParserUtil.parseStringParam(rs.getString("src.key"), "");
-        String value = ParameterParserUtil.parseStringParam(rs.getString("src.value"), "");
-        int sort = ParameterParserUtil.parseIntegerParam(rs.getString("src.sort"), 0);
-        String active = ParameterParserUtil.parseStringParam(rs.getString("src.active"), "");
-        String description = ParameterParserUtil.parseStringParam(rs.getString("src.description"), "");
-        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("src.UsrModif"), "");
-        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("src.UsrCreated"), "");
-        Timestamp dateModif = rs.getTimestamp("src.DateModif");
-        Timestamp dateCreated = rs.getTimestamp("src.DateCreated");
+    public CampaignLabel loadFromResultSet(ResultSet rs) throws SQLException {
+        int campaignlabelid = ParameterParserUtil.parseIntegerParam(rs.getString("cpl.campaignlabelid"), 0);
+        String campaign = ParameterParserUtil.parseStringParam(rs.getString("cpl.campaign"), "");
+        int labelid = ParameterParserUtil.parseIntegerParam(rs.getString("cpl.labelid"), 0);
+        String usrModif = ParameterParserUtil.parseStringParam(rs.getString("cpl.UsrModif"), "");
+        String usrCreated = ParameterParserUtil.parseStringParam(rs.getString("cpl.UsrCreated"), "");
+        Timestamp dateModif = rs.getTimestamp("cpl.DateModif");
+        Timestamp dateCreated = rs.getTimestamp("cpl.DateCreated");
 
         //TODO remove when working in test with mockito and autowired
-        factoryAppServiceContent = new FactoryAppServiceContent();
-        return factoryAppServiceContent.create(service, key, value, active, sort, description,
-                usrCreated, dateCreated, usrModif, dateModif);
+        factoryCampaignLabel = new FactoryCampaignLabel();
+        return factoryCampaignLabel.create(campaignlabelid, campaign, labelid, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
-    public AnswerList<String> readDistinctValuesByCriteria(String system, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
+    public AnswerList<String> readDistinctValuesByCriteria(String campaign, String searchTerm, Map<String, List<String>> individualSearch, String columnName) {
         AnswerList answer = new AnswerList();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
@@ -472,24 +507,21 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
 
         query.append("SELECT distinct ");
         query.append(columnName);
-        query.append(" as distinctValues FROM appservicecontent ");
+        query.append(" as distinctValues FROM campaignlabel ");
 
         searchSQL.append("WHERE 1=1");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" and (`System` = ? )");
+        if (!StringUtil.isNullOrEmpty(campaign)) {
+            searchSQL.append(" and (`campaign` = ? )");
         }
 
         if (!StringUtil.isNullOrEmpty(searchTerm)) {
-            searchSQL.append(" and (src.`service` like ?");
-            searchSQL.append(" or src.`key` like ?");
-            searchSQL.append(" or src.`value` like ?");
-            searchSQL.append(" or src.`sort` like ?");
-            searchSQL.append(" or src.`active` like ?");
-            searchSQL.append(" or src.`usrCreated` like ?");
-            searchSQL.append(" or src.`usrModif` like ?");
-            searchSQL.append(" or src.`dateCreated` like ?");
-            searchSQL.append(" or src.`dateModif` like ?");
-            searchSQL.append(" or src.`description` like ?)");
+            searchSQL.append(" and (cpl.`campaignlabelid` like ?");
+            searchSQL.append(" or cpl.`campaign` like ?");
+            searchSQL.append(" or cpl.`labelid` like ?");
+            searchSQL.append(" or cpl.`usrCreated` like ?");
+            searchSQL.append(" or cpl.`usrModif` like ?");
+            searchSQL.append(" or cpl.`dateCreated` like ?");
+            searchSQL.append(" or cpl.`dateModif` like ?)");
         }
         if (individualSearch != null && !individualSearch.isEmpty()) {
             searchSQL.append(" and ( 1=1 ");
@@ -511,13 +543,10 @@ public class AppServiceContentDAO implements IAppServiceContentDAO {
                 PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
-            if (!StringUtil.isNullOrEmpty(system)) {
-                preStat.setString(i++, system);
+            if (!StringUtil.isNullOrEmpty(campaign)) {
+                preStat.setString(i++, campaign);
             }
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
-                preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");
                 preStat.setString(i++, "%" + searchTerm + "%");

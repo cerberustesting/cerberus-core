@@ -76,6 +76,7 @@ function displayPageLabel() {
     $("[name='descriptionField']").html(doc.getDocLabel("page_testcampaign", "description_field"));
     $("[name='tabDescription']").html(doc.getDocLabel("page_testcampaign", "description_tab"));
     $("[name='tabBatteries']").html(doc.getDocLabel("page_testcampaign", "battery_tab"));
+    $("[name='tabLabels']").html(doc.getDocLabel("page_testcampaign", "label_tab"));
     $("[name='tabParameters']").html(doc.getDocLabel("page_testcampaign", "parameter_tab"));
     $("[name='buttonClose']").html(doc.getDocLabel("page_testcampaign", "close_btn"));
     $("[name='buttonAdd']").html(doc.getDocLabel("page_testcampaign", "save_btn"));
@@ -158,12 +159,45 @@ function renderOptionsForCampaign3(id) {
 
 }
 
+
+
 function renderOptionsForCampaign4(data) {
     if ($("#blankSpaceBattery").length === 0) {
         var contentToAdd = "<div class='marginBottom10' style='height:34px;' id='blankSpaceBattery'></div>";
         $("#viewTestcampaignsTable_wrapper div#viewTestcampaignsTable_length").before(contentToAdd);
     }
 }
+
+function renderOptionsForCampaign5(id) {
+    var doc = new Doc();
+    var data = getSelectInvariant("CAMPAIGN_PARAMETER", false, true);
+    $("#" + id + "_wrapper #addParameterTestcampaign").remove();
+    var contentToAdd =
+            "<div class='marginBottom10 form-inline' id='addParameterTestcampaign'>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='parameterTestSelect' class='form-control' style='width:100%;' onchange='updateSelectParameter(\"" + id + "\")'>";
+    for (var i = 0; i < data.find("option").length; i++) {
+        contentToAdd +=
+                "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].value + "</option>";
+    }
+    contentToAdd +=
+            "</select>" +
+            "</div>" +
+            "<div class='form-group marginRight10 col-sm-3' style='padding-right: 0px; padding-left: 0px;'>" +
+            "<select id='parameterTestSelect2' class='form-control' style='width:100%;'>" +
+            "</select>" +
+            "</div>" +
+            "<div class='form-group'>" +
+            "<button type='button' id='addParameterTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addParameterEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "</div>" +
+            "</div>";
+    $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
+    $("#" + id + "_wrapper #parameterTestSelect").select2();
+    $("#" + id + "_wrapper #parameterTestSelect2").select2();
+    updateSelectParameter(id);
+
+}
+
 
 function viewEntryClick(param) {
     clearResponseMessageMainPage();

@@ -8704,6 +8704,16 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `parameter` SET `param`='cerberus_proxyauthentification_user' WHERE `param`='cerberus_callservicerest_proxyuser';");
         SQLInstruction.add(SQLS.toString());
 
+        // Add tracability fields in campaignlabel table.
+        //-- ------------------------ 1145
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `campaignlabel` ");
+        SQLS.append("ADD COLUMN `UsrCreated` VARCHAR(45) NOT NULL DEFAULT '' AFTER `LabelId`,");
+        SQLS.append("ADD COLUMN `DateCreated` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `UsrCreated`,");
+        SQLS.append("ADD COLUMN `UsrModif` VARCHAR(45) NULL DEFAULT '' AFTER `DateCreated`,");
+        SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
