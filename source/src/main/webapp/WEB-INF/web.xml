@@ -482,7 +482,7 @@
     </servlet>
     <servlet>
         <servlet-name>ReadApplicationObjectImage</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.ReadApplicationObjectImage</servlet-class>
+        <servlet-class>org.cerberus.servlet.crud.countryenvironment.ReadApplicationObjectImage</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>NewBuildRev</servlet-name>
