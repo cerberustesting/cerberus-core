@@ -2189,7 +2189,6 @@
             <url-pattern>/ReadExecutionInQueue</url-pattern>
             <url-pattern>/DeleteExecutionInQueue</url-pattern>
             <url-pattern>/UpdateExecutionInQueue</url-pattern>
-            <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/GetExecutionQueue</url-pattern>
         </web-resource-collection>
         <auth-constraint>
@@ -2455,6 +2454,7 @@
             <url-pattern>/ForgotPassword</url-pattern>
             <url-pattern>/ForgotPasswordEmailConfirmation</url-pattern>
             <url-pattern>/ChangeUserPassword</url-pattern>
+            <url-pattern>/AddToExecutionQueue</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
