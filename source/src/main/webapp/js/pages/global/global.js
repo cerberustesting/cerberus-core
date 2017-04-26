@@ -1685,12 +1685,14 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         //Add selectAll/unSelectAll button
         $("#" + tableId + "_wrapper [name='searchField']").after(
                 $('<button>').attr('class', 'glyphicon glyphicon-check')
+                .attr('type', 'button')
                 .attr('title', 'select all').attr('name', 'selectAll')
                 .attr('data-type', 'custom').on('click', function () {
             $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
         }));
         $("#" + tableId + "_wrapper [name='searchField']").after(
                 $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                .attr('type', 'button')
                 .attr('title', 'unselect all').attr('name', 'unSelectAll')
                 .attr('data-type', 'custom').on('click', function () {
             $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
