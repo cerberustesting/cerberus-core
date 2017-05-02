@@ -31,12 +31,12 @@ cp -R latest ${RELEASE_VERSION}
 awk '/Use the latest Cerberus version/{print; print "${RELEASE_VERSION}   | Use the ${RELEASE_VERSION} Cerberus version     | [${RELEASE_VERSION}/Dockerfile](https://github.com/cerberustesting/cerberus-docker/blob/master/images/cerberus-as-glassfish/${RELEASE_VERSION}/Dockerfile)"; next}1' README.md > README.md.back && mv README.md.back README.md
 
 # Create Docker image
-docker build -t abourdon/cerberus-as-glassfish:${RELEASE_VERSION} ${RELEASE_VERSION}
-docker tag `docker images --format {{.ID}} abourdon/cerberus-as-glassfish:${RELEASE_VERSION}` abourdon/cerberus-as-glassfish:latest
+docker build -t cerberustesting/cerberus-as-glassfish:${RELEASE_VERSION} ${RELEASE_VERSION}
+docker tag `docker images --format {{.ID}} cerberustesting/cerberus-as-glassfish:${RELEASE_VERSION}` cerberustesting/cerberus-as-glassfish:latest
 
 # Push Docker image to the public Docker hub
-docker push abourdon/cerberus-as-glassfish:${RELEASE_VERSION}
-docker push abourdon/cerberus-as-glassfish:latest
+docker push cerberustesting/cerberus-as-glassfish:${RELEASE_VERSION}
+docker push cerberustesting/cerberus-as-glassfish:latest
 
 # Apply changes to SCM
 git add README.md ${RELEASE_VERSION} latest
