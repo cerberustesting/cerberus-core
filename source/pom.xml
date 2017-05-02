@@ -546,7 +546,8 @@
                 <version>${license-maven-plugin.version}</version>
                 <configuration>
                     <failIfMissing>true</failIfMissing>
-                    <strictCheck>true</strictCheck>
+                    <!-- Due to https://issues.apache.org/jira/browse/MRELEASE-266, we cannot be strict as the maven-release-plugin is modifying license headers during process -->
+                    <strictCheck>false</strictCheck>
                     <header>${basedir}/licenseheader.txt</header>
                     <includes>
                         <include>**/*.java</include>
