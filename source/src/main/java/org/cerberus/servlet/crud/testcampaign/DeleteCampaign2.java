@@ -19,31 +19,28 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.cerberus.engine.entity.MessageEvent;
+import java.io.IOException;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.factory.IFactoryCampaignContent;
 import org.cerberus.crud.service.ICampaignContentService;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * @author cte

@@ -498,7 +498,7 @@ function getSelectTestBattery(forceReload, notAsync) {
 }
 
 /**
- * This method will return the combo list of TestBattery.
+ * This method will return the combo list of Label.
  * It will load the values from the sessionStorage cache of the browser
  * when available, if not available, it will get it from the server and save
  * it on local cache.
@@ -506,8 +506,8 @@ function getSelectTestBattery(forceReload, notAsync) {
  * @param {boolean} forceReload true if we want to force the reload on cache from the server
  * @param {boolean} notAsync true if we dont want to have Async ajax
  */
-function getSelectLabel(forceReload, notAsync) {
-    var cacheEntryName = "TESTBATTERY";
+function getSelectLabel(system, forceReload, notAsync) {
+    var cacheEntryName = "LABEL" + system;
     if (forceReload) {
 //        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
@@ -521,22 +521,23 @@ function getSelectLabel(forceReload, notAsync) {
 
     if (list === null) {
         $.ajax({
-            url: "ReadTestBattery",
+            url: "ReadLabel",
             async: async,
+            data: {system: system},
             success: function (data) {
                 list = data.contentTable;
                 sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable));
                 for (var index = 0; index < list.length; index++) {
-                    var item = list[index].testbattery + " - " + list[index].description;
-                    select.append($("<option></option>").text(item).val(list[index].testbattery));
+                    var item = list[index].label + " - " + list[index].color;
+                    select.append($("<option></option>").text(item).val(list[index].id));
                 }
             }
         });
     } else {
         for (var index = 0; index < list.length; index++) {
-            var item = list[index].testbattery + " - " + list[index].description;
+            var item = list[index].label + " - " + list[index].color;
 
-            select.append($("<option></option>").text(item).val(list[index].testbattery));
+            select.append($("<option></option>").text(item).val(list[index].id));
         }
     }
 

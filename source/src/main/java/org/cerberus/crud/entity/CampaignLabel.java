@@ -30,6 +30,19 @@ public class CampaignLabel {
     private Timestamp DateCreated;
     private String UsrModif;
     private Timestamp DateModif;
+    
+    /**
+     * Not included in table.
+     */
+    private Label label;
+
+    public Label getLabel() {
+        return label;
+    }
+
+    public void setLabel(Label label) {
+        this.label = label;
+    }
 
     public Integer getCampaignLabelID() {
         return campaignLabelID;
