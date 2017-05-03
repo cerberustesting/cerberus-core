@@ -12,11 +12,11 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
 
 ### Get started
 
- 1. [Download](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/docker-compose.yml) this Docker composition
+ 1. [Download](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/default.yml) this Docker composition
 
  2. Execute at the root path
 	
-        docker-compose up
+        docker-compose -f default.yml up
 
  3. Wait for the images to startup
 
@@ -37,7 +37,9 @@ _Note: It is not yet possible to change a user's password, except by modifying i
 
 #### Configure Cerberus to access to the Selenium Grid
 
-This composition provides a ready-to-use Selenium Grid to run Web Application tests easier. To do so, simply feed the Cerberus Robot settings by the following information:
+By default, the `default.yml` composition is just executing a Cerberus instance, without any external tool.
+ 
+To start Cerberus with a ready-to-use Selenium Grid, you can run the `default-with-selenium.yml` composition. Once started, a Selenium Grid will be reachable by applying the following configuration the Cerberus Execution or Robot page:
 
 - Selenium ip/host: `selenium-hub`
 - Selenium port: `4444`
@@ -49,10 +51,10 @@ _Note: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all un
 
 The Selenium Grid Console can be reached at `<docker_host>:14444/grid/console`.
 
-By default, this Docker composition starts one [Mozilla Firefox Selenium node]((https://hub.docker.com/r/selenium/node-firefox-debug/)) and one [Google Chrome Selenium node]((https://hub.docker.com/r/selenium/node-chrome-debug/)).
+By default, the `default-with-selenium.yml` Docker composition starts one [Mozilla Firefox Selenium node]((https://hub.docker.com/r/selenium/node-firefox-debug/)) and one [Google Chrome Selenium node]((https://hub.docker.com/r/selenium/node-chrome-debug/)).
 Number of Selenium nodes can be scaled. For instance, by executing:
 
-    docker-compose scale selenium-node-firefox=3 selenium-node-chrome=3
+    docker-compose -f default-with-selenium.yml scale selenium-node-firefox=3 selenium-node-chrome=3
 
 Then three Mozilla Firefox Selenium nodes and three Google Chrome Selenium nodes will be available.
 
@@ -92,7 +94,7 @@ Port             | Description
 `18080`          | the Glassfish HTTP access port
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
-`14444`          | the Selenium Grid access port
+`14444`          | the Selenium Grid access port, in case of using the `default-with-selenium.yml` composition
 
 ### Mapped volumes
 
