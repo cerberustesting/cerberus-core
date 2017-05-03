@@ -1,4 +1,4 @@
-# Cerberus MySQL images
+# Cerberus MySQL image
 
 [Cerberus](http://www.cerberus-testing.org/) is an user-friendly automated testing framework.
 
