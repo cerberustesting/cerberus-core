@@ -6,8 +6,10 @@
 #   1. Have Git 2.7+ installed
 #   2. Be able to push to [Cerberus Testing's repositories](https://github.com/cerberustesting)
 #   3. Have Docker 1.12+ installed
-#   4. Download the [runcmds](https://github.com/abourdon/runcmds) command execution tool
-#   5. If you have not read it yet, read the runcmds's README file :-)
+#   4. Be able to push to the [Cerberus Testing's Docker hub space](https://hub.docker.com/r/cerberustesting)
+#   5. Be logged to the public Docker hub registry
+#   6. Download the [runcmds](https://github.com/abourdon/runcmds) command execution tool
+#   7. If you have not read it yet, read the runcmds's README file :-)
 #
 # How to run it
 # -------------
