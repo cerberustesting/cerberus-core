@@ -12,7 +12,7 @@ It runs also a [Selenium Grid](http://www.seleniumhq.org/docs/07_selenium_grid.j
 
 ### Get started
 
- 1. [Download](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/default.yml) this Docker composition
+ 1. [Download the default Docker composition](https://raw.githubusercontent.com/cerberustesting/cerberus-docker/master/compositions/cerberus-glassfish-mysql/default.yml)
 
  2. Execute at the root path
 	
@@ -109,9 +109,10 @@ Don't forget to change host volume default values to fit to your need.
 
 ## License
 
-Cerberus Copyright (C) 2016 Cerberus Testing
+Cerberus Copyright (C) 2013 - 2017 cerberustesting
 
 This file is part of Cerberus.
+
 Cerberus is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or

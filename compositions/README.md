@@ -14,9 +14,10 @@ Name                                                                            
 
 ## License
 
-Cerberus Copyright (C) 2016 Cerberus Testing
+Cerberus Copyright (C) 2013 - 2017 cerberustesting
 
 This file is part of Cerberus.
+
 Cerberus is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
