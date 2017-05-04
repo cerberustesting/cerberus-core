@@ -27,12 +27,17 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpEntityEnclosingRequest;
 import org.cerberus.crud.entity.Application;
@@ -59,11 +64,13 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.remote.UnreachableBrowserException;
+import org.openqa.selenium.remote.http.HttpClient.Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,6 +89,16 @@ public class SeleniumServerService implements ISeleniumServerService {
     private ISikuliService sikuliService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SeleniumServerService.class);
+    /**
+     * Proxy default config. (Should never be used as default config is inserted
+     * into database)
+     */
+    private static final boolean DEFAULT_PROXY_ACTIVATE = false;
+    private static final String DEFAULT_PROXY_HOST = "proxy";
+    private static final int DEFAULT_PROXY_PORT = 80;
+    private static final boolean DEFAULT_PROXYAUTHENT_ACTIVATE = false;
+    private static final String DEFAULT_PROXYAUTHENT_USER = "squid";
+    private static final String DEFAULT_PROXYAUTHENT_PASSWORD = "squid";
 
     @Override
     public void startServer(TestCaseExecution tCExecution) throws CerberusException {
@@ -142,6 +159,43 @@ public class SeleniumServerService implements ISeleniumServerService {
             LOG.debug(logPrefix + "Set Capabilities - retreived");
 
             /**
+             * SetUp Proxy
+             */
+            String hubUrl = StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub";
+            URL url = new URL(hubUrl);
+            HttpCommandExecutor executor = null;
+
+            boolean isProxy = parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE);
+            if (isProxy) {
+                String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
+                int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
+
+                HttpClientBuilder builder = HttpClientBuilder.create();
+                HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+                builder.setProxy(proxy);
+
+                if (parameterService.getParameterBooleanByKey("cerberus_proxyauthentification_active", system, DEFAULT_PROXYAUTHENT_ACTIVATE)) {
+
+                    String proxyUser = parameterService.getParameterStringByKey("cerberus_proxyauthentification_user", system, DEFAULT_PROXYAUTHENT_USER);
+                    String proxyPassword = parameterService.getParameterStringByKey("cerberus_proxyauthentification_password", system, DEFAULT_PROXYAUTHENT_PASSWORD);
+
+                    CredentialsProvider credsProvider = new BasicCredentialsProvider();
+
+                    credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort), new UsernamePasswordCredentials(proxyUser, proxyPassword));
+
+                    if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
+                        credsProvider.setCredentials(new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())), new UsernamePasswordCredentials(url.getUserInfo()));
+                    }
+
+                    builder.setDefaultCredentialsProvider(credsProvider);
+                }
+
+                Factory factory = new MyHttpClientFactory(builder);
+                executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
+
+            }
+
+            /**
              * SetUp Driver
              */
             LOG.debug(logPrefix + "Set Driver");
@@ -149,19 +203,40 @@ public class SeleniumServerService implements ISeleniumServerService {
             AppiumDriver appiumDriver = null;
             if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)) {
                 if (caps.getPlatform().is(Platform.ANDROID)) {
-                    appiumDriver = new AndroidDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    if (executor == null) {
+                        appiumDriver = new AndroidDriver(url, caps);
+                    } else {
+                        appiumDriver = new AndroidDriver(executor, caps);
+                    }
                     driver = (WebDriver) appiumDriver;
                 } else if (caps.getPlatform().is(Platform.MAC)) {
-                    appiumDriver = new IOSDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                    if (executor == null) {
+                        appiumDriver = new IOSDriver(url, caps);
+                    } else {
+                        appiumDriver = new IOSDriver(executor, caps);
+                    }
                     driver = (WebDriver) appiumDriver;
-                } else {
-                    driver = new RemoteWebDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                } else // Any Other
+                {
+                    if (executor == null) {
+                        driver = new RemoteWebDriver(url, caps);
+                    } else {
+                        driver = new RemoteWebDriver(executor, caps);
+                    }
                 }
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)) {
-                appiumDriver = new AndroidDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                if (executor == null) {
+                    appiumDriver = new AndroidDriver(url, caps);
+                } else {
+                    appiumDriver = new AndroidDriver(executor, caps);
+                }
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)) {
-                appiumDriver = new IOSDriver(new URL(StringUtil.cleanHostURL(tCExecution.getSession().getHost()) + ":" + tCExecution.getSession().getPort() + "/wd/hub"), caps);
+                if (executor == null) {
+                    appiumDriver = new IOSDriver(url, caps);
+                } else {
+                    appiumDriver = new IOSDriver(executor, caps);
+                }
                 driver = (WebDriver) appiumDriver;
             } else if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
                 sikuliService.doSikuliAction(session, "openApp", null, tCExecution.getCountryEnvironmentParameters().getIp());
@@ -216,6 +291,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_COULDNOTCONNECT);
             mes.setDescription(mes.getDescription().replace("%SSIP%", tCExecution.getSeleniumIP()));
             mes.setDescription(mes.getDescription().replace("%SSPORT%", tCExecution.getSeleniumPort()));
+            mes.setDescription(mes.getDescription().replace("%ERROR%", exception.toString()));
             throw new CerberusException(mes);
         } catch (Exception exception) {
             LOG.error(logPrefix + exception.toString());
