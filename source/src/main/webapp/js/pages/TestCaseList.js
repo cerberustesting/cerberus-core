@@ -246,8 +246,8 @@ function massActionModalSaveHandler_addLabel() {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionTestCaseModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-            var oTable = $("#testCaseTable").dataTable();
-            oTable.fnDraw(true);
+            $('#testCaseTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
             $('#massActionTestCaseModal').modal('hide');
             showMessage(data);
         } else {
@@ -270,8 +270,8 @@ function massActionModalSaveHandler_removeLabel() {
         // unblock when remote call returns 
         hideLoaderInModal('#massActionTestCaseModal');
         if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
-            var oTable = $("#testCaseTable").dataTable();
-            oTable.fnDraw(true);
+            $('#testCaseTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
             $('#massActionTestCaseModal').modal('hide');
             showMessage(data);
         } else {

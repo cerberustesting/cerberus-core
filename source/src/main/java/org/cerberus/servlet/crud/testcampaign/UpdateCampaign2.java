@@ -19,23 +19,30 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Level;
-import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.engine.entity.MessageEvent;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Campaign;
-import org.cerberus.crud.factory.IFactoryCampaign;
+import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.CampaignLabel;
+import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.crud.factory.IFactoryCampaignLabel;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;
 import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.log.MyLogger;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
@@ -44,20 +51,8 @@ import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.owasp.html.PolicyFactory;
-import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.util.HtmlUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
 /**
  * @author bcivel
@@ -68,10 +63,10 @@ public class UpdateCampaign2 extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
@@ -105,6 +100,7 @@ public class UpdateCampaign2 extends HttpServlet {
             // Parameter that we cannot secure as we need the html --> We DECODE them
             String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
             String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
+            String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
 
             ICampaignService campaignService = appContext.getBean(ICampaignService.class);
 
@@ -135,7 +131,7 @@ public class UpdateCampaign2 extends HttpServlet {
                     ArrayList<CampaignContent> arr = new ArrayList<>();
                     for (int i = 0; i < batteries.length(); i++) {
                         JSONArray bat = batteries.getJSONArray(i);
-                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
+                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(2), bat.getString(0));
                         arr.add(co);
                     }
 
@@ -156,7 +152,7 @@ public class UpdateCampaign2 extends HttpServlet {
                     ArrayList<CampaignParameter> arr = new ArrayList<>();
                     for (int i = 0; i < parameters.length(); i++) {
                         JSONArray bat = parameters.getJSONArray(i);
-                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
+                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
                         arr.add(co);
                     }
 
@@ -169,6 +165,28 @@ public class UpdateCampaign2 extends HttpServlet {
                         logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Parameter : " + camp.getCampaign(), request);
                     }
                 }
+
+                if (label != null) {
+                    JSONArray labels = new JSONArray(label);
+                    ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
+                    IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
+                    ArrayList<CampaignLabel> arr = new ArrayList<>();
+                    for (int i = 0; i < labels.length(); i++) {
+                        JSONArray bat = labels.getJSONArray(i);
+                        CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                        arr.add(co);
+                    }
+
+                    finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(c, arr);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        ILogEventService logEventService = appContext.getBean(LogEventService.class);
+                        logEventService.createForPrivateCalls("/UpdateCampaign", "UPDATE", "Update Campaign Label : " + camp.getCampaign(), request);
+                    }
+                }
+
             }
         }
 
@@ -183,14 +201,13 @@ public class UpdateCampaign2 extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -207,10 +224,10 @@ public class UpdateCampaign2 extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

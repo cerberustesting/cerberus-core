@@ -69,12 +69,12 @@ public class CampaignLabelService implements ICampaignLabelService {
 
     @Override
     public AnswerList readByVarious(String campaign) {
-        return campaignLabelDAO.readByVariousByCriteria(campaign, 0, 0, "sort", "asc", null, null);
+        return campaignLabelDAO.readByVariousByCriteria(campaign, 0, 0, "campaignlabelid", "asc", null, null);
     }
 
     @Override
     public AnswerList readByCriteria(int startPosition, int length, String columnName, String sort, String searchParameter, Map<String, List<String>> individualSearch) {
-        return campaignLabelDAO.readByVariousByCriteria( null, startPosition, length, columnName, sort, searchParameter, individualSearch);
+        return campaignLabelDAO.readByVariousByCriteria(null, startPosition, length, columnName, sort, searchParameter, individualSearch);
     }
 
     @Override

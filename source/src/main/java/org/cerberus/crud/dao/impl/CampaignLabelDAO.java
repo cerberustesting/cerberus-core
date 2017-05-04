@@ -30,8 +30,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.dao.ICampaignLabelDAO;
 import org.cerberus.crud.entity.CampaignLabel;
+import org.cerberus.crud.entity.Label;
 import org.cerberus.crud.factory.IFactoryCampaignLabel;
+import org.cerberus.crud.factory.IFactoryLabel;
 import org.cerberus.crud.factory.impl.FactoryCampaignLabel;
+import org.cerberus.crud.factory.impl.FactoryLabel;
 import org.cerberus.database.DatabaseSpring;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -58,6 +61,8 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     private DatabaseSpring databaseSpring;
     @Autowired
     private IFactoryCampaignLabel factoryCampaignLabel;
+    @Autowired
+    private IFactoryLabel factoryLabel;
 
     private static final Logger LOG = Logger.getLogger(CampaignLabelDAO.class);
 
@@ -69,7 +74,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     public AnswerItem<CampaignLabel> readByKeyTech(Integer campaignLabelID) {
         AnswerItem ans = new AnswerItem();
         CampaignLabel result = null;
-        final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlavelid` = ? ";
+        final String query = "SELECT * FROM `campaignLabel` cpl WHERE `campaignlabelid` = ? JOIN label lab ON lab.id = cpl.labelid ";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -131,7 +136,7 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
     public AnswerItem<CampaignLabel> readByKey(String campaign, Integer LabelId) {
         AnswerItem ans = new AnswerItem();
         CampaignLabel result = null;
-        final String query = "SELECT * FROM `campaignlabel` src WHERE `campaign` = ? and `labelid` = ?";
+        final String query = "SELECT * FROM `campaignlabel` src WHERE `campaign` = ? and `labelid` = ? JOIN label lab ON lab.id = cpl.labelid";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -204,6 +209,8 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         //SQL_CALC_FOUND_ROWS allows to retrieve the total number of columns by disrearding the limit clauses that 
         //were applied -- used for pagination p
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM campaignlabel cpl ");
+
+        query.append("JOIN label lab ON lab.id = cpl.labelid");
 
         searchSQL.append(" where 1=1 ");
 
@@ -489,9 +496,24 @@ public class CampaignLabelDAO implements ICampaignLabelDAO {
         Timestamp dateModif = rs.getTimestamp("cpl.DateModif");
         Timestamp dateCreated = rs.getTimestamp("cpl.DateCreated");
 
-        //TODO remove when working in test with mockito and autowired
+        Integer id = ParameterParserUtil.parseIntegerParam(rs.getString("lab.id"), 0);
+        String system = ParameterParserUtil.parseStringParam(rs.getString("lab.system"), "");
+        String label = ParameterParserUtil.parseStringParam(rs.getString("lab.label"), "");
+        String color = ParameterParserUtil.parseStringParam(rs.getString("lab.color"), "");
+        String parentLabel = ParameterParserUtil.parseStringParam(rs.getString("lab.parentLabel"), "");
+        String description = ParameterParserUtil.parseStringParam(rs.getString("lab.description"), "");
+        String usrCreated1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrCreated"), "");
+        Timestamp dateCreated1 = rs.getTimestamp("lab.dateCreated");
+        String usrModif1 = ParameterParserUtil.parseStringParam(rs.getString("lab.usrModif"), "");
+        Timestamp dateModif1 = rs.getTimestamp("lab.dateModif");
+        
+        factoryLabel = new FactoryLabel();
+        Label labelObj = factoryLabel.create(id, system, label, color, parentLabel, description, usrCreated1, dateCreated1, usrModif1, dateModif1);
+        
         factoryCampaignLabel = new FactoryCampaignLabel();
-        return factoryCampaignLabel.create(campaignlabelid, campaign, labelid, usrCreated, dateCreated, usrModif, dateModif);
+        CampaignLabel res = factoryCampaignLabel.create(campaignlabelid, campaign, labelid, usrCreated, dateCreated, usrModif, dateModif);
+        res.setLabel(labelObj);
+        return res;
     }
 
     @Override

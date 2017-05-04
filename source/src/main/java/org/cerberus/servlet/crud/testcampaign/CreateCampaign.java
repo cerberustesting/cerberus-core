@@ -19,37 +19,38 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.crud.entity.CampaignParameter;
-import org.cerberus.engine.entity.MessageEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.CampaignContent;
+import org.cerberus.crud.entity.CampaignLabel;
+import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.factory.IFactoryCampaign;
 import org.cerberus.crud.factory.IFactoryCampaignContent;
+import org.cerberus.crud.factory.IFactoryCampaignLabel;
 import org.cerberus.crud.factory.IFactoryCampaignParameter;
 import org.cerberus.crud.service.ICampaignContentService;
+import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
-import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.impl.LogEventService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.Answer;
-import org.cerberus.util.answer.AnswerItem;
-import org.cerberus.util.answer.AnswerUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * @author cte
@@ -84,6 +85,7 @@ public class CreateCampaign extends HttpServlet {
         // Parameter that we cannot secure as we need the html --> We DECODE them
         String battery = ParameterParserUtil.parseStringParam(request.getParameter("Batteries"), null);
         String parameter = ParameterParserUtil.parseStringParam(request.getParameter("Parameters"), null);
+        String label = ParameterParserUtil.parseStringParam(request.getParameter("Labels"), null);
 
         if (StringUtil.isNullOrEmpty(name)) {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
@@ -112,7 +114,7 @@ public class CreateCampaign extends HttpServlet {
                     int i = 0;
                     while (i < batteries.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         JSONArray bat = batteries.getJSONArray(i);
-                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(0), bat.getString(1));
+                        CampaignContent co = factoryCampaignContent.create(0, bat.getString(2), bat.getString(0));
                         ans = campaignContentService.create(co);
                         i++;
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -132,7 +134,7 @@ public class CreateCampaign extends HttpServlet {
                     int i = 0;
                     while (i < parameters.length() && ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
                         JSONArray bat = parameters.getJSONArray(i);
-                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(2), bat.getString(1), bat.getString(3));
+                        CampaignParameter co = factoryCampaignParameter.create(0, bat.getString(0), bat.getString(2), bat.getString(3));
                         ans = campaignParameterService.create(co);
                         i++;
                         if (ans.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
@@ -141,6 +143,26 @@ public class CreateCampaign extends HttpServlet {
                              */
                             logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Update Campaign Parameter : " + co.getCampaign() + ", " + co.getValue(), request);
                         }
+                    }
+                }
+
+                if (label != null) {
+                    JSONArray labels = new JSONArray(label);
+                    ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
+                    IFactoryCampaignLabel factoryCampaignLabel = appContext.getBean(IFactoryCampaignLabel.class);
+                    ArrayList<CampaignLabel> arr = new ArrayList<>();
+                    for (int i = 0; i < labels.length(); i++) {
+                        JSONArray bat = labels.getJSONArray(i);
+                        CampaignLabel co = factoryCampaignLabel.create(0, bat.getString(0), Integer.valueOf(bat.getString(2)), request.getRemoteUser(), null, request.getRemoteUser(), null);
+                        arr.add(co);
+                    }
+
+                    finalAnswer = campaignLabelService.compareListAndUpdateInsertDeleteElements(name, arr);
+                    if (finalAnswer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                        /**
+                         * Adding Log entry.
+                         */
+                        logEventService.createForPrivateCalls("/CreateCampaign", "CREATE", "Create Campaign Label : " + camp.getCampaign(), request);
                     }
                 }
 
