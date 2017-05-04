@@ -164,10 +164,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     createStepList(json, stepList, step, data.hasPermissionsUpdate);
                     var inheritedProperties = drawInheritedProperty(data.inheritedProp);
 
-                    listenEnterKeypressWhenFocusingOnDescription();
-                    setPlaceholderAction();
-                    setPlaceholderControl();
-
                     var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
                     var objectsPromise = loadApplicationObject(data);
 
@@ -291,7 +287,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
-                        drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
 
                         // Restore the saveScript button status
@@ -440,7 +435,6 @@ function addActionAndFocus(action) {
         listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
         autocompleteAllFields();
-        setPlaceholderAction();
     });
 }
 
@@ -573,18 +567,25 @@ function saveScript() {
 
 }
 
-function drawProperty(property, testcaseinfo, canUpdate) {
+function drawPropertyList(property, index) {
+    var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
+    $(htmlElement).append($("<a></a>").attr("style", "padding:0px; color: #333").attr("href", "#propertyLine" + property).text(property));
+    $("#propList").append(htmlElement);
+}
+
+function drawProperty(property, testcaseinfo, canUpdate, index) {
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
+    selectType.attr("name", "propertyType");
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true);
-    var deleteBtn = $("<button class='col-lg-6 btn btn-danger btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
-    var moreBtn = $("<button class='col-lg-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+    var deleteBtn = $("<button class='btn btn-danger add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-trash"));
+    var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
 
-    var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
+    var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
-    var valueInput = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value1);
-    var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
+    var valueInput = $("<textarea name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var value2Input = $("<textarea name='propertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
     var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "'>").addClass("form-control input-sm").val(property.retryNb);
@@ -605,26 +606,26 @@ function drawProperty(property, testcaseinfo, canUpdate) {
     retryPeriodInput.prop("readonly", !canUpdate);
 
     var content = $("<div class='row property list-group-item'></div>");
-    var props = $("<div class='col-sm-11'></div>");
+    var props = $("<div class='col-sm-11' name='propertyLine' id='propertyLine" + property.property + "'></div>");
     var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
     var row1 = $("<div class='row' id='masterProp' name='masterProp' style='margin-top:10px;'></div>");
-    var row2 = $("<div class='row' style='display:none;'></div>");
+    var row2 = $("<div class='row' name='masterProp'></div>");
     var row3 = $("<div class='row' style='display:none;'></div>");
     var row4 = $("<div class='row' name='masterProp'></div>");
     var row5 = $("<div class='row'></div>");
-    var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
-    var description = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
+    var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
+    var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
     var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(testcaseinfo.countryList, property.country, !canUpdate));
     var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.val(property.type));
-    var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
-    var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
-    var value2 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
-    var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
-    var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
-    var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
-    var retryNb = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
-    var retryPeriod = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
+    var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
+    var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+    var value2 = $("<div class='col-sm-6 form-group' name='fieldValue2'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+    var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
+    var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+    var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
+    var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
+    var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
     var selectAllBtn = $("<button></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
         country.find("input[type='checkbox']").prop('checked', true).trigger("change");
@@ -667,6 +668,7 @@ function drawProperty(property, testcaseinfo, canUpdate) {
 
     selectType.change(function () {
         property.type = $(this).val();
+        setPlaceholderProperty($(this).parents(".property"));
     });
 
     selectDB.change(function () {
@@ -703,19 +705,20 @@ function drawProperty(property, testcaseinfo, canUpdate) {
 
     row1.data("property", property);
     row1.append(propertyName);
-    row1.append(type);
-    row1.append(value);
+    row1.append(description);
     props.append(row1);
 
     row4.append(btnRow);
     row4.append(country);
     props.append(row4);
 
-    row2.append(description);
+    row2.append(type);
+    row2.append(db);
+    row2.append(value);
     row2.append(value2);
     props.append(row2);
 
-    row3.append(db);
+
     row3.append(length);
     row3.append(rowLimit);
     row3.append(nature);
@@ -727,6 +730,7 @@ function drawProperty(property, testcaseinfo, canUpdate) {
 
     content.append(props).append(right);
     table.append(content);
+    return props;
 }
 
 function drawInheritedProperty(propList) {
@@ -734,6 +738,7 @@ function drawInheritedProperty(propList) {
     var propertyArray = [];
 
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true).attr("disabled", true);
+    selectType.attr("name", "inheritPropertyType");
     var selectDB = getSelectInvariant("PROPERTYDATABASE", false, true).attr("disabled", true);
     var selectNature = getSelectInvariant("PROPERTYNATURE", false, true).attr("disabled", true);
     var table = $("#inheritedPropPanel");
@@ -745,39 +750,39 @@ function drawInheritedProperty(propList) {
         var test = property.fromTest;
         var testcase = property.fromTestCase;
 
-        var moreBtn = $("<button class='col-sm-6 btn btn-default btn-sm'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
-        var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='col-sm-6 btn btn-primary btn-sm'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
+        var moreBtn = $("<button class='btn btn-default add-btn'></button>").append($("<span></span>").addClass("glyphicon glyphicon-chevron-down"));
+        var editBtn = $("<a href='./TestCaseScript.jsp?test=" + test + "&testcase=" + testcase + "&property=" + property.property + "' class='btn btn-primary add-btn'></a>").append($("<span></span>").addClass("glyphicon glyphicon-pencil"));
 
-        var propertyInput = $("<input id='propName' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.property);
+        var propertyInput = $("<input id='propName' name='propName' style='width: 100%; font-size: 16px; font-weight: 600;' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.property);
         var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.description);
-        var valueInput = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value1);
-        var value2Input = $("<textarea rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value2);
+        var valueInput = $("<pre id='inheritPropertyValue" + index + "' style='min-height:150px'  rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").text(property.value1);
+        var value2Input = $("<textarea name='inheritPropertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "' readonly='readonly'></textarea>").addClass("form-control input-sm").val(property.value2);
         var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.length);
         var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.rowLimit);
         var retryNbInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryNb") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryNb);
         var retryPeriodInput = $("<input placeholder='" + doc.getDocLabel("testcasecountryproperties", "RetryPeriod") + "' readonly='readonly'>").addClass("form-control input-sm").val(property.retryPeriod);
 
         var content = $("<div class='row property list-group-item disabled'></div>");
-        var props = $("<div class='col-sm-11'></div>");
+        var props = $("<div class='col-sm-11' name='inheritPropertyLine' id='inheritPropertyLine" + property.property + "'></div>");
         var right = $("<div class='col-sm-1 propertyButtons'></div>");
 
         var row1 = $("<div class='row' id='masterProp' name='masterProp' style='margin-top:10px;'></div>");
-        var row2 = $("<div class='row' style='display:none;'></div>");
+        var row2 = $("<div class='row' name='masterProp'></div>");
         var row3 = $("<div class='row' style='display:none;'></div>");
         var row4 = $("<div class='row' name='masterProp'></div>");
         var row5 = $("<div class='row'></div>");
-        var propertyName = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "property_field"))).append(propertyInput);
-        var description = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "description_field"))).append(descriptionInput);
+        var propertyName = $("<div class='col-sm-4 form-group'></div>").append(propertyInput);
+        var description = $("<div class='col-sm-8 form-group'></div>").append(descriptionInput);
         var country = $("<div class='col-sm-10'></div>").append(getTestCaseCountry(property.country, property.country, true));
         var type = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "type_field"))).append(selectType.clone().val(property.type));
-        var db = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.clone().val(property.database));
-        var value = $("<div class='col-sm-8 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
-        var value2 = $("<div class='col-sm-6 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
-        var length = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
-        var rowLimit = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
-        var nature = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.clone().val(property.nature));
-        var retryNb = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
-        var retryPeriod = $("<div class='col-sm-2 form-group'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
+        var db = $("<div class='col-sm-2 form-group' name='fieldDatabase'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "db_field"))).append(selectDB.val(property.database));
+        var value = $("<div class='col-sm-8 form-group' name='fieldValue1'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value1_field"))).append(valueInput);
+        var value2 = $("<div class='col-sm-6 form-group' name='fieldValue2'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "value2_field"))).append(value2Input);
+        var length = $("<div class='col-sm-2 form-group' name='fieldLength'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "length_field"))).append(lengthInput);
+        var rowLimit = $("<div class='col-sm-2 form-group' name='fieldRowLimit'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "rowlimit_field"))).append(rowLimitInput);
+        var nature = $("<div class='col-sm-2 form-group' name='fieldNature'></div>").append($("<label></label>").text(doc.getDocLabel("page_testcasescript", "nature_field"))).append(selectNature.val(property.nature));
+        var retryNb = $("<div class='col-sm-2 form-group' name='fieldRetryNb'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryNb"))).append(retryNbInput);
+        var retryPeriod = $("<div class='col-sm-2 form-group' name='fieldRetryPeriod'></div>").append($("<label></label>").text(doc.getDocLabel("testcasecountryproperties", "RetryPeriod"))).append(retryPeriodInput);
 
 
         var selectAllBtn = $("<button disabled></button>").addClass("btn btn-default btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-check")).click(function () {
@@ -801,15 +806,16 @@ function drawInheritedProperty(propList) {
 
         row1.data("property", property);
         row1.append(propertyName);
-        row1.append(type);
-        row1.append(value);
+        row1.append(description);
         props.append(row1);
 
         row4.append(btnRow);
         row4.append(country);
         props.append(row4);
 
-        row2.append(description);
+        row2.append(type);
+        row2.append(db);
+        row2.append(value);
         row2.append(value2);
         props.append(row2);
 
@@ -826,6 +832,10 @@ function drawInheritedProperty(propList) {
 
         content.append(props).append(right);
         table.append(content);
+
+        var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
+        $(htmlElement).append($("<a></a>").attr("style", "padding:0px; color: #333").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
+        $("#inheritPropList").append(htmlElement);
     }
 
     sortProperties("#inheritedPropPanel");
@@ -836,6 +846,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
 
     return new Promise(function (resolve, reject) {
         var array = [];
+        var propertyList = [];
 
         $.ajax({
             url: "GetPropertiesForTestCase",
@@ -847,7 +858,9 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     var property = data[index];
                     array.push(data[index].property);
                     property.toDelete = false;
-                    drawProperty(property, testcaseinfo, canUpdate);
+                    var prop = drawProperty(property, testcaseinfo, canUpdate, index);
+                    setPlaceholderProperty(prop);
+                    propertyList.push(property.property);
                 }
 
 
@@ -863,6 +876,11 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                             });
                         }
                     });
+                }
+
+                var propertyListUnique = Array.from(new Set(propertyList));
+                for (var index = 0; index < propertyListUnique.length; index++) {
+                    drawPropertyList(propertyListUnique[index], index);
                 }
 
                 resolve(array);
@@ -976,7 +994,9 @@ function addStep(event) {
         $('#description').focus();
     })
 
-    $(".sub-sub-item").on("click", function(){showImportStepDetail($(this))});
+    $(".sub-sub-item").on("click", function () {
+        showImportStepDetail($(this))
+    });
 
     $("#addStepConfirm").unbind("click").click(function (event) {
         setModif(true);
@@ -1091,42 +1111,42 @@ function loadLibraryStep(search) {
         data: {system: getUser().defaultSystem},
         async: true,
         success: function (data) {
-    var test = {};
+            var test = {};
 
-    for (var index = 0; index < data.testCaseStepList.length; index++) {
-        var step = data.testCaseStepList[index];
+            for (var index = 0; index < data.testCaseStepList.length; index++) {
+                var step = data.testCaseStepList[index];
 
-        if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
-            if (!test.hasOwnProperty(step.test)) {
-                $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
-                        .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+                if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
+                    if (!test.hasOwnProperty(step.test)) {
+                        $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
+                                .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
-                $("#lib").append(listGr);
+                        var listGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test);
+                        $("#lib").append(listGr);
 
-                test[step.test] = {content: listGr, testCase: {}};
+                        test[step.test] = {content: listGr, testCase: {}};
+                    }
+                    if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
+                        var listGrp = test[step.test].content;
+                        listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
+                                .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
+
+                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
+                        listGrp.append(listCaseGr);
+
+                        test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
+                    }
+                    var listCaseGrp = test[step.test].testCase[step.testCase].content;
+                    var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);
+                    listStepGrp.attr("onclick", "javascript:showImportStepDetail($(this))");
+                    listCaseGrp.append(listStepGrp);
+                    test[step.test].testCase[step.testCase].step[step.description] = listStepGrp;
+                }
             }
-            if ((!test[step.test].testCase.hasOwnProperty(step.testCase))) {
-                var listGrp = test[step.test].content;
-                listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
-                        .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
-
-                var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
-                listGrp.append(listCaseGr);
-
-                test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
-            }
-            var listCaseGrp = test[step.test].testCase[step.testCase].content;
-            var listStepGrp = $("<a></a>").addClass("list-group-item sub-sub-item").attr("href", "#").text(step.description).data("stepInfo", step);
-            listStepGrp.attr("onclick", "javascript:showImportStepDetail($(this))");
-            listCaseGrp.append(listStepGrp);
-            test[step.test].testCase[step.testCase].step[step.description] = listStepGrp;
-        }
-    }
 
             if (search != undefined && search != "") {
                 $('#lib').find("div").toggleClass('in');
-}
+            }
 
             $('.list-group-item').unbind("click").on('click', function () {
                 $('.glyphicon', this)
@@ -1747,6 +1767,9 @@ Action.prototype.draw = function (afterAction) {
     row.data("item", this);
     htmlElement.prepend(row);
 
+    setPlaceholderAction(htmlElement);
+    listenEnterKeypressWhenFocusingOnDescription(htmlElement);
+
     if (afterAction == undefined) {
         this.parentStep.stepActionContainer.append(htmlElement);
     } else {
@@ -1837,14 +1860,13 @@ Action.prototype.generateContent = function () {
     actionList.val(this.action);
     actionList.on("change", function () {
         obj.action = actionList.val();
-        setPlaceholderAction();
+        setPlaceholderAction($(this).parents(".action"));
     });
 
     forceExeStatusList = getSelectInvariant("ACTIONFORCEEXESTATUS", false, true).css("width", "100%");
     forceExeStatusList.val(this.forceExeStatus);
     forceExeStatusList.on("change", function () {
         obj.forceExeStatus = forceExeStatusList.val();
-//        setPlaceholderAction();
     });
 
     actionconditionoper = getSelectInvariant("ACTIONCONDITIONOPER", false, true).css("width", "100%");
@@ -1857,7 +1879,6 @@ Action.prototype.generateContent = function () {
             actionconditionval1.parent().show();
             actionconditionval2.parent().show();
         }
-//        setPlaceholderAction();
     });
     actionconditionoper.val(this.conditionOper).trigger("change");
 
@@ -2036,6 +2057,9 @@ Control.prototype.draw = function (afterControl) {
     htmlElement.append(btnGrp);
     htmlElement.data("item", this);
 
+    setPlaceholderControl(htmlElement);
+    listenEnterKeypressWhenFocusingOnDescription(htmlElement);
+
     if (afterControl == undefined) {
         this.parentAction.html.append(htmlElement);
     } else {
@@ -2120,7 +2144,7 @@ Control.prototype.generateContent = function () {
     controlList.css("width", "100%");
     controlList.on("change", function () {
         obj.control = controlList.val();
-        setPlaceholderControl();
+        setPlaceholderControl($(this).parents(".control"));
     });
 
     controlValueField.val(this.value1);
@@ -2215,8 +2239,8 @@ Control.prototype.getJsonData = function () {
  * focusing on description and clicking on enter
  * @returns {undefined}
  */
-function listenEnterKeypressWhenFocusingOnDescription() {
-    $("input[class='description form-control']").each(function (index, field) {
+function listenEnterKeypressWhenFocusingOnDescription(element) {
+    $(element).find("input[class='description form-control']").each(function (index, field) {
         $(field).off('keydown');
         $(field).on('keydown', function (e) {
             if (e.which === 13) {
@@ -2258,9 +2282,7 @@ function addControl(action, control) {
 
 function addControlAndFocus(oldAction, control) {
     $.when(addControl(oldAction, control)).then(function (action) {
-        listenEnterKeypressWhenFocusingOnDescription();
         $($(action.html[0]).find(".description")[0]).focus();
-        setPlaceholderControl();
         autocompleteAllFields();
     });
 }
@@ -2280,20 +2302,20 @@ var autocompleteAllFields, getTags, setTags;
     };
     //function accessible everywhere that has access to TagsToUse
     autocompleteAllFields = function (Tags, info, thistest, thistestcase) {
-        if (Tags != undefined) {
+        if (Tags !== undefined) {
             TagsToUse = Tags;
         }
-        if (info != undefined) {
+        if (info !== undefined) {
             tcInfo = info;
         }
-        if (thistest != undefined) {
+        if (thistest !== undefined) {
             test = thistest;
         }
-        if (thistestcase != undefined) {
+        if (thistestcase !== undefined) {
             testcase = thistestcase;
         }
 
-        autocompleteVariable("#propTable .property .row:nth-child(1) textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
+        autocompleteVariable("#propTable .property .row textarea, div.step-action .content div.fieldRow div:nth-child(n+2) input, #stepHeader .step .content .fieldRow div:nth-child(n+2) input, #conditionVal1, #conditionVal2", TagsToUse);
 
         $("div.step-action .content div.fieldRow div:nth-child(n+2) input").each(function (i, e) {
             $(e).unbind("input").on("input", function (ev) {
@@ -2342,7 +2364,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     } else if (typeNotExist == "property") {
                         //TODO better way to add property
-                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProp').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         } else {
@@ -2413,7 +2435,8 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
             toDelete: false
         };
 
-        drawProperty(newProperty, info, true);
+        var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
+        setPlaceholderProperty(prop);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2432,7 +2455,6 @@ function editPropertiesModalSaveHandler() {
         }
         propArr.push($(properties[i]).data("property"));
     }
-    //tàtà
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
         $.ajax({
@@ -2484,7 +2506,7 @@ function editPropertiesModalSaveHandler() {
     }
 }
 
-function setPlaceholderAction() {
+function setPlaceholderAction(actionElement) {
     /**
      * Todo : GetFromDatabase
      */
@@ -2551,7 +2573,7 @@ function setPlaceholderAction() {
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
 
-    $('select#actionSelect option:selected').each(function (i, e) {
+    $(actionElement).find('select#actionSelect option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
                 if (placeHolders[i].object !== null) {
@@ -2571,7 +2593,7 @@ function setPlaceholderAction() {
     });
 }
 
-function setPlaceholderControl() {
+function setPlaceholderControl(controlElement) {
     /**
      * Todo : GetFromDatabase
      */
@@ -2646,7 +2668,7 @@ function setPlaceholderControl() {
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
 
-    $('select#controlSelect option:selected').each(function (i, e) {
+    $(controlElement).find('select#controlSelect option:selected').each(function (i, e) {
 
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
@@ -2672,44 +2694,238 @@ function setPlaceholderControl() {
     });
 }
 
-function setPlaceholderProperty() {
+function setPlaceholderProperty(propertyElement) {
     /**
      * Todo : GetFromDatabase
+     * Translate for FR
      */
     var placeHoldersList = {"fr": [
-            {"type": "text", "database": null, "length": null, "rowLimit": null, "nature": null},
-            {"type": "executeSql", "database": null, "length": null, "rowLimit": null, "nature": null}
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
         ], "en": [
-            {"type": "text", "database": null, "length": null, "rowLimit": null, "nature": null},
-            {"type": "executeSql", "database": null, "length": null, "rowLimit": null, "nature": null}
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
         ]};
 
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
 
-
-    $('div[class="rowProperty form-inline"] option:selected').each(function (i, e) {
+    $(propertyElement).find('select[name="propertyType"] option:selected').each(function (i, e) {
         for (var i = 0; i < placeHolders.length; i++) {
             if (placeHolders[i].type === e.value) {
-                if (placeHolders[i].controlValue !== null) {
-                    $(e).parent().parent().next().show();
-                    $(e).parent().parent().next().find('input').prop("placeholder", placeHolders[i].controlValue);
+                if (placeHolders[i].database !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldDatabase']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldDatabase'] label").html(placeHolders[i].database);
                 } else {
-                    $(e).parent().parent().next().hide();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldDatabase']").hide();
                 }
-                if (placeHolders[i].controlProp !== null) {
-                    $(e).parent().parent().next().next().show();
-                    $(e).parent().parent().next().next().find('input').prop("placeholder", placeHolders[i].controlProp);
+                if (placeHolders[i].value1 !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1'] label").html(placeHolders[i].value1);
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
+
+                    //Highlight envelop on modal loading
+                    //var langTools = ace.require("ace/ext/language_tools");
+                    //var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+                    //editor.setTheme("ace/theme/chrome");
+                    //editor.getSession().setMode(placeHolders[i].value1EditorMode);
+                    
+//                    var rhymeCompleter = {
+//                        getCompletions: function (editor, session, pos, prefix, callback) {
+//                            autocompleteField(editor, callback);
+//                        }
+//                    }; 
+                    
+                    //changeCompleter(langTools,rhymeCompleter);
+                    //editor.completers = [rhymeCompleter];        
+                    //editor.setOptions({
+                    //    maxLines: 10,
+                    //    enableBasicAutocompletion: true
+                    //});        
+                            
+// TODO : Below is some try to autocomplete
+// // TODO : Clean that comment
+//                    editor.commands.on("afterExec", function (element) {
+//                        console.log(element.command.name);
+//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g))) {
+//                            editor.execCommand("startAutocomplete");
+//                        }
+//                        console.log(editor.getSession().getDocument().getValue().indexOf("%property."));
+//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().indexOf("%property.")>0) {
+//                            console.log("true");
+//                            editor.execCommand("startAutocomplete");
+//                        }
+//                    });
+//                    
+// TODO : Below is some try to autocomplete   
+// // TODO : Clean that comment                
+//                    editor.commands.addCommand({
+//                        name: "cerberusAutocompletion",
+//                        bindKey: {win: "%", mac: "%"},
+//                        exec: function (editor) {
+//                            //autocompleteVariable;
+//                            autocompleteVariable($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"));
+//                        }
+//                    })
+//                    editor.execCommand("cerberusAutocompletion")
+                    //editor.execCommand("autocomplete");
+
                 } else {
-                    $(e).parent().parent().next().next().hide();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
-                if (placeHolders[i].fatal !== null) {
-                    $(e).parent().parent().next().next().next().show();
+                if (placeHolders[i].value2 !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue2']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue2'] label").html(placeHolders[i].value2);
                 } else {
-                    $(e).parent().parent().next().next().next().hide();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldValue2']").hide();
+                }
+                if (placeHolders[i].length !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldLength']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldLength'] label").html(placeHolders[i].length);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldLength']").hide();
+                }
+                if (placeHolders[i].rowLimit !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRowLimit']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRowLimit'] label").html(placeHolders[i].rowLimit);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRowLimit']").hide();
+                }
+                if (placeHolders[i].nature !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldNature']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldNature'] label").html(placeHolders[i].nature);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldNature']").hide();
+                }
+                if (placeHolders[i].retry !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb'] label").html(placeHolders[i].retry);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryNb']").hide();
+                }
+                if (placeHolders[i].period !== null) {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").show();
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod'] label").html(placeHolders[i].period);
+                } else {
+                    $(e).parents("div[name='propertyLine']").find("div[name='fieldRetryPeriod']").hide();
                 }
             }
         }
     });
 
 }
+
+// Below is some try for autocompletion
+// TODO : Clean that comment
+
+//function split(val, separator) {
+//        return val.split(new RegExp(separator + "(?!.*" + separator + ")"))
+//    }
+//
+//    function extractLast(term, separator) {
+//        return split(term, separator).pop();
+//    }
+//
+//    function extractAllButLast(term, separator) {
+//        var last = split(term, separator).pop();
+//        var index = term.lastIndexOf(last);
+//        return term.substring(0, index);
+//    }
+//    
+//function autocompleteField(editor, callback){
+//    callback(null, []);
+//                                
+//                            
+//                            var wordList = [{"word":"property.","freq":24,"score":300,"flags":"bc","syllables":"0"},
+//                        {"word":"object.","freq":24,"score":300,"flags":"bc","syllables":"0"},
+//                        {"word":"system.","freq":24,"score":300,"flags":"bc","syllables":"0"}];
+//                        
+//                        
+//                callback(null, wordList.map(function (ea) {
+//                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"
+////                                               , completer: {
+////                            insertMatch: function (editor, data) {
+////                                editor.session.insert(editor.getCursorPosition(), data.value);
+////                                editor.execCommand("startAutocomplete");
+////                                console.log("Item clicked: ", data.value);
+////
+////                            }
+//                       //}
+//                       };
+//                                       }));
+//                              
+//                            var TagsToUse = [];
+//                            //var betweenPercent = editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g));       
+//                            var editorValue = editor.getSession().getDocument().getValue()
+//                            
+//                    //Get the part of the string we want (between the last % before our cursor and the cursor)
+//                    var selectionStart = editor.getSelectionRange().start.column;
+//                    var stringToAnalyse = editorValue.substring(0, selectionStart);
+//                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
+//                    console.log("identifier" + editor.getSelectionRange().start.column);
+//                    //If there is a pair number of % it means there is no open variable that needs to be autocompleted
+//                    if ((editorValue.match(/%/g) || []).length % 2 > 0) {
+//                        //Start Iterating on Tags
+//                        var tag = 0;
+//                        var found = false;
+//                        var Tags = getTags();
+//                        var wordList2 = [];
+//                        
+//                        callback(null, []);
+//                        
+//                        
+//                        while (tag < Tags.length && !found) {
+//                            //If We find the separator, then we filter with the already written part
+//                            if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
+//                                this.currentIndexTag = tag;
+//                                var arrayToDisplay = $.ui.autocomplete.filter(
+//                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex));
+//                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
+//                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
+//                                }
+//                                
+//                                wordList2.push({"word":"toto"+tag,"freq":24,"score":300,"flags":"bc","syllables":"0"});
+//                                found = true;
+//                            }
+//                            tag++;
+//                        }
+//                        
+//                        callback(null, wordList2.map(function (ea) {
+//                    console.log("return");
+//                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"};
+//                                       }));
+//                    }
+//                
+//}
+//
+//function changeCompleter(langTools, rhymeCompleter){
+//    langTools.completers = [];
+//    langTools.addCompleter(rhymeCompleter);
+//}

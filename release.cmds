@@ -4,9 +4,10 @@
 # --------------
 #
 #   1. Have Git 2.7+ installed
-#   2. Be able to push to [Cerberus Testing's repositories](https://github.com/cerberustesting)
-#   3. Have necessary credentials to push to Sourceforge server by
-#       Filling your Maven settings file with the following information:
+#   2. Have Maven 3.3+ installed
+#   3. Be able to push, by using SSH, to [Cerberus Testing's repositories](https://github.com/cerberustesting)
+#   4. Be able to push to [Cerberus Testing's Sourceforge space](https://sourceforge.net/projects/cerberus-source)
+#      To do that, fill your Maven's settings file with the following information:
 #       <profiles>
 #           <profile>
 #               <id>default</id>
@@ -25,11 +26,9 @@
 #       Where:
 #           - USERNAME is your Cerberus' Sourceforge username
 #           - PASSWORD is your Cerberus' Sourceforge password
-#
-#       Note that your Maven settings file is commonly located at ~/.m2/settings.xml.
-#       Change the MAVEN_SETTINGS_PATH variable below if this location is not yours.
-#   4. Download the [runcmds](https://github.com/abourdon/runcmds) command execution tool
-#   5. If you have not read it yet, read the runcmds's README file :-)
+#       Note that user Maven's settings file is usually located at ~/.m2/settings.xml
+#   5. Have the [runcmds](https://github.com/abourdon/runcmds) command execution tool installed
+#   6. If you have not read it yet, read the runcmds's README file :-)
 #
 # How to run it
 # -------------

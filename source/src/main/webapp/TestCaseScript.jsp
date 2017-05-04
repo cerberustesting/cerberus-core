@@ -30,6 +30,7 @@
         <script type="text/javascript" src="js/pages/transversalobject/ApplicationObject.js"></script>
         <script type="text/javascript" src="js/pages/transversalobject/TestCase.js"></script>
         <script type="text/javascript" src="js/pages/TestCaseScript.js"></script>
+        <script type="text/javascript" src="dependencies/Ace-1.2.6/ext-language_tools.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/TestCaseScript.css">
     </head>
     <body>
@@ -171,23 +172,46 @@
                             </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabProperties">
-                            <div id="propertiesModal">
-                                <div class="property-table">
-                                    <div class="" id="propPanelWrapper">
-                                        <div class="panel-body collapse in" id="propertiesPanel">
-                                            <div id="propTable" class="list-group">
+                            <nav class="col-lg-3" id="nav-property" style="z-index:1;">
+                                <div id="list-wrapper-prop" style="top:107px;">
+                                    <div id="propListWrapper">
+                                        <!--<h4>Steps</h4>-->
+                                        <ul class="list-group property-list side-item nav nav-pills" id="propList" style="max-height: 600px;overflow-y: auto"></ul>
+                                    </div>
+                                    <div id="propButton">
+                                        <!--<h4>Actions</h4>-->
+                                        <button class="btn btn-warning btn-block marginTop25" id="addProp">Add Property</button>
+                                    </div>
+                                </div>
+                            </nav>
+                            <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
+                                <div id="propertiesModal">
+                                    <div class="property-table">
+                                        <div class="" id="propPanelWrapper">
+                                            <div class="panel-body collapse in" id="propertiesPanel">
+                                                <div id="propTable" class="list-group">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <button class="btn btn-default" id="addProperty" disabled>Add Property</button>
                                 </div>
                             </div>
                         </div>
                         <div class="center marginTop25 tab-pane fade" id="tabInheritedProperties">
-                            <div id="propertiesModal">
-                                <div class="" id="inheritedPropPanelWrapper">
-                                    <div class="panel-body collapse" id="inheritedPropertiesPanel">
-                                        <div id="inheritedPropPanel" class="list-group">
+                            <nav class="col-lg-3" id="nav-property" style="z-index:1;">
+                                <div id="list-wrapper-prop" style="top:107px;">
+                                    <div id="inheritPropListWrapper">
+                                        <!--<h4>Steps</h4>-->
+                                        <ul class="list-group property-list side-item nav nav-pills" id="inheritPropList" style="max-height: 600px;overflow-y: auto"></ul>
+                                    </div>
+                                </div>
+                            </nav>
+                            <div class="col-lg-9 well marginTop5" id="contentWrapperProperty" style="min-height: 200px;max-height: 600px;overflow-y: auto">
+                                <div id="propertiesModal">
+                                    <div class="" id="inheritedPropPanelWrapper">
+                                        <div class="panel-body collapse" id="inheritedPropertiesPanel">
+                                            <div id="inheritedPropPanel" class="list-group">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

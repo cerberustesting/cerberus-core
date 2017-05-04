@@ -2214,7 +2214,7 @@ function autocompleteVariable(identifier, Tags) {
         var index = term.lastIndexOf(last);
         return term.substring(0, index);
     }
-
+console.log($(identifier));
     $(identifier)
             // don't navigate away from the field on tab when selecting an item
             .on("keydown", function (event) {
