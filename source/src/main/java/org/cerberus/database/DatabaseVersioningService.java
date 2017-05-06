@@ -8714,6 +8714,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `DateModif` TIMESTAMP NOT NULL DEFAULT '1970-01-01 01:01:01' ;");
         SQLInstruction.add(SQLS.toString());
 
+        // Removed log table.
+        //-- ------------------------ 1146
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `log`; ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
