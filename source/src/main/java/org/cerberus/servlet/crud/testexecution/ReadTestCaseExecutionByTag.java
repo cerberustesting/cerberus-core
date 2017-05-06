@@ -29,15 +29,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Level;
 import org.cerberus.crud.entity.Invariant;
 import org.cerberus.crud.entity.TestCaseExecution;
-import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
@@ -63,11 +63,14 @@ import org.springframework.web.util.JavaScriptUtils;
  *
  * @author bcivel
  */
+@WebServlet(name = "ReadTestCaseExecutionByTag", urlPatterns = {"/ReadTestCaseExecutionByTag"})
 public class ReadTestCaseExecutionByTag extends HttpServlet {
 
     private ITestCaseExecutionService testCaseExecutionService;
     private ITestCaseExecutionInQueueService testCaseExecutionInQueueService;
     private ITestCaseLabelService testCaseLabelService;
+
+    private static final Logger LOG = Logger.getLogger("ReadTestCaseExecutionByTag");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -124,11 +127,11 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             response.getWriter().print(jsonResponse.toString());
 
         } catch (ParseException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
         } catch (CerberusException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecutionByTag.class.getName()).log(Level.ERROR, null, ex);
         }
     }
 
@@ -182,7 +185,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
         }
 
         return statusList;
@@ -197,7 +200,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 countryList.put(country.getValue(), ParameterParserUtil.parseStringParam(request.getParameter(country.getValue()), "off"));
             }
         } catch (JSONException ex) {
-            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
         }
 
         return countryList;
@@ -272,7 +275,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 testCaseExecutionTable.put("iTotalDisplayRecords", ttc.size());
                 testCaseExecutionTable.put("tableColumns", treeMap.values());
             } catch (JSONException ex) {
-                Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
             }
         }
         return testCaseExecutionTable;
@@ -283,6 +286,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         Map<String, JSONObject> axisMap = new HashMap<String, JSONObject>();
         String globalStart = "";
         String globalEnd = "";
+        long globalStartL = 0;
+        long globalEndL = 0;
         String globalStatus = "Finished";
 
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
@@ -316,12 +321,14 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 axisMap.put(key, function);
             }
             if (testCaseExecution.getStart() != 0) {
-                if ((globalStart.isEmpty()) || (globalStart.compareTo(String.valueOf(testCaseExecution.getStart())) > 0)) {
+                if ((globalStartL == 0) || (globalStartL > testCaseExecution.getStart())) {
+                    globalStartL = testCaseExecution.getStart();
                     globalStart = String.valueOf(new Date(testCaseExecution.getStart()));
                 }
             }
             if (!testCaseExecution.getControlStatus().equalsIgnoreCase("PE") && testCaseExecution.getEnd() != 0) {
-                if ((globalEnd.isEmpty()) || (globalEnd.compareTo(String.valueOf(testCaseExecution.getEnd())) < 0)) {
+                if ((globalEndL == 0) || (globalEndL < testCaseExecution.getEnd())) {
+                    globalEndL = testCaseExecution.getEnd();
                     globalEnd = String.valueOf(new Date(testCaseExecution.getEnd()));
                 }
             }
@@ -332,8 +339,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
 
         jsonResult.put("axis", axisMap.values());
         jsonResult.put("tag", tag);
-        jsonResult.put("globalEnd", globalEnd.toString());
-        jsonResult.put("globalStart", globalStart.toString());
+        jsonResult.put("globalEnd", globalEnd);
+        jsonResult.put("globalStart", globalStart);
         jsonResult.put("globalStatus", globalStatus);
         return jsonResult;
     }
