@@ -80,8 +80,8 @@ public class ReadTestBattery extends HttpServlet {
             if (request.getParameter("columnName") != null) {
                 answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
                 jsonResponse = (JSONObject) answer.getItem();
-            } else if (request.getParameter("param") != null) {
-                answer = findBatteryByKey(request.getParameter("param"), true, appContext, request);
+            } else if (request.getParameter("testbattery") != null) {
+                answer = findBatteryByKey(request.getParameter("testbattery"), true, appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else {
                 answer = findTestBatteryList(appContext, request);

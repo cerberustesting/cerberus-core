@@ -101,7 +101,7 @@ function renderOptionsForCampaign(data) {
 
 function renderOptionsForCampaign_Battery(id) {
     var doc = new Doc();
-    var data = getSelectTestBattery(false, true);
+    var data = getSelectTestBattery(true, true);
     $("#" + id + "_wrapper #addBatteryTestcampaign").remove();
     var contentToAdd =
             "<div class='marginBottom10 form-inline' id='addBatteryTestcampaign'>" +
@@ -149,7 +149,7 @@ function renderOptionsForCampaign_Label(id) {
             "</select>" +
             "</div>" +
             "<div class='form-group'>" +
-            "<button type='button' id='addLabelTestcampaignButton' class='btn btn-primary' name='ButtonEdit' onclick='addLabelEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
+            "<button type='button' id='addLabelTestcampaignButton' disabled='true' class='btn btn-primary' name='ButtonEdit' onclick='addLabelEntryClick(\"" + id + "\")'>" + doc.getDocLabel("page_testcampaign", "add_btn") + "</button>" +
             "</div>" +
             "</div>";
     $("#" + id + "_wrapper div#" + id + "_length").before(contentToAdd);
@@ -206,13 +206,36 @@ function viewEntryClick(param) {
     //Store the campaign name, we need it if we want to add him a battery test
     $("#campaignKey").val(param);
 
-    if ($("#viewTestcampaignModal #viewTestcampaignsTable_wrapper").length > 0) {
-        $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().destroy();
-        $("#viewTestcampaignModal #viewTestcampaignsTable").empty();
-    }
-    //configure and create the dataTable
-    var configurations = new TableConfigurationsServerSide("viewTestcampaignsTable", "ReadTestBatteryContent?campaign=" + param, "contentTable", aoColumnsFunc_TestCase(), [0, 'asc']);
-    createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
+
+
+    var jqxhr = $.getJSON("ReadCampaign?testcase=true", "campaign=" + param);
+    $.when(jqxhr).then(function (data) {
+        var obj = data["contentTable"];
+
+        /* TESTCASE */
+
+        var array = [];
+
+        $.each(obj.testcase, function (e) {
+            array.push(
+                    [obj.testcase[e].test, obj.testcase[e].testCase, obj.testcase[e].application, obj.testcase[e].description, obj.testcase[e].status]
+                    );
+        });
+
+        if ($("#viewTestcampaignModal #viewTestcampaignsTable_wrapper").length > 0) {
+            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().clear();
+            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().rows.add(array).draw();
+
+//            $("#viewTestcampaignModal #viewTestcampaignsTable").DataTable().destroy();
+//            $("#viewTestcampaignModal #viewTestcampaignsTable").empty();
+        } else {
+            //configure and create the dataTable
+//    var configurations = new TableConfigurationsServerSide("viewTestcampaignsTable", "ReadCampaign?testcase=true&campaign=" + param, "contentTable.testcase", aoColumnsFunc_TestCase(), [0, 'asc']);
+            var configurations = new TableConfigurationsClientSide("viewTestcampaignsTable", array, aoColumnsFunc_TestCase(), true);
+            createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
+        }
+
+    });
 
     var formEdit = $('#viewTestcampaignModal');
 
@@ -591,6 +614,7 @@ function updateSelectLabel(id) {
                     "<option value='" + data.find("option")[i].value + "'>" + data.find("option")[i].text + "</option>";
     }
     $("#" + id + "_wrapper #labelSelect2").append(optionList);
+    $("#" + id + '_wrapper #addlabelTestcampaignButton').prop("disabled", true);
     if ($("#" + id + '_wrapper #labelSelect2 option').size() <= 0) {
         $("#" + id + '_wrapper #labelSelect2').parent().hide();
         $("#" + id + '_wrapper #addlabelTestcampaignButton').prop("disabled", true);
@@ -783,18 +807,16 @@ function aoColumnsFunc_Parameter(tableId) {
 function aoColumnsFunc_TestCase() {
     var doc = new Doc();
     var aoColumns = [
+        {"data": "0", "sName": "tbc.Test", "title": doc.getDocLabel("test", "Test")},
         {
-            "data": "testbattery",
-            "sName": "tbc.testbattery",
-            "title": doc.getDocLabel("page_testcampaign", "testbattery_col")
-        },
-        {"data": "test", "sName": "tbc.Test", "title": doc.getDocLabel("page_testcampaign", "test_col")},
-        {
-            "data": "testCase", "sName": "tbc.Testcase", "title": doc.getDocLabel("page_testcampaign", "testcase_col"),
+            "data": "1", "sName": "tbc.Testcase", "title": doc.getDocLabel("testcase", "TestCase"),
             "mRender": function (data, type, obj) {
-                return "<a target=\"_blank\" href='TestCaseScript.jsp?test=" + obj["test"] + "&testcase=" + obj["testCase"] + "'>" + obj["testCase"] + "</a>";
+                return "<a target=\"_blank\" href='TestCaseScript.jsp?test=" + obj[0] + "&testcase=" + obj[1] + "'>" + obj[1] + "</a>";
             }
-        }
+        },
+        {"data": "2", "sName": "tbc.application", "title": doc.getDocLabel("application", "Application")},
+        {"data": "3", "sName": "tbc.description", "title": doc.getDocLabel("testcase", "Description")},
+        {"data": "4", "sName": "tec.status", "title": doc.getDocLabel("testcase", "Status")}
     ];
     return aoColumns;
 }

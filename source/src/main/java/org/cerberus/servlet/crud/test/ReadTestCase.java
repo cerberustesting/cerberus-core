@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.CampaignContent;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseCountry;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -43,7 +41,6 @@ import org.cerberus.crud.entity.TestCaseLabel;
 import org.cerberus.crud.entity.TestCaseStep;
 import org.cerberus.crud.entity.TestCaseStepAction;
 import org.cerberus.crud.entity.TestCaseStepActionControl;
-import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ITestCaseCountryPropertiesService;
 import org.cerberus.crud.service.ITestCaseCountryService;
 import org.cerberus.crud.service.ITestCaseLabelService;
@@ -51,12 +48,7 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.crud.service.ITestCaseStepActionControlService;
 import org.cerberus.crud.service.ITestCaseStepActionService;
 import org.cerberus.crud.service.ITestCaseStepService;
-import org.cerberus.crud.service.impl.TestCaseCountryService;
-import org.cerberus.crud.service.impl.TestCaseLabelService;
-import org.cerberus.crud.service.impl.TestCaseService;
-import org.cerberus.crud.service.impl.TestCaseStepActionControlService;
-import org.cerberus.crud.service.impl.TestCaseStepActionService;
-import org.cerberus.crud.service.impl.TestCaseStepService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -138,7 +130,7 @@ public class ReadTestCase extends HttpServlet {
                 answer = findTestCaseWithStep(appContext, request, test, testCase);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(test) && getMaxTC) {
-                testCaseService = appContext.getBean(TestCaseService.class);
+                testCaseService = appContext.getBean(ITestCaseService.class);
                 String max = testCaseService.getMaxNumberTestCase(test);
                 if (max == null) {
                     max = "0";
@@ -146,7 +138,7 @@ public class ReadTestCase extends HttpServlet {
                 jsonResponse.put("maxTestCase", Integer.valueOf(max));
                 answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
             } else if (filter) {
-                answer = findTestCaseByVariousCriteria(appContext, request);
+                answer = findTestCaseByVarious(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             } else if (!Strings.isNullOrEmpty(campaign)) {
                 answer = findTestCaseByCampaign(appContext, campaign);
@@ -216,8 +208,8 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        testCaseService = appContext.getBean(TestCaseService.class);
-        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
         testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
@@ -317,9 +309,9 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        testCaseService = appContext.getBean(TestCaseService.class);
-        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-        testCaseLabelService = appContext.getBean(TestCaseLabelService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+        testCaseLabelService = appContext.getBean(ITestCaseLabelService.class);
 
         //finds the project
         AnswerItem answerTestCase = testCaseService.readByKey(test, testCase);
@@ -357,7 +349,7 @@ public class ReadTestCase extends HttpServlet {
         return item;
     }
 
-    private AnswerItem findTestCaseByVariousCriteria(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
+    private AnswerItem findTestCaseByVarious(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
         JSONArray dataArray = new JSONArray();
@@ -373,10 +365,11 @@ public class ReadTestCase extends HttpServlet {
         String[] priority = request.getParameterValues("priority");
         String[] group = request.getParameterValues("group");
         String[] status = request.getParameterValues("status");
+        String[] labelid = request.getParameterValues("labelid");
         int length = ParameterParserUtil.parseIntegerParam(request.getParameter("length"), -1);
 
-        testCaseService = appContext.getBean(TestCaseService.class);
-        AnswerList answer = testCaseService.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status, length);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        AnswerList answer = testCaseService.readByVarious(test, idProject, app, creator, implementer, system, testBattery, campaign, labelid, priority, group, status, length);
 
         if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
             for (TestCase tc : (List<TestCase>) answer.getDataList()) {
@@ -395,22 +388,14 @@ public class ReadTestCase extends HttpServlet {
         JSONObject jsonResponse = new JSONObject();
         JSONArray dataArray = new JSONArray();
 
-        ICampaignContentService campaignContentService = appContext.getBean(ICampaignContentService.class);
-        testCaseService = appContext.getBean(TestCaseService.class);
-
-        AnswerList testBatteryAnswer = campaignContentService.readByCampaignByCriteria(campaign, 0, 0, "testbattery", "asc", "", "");
-        List<CampaignContent> testBatteryList = testBatteryAnswer.getDataList();
-        String[] testBattery = new String[testBatteryList.size()];
-
-        for (int index = 0; index < testBatteryList.size(); index++) {
-            testBattery[index] = testBatteryList.get(index).getTestbattery();
-        }
-
-        AnswerList resp = testCaseService.readByVariousCriteria(null, null, null, null, null, null, testBattery, null, null, null, null, -1);
-
-        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
-            for (TestCase tc : (List<TestCase>) resp.getDataList()) {
-                dataArray.put(convertToJSONObject(tc));
+        String[] campaignList = new String[1];
+        campaignList[0] = campaign;
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        AnswerList resp = testCaseService.readByVarious(null, null, null, null, null, null, null, campaignList, null, null, null, null, -1);
+        if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+            for (Object c : resp.getDataList()) {
+                TestCase cc = (TestCase) c;
+                dataArray.put(convertToJSONObject(cc));
             }
         }
 
@@ -426,11 +411,11 @@ public class ReadTestCase extends HttpServlet {
         HashMap<String, JSONObject> hashProp = new HashMap<String, JSONObject>();
         JSONObject jsonResponse = new JSONObject();
 
-        testCaseService = appContext.getBean(TestCaseService.class);
-        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
-        testCaseStepService = appContext.getBean(TestCaseStepService.class);
-        testCaseStepActionService = appContext.getBean(TestCaseStepActionService.class);
-        testCaseStepActionControlService = appContext.getBean(TestCaseStepActionControlService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
+        testCaseStepService = appContext.getBean(ITestCaseStepService.class);
+        testCaseStepActionService = appContext.getBean(ITestCaseStepActionService.class);
+        testCaseStepActionControlService = appContext.getBean(ITestCaseStepActionControlService.class);
         ITestCaseCountryPropertiesService testCaseCountryPropertiesService = appContext.getBean(ITestCaseCountryPropertiesService.class);
 
         //finds the testcase     
@@ -585,8 +570,8 @@ public class ReadTestCase extends HttpServlet {
         AnswerItem answer = new AnswerItem();
         JSONObject object = new JSONObject();
 
-        testCaseService = appContext.getBean(TestCaseService.class);
-        testCaseCountryService = appContext.getBean(TestCaseCountryService.class);
+        testCaseService = appContext.getBean(ITestCaseService.class);
+        testCaseCountryService = appContext.getBean(ITestCaseCountryService.class);
 
         String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "tec.test,tec.testcase,application,project,ticket,description,behaviororvalueexpected,readonly,bugtrackernewurl,deploytype,mavengroupid");

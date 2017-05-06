@@ -90,8 +90,8 @@
                                             <select class="multiselectelement form-control" multiple="multiple" id="projectFilter"></select>
                                         </div>
                                         <div class="form-group col-xs-2">
-                                            <label id="lbl_application" for="applicationFilter">Application</label>
-                                            <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
+                                            <label id="lbl_status" for="statusFilter">Status</label>                                     
+                                            <select class="multiselectelement form-control" multiple="multiple" id="statusFilter"></select>
                                         </div>
                                         <div class="form-group col-xs-2">
                                             <label id="lbl_creator" for="creatorFilter">Creator</label>
@@ -108,6 +108,28 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-xs-2">
+                                            <label id="lbl_priority" for="priorityFilter">Priority</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="priorityFilter"></select>
+                                        </div>
+                                        <div class="form-group col-xs-2">
+                                            <label id="lbl_system" for="systemFilter">System</label>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="systemFilter"></select>
+                                        </div>
+                                        <div class="form-group col-xs-2">
+                                            <label id="lbl_application" for="applicationFilter">Application</label>
+                                            <select class="multiselectelement form-control" multiple="" id="applicationFilter"></select>
+                                        </div>
+                                        <div class="form-group col-xs-2">
+                                            <i><label id="lbl_targetRev" for="targetRevFilter">Target Revision</label></i>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
+                                        </div>
+                                        <div class="form-group col-xs-2">
+                                            <i><label id="lbl_targetSprint" for="targetSprintFilter">Target Sprint</label></i>                                  
+                                            <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-xs-2">
                                             <label id="lbl_campaign" for="campaignFilter">Campaign</label>                                     
                                             <select class="multiselectelement form-control" multiple="multiple" id="campaignFilter"></select>
                                         </div>
@@ -116,31 +138,19 @@
                                             <select class="multiselectelement form-control" multiple="multiple" id="testBatteryFilter"></select>
                                         </div>
                                         <div class="form-group col-xs-2">
-                                            <label id="lbl_priority" for="priorityFilter">Priority</label>                                     
-                                            <select class="multiselectelement form-control" multiple="multiple" id="priorityFilter"></select>
+                                            <i><label id="lbl_label" for="labelFilter">Label</label></i>
+                                            <select class="multiselectelement form-control" multiple="multiple" id="labelidFilter"></select>
                                         </div>
-                                        <div class="form-group col-xs-2">
-                                            <label id="lbl_status" for="statusFilter">Status</label>                                     
-                                            <select class="multiselectelement form-control" multiple="multiple" id="statusFilter"></select>
-                                        </div>
-                                        <div class="form-group col-xs-2">
-                                            <label id="lbl_targetRev" for="targetRevFilter">Target Revision</label>                                     
-                                            <select class="multiselectelement form-control" multiple="multiple" id="targetRevFilter"></select>
-                                        </div>
-                                        <div class="form-group col-xs-2">
-                                            <label id="lbl_targetSprint" for="targetSprintFilter">Target Sprint</label>                                     
-                                            <select class="multiselectelement form-control" multiple="multiple" id="targetSprintFilter"></select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
                                         <div class="form-group col-xs-2">
                                             <label id="lbl_size" for="lengthFilter">Result size</label>
                                             <select class="form-control" id="lengthFilter"></select>
                                         </div>
+                                        <div class="form-group col-xs-2">
+                                            <button type="button" class="btn btn-primary" id="loadFiltersBtn">Search</button>
+                                            <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
+                                        </div>
                                     </div>
                                 </form>
-                                <button type="button" class="btn btn-primary" id="loadFiltersBtn">Search</button>
-                                <button type="button" class="btn btn-default" id="resetbutton">Reset Filters</button>
                             </div>
                         </div>
                         <div class="row">

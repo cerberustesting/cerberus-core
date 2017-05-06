@@ -90,20 +90,7 @@ public interface ITestCaseService {
      */
     void updateTestCaseField(TestCase tc, String columnName, String value);
 
-    /**
-     * @param tCase
-     * @param system
-     * @return
-     * @since 1.0.2
-     */
-    List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system);
 
-    /**
-     * @param campaign the campaign name
-     * @return the list of TCase used in the campaign
-     * @since 1.0.2
-     */
-    List<TestCase> findTestCaseByCampaignName(String campaign);
 
     /**
      * @param campaign the campaign name
@@ -168,8 +155,25 @@ public interface ITestCaseService {
      */
     public AnswerItem readByKeyWithDependency(String test, String testCase);
 
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length);
+    /**
+     *
+     * @param test
+     * @param idProject
+     * @param app
+     * @param creator
+     * @param implementer
+     * @param system
+     * @param testBattery
+     * @param campaign
+     * @param labelid
+     * @param priority
+     * @param group
+     * @param status
+     * @param length
+     * @return
+     */
+    public AnswerList readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length);
 
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 

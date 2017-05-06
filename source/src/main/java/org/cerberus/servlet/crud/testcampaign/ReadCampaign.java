@@ -19,10 +19,8 @@
  */
 package org.cerberus.servlet.crud.testcampaign;
 
-import org.cerberus.engine.entity.MessageEvent;
 import com.google.common.base.*;
 import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,12 +36,13 @@ import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
 import org.cerberus.crud.entity.CampaignLabel;
 import org.cerberus.crud.entity.CampaignParameter;
+import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.service.ICampaignContentService;
 import org.cerberus.crud.service.ICampaignLabelService;
 import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
-import org.cerberus.crud.service.ILabelService;
-
+import org.cerberus.crud.service.ITestCaseService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -68,10 +67,10 @@ public class ReadCampaign extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -86,7 +85,7 @@ public class ReadCampaign extends HttpServlet {
 
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
         boolean userHasPermissions = request.isUserInRole("RunTest");
-        
+
         try {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
@@ -107,21 +106,20 @@ public class ReadCampaign extends HttpServlet {
 
             response.getWriter().print(jsonResponse.toString());
         } catch (JSONException ex) {
-            org.apache.log4j.Logger.getLogger(ReadTestBattery.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
+            org.apache.log4j.Logger.getLogger(ReadCampaign.class.getName()).log(org.apache.log4j.Level.ERROR, null, ex);
             //returns a default error message with the json format that is able to be parsed by the client-side
             response.getWriter().print(AnswerUtil.createGenericErrorAnswer());
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -132,10 +130,10 @@ public class ReadCampaign extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -223,6 +221,12 @@ public class ReadCampaign extends HttpServlet {
         return result;
     }
     
+    private JSONObject convertTestCasetoJSONObject(TestCase testCase) throws JSONException {
+        Gson gson = new Gson();
+        JSONObject result = new JSONObject(gson.toJson(testCase));
+        return result;
+    }
+
     private AnswerItem findCampaignByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
         JSONObject object = new JSONObject();
@@ -262,7 +266,6 @@ public class ReadCampaign extends HttpServlet {
             }
             if (request.getParameter("label") != null) {
                 ICampaignLabelService campaignLabelService = appContext.getBean(ICampaignLabelService.class);
-                ILabelService labelService = appContext.getBean(ILabelService.class);
                 AnswerList resp = campaignLabelService.readByVarious(key);
                 if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
                     JSONArray a = new JSONArray();
@@ -271,6 +274,20 @@ public class ReadCampaign extends HttpServlet {
                         a.put(convertCampaignLabeltoJSONObject(cc));
                     }
                     response.put("label", a);
+                }
+            }
+            if (request.getParameter("testcase") != null) {
+                ITestCaseService testCaseService = appContext.getBean(ITestCaseService.class);
+                String[] campaignList = new String[1];
+                campaignList[0] = key;
+                AnswerList resp = testCaseService.readByVarious(null, null, null, null, null, null, null, campaignList, null, null, null, null, -1);
+                if (resp.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
+                    JSONArray a = new JSONArray();
+                    for (Object c : resp.getDataList()) {
+                        TestCase cc = (TestCase) c;
+                        a.put(convertTestCasetoJSONObject(cc));
+                    }
+                    response.put("testcase", a);
                 }
             }
             object.put("contentTable", response);

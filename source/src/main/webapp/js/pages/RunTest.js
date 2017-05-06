@@ -42,15 +42,17 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $.when(
                 loadExecForm(tag),
                 loadRobotForm(browser),
-                loadMultiSelect("ReadTest", "system=" + system, "test", ["test", "description"], "test"),
+                loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
                 loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-                loadMultiSelect("ReadApplication", "system=" + system, "application", ["application"], "application"),
+                loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
                 loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
                 loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
                 loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
                 loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
                 loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
                 loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
+                loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
+                loadInvariantMultiSelect("system", "SYSTEM"),
                 loadInvariantMultiSelect("priority", "PRIORITY"),
                 loadInvariantMultiSelect("group", "GROUP"),
                 loadInvariantMultiSelect("status", "TCSTATUS"),
@@ -269,7 +271,7 @@ function loadTestCaseFromFilter(defTest, defTestcase) {
     $.ajax({
         url: "ReadTestCase",
         method: "GET",
-        data: "filter=true&" + $("#filters").serialize() + "&system=" + getUser().defaultSystem + testURL + testCaseURL + lengthURL,
+        data: "filter=true&" + $("#filters").serialize() + testURL + testCaseURL + lengthURL,
         datatype: "json",
         async: true,
         success: function (data) {

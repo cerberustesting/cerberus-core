@@ -1039,6 +1039,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
  * @param {type} ajaxProp -  json property
  * @param {type} aoColumnsFunction - function to render the columns
  * @param {type} aaSorting - Table to define the sorting column and order. Ex : [3, 'asc']
+ * @param {type} lengthMenu - Length of the table default to [10, 25, 50, 100]
  * @returns {TableConfigurationsServerSide}
  */
 function TableConfigurationsServerSide(divId, ajaxSource, ajaxProp, aoColumnsFunction, aaSorting, lengthMenu) {

@@ -48,7 +48,7 @@ import org.cerberus.util.servlet.ServletUtil;
 /**
  * @author cerberus
  */
-@WebServlet(name = "ReadTestBattery", urlPatterns = {"/ReadTestBattery"})
+@WebServlet(name = "ReadTestBatteryContent", urlPatterns = {"/ReadTestBatteryContent"})
 public class ReadTestBatteryContent extends HttpServlet {
 
     ITestBatteryService testBatteryService;
@@ -58,10 +58,10 @@ public class ReadTestBatteryContent extends HttpServlet {
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -77,14 +77,11 @@ public class ReadTestBatteryContent extends HttpServlet {
             JSONObject jsonResponse = new JSONObject();
             AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
 
-            if(request.getParameter("columnName") != null) {
-                answer = findDistinctValuesOfColumn(appContext,request,request.getParameter("columnName"));
+            if (request.getParameter("columnName") != null) {
+                answer = findDistinctValuesOfColumn(appContext, request, request.getParameter("columnName"));
                 jsonResponse = (JSONObject) answer.getItem();
-            }else if(request.getParameter("param") != null){
+            } else if (request.getParameter("param") != null) {
                 answer = findBatteryByKey(request.getParameter("param"), true, appContext, request);
-                jsonResponse = (JSONObject) answer.getItem();
-            }else{
-                answer = findTestBatteryList(appContext, request);
                 jsonResponse = (JSONObject) answer.getItem();
             }
 
@@ -100,14 +97,13 @@ public class ReadTestBatteryContent extends HttpServlet {
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-
     /**
      * Handles the HTTP <code>GET</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -118,10 +114,10 @@ public class ReadTestBatteryContent extends HttpServlet {
     /**
      * Handles the HTTP <code>POST</code> method.
      *
-     * @param request  servlet request
+     * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -138,56 +134,6 @@ public class ReadTestBatteryContent extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private AnswerItem findTestBatteryList(ApplicationContext appContext, HttpServletRequest request) throws JSONException {
-        AnswerItem item = new AnswerItem();
-        AnswerList answer = new AnswerList();
-        JSONObject resp = new JSONObject();
-
-        ITestBatteryContentService testBatteryContentService = appContext.getBean(ITestBatteryContentService.class);
-
-        int startPosition = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayStart"), "0"));
-        int length = Integer.valueOf(ParameterParserUtil.parseStringParam(request.getParameter("iDisplayLength"), "0"));
-
-        String searchParameter = ParameterParserUtil.parseStringParam(request.getParameter("sSearch"), "");
-        int columnToSortParameter = Integer.parseInt(ParameterParserUtil.parseStringParam(request.getParameter("iSortCol_0"), "0"));
-        String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "testbattery, Test, TestCase");
-        String columnToSort[] = sColumns.split(",");
-        String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
-
-        Map<String, List<String>> individualSearch = new HashMap<String, List<String>>();
-        for (int a = 0; a < columnToSort.length; a++) {
-            if (null != request.getParameter("sSearch_" + a) && !request.getParameter("sSearch_" + a).isEmpty()) {
-                List<String> search = new ArrayList(Arrays.asList(request.getParameter("sSearch_" + a).split(",")));
-                individualSearch.put(columnToSort[a], search);
-            }
-        }
-
-        if(request.getParameter("campaign") != null) {
-            answer = testBatteryContentService.readByCampaignByCriteria(request.getParameter("campaign"), startPosition, length, columnName, sort, searchParameter, individualSearch);
-        }else{
-            answer = testBatteryContentService.readByCriteria(startPosition, length, columnName, sort, searchParameter, individualSearch);
-        }
-
-//        boolean userHasPermissions = request.isUserInRole("TestAdmin");
-        JSONArray jsonArray = new JSONArray();
-        if (answer.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {//the service was able to perform the query, then we should get all values
-            for (TestBatteryContent testBattery : (List<TestBatteryContent>) answer.getDataList()) {
-                jsonArray.put(convertTestBatteryContenttoJSONObject(testBattery));
-            }
-        }
-
-        resp.put("contentTable", jsonArray);
-//        resp.put("hasPermissions", userHasPermissions);
-        resp.put("iTotalRecords", answer.getTotalRows());
-        resp.put("iTotalDisplayRecords", answer.getTotalRows());
-
-        item.setItem(resp);
-        item.setResultMessage(answer.getResultMessage());
-
-        return item;
-    }
 
     private AnswerItem findBatteryByKey(String key, Boolean userHasPermissions, ApplicationContext appContext, HttpServletRequest request) throws JSONException {
         AnswerItem item = new AnswerItem();
@@ -243,9 +189,9 @@ public class ReadTestBatteryContent extends HttpServlet {
         }
 
         AnswerList applicationList;
-        if(request.getParameter("campaign") != null) {
+        if (request.getParameter("campaign") != null) {
             applicationList = testBatteryContentService.readDistinctValuesByCampaignByCriteria(request.getParameter("campaign"), searchParameter, individualSearch, columnName);
-        }else{
+        } else {
             applicationList = testBatteryService.readDistinctValuesByCriteria(searchParameter, individualSearch, columnName);
         }
 

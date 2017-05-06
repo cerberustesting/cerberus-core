@@ -169,9 +169,9 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
-    public AnswerList readByVariousCriteria(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
-            String[] testBattery, String[] campaign, String[] priority, String[] group, String[] status, int length) {
-        return testCaseDao.readByVariousCriteria(test, idProject, app, creator, implementer, system, testBattery, campaign, priority, group, status, length);
+    public AnswerList readByVarious(String[] test, String[] idProject, String[] app, String[] creator, String[] implementer, String[] system,
+            String[] testBattery, String[] campaign, String[] labelid, String[] priority, String[] group, String[] status, int length) {
+        return testCaseDao.readByVarious(test, idProject, app, creator, implementer, system, testBattery, campaign, labelid, priority, group, status, length);
     }
 
     /**
@@ -230,22 +230,9 @@ public class TestCaseService implements ITestCaseService {
         testCaseDao.updateTestCaseField(tc, columnName, value);
     }
 
-    /**
-     * @since 1.0.2
-     */
-    @Override
-    public List<TestCase> findTestCaseByGroupInCriteria(TestCase tCase, String system) {
-        return this.testCaseDao.findTestCaseByGroupInCriteria(tCase, system);
-    }
-
     @Override
     public void updateTestCase(TestCase tc) throws CerberusException {
         testCaseDao.updateTestCase(tc);
-    }
-
-    @Override
-    public List<TestCase> findTestCaseByCampaignName(String campaign) {
-        return testCaseDao.findTestCaseByCampaignName(campaign);
     }
 
     @Override

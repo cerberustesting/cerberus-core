@@ -769,14 +769,6 @@
         <servlet-class>org.cerberus.servlet.crud.test.ImportTestCaseFromJson</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GetReport</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.GetReport</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>GetReportTest</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.GetReportTest</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.test.UpdateTestCaseWithDependencies</servlet-class>
     </servlet>
@@ -1730,14 +1722,6 @@
     <servlet-mapping>
         <servlet-name>ImportTestCaseFromJson</servlet-name>
         <url-pattern>/ImportTestCaseFromJson</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetReport</servlet-name>
-        <url-pattern>/GetReport</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>GetReportTest</servlet-name>
-        <url-pattern>/GetReportTest</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UpdateTestCaseWithDependencies</servlet-name>

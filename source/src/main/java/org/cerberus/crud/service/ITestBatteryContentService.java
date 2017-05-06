@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import org.cerberus.crud.entity.TestBattery;
 import org.cerberus.crud.entity.TestBatteryContent;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
