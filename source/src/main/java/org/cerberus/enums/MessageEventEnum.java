@@ -388,8 +388,11 @@ public enum MessageEventEnum {
     CONDITIONEVAL_TRUE_NUMERICMINOROREQUAL(1210, "OK", "'%STR1%' is minor or equal to '%STR2%'", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONDITION_TESTCASE_NOTEXECUTED(1280, "NA", "Testcase not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_FA),
     CONDITION_TESTCASESTEP_NOTEXECUTED(1280, "NA", "Testcase Step not executed with loop '%LOOP%' following condition '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASESTEP_FAILED(1290, "FA", "Step not executed following %AREA%condition error : '%COND%'. %MESSAGE%", true, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     CONDITION_TESTCASEACTION_NOTEXECUTED(1280, "NA", "Action not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASEACTION_FAILED(1290, "FA", "Action not executed following %AREA%condition error : '%COND%'. %MESSAGE%", true, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     CONDITION_TESTCASECONTROL_NOTEXECUTED(1280, "NA", "Control not executed following condition : '%COND%'. %MESSAGE%", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    CONDITION_TESTCASECONTROL_FAILED(1290, "FA", "Control not executed following %AREA%condition error : '%COND%'. %MESSAGE%", true, false, false, MessageGeneralEnum.EXECUTION_FA_CONDITION),
     // *********** DATA OPERATION ***********
     DECODE_SUCCESS(600, "OK", "Decode successful.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     DECODE_FAILED_VARIABLENOTDECODED(650, "FA", "Error on decoding %FIELD% because %NB% variable(s) is (are) unknown : (%VAR%). Please change the %FIELD% value with the correct syntax.", false, false, false, MessageGeneralEnum.EXECUTION_FA),
@@ -422,14 +425,14 @@ public enum MessageEventEnum {
     private final boolean getPageSource;
     private final MessageGeneralEnum message;
 
-    private MessageEventEnum(int tempCode, String tempCodeString, String tempDesc, boolean tempStopTest, boolean tempDoScreenshot, boolean tempGetPageSource, MessageGeneralEnum tempMessage) {
-        this.code = tempCode;
-        this.codeString = tempCodeString;
-        this.description = tempDesc;
-        this.stopTest = tempStopTest;
-        this.doScreenshot = tempDoScreenshot;
-        this.getPageSource = tempGetPageSource;
-        this.message = tempMessage;
+    private MessageEventEnum(int code, String codeString, String description, boolean stopTest, boolean doScreenshot, boolean getPageSource, MessageGeneralEnum message) {
+        this.code = code;
+        this.codeString = codeString;
+        this.description = description;
+        this.stopTest = stopTest;
+        this.doScreenshot = doScreenshot;
+        this.getPageSource = getPageSource;
+        this.message = message;
     }
 
     public String getDescription() {

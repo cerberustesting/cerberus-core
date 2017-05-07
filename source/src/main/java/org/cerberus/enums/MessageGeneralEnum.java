@@ -79,7 +79,7 @@ public enum MessageGeneralEnum {
     EXECUTION_FA_SELENIUM(8, "FA", "The test case failed to be executed. Could not start Selenium. %MES%."),
     EXECUTION_FA_CONNECTIVITY(10, "FA", "The test case failed to be executed. Connectivity issues were found."),
     EXECUTION_FA_CERBERUS(9, "FA", "The test case failed to be executed due to error in Cerberus, please contact Administrator of Cerberus. %MES%."),
-    EXECUTION_FA_CONDITION(11, "FA", "The test case failed to be executed. An error occured when evaluating the condition '%COND%'. %MES%"),
+    EXECUTION_FA_CONDITION(11, "FA", "The test case failed to be executed. An error occured when evaluating the %AREA%condition '%COND%'. %MES%"),
     EXECUTION_FA_CONDITIONDECODE(11, "FA", "The test case failed to be executed. %MES%"),
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
