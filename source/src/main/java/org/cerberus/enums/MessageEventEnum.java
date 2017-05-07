@@ -202,7 +202,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_MOUSEOVER(260, "FA", "Object and property are ‘null’. At least one is mandatory in order to perform the action mouse over.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVERANDWAIT_GENERIC(261, "FA", "Object is 'null'. This is mandatory in order to perform the action mouse over and wait.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_MOUSEOVERANDWAIT(262, "FA", "Mouse over '%ELEMENT%' but failed to wait '%TIME%' ms.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
-    ACTION_FAILED_WAIT(263, "FA", "Failed to wait '%TIME%' ms.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
+    ACTION_FAILED_WAIT(263, "FA", "Failed to wait '%TIME%' ms due to Exception : %MESSAGE%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_WAIT_INVALID_FORMAT(263, "FA", "Format of the timeout defined for this action is not numeric", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS(264, "FA", "Object and/or Property are ‘null’. Both are mandatory in order to perform the action type.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_KEYPRESS_ENV_ERROR(264, "FA", "Environment configurations don't allow you to perform the KeyPress operation.", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
