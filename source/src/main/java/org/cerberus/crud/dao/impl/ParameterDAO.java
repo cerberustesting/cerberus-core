@@ -368,14 +368,9 @@ public class ParameterDAO implements IParameterDAO {
         query.append(searchSQL);
 
         if (!StringUtil.isNullOrEmpty(column)) {
-            query.append(" order by ").append(column).append(" ").append(dir);
+            query.append(" order by ? ?");
         }
-
-        if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
-            query.append(" limit ").append(start).append(" , ").append(MAX_ROW_SELECTED);
-        } else {
-            query.append(" limit ").append(start).append(" , ").append(amount);
-        }
+        query.append(" limit ? , ?");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -400,7 +395,16 @@ public class ParameterDAO implements IParameterDAO {
                 for (String individualColumnSearchValue : individalColumnSearchValues) {
                     preStat.setString(i++, individualColumnSearchValue);
                 }
-
+                if (!StringUtil.isNullOrEmpty(column)) {
+                    preStat.setString(i++, column);
+                    preStat.setString(i++, dir);
+                }
+                preStat.setInt(i++, start);
+                if ((amount <= 0) || (amount >= MAX_ROW_SELECTED)) {
+                    preStat.setInt(i++, MAX_ROW_SELECTED);
+                } else {
+                    preStat.setInt(i++, amount);
+                }
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     //gets the data
