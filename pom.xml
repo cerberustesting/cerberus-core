@@ -19,76 +19,48 @@
     along with Cerberus.  If not, see <http://www.gnu.org/licenses />.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.cerberus</groupId>
-	<artifactId>cerberus-testing</artifactId>
+    <groupId>org.cerberus</groupId>
+    <artifactId>cerberus-testing</artifactId>
     <version>1.1.13-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <packaging>pom</packaging>
 
-	<name>Cerberus Testing</name>
+    <name>Cerberus Testing</name>
 
     <properties>
         <maven-release-plugin.version>2.5</maven-release-plugin.version>
         <maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
     </properties>
 
-	<scm>
-		<developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+    <scm>
+        <developerConnection>scm:git:https://github.com/cerberustesting/cerberus-source.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
 
-	<modules>
-		<module>source</module>
-	</modules>
+    <modules>
+        <module>source</module>
+    </modules>
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>${maven-release-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>${maven-deploy-plugin.version}</version>
-          <configuration>
-            <skip>true</skip>
-          </configuration>
-        </plugin>
-        <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <failIfMissing>true</failIfMissing>
-                    <strictCheck>true</strictCheck>
-                    <header>${basedir}/source/licenseheader.txt</header>
-                    <includes>
-                        <include>**/*.java</include>
-                        <include>**/*.jsp</include>
-                        <include>**/*.js</include>
-                        <include>**/*.xml</include>
-                        <include>**/*.xsd</include>
-                    </includes>
-                    <excludes>
-                        <exclude>src/main/webapp/dependencies/**</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>check-headers</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>${maven-release-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
