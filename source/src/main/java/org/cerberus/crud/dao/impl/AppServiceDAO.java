@@ -92,7 +92,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                         String serviceRequest = resultSet.getString("ServiceRequest");
                         String description = resultSet.getString("Description");
                         String servicePath = resultSet.getString("servicePath");
-                        String parsingAnswer = resultSet.getString("parsingAnswer");
+                        String attachementURL = resultSet.getString("AttachementURL");
                         String operation = resultSet.getString("Operation");
                         String application = resultSet.getString("Application");
                         String type = resultSet.getString("Type");
@@ -102,7 +102,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                         Timestamp dateCreated = resultSet.getTimestamp("DateCreated");
                         Timestamp dateModif = resultSet.getTimestamp("DateModif");
 
-                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, parsingAnswer, operation, usrCreated, dateCreated, usrModif, dateModif);
+                        result = this.factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif);
                     } else {
                         throwEx = true;
                     }
@@ -158,6 +158,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.Method like ?");
             searchSQL.append(" or srv.Operation like ?");
             searchSQL.append(" or srv.ServiceRequest like ?");
+            searchSQL.append(" or srv.AttachementURL like ?");
             searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.Description like ?");
             searchSQL.append(" or srv.UsrCreated like ?");
@@ -203,6 +204,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 int i = 1;
 
                 if (!StringUtil.isNullOrEmpty(searchTerm)) {
+                    preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
                     preStat.setString(i++, "%" + searchTerm + "%");
@@ -361,6 +363,7 @@ public class AppServiceDAO implements IAppServiceDAO {
         String servicePath = ParameterParserUtil.parseStringParam(rs.getString("srv.ServicePath"), "");
         String operation = ParameterParserUtil.parseStringParam(rs.getString("srv.Operation"), "");
         String serviceRequest = ParameterParserUtil.parseStringParam(rs.getString("srv.ServiceRequest"), "");
+        String attachementURL = ParameterParserUtil.parseStringParam(rs.getString("srv.AttachementURL"), "");
         String description = ParameterParserUtil.parseStringParam(rs.getString("srv.Description"), "");
         String type = ParameterParserUtil.parseStringParam(rs.getString("srv.Type"), "");
         String method = ParameterParserUtil.parseStringParam(rs.getString("srv.Method"), "");
@@ -372,7 +375,7 @@ public class AppServiceDAO implements IAppServiceDAO {
 
         //TODO remove when working in test with mockito and autowired
         factoryAppService = new FactoryAppService();
-        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, "", operation, usrCreated, dateCreated, usrModif, dateModif);
+        return factoryAppService.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementURL, operation, usrCreated, dateCreated, usrModif, dateModif);
     }
 
     @Override
@@ -396,7 +399,7 @@ public class AppServiceDAO implements IAppServiceDAO {
             searchSQL.append(" or srv.Group like ?");
             searchSQL.append(" or srv.ServicePath like ?");
             searchSQL.append(" or srv.Operation like ?");
-            searchSQL.append(" or srv.ParsingAnswer like ?");
+            searchSQL.append(" or srv.AttachementURL like ?");
             searchSQL.append(" or srv.Description like ?");
             searchSQL.append(" or srv.ServiceRequest like ?)");
         }
@@ -480,11 +483,11 @@ public class AppServiceDAO implements IAppServiceDAO {
     public Answer create(AppService object) {
         MessageEvent msg = null;
         StringBuilder query = new StringBuilder();
-        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `Description`) ");
+        query.append("INSERT INTO appservice (`Service`, `Group`, `Application`, `Type`, `Method`, `ServicePath`, `Operation`, `ServiceRequest`, `AttachementURL`, `Description`) ");
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query.append("VALUES (?,?,?,?,?,?,?,?,?)");
         } else {
-            query.append("VALUES (?,?,null,?,?,?,?,?,?)");
+            query.append("VALUES (?,?,null,?,?,?,?,?,?,?)");
         }
 
         // Debug message on SQL.
@@ -506,6 +509,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getServicePath());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
+                preStat.setString(i++, object.getAttachementURL());
                 preStat.setString(i++, object.getDescription());
 
                 preStat.executeUpdate();
@@ -544,7 +548,7 @@ public class AppServiceDAO implements IAppServiceDAO {
     @Override
     public Answer update(AppService object) {
         MessageEvent msg = null;
-        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, ParsingAnswer = ?, "
+        String query = "UPDATE appservice srv SET `Group` = ?, `ServicePath` = ?, `Operation` = ?, ServiceRequest = ?, AttachementURL = ?, "
                 + "Description = ?, `Type` = ?, Method = ?, `UsrModif`= ?, `DateModif` = NOW()";
         if ((object.getApplication() != null) && (!object.getApplication().equals(""))) {
             query += " ,Application = ?";
@@ -567,7 +571,7 @@ public class AppServiceDAO implements IAppServiceDAO {
                 preStat.setString(i++, object.getServicePath());
                 preStat.setString(i++, object.getOperation());
                 preStat.setString(i++, object.getServiceRequest());
-                preStat.setString(i++, object.getParsingAnswer());
+                preStat.setString(i++, object.getAttachementURL());
                 preStat.setString(i++, object.getDescription());
                 preStat.setString(i++, object.getType());
                 preStat.setString(i++, object.getMethod());

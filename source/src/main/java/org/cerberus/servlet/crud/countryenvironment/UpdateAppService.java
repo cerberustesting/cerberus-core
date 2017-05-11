@@ -93,6 +93,7 @@ public class UpdateAppService extends HttpServlet {
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), null, charset);
         String method = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("method"), "", charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), null, charset);
+        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attachementurl"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), null, charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), null, charset);
         // Parameter that we cannot secure as we need the html --> We DECODE them
@@ -136,6 +137,7 @@ public class UpdateAppService extends HttpServlet {
                  */
                 AppService appService = (AppService) resp.getItem();
                 appService.setGroup(group);
+                appService.setAttachementURL(attachementurl);
                 appService.setDescription(description);
                 appService.setServiceRequest(serviceRequest);
                 appService.setOperation(operation);

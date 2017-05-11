@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.log4j.Logger;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
@@ -71,10 +72,17 @@ public class FileService implements IFileService {
                  * result object if it has been defined in subdata
                  */
                 for (String element : str.split(separator)) {
-                    if (columnsToGet.containsKey(String.valueOf(columnPosition))) {
-                        line.put(columnsToGet.get(String.valueOf(columnPosition)), element);
-                        noDataMapped = false;
+
+                    // Looping against all subdata to get any column that match the current element position.
+                    for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
+                        String columnPos = entry.getValue();
+                        String subDataName = entry.getKey();
+                        if (columnPos.equals(String.valueOf(columnPosition))) { // If columns defined from subdata match the column number, we add the value here.
+                            line.put(subDataName, element);
+                            noDataMapped = false;
+                        }
                     }
+
                     columnPosition++;
                 }
                 csv.add(line);

@@ -340,7 +340,9 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(appData.contentTable.system, testCase);
-            // Loading the labl list from aplication of the testcase.
+            // Title of the label list.
+            $("[name='labelField']").html("Labels from system : " + appData.contentTable.system);
+            // Loading the label list from aplication of the testcase.
             loadLabel(testCase.labelList, appData.contentTable.system, "#selectLabel");
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, appData.contentTable.system);
@@ -397,6 +399,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
         formEdit.find("#actProd").prop("value", "N");
+        formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
             appendTestList(undefined);
@@ -408,7 +411,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         }
     }
     if (isEmpty(testCase)) {
-        formEdit.find("#status").prop("value", "STANDBY");
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
@@ -673,10 +675,14 @@ function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
  * @param {String} labelList - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
+ * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
  * @returns {null}
  */
-function loadLabel(labelList, mySystem, myLabelDiv) {
+function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
 
+    if (isEmpty(labelSize)) {
+        labelSize = "2";
+    }
     var labelDiv = myLabelDiv;
     var targetSystem = mySystem;
     if (isEmpty(targetSystem)) {
@@ -695,7 +701,7 @@ function loadLabel(labelList, mySystem, myLabelDiv) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-2 list-group-item list-label"></div>')
+                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
                 $(labelDiv).append(option);
             }

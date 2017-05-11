@@ -37,14 +37,14 @@ public class FactoryAppService implements IFactoryAppService {
 
     @Override
     public AppService create(String service, String type, String method, String application, String group, String serviceRequest, String description,
-            String servicePath, String parsingAnswer, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
+            String servicePath, String attachementURL, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif) {
         AppService s = new AppService();
         s.setService(service);
         s.setServiceRequest(serviceRequest);
         s.setGroup(group);
         s.setDescription(description);
         s.setServicePath(servicePath);
-        s.setParsingAnswer(parsingAnswer);
+        s.setAttachementURL(attachementURL);
         s.setOperation(operation);
         s.setMethod(method);
         s.setApplication(application);

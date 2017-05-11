@@ -71,6 +71,7 @@ public class TestCase {
     /**
      * Not included in table.
      */
+    private String system;
     private String lastExecutionStatus;
     private List<TestCaseCountry> testCaseCountry;
     private List<TestCaseCountryProperties> testCaseCountryProperties;
@@ -80,6 +81,13 @@ public class TestCase {
 
     private static final Logger LOG = Logger.getLogger(TestCase.class);
 
+    public String getSystem() {
+        return system;
+    }
+
+    public void setSystem(String system) {
+        this.system = system;
+    }
 
     public String getDateCreated() {
         return dateCreated;
@@ -409,7 +417,7 @@ public class TestCase {
         this.dateModif = dateModif;
     }
 
-    public JSONObject toJson(){
+    public JSONObject toJson() {
         JSONObject result = new JSONObject();
         try {
             result.put("test", this.getTest());
@@ -448,7 +456,7 @@ public class TestCase {
             result.put("usrModif", this.getUsrModif());
             result.put("dateModif", this.getDateModif());
             JSONArray array = new JSONArray();
-            if (this.getTestCaseStep() != null ) {
+            if (this.getTestCaseStep() != null) {
                 for (Object testCaseStepExecution : this.getTestCaseStep()) {
                     array.put(((TestCaseStep) testCaseStepExecution).toJson());
                 }

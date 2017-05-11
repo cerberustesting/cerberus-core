@@ -35,7 +35,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,6 +60,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
@@ -81,7 +81,8 @@ public class SoapService implements ISoapService {
      */
     private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
     /**
-     * Proxy default config. (Should never be used as default config is inserted into database)
+     * Proxy default config. (Should never be used as default config is inserted
+     * into database)
      */
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
     private static final String DEFAULT_PROXY_HOST = "proxy";
@@ -100,6 +101,8 @@ public class SoapService implements ISoapService {
     private IFactoryAppServiceHeader factoryAppServiceHeader;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    IProxyService proxyService;
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method, List<AppServiceHeader> header, String token) throws SOAPException, IOException, SAXException, ParserConfigurationException {
@@ -120,6 +123,7 @@ public class SoapService implements ISoapService {
     public void addAttachmentPart(SOAPMessage input, String path) throws CerberusException {
         URL url;
         try {
+            LOG.debug("Adding Attachement to SOAP request : " + path);
             url = new URL(path);
             DataHandler handler = new DataHandler(url);
             //TODO: verify if this code is necessary
@@ -139,7 +143,7 @@ public class SoapService implements ISoapService {
 
     }
 
-    private static SOAPMessage sendSOAPMessage(SOAPMessage message, String url, final Proxy p) throws SOAPException, MalformedURLException {
+    private static SOAPMessage sendSOAPMessage(SOAPMessage message, String url, final Proxy p, final int timeoutms) throws SOAPException, MalformedURLException {
         SOAPConnectionFactory factory = SOAPConnectionFactory.newInstance();
         SOAPConnection connection = factory.createConnection();
 
@@ -150,15 +154,19 @@ public class SoapService implements ISoapService {
                 URL clone = new URL(url.toString());
 
                 URLConnection connection = null;
-                if (p.address().toString().equals("0.0.0.0/0.0.0.0:80")) {
+                if (p == null) {
+                    connection = clone.openConnection();
+
+                } else if (p.address().toString().equals("0.0.0.0/0.0.0.0:80")) {
                     connection = clone.openConnection();
                 } else {
                     connection = clone.openConnection(p);
                 }
-                connection.setConnectTimeout(5 * 1000); // 5 sec
-                connection.setReadTimeout(5 * 1000); // 5 sec
+                // Set Timeout
+                connection.setConnectTimeout(timeoutms);
+                connection.setReadTimeout(timeoutms);
                 // Custom header
-                connection.addRequestProperty("Developer-Mood", "Happy");
+//                connection.addRequestProperty("Developer-Mood", "Happy");
                 return connection;
             }
         });
@@ -200,6 +208,7 @@ public class SoapService implements ISoapService {
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
         AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", method, "", null, "", null);
+        serviceSOAP.setTimeoutms(timeOutMs);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
@@ -245,22 +254,27 @@ public class SoapService implements ISoapService {
             SOAPMessage input = createSoapRequest(envelope, method, header, token);
 
             //Add attachment File if specified
-            //TODO: this feature is not implemented yet therefore is always empty!
             if (!StringUtil.isNullOrEmpty(attachmentUrl)) {
                 this.addAttachmentPart(input, attachmentUrl);
+                // Store the SOAP Call
+                out = new ByteArrayOutputStream();
+                input.writeTo(out);
+                LOG.debug("WS call with attachement : " + out.toString());
+                serviceSOAP.setServiceRequest(out.toString());
+            } else {
+                // Store the SOAP Call
+                out = new ByteArrayOutputStream();
+                input.writeTo(out);
+                LOG.debug("WS call : " + out.toString());
             }
 
-            // Store the SOAP Call
-            out = new ByteArrayOutputStream();
-            input.writeTo(out);
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
             // We already set the item in order to keep the request message in case of failure of SOAP calls.
             serviceSOAP.setService(servicePath);
 
             result.setItem(serviceSOAP);
 
             // Call the WS
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
+            LOG.debug("Calling WS.");
 
             // Reset previous Authentification.
             Authenticator.setDefault(null);
@@ -268,7 +282,7 @@ public class SoapService implements ISoapService {
             serviceSOAP.setProxyUser(null);
 
             SOAPMessage soapResponse = null;
-            if (parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE)) {
+            if (proxyService.useProxy(servicePath, system)) {
 
                 // Get Proxy host and port from parameters.
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
@@ -300,7 +314,7 @@ public class SoapService implements ISoapService {
                 }
 
                 // Call with Proxy.
-                soapResponse = sendSOAPMessage(input, servicePath, proxy);
+                soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
 
             } else {
 
@@ -309,17 +323,18 @@ public class SoapService implements ISoapService {
                 serviceSOAP.setProxyPort(0);
 
                 // Call without proxy.
-                soapResponse = soapConnection.call(input, servicePath);
+                soapResponse = sendSOAPMessage(input, servicePath, null, timeOutMs);
+//                soapResponse = soapConnection.call(input, servicePath);
 
             }
 
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
+            LOG.debug("Called WS.");
             out = new ByteArrayOutputStream();
 
             // Store the response
             soapResponse.writeTo(out);
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
+            LOG.debug("WS response received.");
+            LOG.debug("WS response : " + out.toString());
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
             message.setDescription(message.getDescription()
@@ -337,7 +352,7 @@ public class SoapService implements ISoapService {
             result.setItem(serviceSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
-            MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+            LOG.error(e.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
@@ -354,7 +369,7 @@ public class SoapService implements ISoapService {
                     out.close();
                 }
             } catch (SOAPException | IOException ex) {
-                Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.error(ex);
             } finally {
                 result.setResultMessage(message);
             }

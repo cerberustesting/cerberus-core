@@ -105,6 +105,10 @@
         <a href="#" id="openPopup" data-cerberus="openPopup" onclick="javascript:window.open('./index2.jsp', 'popup',
                         'width=500,height=400,scrollbars=yes,menubar=false,location=false');
                 return false;">Open Popup</a>
+                <br><br>
+                <a href="#" id="openPopupWithoutTitle" data-cerberus="openPopupWithoutTitle" onclick="javascript:window.open('./index4.jsp', 'popup',
+                        'width=500,height=400,scrollbars=yes,menubar=false,location=false');
+                return false;">Open Popup Without Title</a>
         <br>
         <br>
         <a href="#" id="alertPopup" data-cerberus="alertPopup" onclick="javascript:alert('ceci est une popup d\'alert')">Open Alert</a>
@@ -118,9 +122,15 @@
             <input type="text" name="selectedValue2" id="selectedValue2">
             <input id="selectedValue2Submit" type="submit" value="Submit">
         </form>
+        <br><br>
+        <form method="POST" enctype="multipart/form-data">
+            <p>Below is part to test action keypress on non-browser windows</p>
+          File to upload: <input type="file" name="template"><br/>
+          <br/>
+        </form>
 
         <p> Parameters that can be used on that page :</p>
         'asyncdelay' : delay in ms can be used to call async ressource.
-
+        
     </body>
 </html>

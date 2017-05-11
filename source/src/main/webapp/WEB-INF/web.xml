@@ -545,18 +545,6 @@
         <servlet-class>org.cerberus.servlet.crud.testdata.CreateTestData</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.UpdateTestData</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>DeleteTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.DeleteTestData</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>FindAllTestData</servlet-name>
-        <servlet-class>org.cerberus.servlet.crud.testdata.FindAllTestData</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SaveManualExecutionPicture</servlet-name>
         <servlet-class>org.cerberus.servlet.manualtestcase.SaveManualExecutionPicture</servlet-class>
     </servlet>
@@ -1494,22 +1482,6 @@
     <servlet-mapping>
         <servlet-name>ImportTestCaseStep</servlet-name>
         <url-pattern>/ImportTestCaseStep</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CreateTestData</servlet-name>
-        <url-pattern>/CreateTestData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateTestData</servlet-name>
-        <url-pattern>/UpdateTestData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteTestData</servlet-name>
-        <url-pattern>/DeleteTestData</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>FindAllTestData</servlet-name>
-        <url-pattern>/FindAllTestData</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>SaveManualExecutionPicture</servlet-name>
