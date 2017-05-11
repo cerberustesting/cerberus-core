@@ -1316,11 +1316,15 @@ var Autocomplete = function() {
         this.popup = new AcePopup(document.body || document.documentElement);
         this.popup.on("click", function(e) {
             this.insertMatch();
+            //only part that is modified in ace for cerberus
             //show the popup to autocomplete if the user CLICK on ane of the popup option
-            var editorValue = this.editor.getValue();
-            var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;
-            if (oddNumberOfPercentCaractere)
-              this.editor.execCommand("startAutocomplete");
+
+            if (this.editor.getSession().getMode().$id =="ace/mode/cerberus"){
+              var editorValue = this.editor.getValue();
+              var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;
+              if (oddNumberOfPercentCaractere)
+                this.editor.execCommand("startAutocomplete");
+            }
             //
             e.stop();
         }.bind(this));
