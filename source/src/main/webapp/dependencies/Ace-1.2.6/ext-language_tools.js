@@ -1318,7 +1318,6 @@ var Autocomplete = function() {
             this.insertMatch();
             //only part that is modified in ace for cerberus
             //show the popup to autocomplete if the user CLICK on ane of the popup option
-
             if (this.editor.getSession().getMode().$id =="ace/mode/cerberus"){
               var editorValue = this.editor.getValue();
               var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;

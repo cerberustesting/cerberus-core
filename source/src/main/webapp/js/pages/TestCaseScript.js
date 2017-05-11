@@ -879,6 +879,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                 }
 
                 var propertyListUnique = Array.from(new Set(propertyList));
+
                 for (var index = 0; index < propertyListUnique.length; index++) {
                     drawPropertyList(propertyListUnique[index], index);
                 }
@@ -2695,7 +2696,6 @@ function setPlaceholderControl(controlElement) {
 }
 
 //create the string needed for the regex for instance "(?:property|object|system)"
-
 function createRegexHightlight(tab){
   var regexString ="(?:";
   var notFirstLoop =false;
@@ -2756,8 +2756,23 @@ function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,object
   });
 }
 
-function configureAceEditor(editor,mode){
+function changeAceCompletionList(keywordList,label){
+  var langTools = ace.require("ace/ext/language_tools");
+  completer= {
+    getCompletions: function(editor, session, pos, prefix, callback) {
+      var completions = [];
 
+      for (var i in keywordList) {
+        completions.push({ name:"default_name", value:keywordList[i], meta: label });
+      }
+      callback(null, completions);
+    }
+  }
+  langTools.addCompleter(completer);
+}
+
+function configureAceEditor(editor,mode){
+  var langTools = ace.require("ace/ext/language_tools");
   //custom interrection if the cerberus language is selected
   if (mode=="ace/mode/cerberus"){
     //value of the KEYWORD
@@ -2783,21 +2798,19 @@ function configureAceEditor(editor,mode){
                         "LASTSERVICE_HTTPCODE",
                         "TODAY-yyyy","TODAY-MM","TODAY-dd","TODAY-doy","TODAY-HH","TODAY-mm","TODAY-ss",
                         "YESTERDAY-yyyy","YESTERDAY-MM","YESTERDAY-dd","YESTERDAY-doy","YESTERDAY-HH","YESTERDAY-mm","YESTERDAY-ss"];
+
     var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
 
     configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord);
-    editor.getSession().setMode(mode);
+
     var autocompleteDone =false;
     editor.commands.on("afterExec", function(e){
-
-
         var editorValue = editor.getValue();
         var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//must have an odd
         var cursorPosition =editor.getCursorPosition().column;
 
         //start display and change autocomplete
         if ( ( (e.command.name=="insertstring") && oddNumberOfPercentCaractere ) || autocompleteDone ){
-
           autocompleteDone =false;
           var spliceOfEditorValueCurrentlyWorkOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPosition)+1,cursorPosition+1);
           //init keywordList
@@ -2808,15 +2821,17 @@ function configureAceEditor(editor,mode){
             }
           }
           if( editor.getSession().getMode().$keywordList == null || !typeAlreadyWriten ){
-            editor.getSession().getMode().$keywordList=typeKeyWord;
+            if(editor.getSession().getMode().$keywordList != null)
+              langTools.setCompleters([]);
+            changeAceCompletionList(typeKeyWord,"");
           }
           else{
-            if( editor.getValue().search("property") !=-1)
-              editor.getSession().getMode().$keywordList=propertyKeyWord;
-            if( editor.getValue().search("object") !=-1)
-              editor.getSession().getMode().$keywordList=objectKeyWord;
-            if( editor.getValue().search("system") !=-1)
-              editor.getSession().getMode().$keywordList=systemKeyWord;
+            langTools.setCompleters([]);
+            for (var i in typeKeyWord) {
+              if( spliceOfEditorValueCurrentlyWorkOn.search(typeKeyWord[i]) !=-1){
+                changeAceCompletionList(allKeyWordRightPart[ typeKeyWord[i] ],typeKeyWord[i]);
+              }
+            }
           }
           editor.execCommand("startAutocomplete");
         }
@@ -2832,10 +2847,7 @@ function configureAceEditor(editor,mode){
               }
             }
             if(leftPartWithoutPoint){
-              editor.session.insert({//insert at the cursor position
-                 row: editor.getCursorPosition().row,
-                 column: editor.getCursorPosition().column
-              },".")
+              editor.session.insert( editor.getCursorPosition() ,".");
               autocompleteDone =true;
             }
           }
@@ -2851,10 +2863,7 @@ function configureAceEditor(editor,mode){
               }
             }
             if(rightPartWithoutPercent){
-              editor.session.insert({//insert at the cursor position
-                 row: editor.getCursorPosition().row,
-                 column: editor.getCursorPosition().column
-              },"%")
+              editor.session.insert(editor.getCursorPosition(),"%");
             }
           }
         }
@@ -2865,19 +2874,10 @@ function configureAceEditor(editor,mode){
   editor.getSession().setMode(mode);
   //editor option
   editor.setTheme("ace/theme/chrome");
-
   editor.setOptions({
       maxLines: 10,
       enableBasicAutocompletion: true
   });
-}
-
-function cloneTableWithAEndCaractere(tab,caractere){
-  var cloneTab =[];
-  for (var i in tab) {
-    cloneTab.push (tab[i]+caractere);
-  }
-  return cloneTab;
 }
 
 function setPlaceholderProperty(propertyElement) {
@@ -2938,6 +2938,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+
                     configureAceEditor(editor,placeHolders[i].value1EditorMode);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
