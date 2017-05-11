@@ -584,7 +584,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
-    var valueInput = $("<textarea name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var valueInput = $("<pre autocomplete='off' name='propertyValue' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></pre>").addClass("form-control input-sm").text(property.value1);
     var value2Input = $("<textarea name='propertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
@@ -2235,7 +2235,7 @@ Control.prototype.getJsonData = function () {
 };
 
 /**
- * Call Add Action and focus to next description when 
+ * Call Add Action and focus to next description when
  * focusing on description and clicking on enter
  * @returns {undefined}
  */
@@ -2694,44 +2694,228 @@ function setPlaceholderControl(controlElement) {
     });
 }
 
+//create the string needed for the regex for instance "(?:property|object|system)"
+
+function createRegexHightlight(tab){
+  var regexString ="(?:";
+  var notFirstLoop =false;
+  for (var i in tab) {
+    if(notFirstLoop){
+      regexString +="|"
+    }else {
+      notFirstLoop =true;
+    }
+    regexString +=tab[i];
+  }
+  regexString +=")";
+  return regexString;
+}
+
+//part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
+function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord){
+  //change some part of cerberus-mode to highlight text dynamicly
+  define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+  "use strict";
+    var oop = require("../lib/oop");
+    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+    var cerberusHighlightRules = function() {
+        var typeRegexHightlight = createRegexHightlight(typeKeyWord);
+        var propertyRegexHightlight = createRegexHightlight(propertyKeyWord);
+        var objectRegexHightlight = createRegexHightlight(objectKeyWord);
+        var systemRegexHightlight = createRegexHightlight(systemKeyWord);
+        //default autocomplete
+        var keywordMapper = this.createKeywordMapper({
+          "tag" : ""
+        }, "identifier");
+
+        this.$rules = {
+            "start" : [{
+                    token : "constant.numeric", // hex| remove later ?
+                    regex : "0[xX][0-9a-fA-F]+(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+                }, {
+                    token : "constant.numeric", // float| remove later ?
+                    regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+                },{
+                    token : "keyword",
+                    regex : "%property" + "." + propertyRegexHightlight + "%"
+                },{
+                    token : "keyword",
+                    regex : "%object" + "." + objectRegexHightlight + "%"
+                },{
+                    token : "keyword",
+                    regex : "%system" + "." + systemRegexHightlight + "%"
+                },{
+                    token : "keyword",
+                    regex : "%" + typeRegexHightlight//default
+                }]
+        };
+    };
+    oop.inherits(cerberusHighlightRules, TextHighlightRules);
+    exports.cerberusHighlightRules = cerberusHighlightRules;
+  });
+}
+
+function configureAceEditor(editor,mode){
+
+  //custom interrection if the cerberus language is selected
+  if (mode=="ace/mode/cerberus"){
+    //value of the KEYWORD
+    //left part
+    var typeKeyWord =["property","object","system"];
+    //right part
+    var propertyKeyWord=[""];
+    var objectKeyWord = [""];
+    var systemKeyWord = ["SYSTEM",
+                        "APPLI",
+                        "BROWSER",
+                        "APP_DOMAIN","PP_HOST","APP_VAR1","APP_VAR2","APP_VAR3","APP_VAR4",
+                        "ENV","ENVGP",
+                        "COUNTRY","COUNTRYGP1","COUNTRYGP2","COUNTRYGP3","COUNTRYGP4","COUNTRYGP5","COUNTRYGP6","COUNTRYGP7","COUNTRYGP8","COUNTRYGP9",
+                        "TEST",
+                        "TESTCASE",
+                        "SSIP SSPORT",
+                        "TAG",
+                        "EXECUTIONID",
+                        "EXESTART","EXEELAPSEDMS",
+                        "EXESTORAGEURL",
+                        "STEP.n.n.RETURNCODE","CURRENTSTEP_INDEX","CURRENTSTEP_STARTISO","CURRENTSTEP_ELAPSEDMS",
+                        "LASTSERVICE_HTTPCODE",
+                        "TODAY-yyyy","TODAY-MM","TODAY-dd","TODAY-doy","TODAY-HH","TODAY-mm","TODAY-ss",
+                        "YESTERDAY-yyyy","YESTERDAY-MM","YESTERDAY-dd","YESTERDAY-doy","YESTERDAY-HH","YESTERDAY-mm","YESTERDAY-ss"];
+    var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
+
+    configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord);
+    editor.getSession().setMode(mode);
+    var autocompleteDone =false;
+
+    editor.commands.on("afterExec", function(e){
+        console.log(editor.completers);
+        var editorValue = editor.getValue();
+        var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//must have an odd
+        var cursorPosition =editor.getCursorPosition().column;
+
+        //start display and change autocomplete
+        if ( ( (e.command.name=="insertstring") && oddNumberOfPercentCaractere ) || autocompleteDone ){
+          autocompleteDone =false;
+          var spliceOfEditorValueCurrentlyWorkOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPosition)+1,cursorPosition+1);
+          //init keywordList
+          var typeAlreadyWriten =false;
+          for (var i in typeKeyWord) {
+            if (spliceOfEditorValueCurrentlyWorkOn.search(typeKeyWord[i])!=-1 ) {
+              typeAlreadyWriten =true;
+            }
+          }
+          if( editor.getSession().getMode().$keywordList == null || !typeAlreadyWriten ){
+            editor.getSession().getMode().$keywordList=typeKeyWord;
+          }
+          else{
+            if( editor.getValue().search("property") !=-1)
+              editor.getSession().getMode().$keywordList=propertyKeyWord;
+            if( editor.getValue().search("object") !=-1)
+              editor.getSession().getMode().$keywordList=objectKeyWord;
+            if( editor.getValue().search("system") !=-1)
+              editor.getSession().getMode().$keywordList=systemKeyWord;
+          }
+          editor.execCommand("startAutocomplete");
+        }
+        if(e.command.name =="startAutocomplete"){
+          //add a . if the LEFT part was autocomplete
+          var lastPercentCaractere = editorValue.lastIndexOf('%',cursorPosition);
+          if(lastPercentCaractere !=-1){
+            var leftPart = editorValue.slice(lastPercentCaractere+1,cursorPosition);
+            var leftPartWithoutPoint =false;
+            for (var i in typeKeyWord) {
+              if (leftPart ==typeKeyWord[i] && editorValue.slice(cursorPosition,cursorPosition+1) !=".") {
+                leftPartWithoutPoint =true;
+              }
+            }
+            if(leftPartWithoutPoint){
+              editor.session.insert({//insert at the cursor position
+                 row: editor.getCursorPosition().row,
+                 column: editor.getCursorPosition().column
+              },".")
+              autocompleteDone =true;
+            }
+          }
+          //add a % if the RIGHT partwasAutocomple
+          var lastPointCaractere = editorValue.lastIndexOf('.',cursorPosition);
+          if(lastPointCaractere !=-1){
+            var rightPart = editorValue.slice(lastPointCaractere+1,cursorPosition);
+            var rightPartWithoutPercent =false;
+            typeSelected = editorValue.slice(editorValue.lastIndexOf('%',cursorPosition)+1,editorValue.lastIndexOf('.',cursorPosition));
+            for (var i in allKeyWordRightPart[typeSelected]) {
+              if (rightPart == allKeyWordRightPart[typeSelected][i] &&  allKeyWordRightPart[typeSelected][i] !="") {
+                rightPartWithoutPercent =true;
+              }
+            }
+            if(rightPartWithoutPercent){
+              editor.session.insert({//insert at the cursor position
+                 row: editor.getCursorPosition().row,
+                 column: editor.getCursorPosition().column
+              },"%")
+            }
+          }
+        }
+        //
+     });
+  }
+  editor.getSession().setMode(mode);
+  //editor option
+  editor.setTheme("ace/theme/chrome");
+
+  editor.setOptions({
+      maxLines: 10,
+      enableBasicAutocompletion: true
+  });
+}
+
+function cloneTableWithAEndCaractere(tab,caractere){
+  var cloneTab =[];
+  for (var i in tab) {
+    cloneTab.push (tab[i]+caractere);
+  }
+  return cloneTab;
+}
+
 function setPlaceholderProperty(propertyElement) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
      */
-    var placeHoldersList = {"fr": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
-        ], "en": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
-            {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
-        ]};
+     var placeHoldersList = {"fr": [
+             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+             {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+         ], "en": [
+             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+             {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+             {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+         ]};
 
     var user = getUser();
     var placeHolders = placeHoldersList[user.language];
@@ -2750,53 +2934,9 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1'] label").html(placeHolders[i].value1);
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
-
-                    //Highlight envelop on modal loading
-                    //var langTools = ace.require("ace/ext/language_tools");
-                    //var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    //editor.setTheme("ace/theme/chrome");
-                    //editor.getSession().setMode(placeHolders[i].value1EditorMode);
-                    
-//                    var rhymeCompleter = {
-//                        getCompletions: function (editor, session, pos, prefix, callback) {
-//                            autocompleteField(editor, callback);
-//                        }
-//                    }; 
-                    
-                    //changeCompleter(langTools,rhymeCompleter);
-                    //editor.completers = [rhymeCompleter];        
-                    //editor.setOptions({
-                    //    maxLines: 10,
-                    //    enableBasicAutocompletion: true
-                    //});        
-                            
-// TODO : Below is some try to autocomplete
-// // TODO : Clean that comment
-//                    editor.commands.on("afterExec", function (element) {
-//                        console.log(element.command.name);
-//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g))) {
-//                            editor.execCommand("startAutocomplete");
-//                        }
-//                        console.log(editor.getSession().getDocument().getValue().indexOf("%property."));
-//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().indexOf("%property.")>0) {
-//                            console.log("true");
-//                            editor.execCommand("startAutocomplete");
-//                        }
-//                    });
-//                    
-// TODO : Below is some try to autocomplete   
-// // TODO : Clean that comment                
-//                    editor.commands.addCommand({
-//                        name: "cerberusAutocompletion",
-//                        bindKey: {win: "%", mac: "%"},
-//                        exec: function (editor) {
-//                            //autocompleteVariable;
-//                            autocompleteVariable($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"));
-//                        }
-//                    })
-//                    editor.execCommand("cerberusAutocompletion")
-                    //editor.execCommand("autocomplete");
-
+                    //Ace module management
+                    var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
@@ -2858,16 +2998,16 @@ function setPlaceholderProperty(propertyElement) {
 //        var index = term.lastIndexOf(last);
 //        return term.substring(0, index);
 //    }
-//    
+//
 //function autocompleteField(editor, callback){
 //    callback(null, []);
-//                                
-//                            
+//
+//
 //                            var wordList = [{"word":"property.","freq":24,"score":300,"flags":"bc","syllables":"0"},
 //                        {"word":"object.","freq":24,"score":300,"flags":"bc","syllables":"0"},
 //                        {"word":"system.","freq":24,"score":300,"flags":"bc","syllables":"0"}];
-//                        
-//                        
+//
+//
 //                callback(null, wordList.map(function (ea) {
 //                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"
 ////                                               , completer: {
@@ -2880,11 +3020,11 @@ function setPlaceholderProperty(propertyElement) {
 //                       //}
 //                       };
 //                                       }));
-//                              
+//
 //                            var TagsToUse = [];
-//                            //var betweenPercent = editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g));       
+//                            //var betweenPercent = editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g));
 //                            var editorValue = editor.getSession().getDocument().getValue()
-//                            
+//
 //                    //Get the part of the string we want (between the last % before our cursor and the cursor)
 //                    var selectionStart = editor.getSelectionRange().start.column;
 //                    var stringToAnalyse = editorValue.substring(0, selectionStart);
@@ -2897,10 +3037,10 @@ function setPlaceholderProperty(propertyElement) {
 //                        var found = false;
 //                        var Tags = getTags();
 //                        var wordList2 = [];
-//                        
+//
 //                        callback(null, []);
-//                        
-//                        
+//
+//
 //                        while (tag < Tags.length && !found) {
 //                            //If We find the separator, then we filter with the already written part
 //                            if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
@@ -2910,19 +3050,19 @@ function setPlaceholderProperty(propertyElement) {
 //                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
 //                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
 //                                }
-//                                
+//
 //                                wordList2.push({"word":"toto"+tag,"freq":24,"score":300,"flags":"bc","syllables":"0"});
 //                                found = true;
 //                            }
 //                            tag++;
 //                        }
-//                        
+//
 //                        callback(null, wordList2.map(function (ea) {
 //                    console.log("return");
 //                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"};
 //                                       }));
 //                    }
-//                
+//
 //}
 //
 //function changeCompleter(langTools, rhymeCompleter){
