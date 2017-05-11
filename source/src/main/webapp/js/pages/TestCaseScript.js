@@ -2788,15 +2788,16 @@ function configureAceEditor(editor,mode){
     configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord);
     editor.getSession().setMode(mode);
     var autocompleteDone =false;
-
     editor.commands.on("afterExec", function(e){
-        console.log(editor.completers);
+
+
         var editorValue = editor.getValue();
         var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//must have an odd
         var cursorPosition =editor.getCursorPosition().column;
 
         //start display and change autocomplete
         if ( ( (e.command.name=="insertstring") && oddNumberOfPercentCaractere ) || autocompleteDone ){
+
           autocompleteDone =false;
           var spliceOfEditorValueCurrentlyWorkOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPosition)+1,cursorPosition+1);
           //init keywordList
@@ -2819,7 +2820,7 @@ function configureAceEditor(editor,mode){
           }
           editor.execCommand("startAutocomplete");
         }
-        if(e.command.name =="startAutocomplete"){
+        if(e.command.name =="insertstring"){
           //add a . if the LEFT part was autocomplete
           var lastPercentCaractere = editorValue.lastIndexOf('%',cursorPosition);
           if(lastPercentCaractere !=-1){
@@ -2858,6 +2859,7 @@ function configureAceEditor(editor,mode){
           }
         }
         //
+
      });
   }
   editor.getSession().setMode(mode);
