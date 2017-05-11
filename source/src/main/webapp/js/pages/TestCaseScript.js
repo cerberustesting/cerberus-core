@@ -157,6 +157,12 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                 dataType: "json",
                 success: function (data) {
 
+                  var propertyList =[];
+                  for (var index = 0; index < data.length; index++) {
+                    var property = data[index].property;
+                    propertyList.push( property );
+                  }
+
                     testcaseinfo = data.info;
                     loadTestCaseInfo(data.info);
                     json = data.stepList;
@@ -262,7 +268,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     });
 
                     $("#manageProp").click(function () {
-                        editPropertiesModalClick(test, testcase, testcaseinfo, undefined, undefined, data.hasPermissionsUpdate);
+                        editPropertiesModalClick(test, testcase, testcaseinfo, undefined, undefined, data.hasPermissionsUpdate,propertyList);
                     });
 
                     // Button Add Property insert a new Property
@@ -573,7 +579,7 @@ function drawPropertyList(property, index) {
     $("#propList").append(htmlElement);
 }
 
-function drawProperty(property, testcaseinfo, canUpdate, index) {
+function drawProperty(property, testcaseinfo, canUpdate, index, propertyList) {
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     selectType.attr("name", "propertyType");
@@ -668,7 +674,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        setPlaceholderProperty($(this).parents(".property"));
+        setPlaceholderProperty($(this).parents(".property"),propertyList);
     });
 
     selectDB.change(function () {
@@ -854,13 +860,17 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
             async: true,
             success: function (data) {
 
+                var propertyList =[];
+                for (var index = 0; index < data.length; index++) {
+                  var property = data[index].property;
+                  propertyList.push( property );
+                }
                 for (var index = 0; index < data.length; index++) {
                     var property = data[index];
                     array.push(data[index].property);
                     property.toDelete = false;
-                    var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop);
-                    propertyList.push(property.property);
+                    var prop = drawProperty(property, testcaseinfo, canUpdate, index,propertyList);
+                    setPlaceholderProperty(prop,propertyList);
                 }
 
 
@@ -2408,7 +2418,7 @@ function deleteTestCaseHandlerClick() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
-editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate) {
+editPropertiesModalClick = function (test, testcase, info, propertyToAdd, propertyToFocus, canUpdate, propertyList) {
     //$("#propTable").empty();
     loadProperties(test, testcase, info, propertyToFocus, canUpdate).then(function () {
         autocompleteAllFields();
@@ -2436,8 +2446,8 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
             toDelete: false
         };
 
-        var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop);
+        var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length, propertyList);
+        setPlaceholderProperty(prop, propertyList);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2698,12 +2708,12 @@ function setPlaceholderControl(controlElement) {
 //create the string needed for the regex for instance "(?:property|object|system)"
 function createRegexHightlight(tab){
   var regexString ="(?:";
-  var notFirstLoop =false;
+  var firstLoop =true;
   for (var i in tab) {
-    if(notFirstLoop){
-      regexString +="|"
+    if(firstLoop){
+      firstLoop =false;
     }else {
-      notFirstLoop =true;
+      regexString +="|"
     }
     regexString +=tab[i];
   }
@@ -2720,10 +2730,6 @@ function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,object
     var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
     var cerberusHighlightRules = function() {
-        var typeRegexHightlight = createRegexHightlight(typeKeyWord);
-        var propertyRegexHightlight = createRegexHightlight(propertyKeyWord);
-        var objectRegexHightlight = createRegexHightlight(objectKeyWord);
-        var systemRegexHightlight = createRegexHightlight(systemKeyWord);
         //default autocomplete
         var keywordMapper = this.createKeywordMapper({
           "tag" : ""
@@ -2738,16 +2744,16 @@ function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,object
                     regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
                 },{
                     token : "keyword",
-                    regex : "%property" + "." + propertyRegexHightlight + "%"
+                    regex : "%property" + "." + createRegexHightlight(propertyKeyWord) + "%"
                 },{
                     token : "keyword",
-                    regex : "%object" + "." + objectRegexHightlight + "%"
+                    regex : "%object" + "." + createRegexHightlight(objectKeyWord) + "%"
                 },{
                     token : "keyword",
-                    regex : "%system" + "." + systemRegexHightlight + "%"
+                    regex : "%system" + "." + createRegexHightlight(systemKeyWord) + "%"
                 },{
                     token : "keyword",
-                    regex : "%" + typeRegexHightlight//default
+                    regex : "%" + createRegexHightlight(typeKeyWord)//default
                 }]
         };
     };
@@ -2771,7 +2777,7 @@ function changeAceCompletionList(keywordList,label){
   langTools.addCompleter(completer);
 }
 
-function configureAceEditor(editor,mode){
+function configureAceEditor(editor,mode, propertyList){
   var langTools = ace.require("ace/ext/language_tools");
   //custom interrection if the cerberus language is selected
   if (mode=="ace/mode/cerberus"){
@@ -2779,7 +2785,7 @@ function configureAceEditor(editor,mode){
     //left part
     var typeKeyWord =["property","object","system"];
     //right part
-    var propertyKeyWord=[""];
+    var propertyKeyWord= propertyList;
     var objectKeyWord = [""];
     var systemKeyWord = ["SYSTEM",
                         "APPLI",
@@ -2874,13 +2880,14 @@ function configureAceEditor(editor,mode){
   editor.getSession().setMode(mode);
   //editor option
   editor.setTheme("ace/theme/chrome");
+  editor.$blockScrolling = "Infinity";//disable error message
   editor.setOptions({
       maxLines: 10,
       enableBasicAutocompletion: true
   });
 }
 
-function setPlaceholderProperty(propertyElement) {
+function setPlaceholderProperty(propertyElement,propertyList) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
@@ -2938,8 +2945,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-
-                    configureAceEditor(editor,placeHolders[i].value1EditorMode);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode, propertyList);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
@@ -2984,6 +2990,31 @@ function setPlaceholderProperty(propertyElement) {
     });
 
 }
+
+/*
+function getProperties() {
+
+    var test = GetURLParameter("test");
+    var testcase = GetURLParameter("testcase");
+    var property = GetURLParameter("property");
+    var propertyList = [];
+    jQuery.ajaxSetup({async:false});
+    $.ajax({
+        url: "GetPropertiesForTestCase",
+        data: {test: test, testcase: testcase},
+        async: true,
+        success: function (data) {
+            for (var index = 0; index < data.length; index++) {
+              var property = data[index];
+              propertyList.push(property.property);
+            }
+            var propertyListUnique = Array.from(new Set(propertyList));
+            return propertyListUnique;
+        },
+        error: showUnexpectedError
+    });
+    jQuery.ajaxSetup({async:true});
+}*/
 
 // Below is some try for autocompletion
 // TODO : Clean that comment
