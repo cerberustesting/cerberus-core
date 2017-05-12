@@ -2721,8 +2721,21 @@ function createRegexHightlight(tab){
   return regexString;
 }
 
+function getPreviousKeywordId(previousKeyword){
+  var idPreviousKeyword =-1;
+  for (i in allKeyword){
+    for (y in allKeyword[i]["listKeyword"]){
+      if( allKeyword[i]["listKeyword"][y] == previousKeyword){
+        idPreviousKeyword =i;
+      }
+    }
+  }
+  return idPreviousKeyword;
+}
+
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
-function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord){
+function configureHighlingRulesOfCerberusMode(allKeyword){
+
   //change some part of cerberus-mode to highlight text dynamicly
   define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
   "use strict";
@@ -2742,20 +2755,39 @@ function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,object
                 }, {
                     token : "constant.numeric", // float| remove later ?
                     regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
-                },{
-                    token : "keyword",
-                    regex : "%property" + "." + createRegexHightlight(propertyKeyWord) + "%"
-                },{
-                    token : "keyword",
-                    regex : "%object" + "." + createRegexHightlight(objectKeyWord) + "%"
-                },{
-                    token : "keyword",
-                    regex : "%system" + "." + createRegexHightlight(systemKeyWord) + "%"
-                },{
-                    token : "keyword",
-                    regex : "%" + createRegexHightlight(typeKeyWord)//default
                 }]
         };
+        //Regex rule
+        var startingKeywordId =[];
+        for (var i in allKeyword) {
+          var k =allKeyword[i];
+          //get the previous keyword id
+          //
+          if(k["previousKeyword"]  != null)
+            this.$rules["start"].push({
+                  token : "keyword",
+                  regex : "%" + k["previousKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
+              });
+              /*if (k["startCaractere"] =="." ){
+                k = getPreviousKeywordId( k["previousKeyword"] );
+                console.log(k);
+              }*/
+          if(k["previousKeyword"] == null && k["startCaractere"] == "%"){
+            startingKeywordId.push(i);
+          }
+
+        }
+        //Regex Rule
+
+        for (var i in startingKeywordId) {
+          var k =allKeyword[ startingKeywordId[i]  ];
+
+          this.$rules["start"].push({
+                token : "keyword",
+                regex : "%" + createRegexHightlight(k["listKeyword"])
+            });
+          console.log( "%" + createRegexHightlight(k["listKeyword"]) );
+        }
     };
     oop.inherits(cerberusHighlightRules, TextHighlightRules);
     exports.cerberusHighlightRules = cerberusHighlightRules;
@@ -2764,6 +2796,7 @@ function configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,object
 
 function changeAceCompletionList(keywordList,label){
   var langTools = ace.require("ace/ext/language_tools");
+  langTools.setCompleters([]);//clear the autocompleter list
   completer= {
     getCompletions: function(editor, session, pos, prefix, callback) {
       var completions = [];
@@ -2781,101 +2814,96 @@ function configureAceEditor(editor,mode, propertyList){
   var langTools = ace.require("ace/ext/language_tools");
   //custom interrection if the cerberus language is selected
   if (mode=="ace/mode/cerberus"){
-    //value of the KEYWORD
-    //left part
-    var typeKeyWord =["property","object","system"];
-    //right part
-    var propertyKeyWord= propertyList;
-    var objectKeyWord = [""];
-    var systemKeyWord = ["SYSTEM",
-                        "APPLI",
-                        "BROWSER",
-                        "APP_DOMAIN","PP_HOST","APP_VAR1","APP_VAR2","APP_VAR3","APP_VAR4",
-                        "ENV","ENVGP",
-                        "COUNTRY","COUNTRYGP1","COUNTRYGP2","COUNTRYGP3","COUNTRYGP4","COUNTRYGP5","COUNTRYGP6","COUNTRYGP7","COUNTRYGP8","COUNTRYGP9",
-                        "TEST",
-                        "TESTCASE",
-                        "SSIP SSPORT",
-                        "TAG",
-                        "EXECUTIONID",
-                        "EXESTART","EXEELAPSEDMS",
-                        "EXESTORAGEURL",
-                        "STEP.n.n.RETURNCODE","CURRENTSTEP_INDEX","CURRENTSTEP_STARTISO","CURRENTSTEP_ELAPSEDMS",
-                        "LASTSERVICE_HTTPCODE",
-                        "TODAY-yyyy","TODAY-MM","TODAY-dd","TODAY-doy","TODAY-HH","TODAY-mm","TODAY-ss",
-                        "YESTERDAY-yyyy","YESTERDAY-MM","YESTERDAY-dd","YESTERDAY-doy","YESTERDAY-HH","YESTERDAY-mm","YESTERDAY-ss"];
+    var systemList = ["SYSTEM",
+                      "APPLI",
+                      "BROWSER",
+                      "APP_DOMAIN","PP_HOST","APP_VAR1","APP_VAR2","APP_VAR3","APP_VAR4",
+                      "ENV","ENVGP",
+                      "COUNTRY","COUNTRYGP1","COUNTRYGP2","COUNTRYGP3","COUNTRYGP4","COUNTRYGP5","COUNTRYGP6","COUNTRYGP7","COUNTRYGP8","COUNTRYGP9",
+                      "TEST",
+                      "TESTCASE",
+                      "SSIP SSPORT",
+                      "TAG",
+                      "EXECUTIONID",
+                      "EXESTART","EXEELAPSEDMS",
+                      "EXESTORAGEURL",
+                      "STEP.n.n.RETURNCODE","CURRENTSTEP_INDEX","CURRENTSTEP_STARTISO","CURRENTSTEP_ELAPSEDMS",
+                      "LASTSERVICE_HTTPCODE",
+                      "TODAY-yyyy","TODAY-MM","TODAY-dd","TODAY-doy","TODAY-HH","TODAY-mm","TODAY-ss",
+                      "YESTERDAY-yyyy","YESTERDAY-MM","YESTERDAY-dd","YESTERDAY-doy","YESTERDAY-HH","YESTERDAY-mm","YESTERDAY-ss"];
+    //var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
+    var startKeyword ={"previousKeyword" : null, "startCaractere" :"%", "listKeyword": ["property","object","system"], "endCaractere" :"."};
+    //TODO : get the value of the object
+    var objectKeyword  ={"previousKeyword" : "object", "startCaractere" :".", "listKeyword": ["a","b"], "endCaractere" :"." };
+      var subAObjectKeyword  ={"previousKeyword" : "a", "startCaractere" :".", "listKeyword": ["c","d"], "endCaractere" :"%" };
+      var subBObjectKeyword  ={"previousKeyword" : "b", "startCaractere" :".", "listKeyword": ["e","f"], "endCaractere" :"%" };
+    //
+    var propertyKeyword  ={"previousKeyword" : "property", "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%" };
+    var systemKeyword  ={"previousKeyword" : "system", "startCaractere" :".", "listKeyword": systemList, "endCaractere" :"%"};
 
-    var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
-
-    configureHighlingRulesOfCerberusMode(typeKeyWord,propertyKeyWord,objectKeyWord,systemKeyWord);
+    var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,subAObjectKeyword,subBObjectKeyword];
+    //configure all the highlight rule
+    configureHighlingRulesOfCerberusMode(allKeyword);
+    //init the autocomplete list with the keyword of the first element of allKeyword
+    changeAceCompletionList(allKeyword[0]["listKeyword"],"");
 
     var autocompleteDone =false;
     editor.commands.on("afterExec", function(e){
-        var editorValue = editor.getValue();
-        var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//must have an odd
-        var cursorPosition =editor.getCursorPosition().column;
 
-        //start display and change autocomplete
-        if ( ( (e.command.name=="insertstring") && oddNumberOfPercentCaractere ) || autocompleteDone ){
-          autocompleteDone =false;
-          var spliceOfEditorValueCurrentlyWorkOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPosition)+1,cursorPosition+1);
-          //init keywordList
-          var typeAlreadyWriten =false;
-          for (var i in typeKeyWord) {
-            if (spliceOfEditorValueCurrentlyWorkOn.search(typeKeyWord[i])!=-1 ) {
-              typeAlreadyWriten =true;
-            }
-          }
-          if( editor.getSession().getMode().$keywordList == null || !typeAlreadyWriten ){
-            if(editor.getSession().getMode().$keywordList != null)
-              langTools.setCompleters([]);
-            changeAceCompletionList(typeKeyWord,"");
-          }
-          else{
-            langTools.setCompleters([]);
-            for (var i in typeKeyWord) {
-              if( spliceOfEditorValueCurrentlyWorkOn.search(typeKeyWord[i]) !=-1){
-                changeAceCompletionList(allKeyWordRightPart[ typeKeyWord[i] ],typeKeyWord[i]);
-              }
-            }
-          }
-          editor.execCommand("startAutocomplete");
+      var editorValue = editor.getValue();
+      var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//start autocomplete when there is an odd number of %
+
+      if( (e.command.name=="insertstring"  || autocompleteDone) && oddNumberOfPercentCaractere) {
+        var cursorPositionX =editor.getCursorPosition().column;
+
+        //look for the state of the input
+        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); // substring between % or . and the end the cursor is on
+        var previousKeyword =subStringCursorOn;// by default the previous keyword is between the last "%" and the cursor
+        if (subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1) != subStringCursorOn){
+          previousKeyword=subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1)// if there is a "." in subStringCursorOn the previous keyword is after
         }
-        if(e.command.name =="insertstring"){
-          //add a . if the LEFT part was autocomplete
-          var lastPercentCaractere = editorValue.lastIndexOf('%',cursorPosition);
-          if(lastPercentCaractere !=-1){
-            var leftPart = editorValue.slice(lastPercentCaractere+1,cursorPosition);
-            var leftPartWithoutPoint =false;
-            for (var i in typeKeyWord) {
-              if (leftPart ==typeKeyWord[i] && editorValue.slice(cursorPosition,cursorPosition+1) !=".") {
-                leftPartWithoutPoint =true;
-              }
-            }
-            if(leftPartWithoutPoint){
-              editor.session.insert( editor.getCursorPosition() ,".");
-              autocompleteDone =true;
-            }
+        else {
+          if (!autocompleteDone){
+              changeAceCompletionList(allKeyword[0]["listKeyword"],""); // if not we reset the autocomplete
           }
-          //add a % if the RIGHT partwasAutocomple
-          var lastPointCaractere = editorValue.lastIndexOf('.',cursorPosition);
-          if(lastPointCaractere !=-1){
-            var rightPart = editorValue.slice(lastPointCaractere+1,cursorPosition);
-            var rightPartWithoutPercent =false;
-            typeSelected = editorValue.slice(editorValue.lastIndexOf('%',cursorPosition)+1,editorValue.lastIndexOf('.',cursorPosition));
-            for (var i in allKeyWordRightPart[typeSelected]) {
-              if (rightPart == allKeyWordRightPart[typeSelected][i] &&  allKeyWordRightPart[typeSelected][i] !="") {
-                rightPartWithoutPercent =true;
-              }
-            }
-            if(rightPartWithoutPercent){
-              editor.session.insert(editor.getCursorPosition(),"%");
+
+        }
+        autocompleteDone =false;
+        //look for the previousKeyWordUsed
+        var correctPreviousKeyword =false;
+        var idCurrentKeyword =-1;
+        var idPreviousKeyword =-1;
+
+        for (i in allKeyword){
+          for (y in allKeyword[i]["listKeyword"]){
+            if( allKeyword[i]["listKeyword"][y] == previousKeyword){
+              idPreviousKeyword =i;
+              correctPreviousKeyword =true;
             }
           }
         }
-        //
 
-     });
+        editor.execCommand("startAutocomplete");//display autocomplete list
+        if(correctPreviousKeyword){
+          for (i in allKeyword){
+            if( allKeyword[i]["previousKeyword"] == previousKeyword ){
+              idCurrentKeyword = i;
+            }
+          }
+          //final keyword
+          if (idCurrentKeyword == -1){
+            editor.session.insert( editor.getCursorPosition() ,"%");
+          }
+          else {
+            changeAceCompletionList( allKeyword[idCurrentKeyword]["listKeyword"] , allKeyword[idCurrentKeyword]["previousKeyword"] );
+            editor.session.insert( editor.getCursorPosition() ,".");
+            autocompleteDone =true;
+          }
+
+        }
+      }
+    });
+
   }
   editor.getSession().setMode(mode);
   //editor option
