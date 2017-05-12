@@ -2834,14 +2834,14 @@ function configureAceEditor(editor,mode, propertyList){
     //var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
     var startKeyword ={"previousKeyword" : null, "startCaractere" :"%", "listKeyword": ["property","object","system"], "endCaractere" :"."};
     //TODO : get the value of the object
-    var objectKeyword  ={"previousKeyword" : "object", "startCaractere" :".", "listKeyword": ["a","b"], "endCaractere" :"." };
-      var subAObjectKeyword  ={"previousKeyword" : "a", "startCaractere" :".", "listKeyword": ["c","d"], "endCaractere" :"%" };
-      var subBObjectKeyword  ={"previousKeyword" : "b", "startCaractere" :".", "listKeyword": ["e","f"], "endCaractere" :"%" };
+    var objectKeyword  ={"previousKeyword" : "object", "startCaractere" :".", "listKeyword": ["test1","test2"], "endCaractere" :"." };
+      var sub1ObjectKeyword  ={"previousKeyword" : "test1", "startCaractere" :".", "listKeyword": ["test2","test3"], "endCaractere" :"." };
+      var sub2ObjectKeyword  ={"previousKeyword" : "test3", "startCaractere" :".", "listKeyword": ["test4","test5"], "endCaractere" :"%" };
     //
     var propertyKeyword  ={"previousKeyword" : "property", "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%" };
     var systemKeyword  ={"previousKeyword" : "system", "startCaractere" :".", "listKeyword": systemList, "endCaractere" :"%"};
 
-    var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,subAObjectKeyword,subBObjectKeyword];
+    var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,sub1ObjectKeyword,sub2ObjectKeyword];
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword);
     //init the autocomplete list with the keyword of the first element of allKeyword
@@ -2882,8 +2882,8 @@ function configureAceEditor(editor,mode, propertyList){
             }
           }
         }
-
         editor.execCommand("startAutocomplete");//display autocomplete list
+
         if(correctPreviousKeyword){
           for (i in allKeyword){
             if( allKeyword[i]["previousKeyword"] == previousKeyword ){
