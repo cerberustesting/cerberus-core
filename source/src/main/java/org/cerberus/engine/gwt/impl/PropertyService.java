@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -39,7 +38,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IIdentifierService;
@@ -82,8 +80,6 @@ public class PropertyService implements IPropertyService {
     private ISqlLibraryService sqlLibraryService;
     @Autowired
     private IAppServiceService appServiceService;
-    @Autowired
-    private ITestDataService testDataService;
     @Autowired
     private ISoapService soapService;
     @Autowired
@@ -705,15 +701,6 @@ public class PropertyService implements IPropertyService {
                         LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
                         break;
 
-                    case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
-                        testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                        res = testCaseExecutionData.getPropertyResultMessage();
-                        res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                        testCaseExecutionData.setPropertyResultMessage(res);
-                        logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                        LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                        break;
-
                     default:
                         res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
                         res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -915,30 +902,6 @@ public class PropertyService implements IPropertyService {
             testCaseExecutionData.setPropertyResultMessage(new MessageEvent(MessageEventEnum.PROPERTY_FAILED_GETFROMGROOVY_EXCEPTION).resolveDescription("REASON", e.getMessage()));
         }
 
-        return testCaseExecutionData;
-    }
-
-    private TestCaseExecutionData property_getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        String propertyValue = "";
-
-        try {
-            propertyValue = testCaseExecutionData.getValue1();
-            String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplicationObj().getApplication(),
-                    tCExecution.getEnvironmentData(), tCExecution.getCountry()).getValue();
-            if (valueFromTestData != null) {
-                testCaseExecutionData.setValue(valueFromTestData);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
-                res.setDescription(res.getDescription().replace("%PROPERTY%", propertyValue));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromTestData));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } catch (CerberusException exception) {
-            LOG.debug("Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-
-            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        }
         return testCaseExecutionData;
     }
 

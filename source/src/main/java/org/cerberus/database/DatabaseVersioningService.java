@@ -8727,6 +8727,18 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("VALUES ('','cerberus_proxy_nonproxyhosts','localhost,127.0.0.1,192.168.1.*','The list of hosts that should be reached directly, bypassing the proxy. This is a list of patterns separated by \\',\\'. The patterns may start or end with a \\'*\\' for wildcards. Any host matching one of these patterns will be reached through a direct connection instead of through a proxy.');");
         SQLInstruction.add(SQLS.toString());
 
+        // Removed testdata table.
+        //-- ------------------------ 1148-1150
+        SQLS = new StringBuilder();
+        SQLS.append("DROP TABLE `testdata`; ");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `testcasecountryproperties` SET `Type`='Unknown' where `Type` = 'getFromTestData';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE FROM `invariant` WHERE `idname`='PROPERTYTYPE' and`value`='getFromTestData';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

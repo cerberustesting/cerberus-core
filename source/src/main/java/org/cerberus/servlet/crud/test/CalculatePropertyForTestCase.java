@@ -33,10 +33,8 @@ import org.cerberus.engine.entity.ExecutionUUID;
 import org.cerberus.engine.entity.MessageGeneral;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.crud.entity.AppService;
-import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.SqlLibrary;
 import org.cerberus.crud.entity.TestCase;
-import org.cerberus.crud.entity.TestData;
 import org.cerberus.exception.CerberusEventException;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
@@ -45,13 +43,11 @@ import org.cerberus.crud.service.ICountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseService;
-import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.crud.service.impl.ApplicationService;
 import org.cerberus.crud.service.impl.CountryEnvironmentDatabaseService;
 import org.cerberus.crud.service.impl.AppServiceService;
 import org.cerberus.crud.service.impl.SqlLibraryService;
 import org.cerberus.crud.service.impl.TestCaseService;
-import org.cerberus.crud.service.impl.TestDataService;
 import org.cerberus.service.sql.ISQLService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.service.xmlunit.IXmlUnitService;
@@ -90,33 +86,7 @@ public class CalculatePropertyForTestCase extends HttpServlet {
         String country = policy.sanitize(httpServletRequest.getParameter("country"));
         String environment = policy.sanitize(httpServletRequest.getParameter("environment"));
         try {
-            if (type.equals("getFromTestData")) {
-                ITestDataService testDataService = appContext.getBean(TestDataService.class);
-
-                String applicationName = null;
-                Application application = null;
-
-                try {
-                    ITestCaseService testCaseService = appContext.getBean(TestCaseService.class);
-                    IApplicationService applicationService = appContext.getBean(ApplicationService.class);
-
-                    TestCase testCase = testCaseService.findTestCaseByKey(testName, testCaseName);
-                    if (testCase != null) {
-                        application = applicationService.convert(applicationService.readByKey(testCase.getApplication()));
-                        applicationName = application.getApplication();
-                        system = application.getSystem();
-                    } else {
-                        throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
-                    }
-                } catch (CerberusException ex) {
-                    Logger.getLogger(CalculatePropertyForTestCase.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-                }
-
-                TestData td = testDataService.findTestDataByKey(property, applicationName, environment, country);
-                result = td.getValue();
-                description = td.getDescription();
-
-            } else if (type.equals("executeSoapFromLib")) {
+            if (type.equals("executeSoapFromLib")) {
                 IAppServiceService appServiceService = appContext.getBean(AppServiceService.class);
                 ISoapService soapService = appContext.getBean(ISoapService.class);
                 IXmlUnitService xmlUnitService = appContext.getBean(IXmlUnitService.class);
