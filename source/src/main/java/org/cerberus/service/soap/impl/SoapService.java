@@ -61,6 +61,7 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.log.MyLogger;
+import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.soap.ISoapService;
 import org.cerberus.util.SoapUtil;
 import org.cerberus.util.StringUtil;
@@ -81,7 +82,8 @@ public class SoapService implements ISoapService {
      */
     private static final Pattern SOAP_1_2_NAMESPACE_PATTERN = Pattern.compile(SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE);
     /**
-     * Proxy default config. (Should never be used as default config is inserted into database)
+     * Proxy default config. (Should never be used as default config is inserted
+     * into database)
      */
     private static final boolean DEFAULT_PROXY_ACTIVATE = false;
     private static final String DEFAULT_PROXY_HOST = "proxy";
@@ -100,6 +102,8 @@ public class SoapService implements ISoapService {
     private IFactoryAppServiceHeader factoryAppServiceHeader;
     @Autowired
     private IParameterService parameterService;
+    @Autowired
+    IProxyService proxyService;
 
     @Override
     public SOAPMessage createSoapRequest(String envelope, String method, List<AppServiceHeader> header, String token) throws SOAPException, IOException, SAXException, ParserConfigurationException {
@@ -139,7 +143,7 @@ public class SoapService implements ISoapService {
 
     }
 
-    private static SOAPMessage sendSOAPMessage(SOAPMessage message, String url, final Proxy p) throws SOAPException, MalformedURLException {
+    private static SOAPMessage sendSOAPMessage(SOAPMessage message, String url, final Proxy p, final int timeoutms) throws SOAPException, MalformedURLException {
         SOAPConnectionFactory factory = SOAPConnectionFactory.newInstance();
         SOAPConnection connection = factory.createConnection();
 
@@ -150,15 +154,19 @@ public class SoapService implements ISoapService {
                 URL clone = new URL(url.toString());
 
                 URLConnection connection = null;
-                if (p.address().toString().equals("0.0.0.0/0.0.0.0:80")) {
+                if (p == null) {
+                    connection = clone.openConnection();
+
+                } else if (p.address().toString().equals("0.0.0.0/0.0.0.0:80")) {
                     connection = clone.openConnection();
                 } else {
                     connection = clone.openConnection(p);
                 }
-                connection.setConnectTimeout(5 * 1000); // 5 sec
-                connection.setReadTimeout(5 * 1000); // 5 sec
+                // Set Timeout
+                connection.setConnectTimeout(timeoutms);
+                connection.setReadTimeout(timeoutms);
                 // Custom header
-                connection.addRequestProperty("Developer-Mood", "Happy");
+//                connection.addRequestProperty("Developer-Mood", "Happy");
                 return connection;
             }
         });
@@ -200,6 +208,7 @@ public class SoapService implements ISoapService {
         boolean is12SoapVersion = SOAP_1_2_NAMESPACE_PATTERN.matcher(unescapedEnvelope).matches();
 
         AppService serviceSOAP = factoryAppService.create("", AppService.TYPE_SOAP, null, "", "", envelope, "", servicePath, "", method, "", null, "", null);
+        serviceSOAP.setTimeoutms(timeOutMs);
         ByteArrayOutputStream out = null;
         MessageEvent message = null;
 
@@ -268,7 +277,7 @@ public class SoapService implements ISoapService {
             serviceSOAP.setProxyUser(null);
 
             SOAPMessage soapResponse = null;
-            if (parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE)) {
+            if (proxyService.useProxy(servicePath, system)) {
 
                 // Get Proxy host and port from parameters.
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
@@ -300,7 +309,7 @@ public class SoapService implements ISoapService {
                 }
 
                 // Call with Proxy.
-                soapResponse = sendSOAPMessage(input, servicePath, proxy);
+                soapResponse = sendSOAPMessage(input, servicePath, proxy, timeOutMs);
 
             } else {
 
@@ -309,7 +318,8 @@ public class SoapService implements ISoapService {
                 serviceSOAP.setProxyPort(0);
 
                 // Call without proxy.
-                soapResponse = soapConnection.call(input, servicePath);
+                soapResponse = sendSOAPMessage(input, servicePath, null, timeOutMs);
+//                soapResponse = soapConnection.call(input, servicePath);
 
             }
 

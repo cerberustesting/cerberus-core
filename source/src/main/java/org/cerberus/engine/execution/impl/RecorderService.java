@@ -322,7 +322,7 @@ public class RecorderService implements IRecorderService {
 
             // Service Call META data information.
             Recorder recorderRequest = this.initFilenames(runId, test, testCase, step, index, sequence, controlString, property, propertyIndex, "call", "json");
-            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), convertToJSON(se).toString());
+            recordFile(recorderRequest.getFullPath(), recorderRequest.getFileName(), se.toJSONOnExecution().toString());
             // Index file created to database.
             object = testCaseExecutionFileFactory.create(0, runId, recorderRequest.getLevel(), "Service Call", recorderRequest.getRelativeFilenameURL(), "JSON", "", null, "", null);
             testCaseExecutionFileService.save(object);
@@ -380,61 +380,6 @@ public class RecorderService implements IRecorderService {
             LOG.error(logPrefix + ex.toString());
         }
         return objectFileList;
-    }
-
-    private JSONObject convertToJSON(AppService se) {
-        JSONObject jsonResponse = new JSONObject();
-        JSONObject jsonMyRequest = new JSONObject();
-        JSONObject jsonMyResponse = new JSONObject();
-        try {
-            // Request Information.
-            jsonMyRequest.put("CalledURL", se.getServicePath());
-            if (!StringUtil.isNullOrEmpty(se.getMethod())) {
-                jsonMyRequest.put("HTTP-Method", se.getMethod());
-            }
-            jsonMyRequest.put("ServiceType", se.getType());
-            if (!(se.getHeaderList().isEmpty())) {
-                JSONObject jsonHeaders = new JSONObject();
-                for (AppServiceHeader header : se.getHeaderList()) {
-                    jsonHeaders.put(header.getKey(), header.getValue());
-                }
-                jsonMyRequest.put("HTTP-Header", jsonHeaders);
-            }
-            if (!(se.getContentList().isEmpty())) {
-                JSONObject jsonContent = new JSONObject();
-                for (AppServiceContent content : se.getContentList()) {
-                    jsonContent.put(content.getKey(), content.getValue());
-                }
-                jsonMyRequest.put("Content", jsonContent);
-            }
-            jsonMyRequest.put("HTTP-Request", se.getServiceRequest());
-            jsonMyRequest.put("HTTP-Proxy", se.isProxy());
-            jsonMyRequest.put("HTTP-ProxyHost", se.getProxyHost());
-            if (!(se.getProxyPort() == 0)) {
-                jsonMyRequest.put("HTTP-ProxyPort", se.getProxyPort());
-            }
-            jsonMyRequest.put("HTTP-ProxyAuthentification", se.isProxyWithCredential());
-            jsonMyRequest.put("HTTP-ProxyUser", se.getProxyUser());
-            jsonResponse.put("Request", jsonMyRequest);
-
-            // Response Information.
-            jsonMyResponse.put("HTTP-ReturnCode", se.getResponseHTTPCode());
-            jsonMyResponse.put("HTTP-Version", se.getResponseHTTPVersion());
-            jsonMyResponse.put("HTTP-ResponseBody", se.getResponseHTTPBody());
-            jsonMyResponse.put("HTTP-ResponseContentType", se.getResponseHTTPBodyContentType());
-            if (!(se.getResponseHeaderList().isEmpty())) {
-                JSONObject jsonHeaders = new JSONObject();
-                for (AppServiceHeader header : se.getResponseHeaderList()) {
-                    jsonHeaders.put(header.getKey(), header.getValue());
-                }
-                jsonMyResponse.put("Header", jsonHeaders);
-            }
-            jsonResponse.put("Response", jsonMyResponse);
-
-        } catch (JSONException ex) {
-            Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return jsonResponse;
     }
 
     @Override
