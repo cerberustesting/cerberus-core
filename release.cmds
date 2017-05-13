@@ -57,6 +57,6 @@ git add bin/02DeployApp.sh bin/02DeployApp.bat
 git commit -m 'chore: prepare the new ${RELEASE_VERSION} version'
 
 # Execute release
-mvn --batch-mode release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
+mvn --batch-mode -Prelease release:prepare -Dtag=cerberus-testing-${RELEASE_VERSION} -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=${NEXT_DEVELOPMENT_VERSION}
 mvn release:perform
 git push origin master
