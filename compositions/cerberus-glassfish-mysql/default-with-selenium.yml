@@ -77,7 +77,15 @@ services:
     image: selenium/node-firefox-debug:2.53.0
     environment:
       HUB_PORT_4444_TCP_ADDR: selenium-hub
+    expose:
+      - "5900"
+    ports:
+      - "15900:5900"
   selenium-node-chrome:
     image: selenium/node-chrome-debug:2.53.0
     environment:
       HUB_PORT_4444_TCP_ADDR: selenium-hub
+    expose:
+      - "5900"
+    ports:
+      - "15901:5900"

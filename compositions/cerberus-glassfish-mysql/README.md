@@ -51,6 +51,20 @@ _Note: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all un
 
 The Selenium Grid Console can be reached at `<docker_host>:14444/grid/console`.
 
+#### View running test on browser
+
+The Selenium Grid is using the _debug_ version of the associated nodes.
+This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_Network_Computing) that can be reached through a VNC client.
+
+If you use the default `default-with-selenium.yml` Docker composition configuration then you could connect to a Selenium node by: 
+
+1. Getting the port from which the Selenium node you want to connect (`15900` for Google Chrome, `15901` for Mozilla Firefox). Let's name it `<selenium_node_port>`
+2. Connect your VNC client by:
+  1. Using `<docker_host>:<selenium_node_port>` as URL
+  2. Using `secret` as prompted password
+
+#### Selenium nodes scaling
+
 By default, the `default-with-selenium.yml` Docker composition starts one [Mozilla Firefox Selenium node]((https://hub.docker.com/r/selenium/node-firefox-debug/)) and one [Google Chrome Selenium node]((https://hub.docker.com/r/selenium/node-chrome-debug/)).
 Number of Selenium nodes can be scaled. For instance, by executing:
 
@@ -58,22 +72,9 @@ Number of Selenium nodes can be scaled. For instance, by executing:
 
 Then three Mozilla Firefox Selenium nodes and three Google Chrome Selenium nodes will be available.
 
-#### View running test on browser
+**Warning**, the default `default-with-selenium.yml` Docker composition defines a given port for its single Google Chrome and Mozilla Firefox Selenium node. Beware to remove it in order to apply scale. 
 
-The Selenium Grid is using the _debug_ version of the associated nodes.
-This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_Network_Computing) that can be reached through a VNC client.
-
-Assume you already installed your own VNC client, then viewing running test on browser can be done by: 
-
-1. Getting URL of the needed node by:
-  1. Browse to the Selenium hub's console at `<docker_host>:14444/grid/console`, where `<docker_host>` is your Docker host 
-  2. Select the associated node and click on the _Configuration_ tab
-  3. Read the URL's host
-2. Connect your VNC client by:
-  1. Using the read URL's host as target host
-  2. Using `secret` as prompted password
-
-_Note: This configuration could not be efficient in production environment. You may want to remove the -debug suffix from Selenium node image names to get production ready Selenium nodes._
+_Note: The default configuration could not be efficient in production environment. You may want to remove the -debug suffix from Selenium node image names to get production ready Selenium nodes._
 
 ### Associated images
 
