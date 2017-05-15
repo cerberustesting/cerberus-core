@@ -2859,9 +2859,9 @@ function configureAceEditor(editor,mode, propertyList){
     editor.commands.on("afterExec", function(e){
 
       var editorValue = editor.getValue();
-      var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//start autocomplete when there is an odd number of %
+      var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
 
-      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && oddNumberOfPercentCaractere) {
+      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && numberOfPercentCaractere<2) {
         //reset autocomplete var
         autocompleteDone =false;
         //look for the state of the input
@@ -2881,6 +2881,7 @@ function configureAceEditor(editor,mode, propertyList){
           if (!keywordInputByUserExist)
             allKeywordCorrect =false;
         }
+        console.log(allKeywordCorrect);
         editor.execCommand("startAutocomplete");
         if (allKeywordCorrect){
           //change the autocomplete list accordingly to what was input previously
@@ -2907,7 +2908,6 @@ function configureAceEditor(editor,mode, propertyList){
             //ADD the caractare . or % if needed
             if (idCurrentKeyword == -1){
               editor.session.insert( editor.getCursorPosition() ,"%");
-              editor.execCommand("startAutocomplete");
             }else {
               editor.session.insert( editor.getCursorPosition() ,".");
               editor.execCommand("startAutocomplete");
@@ -2917,6 +2917,7 @@ function configureAceEditor(editor,mode, propertyList){
             autocompleteDone =true;
         }else {// if one of the keyword is incorrect delete all the autocomplete var
           langTools.setCompleters([]);
+          editor.execCommand("startAutocomplete");
         }
       }
     });
