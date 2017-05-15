@@ -2886,17 +2886,10 @@ function configureAceEditor(editor,mode, propertyList){
         if (allKeywordCorrect){
 
           //correct a bug if someone paste somthing with a "." at the end or remove a "."
-          if ( e.command.name=="paste") {
-            if ( e.args.text.substring(e.args.text.length-1) =="."){
+          if ( e.command.name=="paste" &&  e.args.text.substring(e.args.text.length-1) =="." || e.args=="." ) {
               editor.setValue(editor.getValue().slice(0,-1), 1);
               editorValue = editor.getValue();//update value
               subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1);
-            }
-          }
-          else if ( e.args=="." ) {
-            editor.setValue(editor.getValue().slice(0,-1), 1);
-            editorValue = editor.getValue();//update value
-            subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); 
           }
           //change the autocomplete list accordingly to what was input previously
           var keywordInputList = subStringCursorOn.split(".");
