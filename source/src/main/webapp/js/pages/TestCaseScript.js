@@ -2795,7 +2795,6 @@ function configureHighlingRulesOfCerberusMode(allKeyword){
                 token : "keyword",
                 regex : "%" + createRegexHightlight(k["listKeyword"])
             });
-          console.log( "%" + createRegexHightlight(k["listKeyword"]) );
         }
     };
     oop.inherits(cerberusHighlightRules, TextHighlightRules);
@@ -2861,34 +2860,15 @@ function configureAceEditor(editor,mode, propertyList){
 
       var editorValue = editor.getValue();
       var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//start autocomplete when there is an odd number of %
-      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && oddNumberOfPercentCaractere) {
-        var cursorPositionX =editor.getCursorPosition().column;
-        //look for the state of the input
-        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); // substring between % or . and the end the cursor is on
-        var motherKeyword =subStringCursorOn;// by default the previous keyword is between the last "%" and the cursor
-        if (subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1) != subStringCursorOn){
-          motherKeyword=subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1)// if there is a "." in subStringCursorOn the previous keyword is after
-        }
-        /*var motherKeyword = subStringCursorOn.split(".");
-        motherKeyword =motherKeyword[motherKeyword.length-1];
-        console.log(motherKeyword);*/
-        else {
-          if (!autocompleteDone){
-              changeAceCompletionList(allKeyword[0]["listKeyword"],""); // if not we reset the autocomplete
-          }
 
-        }
+      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && oddNumberOfPercentCaractere) {
+        //reset autocomplete var
         autocompleteDone =false;
-        //check if the previous keyword exist
-        var correctmotherKeyword =false;
-        for (i in allKeyword){
-          for (y in allKeyword[i]["listKeyword"]){
-            if( allKeyword[i]["listKeyword"][y] == motherKeyword){
-              correctmotherKeyword =true;
-            }
-          }
-        }
-        //check all the keyword to see if they exist
+        //look for the state of the input
+        var cursorPositionX =editor.getCursorPosition().column;
+        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); // substring between % or . and the end the cursor is on
+
+        //check if all the keyword input are correct
         var allKeywordCorrect =true;
         var keywordInputByUser =subStringCursorOn.split(".");
         keywordInputByUser.pop();
@@ -2901,34 +2881,42 @@ function configureAceEditor(editor,mode, propertyList){
           if (!keywordInputByUserExist)
             allKeywordCorrect =false;
         }
-
-        if(!allKeywordCorrect){
-            langTools.setCompleters([]);
-        }else {
-            var idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
-            //if (idCurrentKeyword != -1)
-        }
-        editor.execCommand("startAutocomplete");//display autocomplete list
-
-        if(correctmotherKeyword){
-          var idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
-          //final keyword
-          if (idCurrentKeyword == -1){
-            if (e.command.name != "backspace"){
-              //allow to suppress "%" if the keywords are correct
-              editor.session.insert( editor.getCursorPosition() ,"%");
-              editor.execCommand("startAutocomplete");//display autocomplete list
-            }
-          }
-          else {
+        editor.execCommand("startAutocomplete");
+        if (allKeywordCorrect){
+          //change the autocomplete list accordingly to what was input previously
+          var keywordInputList = subStringCursorOn.split(".");
+          var motherKeyword =keywordInputList[keywordInputList.length-1];
+          //change autocomplete list
+          var idCurrentKeyword =-1;
+          idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
+          if (idCurrentKeyword != -1){
             changeAceCompletionList( allKeyword[idCurrentKeyword]["listKeyword"] , allKeyword[idCurrentKeyword]["motherKeyword"] );
-            if (e.command.name != "backspace"){//allow to suppress "." if the keywords are correct
-              editor.session.insert( editor.getCursorPosition() ,".");
-              editor.execCommand("startAutocomplete");//display autocomplete list
-            }
-            autocompleteDone =true;
+          }else {
+            changeAceCompletionList(allKeyword[0]["listKeyword"],""); //reset autocomplete value
           }
 
+          var correctmotherKeyword =false;
+          for (i in allKeyword){
+            for (y in allKeyword[i]["listKeyword"]){
+              if( allKeyword[i]["listKeyword"][y] == motherKeyword){
+                correctmotherKeyword =true;
+              }
+            }
+          }
+          if (correctmotherKeyword && e.command.name != "backspace"){
+            //ADD the caractare . or % if needed
+            if (idCurrentKeyword == -1){
+              editor.session.insert( editor.getCursorPosition() ,"%");
+              editor.execCommand("startAutocomplete");
+            }else {
+              editor.session.insert( editor.getCursorPosition() ,".");
+              editor.execCommand("startAutocomplete");
+            }
+          }
+          if(correctmotherKeyword)
+            autocompleteDone =true;
+        }else {// if one of the keyword is incorrect delete all the autocomplete var
+          langTools.setCompleters([]);
         }
       }
     });
