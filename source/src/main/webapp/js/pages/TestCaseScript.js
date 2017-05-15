@@ -2721,16 +2721,25 @@ function createRegexHightlight(tab){
   return regexString;
 }
 
-function getPreviousKeywordId(previousKeyword){
-  var idPreviousKeyword =-1;
+function getmotherKeywordId(motherKeyword,allKeyword){
+  var idmotherKeyword =-1;
   for (i in allKeyword){
     for (y in allKeyword[i]["listKeyword"]){
-      if( allKeyword[i]["listKeyword"][y] == previousKeyword){
-        idPreviousKeyword =i;
+      if( allKeyword[i]["listKeyword"][y] == motherKeyword){
+        idmotherKeyword =i;
       }
     }
   }
-  return idPreviousKeyword;
+  return idmotherKeyword;
+}
+function getCurrentKeywordId(motherKeyword,allKeyword){
+  var idCurrentKeyword =-1;
+  for (i in allKeyword){
+    if( allKeyword[i]["motherKeyword"] == motherKeyword ){
+      idCurrentKeyword = i;
+    }
+  }
+  return idCurrentKeyword;
 }
 
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
@@ -2763,16 +2772,16 @@ function configureHighlingRulesOfCerberusMode(allKeyword){
           var k =allKeyword[i];
           //get the previous keyword id
           //
-          if(k["previousKeyword"]  != null)
+          if(k["motherKeyword"]  != null)
             this.$rules["start"].push({
                   token : "keyword",
-                  regex : "%" + k["previousKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
+                  regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
               });
               /*if (k["startCaractere"] =="." ){
-                k = getPreviousKeywordId( k["previousKeyword"] );
+                k = getmotherKeywordId( k["motherKeyword"] );
                 console.log(k);
               }*/
-          if(k["previousKeyword"] == null && k["startCaractere"] == "%"){
+          if(k["motherKeyword"] == null && k["startCaractere"] == "%"){
             startingKeywordId.push(i);
           }
 
@@ -2832,14 +2841,14 @@ function configureAceEditor(editor,mode, propertyList){
                       "TODAY-yyyy","TODAY-MM","TODAY-dd","TODAY-doy","TODAY-HH","TODAY-mm","TODAY-ss",
                       "YESTERDAY-yyyy","YESTERDAY-MM","YESTERDAY-dd","YESTERDAY-doy","YESTERDAY-HH","YESTERDAY-mm","YESTERDAY-ss"];
     //var allKeyWordRightPart = {"property": propertyKeyWord,"object": objectKeyWord,"system": systemKeyWord };
-    var startKeyword ={"previousKeyword" : null, "startCaractere" :"%", "listKeyword": ["property","object","system"], "endCaractere" :"."};
+    var startKeyword ={"motherKeyword" : null, "startCaractere" :"%", "listKeyword": ["property","object","system"], "endCaractere" :"."};
     //TODO : get the value of the object
-    var objectKeyword  ={"previousKeyword" : "object", "startCaractere" :".", "listKeyword": ["test1","test2"], "endCaractere" :"." };
-      var sub1ObjectKeyword  ={"previousKeyword" : "test1", "startCaractere" :".", "listKeyword": ["test2","test3"], "endCaractere" :"." };
-      var sub2ObjectKeyword  ={"previousKeyword" : "test3", "startCaractere" :".", "listKeyword": ["test4","test5"], "endCaractere" :"%" };
+    var objectKeyword  ={"motherKeyword" : "object", "startCaractere" :".", "listKeyword": ["test1","test2"], "endCaractere" :"." };
+      var sub1ObjectKeyword  ={"motherKeyword" : "test1", "startCaractere" :".", "listKeyword": ["test2","test3"], "endCaractere" :"." };
+      var sub2ObjectKeyword  ={"motherKeyword" : "test3", "startCaractere" :".", "listKeyword": ["test4","test5"], "endCaractere" :"%" };
     //
-    var propertyKeyword  ={"previousKeyword" : "property", "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%" };
-    var systemKeyword  ={"previousKeyword" : "system", "startCaractere" :".", "listKeyword": systemList, "endCaractere" :"%"};
+    var propertyKeyword  ={"motherKeyword" : "property", "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%" };
+    var systemKeyword  ={"motherKeyword" : "system", "startCaractere" :".", "listKeyword": systemList, "endCaractere" :"%"};
 
     var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,sub1ObjectKeyword,sub2ObjectKeyword];
     //configure all the highlight rule
@@ -2852,16 +2861,17 @@ function configureAceEditor(editor,mode, propertyList){
 
       var editorValue = editor.getValue();
       var oddNumberOfPercentCaractere =(editorValue.match(/\%/g) || []).length %2;//start autocomplete when there is an odd number of %
-
-      if( (e.command.name=="insertstring"  || autocompleteDone) && oddNumberOfPercentCaractere) {
+      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && oddNumberOfPercentCaractere) {
         var cursorPositionX =editor.getCursorPosition().column;
-
         //look for the state of the input
         var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); // substring between % or . and the end the cursor is on
-        var previousKeyword =subStringCursorOn;// by default the previous keyword is between the last "%" and the cursor
+        var motherKeyword =subStringCursorOn;// by default the previous keyword is between the last "%" and the cursor
         if (subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1) != subStringCursorOn){
-          previousKeyword=subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1)// if there is a "." in subStringCursorOn the previous keyword is after
+          motherKeyword=subStringCursorOn.slice( subStringCursorOn.lastIndexOf('.',cursorPositionX)+1,cursorPositionX+1)// if there is a "." in subStringCursorOn the previous keyword is after
         }
+        /*var motherKeyword = subStringCursorOn.split(".");
+        motherKeyword =motherKeyword[motherKeyword.length-1];
+        console.log(motherKeyword);*/
         else {
           if (!autocompleteDone){
               changeAceCompletionList(allKeyword[0]["listKeyword"],""); // if not we reset the autocomplete
@@ -2869,34 +2879,53 @@ function configureAceEditor(editor,mode, propertyList){
 
         }
         autocompleteDone =false;
-        //look for the previousKeyWordUsed
-        var correctPreviousKeyword =false;
-        var idCurrentKeyword =-1;
-        var idPreviousKeyword =-1;
-
+        //check if the previous keyword exist
+        var correctmotherKeyword =false;
         for (i in allKeyword){
           for (y in allKeyword[i]["listKeyword"]){
-            if( allKeyword[i]["listKeyword"][y] == previousKeyword){
-              idPreviousKeyword =i;
-              correctPreviousKeyword =true;
+            if( allKeyword[i]["listKeyword"][y] == motherKeyword){
+              correctmotherKeyword =true;
             }
           }
         }
+        //check all the keyword to see if they exist
+        var allKeywordCorrect =true;
+        var keywordInputByUser =subStringCursorOn.split(".");
+        keywordInputByUser.pop();
+        for (var i in keywordInputByUser){
+          var keywordInputByUserExist = false;
+          for (var y in allKeyword) {
+            if ( allKeyword[y]["motherKeyword"] == keywordInputByUser[i] )
+              keywordInputByUserExist =true;
+          }
+          if (!keywordInputByUserExist)
+            allKeywordCorrect =false;
+        }
+
+        if(!allKeywordCorrect){
+            langTools.setCompleters([]);
+        }else {
+            var idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
+            //if (idCurrentKeyword != -1)
+        }
         editor.execCommand("startAutocomplete");//display autocomplete list
 
-        if(correctPreviousKeyword){
-          for (i in allKeyword){
-            if( allKeyword[i]["previousKeyword"] == previousKeyword ){
-              idCurrentKeyword = i;
-            }
-          }
+        if(correctmotherKeyword){
+          var idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
           //final keyword
           if (idCurrentKeyword == -1){
-            editor.session.insert( editor.getCursorPosition() ,"%");
+            if (e.command.name != "backspace"){
+              //allow to suppress "%" if the keywords are correct
+              editor.session.insert( editor.getCursorPosition() ,"%");
+              editor.execCommand("startAutocomplete");//display autocomplete list
+            }
           }
           else {
-            changeAceCompletionList( allKeyword[idCurrentKeyword]["listKeyword"] , allKeyword[idCurrentKeyword]["previousKeyword"] );
-            editor.session.insert( editor.getCursorPosition() ,".");
+            changeAceCompletionList( allKeyword[idCurrentKeyword]["listKeyword"] , allKeyword[idCurrentKeyword]["motherKeyword"] );
+            if (e.command.name != "backspace"){//allow to suppress "." if the keywords are correct
+              editor.session.insert( editor.getCursorPosition() ,".");
+              editor.execCommand("startAutocomplete");//display autocomplete list
+            }
             autocompleteDone =true;
           }
 
