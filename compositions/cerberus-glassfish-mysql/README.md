@@ -43,6 +43,7 @@ To start Cerberus with a ready-to-use Selenium Grid, you can run the `default-wi
 
 - Selenium ip/host: `selenium-hub`
 - Selenium port: `4444`
+- Platform: `LINUX`
 - Browser: `firefox` or `chrome`
 
 _Note: The Selenium Grid, Mozilla Firefox node and Google Chrome node are all under the **2.53.0** version._
