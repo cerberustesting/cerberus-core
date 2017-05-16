@@ -58,10 +58,10 @@ This way, nodes integrate a [VNC server](https://fr.wikipedia.org/wiki/Virtual_N
 
 If you use the default `default-with-selenium.yml` Docker composition configuration then you could connect to a Selenium node by: 
 
-1. Getting the port from which the Selenium node you want to connect (`15900` for Google Chrome, `15901` for Mozilla Firefox). Let's name it `<selenium_node_port>`
+1. Getting the port from which the Selenium node you want to connect (`15900` for Mozilla Firefox, `15901` for Google Chrome). Let's name it `<selenium_node_port>`
 2. Connect your VNC client by:
-  1. Using `<docker_host>:<selenium_node_port>` as URL
-  2. Using `secret` as prompted password
+  * Using `<docker_host>:<selenium_node_port>` as URL
+  * Using `secret` as prompted password
 
 #### Selenium nodes scaling
 
@@ -79,7 +79,7 @@ _Note: The default configuration could not be efficient in production environmen
 ### Associated images
 
 Image                                                                                                           | Description
-----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------
 [`cerberustesting/cerberus-db-mysql`](https://hub.docker.com/r/cerberustesting/cerberus-db-mysql/)              | Run a Cerberus dedicated MySQL database instance
 [`cerberustesting/cerberus-as-glassfish`](https://hub.docker.com/r/cerberustesting/cerberus-as-glassfish/)      | Run a Cerberus instance into a Glassfish application server
 [`selenium/hub`](https://hub.docker.com/r/selenium/hub/)                                                        | Run a Selenium Grid instance
@@ -96,15 +96,18 @@ Port             | Description
 `14848`          | the Glassfish administration console access port
 `13306`          | the MySQL database access port
 `14444`          | the Selenium Grid access port, in case of using the `default-with-selenium.yml` composition
+`15900`          | the VNC port for the Mozilla Firefox Selenium node, in case of using the `default-with-selenium.yml` composition
+`15901`          | the VNC port for the Google Chrome Selenium node, in case of using the `default-with-selenium.yml` composition
 
 ### Mapped volumes
 
 Hereafter list of mapped volumes:
 
-Service                 | Data volume (Source)        | Host volume (Destination, default values)   | Description
-------------------------|-----------------------------|---------------------------------------------| ---------------------
-`cerberus-db-mysql`     | `/var/lib/mysql`            | `./localdata/mysql-db`                      | The MySQL local database directory
-`cerberus-as-glassfish` | `/opt/cerberus-screenshots` | `./localdata/screenshots`                   | The Cerberus execution screenshots directory
+Service                 | Data volume (Source)                                                          | Host volume (Destination, default values)     | Description
+------------------------|-------------------------------------------------------------------------------|-----------------------------------------------| -----------------------------------------------
+`cerberus-db-mysql`     | `/var/lib/mysql`                                                              | `./localdata/mysql-db`                        | The MySQL local database directory
+`cerberus-as-glassfish` | `/usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures`    | `./localdata/screenshots`                     | The Cerberus execution screenshots directory
+`cerberus-as-glassfish` | `/usr/local/glassfish4/glassfish/domains/domain1/logs`                        | `./localdata/logs`                            | The Cerberus logs directory
 
 Don't forget to change host volume default values to fit to your need.
 

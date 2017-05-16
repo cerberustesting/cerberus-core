@@ -33,7 +33,7 @@
 # Volumes:
 #   - MySQL data directory                      : FROM /var/lib/mysql                                                             TO ../localdata/mysql-db      (SERVICE cerberus-db-mysql)
 #   - Cerberus execution screenshots directory  : FROM /usr/local/glassfish4/glassfish/domains/domain1/docroot/CerberusPictures   TO ../localdata/screenshots   (SERVICE cerberus-as-glassfish)
-#   - Cerberus server log directory             : FROM /usr/local/glassfish4/glassfish/domains/domain1/logs                       TO ../localdata/logs          (SERVICE cerberus-as-glassfish)
+#   - Cerberus server logs directory            : FROM /usr/local/glassfish4/glassfish/domains/domain1/logs                       TO ../localdata/logs          (SERVICE cerberus-as-glassfish)
 #     ** IMPORTANT **
 #     The default mapping values are for test only. Don't forget to change them to be more relevant with your configuration.
 version: '2'
