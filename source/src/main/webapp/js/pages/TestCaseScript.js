@@ -2718,6 +2718,7 @@ function createRegexHightlight(tab){
     regexString +=tab[i];
   }
   regexString +=")";
+
   return regexString;
 }
 
@@ -2756,7 +2757,7 @@ function configureHighlingRulesOfCerberusMode(allKeyword){
         var keywordMapper = this.createKeywordMapper({
           "tag" : ""
         }, "identifier");
-
+        //regex rule for number (can be deleted)
         this.$rules = {
             "start" : [{
                     token : "constant.numeric", // hex| remove later ?
@@ -2766,31 +2767,43 @@ function configureHighlingRulesOfCerberusMode(allKeyword){
                     regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
                 }]
         };
-        //Regex rule
+        //Regex rule for all middle the keyword
         var startingKeywordId =[];
+        var endKeywordId =[]
         for (var i in allKeyword) {
           var k =allKeyword[i];
-          //get the previous keyword id
-          //
-          if(k["motherKeyword"]  != null)
-            this.$rules["start"].push({
-                  token : "keyword",
-                  regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
-              });
-              /*if (k["startCaractere"] =="." ){
-                k = getmotherKeywordId( k["motherKeyword"] );
-                console.log(k);
-              }*/
+          if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "."){
+            // get all the child value
+            var previousK = allKeyword[ getmotherKeywordId(k["motherKeyword"],allKeyword) ];
+            for (var y in k["listKeyword"]) {
+              var nextK = allKeyword[ getCurrentKeywordId( k["listKeyword"][y] ,allKeyword) ];
+              if ( nextK != undefined){
+                console.log( previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"] + createRegexHightlight( nextK["listKeyword"] ) + nextK["endCaractere"] );
+                this.$rules["start"].push({
+                      token : "keyword",
+                      regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"] + createRegexHightlight( nextK["listKeyword"] ) + nextK["endCaractere"]
+                  });
+              }
+            }
+          }
           if(k["motherKeyword"] == null && k["startCaractere"] == "%"){
             startingKeywordId.push(i);
           }
-
+          if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "%"){
+            endKeywordId.push(i);
+          }
         }
-        //Regex Rule
-
+        //Regex rule for all the keyword that are not object (must be defined in second position)
+        for (var i in endKeywordId) {
+          var k =allKeyword[ endKeywordId[i]  ];
+          this.$rules["start"].push({
+                token : "keyword",
+                regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
+            });
+        }
+        //Regex Rule for the begining (must be defined in last position)
         for (var i in startingKeywordId) {
           var k =allKeyword[ startingKeywordId[i]  ];
-
           this.$rules["start"].push({
                 token : "keyword",
                 regex : "%" + createRegexHightlight(k["listKeyword"])
@@ -2843,19 +2856,20 @@ function configureAceEditor(editor,mode, propertyList){
     var startKeyword ={"motherKeyword" : null, "startCaractere" :"%", "listKeyword": ["property","object","system"], "endCaractere" :"."};
     //TODO : get the value of the object
     var objectKeyword  ={"motherKeyword" : "object", "startCaractere" :".", "listKeyword": ["test1","test2"], "endCaractere" :"." };
-      var sub1ObjectKeyword  ={"motherKeyword" : "test1", "startCaractere" :".", "listKeyword": ["test2","test3"], "endCaractere" :"." };
-      var sub2ObjectKeyword  ={"motherKeyword" : "test3", "startCaractere" :".", "listKeyword": ["test4","test5"], "endCaractere" :"%" };
+      var sub2ObjectKeyword  ={"motherKeyword" : "test1", "startCaractere" :".", "listKeyword": ["test4","test5"], "endCaractere" :"%" };
+      var sub3ObjectKeyword  ={"motherKeyword" : "test2", "startCaractere" :".", "listKeyword": ["test6"], "endCaractere" :"." };
+      var sub4ObjectKeyword  ={"motherKeyword" : "test6", "startCaractere" :".", "listKeyword": ["test7"], "endCaractere" :"%" };
     //
     var propertyKeyword  ={"motherKeyword" : "property", "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%" };
     var systemKeyword  ={"motherKeyword" : "system", "startCaractere" :".", "listKeyword": systemList, "endCaractere" :"%"};
 
-    var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,sub1ObjectKeyword,sub2ObjectKeyword];
+    var allKeyword =[startKeyword,objectKeyword,propertyKeyword,systemKeyword,sub2ObjectKeyword,sub3ObjectKeyword,sub4ObjectKeyword];
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword);
     //init the autocomplete list with the keyword of the first element of allKeyword
     changeAceCompletionList(allKeyword[0]["listKeyword"],"");
-
     var autocompleteDone =false;
+
     editor.commands.on("afterExec", function(e){
 
       var editorValue = editor.getValue();
