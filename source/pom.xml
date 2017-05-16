@@ -36,6 +36,7 @@
         <java.version>1.7</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <env>local</env>
 
         <!-- Version management -->
         <powermock.version>1.5.2</powermock.version>
@@ -86,11 +87,10 @@
         <maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
         <maven-release-plugin.version>2.5</maven-release-plugin.version>
         <maven-deploy-plugin.version>2.5</maven-deploy-plugin.version>
-        <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
+        <maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>2.4.1</maven-assembly-plugin.version>
         <javaee-endorsed-api.version>7.0</javaee-endorsed-api.version>
-        <jsch.version>0.1.42</jsch.version>
-        <ant-jsch.version>1.8.2</ant-jsch.version>
+        <ant-jsch.version>1.10.1</ant-jsch.version>
         <jackson.version>2.8.5</jackson.version>
         <asciidoctor-maven-plugin.version>1.5.2</asciidoctor-maven-plugin.version>
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
@@ -514,6 +514,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/${env}-assembly.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -537,44 +563,48 @@
             </build>
         </profile>
 
-        <!-- Additional configuration during release process -->
+        <!--
+            Additional configuration during release process
+
+            /!\ Prerequisites: Beware to correctly declared the following properties into your Maven settings:
+                - cerberus.sourceforge.username, which is a correct Cerberus' Sourceforge user
+                - cerberus.sourceforge.password, which is a correct Cerberus' Sourceforge password
+        -->
         <profile>
             <id>release</id>
+            <properties>
+                <env>release</env>
+                <cerberus.sourceforge.url>frs.sourceforge.net:/home/frs/project/cerberus-source/
+                </cerberus.sourceforge.url>
+            </properties>
             <build>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>${maven-deploy-plugin.version}</version>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${maven-antrun-plugin.version}</version>
                         <executions>
                             <!-- Upload built artifacts into our SourceForge account during the deploy phase -->
                             <execution>
+                                <id>sourceforge-deploy</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <scp trust="yes"
-                                             file="${project.build.directory}/${project.build.finalName}.zip"
-                                             todir="${sourceforge.username}:${sourceforge.password}@${sourceforge.url}"
-                                             verbose="true"/>
+                                        <!-- Upload artifact -->
+                                        <echo message="Uploading artifact to Sourceforge..."/>
+                                        <scp
+                                                file="${project.build.directory}/${project.build.finalName}.zip"
+                                                todir="${cerberus.sourceforge.username}:${cerberus.sourceforge.password}@${cerberus.sourceforge.url}"
+                                                trust="yes"
+                                                verbose="true"
+                                        />
                                     </target>
                                 </configuration>
                             </execution>
                         </executions>
                         <dependencies>
-                            <dependency>
-                                <groupId>com.jcraft</groupId>
-                                <artifactId>jsch</artifactId>
-                                <version>${jsch.version}</version>
-                            </dependency>
                             <dependency>
                                 <groupId>org.apache.ant</groupId>
                                 <artifactId>ant-jsch</artifactId>
@@ -582,27 +612,92 @@
                             </dependency>
                         </dependencies>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
+            Additional configuration for deployment process on the qualification demonstration server
+
+            /!\ Prerequisites: Beware to correctly declared the following properties into your Maven settings:
+                - cerberus.demo.qa.username, which is the Cerberus demonstration server's user
+                - cerberus.demo.qa.password, which is the Cerberus demonstration server's password
+        -->
+        <profile>
+            <id>qa-demo-deploy</id>
+            <properties>
+                <env>qa-demo</env>
+                <cerberus.demo.host>5.196.23.185</cerberus.demo.host>
+                <cerberus.demo.upload.path>/opt/delivery</cerberus.demo.upload.path>
+                <cerberus.demo.glassfish.asadmin-path>/opt/glassfish4/glassfish/bin/asadmin</cerberus.demo.glassfish.asadmin-path>
+                <cerberus.demo.glassfish.application>CerberusQA</cerberus.demo.glassfish.application>
+                <cerberus.demo.glassfish.cluster>cerberusQA</cerberus.demo.glassfish.cluster>
+                <cerberus.demo.glassfish.context-root>/CerberusQA</cerberus.demo.glassfish.context-root>
+            </properties>
+            <build>
+                <plugins>
                     <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>${maven-assembly-plugin.version}</version>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/assembly/assembly-main.xml</descriptor>
-                            </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${maven-antrun-plugin.version}</version>
                         <executions>
+                            <!-- Upload built artifacts into our SourceForge account during the deploy phase -->
                             <execution>
-                                <id>make-assembly</id>
-                                <phase>package</phase>
+                                <id>qa-demo-deploy</id>
+                                <phase>deploy</phase>
                                 <goals>
-                                    <goal>single</goal>
+                                    <goal>run</goal>
                                 </goals>
+                                <configuration>
+                                    <target>
+                                        <!-- Upload artifact -->
+                                        <echo message="Uploading artifact to QA demo server..."/>
+                                        <scp
+                                                file="${project.build.directory}/${project.build.finalName}.zip"
+                                                todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}"
+                                                password="${cerberus.demo.qa.password}"
+                                                trust="yes"
+                                                verbose="true"/>
+
+                                        <!--
+                                            Deploy artifact by:
+                                                1. Extracting distribution package to the server's upload path;
+                                                2. Redeploying current application
+                                                3. Restarting current cluster.
+                                        -->
+                                        <echo message="Deploying..."/>
+                                        <sshexec
+                                                host="${cerberus.demo.host}"
+                                                username="${cerberus.demo.qa.username}"
+                                                password="${cerberus.demo.qa.password}"
+                                                trust="yes"
+                                                verbose="true"
+                                                command="
+                                            unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp;
+                                            (
+                                                ${cerberus.demo.glassfish.asadmin-path} undeploy --target ${cerberus.demo.glassfish.cluster} --cascade=true ${cerberus.demo.glassfish.application}  &#x3B;
+                                                ${cerberus.demo.glassfish.asadmin-path} deploy --target ${cerberus.demo.glassfish.cluster} --name ${cerberus.demo.glassfish.application} --contextroot ${cerberus.demo.glassfish.context-root} --availabilityenabled=true ${cerberus.demo.upload.path}/${project.build.finalName}/${project.build.finalName}.war
+                                            ) &amp;&amp;
+                                            (
+                                                ${cerberus.demo.glassfish.asadmin-path} stop-cluster ${cerberus.demo.glassfish.cluster} &#x3B;
+                                                ${cerberus.demo.glassfish.asadmin-path} start-cluster ${cerberus.demo.glassfish.cluster}
+                                            )
+                                        "
+                                        />
+                                    </target>
+                                </configuration>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.ant</groupId>
+                                <artifactId>ant-jsch</artifactId>
+                                <version>${ant-jsch.version}</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>
         </profile>
+
     </profiles>
 </project>

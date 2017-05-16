@@ -12,9 +12,8 @@
 #           <profile>
 #               <id>default</id>
 #               <properties>
-#                   <sourceforge.username>USERNAME,cerberus-source</sourceforge.username>
-#                   <sourceforge.password>PASSWORD</sourceforge.password>
-#                   <sourceforge.url>frs.sourceforge.net:/home/frs/project/cerberus-source/</sourceforge.url>
+#                   <cerberus.sourceforge.username>USERNAME,cerberus-source</cerberus.sourceforge.username>
+#                   <cerberus.sourceforge.password>PASSWORD</cerberus.sourceforge.password>
 #               </properties>
 #           </profile>
 #       </profiles>

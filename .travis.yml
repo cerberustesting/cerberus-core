@@ -1,4 +1,4 @@
 language: java
 script: 
   - cd source
-  - mvn clean verify
+  - mvn clean deploy -Pqa-demo-deploy
