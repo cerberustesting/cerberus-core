@@ -2744,78 +2744,82 @@ function getCurrentKeywordId(motherKeyword,allKeyword){
 }
 
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
-function configureHighlingRulesOfCerberusMode(allKeyword){
+function configureHighlingRulesOfCerberusMode(allKeyword, mode){
+  console.log(mode);
+  switch(mode) {
+    case "ace/mode/cerberus":
+    //change some part of cerberus-mode to highlight text dynamicly
+    define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+    "use strict";
+      var oop = require("../lib/oop");
+      var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
-  //change some part of cerberus-mode to highlight text dynamicly
-  define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-  "use strict";
-    var oop = require("../lib/oop");
-    var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-
-    var cerberusHighlightRules = function() {
-        //default autocomplete
-        var keywordMapper = this.createKeywordMapper({
-          "tag" : ""
-        }, "identifier");
-        //regex rule for number (can be deleted)
-        this.$rules = {
-            "start" : [{
-                    token : "constant.numeric", // hex| remove later ?
-                    regex : "0[xX][0-9a-fA-F]+(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
-                }, {
-                    token : "constant.numeric", // float| remove later ?
-                    regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
-                }]
-        };
-        //Regex rule for all middle the keyword
-        var startingKeywordId =[];
-        var endKeywordId =[]
-        for (var i in allKeyword) {
-          var k =allKeyword[i];
-          if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "."){
-            // get all the child value
-            var previousK = allKeyword[ getmotherKeywordId(k["motherKeyword"],allKeyword) ];
-            for (var y in k["listKeyword"]) {
-              var nextK = allKeyword[ getCurrentKeywordId( k["listKeyword"][y] ,allKeyword) ];
-              if ( nextK != undefined){
-                this.$rules["start"].push({
-                      token : "keyword",
-                      regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"] + createRegexHightlight( nextK["listKeyword"] ) + nextK["endCaractere"]
-                  });
+      var cerberusHighlightRules = function() {
+          //default autocomplete
+          var keywordMapper = this.createKeywordMapper({
+            "tag" : ""
+          }, "identifier");
+          //regex rule for number (can be deleted)
+          this.$rules = {
+              "start" : [{
+                      token : "constant.numeric", // hex| remove later ?
+                      regex : "0[xX][0-9a-fA-F]+(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+                  }, {
+                      token : "constant.numeric", // float| remove later ?
+                      regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+                  }]
+          };
+          //Regex rule for all middle the keyword
+          var startingKeywordId =[];
+          var endKeywordId =[]
+          for (var i in allKeyword) {
+            var k =allKeyword[i];
+            if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "."){
+              // get all the child value
+              var previousK = allKeyword[ getmotherKeywordId(k["motherKeyword"],allKeyword) ];
+              for (var y in k["listKeyword"]) {
+                var nextK = allKeyword[ getCurrentKeywordId( k["listKeyword"][y] ,allKeyword) ];
+                if ( nextK != undefined){
                   this.$rules["start"].push({
                         token : "keyword",
-                        regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"]
-                  });
+                        regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"] + createRegexHightlight( nextK["listKeyword"] ) + nextK["endCaractere"]
+                    });
+                    this.$rules["start"].push({
+                          token : "keyword",
+                          regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"]
+                    });
+                }
               }
             }
+            if(k["motherKeyword"] == null && k["startCaractere"] == "%"){
+              startingKeywordId.push(i);
+            }
+            if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "%"){
+              endKeywordId.push(i);
+            }
           }
-          if(k["motherKeyword"] == null && k["startCaractere"] == "%"){
-            startingKeywordId.push(i);
+          //Regex rule for all the keyword that are not object (must be defined in second position)
+          for (var i in endKeywordId) {
+            var k =allKeyword[ endKeywordId[i]  ];
+            this.$rules["start"].push({
+                  token : "keyword",
+                  regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
+              });
           }
-          if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "%"){
-            endKeywordId.push(i);
+          //Regex Rule for the begining (must be defined in last position)
+          for (var i in startingKeywordId) {
+            var k =allKeyword[ startingKeywordId[i]  ];
+            this.$rules["start"].push({
+                  token : "keyword",
+                  regex : "%" + createRegexHightlight(k["listKeyword"])
+              });
           }
-        }
-        //Regex rule for all the keyword that are not object (must be defined in second position)
-        for (var i in endKeywordId) {
-          var k =allKeyword[ endKeywordId[i]  ];
-          this.$rules["start"].push({
-                token : "keyword",
-                regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
-            });
-        }
-        //Regex Rule for the begining (must be defined in last position)
-        for (var i in startingKeywordId) {
-          var k =allKeyword[ startingKeywordId[i]  ];
-          this.$rules["start"].push({
-                token : "keyword",
-                regex : "%" + createRegexHightlight(k["listKeyword"])
-            });
-        }
-    };
-    oop.inherits(cerberusHighlightRules, TextHighlightRules);
-    exports.cerberusHighlightRules = cerberusHighlightRules;
-  });
+      };
+      oop.inherits(cerberusHighlightRules, TextHighlightRules);
+      exports.cerberusHighlightRules = cerberusHighlightRules;
+    });
+    case "ace/mode/xquery":
+  }
 }
 
 function changeAceCompletionList(keywordList,label,editor,startAutocomplete){
@@ -2836,7 +2840,6 @@ function changeAceCompletionList(keywordList,label,editor,startAutocomplete){
 function configureAceEditor(editor,mode,objectList,propertyList){
   var langTools = ace.require("ace/ext/language_tools");
   //custom interrection if the cerberus language is selected
-  //if (mode=="ace/mode/cerberus"){
     var availableObjectProperties = [
         "value",
         "picturepath",
@@ -2879,60 +2882,61 @@ function configureAceEditor(editor,mode,objectList,propertyList){
     //system
     allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
     //configure all the highlight rule
-    configureHighlingRulesOfCerberusMode(allKeyword);
+    configureHighlingRulesOfCerberusMode(allKeyword, mode);
     //init the autocomplete list with the keyword of the first element of allKeyword
     //resetcommand
     editor.commands.removeCommand("cerberusPopup");
     editor.commands.addCommand({
       name: 'cerberusPopup',
       exec: function () {
-
         var cursorPositionX =editor.getCursorPosition().column;
-        var editorValue =editor.getValue();
-        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX );
-        console.log(editor.getValue() );
-        console.log(subStringCursorOn);
-        //check all the previous keyword
-        var allKeywordCorrect =true;
-        var potentiallyNeddApoint =true;
-        var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
-        for (var i in keywordInputByUser){
-          var keywordInputByUserExist = false;
-          for (var y in allKeyword) {
-            for (var n in allKeyword[y]["listKeyword"]){
-              if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
-                keywordInputByUserExist =true;
+        var cursorPositionY =editor.getCursorPosition().row;
+        var editorValue =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
+        var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
+        if ( numberOfPercentCaractere!= 0 && numberOfPercentCaractere%2 == 1){
+          var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+
+          //check all the previous keyword
+          var allKeywordCorrect =true;
+          var potentiallyNeddApoint =true;
+          var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
+          for (var i in keywordInputByUser){
+            var keywordInputByUserExist = false;
+            for (var y in allKeyword) {
+              for (var n in allKeyword[y]["listKeyword"]){
+                if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
+                  keywordInputByUserExist =true;
+                }
               }
             }
+            if( keywordInputByUser[i] ==""){
+                keywordInputByUserExist =true;
+                keywordInputByUser.pop();
+                potentiallyNeddApoint =false;
+            }
+            if (!keywordInputByUserExist)
+              allKeywordCorrect =false;
           }
-          if( keywordInputByUser[i] ==""){
-              keywordInputByUserExist =true;
-              keywordInputByUser.pop();
-              potentiallyNeddApoint =false;
-          }
-          if (!keywordInputByUserExist)
-            allKeywordCorrect =false;
-        }
-        if (allKeywordCorrect){
-          currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
-          idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
-          //add the special caractere
-          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
-            editor.session.insert( editor.getCursorPosition() ,".");
+          if (allKeywordCorrect){
+            currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
+            idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
+            //add the special caractere
+            if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
+              editor.session.insert( editor.getCursorPosition() ,".");
 
-          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
-            editor.session.insert( editor.getCursorPosition() ,"%");
-          //change the autocompletionList
-          if (currentKeyword == undefined){
-            changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor,true);
-            editor.execCommand("startAutocomplete");
-          }
-          if (idNextKeyword !=-1 && currentKeyword != undefined){
-            changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor,true);
-            editor.execCommand("startAutocomplete");
+            if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
+              editor.session.insert( editor.getCursorPosition() ,"%");
+            //change the autocompletionList
+            if (currentKeyword == undefined){
+              changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor,true);
+              editor.execCommand("startAutocomplete");
+            }
+            if (idNextKeyword !=-1 && currentKeyword != undefined){
+              changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor,true);
+              editor.execCommand("startAutocomplete");
+            }
           }
         }
-
       }
     });
     editor.commands.on("afterExec", function(e){
@@ -2942,6 +2946,7 @@ function configureAceEditor(editor,mode,objectList,propertyList){
         editor.commands.exec("cerberusPopup");
       }
     });
+
   editor.getSession().setMode(mode);
   //editor option
   editor.setTheme("ace/theme/chrome");
