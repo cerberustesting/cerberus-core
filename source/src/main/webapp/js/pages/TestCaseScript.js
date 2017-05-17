@@ -2818,13 +2818,12 @@ function configureHighlingRulesOfCerberusMode(allKeyword){
   });
 }
 
-function changeAceCompletionList(keywordList,label){
+function changeAceCompletionList(keywordList,label,editor,startAutocomplete){
   var langTools = ace.require("ace/ext/language_tools");
   langTools.setCompleters([]);//clear the autocompleter list
   completer= {
     getCompletions: function(editor, session, pos, prefix, callback) {
       var completions = [];
-
       for (var i in keywordList) {
         completions.push({ name:"default_name", value:keywordList[i], meta: label });
       }
@@ -2837,8 +2836,7 @@ function changeAceCompletionList(keywordList,label){
 function configureAceEditor(editor,mode,objectList,propertyList){
   var langTools = ace.require("ace/ext/language_tools");
   //custom interrection if the cerberus language is selected
-  if (mode=="ace/mode/cerberus"){
-
+  //if (mode=="ace/mode/cerberus"){
     var availableObjectProperties = [
         "value",
         "picturepath",
@@ -2880,94 +2878,77 @@ function configureAceEditor(editor,mode,objectList,propertyList){
     }
     //system
     allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
-
-
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword);
     //init the autocomplete list with the keyword of the first element of allKeyword
-    changeAceCompletionList(allKeyword[0]["listKeyword"],"");
-    var autocompleteDone =false;
-    editor.commands.on("afterExec", function(e){
+    //resetcommand
+    editor.commands.removeCommand("cerberusPopup");
+    editor.commands.addCommand({
+      name: 'cerberusPopup',
+      exec: function () {
 
-      var editorValue = editor.getValue();
-      var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
-
-      if( (e.command.name=="insertstring" || e.command.name=="paste" || autocompleteDone) && numberOfPercentCaractere ==1 ) {
-
-        //reset autocomplete var
-        autocompleteDone =false;
-        //look for the state of the input
         var cursorPositionX =editor.getCursorPosition().column;
-        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1); // substring between % or . and the end the cursor is on
-
-        //check if all the keyword input are correct
+        var editorValue =editor.getValue();
+        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX );
+        console.log(editor.getValue() );
+        console.log(subStringCursorOn);
+        //check all the previous keyword
         var allKeywordCorrect =true;
-        var keywordInputByUser =subStringCursorOn.split(".");
-        keywordInputByUser.pop();//remove the part the cursor is curently in
+        var potentiallyNeddApoint =true;
+        var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
         for (var i in keywordInputByUser){
           var keywordInputByUserExist = false;
           for (var y in allKeyword) {
-            if ( allKeyword[y]["motherKeyword"] == keywordInputByUser[i] )
+            for (var n in allKeyword[y]["listKeyword"]){
+              if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
+                keywordInputByUserExist =true;
+              }
+            }
+          }
+          if( keywordInputByUser[i] ==""){
               keywordInputByUserExist =true;
+              keywordInputByUser.pop();
+              potentiallyNeddApoint =false;
           }
           if (!keywordInputByUserExist)
             allKeywordCorrect =false;
         }
-        editor.execCommand("startAutocomplete");
         if (allKeywordCorrect){
+          currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
+          idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
+          //add the special caractere
+          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
+            editor.session.insert( editor.getCursorPosition() ,".");
 
-          //correct a bug if someone paste somthing with a "." at the end or remove a "."
-          if ( e.command.name=="paste" &&  e.args.text.substring(e.args.text.length-1) =="." || e.args=="." ) {
-              editor.setValue(editor.getValue().slice(0,-1), 1);
-              editorValue = editor.getValue();//update value
-              subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX+1);
+          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
+            editor.session.insert( editor.getCursorPosition() ,"%");
+          //change the autocompletionList
+          if (currentKeyword == undefined){
+            changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor,true);
+            editor.execCommand("startAutocomplete");
           }
-          //change the autocomplete list accordingly to what was input previously
-          var keywordInputList = subStringCursorOn.split(".");
-          var motherKeyword =keywordInputList[keywordInputList.length-1];
-          //change autocomplete list
-          var idCurrentKeyword =-1;
-          idCurrentKeyword = getCurrentKeywordId(motherKeyword,allKeyword);
-          if (idCurrentKeyword != -1){
-            changeAceCompletionList( allKeyword[idCurrentKeyword]["listKeyword"] , allKeyword[idCurrentKeyword]["motherKeyword"] );
-          }else {
-            changeAceCompletionList(allKeyword[0]["listKeyword"],""); //reset autocomplete value
+          if (idNextKeyword !=-1 && currentKeyword != undefined){
+            changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor,true);
+            editor.execCommand("startAutocomplete");
           }
-
-          var correctmotherKeyword =false;
-          for (i in allKeyword){
-            for (y in allKeyword[i]["listKeyword"]){
-              if( allKeyword[i]["listKeyword"][y] == motherKeyword){
-                correctmotherKeyword =true;
-              }
-            }
-          }
-          if (correctmotherKeyword && e.command.name != "backspace"){
-            //ADD the caractare . or % if needed
-            if (idCurrentKeyword == -1){
-              editor.session.insert( editor.getCursorPosition() ,"%");
-            }else {
-              editor.session.insert( editor.getCursorPosition() ,".");
-              editor.execCommand("startAutocomplete");
-            }
-          }
-          if(correctmotherKeyword)
-            autocompleteDone =true;
-        }else {// if one of the keyword is incorrect delete all the autocomplete var
-          langTools.setCompleters([]);
-          editor.execCommand("startAutocomplete");
         }
+
       }
     });
-
-  }
+    editor.commands.on("afterExec", function(e){
+      //reset autocomplete when language change
+      changeAceCompletionList([],"",editor,false);
+      if( e.command.name=="insertstring" || e.command.name=="paste") {
+        editor.commands.exec("cerberusPopup");
+      }
+    });
   editor.getSession().setMode(mode);
   //editor option
   editor.setTheme("ace/theme/chrome");
   editor.$blockScrolling = "Infinity";//disable error message
   editor.setOptions({
       maxLines: 10,
-      enableBasicAutocompletion: true
+      enableBasicAutocompletion: true,
   });
 }
 //the async part is just here to get the tab modListUnique and objectList
@@ -3007,7 +2988,7 @@ function configureAceEditorAsyncFirstFunction(editor,mode ){
       error: showUnexpectedError
   });
 }
-
+var editorDefined =false;
 function setPlaceholderProperty(propertyElement) {
     /**
      * Todo : GetFromDatabase
