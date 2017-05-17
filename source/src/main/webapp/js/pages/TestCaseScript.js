@@ -287,6 +287,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
+                        drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
 
                         // Restore the saveScript button status
@@ -2364,7 +2365,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     } else if (typeNotExist == "property") {
                         //TODO better way to add property
-                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProp').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         } else {
