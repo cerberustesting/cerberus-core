@@ -122,6 +122,12 @@
             <input type="text" name="selectedValue2" id="selectedValue2">
             <input id="selectedValue2Submit" type="submit" value="Submit">
         </form>
+        <br><br>
+        <form method="POST" enctype="multipart/form-data">
+            <p>Below is part to test action keypress on non-browser windows</p>
+          File to upload: <input type="file" name="template"><br/>
+          <br/>
+        </form>
 
         <p> Parameters that can be used on that page :</p>
         'asyncdelay' : delay in ms can be used to call async ressource.
