@@ -2882,6 +2882,21 @@ function createAllKeywordList(objectList,propertyList ){
   return allKeyword;
 }
 
+function createAceMarkerAndAnnotation(editor,lineNumber,annotationText,annotationType){
+  var Range = ace.require('ace/range').Range; // get reference to ace/range
+  var from = lineNumber;
+  var to = lineNumber +1;
+  editor.session.addMarker(
+      new Range(from, 0, to, 0), "ace_step ", "fullLine"
+   );
+  editor.session.setAnnotations([{
+      row: lineNumber,
+      column: 0,
+      text: annotationText,
+      type: annotationType
+  }]);
+}
+
 function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
   editor.commands.addCommand({
@@ -2940,27 +2955,48 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
 }
 
+function addCommandForSaveAceInput(editor, allKeyword, commandName){
+  editor.commands.addCommand({
+    name: commandName,
+    exec: function () {
+      //console.log(editor.getValue);
+    }
+  });
+}
+
 function configureAceEditor(editor,mode,objectList,propertyList){
     //gather all the keyword
     var allKeyword =createAllKeywordList(objectList,propertyList );
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword, mode);
-    //resetcommand
-    var commandName = "cerberusPopup";
-    editor.commands.removeCommand(commandName);
-    addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName)
 
+    //Popup command
+    var commandNameForAutoCompletePopup = "cerberusPopup";
+    //editor.commands.removeCommand(commandName);
+    addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+
+    //Save command
+    var commandNameForSaveAceInput ="cerberusSave";
+    addCommandForSaveAceInput(editor, allKeyword, commandNameForSaveAceInput);
+
+    //Exec command
     editor.commands.on("afterExec", function(e){
       if( e.command.name=="insertstring" || e.command.name=="paste") {
-        editor.commands.exec(commandName);
+        editor.commands.exec(commandNameForAutoCompletePopup);
+      }
+      if( e.command.name=="insertstring" || e.command.name=="paste"|| e.command.name=="backspace") {
+        editor.commands.exec(commandNameForSaveAceInput);
       }
     });
-
+    //test
+    //
     editor.getSession().setMode(mode);
+    //
     //editor option
     editor.setTheme("ace/theme/chrome");
-    editor.$blockScrolling = "Infinity";//disable error message
-    editor.setOptions({maxLines: 10,enableBasicAutocompletion: true,});
+    editor.$blockScrolling ="Infinity";//disable error message
+    editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
+    createAceMarkerAndAnnotation(editor,0,"wololo","error");
 }
 
 //the async part is just here to get the tab modListUnique and objectList
