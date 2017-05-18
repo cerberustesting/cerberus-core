@@ -2818,11 +2818,10 @@ function configureHighlingRulesOfCerberusMode(allKeyword, mode){
       oop.inherits(cerberusHighlightRules, TextHighlightRules);
       exports.cerberusHighlightRules = cerberusHighlightRules;
     });
-    case "ace/mode/xquery":
   }
 }
 
-function changeAceCompletionList(keywordList,label,editor,startAutocomplete){
+function changeAceCompletionList(keywordList,label,editor){
   var langTools = ace.require("ace/ext/language_tools");
   langTools.setCompleters([]);//clear the autocompleter list
   completer= {
@@ -2837,125 +2836,133 @@ function changeAceCompletionList(keywordList,label,editor,startAutocomplete){
   langTools.addCompleter(completer);
 }
 
-function configureAceEditor(editor,mode,objectList,propertyList){
-  var langTools = ace.require("ace/ext/language_tools");
-  //custom interrection if the cerberus language is selected
-    var availableObjectProperties = [
-        "value",
-        "picturepath",
-        "pictureurl"
-    ];
-    var availableSystemValues = [
-        "SYSTEM",
-        "APPLI",
-        "BROWSER",
-        "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
-        "ENV", "ENVGP",
-        "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
-        "TEST",
-        "TESTCASE",
-        "SSIP", "SSPORT",
-        "TAG",
-        "EXECUTIONID",
-        "EXESTART", "EXEELAPSEDMS",
-        "EXESTORAGEURL",
-        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
-        "LASTSERVICE_HTTPCODE",
-        "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-        "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
-    ];
-    var availableTags = [
-        "property",
-        "object",
-        "system"
-    ];
+function createAllKeywordList(objectList,propertyList ){
+  var availableObjectProperties = [
+      "value",
+      "picturepath",
+      "pictureurl"
+  ];
+  var availableSystemValues = [
+      "SYSTEM",
+      "APPLI",
+      "BROWSER",
+      "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+      "ENV", "ENVGP",
+      "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
+      "TEST",
+      "TESTCASE",
+      "SSIP", "SSPORT",
+      "TAG",
+      "EXECUTIONID",
+      "EXESTART", "EXEELAPSEDMS",
+      "EXESTORAGEURL",
+      "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+      "LASTSERVICE_HTTPCODE",
+      "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+      "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+  ];
+  var availableTags = [
+      "property",
+      "object",
+      "system"
+  ];
 
-    var allKeyword =[];
-    allKeyword.push( {"motherKeyword" : null, "startCaractere" :"%", "listKeyword": availableTags, "endCaractere" :"."} );
-    //property
-    allKeyword.push( {"motherKeyword" : availableTags["0"], "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%"} );
-    //object
-    allKeyword.push( {"motherKeyword" : availableTags["1"], "startCaractere" :".", "listKeyword": objectList, "endCaractere" :"."} );
-    for (var i in objectList) {
-      allKeyword.push( {"motherKeyword" : objectList[i], "startCaractere" :".", "listKeyword": availableObjectProperties, "endCaractere" :"%"} );
-    }
-    //system
-    allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
-    //configure all the highlight rule
-    configureHighlingRulesOfCerberusMode(allKeyword, mode);
-    //init the autocomplete list with the keyword of the first element of allKeyword
-    //resetcommand
-    editor.commands.removeCommand("cerberusPopup");
-    editor.commands.addCommand({
-      name: 'cerberusPopup',
-      exec: function () {
-        var cursorPositionX =editor.getCursorPosition().column;
-        var cursorPositionY =editor.getCursorPosition().row;
-        var editorValue =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
-        var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
-        if ( numberOfPercentCaractere!= 0 && numberOfPercentCaractere%2 == 1){
-          var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+  var allKeyword =[];
+  allKeyword.push( {"motherKeyword" : null, "startCaractere" :"%", "listKeyword": availableTags, "endCaractere" :"."} );
+  //property
+  allKeyword.push( {"motherKeyword" : availableTags["0"], "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%"} );
+  //object
+  allKeyword.push( {"motherKeyword" : availableTags["1"], "startCaractere" :".", "listKeyword": objectList, "endCaractere" :"."} );
+  for (var i in objectList) {
+    allKeyword.push( {"motherKeyword" : objectList[i], "startCaractere" :".", "listKeyword": availableObjectProperties, "endCaractere" :"%"} );
+  }
+  //system
+  allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
 
-          //check all the previous keyword
-          var allKeywordCorrect =true;
-          var potentiallyNeddApoint =true;
-          var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
-          for (var i in keywordInputByUser){
-            var keywordInputByUserExist = false;
-            for (var y in allKeyword) {
-              for (var n in allKeyword[y]["listKeyword"]){
-                if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
-                  keywordInputByUserExist =true;
-                }
+  return allKeyword;
+}
+
+function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
+
+  editor.commands.addCommand({
+    name: commandName,
+    exec: function () {
+      var cursorPositionX =editor.getCursorPosition().column;
+      var cursorPositionY =editor.getCursorPosition().row;
+      var editorValue =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
+      var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
+      if ( numberOfPercentCaractere!= 0 && numberOfPercentCaractere%2 == 1){
+        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+
+        //check all the previous keyword
+        var allKeywordCorrect =true;
+        var potentiallyNeddApoint =true;
+        var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
+        for (var i in keywordInputByUser){
+          var keywordInputByUserExist = false;
+          for (var y in allKeyword) {
+            for (var n in allKeyword[y]["listKeyword"]){
+              if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
+                keywordInputByUserExist =true;
               }
             }
-            if( keywordInputByUser[i] ==""){
-                keywordInputByUserExist =true;
-                keywordInputByUser.pop();
-                potentiallyNeddApoint =false;
-            }
-            if (!keywordInputByUserExist)
-              allKeywordCorrect =false;
           }
-          if (allKeywordCorrect){
-            currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
-            idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
-            //add the special caractere
-            if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
-              editor.session.insert( editor.getCursorPosition() ,".");
+          if( keywordInputByUser[i] ==""){
+              keywordInputByUserExist =true;
+              keywordInputByUser.pop();
+              potentiallyNeddApoint =false;
+          }
+          if (!keywordInputByUserExist)
+            allKeywordCorrect =false;
+        }
+        if (allKeywordCorrect){
+          currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
+          idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
+          //add the special caractere
+          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
+            editor.session.insert( editor.getCursorPosition() ,".");
 
-            if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
-              editor.session.insert( editor.getCursorPosition() ,"%");
-            //change the autocompletionList
-            if (currentKeyword == undefined){
-              changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor,true);
-              editor.execCommand("startAutocomplete");
-            }
-            if (idNextKeyword !=-1 && currentKeyword != undefined){
-              changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor,true);
-              editor.execCommand("startAutocomplete");
-            }
+          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
+            editor.session.insert( editor.getCursorPosition() ,"%");
+          //change the autocompletionList
+          if (currentKeyword == undefined){
+            changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
+            editor.execCommand("startAutocomplete");
+          }
+          if (idNextKeyword !=-1 && currentKeyword != undefined){
+            changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
+            editor.execCommand("startAutocomplete");
           }
         }
       }
-    });
+    }
+  });
+
+}
+
+function configureAceEditor(editor,mode,objectList,propertyList){
+    //gather all the keyword
+    var allKeyword =createAllKeywordList(objectList,propertyList );
+    //configure all the highlight rule
+    configureHighlingRulesOfCerberusMode(allKeyword, mode);
+    //resetcommand
+    var commandName = "cerberusPopup";
+    editor.commands.removeCommand(commandName);
+    addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName)
+
     editor.commands.on("afterExec", function(e){
-      //reset autocomplete when language change
-      changeAceCompletionList([],"",editor,false);
       if( e.command.name=="insertstring" || e.command.name=="paste") {
-        editor.commands.exec("cerberusPopup");
+        editor.commands.exec(commandName);
       }
     });
 
-  editor.getSession().setMode(mode);
-  //editor option
-  editor.setTheme("ace/theme/chrome");
-  editor.$blockScrolling = "Infinity";//disable error message
-  editor.setOptions({
-      maxLines: 10,
-      enableBasicAutocompletion: true,
-  });
+    editor.getSession().setMode(mode);
+    //editor option
+    editor.setTheme("ace/theme/chrome");
+    editor.$blockScrolling = "Infinity";//disable error message
+    editor.setOptions({maxLines: 10,enableBasicAutocompletion: true,});
 }
+
 //the async part is just here to get the tab modListUnique and objectList
 function configureAceEditorAsyncSecondFunction(editor,mode,objectList){
   var test = GetURLParameter("test");
@@ -2993,7 +3000,7 @@ function configureAceEditorAsyncFirstFunction(editor,mode ){
       error: showUnexpectedError
   });
 }
-var editorDefined =false;
+
 function setPlaceholderProperty(propertyElement) {
     /**
      * Todo : GetFromDatabase
