@@ -2733,7 +2733,7 @@ function getmotherKeywordId(motherKeyword,allKeyword){
   }
   return idmotherKeyword;
 }
-function getCurrentKeywordId(motherKeyword,allKeyword){
+function getNextKeywordId(motherKeyword,allKeyword){
   var idCurrentKeyword =-1;
   for (i in allKeyword){
     if( allKeyword[i]["motherKeyword"] == motherKeyword ){
@@ -2745,7 +2745,6 @@ function getCurrentKeywordId(motherKeyword,allKeyword){
 
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
 function configureHighlingRulesOfCerberusMode(allKeyword, mode){
-  console.log(mode);
   switch(mode) {
     case "ace/mode/cerberus":
     //change some part of cerberus-mode to highlight text dynamicly
@@ -2778,7 +2777,7 @@ function configureHighlingRulesOfCerberusMode(allKeyword, mode){
               // get all the child value
               var previousK = allKeyword[ getmotherKeywordId(k["motherKeyword"],allKeyword) ];
               for (var y in k["listKeyword"]) {
-                var nextK = allKeyword[ getCurrentKeywordId( k["listKeyword"][y] ,allKeyword) ];
+                var nextK = allKeyword[ getNextKeywordId( k["listKeyword"][y] ,allKeyword) ];
                 if ( nextK != undefined){
                   this.$rules["start"].push({
                         token : "keyword",
@@ -2862,9 +2861,9 @@ function createAllKeywordList(objectList,propertyList ){
       "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
   ];
   var availableTags = [
-      "property",
-      "object",
-      "system"
+      "property", // 0
+      "object",   // 1
+      "system"    // 2
   ];
 
   var allKeyword =[];
@@ -2883,12 +2882,12 @@ function createAllKeywordList(objectList,propertyList ){
 }
 
 function createAceMarkerAndAnnotation(editor,lineNumber,annotationText,annotationType){
-  var Range = ace.require('ace/range').Range; // get reference to ace/range
+  /*var Range = ace.require('ace/range').Range; // get reference to ace/range
   var from = lineNumber;
-  var to = lineNumber +1;
+  var to = lineNumber+1;
   editor.session.addMarker(
       new Range(from, 0, to, 0), "ace_step ", "fullLine"
-   );
+   );*/
   editor.session.setAnnotations([{
       row: lineNumber,
       column: 0,
@@ -2897,58 +2896,142 @@ function createAceMarkerAndAnnotation(editor,lineNumber,annotationText,annotatio
   }]);
 }
 
+function addCommandForMarkerAndAnnotation(editor, allKeyword, commandName){
+
+  editor.commands.addCommand({
+      name: commandName,
+      exec: function () {
+          var numberOfLine = editor.session.getLength();
+          for (var l = 0; l < numberOfLine; l++) {
+              var editorValueAtTheLine = editor.session.getLine(l);
+              var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
+              if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
+                  var editorValueSplit = editorValueAtTheLine.split("%");
+                  var cerberusVarAtLine =[]
+                  for (var i = 0; i < editorValueSplit.length; i++) {
+                     if ( i%2 == 1)
+                        cerberusVarAtLine.push(editorValueSplit[i]);
+                  }
+                  //let's check if each cerberus var is correct
+                  for (var i in cerberusVarAtLine) {
+                      var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
+                      var keywordsCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
+                      var property = allKeyword[0]["listKeyword"][0];
+                      var object   = allKeyword[0]["listKeyword"][1];
+                      var system   = allKeyword[0]["listKeyword"][2];
+                      var errorInTheCerberusVar = false;
+                      var secondPartIsADefinedKeyword =undefined;
+
+                      if ( keywordsCurrentlyCheck[0] == property && keywordsCurrentlyCheck.length ==2){
+                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
+                      }
+                      else if ( keywordsCurrentlyCheck[0] == object && keywordsCurrentlyCheck.length ==3){
+
+                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
+                        var thirdPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[2],allKeyword);
+                        if ( !thirdPartIsADefinedKeyword ){
+                            errorInTheCerberusVar = keywordsCurrentlyCheck[2];
+                        }
+
+                      }
+                      else if ( keywordsCurrentlyCheck[0] == system && keywordsCurrentlyCheck.length ==2){
+                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
+                        if ( !secondPartIsADefinedKeyword ){
+                            errorInTheCerberusVar = keywordsCurrentlyCheck[1];
+                        }
+                      }
+                      else {
+                          errorInTheCerberusVar = keywordsCurrentlyCheck[0];
+                      }
+                      //now display the error message to the user
+                      if ( errorInTheCerberusVar != false){
+                          var errorMessage = "error invalid keyword: " + errorInTheCerberusVar ;
+                          createAceMarkerAndAnnotation(editor,l,errorMessage,"error")
+                      }
+                      if (secondPartIsADefinedKeyword == -1 && errorInTheCerberusVar == false){
+                        var errorMessage = "warning the "+ keywordsCurrentlyCheck[1] +" : " + keywordsCurrentlyCheck[1] + " don't exist"  ;
+                        createAceMarkerAndAnnotation(editor,l,errorMessage,"error")
+                      }
+                 }
+            }
+        }
+    }
+  });
+
+}
+
 function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
   editor.commands.addCommand({
     name: commandName,
     exec: function () {
-      var cursorPositionX =editor.getCursorPosition().column;
+
       var cursorPositionY =editor.getCursorPosition().row;
-      var editorValue =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
-      var numberOfPercentCaractere =(editorValue.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
-      if ( numberOfPercentCaractere!= 0 && numberOfPercentCaractere%2 == 1){
-        var subStringCursorOn = editorValue.slice( editorValue.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+      var editorValueAtTheLine =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
+      var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
 
-        //check all the previous keyword
-        var allKeywordCorrect =true;
-        var potentiallyNeddApoint =true;
-        var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
-        for (var i in keywordInputByUser){
-          var keywordInputByUserExist = false;
-          for (var y in allKeyword) {
-            for (var n in allKeyword[y]["listKeyword"]){
-              if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
-                keywordInputByUserExist =true;
-              }
+      if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 1){
+          var cursorPositionX =editor.getCursorPosition().column;
+          var subStringCursorOn = editorValueAtTheLine.slice( editorValueAtTheLine.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+          //check all the previous keyword
+          var allKeywordCorrect =true;
+          var potentiallyNeddApoint =true;
+          var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
+          for (var i in keywordInputByUser){
+            var keywordInputByUserExist = false;
+            for (var y in allKeyword) {
+                for (var n in allKeyword[y]["listKeyword"]){
+                    if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
+                        keywordInputByUserExist =true;
+                    }
+                }
             }
+            if( keywordInputByUser[i] ==""){
+                keywordInputByUserExist =true;
+                keywordInputByUser.pop();
+                potentiallyNeddApoint =false;
+            }
+            if (!keywordInputByUserExist)
+                allKeywordCorrect =false;
           }
-          if( keywordInputByUser[i] ==""){
-              keywordInputByUserExist =true;
-              keywordInputByUser.pop();
-              potentiallyNeddApoint =false;
-          }
-          if (!keywordInputByUserExist)
-            allKeywordCorrect =false;
-        }
-        if (allKeywordCorrect){
           currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
-          idNextKeyword = getCurrentKeywordId(currentKeyword,allKeyword);
-          //add the special caractere
-          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
-            editor.session.insert( editor.getCursorPosition() ,".");
+          idNextKeyword = getNextKeywordId(currentKeyword,allKeyword);
 
-          if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword ==-1)
-            editor.session.insert( editor.getCursorPosition() ,"%");
-          //change the autocompletionList
-          if (currentKeyword == undefined){
-            changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
-            editor.execCommand("startAutocomplete");
+          //no new object is currently added and all the keyword are correct
+          if (allKeywordCorrect){
+              //add the special caractere
+              if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
+                editor.session.insert( editor.getCursorPosition() ,".");
+              if (currentKeyword !=undefined && idNextKeyword ==-1)
+                editor.session.insert( editor.getCursorPosition() ,"%");
+
+              //change the autocompletionList
+              if (currentKeyword == undefined){
+                changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
+                editor.execCommand("startAutocomplete");
+              }
+              if (idNextKeyword !=-1 && currentKeyword != undefined){
+                changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
+                editor.execCommand("startAutocomplete");
+              }
+          //show the final popup if the user enter a new object
+          }else {
+              var object = allKeyword[0]["listKeyword"][1];
+              var availableObjectProperties = [//TODO : get this tab from allKeyword
+                  "value",
+                  "picturepath",
+                  "pictureurl"
+              ];
+              // if the user want to defined a new object
+              if( keywordInputByUser[0] == object && keywordInputByUser.length == 2 && potentiallyNeddApoint == false){
+                  changeAceCompletionList(availableObjectProperties,keywordInputByUser[1],editor);
+                  editor.execCommand("startAutocomplete");
+              }
+              // add '%' when an availableObjectProperties was selected
+              if (keywordInputByUser[0] == object && keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
+                  editor.session.insert( editor.getCursorPosition() ,"%");
+              }
           }
-          if (idNextKeyword !=-1 && currentKeyword != undefined){
-            changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
-            editor.execCommand("startAutocomplete");
-          }
-        }
       }
     }
   });
@@ -2969,34 +3052,32 @@ function configureAceEditor(editor,mode,objectList,propertyList){
     var allKeyword =createAllKeywordList(objectList,propertyList );
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword, mode);
-
     //Popup command
     var commandNameForAutoCompletePopup = "cerberusPopup";
-    //editor.commands.removeCommand(commandName);
     addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-
+    //Marker and Annotation command
+    var commandNameForMarkerAndAnnotation = "cerberusMarkerAndAnnotation";
+    addCommandForMarkerAndAnnotation(editor, allKeyword, commandNameForMarkerAndAnnotation);
     //Save command
     var commandNameForSaveAceInput ="cerberusSave";
     addCommandForSaveAceInput(editor, allKeyword, commandNameForSaveAceInput);
-
     //Exec command
     editor.commands.on("afterExec", function(e){
-      if( e.command.name=="insertstring" || e.command.name=="paste") {
+      if( e.command.name == "insertstring" || e.command.name == "paste") {
+        editor.commands.exec(commandNameForSaveAceInput);
         editor.commands.exec(commandNameForAutoCompletePopup);
+        editor.commands.exec(commandNameForMarkerAndAnnotation);
       }
-      if( e.command.name=="insertstring" || e.command.name=="paste"|| e.command.name=="backspace") {
+      if (e.command.name == "backspace"){
         editor.commands.exec(commandNameForSaveAceInput);
       }
     });
-    //test
-    //
+
     editor.getSession().setMode(mode);
-    //
     //editor option
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling ="Infinity";//disable error message
     editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
-    createAceMarkerAndAnnotation(editor,0,"wololo","error");
 }
 
 //the async part is just here to get the tab modListUnique and objectList
