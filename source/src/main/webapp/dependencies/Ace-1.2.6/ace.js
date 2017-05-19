@@ -13659,7 +13659,6 @@ var Gutter = function(parentEl) {
     };
 
     this.setAnnotations = function(annotations) {
-        console.log("test");
         this.$annotations = [];
         for (var i = 0; i < annotations.length; i++) {
             var annotation = annotations[i];

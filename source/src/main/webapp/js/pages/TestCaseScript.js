@@ -2881,27 +2881,37 @@ function createAllKeywordList(objectList,propertyList ){
   return allKeyword;
 }
 
-function createAceMarkerAndAnnotation(editor,lineNumber,annotationText,annotationType){
-  /*var Range = ace.require('ace/range').Range; // get reference to ace/range
-  var from = lineNumber;
-  var to = lineNumber+1;
-  editor.session.addMarker(
-      new Range(from, 0, to, 0), "ace_step ", "fullLine"
-   );*/
-  editor.session.setAnnotations([{
-      row: lineNumber,
-      column: 0,
-      text: annotationText,
-      type: annotationType
-  }]);
+function createAceMarkerAndAnnotation(editor,annotationObjectList){
+    /*
+    Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
+    */
+    editor.getSession().setAnnotations( annotationObjectList );
+}
+function createAceAnnotationObject(lineNumber,annotationText,annotationType){
+    return {row: lineNumber,
+            column: 0,
+            text: annotationText,
+            type: annotationType
+          };
 }
 
-function addCommandForMarkerAndAnnotation(editor, allKeyword, commandName){
+//object use to highlight line
+function createAceMarkerObject(lineNumber,annotationText,annotationType){
+    /*var Range = ace.require('ace/range').Range; // get reference to ace/range
+    var from = lineNumber;
+    var to = lineNumber+1;
+    editor.session.addMarker(
+        new Range(from, 0, to, 0), "ace_step ", "fullLine"
+     );*/
+}
+
+function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
 
   editor.commands.addCommand({
       name: commandName,
       exec: function () {
           var numberOfLine = editor.session.getLength();
+          var annotationObjectList =[];
           for (var l = 0; l < numberOfLine; l++) {
               var editorValueAtTheLine = editor.session.getLine(l);
               var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
@@ -2915,46 +2925,54 @@ function addCommandForMarkerAndAnnotation(editor, allKeyword, commandName){
                   //let's check if each cerberus var is correct
                   for (var i in cerberusVarAtLine) {
                       var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
-                      var keywordsCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
-                      var property = allKeyword[0]["listKeyword"][0];
-                      var object   = allKeyword[0]["listKeyword"][1];
-                      var system   = allKeyword[0]["listKeyword"][2];
-                      var errorInTheCerberusVar = false;
-                      var secondPartIsADefinedKeyword =undefined;
+                      var keywordsListCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
 
-                      if ( keywordsCurrentlyCheck[0] == property && keywordsCurrentlyCheck.length ==2){
-                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
+                      var issueWithKeyword = "none";
+                      if (keywordsListCurrentlyCheck.length >= 2){
+                          var startKeyword = keywordsListCurrentlyCheck[0];
+                          var secondKeyword = keywordsListCurrentlyCheck[1];
+                          if ( startKeyword == "property" && keywordsListCurrentlyCheck.length ==2){
+                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+                                  issueWithKeyword ="warning";
+                              }
+                          }
+                          else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
+                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+                                  issueWithKeyword ="warning";
+                              }
+                              var thirdKeyword = keywordsListCurrentlyCheck[2];
+                              if ( getmotherKeywordId(thirdKeyword ,allKeyword) == -1 ){
+                                  issueWithKeyword ="error";
+                              }
+                          }
+                          else if ( startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
+                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+                                  issueWithKeyword ="error";
+                              }
+                          }
+                          else {
+                                issueWithKeyword ="error";
+                          }
+                      }else{
+                          issueWithKeyword ="error";
                       }
-                      else if ( keywordsCurrentlyCheck[0] == object && keywordsCurrentlyCheck.length ==3){
-
-                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
-                        var thirdPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[2],allKeyword);
-                        if ( !thirdPartIsADefinedKeyword ){
-                            errorInTheCerberusVar = keywordsCurrentlyCheck[2];
-                        }
-
+                      if ( issueWithKeyword == "error" ){
+                          //display the error
+                          var messageOfAnnotion ="error invalid keyword";
+                          //createAceMarkerAndAnnotation(editor,l,messageOfAnnotion,"error");
+                          annotationObjectList.push( createAceAnnotationObject(l,messageOfAnnotion,"error") );
                       }
-                      else if ( keywordsCurrentlyCheck[0] == system && keywordsCurrentlyCheck.length ==2){
-                        secondPartIsADefinedKeyword = getmotherKeywordId(keywordsCurrentlyCheck[1],allKeyword);
-                        if ( !secondPartIsADefinedKeyword ){
-                            errorInTheCerberusVar = keywordsCurrentlyCheck[1];
-                        }
-                      }
-                      else {
-                          errorInTheCerberusVar = keywordsCurrentlyCheck[0];
-                      }
-                      //now display the error message to the user
-                      if ( errorInTheCerberusVar != false){
-                          var errorMessage = "error invalid keyword: " + errorInTheCerberusVar ;
-                          createAceMarkerAndAnnotation(editor,l,errorMessage,"error")
-                      }
-                      if (secondPartIsADefinedKeyword == -1 && errorInTheCerberusVar == false){
-                        var errorMessage = "warning the "+ keywordsCurrentlyCheck[1] +" : " + keywordsCurrentlyCheck[1] + " don't exist"  ;
-                        createAceMarkerAndAnnotation(editor,l,errorMessage,"error")
+                      if (issueWithKeyword == "warning"){
+                          //display the error
+                          var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist"  ;
+                          //createAceMarkerAndAnnotation(editor,l,messageOfAnnotion,"warning");
+                          annotationObjectList.push( createAceAnnotationObject(l,messageOfAnnotion,"warning") );
                       }
                  }
             }
         }
+        console.log( "test2 " );
+        createAceMarkerAndAnnotation(editor,annotationObjectList);
     }
   });
 
@@ -2978,21 +2996,21 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
           var potentiallyNeddApoint =true;
           var keywordInputByUser =subStringCursorOn.split(".");//remove the part the cursor is curently in
           for (var i in keywordInputByUser){
-            var keywordInputByUserExist = false;
-            for (var y in allKeyword) {
-                for (var n in allKeyword[y]["listKeyword"]){
-                    if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
-                        keywordInputByUserExist =true;
-                    }
-                }
-            }
-            if( keywordInputByUser[i] ==""){
-                keywordInputByUserExist =true;
-                keywordInputByUser.pop();
-                potentiallyNeddApoint =false;
-            }
-            if (!keywordInputByUserExist)
-                allKeywordCorrect =false;
+              var keywordInputByUserExist = false;
+              for (var y in allKeyword) {
+                  for (var n in allKeyword[y]["listKeyword"]){
+                      if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
+                          keywordInputByUserExist =true;
+                      }
+                  }
+              }
+              if( keywordInputByUser[i] ==""){
+                  keywordInputByUserExist =true;
+                  keywordInputByUser.pop();
+                  potentiallyNeddApoint =false;
+              }
+              if (!keywordInputByUserExist)
+                  allKeywordCorrect =false;
           }
           currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
           idNextKeyword = getNextKeywordId(currentKeyword,allKeyword);
@@ -3056,20 +3074,21 @@ function configureAceEditor(editor,mode,objectList,propertyList){
     var commandNameForAutoCompletePopup = "cerberusPopup";
     addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
     //Marker and Annotation command
-    var commandNameForMarkerAndAnnotation = "cerberusMarkerAndAnnotation";
-    addCommandForMarkerAndAnnotation(editor, allKeyword, commandNameForMarkerAndAnnotation);
+    var commandNameForIssueDetection = "cerberusIssueDetection";
+    addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
     //Save command
     var commandNameForSaveAceInput ="cerberusSave";
     addCommandForSaveAceInput(editor, allKeyword, commandNameForSaveAceInput);
     //Exec command
     editor.commands.on("afterExec", function(e){
       if( e.command.name == "insertstring" || e.command.name == "paste") {
-        editor.commands.exec(commandNameForSaveAceInput);
+        //editor.commands.exec(commandNameForSaveAceInput);
         editor.commands.exec(commandNameForAutoCompletePopup);
-        editor.commands.exec(commandNameForMarkerAndAnnotation);
+        editor.commands.exec(commandNameForIssueDetection);
       }
       if (e.command.name == "backspace"){
-        editor.commands.exec(commandNameForSaveAceInput);
+          editor.commands.exec(commandNameForIssueDetection);
+          //editor.commands.exec(commandNameForSaveAceInput);
       }
     });
 
