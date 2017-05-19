@@ -1104,6 +1104,10 @@ var getModif, setModif, initModification;
 /** LIBRARY STEP UTILY FUNCTIONS **/
 
 function loadLibraryStep(search) {
+    var search_lower = "";
+    if (search !== undefined) {
+        search_lower = search.toLowerCase();
+    }
     $("#lib").empty();
     showLoaderInModal("#addStepModal");
     $.ajax({
@@ -1116,7 +1120,7 @@ function loadLibraryStep(search) {
             for (var index = 0; index < data.testCaseStepList.length; index++) {
                 var step = data.testCaseStepList[index];
 
-                if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
+                if (search == undefined || search == "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
                                 .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
@@ -2754,20 +2758,20 @@ function setPlaceholderProperty(propertyElement) {
                     //var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
                     //editor.setTheme("ace/theme/chrome");
                     //editor.getSession().setMode(placeHolders[i].value1EditorMode);
-                    
+
 //                    var rhymeCompleter = {
 //                        getCompletions: function (editor, session, pos, prefix, callback) {
 //                            autocompleteField(editor, callback);
 //                        }
 //                    }; 
-                    
+
                     //changeCompleter(langTools,rhymeCompleter);
                     //editor.completers = [rhymeCompleter];        
                     //editor.setOptions({
                     //    maxLines: 10,
                     //    enableBasicAutocompletion: true
                     //});        
-                            
+
 // TODO : Below is some try to autocomplete
 // // TODO : Clean that comment
 //                    editor.commands.on("afterExec", function (element) {
