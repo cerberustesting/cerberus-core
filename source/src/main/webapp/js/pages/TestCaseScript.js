@@ -1066,7 +1066,7 @@ function createStepList(data, stepList, stepIndex, canUpdate) {
                 $(stepList[i].html[0]).click();
             }
         }
-        if (!find) {
+        if ((!find) && (stepList.length > 0)) {
             $(stepList[0].html[0]).click();
         }
     } else if (stepList.length > 0) {
