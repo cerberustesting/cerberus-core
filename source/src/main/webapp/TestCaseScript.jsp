@@ -180,7 +180,7 @@
                                     </div>
                                     <div id="propButton">
                                         <!--<h4>Actions</h4>-->
-                                        <button class="btn btn-warning btn-block marginTop25" id="addProp">Add Property</button>
+                                        <button class="btn btn-warning btn-block marginTop25" id="addProperty">Add Property</button>
                                     </div>
                                 </div>
                             </nav>

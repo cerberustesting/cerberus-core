@@ -422,5 +422,5 @@ public final class StringUtil {
             return prefix + text;
         }
     }
-
-}
+    
+    }

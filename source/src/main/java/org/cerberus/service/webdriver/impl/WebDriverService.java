@@ -593,7 +593,7 @@ public class WebDriverService implements IWebDriverService {
             for (String windowHandle : handles) {
                 if (!windowHandle.equals(currentHandle)) {
                     session.getDriver().switchTo().window(windowHandle);
-                    if (seleniumTestTitleOfWindow(session, session.getDriver().getTitle(), identifier.getIdentifier(), identifier.getLocator())) {
+                    if (checkIfExpectedWindow(session, identifier.getIdentifier(), identifier.getLocator())) {
                         message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_SWITCHTOWINDOW);
                         message.setDescription(message.getDescription().replace("%WINDOW%", windowTitle));
                         return message;
@@ -646,20 +646,32 @@ public class WebDriverService implements IWebDriverService {
         return new MessageEvent(MessageEventEnum.ACTION_FAILED_CLOSE_ALERT);
     }
 
-    private boolean seleniumTestTitleOfWindow(Session session, String title, String identifier, String value) {
-        if (value != null && title != null) {
-            if (value.equals(title)) {
-                return true;
-            }
+    private boolean checkIfExpectedWindow(Session session, String identifier, String value) {
 
-            if ("regexTitle".equals(identifier)) {
+        boolean result = false;
+        WebDriverWait wait = new WebDriverWait(session.getDriver(), TIMEOUT_WEBELEMENT);
+        String title;
+        
+        switch (identifier) {
+            case Identifier.IDENTIFIER_URL: {
+                
+                wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe("about:blank")));
+                return session.getDriver().getCurrentUrl().equals(value);
+            }
+            case Identifier.IDENTIFIER_REGEXTITLE:
+                wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
+                title = session.getDriver().getTitle();
                 Pattern pattern = Pattern.compile(value);
-                Matcher matcher = pattern.matcher(session.getDriver().getTitle());
-
-                return matcher.find();
-            }
+                Matcher matcher = pattern.matcher(title);
+                result = matcher.find();
+            default:
+                wait.until(ExpectedConditions.not(ExpectedConditions.titleIs("")));
+                title = session.getDriver().getTitle();
+                if (title.equals(value)) {
+                    result = true;
+                }
         }
-        return false;
+        return result;
     }
 
     @Override
@@ -783,7 +795,7 @@ public class WebDriverService implements IWebDriverService {
             message.setDescription(message.getDescription().replace("%ELEMENT%", identifier.getIdentifier() + "=" + identifier.getLocator()));
             MyLogger.log(WebDriverService.class.getName(), Level.DEBUG, exception.toString());
             return message;
-        } 
+        }
     }
 
     @Override

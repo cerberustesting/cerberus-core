@@ -287,6 +287,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
+                        drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
 
                         // Restore the saveScript button status
@@ -2368,7 +2369,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     } else if (typeNotExist == "property") {
                         //TODO better way to add property
-                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProp').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         } else {
@@ -2526,7 +2527,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
             {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+            {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
             {"type": "manageDialog", "object": "ok ou cancel", "property": null},
             {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
             {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
@@ -2555,7 +2556,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "rightClick", "object": "Element path", "property": null},
             {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Window id", "property": null},
+            {"type": "switchToWindow", "object": "Window title or url", "property": null},
             {"type": "manageDialog", "object": "ok or cancel", "property": null},
             {"type": "mouseOver", "object": "Element path", "property": null},
             {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
