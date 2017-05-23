@@ -2733,6 +2733,7 @@ function getmotherKeywordId(motherKeyword,allKeyword){
   }
   return idmotherKeyword;
 }
+
 function getNextKeywordId(motherKeyword,allKeyword){
   var idCurrentKeyword =-1;
   for (i in allKeyword){
@@ -2744,166 +2745,119 @@ function getNextKeywordId(motherKeyword,allKeyword){
 }
 
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
-function configureHighlingRulesOfCerberusMode(allKeyword, mode){
-  switch(mode) {
-    case "ace/mode/cerberus":
-    //change some part of cerberus-mode to highlight text dynamicly
-    define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-    "use strict";
-      var oop = require("../lib/oop");
-      var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+function configureHighlingRulesOfCerberusMode(allKeyword, modeName, editor){
 
-      var cerberusHighlightRules = function() {
-          //default autocomplete
-          var keywordMapper = this.createKeywordMapper({
-            "tag" : ""
-          }, "identifier");
-          //regex rule for number (can be deleted)
-          this.$rules = {
-              "start" : [{
-                      token : "constant.numeric", // hex| remove later ?
-                      regex : "0[xX][0-9a-fA-F]+(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
-                  }, {
-                      token : "constant.numeric", // float| remove later ?
-                      regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
-                  }]
-          };
-          //Regex rule for all middle the keyword
-          var startingKeywordId =[];
-          var endKeywordId =[]
-          for (var i in allKeyword) {
-            var k =allKeyword[i];
-            if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "."){
-              // get all the child value
-              var previousK = allKeyword[ getmotherKeywordId(k["motherKeyword"],allKeyword) ];
-              for (var y in k["listKeyword"]) {
-                var nextK = allKeyword[ getNextKeywordId( k["listKeyword"][y] ,allKeyword) ];
-                if ( nextK != undefined){
-                  this.$rules["start"].push({
-                        token : "keyword",
-                        regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"] + createRegexHightlight( nextK["listKeyword"] ) + nextK["endCaractere"]
-                    });
-                    this.$rules["start"].push({
-                          token : "keyword",
-                          regex : previousK["startCaractere"] + k["motherKeyword"] + k["startCaractere"] + k["listKeyword"][y] + k["endCaractere"]
-                    });
-                }
-              }
-            }
-            if(k["motherKeyword"] == null && k["startCaractere"] == "%"){
-              startingKeywordId.push(i);
-            }
-            if(k["motherKeyword"] != null && k["startCaractere"] == "." && k["endCaractere"] == "%"){
-              endKeywordId.push(i);
-            }
-          }
-          //Regex rule for all the keyword that are not object (must be defined in second position)
-          for (var i in endKeywordId) {
-            var k =allKeyword[ endKeywordId[i]  ];
-            this.$rules["start"].push({
-                  token : "keyword",
-                  regex : "%" + k["motherKeyword"] + k["startCaractere"] + createRegexHightlight(k["listKeyword"]) + k["endCaractere"]
-              });
-          }
-          //Regex Rule for the begining (must be defined in last position)
-          for (var i in startingKeywordId) {
-            var k =allKeyword[ startingKeywordId[i]  ];
-            this.$rules["start"].push({
-                  token : "keyword",
-                  regex : "%" + createRegexHightlight(k["listKeyword"])
-              });
-          }
-      };
-      oop.inherits(cerberusHighlightRules, TextHighlightRules);
-      exports.cerberusHighlightRules = cerberusHighlightRules;
-    });
-  }
+    editor.getSession().setMode(modeName);
 }
 
 function changeAceCompletionList(keywordList,label,editor){
-  var langTools = ace.require("ace/ext/language_tools");
-  langTools.setCompleters([]);//clear the autocompleter list
-  completer= {
-    getCompletions: function(editor, session, pos, prefix, callback) {
-      var completions = [];
-      for (var i in keywordList) {
-        completions.push({ name:"default_name", value:keywordList[i], meta: label });
+    var langTools = ace.require("ace/ext/language_tools");
+    langTools.setCompleters([]);//clear the autocompleter list
+    completer= {
+      getCompletions: function(editor, session, pos, prefix, callback) {
+        var completions = [];
+        for (var i in keywordList) {
+          completions.push({ name:"default_name", value:keywordList[i], meta: label });
+        }
+        callback(null, completions);
       }
-      callback(null, completions);
     }
-  }
-  langTools.addCompleter(completer);
+    langTools.addCompleter(completer);
 }
 
 function createAllKeywordList(objectList,propertyList ){
-  var availableObjectProperties = [
-      "value",
-      "picturepath",
-      "pictureurl"
-  ];
-  var availableSystemValues = [
-      "SYSTEM",
-      "APPLI",
-      "BROWSER",
-      "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
-      "ENV", "ENVGP",
-      "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
-      "TEST",
-      "TESTCASE",
-      "SSIP", "SSPORT",
-      "TAG",
-      "EXECUTIONID",
-      "EXESTART", "EXEELAPSEDMS",
-      "EXESTORAGEURL",
-      "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
-      "LASTSERVICE_HTTPCODE",
-      "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
-      "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
-  ];
-  var availableTags = [
-      "property", // 0
-      "object",   // 1
-      "system"    // 2
-  ];
+    var availableObjectProperties = [
+        "value",
+        "picturepath",
+        "pictureurl"
+    ];
+    var availableSystemValues = [
+        "SYSTEM",
+        "APPLI",
+        "BROWSER",
+        "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+        "ENV", "ENVGP",
+        "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
+        "TEST",
+        "TESTCASE",
+        "SSIP", "SSPORT",
+        "TAG",
+        "EXECUTIONID",
+        "EXESTART", "EXEELAPSEDMS",
+        "EXESTORAGEURL",
+        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+        "LASTSERVICE_HTTPCODE",
+        "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+        "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+    ];
+    var availableTags = [
+        "property", // 0
+        "object",   // 1
+        "system"    // 2
+    ];
 
-  var allKeyword =[];
-  allKeyword.push( {"motherKeyword" : null, "startCaractere" :"%", "listKeyword": availableTags, "endCaractere" :"."} );
-  //property
-  allKeyword.push( {"motherKeyword" : availableTags["0"], "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%"} );
-  //object
-  allKeyword.push( {"motherKeyword" : availableTags["1"], "startCaractere" :".", "listKeyword": objectList, "endCaractere" :"."} );
-  for (var i in objectList) {
-    allKeyword.push( {"motherKeyword" : objectList[i], "startCaractere" :".", "listKeyword": availableObjectProperties, "endCaractere" :"%"} );
-  }
-  //system
-  allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
+    var allKeyword =[];
+    allKeyword.push( {"motherKeyword" : null, "startCaractere" :"%", "listKeyword": availableTags, "endCaractere" :"."} );
+    //property
+    allKeyword.push( {"motherKeyword" : availableTags["0"], "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%"} );
+    //object
+    allKeyword.push( {"motherKeyword" : availableTags["1"], "startCaractere" :".", "listKeyword": objectList, "endCaractere" :"."} );
+    for (var i in objectList) {
+      allKeyword.push( {"motherKeyword" : objectList[i], "startCaractere" :".", "listKeyword": availableObjectProperties, "endCaractere" :"%"} );
+    }
+    //system
+    allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
 
-  return allKeyword;
-}
-
-function createAceMarkerAndAnnotation(editor,annotationObjectList){
-    /*
-    Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
-    */
-    editor.getSession().setAnnotations( annotationObjectList );
-}
-function createAceAnnotationObject(lineNumber,annotationText,annotationType){
-    return {row: lineNumber,
-            column: 0,
-            text: annotationText,
-            type: annotationType
-          };
+    return allKeyword;
 }
 
 //object use to highlight line
-function createAceMarkerObject(lineNumber,annotationText,annotationType){
-    /*var Range = ace.require('ace/range').Range; // get reference to ace/range
-    var from = lineNumber;
-    var to = lineNumber+1;
-    editor.session.addMarker(
-        new Range(from, 0, to, 0), "ace_step ", "fullLine"
-     );*/
+function createAceAnnotationObject(lineNumber,annotationText,annotationType){
+
+    return {row: lineNumber,
+            column: 0,
+            text: annotationText,
+            type: annotationType};
 }
+
+function createAceWarningAnnotation(editor,annotationObjectList){
+
+    //Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
+    editor.getSession().setAnnotations( annotationObjectList );
+
+}
+
+function createTooltipForWarningKeyword(editor, line, keywordNumberAtLine, warningKeyword){
+
+    /*
+      Look if ace has updated our span yet (need to loop at least once)
+    */
+    var valueAtAceLineList = document.getElementsByClassName('ace_line');
+    var innerHtmlValueAtCurrentAceLine = valueAtAceLineList[line].innerHTML;
+    var numberOfPercentCaractereAtLine = (innerHtmlValueAtCurrentAceLine.match(/\%/g) || []).length;
+    var allCerberusVarClose = (numberOfPercentCaractereAtLine % 2 == 0 );
+
+    //ace unexpected
+    if ( !allCerberusVarClose ){
+        console.log( innerHtmlValueAtCurrentAceLine );
+    }
+    else{
+        console.log( innerHtmlValueAtCurrentAceLine );
+    }
+    //console.log(cerberusVarBetweenCustomSpan);
+    /*
+    for (i = 0; i < aceLineList.length; ++i) {
+        var aceLine = aceLineList[i];
+        annotationElement.setAttribute("data-toggle","tooltip");
+        annotationElement.setAttribute("data-original-title","wololo");
+        annotationElement.setAttribute("data-container","body");
+    }
+    //enable all tooltip
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip("show");
+    })*/
+}
+
 
 function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
 
@@ -2912,8 +2866,9 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
       exec: function () {
           var numberOfLine = editor.session.getLength();
           var annotationObjectList =[];
-          for (var l = 0; l < numberOfLine; l++) {
-              var editorValueAtTheLine = editor.session.getLine(l);
+          //var warningKeywordList =[];
+          for (var line = 0; line < numberOfLine; line++) {
+              var editorValueAtTheLine = editor.session.getLine(line);
               var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
               if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
                   var editorValueSplit = editorValueAtTheLine.split("%");
@@ -2959,20 +2914,18 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
                       if ( issueWithKeyword == "error" ){
                           //display the error
                           var messageOfAnnotion ="error invalid keyword";
-                          //createAceMarkerAndAnnotation(editor,l,messageOfAnnotion,"error");
-                          annotationObjectList.push( createAceAnnotationObject(l,messageOfAnnotion,"error") );
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error") );
                       }
                       if (issueWithKeyword == "warning"){
                           //display the error
-                          var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist"  ;
-                          //createAceMarkerAndAnnotation(editor,l,messageOfAnnotion,"warning");
-                          annotationObjectList.push( createAceAnnotationObject(l,messageOfAnnotion,"warning") );
+                          var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning") );
+                          createTooltipForWarningKeyword(editor, line , i, keywordsListCurrentlyCheck[1] );
                       }
                  }
             }
         }
-        console.log( "test2 " );
-        createAceMarkerAndAnnotation(editor,annotationObjectList);
+        createAceWarningAnnotation(editor,annotationObjectList);
     }
   });
 
@@ -3019,9 +2972,10 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
           if (allKeywordCorrect){
               //add the special caractere
               if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
-                editor.session.insert( editor.getCursorPosition() ,".");
+                  editor.session.insert( editor.getCursorPosition() ,".");
               if (currentKeyword !=undefined && idNextKeyword ==-1)
-                editor.session.insert( editor.getCursorPosition() ,"%");
+                  editor.session.insert( editor.getCursorPosition() ,"%");
+
 
               //change the autocompletionList
               if (currentKeyword == undefined){
@@ -3034,19 +2988,18 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
               }
           //show the final popup if the user enter a new object
           }else {
-              var object = allKeyword[0]["listKeyword"][1];
-              var availableObjectProperties = [//TODO : get this tab from allKeyword
+              var availableObjectProperties = [
                   "value",
                   "picturepath",
                   "pictureurl"
               ];
               // if the user want to defined a new object
-              if( keywordInputByUser[0] == object && keywordInputByUser.length == 2 && potentiallyNeddApoint == false){
+              if( keywordInputByUser[0] == "object" && keywordInputByUser.length == 2 && potentiallyNeddApoint == false){
                   changeAceCompletionList(availableObjectProperties,keywordInputByUser[1],editor);
                   editor.execCommand("startAutocomplete");
               }
               // add '%' when an availableObjectProperties was selected
-              if (keywordInputByUser[0] == object && keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
+              if (keywordInputByUser[0] == "object" && keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
                   editor.session.insert( editor.getCursorPosition() ,"%");
               }
           }
@@ -3056,43 +3009,29 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
 }
 
-function addCommandForSaveAceInput(editor, allKeyword, commandName){
-  editor.commands.addCommand({
-    name: commandName,
-    exec: function () {
-      //console.log(editor.getValue);
-    }
-  });
-}
-
 function configureAceEditor(editor,mode,objectList,propertyList){
     //gather all the keyword
     var allKeyword =createAllKeywordList(objectList,propertyList );
-    //configure all the highlight rule
-    configureHighlingRulesOfCerberusMode(allKeyword, mode);
     //Popup command
     var commandNameForAutoCompletePopup = "cerberusPopup";
     addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
     //Marker and Annotation command
     var commandNameForIssueDetection = "cerberusIssueDetection";
     addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-    //Save command
-    var commandNameForSaveAceInput ="cerberusSave";
-    addCommandForSaveAceInput(editor, allKeyword, commandNameForSaveAceInput);
+
     //Exec command
     editor.commands.on("afterExec", function(e){
-      if( e.command.name == "insertstring" || e.command.name == "paste") {
-        //editor.commands.exec(commandNameForSaveAceInput);
-        editor.commands.exec(commandNameForAutoCompletePopup);
-        editor.commands.exec(commandNameForIssueDetection);
-      }
-      if (e.command.name == "backspace"){
-          editor.commands.exec(commandNameForIssueDetection);
-          //editor.commands.exec(commandNameForSaveAceInput);
-      }
-    });
 
-    editor.getSession().setMode(mode);
+        if( e.command.name == "insertstring" || e.command.name == "paste" ){
+            editor.commands.exec(commandNameForAutoCompletePopup);
+            editor.commands.exec(commandNameForIssueDetection);
+        }
+    });
+    editor.on("mousedown", function () {
+          console.log("mouse down");
+    });
+    //configure all the highlight rule
+    configureHighlingRulesOfCerberusMode(allKeyword, mode, editor);
     //editor option
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling ="Infinity";//disable error message

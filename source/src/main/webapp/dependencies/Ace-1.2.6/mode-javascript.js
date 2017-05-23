@@ -9,7 +9,7 @@ var DocCommentHighlightRules = function() {
         "start" : [ {
             token : "comment.doc.tag",
             regex : "@[\\w\\d_]+" // TODO: fix email addresses
-        }, 
+        },
         DocCommentHighlightRules.getTagRule(),
         {
             defaultToken : "comment.doc",
@@ -92,7 +92,9 @@ var JavaScriptHighlightRules = function(options) {
         "3[0-7][0-7]?|" + // oct
         "[4-7][0-7]?|" + //oct
         ".)";
+    //custom cerberus rules
 
+    //
     this.$rules = {
         "no_regex" : [
             DocCommentHighlightRules.getStartRule("doc-start"),
@@ -381,6 +383,7 @@ var JavaScriptHighlightRules = function(options) {
 
         if (!options || options.jsx != false)
             JSX.call(this);
+
     }
 
     this.embedRules(DocCommentHighlightRules, "doc-",

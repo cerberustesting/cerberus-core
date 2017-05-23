@@ -1,4 +1,53 @@
-//===Warning the hightling rule of cerberus-mode have to be defined by configureAceEditor() ===//
+define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
+"use strict";
+
+  var oop = require("../lib/oop");
+  var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
+
+  var cerberusHighlightRules = function() {
+      //default autocomplete
+      var keywordMapper = this.createKeywordMapper({
+        "tag" : ""
+      }, "identifier");
+      //regex rule for number (can be deleted)
+      this.$rules = {
+          "start" : [{
+                  token : "constant.numeric", // hex| remove later ?
+                  regex : "0[xX][0-9a-fA-F]+(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+              }, {
+                  token : "constant.numeric", // float| remove later ?
+                  regex : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\\b"
+              }]
+      };
+
+      var k = ["property","system"];
+      this.$rules["start"].push({
+          token : "keyword",
+          regex : "%" + createRegexHightlight(k) +".",
+          next : "p2-1"
+      });
+      this.$rules["p2-1"] = [];
+      this.$rules["p2-1"].push({
+          token : "keyword",
+          regex : "[A-Za-z]+" + "%",
+          next : "start"
+      });
+
+      this.$rules["start"].push({
+          token : "keyword",
+          regex : "%" + "object" + ".",
+          next : "p2-2"
+      });
+      this.$rules["p2-2"] = [];
+      this.$rules["p2-2"].push({
+          token : "keyword",
+          regex : "[A-Za-z]+" + "." + "[A-Za-z]+" + "%",
+          next  : "start"
+      });
+  }
+  oop.inherits(cerberusHighlightRules, TextHighlightRules);
+  exports.cerberusHighlightRules = cerberusHighlightRules;
+});
 
 define("ace/mode/behaviour/cerberus",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator"], function(require, exports, module) {
 "use strict";
