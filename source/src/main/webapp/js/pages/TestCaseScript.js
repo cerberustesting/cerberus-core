@@ -2994,7 +2994,7 @@ function getKeywordList(type){
     }
 }
 
-function createGuterCellListenner( editor ){
+function createGuterCellListenner( editor, commandNameForIssueDetection ){
 
     var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
     var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
@@ -3003,26 +3003,27 @@ function createGuterCellListenner( editor ){
         cellList[i].setAttribute("style", "cursor: pointer");
         cellList[i].onclick = function() {
 
-        var lineClickedId = this.innerHTML -1;//start at 1
-        var annotationObjectList = editor.getSession().getAnnotations();
+            var lineClickedId = this.innerHTML -1;//start at 1
+            var annotationObjectList = editor.getSession().getAnnotations();
 
-        for (var y = 0; y < annotationObjectList.length; y++) {
-            if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
+            console.log(this.className );
+            for (var y = 0; y < annotationObjectList.length; y++) {
+                if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
 
-                  var keywordType = annotationObjectList[y].keywordType;
-                  var keywordValue =  annotationObjectList[y].keywordValue;
-                  if ( keywordType == "property" ){
-                      propertyList.push(keywordValue);
-                  }
-                  if ( keywordType == "object" ){
-                      addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
-                  }
+                      var keywordType = annotationObjectList[y].keywordType;
+                      var keywordValue =  annotationObjectList[y].keywordValue;
+                      if ( keywordType == "property" ){
+                          //propertyList.push(keywordValue);
+                      }
+                      if ( keywordType == "object" ){
+                          this.className = "ace_gutter-cell";//Remove the warning annotation
+                          addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
+                      }
 
                 }
             }
         }
     }
-
 }
 
 function configureAceEditor(editor,mode){
@@ -3043,7 +3044,7 @@ function configureAceEditor(editor,mode){
             editor.commands.exec(commandNameForIssueDetection);
 
         }
-        createGuterCellListenner( editor );
+        createGuterCellListenner( editor, commandNameForIssueDetection );
 
     });
 
