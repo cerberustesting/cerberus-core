@@ -8950,7 +8950,7 @@ var EditSession = function(text, mode) {
     };
     this.setAnnotations = function(annotations) {
         this.$annotations = annotations;
-        this._signal("changeAnnotation", {});
+        this._signal("changeAnnotation", {});        
     };
     this.getAnnotations = function() {
         return this.$annotations || [];

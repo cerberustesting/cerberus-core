@@ -2746,7 +2746,6 @@ function getNextKeywordId(motherKeyword,allKeyword){
 
 //part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
 function configureHighlingRulesOfCerberusMode(allKeyword, modeName, editor){
-
     editor.getSession().setMode(modeName);
 }
 
@@ -2797,67 +2796,37 @@ function createAllKeywordList(objectList,propertyList ){
     ];
 
     var allKeyword =[];
-    allKeyword.push( {"motherKeyword" : null, "startCaractere" :"%", "listKeyword": availableTags, "endCaractere" :"."} );
+    allKeyword.push( {"motherKeyword" : null, "listKeyword": availableTags} );
     //property
-    allKeyword.push( {"motherKeyword" : availableTags["0"], "startCaractere" :".", "listKeyword": propertyList, "endCaractere" :"%"} );
+    allKeyword.push( {"motherKeyword" : availableTags["0"], "listKeyword": propertyList} );
     //object
-    allKeyword.push( {"motherKeyword" : availableTags["1"], "startCaractere" :".", "listKeyword": objectList, "endCaractere" :"."} );
+    allKeyword.push( {"motherKeyword" : availableTags["1"], "listKeyword": objectList} );
     for (var i in objectList) {
-      allKeyword.push( {"motherKeyword" : objectList[i], "startCaractere" :".", "listKeyword": availableObjectProperties, "endCaractere" :"%"} );
+      allKeyword.push( {"motherKeyword" : objectList[i], "listKeyword": availableObjectProperties} );
     }
     //system
-    allKeyword.push( {"motherKeyword" : availableTags["2"], "startCaractere" :".", "listKeyword": availableSystemValues, "endCaractere" :"%"} );
+    allKeyword.push( {"motherKeyword" : availableTags["2"], "listKeyword": availableSystemValues} );
 
     return allKeyword;
 }
 
 //object use to highlight line
-function createAceAnnotationObject(lineNumber,annotationText,annotationType){
+function createAceAnnotationObject(lineNumber,annotationText,annotationType,idOnLine){
 
     return {row: lineNumber,
             column: 0,
             text: annotationText,
-            type: annotationType};
+            type: annotationType,
+            lineNumber: lineNumber,
+            id: "annotationId:"+lineNumber+":"+idOnLine};
 }
 
-function createAceWarningAnnotation(editor,annotationObjectList){
 
+
+function createAceAnnotation(editor,annotationObjectList){
     //Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
     editor.getSession().setAnnotations( annotationObjectList );
-
 }
-
-function createTooltipForWarningKeyword(editor, line, keywordNumberAtLine, warningKeyword){
-
-    /*
-      Look if ace has updated our span yet (need to loop at least once)
-    */
-    var valueAtAceLineList = document.getElementsByClassName('ace_line');
-    var innerHtmlValueAtCurrentAceLine = valueAtAceLineList[line].innerHTML;
-    var numberOfPercentCaractereAtLine = (innerHtmlValueAtCurrentAceLine.match(/\%/g) || []).length;
-    var allCerberusVarClose = (numberOfPercentCaractereAtLine % 2 == 0 );
-
-    //ace unexpected
-    if ( !allCerberusVarClose ){
-        console.log( innerHtmlValueAtCurrentAceLine );
-    }
-    else{
-        console.log( innerHtmlValueAtCurrentAceLine );
-    }
-    //console.log(cerberusVarBetweenCustomSpan);
-    /*
-    for (i = 0; i < aceLineList.length; ++i) {
-        var aceLine = aceLineList[i];
-        annotationElement.setAttribute("data-toggle","tooltip");
-        annotationElement.setAttribute("data-original-title","wololo");
-        annotationElement.setAttribute("data-container","body");
-    }
-    //enable all tooltip
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip("show");
-    })*/
-}
-
 
 function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
 
@@ -2914,18 +2883,17 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
                       if ( issueWithKeyword == "error" ){
                           //display the error
                           var messageOfAnnotion ="error invalid keyword";
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error") );
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", i) );
                       }
                       if (issueWithKeyword == "warning"){
                           //display the error
                           var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning") );
-                          createTooltipForWarningKeyword(editor, line , i, keywordsListCurrentlyCheck[1] );
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , i) );
                       }
                  }
             }
         }
-        createAceWarningAnnotation(editor,annotationObjectList);
+        createAceAnnotation(editor,annotationObjectList);
     }
   });
 
@@ -3009,6 +2977,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
 }
 
+
 function configureAceEditor(editor,mode,objectList,propertyList){
     //gather all the keyword
     var allKeyword =createAllKeywordList(objectList,propertyList );
@@ -3021,14 +2990,25 @@ function configureAceEditor(editor,mode,objectList,propertyList){
 
     //Exec command
     editor.commands.on("afterExec", function(e){
-
         if( e.command.name == "insertstring" || e.command.name == "paste" ){
             editor.commands.exec(commandNameForAutoCompletePopup);
             editor.commands.exec(commandNameForIssueDetection);
         }
-    });
-    editor.on("mousedown", function () {
-          console.log("mouse down");
+        var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
+        var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
+        for (var i = 0; i < cellList.length; i++) {
+            cellList[i].setAttribute("style", "cursor: pointer");
+            cellList[i].onclick = function() {
+                var lineClickedId = this.innerHTML -1;//start at 1
+                var annotationObjectList = editor.getSession().getAnnotations();
+
+                for (var y = 0; y < annotationObjectList.length; y++) {
+                    if (annotationObjectList[y].lineNumber == lineClickedId){
+                        console.log( annotationObjectList[y] );
+                    }
+                }
+            }
+        }
     });
     //configure all the highlight rule
     configureHighlingRulesOfCerberusMode(allKeyword, mode, editor);
