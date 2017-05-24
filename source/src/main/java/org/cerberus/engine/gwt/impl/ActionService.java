@@ -1107,7 +1107,7 @@ public class ActionService implements IActionService {
                 }
 
             } catch (Exception ex) {
-                LOG.error(ex.toString());
+                LOG.error(ex.toString(), ex);
                 message = new MessageEvent(MessageEventEnum.ACTION_FAILED_GENERIC).resolveDescription("DETAIL", ex.toString());
             }
         }
