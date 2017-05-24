@@ -2994,47 +2994,57 @@ function getKeywordList(type){
     }
 }
 
-function configureAceEditor(editor,mode,objectList,propertyList){
+function createGuterCellListenner( editor ){
+
+    var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
+    var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
+    for (var i = 0; i < cellList.length; i++) {
+
+        cellList[i].setAttribute("style", "cursor: pointer");
+        cellList[i].onclick = function() {
+
+        var lineClickedId = this.innerHTML -1;//start at 1
+        var annotationObjectList = editor.getSession().getAnnotations();
+
+        for (var y = 0; y < annotationObjectList.length; y++) {
+            if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
+
+                  var keywordType = annotationObjectList[y].keywordType;
+                  var keywordValue =  annotationObjectList[y].keywordValue;
+                  if ( keywordType == "property" ){
+                      propertyList.push(keywordValue);
+                  }
+                  if ( keywordType == "object" ){
+                      addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
+                  }
+
+                }
+            }
+        }
+    }
+
+}
+
+function configureAceEditor(editor,mode){
 
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
     var commandNameForIssueDetection = "cerberusIssueDetection";
-
     //Exec command
     editor.commands.on("afterExec", function(e){
+
         if( e.command.name == "insertstring" || e.command.name == "paste" ){
 
-            var allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
+            allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
             addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
             addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
 
             editor.commands.exec(commandNameForAutoCompletePopup);
             editor.commands.exec(commandNameForIssueDetection);
-        }
-        var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
-        var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
-        for (var i = 0; i < cellList.length; i++) {
-            cellList[i].setAttribute("style", "cursor: pointer");
-            cellList[i].onclick = function() {
-                var lineClickedId = this.innerHTML -1;//start at 1
-                var annotationObjectList = editor.getSession().getAnnotations();
-                editor.getSession().setAnnotations(  );
-                for (var y = 0; y < annotationObjectList.length; y++) {
-                    if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
 
-                          var keywordType = annotationObjectList[y].keywordType;
-                          var keywordValue =  annotationObjectList[y].keywordValue;
-                          if ( keywordType == "property" ){
-                              propertyList.push(keywordValue);
-                          }
-                          if ( keywordType == "object" ){
-                              addApplicationObjectModalClick(undefined, keywordValue,"Google");
-                          }
-                    }
-                }
-                editor.commands.exec(commandNameForIssueDetection);
-            }
         }
+        createGuterCellListenner( editor );
+
     });
 
     //editor option
@@ -3044,44 +3054,6 @@ function configureAceEditor(editor,mode,objectList,propertyList){
     editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
 }
 
-//the async part is just here to get the tab modListUnique and objectList
-function configureAceEditorAsyncSecondFunction(editor,mode,objectList){
-  var test = GetURLParameter("test");
-  var testcase = GetURLParameter("testcase");
-  $.ajax({
-      url: "GetPropertiesForTestCase",
-      data: {test: test, testcase: testcase},
-      async: false,
-      success: function (data) {
-
-          var propertyList =[];
-          for (var index = 0; index < data.length; index++) {
-            var property = data[index].property;
-            propertyList.push( property );
-          }
-          var propertyList = Array.from(new Set(propertyList));
-          configureAceEditor(editor,mode,objectList,propertyList);
-      },
-      error: showUnexpectedError
-  })
-}
-
-function configureAceEditorAsyncFirstFunction(editor,mode ){
-  var test = GetURLParameter("test");
-  var testcase = GetURLParameter("testcase");
-  $.ajax({
-    url: "ReadTestCase",
-    data: {test: test, testCase: testcase, withStep: true},
-    dataType: "json",
-    success: function (data) {
-        var objectsPromise = loadApplicationObject(data);
-        Promise.all([objectsPromise]).then(function (data2) {
-          configureAceEditorAsyncSecondFunction(editor,mode,data2[0])
-        });
-      },
-      error: showUnexpectedError
-  });
-}
 
 function setPlaceholderProperty(propertyElement) {
     /**
@@ -3141,7 +3113,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    configureAceEditorAsyncFirstFunction(editor,placeHolders[i].value1EditorMode);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
