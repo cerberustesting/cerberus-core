@@ -2744,11 +2744,6 @@ function getNextKeywordId(motherKeyword,allKeyword){
   return idCurrentKeyword;
 }
 
-//part which is suppose to be contain at the beginning of the file cerberus-mode but write this here give the possibility to chose the colors highlighted
-function configureHighlingRulesOfCerberusMode(allKeyword, modeName, editor){
-    editor.getSession().setMode(modeName);
-}
-
 function changeAceCompletionList(keywordList,label,editor){
     var langTools = ace.require("ace/ext/language_tools");
     langTools.setCompleters([]);//clear the autocompleter list
@@ -2811,17 +2806,17 @@ function createAllKeywordList(objectList,propertyList ){
 }
 
 //object use to highlight line
-function createAceAnnotationObject(lineNumber,annotationText,annotationType,idOnLine){
+function createAceAnnotationObject(lineNumber,annotationText,annotationType, keywordTypeVar, keywordValueVar){
 
     return {row: lineNumber,
             column: 0,
             text: annotationText,
             type: annotationType,
             lineNumber: lineNumber,
-            id: "annotationId:"+lineNumber+":"+idOnLine};
+            keywordType: keywordTypeVar,
+            keywordValue: keywordValueVar
+          }
 }
-
-
 
 function createAceAnnotation(editor,annotationObjectList){
     //Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
@@ -2883,12 +2878,12 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
                       if ( issueWithKeyword == "error" ){
                           //display the error
                           var messageOfAnnotion ="error invalid keyword";
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", i) );
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", null , null) );
                       }
                       if (issueWithKeyword == "warning"){
                           //display the error
                           var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , i) );
+                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]) );
                       }
                  }
             }
@@ -2976,21 +2971,43 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
   });
 
 }
+function updateAllKeyword(allKeyword){
+    console.log("test");
+}
 
+function getKeywordList(type){
+    if ( getTags() != undefined ){
+      var idType = -1;
+      switch (type) {
+          case "object":
+              return getTags()[1].array;
+          case "property":
+              return getTags()[2].array;
+          case "system":
+              return getTags()[3].array;
+          break;
+        default:
+            return null;
+      }
+    }else{
+        return null;
+    }
+}
 
 function configureAceEditor(editor,mode,objectList,propertyList){
-    //gather all the keyword
-    var allKeyword =createAllKeywordList(objectList,propertyList );
-    //Popup command
+
+    //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
-    addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
-    //Marker and Annotation command
     var commandNameForIssueDetection = "cerberusIssueDetection";
-    addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
 
     //Exec command
     editor.commands.on("afterExec", function(e){
         if( e.command.name == "insertstring" || e.command.name == "paste" ){
+
+            var allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
+            addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+
             editor.commands.exec(commandNameForAutoCompletePopup);
             editor.commands.exec(commandNameForIssueDetection);
         }
@@ -3001,18 +3018,27 @@ function configureAceEditor(editor,mode,objectList,propertyList){
             cellList[i].onclick = function() {
                 var lineClickedId = this.innerHTML -1;//start at 1
                 var annotationObjectList = editor.getSession().getAnnotations();
-
+                editor.getSession().setAnnotations(  );
                 for (var y = 0; y < annotationObjectList.length; y++) {
-                    if (annotationObjectList[y].lineNumber == lineClickedId){
-                        console.log( annotationObjectList[y] );
+                    if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
+
+                          var keywordType = annotationObjectList[y].keywordType;
+                          var keywordValue =  annotationObjectList[y].keywordValue;
+                          if ( keywordType == "property" ){
+                              propertyList.push(keywordValue);
+                          }
+                          if ( keywordType == "object" ){
+                              addApplicationObjectModalClick(undefined, keywordValue,"Google");
+                          }
                     }
                 }
+                editor.commands.exec(commandNameForIssueDetection);
             }
         }
     });
-    //configure all the highlight rule
-    configureHighlingRulesOfCerberusMode(allKeyword, mode, editor);
+
     //editor option
+    editor.getSession().setMode(mode);
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling ="Infinity";//disable error message
     editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
@@ -3039,6 +3065,7 @@ function configureAceEditorAsyncSecondFunction(editor,mode,objectList){
       error: showUnexpectedError
   })
 }
+
 function configureAceEditorAsyncFirstFunction(editor,mode ){
   var test = GetURLParameter("test");
   var testcase = GetURLParameter("testcase");
