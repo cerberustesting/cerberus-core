@@ -475,8 +475,8 @@ public class SQLService implements ISQLService {
                         HashMap<String, String> row = new HashMap<String, String>();
 
                         for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
-                            String column = entry.getKey();
-                            String name = entry.getValue();
+                            String column = entry.getValue();
+                            String name = entry.getKey();
                             try {
                                 String valueSQL = resultSet.getString(column);
                                 if (valueSQL == null) { // If data is null from the database, we convert it to the static string <NULL>. 

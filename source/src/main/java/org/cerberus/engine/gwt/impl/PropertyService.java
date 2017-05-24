@@ -73,6 +73,7 @@ public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
+    private static final String VALUE_NULL = "<NULL>";
 
     @Autowired
     private IWebDriverService webdriverService;
@@ -1224,7 +1225,11 @@ public class PropertyService implements IPropertyService {
 
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = (String) result.get(0).get("");
-                testCaseExecutionData.setValue(value);
+                if (value == null) {
+                    testCaseExecutionData.setValue(VALUE_NULL);
+                } else {
+                    testCaseExecutionData.setValue(value);
+                }
 
                 //Record result in filessytem.
                 recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
