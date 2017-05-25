@@ -8739,6 +8739,14 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DELETE FROM `invariant` WHERE `idname`='PROPERTYTYPE' and`value`='getFromTestData';");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding SOAP attachement in appservice.
+        //-- ------------------------ 1151
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `appservice` ");
+        SQLS.append("DROP COLUMN `ParsingAnswer`, ");
+        SQLS.append("ADD COLUMN `AttachementURL` VARCHAR(255) NULL DEFAULT '' AFTER `Operation`;");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

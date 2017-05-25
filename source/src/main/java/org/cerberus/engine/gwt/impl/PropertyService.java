@@ -938,16 +938,11 @@ public class PropertyService implements IPropertyService {
         try {
             AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
             if (appService != null) {
-                String attachement = "";//TODO implement this feature
-                //TODO implement the executeSoapFromLib
-                /*if (!testCaseExecutionData.getValue2().isEmpty()){
-                 attachement = testCaseExecutionData.getValue2();
-                 }else{
-                 attachement = soapLib.getAttachmentUrl();
-                 }*/
+
                 String decodedEnveloppe = appService.getServiceRequest();
                 String decodedServicePath = appService.getServicePath();
                 String decodedMethod = appService.getOperation();
+                String decodedAttachement = appService.getAttachementURL();
 
                 if (appService.getServiceRequest().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
@@ -979,16 +974,26 @@ public class PropertyService implements IPropertyService {
                         return testCaseExecutionData;
                     }
                 }
+                if (appService.getAttachementURL().contains("%")) {
+                    answerDecode = variableService.decodeStringCompletly(appService.getAttachementURL(), tCExecution, testCaseStepActionExecution, false);
+                    decodedAttachement = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Attachement URL"));
+                        LOG.debug("Property interupted due to decode 'SOAP Attachement URL.");
+                        return testCaseExecutionData;
+                    }
+                }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
-                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement, null, null, 60000, tCExecution.getApplicationObj().getSystem());
+                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, decodedAttachement, null, null, 60000, tCExecution.getApplicationObj().getSystem());
                 AppService se1 = (AppService) soapCall.getItem();
 //                tCExecution.setLastSOAPCalled(soapCall);
 
                 if (soapCall.isCodeEquals(200)) {
 //                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                     String xmlResponse = se1.getResponseHTTPBody();
-                    result = xmlUnitService.getFromXml(xmlResponse, appService.getParsingAnswer());
+                    result = xmlUnitService.getFromXml(xmlResponse, appService.getAttachementURL());
                 }
                 if (result != null) {
                     testCaseExecutionData.setValue(result);

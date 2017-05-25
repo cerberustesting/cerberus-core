@@ -95,9 +95,8 @@ public class CalculatePropertyForTestCase extends HttpServlet {
                     ExecutionUUID executionUUIDObject = appContext.getBean(ExecutionUUID.class);
                     UUID executionUUID = UUID.randomUUID();
                     executionUUIDObject.setExecutionUUID(executionUUID.toString(), null);
-                    String attachement = appService.getAttachmentUrl();
-                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), attachement, null, null, 60000, system);
-                    result = xmlUnitService.getFromXml(executionUUID.toString(), appService.getParsingAnswer());
+                    soapService.callSOAP(appService.getServiceRequest(), appService.getServicePath(), appService.getOperation(), appService.getAttachementURL(), null, null, 60000, system);
+                    result = xmlUnitService.getFromXml(executionUUID.toString(), appService.getAttachementURL());
                     description = appService.getDescription();
                     executionUUIDObject.removeExecutionUUID(executionUUID.toString());
                     MyLogger.log(CalculatePropertyForTestCase.class.getName(), Level.DEBUG, "Clean ExecutionUUID");

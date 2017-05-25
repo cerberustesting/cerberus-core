@@ -42,7 +42,7 @@ public class AppService {
     private String servicePath; // Path to access the service
     private String operation; // Operation used for SOAP Requests
     private String serviceRequest; // Content of the request.
-    private String parsingAnswer; // Should not be used.
+    private String attachementURL; // Attachement in cas of SOAP call with attachement.
     private String group; // Information in order to group the services in order to organise them
     private String description;
     private String UsrCreated;
@@ -52,7 +52,6 @@ public class AppService {
     /**
      * From here are data outside database model.
      */
-    private String attachmentUrl;
     private List<AppServiceContent> contentList;
     private List<AppServiceHeader> headerList;
     private String proxyHost;
@@ -219,20 +218,12 @@ public class AppService {
         this.DateModif = DateModif;
     }
 
-    public String getAttachmentUrl() {
-        return attachmentUrl;
-    }
-
-    public void setAttachmentUrl(String attachmentUrl) {
-        this.attachmentUrl = attachmentUrl;
-    }
-
     public void setOperation(String operation) {
         this.operation = operation;
     }
 
-    public void setParsingAnswer(String parsingAnswer) {
-        this.parsingAnswer = parsingAnswer;
+    public void setAttachementURL(String attachementURL) {
+        this.attachementURL = attachementURL;
     }
 
     public void setServicePath(String servicePath) {
@@ -259,8 +250,8 @@ public class AppService {
         return operation;
     }
 
-    public String getParsingAnswer() {
-        return parsingAnswer;
+    public String getAttachementURL() {
+        return attachementURL;
     }
 
     public String getServicePath() {

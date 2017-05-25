@@ -35,7 +35,6 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
 import javax.xml.parsers.ParserConfigurationException;
@@ -124,6 +123,7 @@ public class SoapService implements ISoapService {
     public void addAttachmentPart(SOAPMessage input, String path) throws CerberusException {
         URL url;
         try {
+            LOG.debug("Adding Attachement to SOAP request : " + path);
             url = new URL(path);
             DataHandler handler = new DataHandler(url);
             //TODO: verify if this code is necessary
@@ -254,22 +254,27 @@ public class SoapService implements ISoapService {
             SOAPMessage input = createSoapRequest(envelope, method, header, token);
 
             //Add attachment File if specified
-            //TODO: this feature is not implemented yet therefore is always empty!
             if (!StringUtil.isNullOrEmpty(attachmentUrl)) {
                 this.addAttachmentPart(input, attachmentUrl);
+                // Store the SOAP Call
+                out = new ByteArrayOutputStream();
+                input.writeTo(out);
+                LOG.debug("WS call with attachement : " + out.toString());
+                serviceSOAP.setServiceRequest(out.toString());
+            } else {
+                // Store the SOAP Call
+                out = new ByteArrayOutputStream();
+                input.writeTo(out);
+                LOG.debug("WS call : " + out.toString());
             }
 
-            // Store the SOAP Call
-            out = new ByteArrayOutputStream();
-            input.writeTo(out);
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS call : " + out.toString());
             // We already set the item in order to keep the request message in case of failure of SOAP calls.
             serviceSOAP.setService(servicePath);
 
             result.setItem(serviceSOAP);
 
             // Call the WS
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Calling WS");
+            LOG.debug("Calling WS.");
 
             // Reset previous Authentification.
             Authenticator.setDefault(null);
@@ -323,13 +328,13 @@ public class SoapService implements ISoapService {
 
             }
 
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "Called WS");
+            LOG.debug("Called WS.");
             out = new ByteArrayOutputStream();
 
             // Store the response
             soapResponse.writeTo(out);
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response received");
-            MyLogger.log(SoapService.class.getName(), Level.DEBUG, "WS response : " + out.toString());
+            LOG.debug("WS response received.");
+            LOG.debug("WS response : " + out.toString());
 
             message = new MessageEvent(MessageEventEnum.ACTION_SUCCESS_CALLSOAP);
             message.setDescription(message.getDescription()
@@ -347,7 +352,7 @@ public class SoapService implements ISoapService {
             result.setItem(serviceSOAP);
 
         } catch (SOAPException | UnsupportedOperationException | IOException | SAXException | ParserConfigurationException | CerberusException e) {
-            MyLogger.log(SoapService.class.getName(), Level.ERROR, e.toString());
+            LOG.error(e.toString());
             message = new MessageEvent(MessageEventEnum.ACTION_FAILED_CALLSOAP);
             message.setDescription(message.getDescription()
                     .replace("%SERVICEPATH%", servicePath)
@@ -364,7 +369,7 @@ public class SoapService implements ISoapService {
                     out.close();
                 }
             } catch (SOAPException | IOException ex) {
-                Logger.getLogger(SoapService.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                LOG.error(ex);
             } finally {
                 result.setResultMessage(message);
             }
