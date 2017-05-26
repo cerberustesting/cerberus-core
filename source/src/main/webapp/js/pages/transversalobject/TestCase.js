@@ -397,6 +397,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#usrmodif").prop("value", "");
         formEdit.find("#datemodif").prop("value", "");
         formEdit.find("#actProd").prop("value", "N");
+        formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
             appendTestList(undefined);
@@ -408,7 +409,6 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         }
     }
     if (isEmpty(testCase)) {
-        formEdit.find("#status").prop("value", "STANDBY");
         formEdit.find("#originalTest").prop("value", "");
         formEdit.find("#originalTestCase").prop("value", "");
         formEdit.find("#implementer").prop("value", "");
