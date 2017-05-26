@@ -673,10 +673,14 @@ function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
  * @param {String} labelList - list of labels from the testcase to flag. Label in that list are displayed first. This is optional.
  * @param {String} mySystem - system that will be used in order to load the label list. if not feed, the default system from user will be used.
  * @param {String} myLabelDiv - Reference of the div where the label will be added. Ex : "#selectLabel".
+ * @param {String} labelSize - size of col-xs-?? from 1 to 12. Default to 2 Ex : "4".
  * @returns {null}
  */
-function loadLabel(labelList, mySystem, myLabelDiv) {
+function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
 
+    if (isEmpty(labelSize)) {
+        labelSize = "2";
+    }
     var labelDiv = myLabelDiv;
     var targetSystem = mySystem;
     if (isEmpty(targetSystem)) {
@@ -695,7 +699,7 @@ function loadLabel(labelList, mySystem, myLabelDiv) {
                 //the character " needs a special encoding in order to avoid breaking the string that creates the html element   
                 var labelTag = '<div style="float:left" align="center"><input name="labelid" id="labelId' + data.contentTable[index].id + '" value="' + data.contentTable[index].id + '" type="checkbox">\n\
                 <span class="label label-primary" style="cursor:pointer;background-color:' + data.contentTable[index].color + '">' + data.contentTable[index].label + '</span></div> ';
-                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-2 list-group-item list-label"></div>')
+                var option = $('<div style="float:left" name="itemLabelDiv" id="itemLabelId' + data.contentTable[index].id + '" class="col-xs-' + labelSize + ' list-group-item list-label"></div>')
                         .attr("value", data.contentTable[index].label).html(labelTag);
                 $(labelDiv).append(option);
             }

@@ -72,7 +72,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
         $("[name='" + selectName + "']").append($('<option></option>').text(addValue1).val(addValue1));
     }
 
-//    console.debug("display Invariant " + idName + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = true;
     }
@@ -84,7 +83,6 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
 
     var cacheEntryName = idName + "INVARIANT";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -256,14 +254,12 @@ function displayBatchInvariantList(selectName, system, defaultValue) {
 function displayBuildList(selectName, system, level, defaultValue, withAll, withNone, forceReload) {
     var select = $(selectName);
 
-//    console.debug("display Invariant Build Rev " + system + " " + forceReload);
     if (forceReload === undefined) {
         forceReload = true;
     }
 
     var cacheEntryName = "BRINVARIANT" + "-" + level + "-" + system;
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -415,7 +411,6 @@ function getInvariantListN(list, handleData) {
 function getSelectInvariant(idName, forceReload, notAsync) {
     var cacheEntryName = idName + "INVARIANT";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var async = true;
@@ -463,7 +458,6 @@ function getSelectInvariant(idName, forceReload, notAsync) {
 function getSelectTestBattery(forceReload, notAsync) {
     var cacheEntryName = "TESTBATTERY";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var async = true;
@@ -509,7 +503,6 @@ function getSelectTestBattery(forceReload, notAsync) {
 function getSelectLabel(system, forceReload, notAsync) {
     var cacheEntryName = "LABEL" + system;
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var async = true;
@@ -547,7 +540,6 @@ function getSelectLabel(system, forceReload, notAsync) {
 function getSelectApplication(system, forceReload) {
     var cacheEntryName = system + "INVARIANT";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -582,7 +574,6 @@ function getSelectApplication(system, forceReload) {
 function getSelectDeployType(forceReload) {
     var cacheEntryName = "DEPLOYTYPE";
     if (forceReload) {
-//        console.debug("Purge " + cacheEntryName);
         sessionStorage.removeItem(cacheEntryName);
     }
     var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
@@ -1185,7 +1176,6 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             if ("" !== user.userPreferences && undefined !== user.userPreferences && null !== user.userPreferences) {
                 var userPref = JSON.parse(user.userPreferences);
                 if (undefined !== userPref['DataTables_' + settings.sInstance + '_' + location.pathname]) {
-                    //console.debug(JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]));
                     return JSON.parse(userPref['DataTables_' + settings.sInstance + '_' + location.pathname]);
                 }
             }
@@ -1666,7 +1656,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                                 $(this).html(val);
                             },
                             success: function (response, newValue) {
-                                console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
+//                                console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
                                 $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
                             }
                         });
@@ -2215,7 +2205,7 @@ function autocompleteVariable(identifier, Tags) {
         var index = term.lastIndexOf(last);
         return term.substring(0, index);
     }
-console.log($(identifier));
+
     $(identifier)
             // don't navigate away from the field on tab when selecting an item
             .on("keydown", function (event) {
