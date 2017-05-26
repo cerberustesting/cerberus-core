@@ -100,7 +100,7 @@ public class SQLService implements ISQLService {
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
                     try {
-                        Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_externalsql_timeout", system, 60);
+                        Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
                         List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit(), sqlTimeout);
 
                         if (list != null && !list.isEmpty()) {
