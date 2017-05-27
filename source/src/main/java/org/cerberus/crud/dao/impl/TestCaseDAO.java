@@ -75,15 +75,6 @@ public class TestCaseDAO implements ITestCaseDAO {
     private final String SQL_DUPLICATED_CODE = "23000";
     private final int MAX_ROW_SELECTED = 100000;
 
-    /**
-     * Get summary information of all test cases of one group.
-     * <p/>
-     * Used to display list of test cases on drop-down list
-     *
-     * @param test Name of test group.
-     * @return List with a list of 3 strings (name of test case, type of
-     * application, description of test case).
-     */
     @Override
     public List<TestCase> findTestCaseByTest(String test) {
         List<TestCase> list = null;
@@ -147,9 +138,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append("SELECT SQL_CALC_FOUND_ROWS * FROM testcase tec ");
         query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
         query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
-        }
+        query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
 
         searchSQL.append("WHERE 1=1");
 
@@ -303,20 +292,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         return answer;
     }
 
-    /**
-     * Get test case information.
-     *
-     * @param test Name of test group.
-     * @param testCase Name of test case.
-     * @return TestCase object or null.
-     * @throws org.cerberus.exception.CerberusException
-     * @see org.cerberus.crud.entity.TestCase
-     */
     @Override
     public TestCase findTestCaseByKey(String test, String testCase) throws CerberusException {
         boolean throwExcep = false;
         TestCase result = null;
-        final String query = "SELECT * FROM testcase tec WHERE test = ? AND testcase = ?";
+        final String query = "SELECT * FROM testcase tec  LEFT OUTER JOIN application app on app.application = tec.application WHERE test = ? AND testcase = ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -601,7 +581,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active) {
         List<TestCase> list = null;
-        final String query = "SELECT tec.* FROM testcase tec JOIN testcasecountry tcc "
+        final String query = "SELECT tec.* FROM testcase tec "
+                + "JOIN testcasecountry tcc "
+                + "LEFT OUTER JOIN application app on app.application = tec.application "
                 + "WHERE tec.test=tcc.test AND tec.testcase=tcc.testcase "
                 + "AND tec.test = ? AND tec.application = ? AND tcc.country = ? AND tec.tcactive = ? ";
 
@@ -654,7 +636,8 @@ public class TestCaseDAO implements ITestCaseDAO {
     public List<TestCase> findTestCaseByCriteria(TestCase testCase, String text, String system) {
         List<TestCase> list = null;
         String query = new StringBuilder()
-                .append("SELECT tec.* FROM testcase tec LEFT OUTER JOIN application a ON a.application=tec.application ")
+                .append("SELECT tec.* FROM testcase tec ")
+                .append("LEFT OUTER JOIN application app ON app.application=tec.application ")
                 .append(" WHERE (tec.test LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.test", testCase.getTest()))
                 .append(") AND (tec.project LIKE ")
@@ -665,8 +648,8 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.bugid", testCase.getBugID()))
                 .append(") AND (tec.origine LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.origine", testCase.getOrigine()))
-                .append(") AND (a.system LIKE ")
-                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("a.system", system))
+                .append(") AND (app.system LIKE ")
+                .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("app.system", system))
                 .append(") AND (tec.application LIKE ")
                 .append(ParameterParserUtil.wildcardOrIsNullIfEmpty("tec.application", testCase.getApplication()))
                 .append(") AND (tec.priority LIKE ")
@@ -758,9 +741,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcase tec ");
-        if (system != null) {
-            query.append("LEFT JOIN application app ON tec.application = app.application ");
-        }
+        query.append("LEFT JOIN application app ON tec.application = app.application ");
         if ((testBattery != null) || (campaign != null)) {
             query.append("LEFT JOIN testbatterycontent tbc ON tec.test = tbc.test AND tec.testcase = tbc.testcase ");
             query.append("LEFT JOIN campaigncontent cpc ON tbc.testbattery = cpc.testbattery ");
@@ -868,7 +849,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<String> findUniqueDataOfColumn(String column) {
         List<String> list = null;
-        final String query = "SELECT DISTINCT tec." + column + " FROM testcase tec ORDER BY tec." + column + " ASC";
+        final String query = "SELECT DISTINCT tec." + column + " FROM testcase tec LEFT OUTER JOIN application a ON a.application=tec.application ORDER BY tec." + column + " ASC";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1293,7 +1274,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public String findSystemOfTestCase(String test, String testcase) throws CerberusException {
         String result = "";
-        final String sql = "SELECT system from application a join testcase tec on tec.application=a.Application where tec.test= ? and tec.testcase= ?";
+        final String sql = "SELECT system from application app join testcase tec on tec.application=app.Application where tec.test= ? and tec.testcase= ?";
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
@@ -1308,7 +1289,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
                     if (resultSet.next()) {
-                        result = resultSet.getString("system");
+                        result = resultSet.getString("app.system");
                     }
                 } catch (SQLException exception) {
                     LOG.error("Unable to execute query : " + exception.toString());
@@ -1340,10 +1321,11 @@ public class TestCaseDAO implements ITestCaseDAO {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         List<TestCase> list = new ArrayList<TestCase>();
         StringBuilder query = new StringBuilder();
-        query.append("SELECT * FROM testcase tec  ");
-        query.append("inner join testcasestep  tcs on tec.test = tcs.test and tec.testcase = tcs.testcase ");
+        query.append("SELECT * FROM testcase tec ");
+        query.append("LEFT OUTER JOIN application app ON app.application=tec.application ");
+        query.append("INNER JOIN testcasestep  tcs ON tec.test = tcs.test and tec.testcase = tcs.testcase ");
         query.append("WHERE tec.test= ? and (tcs.inlibrary = 'Y' or tcs.inlibrary = 'y') ");
-        query.append("group by tec.testcase order by tec.testcase ");
+        query.append("GROUP BY tec.testcase order by tec.testcase ");
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -1416,7 +1398,7 @@ public class TestCaseDAO implements ITestCaseDAO {
     public AnswerItem readByKey(String test, String testCase) {
         AnswerItem ans = new AnswerItem();
         TestCase result = null;
-        final String query = "SELECT * FROM `testcase` tec WHERE tec.`test` = ? AND tec.`testcase` = ?";
+        final String query = "SELECT * FROM `testcase` tec LEFT OUTER JOIN application app ON app.application=tec.application WHERE tec.`test` = ? AND tec.`testcase` = ?";
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
         msg.setDescription(msg.getDescription().replace("%DESCRIPTION%", ""));
 
@@ -1489,10 +1471,7 @@ public class TestCaseDAO implements ITestCaseDAO {
         query.append(" as distinctValues FROM testcase tec ");
         query.append(" LEFT OUTER JOIN testcaselabel tel on tec.test = tel.test AND tec.testcase = tel.testcase ");
         query.append(" LEFT OUTER JOIN label lab on tel.labelId = lab.id ");
-
-        if (!StringUtil.isNullOrEmpty(system)) {
-            searchSQL.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
-        }
+        query.append(" LEFT OUTER JOIN application app on app.application = tec.application ");
 
         searchSQL.append("WHERE 1=1");
 
@@ -1886,11 +1865,20 @@ public class TestCaseDAO implements ITestCaseDAO {
         String usrModif = resultSet.getString("tec.UsrModif");
         Timestamp dateModif = resultSet.getTimestamp("tec.DateModif");
         String userAgent = resultSet.getString("tec.useragent");
+        String system = null;
+        try {
+            system = resultSet.getString("app.system");
+        } catch (SQLException e) {
+            LOG.debug("Column system does not Exist.");
+        }
 
-        return factoryTestCase.create(test, testCase, origin, refOrigin, usrCreated, implementer,
+        TestCase newTestCase = new TestCase();
+        newTestCase = factoryTestCase.create(test, testCase, origin, refOrigin, usrCreated, implementer,
                 usrModif, project, ticket, function, tcapplication, runQA, runUAT, runPROD, priority, group,
                 status, description, behavior, howTo, tcactive, conditionOper, conditionVal1, conditionVal2, fromSprint, fromRevision, toSprint,
                 toRevision, status, bugID, targetSprint, targetRevision, comment, dateCreated, userAgent, dateModif);
+        newTestCase.setSystem(system);
+        return newTestCase;
     }
 
     private String createInClauseFromList(String[] list, String column, String preString, String postString) {

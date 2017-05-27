@@ -563,6 +563,13 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
+            "data": "system",
+            "sName": "app.system",
+            "title": doc.getDocOnline("invariant", "SYSTEM"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "application",
             "sName": "tec.application",
             "title": doc.getDocOnline("application", "Application"),
