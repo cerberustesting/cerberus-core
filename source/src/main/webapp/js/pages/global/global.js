@@ -742,6 +742,16 @@ function showMessageMainPage(type, message) {
     $("#mainAlert").addClass("alert-" + type);
     $("#alertDescription").html(message);
     $("#mainAlert").fadeIn();
+    // Automatically fadeout after n second.
+    var waitinMs = 10000; // Default wait to 10 seconds.
+    if (type === "success") {
+        waitinMs = 2000;
+    } else if (type === "error") {
+        waitinMs = 5000;
+    }
+    $("#mainAlert").fadeTo(waitinMs, 500).slideUp(500, function () {
+        $("#mainAlert").slideUp(500);
+    });
 }
 
 /*****************************************************************************/
