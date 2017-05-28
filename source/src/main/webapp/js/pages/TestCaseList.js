@@ -137,7 +137,6 @@ function displayPageLabel(doc) {
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
 
-
 }
 
 function loadTable(selectTest, sortColumn) {
@@ -340,8 +339,10 @@ function massActionClick() {
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
         showMessage(localMessage, null);
     } else {
+        // Title of the label list.
+        $("[name='labelMassField']").html("Labels from system : " + getUser().defaultSystem);
         // Labels
-        loadLabel(undefined, undefined, "#selectLabelAdd", "4");
+        loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
         $('#massActionTestCaseModal').modal('show');
     }
 }

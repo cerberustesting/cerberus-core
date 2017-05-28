@@ -8747,6 +8747,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ADD COLUMN `AttachementURL` VARCHAR(255) NULL DEFAULT '' AFTER `Operation`;");
         SQLInstruction.add(SQLS.toString());
 
+        // Adding ScreenSize column in testcase table.
+        //-- ------------------------ 1152
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcase` ADD COLUMN `screensize` VARCHAR(250) NOT NULL DEFAULT '' AFTER `useragent`; ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -340,7 +340,9 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 
             // Loading build and revision various combos.
             appendBuildRevListOnTestCase(appData.contentTable.system, testCase);
-            // Loading the labl list from aplication of the testcase.
+            // Title of the label list.
+            $("[name='labelField']").html("Labels from system : " + appData.contentTable.system);
+            // Loading the label list from aplication of the testcase.
             loadLabel(testCase.labelList, appData.contentTable.system, "#selectLabel");
             // Loading application combo from the system of the current application.
             appendApplicationList(testCase.application, appData.contentTable.system);
