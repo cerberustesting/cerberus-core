@@ -100,7 +100,7 @@ public class SQLService implements ISQLService {
 
                 if (!(StringUtil.isNullOrEmpty(connectionName))) {
                     try {
-                        Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_externalsql_timeout", system, 60);
+                        Integer sqlTimeout = parameterService.getParameterIntegerByKey("cerberus_propertyexternalsql_timeout", system, 60);
                         List<String> list = this.queryDatabase(connectionName, sql, testCaseProperties.getRowLimit(), sqlTimeout);
 
                         if (list != null && !list.isEmpty()) {
@@ -475,8 +475,8 @@ public class SQLService implements ISQLService {
                         HashMap<String, String> row = new HashMap<String, String>();
 
                         for (Map.Entry<String, String> entry : columnsToGet.entrySet()) {
-                            String column = entry.getKey();
-                            String name = entry.getValue();
+                            String column = entry.getValue();
+                            String name = entry.getKey();
                             try {
                                 String valueSQL = resultSet.getString(column);
                                 if (valueSQL == null) { // If data is null from the database, we convert it to the static string <NULL>. 

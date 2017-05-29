@@ -19,13 +19,47 @@
                         </div>
                     </div>
                     <ul id="tabsMassActions" class="nav nav-tabs" data-tabs="tabs">
-                        <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabAddLabel">Add a Label</a></li>
-                        <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabRemoveLabel">Remove a Label</a></li>
+                        <li class="active"><a data-toggle="tab" href="#tabsMass-1" id="massTab1Text" name="tabUpdate">Update</a></li>
+                        <li><a data-toggle="tab" href="#tabsMass-2" id="massTab2Text" name="tabAddLabel">Label Management</a></li>
                     </ul>
                     <div class="tab-content">
                         <div class="center marginTop25 tab-pane fade in active" id="tabsMass-1">
+                            <form id="massActionTestCaseModalFormUpdate" name="massActionTestCaseModalFormUpdate"  title="Massive Update" role="form">
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <div>
+                                            <br>
+                                            <input type="checkbox" id="statusCheckbox"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-11">
+                                        <label for="status" name="statusField">Status</label>
+                                        <select type="text" class="form-control input-sm" name="status" id="status"></select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group form-group-sm col-xs-1">
+                                        <div>
+                                            <br>
+                                            <input type="checkbox" id="functionCheckbox"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group form-group-sm col-xs-11">
+                                        <label for="function" name="functionField">Function</label>
+                                        <input type="text" class="form-control input-sm" name="function" id="function"/>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="row">
+                                <div class="form-group col-xs-6">
+                                    <button type="button" id="massActionTestCaseButtonUpdate" class="btn btn-primary" name="buttonUpdate">Update</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="center marginTop25 tab-pane fade" id="tabsMass-2">
                             <!--add form-->
                             <form id="massActionTestCaseModalFormAddLabel" name="massActionTestCaseModalFormAddLabel"  title="Massive Update" role="form">
+                                <label for="labelMass" name="labelMassField">Labels from system : </label>
                                 <div style="max-height:500px; overflow: auto">
                                     <div class="form-group" id="labelListAdd">
                                         <div id="selectLabelAdd" class="list-group">
@@ -33,23 +67,11 @@
                                     </div>
                                 </div>
                             </form>
-                            <div class="row">
-                                <div class="form-group col-xs-12">
+                            <div class="row marginTop25">
+                                <div class="form-group col-xs-6">
                                     <button type="button" id="massActionTestCaseButtonAddLabel" class="btn btn-primary" name="buttonAddLabel">Add Label</button>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabsMass-2">
-                            <form id="massActionTestCaseModalFormRemoveLabel" name="massActionTestCaseModalFormRemoveLabel"  title="Massive Update" role="form">
-                                <div style="max-height:500px; overflow: auto">
-                                    <div class="form-group" id="labelListRemove">
-                                        <div id="selectLabelRemove" class="list-group">
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                            <div class="row">
-                                <div class="form-group col-xs-12">
+                                <div class="form-group col-xs-6">
                                     <button type="button" id="massActionTestCaseButtonRemoveLabel" class="btn btn-primary" name="buttonRemoveLabel">Remove Label</button>
                                 </div>
                             </div>

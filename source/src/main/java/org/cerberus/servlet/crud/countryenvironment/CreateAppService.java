@@ -92,7 +92,7 @@ public class CreateAppService extends HttpServlet {
         String service = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("service"), null, charset);
         String group = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("group"), "", charset);
         String description = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("description"), "", charset);
-        String parsingAnswer = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("parsingAnswer"), "", charset);
+        String attachementurl = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("attachementurl"), "", charset);
         String operation = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("operation"), "", charset);
         String application = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("application"), null, charset);
         String type = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("type"), "", charset);
@@ -126,7 +126,7 @@ public class CreateAppService extends HttpServlet {
             appServiceContentFactory = appContext.getBean(IFactoryAppServiceContent.class);
             appServiceHeaderFactory = appContext.getBean(IFactoryAppServiceHeader.class);
 
-            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, description, servicePath, parsingAnswer, operation, request.getRemoteUser(), null, null, null);
+            AppService appService = appServiceFactory.create(service, type, method, application, group, serviceRequest, description, servicePath, attachementurl, operation, request.getRemoteUser(), null, null, null);
             ans = appServiceService.create(appService);
             finalAnswer = AnswerUtil.agregateAnswer(finalAnswer, (Answer) ans);
 

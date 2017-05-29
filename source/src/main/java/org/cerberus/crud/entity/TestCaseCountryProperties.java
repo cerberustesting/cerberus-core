@@ -65,8 +65,6 @@ public class TestCaseCountryProperties {
     public static final String TYPE_GETFROMJSON = "getFromJson";
     public static final String TYPE_GETFROMGROOVY = "getFromGroovy";
     @Deprecated
-    public static final String TYPE_GETFROMTESTDATA = "getFromTestData";
-    @Deprecated
     public static final String TYPE_EXECUTESQLFROMLIB = "executeSqlFromLib";
     @Deprecated
     public static final String TYPE_EXECUTESOAPFROMLIB = "executeSoapFromLib";

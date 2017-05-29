@@ -293,6 +293,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
+                        drawProperty(newProperty, testcaseinfo, true);
                         autocompleteAllFields();
 
                         // Restore the saveScript button status
@@ -1076,7 +1077,7 @@ function createStepList(data, stepList, stepIndex, canUpdate) {
                 $(stepList[i].html[0]).click();
             }
         }
-        if (!find) {
+        if ((!find) && (stepList.length > 0)) {
             $(stepList[0].html[0]).click();
         }
     } else if (stepList.length > 0) {
@@ -1115,6 +1116,10 @@ var getModif, setModif, initModification;
 /** LIBRARY STEP UTILY FUNCTIONS **/
 
 function loadLibraryStep(search) {
+    var search_lower = "";
+    if (search !== undefined) {
+        search_lower = search.toLowerCase();
+    }
     $("#lib").empty();
     showLoaderInModal("#addStepModal");
     $.ajax({
@@ -1127,7 +1132,7 @@ function loadLibraryStep(search) {
             for (var index = 0; index < data.testCaseStepList.length; index++) {
                 var step = data.testCaseStepList[index];
 
-                if (search == undefined || search == "" || step.description.indexOf(search) > -1 || step.testCase.indexOf(search) > -1 || step.test.indexOf(search) > -1) {
+                if (search == undefined || search == "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
                                 .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
@@ -2375,7 +2380,7 @@ var autocompleteAllFields, getTags, setTags;
                         }
                     } else if (typeNotExist == "property") {
                         //TODO better way to add property
-                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProp').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
+                        var newTitle = "<a style='color: #fff;' href='#' onclick=\"$('#manageProp').click();$('#addProperty').click();$('#propTable input#propName').last().val('" + nameNotExist + "').trigger('change');$('#editTabProperties').click();$(this).hide()\"><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span> " + doc.getDocLabel("page_global", "warning") + " : " + nameNotExist + " " + doc.getDocLabel("page_testcasescript", "not_property") + "</a>";
                         if (newTitle != $(e).attr('data-original-title')) {
                             $(e).attr('data-original-title', newTitle).tooltip('fixTitle').tooltip('show');
                         } else {
@@ -2533,7 +2538,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "rightClick", "object": "Chemin vers l'élement à clicker avec le bouton droit", "property": null},
             {"type": "focusToIframe", "object": "Identifiant de l'iFrame à cibler", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Identifiant de fenêtre", "property": null},
+            {"type": "switchToWindow", "object": "Titre ou url de la fenêtre", "property": null},
             {"type": "manageDialog", "object": "ok ou cancel", "property": null},
             {"type": "mouseOver", "object": "Chemin vers l'élement", "property": null},
             {"type": "mouseOverAndWait", "object": "Action Depreciée", "property": "Action Depreciée"},
@@ -2562,7 +2567,7 @@ function setPlaceholderAction(actionElement) {
             {"type": "rightClick", "object": "Element path", "property": null},
             {"type": "focusToIframe", "object": "Id of the target iFrame", "property": null},
             {"type": "focusDefaultIframe", "object": null, "property": null},
-            {"type": "switchToWindow", "object": "Window id", "property": null},
+            {"type": "switchToWindow", "object": "Window title or url", "property": null},
             {"type": "manageDialog", "object": "ok or cancel", "property": null},
             {"type": "mouseOver", "object": "Element path", "property": null},
             {"type": "mouseOverAndWait", "object": "Deprecated", "property": "Deprecated"},
@@ -2706,39 +2711,27 @@ function setPlaceholderControl(controlElement) {
 }
 
 //create the string needed for the regex for instance "(?:property|object|system)"
-function createRegexHightlight(tab){
-  var regexString ="(?:";
-  var firstLoop =true;
-  for (var i in tab) {
-    if(firstLoop){
-      firstLoop =false;
-    }else {
-      regexString +="|"
-    }
-    regexString +=tab[i];
-  }
-  regexString +=")";
 
-  return regexString;
-}
-
-function getmotherKeywordId(motherKeyword,allKeyword){
-  var idmotherKeyword =-1;
+function getPossibleMotherKeyword(motherKeyword,allKeyword){
+  var idmotherKeyword =[];
   for (i in allKeyword){
     for (y in allKeyword[i]["listKeyword"]){
       if( allKeyword[i]["listKeyword"][y] == motherKeyword){
-        idmotherKeyword =i;
+        idmotherKeyword.push( allKeyword[i]["motherKeyword"] );
       }
     }
   }
-  return idmotherKeyword;
+  if (idmotherKeyword.length == 0)
+    return -1;
+  else
+    return idmotherKeyword;
 }
 
 function getNextKeywordId(motherKeyword,allKeyword){
-  var idCurrentKeyword =-1;
+  var idCurrentKeyword = -1;
   for (i in allKeyword){
     if( allKeyword[i]["motherKeyword"] == motherKeyword ){
-      idCurrentKeyword = i;
+      idCurrentKeyword =i;
     }
   }
   return idCurrentKeyword;
@@ -2791,17 +2784,17 @@ function createAllKeywordList(objectList,propertyList ){
     ];
 
     var allKeyword =[];
-    allKeyword.push( {"motherKeyword" : null, "listKeyword": availableTags} );
+    allKeyword.push( {"motherKeyword" : null, "listKeyword": availableTags } );
     //property
-    allKeyword.push( {"motherKeyword" : availableTags["0"], "listKeyword": propertyList} );
+    allKeyword.push( {"motherKeyword" : availableTags["0"], "listKeyword": propertyList } );
     //object
-    allKeyword.push( {"motherKeyword" : availableTags["1"], "listKeyword": objectList} );
-    for (var i in objectList) {
-      allKeyword.push( {"motherKeyword" : objectList[i], "listKeyword": availableObjectProperties} );
-    }
+    allKeyword.push( {"motherKeyword" : availableTags["1"], "listKeyword": objectList } );
     //system
-    allKeyword.push( {"motherKeyword" : availableTags["2"], "listKeyword": availableSystemValues} );
-
+    allKeyword.push( {"motherKeyword" : availableTags["2"], "listKeyword": availableSystemValues } );
+    //object tag
+    for (var i in objectList) {
+      allKeyword.push( {"motherKeyword" : objectList[i], "listKeyword": availableObjectProperties } );
+    }
     return allKeyword;
 }
 
@@ -2850,22 +2843,24 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
                       if (keywordsListCurrentlyCheck.length >= 2){
                           var startKeyword = keywordsListCurrentlyCheck[0];
                           var secondKeyword = keywordsListCurrentlyCheck[1];
-                          if ( startKeyword == "property" && keywordsListCurrentlyCheck.length ==2){
-                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+
+                          if ( startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
+                              if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
                                   issueWithKeyword ="warning";
+                              }else {
+                                  if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                    issueWithKeyword ="warning";//keyword exist but not correct
                               }
                           }
                           else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
-                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+                              if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
                                   issueWithKeyword ="warning";
+                              }else {
+                                  if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                    issueWithKeyword ="warning";//keyword exist but not correct
                               }
                               var thirdKeyword = keywordsListCurrentlyCheck[2];
-                              if ( getmotherKeywordId(thirdKeyword ,allKeyword) == -1 ){
-                                  issueWithKeyword ="error";
-                              }
-                          }
-                          else if ( startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
-                              if ( getmotherKeywordId(secondKeyword ,allKeyword) == -1 ){
+                              if ( getPossibleMotherKeyword(thirdKeyword ,allKeyword) == -1 ){
                                   issueWithKeyword ="error";
                               }
                           }
@@ -2916,7 +2911,11 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
               for (var y in allKeyword) {
                   for (var n in allKeyword[y]["listKeyword"]){
                       if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[i] ){
-                          keywordInputByUserExist =true;
+                          //check if the keyword matching posses the same mother keyword
+                          var listMotherKeywordPossible = getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword);
+                          if (!( i>=1 && listMotherKeywordPossible[0] !=null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n] ,allKeyword).indexOf(  keywordInputByUser[i-1] ) == -1) ){
+                              keywordInputByUserExist =true;
+                          }
                       }
                   }
               }
@@ -2928,29 +2927,36 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
               if (!keywordInputByUserExist)
                   allKeywordCorrect =false;
           }
-          currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
-          idNextKeyword = getNextKeywordId(currentKeyword,allKeyword);
-
+          var currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
+          /*
+            In some cases, when keyword are define twice
+            getNextKeywordId get the next id when it shouldn't be the case
+          */
+          var idNextKeyword = getNextKeywordId(currentKeyword, allKeyword);
+          if ( keywordInputByUser[0] !="object" && keywordInputByUser.length == 2){
+              idNextKeyword = -1;
+          }
           //no new object is currently added and all the keyword are correct
           if (allKeywordCorrect){
               //add the special caractere
-              if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1)
+              if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1){
                   editor.session.insert( editor.getCursorPosition() ,".");
-              if (currentKeyword !=undefined && idNextKeyword ==-1)
+              }
+              if (currentKeyword !=undefined && idNextKeyword ==-1 ){
                   editor.session.insert( editor.getCursorPosition() ,"%");
-
-
+              }
               //change the autocompletionList
               if (currentKeyword == undefined){
-                changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
-                editor.execCommand("startAutocomplete");
+                  changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
+                  editor.execCommand("startAutocomplete");
               }
-              if (idNextKeyword !=-1 && currentKeyword != undefined){
-                changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
-                editor.execCommand("startAutocomplete");
+              if (idNextKeyword !=-1 && currentKeyword != undefined ){
+                  changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
+                  editor.execCommand("startAutocomplete");
               }
           //show the final popup if the user enter a new object
-          }else {
+        }
+        else{
               var availableObjectProperties = [
                   "value",
                   "picturepath",
@@ -2965,7 +2971,7 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
               if (keywordInputByUser[0] == "object" && keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
                   editor.session.insert( editor.getCursorPosition() ,"%");
               }
-          }
+        }
       }
     }
   });
@@ -3014,6 +3020,24 @@ function createGuterCellListenner( editor, commandNameForIssueDetection ){
                       var keywordValue =  annotationObjectList[y].keywordValue;
                       if ( keywordType == "property" ){
                           //propertyList.push(keywordValue);
+                          this.className = "ace_gutter-cell";//Remove the warning annotation
+                          //
+                          var newProperty = {
+                              property: "",
+                              description: "",
+                              country: "",
+                              type: "text",
+                              database: "",
+                              value1: "",
+                              value2: "",
+                              length: 0,
+                              rowLimit: 0,
+                              nature: "STATIC",
+                              toDelete: false
+                          };
+                          drawProperty(newProperty, null);
+                          autocompleteAllFields();
+                          //
                       }
                       if ( keywordType == "object" ){
                           this.className = "ace_gutter-cell";//Remove the warning annotation
@@ -3062,7 +3086,7 @@ function setPlaceholderProperty(propertyElement) {
      * Translate for FR
      */
      var placeHoldersList = {"fr": [
-             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
              {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
              {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
              {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
@@ -3078,7 +3102,7 @@ function setPlaceholderProperty(propertyElement) {
              {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
              {"type": "getFromTestData", "value1": "TestData Name", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
          ], "en": [
-             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+             {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
              {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
              {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
              {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},

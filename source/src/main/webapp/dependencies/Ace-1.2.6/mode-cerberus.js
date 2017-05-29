@@ -29,7 +29,7 @@ define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/li
       this.$rules["p2-1"] = [];
       this.$rules["p2-1"].push({
           token : "keyword",
-          regex : "[A-Za-z]+" + "%",
+          regex : "[A-Za-z1-9]+" + "%",
           next : "start"
       });
 
@@ -41,13 +41,29 @@ define("ace/mode/cerberus_highlight_rules",["require","exports","module","ace/li
       this.$rules["p2-2"] = [];
       this.$rules["p2-2"].push({
           token : "keyword",
-          regex : "[A-Za-z]+" + "." + "[A-Za-z]+" + "%",
+          regex : "[A-Za-z1-9]+" + "." + "[A-Za-z1-9]+" + "%",
           next  : "start"
       });
   }
   oop.inherits(cerberusHighlightRules, TextHighlightRules);
   exports.cerberusHighlightRules = cerberusHighlightRules;
 });
+
+function createRegexHightlight(tab){
+  var regexString ="(?:";
+  var firstLoop =true;
+  for (var i in tab) {
+    if(firstLoop){
+      firstLoop =false;
+    }else {
+      regexString +="|"
+    }
+    regexString +=tab[i];
+  }
+  regexString +=")";
+
+  return regexString;
+}
 
 define("ace/mode/behaviour/cerberus",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator"], function(require, exports, module) {
 "use strict";

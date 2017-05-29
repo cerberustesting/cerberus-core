@@ -191,6 +191,7 @@ function confirmAppServiceModalHandler(mode) {
             method: data.method,
             servicePath: data.servicePath,
             operation: data.operation,
+            attachementurl: data.attachementurl,
             description: data.description,
             group: data.group,
             serviceRequest: data.srvRequest,
@@ -223,9 +224,11 @@ function refreshDisplayOnTypeChange(newValue) {
         // If SOAP service, no need to feed the method.
         $('#editSoapLibraryModal #method').prop("disabled", true);
         $('#editSoapLibraryModal #operation').prop("readonly", false);
+        $('#editSoapLibraryModal #attachementurl').prop("readonly", false);
     } else {
         $('#editSoapLibraryModal #method').prop("disabled", false);
         $('#editSoapLibraryModal #operation').prop("readonly", true);
+        $('#editSoapLibraryModal #attachementurl').prop("readonly", true);
     }
 }
 
@@ -326,6 +329,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         refreshDisplayOnTypeChange("REST");
         formEdit.find("#method").prop("value", "GET");
         formEdit.find("#servicePath").prop("value", "");
+        formEdit.find("#attachementurl").prop("value", "");
         formEdit.find("#srvRequest").text("");
         formEdit.find("#group").prop("value", "");
         formEdit.find("#operation").prop("value", "");
@@ -335,6 +339,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").val(service.type);
         formEdit.find("#method").val(service.method);
         formEdit.find("#servicePath").prop("value", service.servicePath);
+        formEdit.find("#attachementurl").prop("value", service.attachementURL);
         formEdit.find("#srvRequest").text(service.serviceRequest);
         formEdit.find("#group").prop("value", service.group);
         formEdit.find("#operation").prop("value", service.operation);
@@ -377,6 +382,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").prop("disabled", "disabled");
         formEdit.find("#method").prop("disabled", "disabled");
         formEdit.find("#servicePath").prop("readonly", true);
+        formEdit.find("#attachementurl").prop("readonly", true);
         formEdit.find("#srvRequest").prop("readonly", "readonly");
         formEdit.find("#description").prop("readonly", "readonly");
         // We hide Save button.
@@ -387,6 +393,7 @@ function feedAppServiceModalData(service, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#type").removeProp("disabled");
         formEdit.find("#method").removeProp("disabled");
         formEdit.find("#servicePath").prop("readonly", false);
+        formEdit.find("#attachementurl").prop("readonly", false);
         formEdit.find("#srvRequest").removeProp("readonly");
         formEdit.find("#description").removeProp("disabled");
     }

@@ -29,5 +29,5 @@ import org.cerberus.crud.entity.AppService;
 public interface IFactoryAppService {
 
     AppService create(String service, String type, String method, String application, String group, String serviceRequest, 
-            String description, String servicePath, String parsingAnswer, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
+            String description, String servicePath, String attachementURL, String operation, String usrCreated, Timestamp dateCreated, String usrModif, Timestamp dateModif);
 }

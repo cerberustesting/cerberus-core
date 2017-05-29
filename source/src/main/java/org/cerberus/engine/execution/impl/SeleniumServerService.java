@@ -51,6 +51,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.enums.MessageGeneralEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.engine.execution.ISeleniumServerService;
+import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.sikuli.ISikuliService;
 import org.cerberus.util.StringUtil;
 import org.json.JSONException;
@@ -87,6 +88,8 @@ public class SeleniumServerService implements ISeleniumServerService {
     private IInvariantService invariantService;
     @Autowired
     private ISikuliService sikuliService;
+    @Autowired
+    IProxyService proxyService;
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(SeleniumServerService.class);
     /**
@@ -165,7 +168,7 @@ public class SeleniumServerService implements ISeleniumServerService {
             URL url = new URL(hubUrl);
             HttpCommandExecutor executor = null;
 
-            boolean isProxy = parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE);
+            boolean isProxy = proxyService.useProxy(hubUrl, system);
             if (isProxy) {
                 String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
                 int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);

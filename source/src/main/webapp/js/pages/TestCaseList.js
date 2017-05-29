@@ -57,6 +57,23 @@ function initPage() {
     //PREPARE MASS ACTION
     $("#massActionTestCaseButtonAddLabel").click(massActionModalSaveHandler_addLabel);
     $("#massActionTestCaseButtonRemoveLabel").click(massActionModalSaveHandler_removeLabel);
+    $("#massActionTestCaseButtonUpdate").click(massActionModalSaveHandler_update);
+    $("#massActionTestCaseModal #status").prop("disabled", true);
+    $("#statusCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #status").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #status").prop("disabled", true);
+        }
+    });
+    $("#massActionTestCaseModal #function").prop("disabled", true);
+    $("#functionCheckbox").change(function () {
+        if ($(this).prop("checked")) {
+            $("#massActionTestCaseModal #function").prop("disabled", false);
+        } else {
+            $("#massActionTestCaseModal #function").prop("disabled", true);
+        }
+    });
 
     //PREPARE MASS ACTION
     $('#massActionTestCaseModal').on('hidden.bs.modal', massActionModalCloseHandler);
@@ -119,7 +136,6 @@ function displayPageLabel(doc) {
     $("[name='lbl_usrcreated']").html(doc.getDocOnline("transversal", "UsrCreated"));
     $("[name='lbl_datemodif']").html(doc.getDocOnline("transversal", "DateModif"));
     $("[name='lbl_usrmodif']").html(doc.getDocOnline("transversal", "UsrModif"));
-
 
 }
 
@@ -259,7 +275,7 @@ function massActionModalSaveHandler_addLabel() {
 function massActionModalSaveHandler_removeLabel() {
     clearResponseMessage($('#massActionTestCaseModal'));
 
-    var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormRemoveLabel');
+    var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormAddLabel');
     var formList = $('#massActionForm');
     var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
 
@@ -280,6 +296,31 @@ function massActionModalSaveHandler_removeLabel() {
     }).fail(handleErrorAjaxAfterTimeout);
 }
 
+function massActionModalSaveHandler_update() {
+    clearResponseMessage($('#massActionTestCaseModal'));
+
+    var formNewValues = $('#massActionTestCaseModal #massActionTestCaseModalFormUpdate');
+    var formList = $('#massActionForm');
+    var paramSerialized = formNewValues.serialize() + "&" + formList.serialize().replace(/=on/g, '').replace(/test-/g, 'test=').replace(/testcase-/g, '&testcase=');
+
+    showLoaderInModal('#massActionTestCaseModal');
+
+    var jqxhr = $.post("UpdateTestCaseMass", paramSerialized, "json");
+    $.when(jqxhr).then(function (data) {
+        // unblock when remote call returns 
+        hideLoaderInModal('#massActionTestCaseModal');
+        if ((getAlertType(data.messageType) === "success") || (getAlertType(data.messageType) === "warning")) {
+            $('#testCaseTable').DataTable().draw();
+            $("#selectAll").prop("checked", false);
+            $('#massActionTestCaseModal').modal('hide');
+            showMessage(data);
+        } else {
+            showMessage(data, $('#massActionTestCaseModal'));
+        }
+    }).fail(handleErrorAjaxAfterTimeout);
+}
+
+
 function massActionModalCloseHandler() {
     // reset form values
     $('#massActionTestCaseModal #massActionTestCaseModalForm')[0].reset();
@@ -291,7 +332,6 @@ function massActionModalCloseHandler() {
 
 function massActionClick() {
     var doc = new Doc();
-    console.debug("Mass Action");
     clearResponseMessageMainPage();
     // When creating a new item, Define here the default value.
     var formList = $('#massActionForm');
@@ -299,9 +339,10 @@ function massActionClick() {
         var localMessage = new Message("danger", doc.getDocLabel("page_global", "message_massActionError"));
         showMessage(localMessage, null);
     } else {
+        // Title of the label list.
+        $("[name='labelMassField']").html("Labels from system : " + getUser().defaultSystem);
         // Labels
-        loadLabel(undefined, undefined, "#selectLabelAdd");
-        loadLabel(undefined, undefined, "#selectLabelRemove");
+        loadLabel(undefined, getUser().defaultSystem, "#selectLabelAdd", "4");
         $('#massActionTestCaseModal').modal('show');
     }
 }
@@ -523,6 +564,13 @@ function aoColumnsFunc(countries, tableId) {
             }
         },
         {
+            "data": "system",
+            "sName": "app.system",
+            "title": doc.getDocOnline("invariant", "SYSTEM"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
             "data": "application",
             "sName": "tec.application",
             "title": doc.getDocOnline("application", "Application"),
@@ -579,6 +627,13 @@ function aoColumnsFunc(countries, tableId) {
             "data": "status",
             "sName": "tec.status",
             "title": doc.getDocOnline("testcase", "Status"),
+            "sWidth": "100px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "function",
+            "sName": "tec.function",
+            "title": doc.getDocOnline("testcase", "Function"),
             "sWidth": "100px",
             "sDefaultContent": ""
         },

@@ -92,7 +92,7 @@ image:testcasemovestep1.png[testcaseusestep] image:testcasemovestep2.png[testcas
 *[red]#Value1#*	Identifier and name of the element to click in the form of : identifier=html_reference. Example : id=html_reference | 
 | focustoIframe | TBD | 
 | focustoDefaultIframe | TBD | 
-| Switchtowindow | TBD | 
+| switchToWindow | When the Test case need to switch to another window (like popup dialog) this action is used. Just specify the title or the URL of the other window to switch to this window. | title=titleOfThisNewWindow or url=http://url_of_this_new_window
 | manageDialog | TBD | 
 | mouseOver | Mouse cursor over an object *[red]#Element path#* : the id of the element | 
 | OpenUrlWithBase | TBD | 

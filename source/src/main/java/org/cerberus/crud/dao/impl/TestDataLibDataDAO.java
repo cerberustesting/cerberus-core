@@ -223,7 +223,7 @@ public class TestDataLibDataDAO implements ITestDataLibDataDAO {
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query);
-            LOG.debug("SQL.param.application : " + testDataLibID);
+            LOG.debug("SQL.param.testDataLibID : " + testDataLibID);
         }
 
         Connection connection = this.databaseSpring.connect();

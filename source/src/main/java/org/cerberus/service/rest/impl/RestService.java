@@ -60,6 +60,7 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IRecorderService;
 import org.cerberus.enums.MessageEventEnum;
+import org.cerberus.service.proxy.IProxyService;
 import org.cerberus.service.rest.IRestService;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.answer.AnswerItem;
@@ -83,6 +84,8 @@ public class RestService implements IRestService {
     IFactoryAppService factoryAppService;
     @Autowired
     IAppServiceService AppServiceService;
+    @Autowired
+    IProxyService proxyService;
 
     /**
      * Proxy default config. (Should never be used as default config is inserted
@@ -140,6 +143,7 @@ public class RestService implements IRestService {
         serviceREST.setProxyPort(0);
         serviceREST.setProxyWithCredential(false);
         serviceREST.setProxyUser(null);
+        serviceREST.setTimeoutms(timeOutMs);
         MessageEvent message = null;
 
         if (StringUtil.isNullOrEmpty(servicePath)) {
@@ -158,7 +162,7 @@ public class RestService implements IRestService {
         }
 
         CloseableHttpClient httpclient;
-        if (parameterService.getParameterBooleanByKey("cerberus_proxy_active", system, DEFAULT_PROXY_ACTIVATE)) {
+        if (proxyService.useProxy(servicePath, system)) {
 
             String proxyHost = parameterService.getParameterStringByKey("cerberus_proxy_host", system, DEFAULT_PROXY_HOST);
             int proxyPort = parameterService.getParameterIntegerByKey("cerberus_proxy_port", system, DEFAULT_PROXY_PORT);
@@ -202,7 +206,7 @@ public class RestService implements IRestService {
 
             RequestConfig requestConfig;
             // Timeout setup.
-            requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).build();
+            requestConfig = RequestConfig.custom().setConnectTimeout(timeOutMs).setConnectionRequestTimeout(timeOutMs).setSocketTimeout(timeOutMs).build();
 
             AppService responseHttp = null;
 

@@ -21,6 +21,12 @@ package org.cerberus.crud.entity;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cerberus.engine.execution.impl.RecorderService;
+import org.cerberus.util.StringUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Map la table Service
@@ -36,7 +42,7 @@ public class AppService {
     private String servicePath; // Path to access the service
     private String operation; // Operation used for SOAP Requests
     private String serviceRequest; // Content of the request.
-    private String parsingAnswer; // Should not be used.
+    private String attachementURL; // Attachement in cas of SOAP call with attachement.
     private String group; // Information in order to group the services in order to organise them
     private String description;
     private String UsrCreated;
@@ -46,7 +52,6 @@ public class AppService {
     /**
      * From here are data outside database model.
      */
-    private String attachmentUrl;
     private List<AppServiceContent> contentList;
     private List<AppServiceHeader> headerList;
     private String proxyHost;
@@ -60,6 +65,7 @@ public class AppService {
     private String responseHTTPBody;
     private String responseHTTPBodyContentType;
     private List<AppServiceHeader> responseHeaderList;
+    private int timeoutms; // Timeout used during service request
 
     /**
      * Invariant PROPERTY TYPE String.
@@ -71,6 +77,14 @@ public class AppService {
     public static final String RESPONSEHTTPBODYCONTENTTYPE_XML = "XML";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_JSON = "JSON";
     public static final String RESPONSEHTTPBODYCONTENTTYPE_TXT = "TXT";
+
+    public int getTimeoutms() {
+        return timeoutms;
+    }
+
+    public void setTimeoutms(int timeoutms) {
+        this.timeoutms = timeoutms;
+    }
 
     public String getProxyHost() {
         return proxyHost;
@@ -204,20 +218,12 @@ public class AppService {
         this.DateModif = DateModif;
     }
 
-    public String getAttachmentUrl() {
-        return attachmentUrl;
-    }
-
-    public void setAttachmentUrl(String attachmentUrl) {
-        this.attachmentUrl = attachmentUrl;
-    }
-
     public void setOperation(String operation) {
         this.operation = operation;
     }
 
-    public void setParsingAnswer(String parsingAnswer) {
-        this.parsingAnswer = parsingAnswer;
+    public void setAttachementURL(String attachementURL) {
+        this.attachementURL = attachementURL;
     }
 
     public void setServicePath(String servicePath) {
@@ -244,8 +250,8 @@ public class AppService {
         return operation;
     }
 
-    public String getParsingAnswer() {
-        return parsingAnswer;
+    public String getAttachementURL() {
+        return attachementURL;
     }
 
     public String getServicePath() {
@@ -290,6 +296,72 @@ public class AppService {
 
     public void setApplication(String application) {
         this.application = application;
+    }
+
+    public JSONObject toJSONOnExecution() {
+        JSONObject jsonMain = new JSONObject();
+        JSONObject jsonMyRequest = new JSONObject();
+        JSONObject jsonMyResponse = new JSONObject();
+        try {
+            // Request Information.
+            if (!(this.getTimeoutms() == 0)) {
+                jsonMyRequest.put("HTTP-TimeOutMs", this.getTimeoutms());
+            }
+            jsonMyRequest.put("CalledURL", this.getServicePath());
+            if (!StringUtil.isNullOrEmpty(this.getMethod())) {
+                jsonMyRequest.put("HTTP-Method", this.getMethod());
+            }
+            jsonMyRequest.put("ServiceType", this.getType());
+            if (!(this.getHeaderList().isEmpty())) {
+                JSONObject jsonHeaders = new JSONObject();
+                for (AppServiceHeader header : this.getHeaderList()) {
+                    jsonHeaders.put(header.getKey(), header.getValue());
+                }
+                jsonMyRequest.put("HTTP-Header", jsonHeaders);
+            }
+            if (!(this.getContentList().isEmpty())) {
+                JSONObject jsonContent = new JSONObject();
+                for (AppServiceContent content : this.getContentList()) {
+                    jsonContent.put(content.getKey(), content.getValue());
+                }
+                jsonMyRequest.put("Content", jsonContent);
+            }
+            jsonMyRequest.put("HTTP-Request", this.getServiceRequest());
+
+            JSONObject jsonProxy = new JSONObject();
+            jsonProxy.put("HTTP-Proxy", this.isProxy());
+            if (this.isProxy()) {
+                jsonProxy.put("HTTP-ProxyHost", this.getProxyHost());
+                if (!(this.getProxyPort() == 0)) {
+                    jsonProxy.put("HTTP-ProxyPort", this.getProxyPort());
+                }
+                jsonProxy.put("HTTP-ProxyAuthentification", this.isProxyWithCredential());
+                if (this.isProxyWithCredential()) {
+                    jsonProxy.put("HTTP-ProxyUser", this.getProxyUser());
+                }
+            }
+            jsonMyRequest.put("HTTP-Proxy", jsonProxy);
+
+            jsonMain.put("Request", jsonMyRequest);
+
+            // Response Information.
+            jsonMyResponse.put("HTTP-ReturnCode", this.getResponseHTTPCode());
+            jsonMyResponse.put("HTTP-Version", this.getResponseHTTPVersion());
+            jsonMyResponse.put("HTTP-ResponseBody", this.getResponseHTTPBody());
+            jsonMyResponse.put("HTTP-ResponseContentType", this.getResponseHTTPBodyContentType());
+            if (!(this.getResponseHeaderList().isEmpty())) {
+                JSONObject jsonHeaders = new JSONObject();
+                for (AppServiceHeader header : this.getResponseHeaderList()) {
+                    jsonHeaders.put(header.getKey(), header.getValue());
+                }
+                jsonMyResponse.put("Header", jsonHeaders);
+            }
+            jsonMain.put("Response", jsonMyResponse);
+
+        } catch (JSONException ex) {
+            Logger.getLogger(RecorderService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return jsonMain;
     }
 
 }

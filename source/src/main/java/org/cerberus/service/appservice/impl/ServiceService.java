@@ -78,6 +78,7 @@ public class ServiceService implements IServiceService {
         String decodedRequest;
         String decodedServicePath = null;
         String decodedOperation;
+        String decodedAttachement;
         AnswerItem result = new AnswerItem();
         String system = tCExecution.getApplicationObj().getSystem();
         String country = tCExecution.getCountry();
@@ -298,6 +299,7 @@ public class ServiceService implements IServiceService {
                          * properties encapsulated with %
                          */
                         decodedOperation = appService.getOperation();
+                        decodedAttachement = appService.getAttachementURL();
                         try {
 
                             answerDecode = variableService.decodeStringCompletly(decodedOperation, tCExecution, null, false);
@@ -305,6 +307,17 @@ public class ServiceService implements IServiceService {
                             if (!(answerDecode.isCodeStringEquals("OK"))) {
                                 // If anything wrong with the decode --> we stop here with decode message in the action result.
                                 String field = "Operation";
+                                message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
+                                LOG.debug("Property interupted due to decode '" + field + "'.");
+                                result.setResultMessage(message);
+                                return result;
+                            }
+                            
+                            answerDecode = variableService.decodeStringCompletly(decodedAttachement, tCExecution, null, false);
+                            decodedAttachement = (String) answerDecode.getItem();
+                            if (!(answerDecode.isCodeStringEquals("OK"))) {
+                                // If anything wrong with the decode --> we stop here with decode message in the action result.
+                                String field = "Attachement URL";
                                 message = answerDecode.getResultMessage().resolveDescription("FIELD", field);
                                 LOG.debug("Property interupted due to decode '" + field + "'.");
                                 result.setResultMessage(message);
@@ -321,14 +334,9 @@ public class ServiceService implements IServiceService {
                         }
 
                         /**
-                         * Add attachment.
-                         */
-                        String attachement = "";
-
-                        /**
                          * Call SOAP and store it into the execution.
                          */
-                        result = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, attachement,
+                        result = soapService.callSOAP(decodedRequest, decodedServicePath, decodedOperation, decodedAttachement,
                                 appService.getHeaderList(), token, timeOutMs, system);
                         LOG.debug("SOAP Called done.");
 

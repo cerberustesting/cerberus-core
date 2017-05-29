@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import org.cerberus.crud.entity.AppService;
 import org.cerberus.crud.entity.Application;
 import org.cerberus.crud.entity.TestCaseCountryProperties;
@@ -39,7 +38,6 @@ import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ISqlLibraryService;
 import org.cerberus.crud.service.ITestCaseExecutionDataService;
 import org.cerberus.crud.service.ITestDataLibService;
-import org.cerberus.crud.service.ITestDataService;
 import org.cerberus.engine.entity.Identifier;
 import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.engine.execution.IIdentifierService;
@@ -75,6 +73,7 @@ public class PropertyService implements IPropertyService {
 
     private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(PropertyService.class);
     private static final String MESSAGE_DEPRECATED = "[DEPRECATED]";
+    private static final String VALUE_NULL = "<NULL>";
 
     @Autowired
     private IWebDriverService webdriverService;
@@ -82,8 +81,6 @@ public class PropertyService implements IPropertyService {
     private ISqlLibraryService sqlLibraryService;
     @Autowired
     private IAppServiceService appServiceService;
-    @Autowired
-    private ITestDataService testDataService;
     @Autowired
     private ISoapService soapService;
     @Autowired
@@ -705,15 +702,6 @@ public class PropertyService implements IPropertyService {
                         LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_EXECUTESQLFROMLIB + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
                         break;
 
-                    case TestCaseCountryProperties.TYPE_GETFROMTESTDATA: // DEPRECATED
-                        testCaseExecutionData = this.property_getFromTestData(testCaseExecutionData, tCExecution, testCaseCountryProperty, forceRecalculation);
-                        res = testCaseExecutionData.getPropertyResultMessage();
-                        res.setDescription(MESSAGE_DEPRECATED + " " + res.getDescription());
-                        testCaseExecutionData.setPropertyResultMessage(res);
-                        logEventService.createForPrivateCalls("ENGINE", TestCaseCountryProperties.TYPE_GETFROMTESTDATA, MESSAGE_DEPRECATED + " Deprecated Property triggered by TestCase : ['" + test + "|" + testCase + "']");
-                        LOG.warn(MESSAGE_DEPRECATED + " Deprecated Property " + TestCaseCountryProperties.TYPE_GETFROMTESTDATA + " triggered by TestCase : ['" + test + "'|'" + testCase + "']");
-                        break;
-
                     default:
                         res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_UNKNOWNPROPERTY);
                         res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseCountryProperty.getType()));
@@ -918,30 +906,6 @@ public class PropertyService implements IPropertyService {
         return testCaseExecutionData;
     }
 
-    private TestCaseExecutionData property_getFromTestData(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
-        String propertyValue = "";
-
-        try {
-            propertyValue = testCaseExecutionData.getValue1();
-            String valueFromTestData = testDataService.findTestDataByKey(propertyValue, tCExecution.getApplicationObj().getApplication(),
-                    tCExecution.getEnvironmentData(), tCExecution.getCountry()).getValue();
-            if (valueFromTestData != null) {
-                testCaseExecutionData.setValue(valueFromTestData);
-                MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_SUCCESS_TESTDATA);
-                res.setDescription(res.getDescription().replace("%PROPERTY%", propertyValue));
-                res.setDescription(res.getDescription().replace("%VALUE%", valueFromTestData));
-                testCaseExecutionData.setPropertyResultMessage(res);
-            }
-        } catch (CerberusException exception) {
-            LOG.debug("Exception Getting value from TestData for data :'" + propertyValue + "'\n" + exception.getMessageError().getDescription());
-            MessageEvent res = new MessageEvent(MessageEventEnum.PROPERTY_FAILED_TESTDATA_PROPERTYDONOTEXIST);
-
-            res.setDescription(res.getDescription().replace("%PROPERTY%", testCaseExecutionData.getValue1()));
-            testCaseExecutionData.setPropertyResultMessage(res);
-        }
-        return testCaseExecutionData;
-    }
-
     private TestCaseExecutionData property_getAttributeFromHtml(TestCaseExecutionData testCaseExecutionData, TestCaseExecution tCExecution, TestCaseCountryProperties testCaseCountryProperty, boolean forceCalculation) {
         MessageEvent res;
         try {
@@ -974,16 +938,11 @@ public class PropertyService implements IPropertyService {
         try {
             AppService appService = this.appServiceService.findAppServiceByKey(testCaseExecutionData.getValue1());
             if (appService != null) {
-                String attachement = "";//TODO implement this feature
-                //TODO implement the executeSoapFromLib
-                /*if (!testCaseExecutionData.getValue2().isEmpty()){
-                 attachement = testCaseExecutionData.getValue2();
-                 }else{
-                 attachement = soapLib.getAttachmentUrl();
-                 }*/
+
                 String decodedEnveloppe = appService.getServiceRequest();
                 String decodedServicePath = appService.getServicePath();
                 String decodedMethod = appService.getOperation();
+                String decodedAttachement = appService.getAttachementURL();
 
                 if (appService.getServiceRequest().contains("%")) {
                     answerDecode = variableService.decodeStringCompletly(appService.getServiceRequest(), tCExecution, testCaseStepActionExecution, false);
@@ -1015,16 +974,26 @@ public class PropertyService implements IPropertyService {
                         return testCaseExecutionData;
                     }
                 }
+                if (appService.getAttachementURL().contains("%")) {
+                    answerDecode = variableService.decodeStringCompletly(appService.getAttachementURL(), tCExecution, testCaseStepActionExecution, false);
+                    decodedAttachement = (String) answerDecode.getItem();
+                    if (!(answerDecode.isCodeStringEquals("OK"))) {
+                        // If anything wrong with the decode --> we stop here with decode message in the action result.
+                        testCaseExecutionData.setPropertyResultMessage(answerDecode.getResultMessage().resolveDescription("FIELD", "SOAP Attachement URL"));
+                        LOG.debug("Property interupted due to decode 'SOAP Attachement URL.");
+                        return testCaseExecutionData;
+                    }
+                }
 
                 //Call Soap and set LastSoapCall of the testCaseExecution.
-                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, attachement, null, null, 60000, tCExecution.getApplicationObj().getSystem());
+                AnswerItem soapCall = soapService.callSOAP(decodedEnveloppe, decodedServicePath, decodedMethod, decodedAttachement, null, null, 60000, tCExecution.getApplicationObj().getSystem());
                 AppService se1 = (AppService) soapCall.getItem();
 //                tCExecution.setLastSOAPCalled(soapCall);
 
                 if (soapCall.isCodeEquals(200)) {
 //                    SOAPExecution lastSoapCalled = (SOAPExecution) tCExecution.getLastSOAPCalled().getItem();
                     String xmlResponse = se1.getResponseHTTPBody();
-                    result = xmlUnitService.getFromXml(xmlResponse, appService.getParsingAnswer());
+                    result = xmlUnitService.getFromXml(xmlResponse, appService.getAttachementURL());
                 }
                 if (result != null) {
                     testCaseExecutionData.setValue(result);
@@ -1261,7 +1230,11 @@ public class PropertyService implements IPropertyService {
 
                 // Value of testCaseExecutionData object takes the master subdata entry "".
                 String value = (String) result.get(0).get("");
-                testCaseExecutionData.setValue(value);
+                if (value == null) {
+                    testCaseExecutionData.setValue(VALUE_NULL);
+                } else {
+                    testCaseExecutionData.setValue(value);
+                }
 
                 //Record result in filessytem.
                 recorderService.recordTestDataLibProperty(tCExecution.getId(), testCaseCountryProperty.getProperty(), 1, result);
