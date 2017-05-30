@@ -601,7 +601,6 @@
                                                 file="${project.build.directory}/${project.build.finalName}.zip"
                                                 todir="${cerberus.sourceforge.username}:${cerberus.sourceforge.password}@${cerberus.sourceforge.url}"
                                                 trust="yes"
-                                                verbose="true"
                                         />
                                     </target>
                                 </configuration>
@@ -659,7 +658,7 @@
                                                 todir="${cerberus.demo.qa.username}@${cerberus.demo.host}:${cerberus.demo.upload.path}"
                                                 password="${cerberus.demo.qa.password}"
                                                 trust="yes"
-                                                verbose="true"/>
+                                        />
 
                                         <!--
                                             Deploy artifact by:
@@ -673,7 +672,6 @@
                                                 username="${cerberus.demo.qa.username}"
                                                 password="${cerberus.demo.qa.password}"
                                                 trust="yes"
-                                                verbose="true"
                                                 command="
                                             unzip -o ${cerberus.demo.upload.path}/${project.build.finalName}.zip -d ${cerberus.demo.upload.path} &amp;&amp;
                                             (
