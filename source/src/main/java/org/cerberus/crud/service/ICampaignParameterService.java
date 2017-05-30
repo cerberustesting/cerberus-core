@@ -19,7 +19,6 @@
  */
 package org.cerberus.crud.service;
 
-import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.util.answer.Answer;
@@ -27,6 +26,7 @@ import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -37,6 +37,8 @@ public interface ICampaignParameterService {
     AnswerList readByCampaignByCriteria(String campaign, int startPosition, int length, String columnName, String sort, String searchParameter, String string);
 
     AnswerList readByCampaign(String campaign);
+
+    AnswerItem<Map<String, List<String>>> parseParametersByCampaign(String campaignName);
 
     Answer deleteByCampaign (String key);
 

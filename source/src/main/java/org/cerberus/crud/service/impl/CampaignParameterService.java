@@ -35,7 +35,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cerberus
@@ -56,6 +58,22 @@ public class CampaignParameterService implements ICampaignParameterService {
     @Override
     public AnswerList readByCampaign(String campaign) {
         return campaignParameterDAO.readByCampaign(campaign);
+    }
+
+    @Override
+    public AnswerItem<Map<String, List<String>>> parseParametersByCampaign(final String campaignName) {
+        final AnswerList<CampaignParameter> campaignParameters = readByCampaign(campaignName);
+        if (!campaignParameters.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+            return new AnswerItem<>(campaignParameters.getResultMessage());
+        }
+        final Map<String, List<String>> sortedCampaignParameters = new HashMap<>();
+        for (final CampaignParameter campaignParameter : campaignParameters.getDataList()) {
+            if (!sortedCampaignParameters.containsKey(campaignParameter.getParameter())) {
+                sortedCampaignParameters.put(campaignParameter.getParameter(), new ArrayList<String>());
+            }
+            sortedCampaignParameters.get(campaignParameter.getParameter()).add(campaignParameter.getValue());
+        }
+        return new AnswerItem<>(sortedCampaignParameters, new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
     }
 
     @Override
