@@ -581,6 +581,8 @@ function drawPropertyList(property, index) {
 }
 
 function drawProperty(property, testcaseinfo, canUpdate, index ) {
+    console.log(property);
+    console.log(testcaseinfo);
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     selectType.attr("name", "propertyType");
@@ -2928,16 +2930,12 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
                   allKeywordCorrect =false;
           }
           var currentKeyword =keywordInputByUser[keywordInputByUser.length-1];
-          /*
-            In some cases, when keyword are define twice
-            getNextKeywordId get the next id when it shouldn't be the case
-          */
-          var idNextKeyword = getNextKeywordId(currentKeyword, allKeyword);
-          if ( keywordInputByUser[0] !="object" && keywordInputByUser.length == 2){
-              idNextKeyword = -1;
-          }
           //no new object is currently added and all the keyword are correct
           if (allKeywordCorrect){
+              var idNextKeyword = -1;
+              if (!( keywordInputByUser[0] !="object" && keywordInputByUser.length == 2) ){
+                  idNextKeyword = getNextKeywordId(currentKeyword, allKeyword);
+              }
               //add the special caractere
               if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1){
                   editor.session.insert( editor.getCursorPosition() ,".");
@@ -2954,21 +2952,20 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
                   changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
                   editor.execCommand("startAutocomplete");
               }
-          //show the final popup if the user enter a new object
         }
-        else{
+        if ( keywordInputByUser[0] == "object" && !allKeywordCorrect){
               var availableObjectProperties = [
                   "value",
                   "picturepath",
                   "pictureurl"
               ];
               // if the user want to defined a new object
-              if( keywordInputByUser[0] == "object" && keywordInputByUser.length == 2 && potentiallyNeddApoint == false){
+              if( keywordInputByUser.length == 2 && potentiallyNeddApoint == false){
                   changeAceCompletionList(availableObjectProperties,keywordInputByUser[1],editor);
                   editor.execCommand("startAutocomplete");
               }
               // add '%' when an availableObjectProperties was selected
-              if (keywordInputByUser[0] == "object" && keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
+              if (keywordInputByUser.length == 3 && availableObjectProperties.indexOf(keywordInputByUser[2]) != -1){
                   editor.session.insert( editor.getCursorPosition() ,"%");
               }
         }
@@ -2976,9 +2973,6 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
     }
   });
 
-}
-function updateAllKeyword(allKeyword){
-    console.log("test");
 }
 
 function getKeywordList(type){
@@ -3000,7 +2994,58 @@ function getKeywordList(type){
     }
 }
 
-function createGuterCellListenner( editor, commandNameForIssueDetection ){
+function addPropertyInAce(propertyValue){
+
+  var test = GetURLParameter("test");
+  var testcase = GetURLParameter("testcase");
+  var info = GetURLParameter("testcase");
+  var step = GetURLParameter("step");
+  var property = GetURLParameter("property");
+
+  $.ajax({
+      url: "ReadTestCase",
+      data: {test: test, testCase: testcase, withStep: true},
+      dataType: "json",
+      success: function (data) {
+
+          testcaseinfo = data.info;
+          loadTestCaseInfo(data.info);
+          console.log(data);
+
+          var myCountry = [];
+          $.each(testcaseinfo.countryList, function (index) {
+              myCountry.push(index);
+          });
+          // Store the current saveScript button status and disable it
+          var saveScriptOldStatus = $("#saveScript").attr("disabled");
+          $("#saveScript").attr("disabled", true);
+
+          var newProperty = {
+              property: propertyValue,
+              description: "",
+              country: myCountry,
+              type: "text",
+              database: "",
+              value1: "",
+              value2: "",
+              length: 0,
+              rowLimit: 0,
+              nature: "STATIC",
+              retryNb: "",
+              retryPeriod: "",
+              toDelete: false
+          };
+
+          drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+          setPlaceholderProperty(newProperty);
+
+          // Restore the saveScript button status
+          $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+      }
+    });
+}
+
+function createGuterCellListenner( editor, commandNameForIssueDetection, indexEditor){
 
     var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
     var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
@@ -3012,45 +3057,25 @@ function createGuterCellListenner( editor, commandNameForIssueDetection ){
             var lineClickedId = this.innerHTML -1;//start at 1
             var annotationObjectList = editor.getSession().getAnnotations();
 
-            console.log(this.className );
             for (var y = 0; y < annotationObjectList.length; y++) {
                 if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
 
-                      var keywordType = annotationObjectList[y].keywordType;
-                      var keywordValue =  annotationObjectList[y].keywordValue;
-                      if ( keywordType == "property" ){
-                          //propertyList.push(keywordValue);
-                          this.className = "ace_gutter-cell";//Remove the warning annotation
-                          //
-                          var newProperty = {
-                              property: "",
-                              description: "",
-                              country: "",
-                              type: "text",
-                              database: "",
-                              value1: "",
-                              value2: "",
-                              length: 0,
-                              rowLimit: 0,
-                              nature: "STATIC",
-                              toDelete: false
-                          };
-                          drawProperty(newProperty, null);
-                          autocompleteAllFields();
-                          //
-                      }
-                      if ( keywordType == "object" ){
-                          this.className = "ace_gutter-cell";//Remove the warning annotation
-                          addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
-                      }
-
+                    var keywordType = annotationObjectList[y].keywordType;
+                    var keywordValue =  annotationObjectList[y].keywordValue;
+                    if ( keywordType == "property" ){
+                        addPropertyInAce(keywordValue);
+                    }
+                    if ( keywordType == "object" ){
+                        addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
+                    }
                 }
             }
+            this.className = "ace_gutter-cell";//Remove the warning annotation
         }
     }
 }
 
-function configureAceEditor(editor,mode){
+function configureAceEditor(editor,mode, indexEditor){
 
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
@@ -3058,18 +3083,20 @@ function configureAceEditor(editor,mode){
     //Exec command
     editor.commands.on("afterExec", function(e){
 
-        if( e.command.name == "insertstring" || e.command.name == "paste" ){
+        if( e.command.name == "insertstring" || e.command.name == "paste" ||  e.command.name == "backspace"){
 
-            allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
-            addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+            var allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
+
+            if (e.command.name != "backspace" ){
+                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+                editor.commands.exec(commandNameForAutoCompletePopup);
+            }
+
             addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
-
-            editor.commands.exec(commandNameForAutoCompletePopup);
             editor.commands.exec(commandNameForIssueDetection);
 
+            createGuterCellListenner( editor, commandNameForIssueDetection ,indexEditor);
         }
-        createGuterCellListenner( editor, commandNameForIssueDetection );
-
     });
 
     //editor option
@@ -3138,7 +3165,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    configureAceEditor(editor,placeHolders[i].value1EditorMode);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode, i);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
