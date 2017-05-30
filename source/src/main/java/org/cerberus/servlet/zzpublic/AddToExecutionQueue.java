@@ -232,7 +232,7 @@ public class AddToExecutionQueue extends HttpServlet {
 
         final String charset = req.getCharacterEncoding();
 
-        // Select test cases and associated to run
+        // Select test cases and associated parameters to run
         List<Map<String, String>> selectedTests;
         List<String> countries;
         List<String> environments;
@@ -281,7 +281,7 @@ public class AddToExecutionQueue extends HttpServlet {
                     }
                 });
             }
-            if (selectedTests == null) {
+            if (selectedTests.isEmpty()) {
                 throw new ParameterException("Selected campaign does not defined any test case");
             }
         }
