@@ -581,8 +581,6 @@ function drawPropertyList(property, index) {
 }
 
 function drawProperty(property, testcaseinfo, canUpdate, index ) {
-    console.log(property);
-    console.log(testcaseinfo);
     var doc = new Doc();
     var selectType = getSelectInvariant("PROPERTYTYPE", false, true);
     selectType.attr("name", "propertyType");
@@ -677,7 +675,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index ) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        setPlaceholderProperty($(this).parents(".property") );
+        setPlaceholderProperty($(this).parents(".property"),property );
     });
 
     selectDB.change(function () {
@@ -873,7 +871,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     array.push(data[index].property);
                     property.toDelete = false;
                     var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop);
+                    setPlaceholderProperty(prop,property);
                 }
 
 
@@ -2454,7 +2452,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
         };
 
         var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop);
+        setPlaceholderProperty(prop,property);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2994,12 +2992,11 @@ function getKeywordList(type){
     }
 }
 
-function addPropertyInAce(propertyValue){
+function addPropertyWithAce(propertyValue){
 
   var test = GetURLParameter("test");
   var testcase = GetURLParameter("testcase");
   var info = GetURLParameter("testcase");
-  var step = GetURLParameter("step");
   var property = GetURLParameter("property");
 
   $.ajax({
@@ -3010,7 +3007,9 @@ function addPropertyInAce(propertyValue){
 
           testcaseinfo = data.info;
           loadTestCaseInfo(data.info);
+
           console.log(data);
+          console.log(data.info.application);
 
           var myCountry = [];
           $.each(testcaseinfo.countryList, function (index) {
@@ -3037,15 +3036,41 @@ function addPropertyInAce(propertyValue){
           };
 
           drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
-          setPlaceholderProperty(newProperty);
+          setPlaceholderProperty(newProperty,newProperty);
 
           // Restore the saveScript button status
           $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
       }
     });
+    getKeywordList("property").push(keywordValue);
 }
 
-function createGuterCellListenner( editor, commandNameForIssueDetection, indexEditor){
+function addObjectWithAce(keywordValue){
+
+  var test = GetURLParameter("test");
+  var testcase = GetURLParameter("testcase");
+  var info = GetURLParameter("testcase");
+
+  $.ajax({
+      url: "ReadTestCase",
+      data: {test: test, testCase: testcase, withStep: true},
+      dataType: "json",
+      success: function (data) {
+        // Store the current saveScript button status and disable it
+        var saveScriptOldStatus = $("#saveScript").attr("disabled");
+        $("#saveScript").attr("disabled", true);
+
+        console.log(data.info.application);
+        var applicationName =data.info.application;
+        addApplicationObjectModalClick(undefined, keywordValue,applicationName);
+
+        // Restore the saveScript button status
+        $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+      }
+    });
+}
+
+function createGuterCellListenner( editor ){
 
     var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
     var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
@@ -3063,10 +3088,10 @@ function createGuterCellListenner( editor, commandNameForIssueDetection, indexEd
                     var keywordType = annotationObjectList[y].keywordType;
                     var keywordValue =  annotationObjectList[y].keywordValue;
                     if ( keywordType == "property" ){
-                        addPropertyInAce(keywordValue);
+                        addPropertyWithAce(keywordValue);
                     }
                     if ( keywordType == "object" ){
-                        addApplicationObjectModalClick(undefined, keywordValue,"Google");//Todo change the google
+                        addObjectWithAce(keywordValue);
                     }
                 }
             }
@@ -3075,7 +3100,7 @@ function createGuterCellListenner( editor, commandNameForIssueDetection, indexEd
     }
 }
 
-function configureAceEditor(editor,mode, indexEditor){
+function configureAceEditor(editor,mode,property){
 
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
@@ -3095,7 +3120,8 @@ function configureAceEditor(editor,mode, indexEditor){
             addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
             editor.commands.exec(commandNameForIssueDetection);
 
-            createGuterCellListenner( editor, commandNameForIssueDetection ,indexEditor);
+            createGuterCellListenner( editor );
+            property.value1 = editor.session.getValue();
         }
     });
 
@@ -3107,7 +3133,7 @@ function configureAceEditor(editor,mode, indexEditor){
 }
 
 
-function setPlaceholderProperty(propertyElement) {
+function setPlaceholderProperty(propertyElement,property) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
@@ -3165,7 +3191,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    configureAceEditor(editor,placeHolders[i].value1EditorMode, i);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode,property);
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
