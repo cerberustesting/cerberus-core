@@ -260,6 +260,7 @@ public enum MessageEventEnum {
     ACTION_FAILED_TIMEOUT(298, "FA", "Timeout exceeded when performing the action : %TIMEOUT% milliseconds", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_FAILED_GENERIC(298, "FA", "Action Failed. %DETAIL%", true, true, true, MessageGeneralEnum.EXECUTION_FA_ACTION),
     ACTION_PENDING(299, "PE", "Doing Action...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    ACTION_NOTEXECUTED(240, "NE", "Action not executed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION CONTROLS ***********
     CONTROL_SUCCESS(300, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_SUCCESS_EQUAL(300, "OK", "'%STRING1%' is equal to '%STRING2%'.", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
@@ -341,9 +342,11 @@ public enum MessageEventEnum {
     CONTROL_NOTEXECUTED_NOTSUPPORTED_FOR_MESSAGETYPE(362, "FA", "Message type %TYPE% not supported for control '%CONTROL%'.", true, false, true, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_NOOBJECTINMEMORY(362, "FA", "Cannot perform the control because no successfull Service/Page/Screen was accessed previously.", true, false, true, MessageGeneralEnum.EXECUTION_FA),
     CONTROL_FAILED_GENERIC(362, "FA", "Cannot perform the control. %ERROR%", true, false, true, MessageGeneralEnum.EXECUTION_FA),
+    CONTROL_NOTEXECUTED(398, "NE", "Control not executed", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     CONTROL_PENDING(399, "PE", "Control beeing performed...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** EXECUTION STEP ***********
     STEP_SUCCESS(400, "OK", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
+    STEP_NOTEXECUTED(410, "NE", "", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_FAILED(450, "KO", "", false, true, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     STEP_PENDING(499, "PE", "Step %STEP%.%STEPINDEX% running...", false, false, false, MessageGeneralEnum.EXECUTION_PE_TESTSTARTED),
     // *********** CONDITION OPERATION ***********

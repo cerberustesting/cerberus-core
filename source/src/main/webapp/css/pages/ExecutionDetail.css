@@ -226,3 +226,21 @@ color: red !important;
 }
 
 textarea { resize:vertical ; }
+
+.text-black {
+    color: #34495E; 
+}
+
+.progress-bar-black{
+    background-color: #34495E; 
+}
+
+.list-group-item-black{
+    color: #34495E;
+    background-color: #fff;
+}
+
+.list-group-item-black.active{
+    color: #fff;
+    background-color: #34495E;
+}

@@ -84,6 +84,7 @@ public enum MessageGeneralEnum {
     EXECUTION_CA(6, "CA", "The test case has been cancelled by the user."),
     EXECUTION_NA(7, "NA", "The test case could not be run because of missing testing data."),
     EXECUTION_NA_CONDITION(12, "NA", "The test case was not executed following the evaluation of the condition '%COND%'. %MES%"),
+    EXECUTION_NE(13, "NE", "The test case has not been executed."),
     APPLICATION_NOT_FOUND(100, "FA", "Application does not exist."),
     NOT_IMPLEMEMTED(101, "FA", "Missing data."),
     NO_DATA_FOUND(102, "FA", "Missing data."),
