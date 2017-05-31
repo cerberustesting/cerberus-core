@@ -288,8 +288,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                         };
 
                         var prop = drawProperty(newProperty, testcaseinfo, true);
-                        setPlaceholderProperty(prop);
-                        autocompleteAllFields();
+                        setPlaceholderProperty(prop[0],prop[1]);
+                        //autocompleteAllFields();
 
                         // Restore the saveScript button status
                         $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
@@ -670,13 +670,13 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        setPlaceholderProperty($(this).parents(".property"));
+        setPlaceholderProperty($(this).parents(".property"),property);
     });
 
     selectDB.change(function () {
         property.database = $(this).val();
     });
-
+    
     valueInput.change(function () {
         property.value1 = $(this).val();
     });
@@ -732,7 +732,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     content.append(props).append(right);
     table.append(content);
-    return props;
+    return [props,property];
 }
 
 function drawInheritedProperty(propList) {
@@ -861,7 +861,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     array.push(data[index].property);
                     property.toDelete = false;
                     var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop);
+                    setPlaceholderProperty(prop[0],prop[1]);
                     propertyList.push(property.property);
                 }
 
@@ -2442,7 +2442,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
         };
 
         var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop);
+        setPlaceholderProperty(prop[0],prop[1]);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2700,7 +2700,7 @@ function setPlaceholderControl(controlElement) {
     });
 }
 
-function setPlaceholderProperty(propertyElement) {
+function setPlaceholderProperty(propertyElement,property) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
@@ -2756,7 +2756,7 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    configureAceEditor(editor,placeHolders[i].value1EditorMode );
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode, property);
                     
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
@@ -2805,7 +2805,7 @@ function setPlaceholderProperty(propertyElement) {
 /*
  * main function of ace editor
  */
-function configureAceEditor(editor,mode){
+function configureAceEditor(editor,mode,property){
 
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
@@ -2826,16 +2826,17 @@ function configureAceEditor(editor,mode){
             editor.commands.exec(commandNameForIssueDetection);//set annotation
 
             createGuterCellListenner( editor );
-            //currentProperty.value1 = editor.session.getValue();
+            property.value1 = editor.session.getValue();
         }
     });
     
     //editor option
-    
     editor.getSession().setMode(mode);
     editor.setTheme("ace/theme/chrome");
     editor.$blockScrolling ="Infinity";//disable error message
     editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
+    //set text previously input
+    editor.setValue(property.value1);
 }
 /*
  * create an array of the current keyword with the keyword that precede them
@@ -3206,8 +3207,8 @@ function addPropertyWithAce(keywordValue){
                 toDelete: false
             };
 
-            var prop = drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
-            setPlaceholderProperty(prop);
+            var prop =drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+            setPlaceholderProperty(prop[0],prop[1]);
 
             // Restore the saveScript button status
             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
