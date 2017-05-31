@@ -141,6 +141,14 @@ td
     margin-left:5px;
 }
 
+.marginLeft15{
+    margin-left:15px;
+}
+
+.marginLeft-15{
+    margin-left:-15px;
+}
+
 .marginLeft25{
     margin-left:25px;
 }

@@ -29,6 +29,7 @@
         <script type="text/javascript" src="dependencies/Tinymce-4.2.6/tinymce.min.js"></script>
         <script type="text/javascript" src="js/pages/ExecutionDetail.js"></script>
         <link rel="stylesheet" type="text/css" href="css/pages/ExecutionDetail.css">
+        <link rel="stylesheet" type="text/css" href="css/bootstrapInverseButton.css">
     </head>
     <body>
         <%@ include file="include/header.html"%>

@@ -875,7 +875,10 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "NE") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
-        // $("#stepContent").addClass("col-lg-9");
+        var buttonOK = $("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK");
+        var buttonFA = $("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA");
+        var buttonKO = $("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO");
+        stepDesc.append($("<div>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA).append(buttonKO));
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
@@ -1045,7 +1048,7 @@ Action.prototype.draw = function () {
     row.append(header);
     row.data("item", this);
 
-    var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
+    var button = $("<div></div>").addClass("marginLeft-15 col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
@@ -1140,8 +1143,25 @@ Action.prototype.generateHeader = function () {
         elapsedTime.append("...");
     }
 
+/**
+ * If returnCode is NE, display button, else display elapsed time
+ */
+    if (this.returnCode === "NE") {
+        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK")).click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, "OK");
+        });
+        var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA")).click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerActionExecution(this, "FA");
+        });
+        contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+    } else {
+        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+    }
 
-    contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
 
     firstRow.append(contentField);
@@ -1151,6 +1171,24 @@ Action.prototype.generateHeader = function () {
     return content;
 
 };
+
+function triggerActionExecution(element, status) {
+    if (status === "OK") {
+        $($(element).closest(".action")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+        }).addClass("row list-group-item list-group-item-success");
+        $($($(element).closest(".action")[0]).find("span")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass("glyphicon-ok");
+    } else {
+        $($(element).closest(".action")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+        }).addClass("row list-group-item list-group-item-warning");
+        $($($(element).closest(".action")[0]).find("span")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass("glyphicon-alert");
+    }
+}
 
 Action.prototype.generateContent = function () {
     var obj = this;
@@ -1372,7 +1410,7 @@ Control.prototype.draw = function () {
         htmlElement.addClass("row list-group-item list-group-item-info");
         content.hide();
     } else if (this.returnCode === "NE") {
-        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
+        htmlElement.prepend($("<div>").addClass("marginLeft-15 col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
     } else {
@@ -1431,7 +1469,22 @@ Control.prototype.generateHeader = function () {
         elapsedTime.append("...");
     }
 
-    contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+    if (this.returnCode === "NE") {
+        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK")).click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerControlExecution(this, "OK");
+        });
+        var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO")).click(function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            triggerControlExecution(this, "KO");
+        });
+        contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+    } else {
+        contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+    }
+
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
 
     firstRow.append(contentField);
@@ -1440,6 +1493,24 @@ Control.prototype.generateHeader = function () {
 
     return content;
 };
+
+function triggerControlExecution(element, status) {
+    if (status === "OK") {
+        $($(element).closest(".control")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+        }).addClass("row list-group-item list-group-item-success");
+        $($($(element).closest(".control")[0]).find("span")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass("glyphicon-ok");
+    } else {
+        $($(element).closest(".control")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+        }).addClass("row list-group-item list-group-item-danger");
+        $($($(element).closest(".control")[0]).find("span")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass("glyphicon-remove");
+    }
+}
 
 Control.prototype.generateContent = function () {
     var doc = new Doc();
