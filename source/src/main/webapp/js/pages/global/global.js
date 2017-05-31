@@ -1727,8 +1727,14 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         $(this.parentNode).find("h3").after($('<div></div>').append($('<input>').attr('placeholder', 'Search...')
                 .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
                 .attr('data-type', 'custom').on('keyup', function () {
-            $('#' + tableId + '_wrapper .editable-checklist > div').hide();
-            $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')').show();
+            var allElement = $('#' + tableId + '_wrapper .editable-checklist > div')
+            var elementsTocheck = $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')')
+            //uncheck and hive all element
+            allElement.find("[type='checkbox']").prop('checked', false);
+            allElement.hide();
+            //check and show element that need to be check
+            elementsTocheck.find("[type='checkbox']").prop('checked', true);
+            elementsTocheck.show();
         })));
         //Add selectAll/unSelectAll button
         $("#" + tableId + "_wrapper [name='searchField']").after(
