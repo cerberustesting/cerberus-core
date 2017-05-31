@@ -30,13 +30,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cerberus.crud.entity.CountryEnvParam;
-import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.crud.service.IBuildRevisionInvariantService;
-import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ICountryEnvParamService;
 import org.cerberus.crud.service.ICountryEnvParam_logService;
+import org.cerberus.crud.service.IInvariantService;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.engine.entity.MessageEvent;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.service.email.IEmailGeneration;
 import org.cerberus.service.email.impl.sendMail;
@@ -44,6 +44,7 @@ import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.answer.Answer;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.answer.AnswerUtil;
+import org.cerberus.util.servlet.ServletUtil;
 import org.cerberus.version.Infos;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -74,20 +75,23 @@ public class DisableEnvironmentV000 extends HttpServlet {
 
         String charset = request.getCharacterEncoding();
 
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        /**
-         * Adding Log entry.
-         */
-        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
-
         // Loading Services.
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
         ICountryEnvParamService countryEnvParamService = appContext.getBean(ICountryEnvParamService.class);
         IInvariantService invariantService = appContext.getBean(IInvariantService.class);
         IBuildRevisionInvariantService buildRevisionInvariantService = appContext.getBean(IBuildRevisionInvariantService.class);
         IEmailGeneration emailService = appContext.getBean(IEmailGeneration.class);
         ICountryEnvParam_logService countryEnvParam_logService = appContext.getBean(ICountryEnvParam_logService.class);
         IParameterService parameterService = appContext.getBean(IParameterService.class);
+        
+        // Calling Servlet Transversal Util.
+        ServletUtil.servletStart(request);
+
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
+        logEventService.createForPublicCalls("/DisableEnvironmentV000", "CALL", "DisableEnvironmentV000 called : " + request.getRequestURL(), request);
 
         // Parsing all parameters.
         String system = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("system"), "", charset);
@@ -100,9 +104,8 @@ public class DisableEnvironmentV000 extends HttpServlet {
                 + "- country [mandatory] : the country where the Build Revision has been deployed. You can use ALL if you want to perform the action for all countries that exist for the given system and environement. [" + country + "]\n"
                 + "- environment [mandatory] : the environment where the Build Revision has been deployed. [" + environment + "]\n";
 
-        boolean error = false;
-
         // Checking the parameter validity.
+        boolean error = false;
         if (system.equalsIgnoreCase("")) {
             out.println("Error - Parameter system is mandatory.");
             error = true;

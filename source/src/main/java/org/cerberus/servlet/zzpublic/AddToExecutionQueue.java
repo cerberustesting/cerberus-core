@@ -20,8 +20,10 @@
 package org.cerberus.servlet.zzpublic;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -30,19 +32,28 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.google.common.collect.Maps;
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Campaign;
+import org.cerberus.crud.entity.CampaignParameter;
 import org.cerberus.crud.entity.TestCase;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.factory.IFactoryTestCaseExecutionInQueue;
+import org.cerberus.crud.service.ICampaignParameterService;
 import org.cerberus.crud.service.ICampaignService;
+import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.exception.FactoryCreationException;
 import org.cerberus.util.ParameterParserUtil;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.answer.AnswerItem;
+import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.servlet.ServletUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -122,7 +133,7 @@ public class AddToExecutionQueue extends HttpServlet {
     private IFactoryTestCaseExecutionInQueue inQueueFactoryService;
     private IExecutionThreadPoolService executionThreadService;
     private ITestCaseService testCaseService;
-    private ICampaignService campaignService;
+    private ICampaignParameterService campaignParameterService;
 
     @Override
     public void init() throws ServletException {
@@ -131,7 +142,7 @@ public class AddToExecutionQueue extends HttpServlet {
         inQueueFactoryService = appContext.getBean(IFactoryTestCaseExecutionInQueue.class);
         executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
         testCaseService = appContext.getBean(ITestCaseService.class);
-        campaignService = appContext.getBean(ICampaignService.class);
+        campaignParameterService = appContext.getBean(ICampaignParameterService.class);
     }
 
     @Override
@@ -155,59 +166,94 @@ public class AddToExecutionQueue extends HttpServlet {
      * </ol>
      * </p>
      *
-     * @param req
-     * @param resp
+     * @param request
+     * @param response
      * @throws ServletException
      * @throws IOException
      */
-    private void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        PrintWriter out = response.getWriter();
+
+        // Loading Services.
+        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
 
         // Calling Servlet Transversal Util.
-        ServletUtil.servletStart(req);
+        ServletUtil.servletStart(request);
 
-        // Part 1: Getting all test cases which have been sent to this servlet.
-        List<TestCaseExecutionInQueue> toInserts = null;
-        try {
-            toInserts = getTestCasesToInsert(req);
-        } catch (ParameterException pe) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
-            return;
-        } catch (CerberusException ex) {
-            java.util.logging.Logger.getLogger(AddToExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+        /**
+         * Adding Log entry.
+         */
+        ILogEventService logEventService = appContext.getBean(ILogEventService.class);
+        logEventService.createForPublicCalls("/AddToExecutionQueue", "CALL", "AddToExecutionQueue called : " + request.getRequestURL(), request);
+
+        // Parsing all parameters.
+        String tag = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_TAG), "");
+// TO BE IMPLEMENTED...
+
+        // Defining help message.
+        String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution specified by various parameters:\n"
+                + "- " + PARAMETER_TAG + " [mandatory] : Tag that will be used for every execution triggered. [" + tag + "]\n";
+// TO BE IMPLEMENTED...
+
+        // Checking the parameter validity.
+        boolean error = false;
+        if (tag == null || tag.isEmpty()) {
+            out.println("Error - Parameter " + PARAMETER_TAG + " is mandatory.");
+            error = true;
         }
 
-        // Part 2: Try to insert all these test cases to the execution queue.
-        List<String> errorMessages = new ArrayList<String>();
-        for (TestCaseExecutionInQueue toInsert : toInserts) {
+        // Starting the request only if previous parameters exist.
+        if (!error) {
+
+            // Part 1: Getting all test cases which have been sent to this servlet.
+            List<TestCaseExecutionInQueue> toInserts = null;
             try {
-                inQueueService.insert(toInsert);
-            } catch (CerberusException e) {
-                String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+                toInserts = getTestCasesToInsert(request);
+            } catch (ParameterException pe) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, pe.getMessage());
+                return;
+            } catch (CerberusException ex) {
+                java.util.logging.Logger.getLogger(AddToExecutionQueue.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            // Part 2: Try to insert all these test cases to the execution queue.
+            List<String> errorMessages = new ArrayList<String>();
+            for (TestCaseExecutionInQueue toInsert : toInserts) {
+                try {
+                    inQueueService.insert(toInsert);
+                } catch (CerberusException e) {
+                    String errorMessage = "Unable to insert " + toInsert.toString() + " due to " + e.getMessage();
+                    LOG.warn(errorMessage);
+                    errorMessages.add(errorMessage);
+                    continue;
+                }
+            }
+
+            // Part 3 : Put these tests in the queue in memory
+            try {
+                executionThreadService.executeNextInQueue();
+            } catch (CerberusException ex) {
+                String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
                 LOG.warn(errorMessage);
                 errorMessages.add(errorMessage);
-                continue;
             }
-        }
 
-        // Part 3 : Put these tests in the queue in memory
-        try {
-            executionThreadService.executeNextInQueue();
-        } catch (CerberusException ex) {
-            String errorMessage = "Unable to feed the execution queue due to " + ex.getMessage();
-            LOG.warn(errorMessage);
-            errorMessages.add(errorMessage);
-        }
-
-        if (!errorMessages.isEmpty()) {
-            StringBuilder errorMessage = new StringBuilder();
-            for (String item : errorMessages) {
-                errorMessage.append(item);
-                errorMessage.append(LINE_SEPARATOR);
+            if (!errorMessages.isEmpty()) {
+                StringBuilder errorMessage = new StringBuilder();
+                for (String item : errorMessages) {
+                    errorMessage.append(item);
+                    errorMessage.append(LINE_SEPARATOR);
+                }
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
             }
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, errorMessage.toString());
-        }
 
-        resp.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(req.getParameter(PARAMETER_TAG)));
+            response.sendRedirect("ReportingExecutionByTag.jsp?enc=1&Tag=" + StringUtil.encodeAsJavaScriptURIComponent(request.getParameter(PARAMETER_TAG)));
+
+        } else {
+            // In case of errors, we displayu the help message.
+            out.println(helpMessage);
+
+        }
 
     }
 
@@ -221,59 +267,66 @@ public class AddToExecutionQueue extends HttpServlet {
      */
     private List<TestCaseExecutionInQueue> getTestCasesToInsert(HttpServletRequest req) throws ParameterException, CerberusException {
 
-        String charset = req.getCharacterEncoding();
+        final String charset = req.getCharacterEncoding();
 
-        boolean autoRunCampaign = false;
-        String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
-        if (campaign != null && !campaign.isEmpty()) {
-            autoRunCampaign = true;
-        }
-
-        List<Map<String, String>> selectedTests = new ArrayList();
-        List<String> countries = new ArrayList();
-        if (!autoRunCampaign) {
+        // Select test cases and associated parameters to run
+        List<Map<String, String>> selectedTests;
+        List<String> countries;
+        List<String> environments;
+        List<String> browsers;
+        final String campaign = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(req.getParameter(PARAMETER_CAMPAIGN), null, charset);
+        if (campaign == null || campaign.isEmpty()) {
             selectedTests = ParameterParserUtil.parseListMapParamAndDecode(req.getParameterValues(PARAMETER_SELECTED_TEST), null, charset);
-            countries = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_COUNTRY), null, charset);
-        } else {
-            countries = campaignService.findCountries(campaign);
-            String[] countryList = new String[countries.size()];
-            countryList = countries.toArray(countryList);
-            List<TestCase> testCaseList = testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countryList);
-            List<String> selTc = new ArrayList();
-            for (TestCase tc : testCaseList) {
-                selTc.add("Test=" + tc.getTest() + "&TestCase=" + tc.getTestCase());
+            if (selectedTests == null || selectedTests.isEmpty()) {
+                throw new ParameterException("Selected tests are not defined");
             }
-            String[] tcList = new String[selTc.size()];
-            tcList = selTc.toArray(tcList);
-            selectedTests = ParameterParserUtil.parseListMapParamAndDecode(tcList, null, charset);
+            countries = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_COUNTRY), null, charset);
+            if (countries == null || countries.isEmpty()) {
+                throw new ParameterException("Countries are not defined");
+            }
+            environments = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
+            if (environments == null || environments.isEmpty()) {
+                throw new ParameterException("Environment are not defined");
+            }
+            browsers = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_BROWSER), null, charset);
+            if (browsers == null || browsers.isEmpty()) {
+                throw new ParameterException("Browsers are not defined");
+            }
+        } else {
+            final AnswerItem<Map<String, List<String>>> parsedCampaignParameters = campaignParameterService.parseParametersByCampaign(campaign);
+            if (!parsedCampaignParameters.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode())) {
+                throw new ParameterException("Unable to get selected campaign or associated parameters");
+            }
+            countries = parsedCampaignParameters.getItem().get(CampaignParameter.COUNTRY_PARAMETER);
+            if (countries == null || countries.isEmpty()) {
+                throw new ParameterException("Selected campaign does not defined any country");
+            }
+            environments = parsedCampaignParameters.getItem().get(CampaignParameter.ENVIRONMENT_PARAMETER);
+            if (environments == null || environments.isEmpty()) {
+                throw new ParameterException("Selected campaign does not defined any environment");
+            }
+            browsers = parsedCampaignParameters.getItem().get(CampaignParameter.BROWSER_PARAMETER);
+            if (browsers == null || browsers.isEmpty()) {
+                throw new ParameterException("Selected campaign does not defined any browser");
+            }
+            selectedTests = new ArrayList<>();
+            for (final TestCase testCase : testCaseService.findTestCaseByCampaignNameAndCountries(campaign, countries.toArray(new String[countries.size()]))) {
+                selectedTests.add(new HashMap<String, String>() {
+                    {
+                        put(PARAMETER_SELECTED_TEST_TEST, testCase.getTest());
+                        put(PARAMETER_SELECTED_TEST_TEST_CASE, testCase.getTestCase());
+                    }
+                });
+            }
+            if (selectedTests.isEmpty()) {
+                throw new ParameterException("Selected campaign does not defined any test case");
+            }
         }
 
-        if (selectedTests == null || selectedTests.isEmpty()) {
-            throw new ParameterException("Selected test must not be null");
-        }
-        if (countries == null || countries.isEmpty()) {
-            throw new ParameterException("Countries can not be null");
-        }
-
-        List<String> environments = new ArrayList();
-        environments = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_ENVIRONMENT), null, charset);
-        if (environments == null || environments.isEmpty()) {
-            throw new ParameterException("Environment must not be null");
-        }
-        List<String> browsers = new ArrayList();
-        browsers = ParameterParserUtil.parseListParamAndDecode(req.getParameterValues(PARAMETER_BROWSER), null, charset);
-        if (browsers == null || browsers.isEmpty()) {
-            throw new ParameterException("Browser must not be null");
-        }
-
-        //String tag = ParameterParserUtil.parseStringParamAndDecode(req.getParameter(PARAMETER_TAG), null, charset);
-        String tag = ParameterParserUtil.parseStringParam(req.getParameter(PARAMETER_TAG), "");
+        final String tag = ParameterParserUtil.parseStringParam(req.getParameter(PARAMETER_TAG), "");
         if (tag == null || tag.isEmpty()) {
-            throw new ParameterException("Tag must not be null");
+            throw new ParameterException("Tag is not defined");
         }
-
-        ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-        IParameterService parameterService = appContext.getBean(IParameterService.class);
 
         Date requestDate = new Date();
 
