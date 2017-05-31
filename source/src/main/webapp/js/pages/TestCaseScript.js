@@ -287,7 +287,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
-                        drawProperty(newProperty, testcaseinfo, true);
+                        var prop = drawProperty(newProperty, testcaseinfo, true);
+                        setPlaceholderProperty(prop);
                         autocompleteAllFields();
 
                         // Restore the saveScript button status
