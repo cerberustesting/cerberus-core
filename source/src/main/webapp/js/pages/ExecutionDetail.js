@@ -221,6 +221,9 @@ function updatePage(data, stepList) {
     } else if (data.controlStatus === "KO") {
         configPanel.find("#controlstatus").addClass("text-danger");
         configPanel.find("#exReturnMessage").addClass("text-danger");
+    } else if (data.controlStatus === "NE") {
+        configPanel.find("#controlstatus").addClass("text-black");
+        configPanel.find("#exReturnMessage").addClass("text-black");
     } else {
         configPanel.find("#controlstatus").addClass("text-warning");
         configPanel.find("#exReturnMessage").addClass("text-warning");
@@ -349,6 +352,8 @@ function updateLoadBar(data) {
             $("#progress-bar").addClass("progress-bar-success");
         } else if (data.controlStatus === "KO") {
             $("#progress-bar").addClass("progress-bar-danger");
+        } else if (data.controlStatus === "NE") {
+            $("#progress-bar").addClass("progress-bar-black");
         } else {
             $("#progress-bar").addClass("progress-bar-warning");
         }
@@ -829,6 +834,9 @@ Step.prototype.draw = function () {
     } else if (object.returnCode === "NA") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-info");
+    } else if (object.returnCode === "NE") {
+        htmlElement.append($("<span>").addClass("glyphicon glyphicon-question-sign pull-left"));
+        object.html.addClass("list-group-item-black");
     } else {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
@@ -864,6 +872,9 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "KO") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-remove pull-left text-danger").attr("style", "font-size:3em")));
+        // $("#stepContent").addClass("col-lg-9");
+    } else if (object.returnCode === "NE") {
+        $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
@@ -1056,6 +1067,10 @@ Action.prototype.draw = function () {
     } else if (action.returnCode === "NA") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
+    } else if (action.returnCode === "NE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
@@ -1355,6 +1370,10 @@ Control.prototype.draw = function () {
     } else if (this.returnCode === "NA") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-info");
+        content.hide();
+    } else if (this.returnCode === "NE") {
+        htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-question-sign").attr("style", "font-size:1.5em")));
+        htmlElement.addClass("row list-group-item list-group-item-black");
         content.hide();
     } else {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-alert").attr("style", "font-size:1.5em")));

@@ -387,40 +387,42 @@ public class ExecutionStartService implements IExecutionStartService {
         }
 
         /**
-         * Start server
+         * Start server if execution is not manual
          */
-        tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
-        if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
-                || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
+        if (!tCExecution.isManualExecution()) {
+            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_STARTINGROBOTSERVER));
+            if (tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_GUI)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_APK)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_IPA)
+                    || tCExecution.getApplicationObj().getType().equalsIgnoreCase(Application.TYPE_FAT)) {
 
-            if (tCExecution.getIp().equalsIgnoreCase("")) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
-                mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
-                LOG.debug(mes.getDescription());
-                throw new CerberusException(mes);
-            }
-            if (tCExecution.getPort().equalsIgnoreCase("")) {
-                MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
-                mes.setDescription(mes.getDescription().replace("%PORT%", tCExecution.getPort()));
-                LOG.debug(mes.getDescription());
-                throw new CerberusException(mes);
-            }
+                if (tCExecution.getIp().equalsIgnoreCase("")) {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADIP);
+                    mes.setDescription(mes.getDescription().replace("%IP%", tCExecution.getIp()));
+                    LOG.debug(mes.getDescription());
+                    throw new CerberusException(mes);
+                }
+                if (tCExecution.getPort().equalsIgnoreCase("")) {
+                    MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_SELENIUM_EMPTYORBADPORT);
+                    mes.setDescription(mes.getDescription().replace("%PORT%", tCExecution.getPort()));
+                    LOG.debug(mes.getDescription());
+                    throw new CerberusException(mes);
+                }
 
-            /**
-             * Start Selenium server
-             */
-            LOG.debug("Starting Server.");
-            tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
-            try {
-                this.serverService.startServer(tCExecution);
-            } catch (CerberusException ex) {
-                LOG.debug(ex.getMessageError().getDescription());
-                throw new CerberusException(ex.getMessageError());
-            }
-            LOG.debug("Server Started.");
+                /**
+                 * Start Selenium server
+                 */
+                LOG.debug("Starting Server.");
+                tCExecution.setResultMessage(new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CREATINGRUNID));
+                try {
+                    this.serverService.startServer(tCExecution);
+                } catch (CerberusException ex) {
+                    LOG.debug(ex.getMessageError().getDescription());
+                    throw new CerberusException(ex.getMessageError());
+                }
+                LOG.debug("Server Started.");
 
+            }
         }
 
         /**
@@ -454,14 +456,16 @@ public class ExecutionStartService implements IExecutionStartService {
          * Stop the browser if executionID is equal to zero (to prevent database
          * instabilities)
          */
-        try {
-            if (tCExecution.getId() == 0) {
-                LOG.debug("Starting to Stop the Selenium Server.");
-                this.serverService.stopServer(tCExecution.getSession());
-                LOG.debug("Selenium Server stopped.");
+        if (!tCExecution.isManualExecution()) {
+            try {
+                if (tCExecution.getId() == 0) {
+                    LOG.debug("Starting to Stop the Selenium Server.");
+                    this.serverService.stopServer(tCExecution.getSession());
+                    LOG.debug("Selenium Server stopped.");
+                }
+            } catch (Exception ex) {
+                LOG.warn(ex.toString());
             }
-        } catch (Exception ex) {
-            LOG.warn(ex.toString());
         }
 
         /**
