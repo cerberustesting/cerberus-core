@@ -31,7 +31,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var obj = convertSerialToJSONObject(serial);
             sessionStorage.setItem("splitFilter", JSON.stringify(obj));
         });
-
+        
         splitFilterPreferences();
 
         $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
@@ -59,10 +59,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 /*
  * Loading functions
  */
-
 function initPage() {
     var doc = new Doc();
-
     displayHeaderLabel(doc);
     displayPageLabel(doc);
     displayFooter(doc);
