@@ -23,9 +23,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
         
-        var urlTag = GetURLParameter('Tag');
-        
         bindToggleCollapse();
+        
+        var urlTag = GetURLParameter('Tag');
         
         $("#splitFilter input").click(function () {
             //save the filter preferences in the session storage
@@ -230,24 +230,22 @@ function loadReportingData(selectTag) {
 
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
-    
     $.when(jqxhr).then(function (data) {
         loadByStatusAndByfunctionReports(data.functionChart);
-        console.log(data);
         loadEnvCountryBrowserReport(data.statsChart);
         loadReportList(data.table, selectTag);
     });
 
 }
 
-function filterCountryBrowserReport(selectTag) {
+function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
     //var selectTag = $("#selectTag option:selected").text();
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitFilter input");
 
-    //Retrieve data for charts and draw them
-    var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
+    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" +  params.serialize() + "&" + "outputReport=statsChart";
+    var jqxhr = $.get(requestToServlet , null, "json");
     
     $.when(jqxhr).then(function (data) {
         loadEnvCountryBrowserReport(data.statsChart);
