@@ -106,7 +106,7 @@ public class RunTestCase extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/RunTestCase", "CALL", "RunTestCaseV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/RunTestCase", "CALL", "RunTestCase called : " + request.getRequestURL(), request);
 
         //Tool
         String ss_ip = ""; // Selenium IP
