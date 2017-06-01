@@ -22,16 +22,22 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
-
+        
         bindToggleCollapse();
-
+        
+        var urlTag = GetURLParameter('Tag');
+        
         $("#splitFilter input").click(function () {
             //save the filter preferences in the session storage
             var serial = $("#splitFilter input").serialize();
             var obj = convertSerialToJSONObject(serial);
             sessionStorage.setItem("splitFilter", JSON.stringify(obj));
+            //split when check or uncheck filter
+            if (urlTag !== null && urlTag !== "" && urlTag !==undefined){
+                filterCountryBrowserReport(urlTag);
+            }
         });
-
+        
         splitFilterPreferences();
 
         $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
@@ -48,7 +54,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             }
         });
 
-        var urlTag = GetURLParameter('Tag');
         loadTagFilters(urlTag);
         if (urlTag !== null) {
             loadAllReports(urlTag);
@@ -229,6 +234,21 @@ function loadReportingData(selectTag) {
         loadByStatusAndByfunctionReports(data.functionChart);
         loadEnvCountryBrowserReport(data.statsChart);
         loadReportList(data.table, selectTag);
+    });
+
+}
+
+function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
+    //var selectTag = $("#selectTag option:selected").text();
+    var statusFilter = $("#statusFilter input");
+    var countryFilter = $("#countryFilter input");
+    var params = $("#splitFilter input");
+
+    var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" +  params.serialize() + "&" + "outputReport=statsChart";
+    var jqxhr = $.get(requestToServlet , null, "json");
+    
+    $.when(jqxhr).then(function (data) {
+        loadEnvCountryBrowserReport(data.statsChart);
     });
 
 }

@@ -135,6 +135,7 @@
                                     <input type="checkbox" name="app" checked/>
                                     Application
                                 </label>
+                                <button type="button" class="btn btn-default pull-right" id="reloadSplit">Reload</button>
                             </div>
                             <div id="progressEnvCountryBrowser">
 

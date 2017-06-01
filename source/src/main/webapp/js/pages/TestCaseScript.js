@@ -287,8 +287,9 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                             toDelete: false
                         };
 
-                        drawProperty(newProperty, testcaseinfo, true);
-                        autocompleteAllFields();
+                        var prop = drawProperty(newProperty, testcaseinfo, true);
+                        setPlaceholderProperty(prop[0],prop[1]);
+                        //autocompleteAllFields();
 
                         // Restore the saveScript button status
                         $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
@@ -585,7 +586,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     var propertyInput = $("<input onkeypress='return restrictCharacters(this, event, propertyNameRestriction);' id='propName' style='width: 100%; font-size: 16px; font-weight: 600;' name='propName' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertyname") + "'>").addClass("form-control input-sm").val(property.property);
     var descriptionInput = $("<textarea rows='1' id='propDescription' placeholder='" + doc.getDocLabel("page_testcasescript", "feed_propertydescription") + "'>").addClass("form-control input-sm").val(property.description);
-    var valueInput = $("<textarea name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value1);
+    var valueInput = $("<pre name='propertyValue' id='propertyValue" + index + "' style='min-height:150px' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></pre>").addClass("form-control input-sm").val(property.value1);
     var value2Input = $("<textarea name='propertyValue2' rows='1' placeholder='" + doc.getDocLabel("page_applicationObject", "Value") + "'></textarea>").addClass("form-control input-sm").val(property.value2);
     var lengthInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "length") + "'>").addClass("form-control input-sm").val(property.length);
     var rowLimitInput = $("<input placeholder='" + doc.getDocLabel("page_testcasescript", "row_limit") + "'>").addClass("form-control input-sm").val(property.rowLimit);
@@ -669,13 +670,13 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        setPlaceholderProperty($(this).parents(".property"));
+        setPlaceholderProperty($(this).parents(".property"),property);
     });
 
     selectDB.change(function () {
         property.database = $(this).val();
     });
-
+    
     valueInput.change(function () {
         property.value1 = $(this).val();
     });
@@ -731,7 +732,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     content.append(props).append(right);
     table.append(content);
-    return props;
+    return [props,property];
 }
 
 function drawInheritedProperty(propList) {
@@ -860,7 +861,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     array.push(data[index].property);
                     property.toDelete = false;
                     var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop);
+                    setPlaceholderProperty(prop[0],prop[1]);
                     propertyList.push(property.property);
                 }
 
@@ -2441,7 +2442,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
         };
 
         var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop);
+        setPlaceholderProperty(prop[0],prop[1]);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2699,41 +2700,41 @@ function setPlaceholderControl(controlElement) {
     });
 }
 
-function setPlaceholderProperty(propertyElement) {
+function setPlaceholderProperty(propertyElement,property) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
      */
     var placeHoldersList = {"fr": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
         ], "en": [
-            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
+            {"type": "text", "value1": "Value :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": "[opt] Length :", "rowLimit": null, "nature": "Nature :", "retry": null, "period": null},
             {"type": "executeSql", "value1": "SQL Query :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/sql", "value2": null, "database": "Database :", "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
-            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
+            {"type": "getFromDataLib", "value1": "DataLib name :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": "Row Limit :", "nature": "Nature :", "retry": "Number of retry (if empty)", "period": "Retry period (ms)"},
             {"type": "getFromHtml", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromHtmlVisible", "value1": "Element path :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/xquery", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJS", "value1": "Javascript command :", "value1Class": "col-sm-10", "value1EditorMode": "ace/mode/javascript", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getAttributeFromHtml", "value1": "Element path :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "Attribute name :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "getFromCookie", "value1": "Cookie name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": "Cookie attribute :", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromXml", "value1": "Xpath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "[opt] XML or URL to XML file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getDifferencesFromXml", "value1": "value1", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/xquery", "value2": "value2", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromJson", "value1": "JSONPath :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/json", "value2": "[opt] JSON or URL to JSON file", "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
             {"type": "getFromGroovy", "value1": "Groovy command :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/groovy", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
-            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/text", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
+            {"type": "executeSoapFromLib", "value1": "Service lib name :", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null},
+            {"type": "executeSqlFromLib", "value1": "SQL Lib name", "value1Class": "col-sm-8", "value1EditorMode": "ace/mode/cerberus", "value2": null, "database": null, "length": null, "rowLimit": null, "nature": null, "retry": null, "period": null}
         ]};
 
     var user = getUser();
@@ -2753,53 +2754,10 @@ function setPlaceholderProperty(propertyElement) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1'] label").html(placeHolders[i].value1);
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").removeClass();
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
-
-                    //Highlight envelop on modal loading
-                    //var langTools = ace.require("ace/ext/language_tools");
-                    //var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    //editor.setTheme("ace/theme/chrome");
-                    //editor.getSession().setMode(placeHolders[i].value1EditorMode);
-
-//                    var rhymeCompleter = {
-//                        getCompletions: function (editor, session, pos, prefix, callback) {
-//                            autocompleteField(editor, callback);
-//                        }
-//                    }; 
-
-                    //changeCompleter(langTools,rhymeCompleter);
-                    //editor.completers = [rhymeCompleter];        
-                    //editor.setOptions({
-                    //    maxLines: 10,
-                    //    enableBasicAutocompletion: true
-                    //});        
-
-// TODO : Below is some try to autocomplete
-// // TODO : Clean that comment
-//                    editor.commands.on("afterExec", function (element) {
-//                        console.log(element.command.name);
-//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g))) {
-//                            editor.execCommand("startAutocomplete");
-//                        }
-//                        console.log(editor.getSession().getDocument().getValue().indexOf("%property."));
-//                        if (element.command.name == "insertstring" && editor.getSession().getDocument().getValue().indexOf("%property.")>0) {
-//                            console.log("true");
-//                            editor.execCommand("startAutocomplete");
-//                        }
-//                    });
-//                    
-// TODO : Below is some try to autocomplete   
-// // TODO : Clean that comment                
-//                    editor.commands.addCommand({
-//                        name: "cerberusAutocompletion",
-//                        bindKey: {win: "%", mac: "%"},
-//                        exec: function (editor) {
-//                            //autocompleteVariable;
-//                            autocompleteVariable($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"));
-//                        }
-//                    })
-//                    editor.execCommand("cerberusAutocompletion")
-                    //editor.execCommand("autocomplete");
-
+                    //Ace module management
+                    var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
+                    configureAceEditor(editor,placeHolders[i].value1EditorMode, property);
+                    
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
@@ -2844,91 +2802,467 @@ function setPlaceholderProperty(propertyElement) {
     });
 
 }
+/*
+ * main function of ace editor
+ */
+function configureAceEditor(editor,mode,property){
 
-// Below is some try for autocompletion
-// TODO : Clean that comment
+    //command Name
+    var commandNameForAutoCompletePopup = "cerberusPopup";
+    var commandNameForIssueDetection = "cerberusIssueDetection";
+    //event listenner
+    editor.commands.on("afterExec", function(e){
+        
+        if( e.command.name == "insertstring" || e.command.name == "paste" ||  e.command.name == "backspace"){
+            //recreate the array at each loop
+            var allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
 
-//function split(val, separator) {
-//        return val.split(new RegExp(separator + "(?!.*" + separator + ")"))
-//    }
-//
-//    function extractLast(term, separator) {
-//        return split(term, separator).pop();
-//    }
-//
-//    function extractAllButLast(term, separator) {
-//        var last = split(term, separator).pop();
-//        var index = term.lastIndexOf(last);
-//        return term.substring(0, index);
-//    }
-//    
-//function autocompleteField(editor, callback){
-//    callback(null, []);
-//                                
-//                            
-//                            var wordList = [{"word":"property.","freq":24,"score":300,"flags":"bc","syllables":"0"},
-//                        {"word":"object.","freq":24,"score":300,"flags":"bc","syllables":"0"},
-//                        {"word":"system.","freq":24,"score":300,"flags":"bc","syllables":"0"}];
-//                        
-//                        
-//                callback(null, wordList.map(function (ea) {
-//                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"
-////                                               , completer: {
-////                            insertMatch: function (editor, data) {
-////                                editor.session.insert(editor.getCursorPosition(), data.value);
-////                                editor.execCommand("startAutocomplete");
-////                                console.log("Item clicked: ", data.value);
-////
-////                            }
-//                       //}
-//                       };
-//                                       }));
-//                              
-//                            var TagsToUse = [];
-//                            //var betweenPercent = editor.getSession().getDocument().getValue().match(new RegExp(/%[^%]*%/g));       
-//                            var editorValue = editor.getSession().getDocument().getValue()
-//                            
-//                    //Get the part of the string we want (between the last % before our cursor and the cursor)
-//                    var selectionStart = editor.getSelectionRange().start.column;
-//                    var stringToAnalyse = editorValue.substring(0, selectionStart);
-//                    var identifier = stringToAnalyse.substring(stringToAnalyse.lastIndexOf("%"));
-//                    console.log("identifier" + editor.getSelectionRange().start.column);
-//                    //If there is a pair number of % it means there is no open variable that needs to be autocompleted
-//                    if ((editorValue.match(/%/g) || []).length % 2 > 0) {
-//                        //Start Iterating on Tags
-//                        var tag = 0;
-//                        var found = false;
-//                        var Tags = getTags();
-//                        var wordList2 = [];
-//                        
-//                        callback(null, []);
-//                        
-//                        
-//                        while (tag < Tags.length && !found) {
-//                            //If We find the separator, then we filter with the already written part
-//                            if ((identifier.match(new RegExp(Tags[tag].regex)) || []).length > 0) {
-//                                this.currentIndexTag = tag;
-//                                var arrayToDisplay = $.ui.autocomplete.filter(
-//                                        Tags[tag].array, extractLast(identifier, Tags[tag].regex));
-//                                if (Tags[tag].isCreatable && extractLast(identifier, Tags[tag].regex) != "") {
-//                                    arrayToDisplay.push(extractLast(identifier, Tags[tag].regex));
-//                                }
-//                                
-//                                wordList2.push({"word":"toto"+tag,"freq":24,"score":300,"flags":"bc","syllables":"0"});
-//                                found = true;
-//                            }
-//                            tag++;
-//                        }
-//                        
-//                        callback(null, wordList2.map(function (ea) {
-//                    console.log("return");
-//                                           return {name: ea.word, value: ea.word, score: ea.score, meta: "cerberus"};
-//                                       }));
-//                    }
-//                
-//}
-//
-//function changeCompleter(langTools, rhymeCompleter){
-//    langTools.completers = [];
-//    langTools.addCompleter(rhymeCompleter);
-//}
+            if (e.command.name != "backspace" ){
+                addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
+                editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
+            }
+
+            addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
+            editor.commands.exec(commandNameForIssueDetection);//set annotation
+
+            createGuterCellListenner( editor );
+            property.value1 = editor.session.getValue();
+        }
+    });
+    
+    //editor option
+    editor.getSession().setMode(mode);
+    editor.setTheme("ace/theme/chrome");
+    editor.$blockScrolling ="Infinity";//disable error message
+    editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
+    //set text previously input
+    editor.setValue(property.value1);
+}
+/*
+ * create an array of the current keyword with the keyword that precede them
+ */
+function createAllKeywordList(objectList,propertyList ){
+    var availableObjectProperties = [
+        "value",
+        "picturepath",
+        "pictureurl"
+    ];
+    var availableSystemValues = [
+        "SYSTEM",
+        "APPLI",
+        "BROWSER",
+        "APP_DOMAIN", "APP_HOST", "APP_VAR1", "APP_VAR2", "APP_VAR3", "APP_VAR4",
+        "ENV", "ENVGP",
+        "COUNTRY", "COUNTRYGP1", "COUNTRYGP2", "COUNTRYGP3", "COUNTRYGP4", "COUNTRYGP5", "COUNTRYGP6", "COUNTRYGP7", "COUNTRYGP8", "COUNTRYGP9",
+        "TEST",
+        "TESTCASE",
+        "SSIP", "SSPORT",
+        "TAG",
+        "EXECUTIONID",
+        "EXESTART", "EXEELAPSEDMS",
+        "EXESTORAGEURL",
+        "STEP.n.n.RETURNCODE", "CURRENTSTEP_INDEX", "CURRENTSTEP_STARTISO", "CURRENTSTEP_ELAPSEDMS",
+        "LASTSERVICE_HTTPCODE",
+        "TODAY-yyyy", "TODAY-MM", "TODAY-dd", "TODAY-doy", "TODAY-HH", "TODAY-mm", "TODAY-ss",
+        "YESTERDAY-yyyy", "YESTERDAY-MM", "YESTERDAY-dd", "YESTERDAY-doy", "YESTERDAY-HH", "YESTERDAY-mm", "YESTERDAY-ss"
+    ];
+    var availableTags = [
+        "property", // 0
+        "object",   // 1
+        "system"    // 2
+    ];
+
+    var allKeyword =[];
+    allKeyword.push( {"motherKeyword" : null, "listKeyword": availableTags } );
+    //property
+    allKeyword.push( {"motherKeyword" : availableTags["0"], "listKeyword": propertyList } );
+    //object
+    allKeyword.push( {"motherKeyword" : availableTags["1"], "listKeyword": objectList } );
+    //system
+    allKeyword.push( {"motherKeyword" : availableTags["2"], "listKeyword": availableSystemValues } );
+    //object tag
+    for (var i in objectList) {
+      allKeyword.push( {"motherKeyword" : objectList[i], "listKeyword": availableObjectProperties } );
+    }
+    return allKeyword;
+}
+/*
+ * add an ace command to display autocomplete popup
+ */
+function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
+
+    editor.commands.addCommand({
+        name: commandName,
+        exec: function () {
+
+            var cursorPositionY =editor.getCursorPosition().row;
+            var editorValueAtTheLine =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
+            var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
+
+            if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 1){
+                var cursorPositionX =editor.getCursorPosition().column;
+                var subStringCursorOn = editorValueAtTheLine.slice( editorValueAtTheLine.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+                //Create an array of all the word separated by "." contain between "%" caractere
+                var keywordInputList =subStringCursorOn.split(".");
+                
+                var potentiallyNeddApoint =true;
+                var allKeywordCorrect =true;
+                //Check all the keywordInput
+                for (var idKeywordToCheck in keywordInputList){
+                    
+                    var keywordInputByUserExist;
+                    //Just after a "." or a blank line
+                    if( keywordInputList[idKeywordToCheck] ==""){
+                        keywordInputByUserExist =true;//blank is a valid keyword
+                        keywordInputList.pop();//remove blank caractere
+                        potentiallyNeddApoint =false;
+                    }else{
+                        keywordInputByUserExist = checkIfTheKeywordIsCorrect(allKeyword, keywordInputList, idKeywordToCheck);
+                    }
+                    //if at least on keyword between the "%" by default autocompletion is diable
+                    if (keywordInputByUserExist == false)
+                        allKeywordCorrect =false;
+                    
+                }
+                var currentKeyword =keywordInputList[keywordInputList.length-1];
+                //All the keyword are correct set autocompletion
+                if (allKeywordCorrect){
+                    var idNextKeyword = getNextKeywordId(currentKeyword, allKeyword, keywordInputList);
+                    //add the special caractere
+                    if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1){
+                        editor.session.insert( editor.getCursorPosition() ,".");
+                    }
+                    if (currentKeyword !=undefined && idNextKeyword ==-1 ){
+                        editor.session.insert( editor.getCursorPosition() ,"%");
+                    }
+                    //change the autocompletionList
+                    if (currentKeyword == undefined){
+                        changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
+                        editor.execCommand("startAutocomplete");
+                    }
+                    if (idNextKeyword !=-1 && currentKeyword != undefined ){
+                        changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
+                        editor.execCommand("startAutocomplete");
+                    }
+                }
+                //The user tryed to add an new object set autocompletion for this specifique part
+                if ( !allKeywordCorrect && keywordInputList[0] == "object" && keywordInputList.length <4){
+                    var availableObjectProperties = [
+                        "value",
+                        "picturepath",
+                        "pictureurl"
+                    ];
+                    // if the user want to defined a new object
+                    if( keywordInputList.length == 2 && potentiallyNeddApoint == false){
+                        changeAceCompletionList(availableObjectProperties,keywordInputList[1],editor);
+                        editor.execCommand("startAutocomplete");
+                    }
+                    // add '%' when an availableObjectProperties was selected
+                    if (keywordInputList.length == 3 && availableObjectProperties.indexOf(keywordInputList[2]) != -1){
+                        editor.session.insert( editor.getCursorPosition() ,"%");
+                    }
+                }
+            }
+        }
+    });
+
+}
+/*
+*check if the keywordInputByUser and the keyword designated by the idKeywordToCheck share the same motherKeyword (resolve issue with duplicate)
+*/
+function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToCheck){
+    
+    for (var y in allKeyword) {
+        for (var n in allKeyword[y]["listKeyword"]){
+            if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[idKeywordToCheck] ){
+                //check if the keyword matching posses the same mother keyword
+                var listMotherKeywordPossible = getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword);
+                if (!( idKeywordToCheck>=1 && listMotherKeywordPossible[0] !=null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n] ,allKeyword).indexOf(  keywordInputByUser[idKeywordToCheck-1] ) == -1) ){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+/*
+ * Get the list of all the previous keyword possible for this keyword
+ */
+function getPossibleMotherKeyword(keyword,allKeyword){
+  var idmotherKeyword =[];
+  for (i in allKeyword){
+    for (y in allKeyword[i]["listKeyword"]){
+      if( allKeyword[i]["listKeyword"][y] == keyword){
+        idmotherKeyword.push( allKeyword[i]["motherKeyword"] );
+      }
+    }
+  }
+  if (idmotherKeyword.length == 0)
+    return -1;
+  else
+    return idmotherKeyword;
+}
+/*
+ * Get the id of the next list of keyword by finding which one has keyword as a motherKeyword
+ */
+function getNextKeywordId(keyword,allKeyword, keywordInputList){
+    // resolve issue with duplicate
+    if ( keywordInputList[0] !="object" && keywordInputList.length == 2){
+        return -1;
+    }
+    //no duplicate
+    else{
+        var idCurrentKeyword = -1;
+        for (i in allKeyword){
+            if( allKeyword[i]["motherKeyword"] == keyword ){
+                idCurrentKeyword =i;
+            }
+        }
+        return idCurrentKeyword;
+    }
+}
+/*
+ * Replace the autocompletion list of ace editor
+ */
+function changeAceCompletionList(keywordList,label,editor){
+    var langTools = ace.require("ace/ext/language_tools");
+    langTools.setCompleters([]);//clear the autocompleter list
+    var completer= {
+      getCompletions: function(editor, session, pos, prefix, callback) {
+        var completions = [];
+        for (var i in keywordList) {
+          completions.push({ name:"default_name", value:keywordList[i], meta: label });
+        }
+        callback(null, completions);
+      }
+    }
+    langTools.addCompleter(completer);
+}
+
+/*
+ * Create a command to find and display (with annotation) the issue in ace
+ */
+function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
+
+  editor.commands.addCommand({
+        name: commandName,
+        exec: function () {
+            var numberOfLine = editor.session.getLength();
+            var annotationObjectList =[];
+            //var warningKeywordList =[];
+            for (var line = 0; line < numberOfLine; line++) {
+                var editorValueAtTheLine = editor.session.getLine(line);
+                var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
+                if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
+                    var editorValueSplit = editorValueAtTheLine.split("%");
+                    var cerberusVarAtLine =[]
+                    for (var i = 0; i < editorValueSplit.length; i++) {
+                       if ( i%2 == 1)
+                          cerberusVarAtLine.push(editorValueSplit[i]);
+                    }
+                    //Check if each cerberus var is correct
+                    for (var i in cerberusVarAtLine) {
+                        var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
+                        var keywordsListCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
+
+                        var issueWithKeyword = "none";
+
+                        if (keywordsListCurrentlyCheck.length >= 2){
+                            var startKeyword = keywordsListCurrentlyCheck[0];
+                            var secondKeyword = keywordsListCurrentlyCheck[1];
+
+                            if ( startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
+                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
+                                    issueWithKeyword ="warning";
+                                }else {
+                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                      issueWithKeyword ="warning";//keyword exist but not correct
+                                }
+                            }
+                            else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
+
+                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
+                                    issueWithKeyword ="warning";
+                                }else {
+                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                      issueWithKeyword ="warning";//keyword exist but not correct
+                                }
+                                var thirdKeyword = keywordsListCurrentlyCheck[2];
+                                var availableObjectProperties = [
+                                    "value",
+                                    "picturepath",
+                                    "pictureurl"
+                                ];
+                                if ( availableObjectProperties.indexOf(thirdKeyword) == -1 ){
+                                    issueWithKeyword ="error";
+                                }
+                            }
+                            else {
+                                  issueWithKeyword ="error";
+                            }
+                        }else{
+                            issueWithKeyword ="error";
+                        }
+                        if ( issueWithKeyword == "error" ){
+                            var messageOfAnnotion ="error invalid keyword";
+                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", null , null) );
+                        }
+                        if (issueWithKeyword == "warning"){
+                            var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
+                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]) );
+                      }
+                  }
+              }
+          }
+          setAceAnnotation(editor,annotationObjectList);
+      }
+  });
+
+}
+
+/*
+ *object use to highlight line
+ */
+function createAceAnnotationObject(lineNumber,annotationText,annotationType, keywordTypeVar, keywordValueVar){
+
+    return {row: lineNumber,
+            column: 0,
+            text: annotationText,
+            type: annotationType,
+            lineNumber: lineNumber,
+            keywordType: keywordTypeVar,
+            keywordValue: keywordValueVar
+          }
+}
+
+//set the list of ace annotion object as annotation
+function setAceAnnotation(editor,annotationObjectList){
+    //Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
+    editor.getSession().setAnnotations( annotationObjectList );
+}
+/*
+ * Set a listenner for every left part of ace's lines in each line that will resolve issue
+ */
+function createGuterCellListenner( editor ){
+
+    var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
+    var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
+    for (var i = 0; i < cellList.length; i++) {
+
+        cellList[i].setAttribute("style", "cursor: pointer");
+        cellList[i].onclick = function() {
+
+            var lineClickedId = this.innerHTML -1;//start at 1
+            var annotationObjectList = editor.getSession().getAnnotations();
+
+            for (var y = 0; y < annotationObjectList.length; y++) {
+                if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
+
+                    var keywordType = annotationObjectList[y].keywordType;
+                    var keywordValue =  annotationObjectList[y].keywordValue;
+                    if ( keywordType == "property" ){
+                        addPropertyWithAce(keywordValue);
+                    }
+                    if ( keywordType == "object" ){
+                        addObjectWithAce(keywordValue);
+                    }
+                }
+            }
+            this.className = "ace_gutter-cell";//Remove the warning annotation
+        }
+    }
+}
+
+//Add keywordValue as a new property
+function addPropertyWithAce(keywordValue){
+
+  var test = GetURLParameter("test");
+  var testcase = GetURLParameter("testcase");
+  var info = GetURLParameter("testcase");
+  var property = GetURLParameter("property");
+
+  $.ajax({
+        url: "ReadTestCase",
+        data: {test: test, testCase: testcase, withStep: true},
+        dataType: "json",
+        success: function (data) {
+
+            testcaseinfo = data.info;
+            loadTestCaseInfo(data.info);
+
+            var myCountry = [];
+            $.each(testcaseinfo.countryList, function (index) {
+                myCountry.push(index);
+            });
+            // Store the current saveScript button status and disable it
+            var saveScriptOldStatus = $("#saveScript").attr("disabled");
+            $("#saveScript").attr("disabled", true);
+
+            var newProperty = {
+                property: keywordValue,
+                description: "",
+                country: myCountry,
+                type: "text",
+                database: "",
+                value1: "",
+                value2: "",
+                length: 0,
+                rowLimit: 0,
+                nature: "STATIC",
+                retryNb: "",
+                retryPeriod: "",
+                toDelete: false
+            };
+
+            var prop =drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+            setPlaceholderProperty(prop[0],prop[1]);
+
+            // Restore the saveScript button status
+            $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+        }
+    });
+    getKeywordList("property").push(keywordValue);
+}
+//Add keywordValue as a new object
+function addObjectWithAce(keywordValue){
+
+    var test = GetURLParameter("test");
+    var testcase = GetURLParameter("testcase");
+    var info = GetURLParameter("testcase");
+
+    $.ajax({
+        url: "ReadTestCase",
+        data: {test: test, testCase: testcase, withStep: true},
+        dataType: "json",
+        success: function (data) {
+            // Store the current saveScript button status and disable it
+            var saveScriptOldStatus = $("#saveScript").attr("disabled");
+            $("#saveScript").attr("disabled", true);
+
+            var applicationName =data.info.application;
+            addApplicationObjectModalClick(undefined, keywordValue,applicationName);
+
+            // Restore the saveScript button status
+            $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+        }
+    });
+}
+//Get the CURRENT list of keyword for each type
+function getKeywordList(type){
+    if ( getTags() != undefined ){
+        var idType = -1;
+        switch (type) {
+            case "object":
+                return getTags()[1].array;
+            case "property":
+                return getTags()[2].array;
+            case "system":
+                return getTags()[3].array;
+            break;
+            default:
+                return null;
+    }
+    }else{
+        return null;
+    }
+}
