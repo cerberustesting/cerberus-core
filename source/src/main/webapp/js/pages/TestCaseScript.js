@@ -3045,70 +3045,77 @@ function changeAceCompletionList(keywordList,label,editor){
 function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
 
   editor.commands.addCommand({
-      name: commandName,
-      exec: function () {
-          var numberOfLine = editor.session.getLength();
-          var annotationObjectList =[];
-          //var warningKeywordList =[];
-          for (var line = 0; line < numberOfLine; line++) {
-              var editorValueAtTheLine = editor.session.getLine(line);
-              var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
-              if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
-                  var editorValueSplit = editorValueAtTheLine.split("%");
-                  var cerberusVarAtLine =[]
-                  for (var i = 0; i < editorValueSplit.length; i++) {
-                     if ( i%2 == 1)
-                        cerberusVarAtLine.push(editorValueSplit[i]);
-                  }
-                  //Check if each cerberus var is correct
-                  for (var i in cerberusVarAtLine) {
-                      var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
-                      var keywordsListCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
-
-                      var issueWithKeyword = "none";
-                      if (keywordsListCurrentlyCheck.length >= 2){
-                          var startKeyword = keywordsListCurrentlyCheck[0];
-                          var secondKeyword = keywordsListCurrentlyCheck[1];
-
-                          if ( startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
-                              if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
-                                  issueWithKeyword ="warning";
-                              }else {
-                                  if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
-                                    issueWithKeyword ="warning";//keyword exist but not correct
-                              }
-                          }
-                          else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
-                              if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
-                                  issueWithKeyword ="warning";
-                              }else {
-                                  if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
-                                    issueWithKeyword ="warning";//keyword exist but not correct
-                              }
-                              var thirdKeyword = keywordsListCurrentlyCheck[2];
-                              if ( getPossibleMotherKeyword(thirdKeyword ,allKeyword) == -1 ){
-                                  issueWithKeyword ="error";
-                              }
-                          }
-                          else {
-                                issueWithKeyword ="error";
-                          }
-                      }else{
-                          issueWithKeyword ="error";
-                      }
-                      if ( issueWithKeyword == "error" ){
-                          var messageOfAnnotion ="error invalid keyword";
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", null , null) );
-                      }
-                      if (issueWithKeyword == "warning"){
-                          var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
-                          annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]) );
+        name: commandName,
+        exec: function () {
+            var numberOfLine = editor.session.getLength();
+            var annotationObjectList =[];
+            //var warningKeywordList =[];
+            for (var line = 0; line < numberOfLine; line++) {
+                var editorValueAtTheLine = editor.session.getLine(line);
+                var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
+                if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
+                    var editorValueSplit = editorValueAtTheLine.split("%");
+                    var cerberusVarAtLine =[]
+                    for (var i = 0; i < editorValueSplit.length; i++) {
+                       if ( i%2 == 1)
+                          cerberusVarAtLine.push(editorValueSplit[i]);
                     }
-                }
-            }
-        }
-        setAceAnnotation(editor,annotationObjectList);
-    }
+                    //Check if each cerberus var is correct
+                    for (var i in cerberusVarAtLine) {
+                        var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
+                        var keywordsListCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
+
+                        var issueWithKeyword = "none";
+
+                        if (keywordsListCurrentlyCheck.length >= 2){
+                            var startKeyword = keywordsListCurrentlyCheck[0];
+                            var secondKeyword = keywordsListCurrentlyCheck[1];
+
+                            if ( startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
+                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
+                                    issueWithKeyword ="warning";
+                                }else {
+                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                      issueWithKeyword ="warning";//keyword exist but not correct
+                                }
+                            }
+                            else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
+
+                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
+                                    issueWithKeyword ="warning";
+                                }else {
+                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
+                                      issueWithKeyword ="warning";//keyword exist but not correct
+                                }
+                                var thirdKeyword = keywordsListCurrentlyCheck[2];
+                                var availableObjectProperties = [
+                                    "value",
+                                    "picturepath",
+                                    "pictureurl"
+                                ];
+                                if ( availableObjectProperties.indexOf(thirdKeyword) == -1 ){
+                                    issueWithKeyword ="error";
+                                }
+                            }
+                            else {
+                                  issueWithKeyword ="error";
+                            }
+                        }else{
+                            issueWithKeyword ="error";
+                        }
+                        if ( issueWithKeyword == "error" ){
+                            var messageOfAnnotion ="error invalid keyword";
+                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", null , null) );
+                        }
+                        if (issueWithKeyword == "warning"){
+                            var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
+                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]) );
+                      }
+                  }
+              }
+          }
+          setAceAnnotation(editor,annotationObjectList);
+      }
   });
 
 }
