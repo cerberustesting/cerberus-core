@@ -55,6 +55,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             });
 
             localStorage.setItem("tagList", JSON.stringify(tagList));
+            
             $("#tagSettingsModal").modal('hide');
             $('#tagExecStatus').empty();
             loadTagExec();
@@ -64,7 +65,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             stopPropagation(event);
             var tagListForm = $("#tagList");
             var tagList = JSON.parse(localStorage.getItem("tagList"));
-
+            
             if (tagList !== null) {
                 for (var index = 0; index < tagList.length; index++) {
                     tagListForm.append('<div class="input-group">\n\
@@ -79,7 +80,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             $(".removeTag").on('click', function () {
                 $(this).parent().remove();
             });
-
+            
             $("#tagSettingsModal").modal('show');
         });
 
@@ -256,23 +257,28 @@ function loadTagExec() {
     if (tagList === null || tagList.length === 0) {
         tagList = readLastTagExec();
     }
-
+    
     for (var index = 0; index < tagList.length; index++) {
-        var tagName = tagList[index];
-        $.ajax({
-            type: "GET",
-            url: "GetReportData",
-            data: {split: true, Tag: tagName},
-            tag: tagName,
-            async: true,
-            dataType: 'json',
-            success: function (data) {
-                generateTagReport(data.contentTable.total, this.tag);
-            },
-            error: showUnexpectedError
+        let tagName = tagList[index];
+        //TODO find a way to remove the use for resendTag
+        var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag";
+        var jqxhr = $.get(requestToServlet , null, "json");
+        
+        $.when(jqxhr).then(function (data ) {
+            generateTagReport( data.statsChart.contentTable.total ,  data.tag );
         });
     }
+    
 }
+
+function getCountryFilter() {
+    return $.ajax({url: "FindInvariantByID",
+        data: {idName: "COUNTRY"},
+        async: false,
+        dataType: 'json',
+    });
+}
+
 
 function aoColumnsFunc() {
     var doc = getDoc();

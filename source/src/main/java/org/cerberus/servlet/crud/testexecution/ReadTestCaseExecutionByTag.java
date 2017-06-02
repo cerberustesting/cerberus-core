@@ -115,9 +115,19 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 jsonResponse.put("functionChart", generateFunctionChart(testCaseExecutions, Tag, statusFilter, countryFilter));
             }
             if (outputReport.isEmpty() || outputReport.contains("statsChart")) {
-                jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter));
+                jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter, true));
             }
-
+            if ( !outputReport.isEmpty() ){
+                //currently used to optimize the homePage
+                if (outputReport.contains("totalStatsCharts") && !outputReport.contains("statsChart")) {
+                    jsonResponse.put("statsChart", generateStats(request, testCaseExecutions, statusFilter, countryFilter, false));
+                }
+                //currently used to optimize the homePage
+                if (outputReport.contains("resendTag")) {
+                    jsonResponse.put("tag",  Tag );
+                }
+            }
+            
             answer.setItem(jsonResponse);
             answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
 
@@ -344,14 +354,14 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
         jsonResult.put("globalStatus", globalStatus);
         return jsonResult;
     }
-
-    private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    
+    private JSONObject generateStats(HttpServletRequest request, List<TestCaseExecution> testCaseExecutions, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
 
         JSONObject jsonResult = new JSONObject();
-        boolean env = request.getParameter("env") != null;
-        boolean country = request.getParameter("country") != null;
-        boolean browser = request.getParameter("browser") != null;
-        boolean app = request.getParameter("app") != null;
+        boolean env = request.getParameter("env") != null || !splitStats;
+        boolean country = request.getParameter("country") != null || !splitStats;
+        boolean browser = request.getParameter("browser") != null || !splitStats;
+        boolean app = request.getParameter("app") != null || !splitStats;
 
         HashMap<String, SummaryStatisticsDTO> statMap = new HashMap<String, SummaryStatisticsDTO>();
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
@@ -377,22 +387,22 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 statMap.put(key.toString(), stat);
             }
         }
-
-        jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseExecutions, statMap, env, country, browser, app, statusFilter, countryFilter));
-
+        
+        jsonResult.put("contentTable", getStatByEnvCountryBrowser(testCaseExecutions, statMap, env, country, browser, app, statusFilter, countryFilter, splitStats));
+        
         return jsonResult;
     }
 
-    private JSONObject getStatByEnvCountryBrowser(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app, JSONObject statusFilter, JSONObject countryFilter) throws JSONException {
+    private JSONObject getStatByEnvCountryBrowser(List<TestCaseExecution> testCaseExecutions, HashMap<String, SummaryStatisticsDTO> statMap, boolean env, boolean country, boolean browser, boolean app, JSONObject statusFilter, JSONObject countryFilter, boolean splitStats) throws JSONException {
         SummaryStatisticsDTO total = new SummaryStatisticsDTO();
         total.setEnvironment("Total");
-
+        
         for (TestCaseExecution testCaseExecution : testCaseExecutions) {
-
+            
             String controlStatus = testCaseExecution.getControlStatus();
-            if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on")) {
+            if (statusFilter.get(controlStatus).equals("on") && countryFilter.get(testCaseExecution.getCountry()).equals("on") || !splitStats) {
                 StringBuilder key = new StringBuilder();
-
+                
                 key.append((env) ? testCaseExecution.getEnvironment() : "");
                 key.append("_");
                 key.append((country) ? testCaseExecution.getCountry() : "");
@@ -407,24 +417,25 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
                 total.updateStatisticByStatus(testCaseExecution.getControlStatus());
             }
         }
-        return extractSummaryData(statMap, total);
+        return extractSummaryData(statMap, total, splitStats);
     }
 
-    private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total) throws JSONException {
+    private JSONObject extractSummaryData(HashMap<String, SummaryStatisticsDTO> summaryMap, SummaryStatisticsDTO total, boolean splitStats) throws JSONException {
         JSONObject extract = new JSONObject();
-        JSONArray dataArray = new JSONArray();
         Gson gson = new Gson();
-        //sort keys
-        TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
-        for (String key : sortedKeys.keySet()) {
-            SummaryStatisticsDTO sumStats = summaryMap.get(key);
-            //percentage values
-            sumStats.updatePercentageStatistics();
-            dataArray.put(new JSONObject(gson.toJson(sumStats)));
+        if ( splitStats ){
+            JSONArray dataArray = new JSONArray();
+            //sort keys
+            TreeMap<String, SummaryStatisticsDTO> sortedKeys = new TreeMap<String, SummaryStatisticsDTO>(summaryMap);
+            for (String key : sortedKeys.keySet()) {
+                SummaryStatisticsDTO sumStats = summaryMap.get(key);
+                //percentage values
+                sumStats.updatePercentageStatistics();
+                dataArray.put(new JSONObject(gson.toJson(sumStats)));
+            }
+            extract.put("split", dataArray);
         }
         total.updatePercentageStatistics();
-
-        extract.put("split", dataArray);
         extract.put("total", new JSONObject(gson.toJson(total)));
         return extract;
     }
