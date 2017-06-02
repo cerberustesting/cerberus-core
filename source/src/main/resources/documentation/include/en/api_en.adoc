@@ -1,0 +1,7 @@
+When integrating Cerberus with any external tool, public API must be used.
+All public API are version managed in order to allow secure and stable integration.
+Each time the signature of the API is modified or behaviour has changed, it is implemented on a new version keeping existing version only subject to bugfix changes.
+
+Old version of Public API can disappear (after a deprecated period) from one version to another.
+In order to perform the impact analysis of the systems that are calling your Cerberus installation, you can use the parameter cerberus_log_publiccalls.
+Setting the parameter to Y will log every public API calls performed reporting any deprecated calls that needs to be migrated to newer version of the same API.
