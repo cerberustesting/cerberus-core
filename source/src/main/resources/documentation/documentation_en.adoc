@@ -216,8 +216,6 @@ include::include/{lang}/{file-to-include}[]
 
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
-== Cerberus installation
-
 ---
 = Installation
 :file-to-include: installation_introduction_{lang}.adoc
