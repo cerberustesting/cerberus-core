@@ -210,6 +210,25 @@ include::include/{lang}/{file-to-include}[]
 link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
 
 ---
+= API Publiques
+:file-to-include: api_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== API d'execution de test
+:file-to-include: api_test_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+== API d'intégration 
+:file-to-include: api_integration_{lang}.adoc
+include::include/{lang}/{file-to-include}[]
+
+link:{repo-url}/{file-to-include}[image:edit-doc.png[FR,20,20]^] _{contribution-message}_
+
+---
 = Installation
 :file-to-include: installation_introduction_{lang}.adoc
 include::include/{lang}/{file-to-include}[]
