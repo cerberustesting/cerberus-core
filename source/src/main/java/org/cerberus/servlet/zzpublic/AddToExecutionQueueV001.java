@@ -64,9 +64,9 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final String PARAMETER_SELECTED_TEST = "testlist";
     private static final String PARAMETER_SELECTED_TEST_KEY_TEST = "test";
     private static final String PARAMETER_SELECTED_TEST_KEY_TESTCASE = "testcase";
-    private static final String PARAMETER_COUNTRY = "countrylist";
-    private static final String PARAMETER_ENVIRONMENT = "environmentlist";
-    private static final String PARAMETER_BROWSER = "browserlist";
+    private static final String PARAMETER_COUNTRY = "country";
+    private static final String PARAMETER_ENVIRONMENT = "environment";
+    private static final String PARAMETER_BROWSER = "browser";
     private static final String PARAMETER_ROBOT = "robot";
     private static final String PARAMETER_ROBOT_IP = "ss_ip";
     private static final String PARAMETER_ROBOT_PORT = "ss_p";
@@ -178,8 +178,8 @@ public class AddToExecutionQueueV001 extends HttpServlet {
 
         // Defining help message.
         String helpMessage = "\nThis servlet is used to add to Cerberus execution queue a list of execution. Execution list will be calculated from cartesian product of "
-                + "testcase, country, environment and broswer list. Those list can be defined from the associated servlet parameter but can also be defined from campaign directy inside Cerberus.\n"
-                + "List define from servlet overwrite the list defined from the campaign. All other execution parameters will be taken to each execution.\n"
+                + "testcase, country, environment and browser list. Those list can be defined from the associated servlet parameter but can also be defined from campaign directy inside Cerberus.\n"
+                + "List defined from servlet overwrite the list defined from the campaign. All other execution parameters will be taken to each execution.\n"
                 + "Available parameters:\n"
                 + "- " + PARAMETER_CAMPAIGN + " : Campaign name from which testcase, countries, environment and browser can be defined from Cerberus. [" + campaign + "]\n"
                 + "- " + PARAMETER_SELECTED_TEST + " : List of testCase to trigger. That list overwrite the list coming from the Campaign (if defined). Ex : " + PARAMETER_SELECTED_TEST + "=" + PARAMETER_SELECTED_TEST_KEY_TEST + "=Cerberus%26" + PARAMETER_SELECTED_TEST_KEY_TESTCASE + "=9644A. [" + selectedTests + "]\n"
