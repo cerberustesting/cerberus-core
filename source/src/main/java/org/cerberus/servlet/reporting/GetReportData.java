@@ -170,6 +170,8 @@ public class GetReportData extends HttpServlet {
             Map<String, TestCaseExecution> testCaseExecutionsList = new LinkedHashMap();
 
             for (TestCaseExecution column : columnTcExec) {
+                System.out.println(column);
+                System.out.println(column.getCountry() );
                 String key = column.getBrowser()
                         + column.getCountry()
                         + column.getEnvironment()

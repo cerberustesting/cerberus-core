@@ -243,7 +243,6 @@ function  filterCountryBrowserReport(selectTag, splitFilterSettings) {
     var statusFilter = $("#statusFilter input");
     var countryFilter = $("#countryFilter input");
     var params = $("#splitFilter input");
-
     var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" +  params.serialize() + "&" + "outputReport=statsChart";
     var jqxhr = $.get(requestToServlet , null, "json");
     
