@@ -25,18 +25,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
-import org.cerberus.database.DatabaseSpring;
-import org.cerberus.log.MyLogger;
 import org.cerberus.crud.service.ILogEventService;
 import org.cerberus.crud.service.IParameterService;
+import org.cerberus.database.DatabaseSpring;
+import org.cerberus.log.MyLogger;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.Sanitizers;
 import org.springframework.context.ApplicationContext;
@@ -60,7 +58,7 @@ public class ResultCI extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(ILogEventService.class);
-        logEventService.createForPublicCalls("/ResultCI", "CALL", "ResultCIV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/ResultCI", "CALL", "ResultCI called : " + request.getRequestURL(), request);
 
         String tag = policy.sanitize(request.getParameter("tag"));
 

@@ -1087,8 +1087,9 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Override
     public List<TestCase> findTestCaseByCampaignNameAndCountries(String campaign, String[] countries) {
         List<TestCase> list = null;
-        final StringBuilder query = new StringBuilder("SELECT tec.* ")
+        final StringBuilder query = new StringBuilder("SELECT tec.*, app.system ")
                 .append("FROM testcase tec ")
+                .append("LEFT OUTER JOIN application app ON app.application = tec.application ")
                 .append("INNER JOIN testcasecountry tcc ON tcc.Test = tec.Test and tcc.TestCase = tec.TestCase ")
                 .append("LEFT JOIN testbatterycontent tbc ON tbc.Test = tec.Test and tbc.TestCase = tec.TestCase ")
                 .append("LEFT JOIN campaigncontent cpc ON cpc.testbattery = tbc.testbattery ")

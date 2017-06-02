@@ -94,7 +94,7 @@ public class GetNumberOfExecutions extends HttpServlet {
          * Adding Log entry.
          */
         ILogEventService logEventService = appContext.getBean(LogEventService.class);
-        logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutionsV0 called : " + request.getRequestURL(), request);
+        logEventService.createForPublicCalls("/GetNumberOfExecutions", "CALL", "GetNumberOfExecutions called : " + request.getRequestURL(), request);
 
         // Parsing all parameters.
         String environment = ParameterParserUtil.parseStringParam(request.getParameter("environment"), "PROD");
