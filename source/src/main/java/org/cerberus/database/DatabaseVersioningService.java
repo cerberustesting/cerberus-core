@@ -8753,6 +8753,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("ALTER TABLE `testcase` ADD COLUMN `screensize` VARCHAR(250) NOT NULL DEFAULT '' AFTER `useragent`; ");
         SQLInstruction.add(SQLS.toString());
 
+        // Cleaning type properties.
+        //-- ------------------------ 1153
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE testcasecountryproperties SET `type` = 'text' where type='Unknown'; ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
