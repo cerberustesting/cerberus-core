@@ -707,3 +707,7 @@ img.selectedPicture{
         max-width: 1200px;
     }
 }
+/*This is to force autocomplete to display on top of modal*/
+.ui-autocomplete {
+    z-index: 5000;
+}

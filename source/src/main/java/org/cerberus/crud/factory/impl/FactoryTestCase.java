@@ -44,7 +44,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
-            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String userAgent, List<TestCaseCountry> testCaseCountry,
+            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
             List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep, List<TestCaseStepBatch> testCaseStepBatch) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTcActive(tcActive);
@@ -79,6 +79,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setUsrCreated(usrCreated);
         newTestCase.setUsrModif(usrModif);
         newTestCase.setUserAgent(userAgent);
+        newTestCase.setScreenSize(screenSize);
         newTestCase.setLastExecutionStatus(lastExecutionStatus);
         newTestCase.setTestCaseCountry(testCaseCountry);
         newTestCase.setTestCaseCountryProperties(testCaseCountryProperties);
@@ -92,7 +93,7 @@ public class FactoryTestCase implements IFactoryTestCase {
     @Override
     public TestCase create(String test, String testCase, String origine, String refOrigine, String usrCreated, String implementer, String usrModif, String project, String ticket, String function, String application,
             String activeQA, String activeUAT, String activePROD, int priority, String group, String status, String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild, String fromRev,
-            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, Timestamp dateModif) {
+            String toBuild, String toRev, String lastExecutionStatus, String bugID, String targetBuild, String targetRev, String comment, String dateCreated, String userAgent, String screenSize, Timestamp dateModif) {
         TestCase newTestCase = new TestCase();
         newTestCase.setTcActive(tcActive);
         newTestCase.setConditionOper(conditionOper);
@@ -130,6 +131,7 @@ public class FactoryTestCase implements IFactoryTestCase {
         newTestCase.setDateModif(dateModif);
         newTestCase.setUsrModif(usrModif);
         newTestCase.setUserAgent(userAgent);
+        newTestCase.setScreenSize(screenSize);
 
         return newTestCase;
     }

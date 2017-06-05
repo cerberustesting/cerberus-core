@@ -105,7 +105,7 @@ public class ExportListTestCase extends HttpServlet {
 
         IFactoryTestCase factoryTCase = new FactoryTestCase();
         return factoryTCase.create(test, testCase, origine, null, creator, null, null, project, ticket,function, application, qa, uat, prod, priority, group,
-                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", null, null, null, null);
+                status, null, null, null, active, conditionOper, conditionVal1, conditionVal2, fBuild, fRev, tBuild, tRev, null, bug, targetBuild, targetRev, null, "", "", null, null, null, null);
     }
 
     private String getValue(HttpServletRequest req, String valueName) {

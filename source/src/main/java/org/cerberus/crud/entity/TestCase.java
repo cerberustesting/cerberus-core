@@ -63,6 +63,7 @@ public class TestCase {
     private String activePROD;
     private String function;
     private String userAgent;
+    private String screenSize;
     private String usrCreated;
     private String dateCreated;
     private String usrModif;
@@ -80,6 +81,14 @@ public class TestCase {
     private List<TestCaseLabel> testCaseLabel;
 
     private static final Logger LOG = Logger.getLogger(TestCase.class);
+
+    public String getScreenSize() {
+        return screenSize;
+    }
+
+    public void setScreenSize(String screenSize) {
+        this.screenSize = screenSize;
+    }
 
     public String getSystem() {
         return system;
@@ -451,6 +460,7 @@ public class TestCase {
             result.put("activePROD", this.getActivePROD());
             result.put("function", this.getFunction());
             result.put("usrAgent", this.getUserAgent());
+            result.put("screenSize", this.getScreenSize());
             result.put("usrCreated", this.getUsrCreated());
             result.put("dateCreated", this.getDateCreated());
             result.put("usrModif", this.getUsrModif());

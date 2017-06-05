@@ -188,7 +188,7 @@ public class TestCaseService implements ITestCaseService {
     public List<String> findTestWithTestCaseActiveAutomatedBySystem(String system) {
         TestCase tCase = factoryTCase.create(null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<String> result = new ArrayList();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
@@ -208,7 +208,7 @@ public class TestCaseService implements ITestCaseService {
     public List<TestCase> findTestCaseActiveAutomatedBySystem(String test, String system) {
         TestCase tCase = factoryTCase.create(test, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, -1, null, null, null, null, null, "Y", null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         List<TestCase> result = new ArrayList();
         List<TestCase> testCases = findTestCaseByAllCriteria(tCase, null, system);
