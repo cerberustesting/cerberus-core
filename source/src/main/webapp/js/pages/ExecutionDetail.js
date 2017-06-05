@@ -347,6 +347,11 @@ function updateLoadBar(data) {
         }
     }
     var progress = ended / total * 100;
+
+    $("#progress-bar").removeClass(function (index, className) {
+        return (className.match(/(^|\s)progress-bar-\S+/g) || []).join(' ');
+    });
+
     if (data.controlStatus != "PE") {
         if (data.controlStatus === "OK") {
             $("#progress-bar").addClass("progress-bar-success");
@@ -875,10 +880,6 @@ Step.prototype.show = function () {
         // $("#stepContent").addClass("col-lg-9");
     } else if (object.returnCode === "NE") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-question-sign pull-left text-black").attr("style", "font-size:3em")));
-        var buttonOK = $("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK");
-        var buttonFA = $("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA");
-        var buttonKO = $("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO");
-        stepDesc.append($("<div>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA).append(buttonKO));
     } else {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-alert pull-left text-warning").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
@@ -1143,9 +1144,9 @@ Action.prototype.generateHeader = function () {
         elapsedTime.append("...");
     }
 
-/**
- * If returnCode is NE, display button, else display elapsed time
- */
+    /**
+     * If returnCode is NE, display button, else display elapsed time
+     */
     if (this.returnCode === "NE") {
         var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK")).click(function (event) {
             event.preventDefault();
@@ -1173,21 +1174,120 @@ Action.prototype.generateHeader = function () {
 };
 
 function triggerActionExecution(element, status) {
+    var currentElement = $($(element).closest(".action")[0]);
     if (status === "OK") {
-        $($(element).closest(".action")[0]).removeClass(function (index, className) {
+        currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $($($(element).closest(".action")[0]).find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
+        //Modify Status of current action 
+        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
+        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
+        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     } else {
-        $($(element).closest(".action")[0]).removeClass(function (index, className) {
+        currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-warning");
-        $($($(element).closest(".action")[0]).find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-alert");
+        //Modify Status of current action 
+        $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
+        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
+        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     }
+
+
+    //Modify style of all previous action and control of the current step that have not been modified yet
+    var prevElementCurrentStep = $($($(element).closest(".action")[0]).prevAll(".list-group-item-black"));
+    prevElementCurrentStep.removeClass(function (index, className) {
+        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+    }).addClass("row list-group-item list-group-item-success");
+    //Modify glyphicon of all previous action and control of the current step that have not been modified yet
+    $($($($(element).closest(".action")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    }).addClass("glyphicon-ok");
+    //Modify Status of all previous action and control of the current step that have not been modified yet
+    $(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+
+    //Modify style of all previous action and control of the previous steps that have not been modified yet
+    var prevElementPreviousStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
+    prevElementPreviousStep.removeClass(function (index, className) {
+        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+    }).addClass("row list-group-item list-group-item-success");
+    //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
+    $($($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    }).addClass("glyphicon-ok");
+    //Modify Status of all previous action and control of the previous step that have not been modified yet
+    $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+
+    //Check Step Status
+    updateStepStatus(currentElement);
+}
+
+function updateStepStatus(currentElement) {
+    currentElement.parent().parent().children().each(function (index, element) {
+        var status = $(element).find("input[id='returncode']").map(function (i, v) {
+            return $(this).val();
+        }).toArray();
+        var className = "list-group-item-success";
+        var glyphiconName = "glyphicon-ok";
+        var stepStatus = "OK";
+
+        if (status.indexOf("NE") > -1) {
+            className = "list-group-item-black";
+            glyphiconName = "glyphicon-question-sign";
+            stepStatus = "NE";
+        }
+        if (status.indexOf("FA") > -1) {
+            className = "list-group-item-warning"
+            glyphiconName = "glyphicon-alert";
+            stepStatus = "FA";
+        }
+        if (status.indexOf("KO") > -1) {
+            className = "list-group-item-danger";
+            glyphiconName = "glyphicon-remove";
+            stepStatus = "KO";
+        }
+
+
+        $($("#steps").find("a")[index]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+        }).addClass(className);
+        $($("#steps").find("a")[index]).find("span").removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass(glyphiconName);
+        $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+        }).addClass(glyphiconName);
+
+        //Update Step Status
+        $($("#stepList a")[index]).data("item").returnCode = stepStatus;
+    });
+    updateExecutionStatus();
+}
+
+function updateExecutionStatus() {
+    var globalStatus = "OK";
+    $("#stepList a").each(function (index, element) {
+        var stepStatus = $($("#stepList a")[index]).data("item").returnCode;
+        if (globalStatus === "OK" && stepStatus === "NE") {
+            globalStatus = "NE";
+        }
+        if (stepStatus === "FA") {
+            globalStatus = "FA";
+        }
+        if (stepStatus === "KO") {
+            globalStatus = "KO";
+        }
+    });
+    var data = {controlStatus: globalStatus};
+    updateLoadBar(data);
 }
 
 Action.prototype.generateContent = function () {
@@ -1495,22 +1595,63 @@ Control.prototype.generateHeader = function () {
 };
 
 function triggerControlExecution(element, status) {
+    var currentElement = $($(element).closest(".control")[0]);
     if (status === "OK") {
-        $($(element).closest(".control")[0]).removeClass(function (index, className) {
+        currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-success");
-        $($($(element).closest(".control")[0]).find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
+        //Modify Status of current action 
+        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
+        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
+        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     } else {
-        $($(element).closest(".control")[0]).removeClass(function (index, className) {
+        currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass("row list-group-item list-group-item-danger");
-        $($($(element).closest(".control")[0]).find("span")[0]).removeClass(function (index, className) {
+        $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-remove");
+        //Modify Status of current action 
+        $(currentElement).next("div").find("input[id='returncode']").val("KO").change();
+        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
+        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
     }
+
+
+//Modify style of all previous action and control of the current step that have not been modified yet
+    var prevElementCurrentStep = $($($(element).closest(".control")[0]).prevAll(".list-group-item-black"));
+    prevElementCurrentStep.removeClass(function (index, className) {
+        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+    }).addClass("row list-group-item list-group-item-success");
+    //Modify glyphicon of all previous action and control of the current step that have not been modified yet
+    $($($($(element).closest(".control")[0]).prevAll(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    }).addClass("glyphicon-ok");
+    //Modify Status of all previous action and control of the current step that have not been modified yet
+    $(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+
+
+    //Modify style of all previous action and control of the previous steps that have not been modified yet
+    var prevElementPreviousStep = $($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item-black"));
+    prevElementPreviousStep.removeClass(function (index, className) {
+        return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
+    }).addClass("row list-group-item list-group-item-success");
+    //Modify glyphicon of all previous action and control of the previous steps that have not been modified yet
+    $($($($(element).closest(".control")[0]).parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
+        return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+    }).addClass("glyphicon-ok");
+    //Modify Status of all previous action and control of the previous step that have not been modified yet
+    $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+
+    //Check Step Status
+    updateStepStatus(currentElement);
 }
+
 
 Control.prototype.generateContent = function () {
     var doc = new Doc();
