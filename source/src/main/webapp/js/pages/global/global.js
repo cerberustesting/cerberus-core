@@ -121,6 +121,62 @@ function displayInvariantList(selectName, idName, forceReload, defaultValue, add
 }
 
 /**
+ * Method that return a list of value retrieved from the invariant list
+ * @param {String} idName value that filters the invariants that will be retrieved (ex : "SYSTEM", "COUNTRY", ...)
+ * @param {String} forceReload true in order to force the reload of list from database.
+ * @param {String} addValue1 [optional] Adds a value on top of the normal List.
+ * @param {String} asyn [optional] Do a async ajax request. Default: true
+ * @returns {array}
+ */
+function getInvariantArray(idName, forceReload, addValue1, asyn) {
+    var result = [];
+    // Adding the specific value when defined.
+    if (addValue1 !== undefined) {
+        result.add(addValue1);
+    }
+
+    if (forceReload === undefined) {
+        forceReload = true;
+    }
+
+    var async = true;
+    if (asyn !== undefined) {
+        async = asyn;
+    }
+
+    var cacheEntryName = idName + "INVARIANT";
+    if (forceReload) {
+        sessionStorage.removeItem(cacheEntryName);
+    }
+    var list = JSON.parse(sessionStorage.getItem(cacheEntryName));
+
+    if (list === null) {
+        $.ajax({
+            url: "FindInvariantByID",
+            data: {idName: idName},
+            async: async,
+            success: function (data) {
+                list = data;
+                sessionStorage.setItem(cacheEntryName, JSON.stringify(data));
+                for (var index = 0; index < list.length; index++) {
+                    var item = list[index].value;
+                    result.push(item);
+                }
+            }
+        });
+    } else {
+        for (var index = 0; index < list.length; index++) {
+            var item = list[index].value;
+            var desc = list[index].value + " - " + list[index].description;
+
+                    result.push(item);
+        }
+    }
+
+    return result;
+}
+
+/**
  * Method that display a combo box in all the selectName tags with the value retrieved from the invariant list
  * and the description of the invariant
  * @param {String} selectName value name of the select tag in the html

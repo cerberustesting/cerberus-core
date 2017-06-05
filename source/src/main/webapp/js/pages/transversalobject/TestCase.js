@@ -270,6 +270,7 @@ function confirmTestCaseModalHandler(mode) {
             toRev: data.toRev,
             toSprint: data.toSprint,
             userAgent: data.userAgent,
+            screenSize: data.screenSize,
             labelList: JSON.stringify(table_label),
             countryList: JSON.stringify(table_country)},
         success: function (data) {
@@ -372,6 +373,20 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
         });
 
         feedTestCaseData(testCase, modalId, mode, data["hasPermissionsUpdate"]);
+
+        var availableUserAgent = getInvariantArray("USERAGENT", false);
+        formEdit.find("#userAgent").autocomplete({
+            source: availableUserAgent
+        });
+        var availableScreenSize = getInvariantArray("SCREENSIZE",false);
+        formEdit.find("#screenSize").autocomplete({
+            source: availableScreenSize
+        });
+        var availableFunctions = getInvariantArray("FUNCTION",false);
+        formEdit.find("#function").autocomplete({
+            source: availableFunctions
+        });
+
         formEdit.modal('show');
     });
 
@@ -424,6 +439,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#actQA").prop("value", "Y");
         formEdit.find("#actUAT").prop("value", "Y");
         formEdit.find("#userAgent").prop("value", "");
+        formEdit.find("#screenSize").prop("value", "");
         formEdit.find("#shortDesc").prop("value", "");
         tinyMCE.get('behaviorOrValueExpected').setContent("");
         tinyMCE.get('howTo').setContent("");
@@ -450,6 +466,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#actQA").prop("value", testCase.activeQA);
         formEdit.find("#actUAT").prop("value", testCase.activeUAT);
         formEdit.find("#userAgent").prop("value", testCase.userAgent);
+        formEdit.find("#screenSize").prop("value", testCase.screenSize);
         formEdit.find("#shortDesc").prop("value", testCase.description);
         tinyMCE.get('behaviorOrValueExpected').setContent(testCase.behaviorOrValueExpected);
         tinyMCE.get('howTo').setContent(testCase.howTo);
@@ -485,6 +502,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#actUAT").prop("disabled", "disabled");
         formEdit.find("#actProd").prop("disabled", "disabled");
         formEdit.find("#userAgent").prop("disabled", "disabled");
+        formEdit.find("#screenSize").prop("disabled", "disabled");
         formEdit.find("#shortDesc").prop("readonly", "readonly");
         tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', false);
         tinyMCE.get('howTo').getBody().setAttribute('contenteditable', false);
@@ -522,6 +540,7 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#actUAT").removeProp("disabled");
         formEdit.find("#actProd").removeProp("disabled");
         formEdit.find("#userAgent").removeProp("disabled");
+        formEdit.find("#screenSize").removeProp("disabled");
         formEdit.find("#shortDesc").removeProp("readonly");
         tinyMCE.get('behaviorOrValueExpected').getBody().setAttribute('contenteditable', true);
         tinyMCE.get('howTo').getBody().setAttribute('contenteditable', true);

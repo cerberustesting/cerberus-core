@@ -8759,6 +8759,22 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE testcasecountryproperties SET `type` = 'text' where type='Unknown'; ");
         SQLInstruction.add(SQLS.toString());
 
+        // Added USERAGENT invariant.
+        //-- ------------------------ 1154
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` VALUES ");
+        SQLS.append("('USERAGENT', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 100, 'Chrome Generic Win10', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36', 100, 'Chrome Generic Win7', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (Linux; Android 6.0.1; SM-G920V Build/MMB29K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.98 Mobile Safari/537.36', 100, 'Samsung Galaxy S6', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (Linux; Android 6.0.1; Nexus 6P Build/MMB29P) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.83 Mobile Safari/537.36', 100, 'Nexus 6P', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (Linux; Android 5.0.2; SAMSUNG SM-T550 Build/LRX22G) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/3.3 Chrome/38.0.2125.102 Safari/537.36', 100, 'Samsung Galaxy Tab A', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)', 100, 'Google bot', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)', 100, 'Bing bot', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3', 100, 'iPhone', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('USERAGENT', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3', 100, 'iPad', '', '', '', '', '', '', '', '', '', '')");
+        SQLS.append(",('INVARIANTPUBLIC', 'USERAGENT', '600', '', '', '', '', '', '', '', '', '', '', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

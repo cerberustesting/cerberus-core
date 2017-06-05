@@ -296,6 +296,7 @@ public class UpdateTestCase2 extends HttpServlet {
         tc.setComment(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("comment"), tc.getComment(), charset));
         tc.setFunction(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("function"), tc.getFunction(), charset));
         tc.setUserAgent(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("userAgent"), tc.getUserAgent(), charset));
+        tc.setScreenSize(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("screenSize"), tc.getScreenSize(), charset));
         tc.setConditionVal1(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionVal1"), tc.getConditionVal1(), charset));
         tc.setConditionVal2(ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter("conditionVal2"), tc.getConditionVal2(), charset));
 
