@@ -420,9 +420,10 @@ public class UpdateTestCaseWithDependencies extends HttpServlet {
         String comment = request.getParameter("editComment");
         String function = request.getParameter("editFunction");
         String userAgent = request.getParameter("editUserAgent");
+        String screenSize = request.getParameter("editScreenSize");
         return testCaseFactory.create(test, testCase, origin, refOrigin, creator, implementer, lastModifier, project, ticket, function, application,
                 runQA, runUAT, runPROD, priority, group, status, shortDescription, description, howTo, active, conditionOper, conditionVal1, conditionVal2, fromSprint, fromRevision, toSprint,
-                toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, null, null, null, null);
+                toRevision, null, bugID, targetSprint, targetRevision, comment, userAgent, screenSize, null, null, null, null);
     }
 
     private List<TestCaseCountry> getTestCaseCountryFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) {

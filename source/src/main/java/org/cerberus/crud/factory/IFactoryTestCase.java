@@ -69,6 +69,7 @@ public interface IFactoryTestCase {
      * @param targetRev
      * @param comment
      * @param userAgent
+     * @param screenSize
      * @param testCaseCountry
      * @param testCaseCountryProperties
      * @param testCaseStep
@@ -80,7 +81,7 @@ public interface IFactoryTestCase {
                  String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
                  String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
                  String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
-                 String targetBuild, String targetRev, String comment, String userAgent, List<TestCaseCountry> testCaseCountry,
+                 String targetBuild, String targetRev, String comment, String userAgent, String screenSize, List<TestCaseCountry> testCaseCountry,
                  List<TestCaseCountryProperties> testCaseCountryProperties, List<TestCaseStep> testCaseStep,
                  List<TestCaseStepBatch> testCaseStepBatch);
     
@@ -121,6 +122,7 @@ public interface IFactoryTestCase {
      * @param comment
      * @param dateCreated
      * @param userAgent
+     * @param screenSize
      * @param dateModif
      * @return
      */
@@ -129,7 +131,7 @@ public interface IFactoryTestCase {
                  String activeQA, String activeUAT, String activePROD, int priority, String group, String status,
                  String description, String behavior, String howTo, String tcActive, String conditionOper, String conditionVal1, String conditionVal2, String fromBuild,
                  String fromRev, String toBuild, String toRev, String lastExecutionStatus, String bugID,
-                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, Timestamp dateModif);
+                 String targetBuild, String targetRev, String comment,  String dateCreated, String userAgent, String screenSize, Timestamp dateModif);
 
     /**
      *
