@@ -127,9 +127,10 @@ function duplicateTestCaseClick(test, testCase) {
 
 /***
  * Open the modal in order to create a new testcase.
+ * @param {String} defaultTest - optionaly define the test context to pick for creating the new testcase.
  * @returns {null}
  */
-function addTestCaseClick() {
+function addTestCaseClick(defaultTest) {
     $("#addTestCaseButton").off("click");
     $("#addTestCaseButton").click(function () {
         confirmTestCaseModalHandler("ADD");
@@ -147,7 +148,7 @@ function addTestCaseClick() {
         feedTestCaseField(null, "editTestCaseModalForm");
     });
 
-    feedNewTestCaseModal("editTestCaseModal");
+    feedNewTestCaseModal("editTestCaseModal", defaultTest);
 }
 
 /***
@@ -296,17 +297,18 @@ function confirmTestCaseModalHandler(mode) {
 
 /***
  * Feed the TestCase modal with all the data from the TestCase.
- * @param {String} modalId - type selected
+ * @param {String} modalId - Id of the modal to feed.
+ * @param {String} defaultTest - default test to selected.
  * @returns {null}
  */
-function feedNewTestCaseModal(modalId) {
+function feedNewTestCaseModal(modalId, defaultTest) {
     clearResponseMessageMainPage();
 
     var formEdit = $('#' + modalId);
 
     appendBuildRevListOnTestCase(getUser().defaultSystem, undefined);
 
-    feedTestCaseData(undefined, modalId, "ADD", true);
+    feedTestCaseData(undefined, modalId, "ADD", true, defaultTest);
     // Labels
     loadLabel(undefined, undefined, "#selectLabel");
     //Application Combo
@@ -378,11 +380,11 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
         formEdit.find("#userAgent").autocomplete({
             source: availableUserAgent
         });
-        var availableScreenSize = getInvariantArray("SCREENSIZE",false);
+        var availableScreenSize = getInvariantArray("SCREENSIZE", false);
         formEdit.find("#screenSize").autocomplete({
             source: availableScreenSize
         });
-        var availableFunctions = getInvariantArray("FUNCTION",false);
+        var availableFunctions = getInvariantArray("FUNCTION", false);
         formEdit.find("#function").autocomplete({
             source: availableFunctions
         });
@@ -393,7 +395,7 @@ function feedTestCaseModal(test, testCase, modalId, mode) {
 }
 
 
-function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
+function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, defaultTest) {
     var formEdit = $('#' + modalId);
     var doc = new Doc();
 
@@ -417,8 +419,8 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate) {
         formEdit.find("#status option:nth(0)").attr("selected", "selected"); // We select the 1st entry of the status combobox.
         if (mode === "ADD") {
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_create"));
-            appendTestList(undefined);
-            feedTestCaseField(undefined, "editTestCaseModalForm");  // Calculate corresponding testcase value.
+            appendTestList(defaultTest);
+            feedTestCaseField(defaultTest, "editTestCaseModalForm");  // Calculate corresponding testcase value.
         } else { // DUPLICATE
             $("[name='editTestCaseField']").html(doc.getDocOnline("page_testcaselist", "btn_duplicate"));
             appendTestList(testCase.test);
