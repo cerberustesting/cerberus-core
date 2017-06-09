@@ -1137,7 +1137,7 @@ function loadLibraryStep(search) {
                         listGrp.append($("<a></a>").addClass("list-group-item sub-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "'][data-testCase='" + step.testCase + "']")
                                 .text(step.testCase + " - " + step.tcdesc).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
 
-                        var listCaseGr = $("<div></div>").addClass("list-group collapse").attr("data-test", step.test).attr("data-testCase", step.testCase);
+                        var listCaseGr = $("<div></div>").addClass("list-group collapse in").attr("data-test", step.test).attr("data-testCase", step.testCase);
                         listGrp.append(listCaseGr);
 
                         test[step.test].testCase[step.testCase] = {content: listCaseGr, step: {}};
