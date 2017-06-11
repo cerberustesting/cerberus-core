@@ -48,6 +48,13 @@ public final class ServletUtil {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Servlet " + request.getServletPath() + " - Waiting : " + DEFAULT_WAIT_MS);
             try {
+                switch (request.getServletPath()) {
+                    case "/ReadCampaign":
+                        Thread.sleep(2000);
+                        break;
+                    default:
+                }
+
                 Thread.sleep(DEFAULT_WAIT_MS);
             } catch (InterruptedException ex) {
                 LOG.error(ex);

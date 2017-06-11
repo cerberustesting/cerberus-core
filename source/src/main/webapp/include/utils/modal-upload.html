@@ -1,12 +1,12 @@
 <div data-backdrop="static" class="modal fade" id="modalUpload" tabindex="-1" role="dialog" aria-labelledby="modalUploadLabel" aria-hidden="true">
-    <div class="modal-dialog nomargintop nomarginbottom">
+    <div class="modal-dialog nomargintop nomarginbottom modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="modalUploadLabel">Upload File</h4>
             </div>            
             <div class="modal-body" id="modalBody"> 
-                <div id="DialogMessagesAreaFileUpload" class="width500">
+                <div id="DialogMessagesAreaFileUpload">
                         <div class="alert" id="DialogMessagesAlertFileUpload"  style="display:none;">
                             <strong><span class="alert-description" id="DialogAlertDescriptionFileUpload"></span></strong>
                             <button type="button" class="close" data-hide="alert"  aria-hidden="true">
@@ -20,7 +20,7 @@
                             
                             <div class="fileUpload btn btn-primary">
                                 <span id="choseFileLabel">Choose File</span>
-                                <input type="file" id="fileInput" name="fileInput" accept="text/xml" class="upload width100" />                                             
+                                <input type="file" id="fileInput" name="fileInput" accept="text/xml" class="upload" />                                             
                             </div>
                             <label id="upload-file-info"></label>                            
                         </div>
