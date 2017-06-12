@@ -290,6 +290,7 @@ function buildBar(obj) {
     var buildBar;
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
     var len = statusOrder.length;
+    //Todo change
     var key = obj.environment + " " + obj.country + " " + obj.browser + " " + obj.application;
     var tooltip = generateBarTooltip(obj, statusOrder);
 
@@ -339,12 +340,11 @@ function loadReportList(data2, selectTag) {
         }
 
         var config = new TableConfigurationsClientSide("listTable", data2.tableContent, aoColumnsFunc(data2.tableColumns));
-            customConfig(config);
-            createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
-            $('#listTable_wrapper').not('.initialized').addClass('initialized');
-            hideLoader($("#listReport"));
+        customConfig(config);
 
-        //});
+        var table = createDataTableWithPermissions(config, undefined, "#tableArea", undefined, undefined, undefined, createShortDescRow);
+        $('#listTable_wrapper').not('.initialized').addClass('initialized');
+        hideLoader($("#listReport"));
     }
 }
 
