@@ -1056,6 +1056,7 @@ function TableConfigurationsClientSide(divId, data, aoColumnsFunction, defineLen
     this.divId = divId;
     this.aoColumnsFunction = aoColumnsFunction;
     this.aaData = data;
+    
     if (defineLenghtMenu) {
         this.lengthMenu = [10, 25, 50, 100];
         this.lengthChange = true;
@@ -1176,7 +1177,6 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
  * @return {Object} Return the dataTable object to use the api
  */
 function createDataTableWithPermissions(tableConfigurations, callbackFunction, objectWaitingLayer, filtrableColumns, checkPermissions, userCallbackFunction, createdRowCallback) {
-
     /**
      * Define datatable config with tableConfiguration object received 
      */
@@ -1218,8 +1218,10 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
         configs["createdRow"] = createdRowCallback;
     }
     if (tableConfigurations.serverSide) {
+
         configs["sAjaxSource"] = tableConfigurations.ajaxSource;
         configs["sAjaxDataProp"] = tableConfigurations.ajaxProp;
+        
         configs["fnStateSaveCallback"] = function (settings, data) {
             try {
                 localStorage.setItem(
@@ -1262,10 +1264,12 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
             };
         }
         configs["fnServerData"] = function (sSource, aoData, fnCallback, oSettings) {
+
             var objectWL = $(objectWaitingLayer);
             if (objectWaitingLayer !== undefined) {
                 showLoader(objectWL);
             }
+            
             oSettings.jqXHR = $.ajax({
                 "dataType": 'json',
                 "type": "POST",
@@ -1298,12 +1302,19 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
 
                 if (callbackFunction !== undefined)
                     callbackFunction(data);
-
             });
         };
+    
     } else {
+        
+        configs["fnStateSaveCallback"] = function (oSettings) {  
+            
+            afterDatatableFeedsForServerSide(tableConfigurations.aaData, tableConfigurations.divId, oSettings);
+            
+        };
         configs["data"] = tableConfigurations.aaData;
     }
+    
     var oTable = $("#" + tableConfigurations.divId).DataTable(configs);
 
     var doc = new Doc();
@@ -1349,11 +1360,30 @@ function createDataTableWithPermissions(tableConfigurations, callbackFunction, o
     }
     $("#" + tableConfigurations.divId + "_length").addClass("marginBottom10").addClass("width80").addClass("pull-left");
     $("#" + tableConfigurations.divId + "_filter").addClass("marginBottom10").addClass("width150").addClass("pull-left");
-
+    
     return oTable;
 }
+
 /**
- * Function called after data loaded in tables
+ * Function called after data loaded in tables from server side
+ * @returns {undefined}
+ */
+function afterDatatableFeedsForServerSide(tableConfigurations, tableConfigurations, oSettings) {
+    /**
+     * Display individual search on each columns
+     */
+     displayColumnSearchForClientSideTable(tableConfigurations, tableConfigurations, oSettings);
+        
+    
+    /**
+     * Add tooltip on fields where data need to be wrapped.
+     */
+    showTitleWhenTextOverflow();
+}
+
+
+/**
+ * Function called after data loaded in tables from server side
  * @returns {undefined}
  */
 function afterDatatableFeeds(divId, ajaxSource, oSettings) {
@@ -1361,7 +1391,7 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
      * Display individual search on each columns
      */
     displayColumnSearch(divId, ajaxSource, oSettings);
-
+    
     /**
      * Add tooltip on fields where data need to be wrapped.
      */
@@ -1370,6 +1400,7 @@ function afterDatatableFeeds(divId, ajaxSource, oSettings) {
     /**
      * If specific function defined in page, call 
      */
+    
     if (typeof afterTableLoad === "function") {
         afterTableLoad();
     }
@@ -1565,7 +1596,246 @@ function clearIndividualFilter(tableId, columnNumber, clearGlobalSearch) {
     var oTable = $('#' + tableId).dataTable();
     resetFilters(oTable, columnNumber, clearGlobalSearch);
 }
+/**
+ * Function that allow to clear filter individually
+ * @param {type} tableId >> ID of the datatable
+ * @param {type} columnNumber >> Number of the column
+ * @param {type} clearGlobalSearch >> boolean. true if global search should be cleared.
+ * @returns {undefined}
+ */
+function clearIndividualFilterForClientSide(tableId, columnNumber, clearGlobalSearch) {
+    columnSearchValuesForClientSide[columnNumber] =[];//reset the search value for the column
+    var oTable = $('#' + tableId).dataTable();
+    resetFilters(oTable, columnNumber, clearGlobalSearch);
+}
+/**
+ * Function that allow display of individual column when the table is created client side
+ * @param {type} tableId >> ID of the datatable
+ * @param {type} oSettings >> datatable settings
+ * @returns {undefined}
+ */
+var columnSearchValuesForClientSide =[];//global var that take the role of the ajax function
+function displayColumnSearchForClientSideTable( tableData, tableId, oSettings) {
+    
+    //Hide filtered alert message displayed when filtered column
+    $("#" + tableId + "_wrapper #filterAlertDiv").hide();
+    //Load the table
+    var table = $("#" + tableId).dataTable().api();
+    var columnVisibleIndex = 0;
+    var doc = new Doc();
 
+    //Start building the Alert Message for filtered column information
+    //TODO : Replace with data from doc table
+    var filteredInformation = new Array();
+    filteredInformation.push("<div class=\"col-sm-2 alert-warning\" style=\"margin-bottom:0px; padding:15px\">Showing information filtering : </div>");
+    if (table.search() !== "") {
+        filteredInformation.push("<div class=\"col-sm-2 alert alert-warning\" style=\"margin-bottom:0px\">");
+        filteredInformation.push("<span id='clearFilterButtonGlobal' onclick='clearIndividualFilterForClientSide(\"" + tableId + "\", null, true)'  data-toggle='tooltip' title='Clear global filter' class='glyphicon glyphicon-remove-sign pull-right'  style='cursor:pointer;'></span>");
+        filteredInformation.push("<div data-toggle='tooltip' data-html='true' title=" + table.search() + " style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
+        filteredInformation.push("<strong>all columns</strong> containing <br>[" + table.search() + "]</div></div>");
+        filteredInformation.push(" ");
+    }
+    
+    //Get the column name in the right order TODO check if it's correct
+    var orderedColumns = [];
+    $.each(oSettings.aoColumns, function (i, columns) {
+        if( columns.sName !== "" ){
+            orderedColumns.push(columns.sName.split(".")[1]);
+        }
+        else{
+            orderedColumns.push("labels");
+        }
+    });
+    // Delete and Build a new tr in the header to display the editable mark
+    //So first delete in case on page reload
+    $("#" + tableId + "_wrapper #filterHeader").remove();
+    $("#" + tableId + '_wrapper .dataTables_scrollBody').find("#filterHeader").remove();
+    //Set the table with relative position position for the editable box.
+    $("#" + tableId + "_wrapper").attr("style", "position: relative");
+    //Remove the relative position of the header
+    $("#" + tableId + '_wrapper [class="dataTables_scrollHead ui-state-default"]').attr("style", "overflow: hidden; border: 0px; width: 100%;");
+    //Then create a th tag for each columns
+    $("#" + tableId + '_wrapper .dataTables_scrollHeadInner table thead').append('<tr id="filterHeader"></tr>');
+    $("#" + tableId + '_wrapper .dataTables_scrollHeadInner table thead tr th').each(function () {
+        $("#" + tableId + "_wrapper #filterHeader").append("<th name='filterColumnHeader'></th>");
+    });
+    var columnVisibleIndex = 0;
+    $.each(orderedColumns, function (index, value) {
+        var colIndex = orderedColumns.indexOf(value)
+        //TODO get the true value
+        //var json_obj = JSON.stringify( table.ajax.params() );
+        
+        var columnSearchValues =columnSearchValuesForClientSide[colIndex];
+        //Get the column names (for title display)
+        var title = value;
+        
+        //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
+        var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
+        var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
+        var display = '<span class="glyphicon glyphicon-filter pull-right" style="cursor:pointer;opacity:0.2;font-size:125%" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
+        var valueFiltered = [];
+        if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
+            //Build the Alert Message for filtered column information
+            var filteredColumnInformation = new Array();
+            var filteredTooltip = '<div>';
+            $(columnSearchValues).each(function (i) {
+                valueFiltered[i] = $('<p>' + columnSearchValues[i] + '</p>').text();
+                filteredTooltip += "<br><span>" + $('<p>' + columnSearchValues[i] + '</p>').text() + "</span> ";
+                filteredColumnInformation.push(columnSearchValues[i]);
+                filteredColumnInformation.push(" | ");
+            });
+            
+            filteredColumnInformation.pop();
+            filteredTooltip += '</div>';
+            filteredInformation.push("<div class=\"col-sm-2 alert alert-warning\" style=\"margin-bottom:0px;\">");
+            filteredInformation.push("<span id='clearFilterButton" + colIndex + "' onclick='clearIndividualFilterForClientSide(\"" + tableId + "\", \"" + colIndex + "\", false)' data-toggle='tooltip' title='Clear filter " + title + "' class='pull-right glyphicon glyphicon-remove-sign'  style='cursor:pointer;'></span>");
+            filteredInformation.push("<div style=\"margin-bottom:0px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;\">");
+            filteredInformation.push("<strong>" + title + "</strong> IN <br>");
+            filteredInformation.push("<div data-toggle=\"tooltip\" data-html=\"true\" title=\"" + filteredTooltip + "\" id=\"alertFilteredValues" + colIndex + "\">[ ");
+            filteredInformation.push(filteredColumnInformation);
+            filteredInformation.push(" ]</div></div></div>");
+            filteredInformation.push(" ");
+            display = "<span class='glyphicon glyphicon-filter pull-right' style='cursor:pointer;opacity:0.5;font-size:125%' data-toggle='tooltip' data-html='true' title='" + valueFiltered.length + " " + selectedFilter + " : " + filteredTooltip + "'></span>";
+        }
+        
+        if (oSettings.aoColumns[index].bVisible) {
+            var data = [];
+            if(title !== "labels"){
+                table.column(index).data().unique().sort().each(function (d, j) {
+                    data.push(d);
+                });
+            }else{//For the navigation filter list
+                oSettings.aoColumns[index].bSearchable = false;
+            }
+            var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
+            
+            $(tableCell).removeClass().addClass("filterHeader");
+            if(oSettings.aoColumns[index].bSearchable){
+                //Then init the editable object
+                var select = $('<span class="label"></span>')
+                    .appendTo($(tableCell).attr('data-id', 'filter_' + columnVisibleIndex)
+                    .attr('data-order', index))
+                    .editable({
+                        type: 'checklist',
+                        title: title,
+                        source: function () {
+                            return data;
+                        },
+                        onblur: 'cancel',
+                        mode: 'popup',
+                        placement: 'bottom',
+                        emptytext: display,
+                        send: 'always',
+                        validate: function (value) {
+                            if (value === null || value === '' || value.length === 0) {
+                                //$("#" + tableId).dataTable().fnFilter('',index ); 
+                                $("#" + tableId).dataTable().fnFilter('', Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), index));
+                            }
+                        },
+                        display: function (value, sourceData) {
+                            var val;
+                            $(value).each(function (i) {
+                                val = "<span class='glyphicon glyphicon-filter pull-right'></span>";
+                            });
+                            $(this).html(val);
+                        },
+                        success: function (response, newValue) {
+                            columnSearchValuesForClientSide[index] = newValue;
+                            var filterForFnFilter ="";//create the filter list that will be used by fnFilter
+                            for (var i in newValue){
+                                filterForFnFilter += newValue[i]+"|";
+                            }
+                            filterForFnFilter = filterForFnFilter.slice(0, -1);
+                            $("#" + tableId).dataTable().fnFilter( filterForFnFilter ,index,true);
+
+                        }
+                    });               
+            }
+            columnVisibleIndex++;
+        }
+        
+    }); // end of loop on columns
+    
+    //Display the filtered alert message only if search is activated in at least 1 column
+    //filteredInformation.pop();
+    if (filteredInformation.length > 1) {
+        var filteredStringToDisplay = "";
+        for (var l = 0; l < filteredInformation.length; l++) {
+            filteredStringToDisplay += filteredInformation[l];
+        }
+        $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
+        $("#" + tableId + "_wrapper #clearFilterButton").click(function () {
+            columnSearchValuesForClientSide = [];//reset the search value when the user click on the clear all buton
+            resetFilters($("#" + tableId).dataTable(), undefined, true);
+        });
+        $("#" + tableId + "_wrapper #restoreFilterButton").click(function () {
+            location.reload();
+        });
+        $("#" + tableId + "_wrapper #filterAlertDiv").show();
+    }
+
+    
+    //call the displayColumnSearchForClientSideTable when table configuration is changed
+    $("#" + tableId + "_wrapper #showHideColumnsButton").click(function () {
+        $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
+             displayColumnSearchForClientSideTable( tableData, tableId, oSettings);
+        });
+    });
+    
+    //To put into a function
+    //When clicking on the edit filter links
+    $("#" + tableId + "_wrapper .editable").click(function () {
+
+        //Clear custom fields to avoid duplication
+        $("#" + tableId + "_wrapper [data-type='custom']").remove();
+
+        //Check the value already selected
+        //Check all if no specific value selected
+        if ($(this).find("span").size() < 2) {
+            $("#" + tableId + '_wrapper .editable-checklist').find("input").prop('checked', true);
+        } else {
+            $(this).find("span").each(function () {
+                $("#" + tableId + '_wrapper .editable-checklist').find("input[value='" + $(this).text() + "']").prop('checked', true);
+            });
+        }
+
+        //Add an input field to search specific checkbox (search ignore case)
+        $.extend($.expr[":"], {
+            "containsIN": function (elem, i, match, array) {
+                return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
+            }
+        });
+        $(this.parentNode).find("h3").after($('<div></div>').append($('<input>').attr('placeholder', 'Search...')
+                .attr('class', 'col-sm-8 form-control input-sm').attr('name', 'searchField')
+                .attr('data-type', 'custom').on('keyup', function () {
+            var allElement = $('#' + tableId + '_wrapper .editable-checklist > div')
+            var elementsTocheck = $('#' + tableId + '_wrapper .editable-checklist > div:containsIN(' + $(this).val() + ')')
+            //uncheck and hive all element
+            allElement.find("[type='checkbox']").prop('checked', false);
+            allElement.hide();
+            //check and show element that need to be check
+            elementsTocheck.find("[type='checkbox']").prop('checked', true);
+            elementsTocheck.show();
+        })));
+        //Add selectAll/unSelectAll button
+        $("#" + tableId + "_wrapper [name='searchField']").after(
+                $('<button>').attr('class', 'glyphicon glyphicon-check')
+                .attr('type', 'button')
+                .attr('title', 'select all').attr('name', 'selectAll')
+                .attr('data-type', 'custom').on('click', function () {
+            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', true);
+        }));
+        $("#" + tableId + "_wrapper [name='searchField']").after(
+                $('<button>').attr('class', 'glyphicon glyphicon-unchecked')
+                .attr('type', 'button')
+                .attr('title', 'unselect all').attr('name', 'unSelectAll')
+                .attr('data-type', 'custom').on('click', function () {
+            $(this).parent().parent().find("[type='checkbox']:visible").prop('checked', false);
+        }));
+
+
+    });
+}
 /**
  * Function that allow display of individual column searching on datatable
  * @param {type} tableId >> ID of the datatable
@@ -1574,11 +1844,12 @@ function clearIndividualFilter(tableId, columnNumber, clearGlobalSearch) {
  * @returns {undefined}
  */
 function displayColumnSearch(tableId, contentUrl, oSettings) {
+
     //Hide filtered alert message displayed when filtered column
     $("#" + tableId + "_wrapper #filterAlertDiv").hide();
     //Load the table
     var table = $("#" + tableId).dataTable().api();
-
+    
     var columnVisibleIndex = 0;//Used to Match visible column with columns available
     var doc = new Doc();
 
@@ -1593,20 +1864,18 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
         filteredInformation.push("<strong>all columns</strong> containing <br>[" + table.search() + "]</div></div>");
         filteredInformation.push(" ");
     }
-
     //Get the column name in the right order
     var orderedColumns = [];
     $.each(oSettings.aoColumns, function (i, columns) {
         orderedColumns.push(columns.sName);
     });
-
+    
     // Delete and Build a new tr in the header to display the editable mark
     //So first delete in case on page reload
     $("#" + tableId + "_wrapper #filterHeader").remove();
     $("#" + tableId + '_wrapper .dataTables_scrollBody').find("#filterHeader").remove();
-
     //Set the table with relative position position for the editable box.
-    $("#" + tableId + "_wrapper").attr("style", "position: relative");
+    $("#" + tableId + "_wrapper").attr("style", "position: relative");;
     //Remove the relative position of the header
     $("#" + tableId + '_wrapper [class="dataTables_scrollHead ui-state-default"]').attr("style", "overflow: hidden; border: 0px; width: 100%;");
     //Then create a th tag for each columns
@@ -1614,23 +1883,22 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
     $("#" + tableId + '_wrapper .dataTables_scrollHeadInner table thead tr th').each(function () {
         $("#" + tableId + "_wrapper #filterHeader").append("<th name='filterColumnHeader'></th>");
     });
-
-//Iterate on all columns
+    
+    //Iterate on all columns
     $.each(orderedColumns, function (index, value) {
         var colIndex = table.ajax.params().sColumns.split(',').indexOf(value);
-
         //Get the value from storage (To display specific string if already filtered)
-        var json_obj = JSON.stringify(table.ajax.params());
+        var json_obj = JSON.stringify(table.ajax.params() );
         var columnSearchValues = JSON.parse(json_obj)["sSearch_" + colIndex].split(',');
 
         //Get the column names (for title display)
-        var title = value;
-
+        var title = value;  
         //Build the specific tooltip for filtered columns and the tooltip for not filtered columns
         var emptyFilter = doc.getDocLabel("page_global", "tooltip_column_filter_empty");
         var selectedFilter = doc.getDocLabel("page_global", "tooltip_column_filter_filtered");
         var display = '<span class="glyphicon glyphicon-filter pull-right" style="cursor:pointer;opacity:0.2;font-size:125%" data-toggle="tooltip" data-html="true" title="' + emptyFilter + '"></span>';
         var valueFiltered = [];
+        
         if (columnSearchValues !== undefined && columnSearchValues.length > 0 && columnSearchValues[0] !== '') {
             //Build the Alert Message for filtered column information
             var filteredColumnInformation = new Array();
@@ -1664,10 +1932,10 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             table.column(colIndex).data().unique().sort().each(function (d, j) {
                 data.push(d);
             });
-
-
+            
             //Get the header cell to display the filter
             var tableCell = $($("#" + tableId + '_wrapper [name="filterColumnHeader"]')[columnVisibleIndex])[0];
+
             $(tableCell).removeClass().addClass("filterHeader");
             if (table.ajax.params()["bSearchable_" + colIndex]) {
                 //Then init the editable object
@@ -1722,7 +1990,6 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
                                 $(this).html(val);
                             },
                             success: function (response, newValue) {
-//                                console.log("index on the table : " + $("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()) + " Initial index : " + colIndex);
                                 $("#" + tableId).dataTable().fnFilter(newValue, Math.max($("#" + tableId + " [name='filterColumnHeader']").index($(this).parent()), colIndex));
                             }
                         });
@@ -1730,15 +1997,16 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
             columnVisibleIndex++;
         }
     }); // end of loop on columns
-
+    
     //Display the filtered alert message only if search is activated in at least 1 column
-    filteredInformation.pop();
-    if (filteredInformation.length > 1) {
+    //filteredInformation.pop();
+    
+    if (filteredInformation.length > 1) { 
+        
         var filteredStringToDisplay = "";
         for (var l = 0; l < filteredInformation.length; l++) {
             filteredStringToDisplay += filteredInformation[l];
         }
-
         $("#" + tableId + "_wrapper #activatedFilters").html(filteredStringToDisplay);
         $("#" + tableId + "_wrapper #clearFilterButton").click(function () {
             resetFilters($("#" + tableId).dataTable(), undefined, true);
@@ -1750,15 +2018,15 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
     }
 
     //call the displayColumnSearch when table configuration is changed
+    
     $("#" + tableId + "_wrapper #showHideColumnsButton").click(function () {
         $('ul[class="dt-button-collection dropdown-menu"] li').click(function () {
             displayColumnSearch(tableId, contentUrl, oSettings);
         });
     });
-
-
-//To put into a function
-//When clicking on the edit filter links
+    
+    //To put into a function
+    //When clicking on the edit filter links
     $("#" + tableId + "_wrapper .editable").click(function () {
 
         //Clear custom fields to avoid duplication
