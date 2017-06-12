@@ -44,7 +44,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             stopPropagation(event);
             $(this).parent().find(".active").removeClass("active");
             $(this).addClass("active");
-
             if ($(this).prop("id") === "tab") {
                 $("#progressEnvCountryBrowser").hide();
                 $("#summaryTableDiv").show();
@@ -227,7 +226,6 @@ function loadReportingData(selectTag) {
     var params = $("#splitFilter input");
     $("#startExe").val("");
     $("#endExe").val("");
-
     //Retrieve data for charts and draw them
     var jqxhr = $.get("ReadTestCaseExecutionByTag?Tag=" + selectTag + "&" + statusFilter.serialize() + "&" + countryFilter.serialize() + "&" + params.serialize(), null, "json");
     $.when(jqxhr).then(function (data) {
@@ -290,10 +288,21 @@ function buildBar(obj) {
     var buildBar;
     var statusOrder = ["OK", "KO", "FA", "NA", "NE", "PE", "CA"];
     var len = statusOrder.length;
-    //Todo change
-    var key = obj.environment + " " + obj.country + " " + obj.browser + " " + obj.application;
+    //Build the title to show at the top of the bar by checking the value of the checkbox
+    var params = $("#splitFilter input");
+    var key = "";
+    if ( params[0].checked )
+        key += obj.environment + " ";
+    if ( params[1].checked )
+        key += obj.country + " ";
+    if ( params[2].checked )
+        key += obj.browser + " ";
+    if ( params[3].checked )
+        key += obj.application;
+    if ( key === "")//if no spliter if selected
+        key = "Total";
+    
     var tooltip = generateBarTooltip(obj, statusOrder);
-
     buildBar = '<div>' + key + '<div class="pull-right" style="display: inline;">Total executions : ' + obj.total + '</div>\n\
                                                         </div><div class="progress" data-toggle="tooltip" data-html="true" title="' + tooltip + '">';
 
@@ -317,7 +326,6 @@ function loadEnvCountryBrowserReport(data) {
     //adds a loader to a table 
     showLoader($("#reportEnvCountryBrowser"));
     $("#progressEnvCountryBrowser").empty();
-
 
     var len = data.contentTable.split.length;
     createSummaryTable(data.contentTable);
@@ -616,32 +624,98 @@ function controlExportRadioButtons() {
  * @param {JSONObject} row containing the data of the row
  * @returns {jQuery} the jquery object row
  */
-function createRow(row) {
-    var $tr = $('<tr>').append(
-            $('<td>').text(row.environment),
-            $('<td>').text(row.country),
-            $('<td>').text(row.browser),
-            $('<td>').text(row.application),
-            $('<td>').text(row.OK).css("text-align", "right"),
-            $('<td>').text(row.KO).css("text-align", "right"),
-            $('<td>').text(row.FA).css("text-align", "right"),
-            $('<td>').text(row.NA).css("text-align", "right"),
-            $('<td>').text(row.NE).css("text-align", "right"),
-            $('<td>').text(row.PE).css("text-align", "right"),
-            $('<td>').text(row.CA).css("text-align", "right"),
-            $('<td>').text(row.notOKTotal).css("text-align", "right"),
-            $('<td>').text(row.total).css("text-align", "right"),
-            $('<td>').text(row.percOK + "%").css("text-align", "right"),
-            $('<td>').text(row.percKO + "%").css("text-align", "right"),
-            $('<td>').text(row.percFA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNE + "%").css("text-align", "right"),
-            $('<td>').text(row.percPE + "%").css("text-align", "right"),
-            $('<td>').text(row.percCA + "%").css("text-align", "right"),
-            $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right"));
+function createRow(row,isTotalRow) {
+
+    var $tr = $('<tr>');
+    var params = $("#splitFilter input");
+    
+    if (!isTotalRow){
+        if ( params[0].checked ){
+            if (row.environment === "Total")//TODO: make this change in the back-end
+                row.environment = "";//The part where Total is written is handle in a more generic way
+            $tr.append($('<td>').text( row.environment ).css("text-align", "center"), );
+        }
+        if ( params[1].checked )
+           $tr.append($('<td>').text( row.country ).css("text-align", "center"), );
+        if ( params[2].checked )
+            $tr.append($('<td>').text( row.browser ).css("text-align", "center"), );
+        if ( params[3].checked )
+            $tr.append($('<td>').text( row.application ).css("text-align", "center"), );
+    }
+    else{
+        var blankSpaceToAdd =0;
+        for (var i in params){
+            if ( params[i].checked )
+                blankSpaceToAdd ++;
+        }
+        if ( blankSpaceToAdd !== 0){
+            $tr.append($('<td>').text( "Total" ).css("text-align", "center"), );
+            blankSpaceToAdd --;//remove a blank space for the total
+            for (var i =0; i < blankSpaceToAdd; i++){
+                $tr.append($('<td>').text( "" ).css("text-align", "center"), );
+            }
+        }
+    }
+    $tr.append(
+        $('<td>').text(row.OK).css("text-align", "right"),
+        $('<td>').text(row.KO).css("text-align", "right"),
+        $('<td>').text(row.FA).css("text-align", "right"),
+        $('<td>').text(row.NA).css("text-align", "right"),
+        $('<td>').text(row.NE).css("text-align", "right"),
+        $('<td>').text(row.PE).css("text-align", "right"),
+        $('<td>').text(row.CA).css("text-align", "right"),
+        $('<td>').text(row.notOKTotal).css("text-align", "right"),
+        $('<td>').text(row.total).css("text-align", "right"),
+        $('<td>').text(row.percOK + "%").css("text-align", "right"),
+        $('<td>').text(row.percKO + "%").css("text-align", "right"),
+        $('<td>').text(row.percFA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNE + "%").css("text-align", "right"),
+        $('<td>').text(row.percPE + "%").css("text-align", "right"),
+        $('<td>').text(row.percCA + "%").css("text-align", "right"),
+        $('<td>').text(row.percNotOKTotal + "%").css("text-align", "right")
+    );
     return $tr;
 }
 
+/**
+ * Create a row for the summaryTableHeader
+ * @returns {jQuery} the jquery object row
+ */
+function createHeaderRow() {
+    var $tr = $('<tr>');
+    
+    var params = $("#splitFilter input");
+    if ( params[0].checked )
+        $tr.append($('<td>').text( "Environment" ).css("text-align", "center"), );
+    if ( params[1].checked )
+       $tr.append($('<td>').text( "Country" ).css("text-align", "center"), );
+    if ( params[2].checked )
+        $tr.append($('<td>').text( "Browser" ).css("text-align", "center"), );
+    if ( params[3].checked )
+        $tr.append($('<td>').text( "Application" ).css("text-align", "center"), );
+    
+    $tr.append(
+        $('<td>').text( "OK" ).css("text-align", "center"),
+        $('<td>').text( "KO" ).css("text-align", "center"),
+        $('<td>').text( "FA" ).css("text-align", "center"),
+        $('<td>').text( "NA" ).css("text-align", "center"),
+        $('<td>').text( "NE" ).css("text-align", "center"),
+        $('<td>').text( "PE" ).css("text-align", "center"),
+        $('<td>').text( "CA" ).css("text-align", "center"),
+        $('<td>').text( "NOT OK" ).css("text-align", "center"),
+        $('<td>').text( "TOTAL" ).css("text-align", "center"),
+        $('<td>').text( "% OK" ).css("text-align", "center"),
+        $('<td>').text( "% KO" ).css("text-align", "center"),
+        $('<td>').text( "% FA" ).css("text-align", "center"),
+        $('<td>').text( "% NA" ).css("text-align", "center"),
+        $('<td>').text( "% NE" ).css("text-align", "center"),
+        $('<td>').text( "% PE" ).css("text-align", "center"),
+        $('<td>').text( "% CA" ).css("text-align", "center"),/*.class("width80")*/
+        $('<td>').text( "% NOT OK" ).css("text-align", "center")   
+    );
+    return $tr;
+}
 /**
  * Creates a summary table from data retrieved from server.
  * @param {type} data
@@ -649,22 +723,21 @@ function createRow(row) {
  */
 function createSummaryTable(data) {
     //cleans the data that was already added
+    $("#summaryTableHeader tr").remove();
     $("#summaryTableBody tr").remove();
+    $("#summaryTableHeader").append( createHeaderRow(data.total) );
     //TODO:FN verifies if table is empty?
     $.when($.each(data.split, function (idx, obj) {
-        //creates a new row
+        //creates a new row 
         //numbers are aligned to right
-        var $tr = createRow(obj);
+        var $tr = createRow(obj,false);
         if (obj.percOK === 100) {
             $($tr).addClass("summary100");
         }
         $("#summaryTableBody").append($tr);
-
-
     })).then(function () {
-        var $total = createRow(data.total);
+        var $total = createRow(data.total,true);
         $total.addClass("summaryTotal");
-
         $("#summaryTableBody").append($total);
         //alternate colors
         $("#summaryTableBody tr:odd").css("background-color", "rgba(225,231,243,0.2)");
