@@ -1035,7 +1035,6 @@ function loadTestCaseEssentialData(test, testcase, environment, country){
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
     $(".collapse").each(function () {
-        console.log($(this)[0].id);   
         $(this).on('shown.bs.collapse', function () {
             localStorage.setItem(this.id, true);
             if ( $(this)[0].id != "filtersPanel")
