@@ -824,6 +824,11 @@
         <servlet-class>org.cerberus.servlet.zzpublic.ExecuteNextInQueue</servlet-class>
     </servlet>
     <servlet>
+        <description>Get information about a campaign.</description>
+        <servlet-name>GetCampaignInformation</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignInformation</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionParameters</servlet-class>
     </servlet>
@@ -1744,6 +1749,10 @@
         <url-pattern>/ExecuteNextInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>GetCampaignInformation</servlet-name>
+        <url-pattern>/GetCampaignInformation</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>GeneratePerformanceString</servlet-name>
         <url-pattern>/GeneratePerformanceString</url-pattern>
     </servlet-mapping>
@@ -2412,6 +2421,7 @@
             <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
+            <url-pattern>/GetCampaignInformation</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
