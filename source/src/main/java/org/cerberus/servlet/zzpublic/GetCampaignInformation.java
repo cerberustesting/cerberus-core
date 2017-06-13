@@ -144,7 +144,20 @@ public class GetCampaignInformation extends GetableHttpServlet<GetCampaignInform
 
     @Override
     protected String getUsageDescription() {
-        return "<p>Get information about a campaign.</p> <p>Usage: GET /&lt;host&gt;?id=&lt;campaignIdentifier&gt;[failIfMissing=true]</p> <p><span style=\"text-decoration: underline;\">Request parameters</span></p> <ul> <li><strong>id</strong>, <em>mandatory</em>: the campaign identifier</li> <li><strong>failIfMissing</strong>, <em>optional</em>: if campaign is containing test cases which cannot be found</li> </ul> <p><span style=\"text-decoration: underline;\">Expected response (in case of success)</span></p> <pre>{<br /> testCases: [List of campaign's test cases]<br />}<br /><br /></pre>";
+        return "Get information about a campaign.\n" +
+                "\n" +
+                "Usage: GET /<host>?id=<campaignIdentifier>[failIfMissing=true]\n" +
+                "\n" +
+                "Request parameters\n" +
+                "\n" +
+                "- id, mandatory: the campaign identifier\n" +
+                "- failIfMissing, optional: if campaign is containing test cases which cannot be found\n" +
+                "\n" +
+                "Expected response (in case of success)\n" +
+                "\n" +
+                "{\n" +
+                "  testCases: [List of campaign's test cases]\n" +
+                "}\n";
     }
 
     private Campaign retrieveCampaign(final Integer campaignId) throws RequestProcessException {
