@@ -45,14 +45,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Get information about a campaign.
+ * Get {@link Campaign}'s {@link TestCase}s
  * <p>
- * Campaign can be fetched by its id, as explained from {@link Request}
- * Information is
+ * Campaign can be fetched by its id, as defined in {@link Request}
+ * <p>
+ * Result is a list of {@link TestCase}s wrapped into a {@link Response}
  *
  * @author Aurelien Bourdon
  */
-public class GetCampaignInformation extends GetableHttpServlet<GetCampaignInformation.Request, GetCampaignInformation.Response> {
+public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCases.Request, GetCampaignTestCases.Response> {
 
     /**
      * The servlet parameters.
@@ -119,7 +120,7 @@ public class GetCampaignInformation extends GetableHttpServlet<GetCampaignInform
     /**
      * The associated {@link Logger} to this class
      */
-    private static final Logger LOGGER = Logger.getLogger(GetCampaignInformation.class);
+    private static final Logger LOGGER = Logger.getLogger(GetCampaignTestCases.class);
 
     /**
      * The associated {@link ApplicationContext}
@@ -163,16 +164,16 @@ public class GetCampaignInformation extends GetableHttpServlet<GetCampaignInform
 
     @Override
     protected String getUsageDescription() {
-        return "Get information about a campaign.\n" +
+        return "Get the list of test cases associated to a campaign.\n" +
                 "\n" +
-                "Usage: GET /<host>?id=<campaignIdentifier>[failIfMissing=true]\n" +
+                String.format("Usage: GET <Cerberus URL>/%s?id=<Campaign identifier>[&failIfMissing=true]\n", GetCampaignTestCases.class.getSimpleName()) +
                 "\n" +
-                "Request parameters\n" +
+                "Request parameters:\n" +
                 "\n" +
                 "- id, mandatory: the campaign identifier\n" +
                 "- failIfMissing, optional: if campaign is containing test cases which cannot be found\n" +
                 "\n" +
-                "Expected response (in case of success)\n" +
+                "Expected response (in case of success):\n" +
                 "\n" +
                 "{\n" +
                 "  testCases: [List of campaign's test cases]\n" +
