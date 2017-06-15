@@ -19,7 +19,7 @@
  */
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
-        initPage();
+       initPage();
 
         $("#editEntryButton").click(editEntryModalSaveHandler);
         $("#addEntryButton").click(addEntryModalSaveHandler);
@@ -28,7 +28,6 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, modalFormCleaner);
 
         var config = new TableConfigurationsServerSide("testTable", "ReadTest", "contentTable", aoColumnsFunc(), [1, 'asc']);
-
         var table = createDataTableWithPermissions(config, renderOptionsForTest, "#testList", undefined, true);
 
     });

@@ -143,31 +143,7 @@
                             <div id="summaryTableDiv" style="display: none;">
 
                                 <table id="summaryTable" name="summaryTable" class="table table-hover display">
-                                    <thead id="summaryTableHeader">
-                                        <tr>
-                                            <td id="summaryTableHeaderEnvironment" class="width80">Environment</td>
-                                            <td id="summaryTableHeaderCountry" style="text-align: center">Country</td>
-                                            <td id="summaryTableHeaderEnvironment" class="width80">Browser</td>
-                                            <td id="summaryTableHeaderApplication" style="text-align: center" class="width130 center-text">Application</td>
-                                            <td style="text-align: center">OK</td>
-                                            <td style="text-align: center">KO</td>
-                                            <td style="text-align: center">FA</td>
-                                            <td style="text-align: center">NA</td>
-                                            <td style="text-align: center">NE</td>
-                                            <td style="text-align: center">PE</td>
-                                            <td style="text-align: center">CA</td>
-                                            <td style="text-align: center">NOT OK</td>
-                                            <td style="text-align: center">TOTAL</td>
-                                            <td style="text-align: center">% OK</td>
-                                            <td style="text-align: center">% KO</td>
-                                            <td style="text-align: center">% FA</td>
-                                            <td style="text-align: center">% NA</td>
-                                            <td style="text-align: center">% NE</td>
-                                            <td style="text-align: center">% PE</td>
-                                            <td style="text-align: center">% CA</td>
-                                            <td class="width80" style="text-align: center">% NOT OK</td>
-                                        </tr>                                    
-                                    </thead>
+                                    <thead id="summaryTableHeader"></thead>
                                     <tbody id="summaryTableBody"></tbody>
                                 </table>
                             </div>

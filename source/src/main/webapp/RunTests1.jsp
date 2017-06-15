@@ -74,7 +74,7 @@
                     </div>
                     <div class="panel-body" id="chooseTest">
                         <div class="panel panel-default" id="filtersPanelContainer">
-                            <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel">
+                            <div class="panel-heading card" data-toggle="collapse" data-target="#filtersPanel" id="FilterPanelHeader">
                                 <span class="toggle glyphicon glyphicon-chevron-right pull-right"></span>
                                 <span id="FilterHeader">Extended Test Case Filters</span>
                             </div>
