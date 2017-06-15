@@ -45,10 +45,6 @@
         <servlet-class>org.cerberus.servlet.zzpublic.RunTestCase</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RunTestCaseManually</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.RunTestCaseManually</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>SaveStatistic</servlet-name>
         <servlet-class>org.cerberus.servlet.engine.SaveStatistic</servlet-class>
     </servlet>
@@ -987,10 +983,6 @@
     <servlet-mapping>
         <servlet-name>RunTestCase</servlet-name>
         <url-pattern>/RunTestCase</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>RunTestCaseManually</servlet-name>
-        <url-pattern>/RunTestCaseManually</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DocumentationField</servlet-name>
