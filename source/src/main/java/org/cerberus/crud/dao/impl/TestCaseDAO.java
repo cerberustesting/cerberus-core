@@ -1707,7 +1707,7 @@ public class TestCaseDAO implements ITestCaseDAO {
                 .append("`BugID`, `TargetBuild`, `TargetRev`, `UsrCreated`, ")
                 .append("`Implementer`, `function`, `activeQA`, `activeUAT`, `activePROD`, `useragent`, `screenSize`, `conditionOper`, `conditionVal1`, `conditionVal2`) ")
                 .append("VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ")
-                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
+                .append("?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ); ");
 
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
