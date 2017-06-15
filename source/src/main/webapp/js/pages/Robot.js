@@ -26,12 +26,19 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 function initPage() {
     var doc = new Doc();
     displayPageLabel();
-    $("[name=screensize]").append($('<option></option>').text(doc.getDocLabel("page_runtest","default_full_screen")).val(""));
-    displayInvariantList("screensize", "SCREENSIZE", false);
-    
+    $("[name=screensize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val(""));
+    var availableUserAgent = getInvariantArray("USERAGENT", false);
+    $("[name='useragent']").autocomplete({
+        source: availableUserAgent
+    });
+    var availableScreenSize = getInvariantArray("SCREENSIZE", false);
+    $("[name='screensize']").autocomplete({
+        source: availableScreenSize
+    });
+
     // Load the select needed in localStorage cache.
     getSelectInvariant("CAPABILITY", true);
-    
+
     // handle the click for specific action buttons
     $("#addEntryButton").click(addEntryModalSaveHandler);
     $("#editEntryButton").click(editEntryModalSaveHandler);
@@ -39,7 +46,7 @@ function initPage() {
     //clear the modals fields when closed
     $('#addEntryModal').on('hidden.bs.modal', {extra: "#addEntryModal"}, buttonCloseHandler);
     $('#editEntryModal').on('hidden.bs.modal', {extra: "#editEntryModal"}, buttonCloseHandler);
-    
+
     // Adding rows in modals.
     $("#addAddCapabilitiy").click(addNewCapabilityRow.bind(null, "addCapabilitiesTableBody"));
     $("#addEditCapabilitiy").click(addNewCapabilityRow.bind(null, "editCapabilitiesTableBody"));
@@ -77,7 +84,7 @@ function displayPageLabel() {
     displayInvariantList("active", "ROBOTACTIVE", false);
     displayInvariantList("browser", "BROWSER", false, undefined, "");
     displayInvariantList("platform", "PLATFORM", false, undefined, "");
-    
+
     displayFooter(doc);
 }
 
@@ -154,7 +161,7 @@ function addEntryModalSaveHandler() {
             capabilities.push(capability);
         }
     }
-    
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formAdd.serialize());
     data.capabilities = JSON.stringify(capabilities);
@@ -183,7 +190,7 @@ function editEntryModalSaveHandler() {
             capabilities.push(capability);
         }
     }
-    
+
     // Get the header data from the form.
     var data = convertSerialToJSONObject(formEdit.serialize());
     data.capabilities = JSON.stringify(capabilities);
@@ -211,7 +218,7 @@ function editEntryClick(id) {
         formEdit.find("#useragent").prop("value", obj["userAgent"]);
         formEdit.find("#screensize").prop("value", obj["screenSize"]);
         formEdit.find("#Description").prop("value", obj["description"]);
-        
+
         loadCapabilitiesTable("editCapabilitiesTableBody", obj["capabilities"]);
 
         if (!(data["hasPermissions"])) { // If readonly, we only readonly all fields
@@ -228,7 +235,7 @@ function editEntryClick(id) {
 
             $('#editEntryButton').attr('class', '');
             $('#editEntryButton').attr('hidden', 'hidden');
-            
+
             $('#addEditCapabilitiy').attr('class', '');
             $('#addEditCapabilitiy').attr('hidden', 'hidden');
         }

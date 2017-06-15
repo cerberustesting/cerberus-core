@@ -925,7 +925,8 @@ function loadRobotForm(browser) {
             $("[name=Platform]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default")).val("")),
             loadSelect("PLATFORM", "Platform"),
             $("[name=screenSize]").append($('<option></option>').text(doc.getDocLabel("page_runtest", "default_full_screen")).val("")),
-            loadSelect("screensize", "screenSize")
+//            loadSelect("screensize", "screenSize")
+            $("[name='screenSize']").autocomplete({source: getInvariantArray("SCREENSIZE", false)})
             ).then(function () {
         applyRobotPref(browser);
     });

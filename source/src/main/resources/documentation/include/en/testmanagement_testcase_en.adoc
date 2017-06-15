@@ -257,4 +257,30 @@ You will find below some tricks which help you to implement specific test cases.
 NOTE: It is possible to create a random property with a number of digit defined. You have to feed the property fields like the screenshot below. This property will be different for each execution. Example: 884592, 004795
 image:testcaserandomproperty.PNG[TestCaseRandomProperty]
 
+==== Robot Constrains
 
+You can define Robot constrains at testcase level in order to force the execution a specific testcase with a specific UserAgent or ScreenSize.
+This is used to test some specific behaviour of a website for a given UserAgent or ScreenSize.
+You can tune the list of UserAgent and ScreenSize proposed in autocomplete mode (on the GUI) by modifying the respective public invariant USERAGENT and SCREENSIZE.
+
+UserAgent and ScreenSize will be defined at execution level following the rule :
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *UserAgent Result*   
+| UserAgent1 |	| UserAgent1
+|  | UserAgent2 | UserAgent2
+|  |	| user Agent unchanged
+| UserAgent1 | UserAgent2 | UserAgent1
+
+|=== 
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *ScreenSize Result*   
+| 1024*768 |	| 1024*768
+|  | 640*360 | 640*360
+|  |	| Fullscreen
+| 1024*768 | 640*360 | 1024*768
+
+|=== 
