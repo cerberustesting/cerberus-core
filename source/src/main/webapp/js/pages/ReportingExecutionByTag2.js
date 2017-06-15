@@ -633,14 +633,14 @@ function createRow(row,isTotalRow) {
         if ( params[0].checked ){
             if (row.environment === "Total")//TODO: make this change in the back-end
                 row.environment = "";//The part where Total is written is handle in a more generic way
-            $tr.append($('<td>').text( row.environment ).css("text-align", "center"), );
+            $tr.append($('<td>').text( row.environment ).css("text-align", "center") );
         }
         if ( params[1].checked )
-           $tr.append($('<td>').text( row.country ).css("text-align", "center"), );
+           $tr.append($('<td>').text( row.country ).css("text-align", "center") );
         if ( params[2].checked )
-            $tr.append($('<td>').text( row.browser ).css("text-align", "center"), );
+            $tr.append($('<td>').text( row.browser ).css("text-align", "center") );
         if ( params[3].checked )
-            $tr.append($('<td>').text( row.application ).css("text-align", "center"), );
+            $tr.append($('<td>').text( row.application ).css("text-align", "center") );
     }
     else{
         var blankSpaceToAdd =0;
@@ -649,10 +649,10 @@ function createRow(row,isTotalRow) {
                 blankSpaceToAdd ++;
         }
         if ( blankSpaceToAdd !== 0){
-            $tr.append($('<td>').text( "Total" ).css("text-align", "center"), );
+            $tr.append($('<td>').text( "Total" ).css("text-align", "center") );
             blankSpaceToAdd --;//remove a blank space for the total
             for (var i =0; i < blankSpaceToAdd; i++){
-                $tr.append($('<td>').text( "" ).css("text-align", "center"), );
+                $tr.append($('<td>').text( "" ).css("text-align", "center") );
             }
         }
     }
@@ -687,13 +687,13 @@ function createHeaderRow() {
     
     var params = $("#splitFilter input");
     if ( params[0].checked )
-        $tr.append($('<td>').text( "Environment" ).css("text-align", "center"), );
+        $tr.append($('<td>').text( "Environment" ).css("text-align", "center") );
     if ( params[1].checked )
-       $tr.append($('<td>').text( "Country" ).css("text-align", "center"), );
+       $tr.append($('<td>').text( "Country" ).css("text-align", "center") );
     if ( params[2].checked )
-        $tr.append($('<td>').text( "Browser" ).css("text-align", "center"), );
+        $tr.append($('<td>').text( "Browser" ).css("text-align", "center") );
     if ( params[3].checked )
-        $tr.append($('<td>').text( "Application" ).css("text-align", "center"), );
+        $tr.append($('<td>').text( "Application" ).css("text-align", "center") );
     
     $tr.append(
         $('<td>').text( "OK" ).css("text-align", "center"),

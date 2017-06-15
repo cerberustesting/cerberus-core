@@ -20,14 +20,14 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         var doc = new Doc();
-        
+
         displayHeaderLabel(doc);
         displayFooter(doc);
         bindToggleCollapseCustom();
         displayPageLabel(doc);
 
         appendCampaignList();
-        
+
         var country = GetURLParameter("country");
         appendCountryList(country);
 
@@ -41,16 +41,16 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         //check if Extended Test Case Filters is collapse and load the data if it is not
         var filterPanelDataLoaded = false;
         var filterPanel = document.getElementById("filtersPanel");
-        if( filterPanel.className === "panel-body collapse in"){
+        if (filterPanel.className === "panel-body collapse in") {
             loadTestCaseFilterData(system, tag, browser);
             filterPanelDataLoaded = true;
             updateUserPreferences();
         }
         //add a listenner to load the data when needed
         $("#FilterPanelHeader").click(function () {
-            if ( !filterPanelDataLoaded ){
+            if (!filterPanelDataLoaded) {
                 loadTestCaseFilterData(system, tag, browser);
-                filterPanelDataLoaded =true
+                filterPanelDataLoaded = true
                 updateUserPreferences();
             }
         });
@@ -58,7 +58,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         loadTestCaseEssentialData(test, testcase, environment, country);
 
         var system = getUser().defaultSystem;
-        
+
         $("[name='typeSelect']").on("change", typeSelectHandler);
 
         $("#run").click(sendForm);
@@ -996,55 +996,54 @@ function enableRobotFields() {
 }
 
 //Load the data to put in Extended Test Case Filters panel
-function loadTestCaseFilterData(system, tag, browser){
+function loadTestCaseFilterData(system, tag, browser) {
     showLoader("#filtersPanelContainer");
-    $.when(            
-        loadExecForm(tag),
-        loadRobotForm(browser),
-        loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
-        loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
-        loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
-        loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
-        loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
-        loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
-        loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
-        loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
-        loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
-        loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
-        loadInvariantMultiSelect("system", "SYSTEM"),
-        loadInvariantMultiSelect("priority", "PRIORITY"),
-        loadInvariantMultiSelect("group", "GROUP"),
-        loadInvariantMultiSelect("status", "TCSTATUS"),
-        )
-        .then(function () {
-            hideLoader("#filtersPanelContainer");
-        });
+    $.when(
+            loadExecForm(tag),
+            loadRobotForm(browser),
+            loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
+            loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
+            loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
+            loadMultiSelect("ReadUserPublic", "", "creator", ["login"], "login"),
+            loadMultiSelect("ReadUserPublic", "", "implementer", ["login"], "login"),
+            loadMultiSelect("ReadTestBattery", "", "testBattery", ["testbattery"], "testbattery"),
+            loadMultiSelect("ReadCampaign", "", "campaign", ["campaign"], "campaign"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=1&system=" + system, "targetSprint", ["versionName"], "versionName"),
+            loadMultiSelect("ReadBuildRevisionInvariant", "level=2&system=" + system, "targetRev", ["versionName"], "versionName"),
+            loadMultiSelect("ReadLabel", "system=" + system, "labelid", ["label"], "id"),
+            loadInvariantMultiSelect("system", "SYSTEM"),
+            loadInvariantMultiSelect("priority", "PRIORITY"),
+            loadInvariantMultiSelect("group", "GROUP"),
+            loadInvariantMultiSelect("status", "TCSTATUS")
+            ).then(function () {
+        hideLoader("#filtersPanelContainer");
+    });
 }
 
 
-function loadTestCaseEssentialData(test, testcase, environment, country){
+function loadTestCaseEssentialData(test, testcase, environment, country) {
     showLoader("#chooseTest");
     $.when(
-        loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
-        )
-        .then(function () {
-            typeSelectHandler(test, testcase, environment, country);
-        });
-    
+            loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+            )
+            .then(function () {
+                typeSelectHandler(test, testcase, environment, country);
+            });
+
 }
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
     $(".collapse").each(function () {
         $(this).on('shown.bs.collapse', function () {
             localStorage.setItem(this.id, true);
-            if ( $(this)[0].id != "filtersPanel")
+            if ($(this)[0].id != "filtersPanel")
                 updateUserPreferences();
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
         });
 
         $(this).on('hidden.bs.collapse', function () {
             localStorage.setItem(this.id, false);
-            if ( $(this)[0].id != "filtersPanel")
+            if ($(this)[0].id != "filtersPanel")
                 updateUserPreferences();
             $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
         });
