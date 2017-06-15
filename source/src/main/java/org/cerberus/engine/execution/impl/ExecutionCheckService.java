@@ -72,14 +72,14 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)
-                    && this.checkUserAgentConsistent(tCExecution)) {
+                    && this.checkMaintenanceTime(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         } else /**
          * Automatic application connectivity parameter (from database)
          */
-         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+        {
+            if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
@@ -87,10 +87,10 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestCaseActive(tCExecution.getTestCaseObj())
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
-                    && this.checkMaintenanceTime(tCExecution)
-                    && this.checkUserAgentConsistent(tCExecution)) {
+                    && this.checkMaintenanceTime(tCExecution)) {
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
+        }
         return message;
     }
 
@@ -377,16 +377,4 @@ public class ExecutionCheckService implements IExecutionCheckService {
         return true;
     }
 
-    private boolean checkUserAgentConsistent(TestCaseExecution tCExecution) {
-        // We check here that User Agent has not been forced at TestCase Level and Robot Level on different value.
-        if (!(StringUtil.isNullOrEmpty(tCExecution.getTestCaseObj().getUserAgent())) && !(StringUtil.isNullOrEmpty(tCExecution.getUserAgent()))) {
-            if (!(tCExecution.getTestCaseObj().getUserAgent().equals(tCExecution.getUserAgent()))) {
-                message = new MessageGeneral(MessageGeneralEnum.VALIDATION_FAILED_USERAGENTDIFFERENT)
-                        .resolveDescription("UATESTCASE", tCExecution.getTestCaseObj().getUserAgent())
-                        .resolveDescription("UAROBOT", tCExecution.getUserAgent());
-                return false;
-            }
-        }
-        return true;
-    }
 }

@@ -271,7 +271,7 @@
                                     <div class="form-group">
                                         <label for="screenSize" class="col-sm-3 control-label bold">Screen Size</label>
                                         <div class="col-sm-9">
-                                            <select class="form-control input-sm" id="screenSize" name="screenSize"></select>
+                                            <input type="text" class="form-control" name="screenSize" id="screenSize" aria-describedby="basic-addon1" maxlength="250">
                                         </div>
                                     </div>
                                 </form>

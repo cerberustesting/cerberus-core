@@ -70,3 +70,31 @@ These syntax are available:
 . %object.myobject.pictureurl% : Get the application object myobject's picure url
 
 
+
+==== Pose de Contraintes sur le Robot
+
+Il est possible de definir au niveau du cas de test des contraintes (UserAgent et/ou ScreenSize) qui seront utilisées lors de l'execution.
+Ceci peut être utile pour tester des fonctionalités qui ne s'activent que pour une resolution et/ou un UserAgent bien precis.
+Il est possible de tuner les liste des UserAgent et ScreenSize proposés en mode autocomplete dans l'interface de Cerberus via les invariant public USERAGENT et SCREENSIZE.
+
+UserAgent et ScreenSize seront definis au moment de l'execution en suivant la regle suivante :
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *UserAgent Result*   
+| UserAgent1 |	| UserAgent1
+|  | UserAgent2 | UserAgent2
+|  |	| user Agent unchanged
+| UserAgent1 | UserAgent2 | UserAgent1
+
+|=== 
+
+|=== 
+
+| *TestCase* | *Robot / Execution* | *ScreenSize Result*   
+| 1024*768 |	| 1024*768
+|  | 640*360 | 640*360
+|  |	| Fullscreen
+| 1024*768 | 640*360 | 1024*768
+
+|=== 

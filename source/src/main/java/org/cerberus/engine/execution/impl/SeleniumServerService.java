@@ -58,6 +58,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
@@ -272,12 +273,19 @@ public class SeleniumServerService implements ISeleniumServerService {
                 /**
                  * If screenSize is defined, set the size of the screen.
                  */
-                if (!tCExecution.getScreenSize().equals("")) {
-                    Integer screenWidth = Integer.valueOf(tCExecution.getScreenSize().split("\\*")[0]);
-                    Integer screenLength = Integer.valueOf(tCExecution.getScreenSize().split("\\*")[1]);
+                String targetScreensize = getScreenSizeToUse(tCExecution.getTestCaseObj().getScreenSize(), tCExecution.getScreenSize());
+                LOG.debug("Selenium resolution : " + targetScreensize);
+                if ((!StringUtil.isNullOrEmpty(targetScreensize)) && targetScreensize.contains("*")) {
+                    Integer screenWidth = Integer.valueOf(targetScreensize.split("\\*")[0]);
+                    Integer screenLength = Integer.valueOf(targetScreensize.split("\\*")[1]);
                     setScreenSize(driver, screenWidth, screenLength);
+                    LOG.debug("Selenium resolution Activated : " + screenWidth + "*" + screenLength);
                 }
                 tCExecution.setScreenSize(getScreenSize(driver));
+
+                String userAgent = (String) ((JavascriptExecutor) driver).executeScript("return navigator.userAgent;");
+                tCExecution.setUserAgent(userAgent);
+
             }
             tCExecution.getSession().setStarted(true);
 
@@ -393,15 +401,15 @@ public class SeleniumServerService implements ISeleniumServerService {
                 }
 
                 // Set UserAgent if testCaseUserAgent or robotUserAgent is defined
-                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
-                        || !tCExecution.getUserAgent().isEmpty()) {
-                    String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
                     profile.setPreference("general.useragent.override", usedUserAgent);
-                    tCExecution.setUserAgent(usedUserAgent);
                 }
                 capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+
             } else if (browser.equalsIgnoreCase("IE")) {
                 capabilities = DesiredCapabilities.internetExplorer();
+
             } else if (browser.equalsIgnoreCase("chrome")) {
                 capabilities = DesiredCapabilities.chrome();
                 /**
@@ -411,23 +419,27 @@ public class SeleniumServerService implements ISeleniumServerService {
                 // Maximize windows for chrome browser
                 options.addArguments("--start-fullscreen");
                 // Set UserAgent if necessary
-                if (!tCExecution.getTestCaseObj().getUserAgent().isEmpty()
-                        || !tCExecution.getUserAgent().isEmpty()) {
-                    options.addArguments("--user-agent=" + getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent()));
+                String usedUserAgent = getUserAgentToUse(tCExecution.getTestCaseObj().getUserAgent(), tCExecution.getUserAgent());
+                if (!StringUtil.isNullOrEmpty(usedUserAgent)) {
+                    options.addArguments("--user-agent=" + usedUserAgent);
                 }
-
                 capabilities.setCapability(ChromeOptions.CAPABILITY, options);
 
             } else if (browser.contains("android")) {
                 capabilities = DesiredCapabilities.android();
+
             } else if (browser.contains("ipad")) {
                 capabilities = DesiredCapabilities.ipad();
+
             } else if (browser.contains("iphone")) {
                 capabilities = DesiredCapabilities.iphone();
+
             } else if (browser.contains("opera")) {
                 capabilities = DesiredCapabilities.opera();
+
             } else if (browser.contains("safari")) {
                 capabilities = DesiredCapabilities.safari();
+
             } else {
                 LOG.warn("Not supported Browser : " + browser);
                 MessageGeneral mes = new MessageGeneral(MessageGeneralEnum.EXECUTION_FA_SELENIUM);
@@ -451,7 +463,26 @@ public class SeleniumServerService implements ISeleniumServerService {
      * @return String containing the userAgent to use
      */
     private String getUserAgentToUse(String userAgentTestCase, String userAgentRobot) {
-        return userAgentTestCase.isEmpty() ? userAgentRobot : userAgentTestCase;
+        if (StringUtil.isNullOrEmpty(userAgentRobot) && StringUtil.isNullOrEmpty(userAgentTestCase)) {
+            return "";
+        } else {
+            return StringUtil.isNullOrEmpty(userAgentTestCase) ? userAgentRobot : userAgentTestCase;
+        }
+    }
+
+    /**
+     * This method determine which screenSize to use.
+     *
+     * @param screenSizeTestCase
+     * @param screenSizeRobot
+     * @return String containing the userAgent to use
+     */
+    private String getScreenSizeToUse(String screenSizeTestCase, String screenSizeRobot) {
+        if (StringUtil.isNullOrEmpty(screenSizeRobot) && StringUtil.isNullOrEmpty(screenSizeTestCase)) {
+            return "";
+        } else {
+            return StringUtil.isNullOrEmpty(screenSizeTestCase) ? screenSizeRobot : screenSizeTestCase;
+        }
     }
 
     @Override
