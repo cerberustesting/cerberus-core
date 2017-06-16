@@ -72,23 +72,32 @@
     cursor: pointer;
 }
 
-.property-list li:hover {
-    border-color:#eea236;
-    background-color:#f0ad4e;
-    color:#fff;
-    z-index: 2;
-}
-
-.property-list li .active {
-    border-color:#eea236;
-    background-color:#f0ad4e;
-    color:#fff;
-    z-index: 2;
-}
-
 .property-list li {
     width: 100%;
     cursor: pointer;
+    padding: 0px;
+    margin-left: 0px;
+}
+
+.property-list li a{
+    padding: 10px 15px;
+    color: #333;
+    font-size: 14px;
+}
+
+.property-list li a:hover {
+    border-color:#eea236;
+    background-color:#f0ad4e;
+    color:#fff;
+    z-index: 2;
+    color: whitesmoke;
+}
+
+.property-list li a .active {
+    border-color:#eea236;
+    background-color:#f0ad4e;
+    color:#fff;
+    z-index: 2;
 }
 
 .step-header {
