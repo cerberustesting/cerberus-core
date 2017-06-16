@@ -571,7 +571,7 @@ function saveScript() {
 
 function drawPropertyList(property, index) {
     var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-    $(htmlElement).append($("<a></a>").attr("style", "padding:0px; color: #333").attr("href", "#propertyLine" + property).text(property));
+    $(htmlElement).append($("<a></a>").attr("href", "#propertyLine" + property).text(property));
     $("#propList").append(htmlElement);
 }
 
@@ -836,7 +836,7 @@ function drawInheritedProperty(propList) {
         table.append(content);
 
         var htmlElement = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
-        $(htmlElement).append($("<a></a>").attr("style", "padding:0px; color: #333").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
+        $(htmlElement).append($("<a></a>").attr("href", "#inheritPropertyLine" + property.property).text(property.property));
         $("#inheritPropList").append(htmlElement);
     }
 

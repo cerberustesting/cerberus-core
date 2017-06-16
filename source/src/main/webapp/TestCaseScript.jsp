@@ -171,15 +171,16 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="center marginTop25 tab-pane fade" id="tabProperties">
+                            
+                            
                             <nav class="col-lg-3" id="nav-property" style="z-index:1;">
                                 <div id="list-wrapper-prop" style="top:107px;">
                                     <div id="propListWrapper">
-                                        <!--<h4>Steps</h4>-->
                                         <ul class="list-group property-list side-item nav nav-pills" id="propList" style="max-height: 600px;overflow-y: auto"></ul>
                                     </div>
                                     <div id="propButton">
-                                        <!--<h4>Actions</h4>-->
                                         <button class="btn btn-warning btn-block marginTop25" id="addProperty">Add Property</button>
                                     </div>
                                 </div>
