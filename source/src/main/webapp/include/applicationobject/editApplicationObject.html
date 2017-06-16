@@ -1,3 +1,5 @@
+<!--EditApplicationObject custom css-->
+<link rel="stylesheet" type="text/css" href="css/pages/editApplicationObject.css">
 <!--Edit an applicationObject -->
 <div data-backdrop="static" class="modal fade center" id="editApplicationObjectModal" tabindex="-1" role="dialog" aria-labelledby="editApplicationObjectModalLabel" aria-hidden="true">
     <div class="modal-dialog nomargintop nomarginbottom modal-md">
@@ -39,13 +41,21 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-xs-12">
-                                <label for="screenshotfilename" name="screenshotfilenameField">Screenshot File</label>
-                                <input type="file" class="form-control" name="screenshotfilename" id="screenshotfilename" aria-describedby="basic-editon1" >
+                            <div class="form-group col-xs-12">                                
+                                <!-- Drop Zone -->                                
+                                <label for="screenshotfilenameLabel" name="screenshotfilenameField">Screenshot File</label>
+                                <label  for="inputFile" id="dropzone" class="upload-drop-zone" >
+                                    <h3 id ="dropzoneText"> Drag and drop Files  <span class="glyphicon glyphicon-download-alt"></span></h3>
+                                    <label for="inputFile" class="btn btn-primary browseFile">Browse Files </label>
+                                </label>
+                                <input type="file" name="screenshotfilename" id="inputFile" class="hidden"/> 
+                                <div class ="text-muted" id="DropzoneClipboardPasteMessage"><kbd>Ctrl+v</kbd> to paste it from your clipboard </div>
                             </div>
                         </div>
+                        
                     </div>
                 </form>
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" name="buttonClose">Close</button>
