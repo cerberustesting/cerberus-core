@@ -200,12 +200,14 @@ function viewEntryClick(param) {
     clearResponseMessageMainPage();
 
     var doc = new Doc();
+    var formEdit = $('#viewTestcampaignModal');
 
     $("[name='viewTestcampaignField']").html(doc.getDocLabel("page_testcampaign", "viewtestcampaign_field") + " " + param);
 
     //Store the campaign name, we need it if we want to add him a battery test
     $("#campaignKey").val(param);
 
+    showLoader("#testcampaignList");
 
 
     var jqxhr = $.getJSON("ReadCampaign?testcase=true", "campaign=" + param);
@@ -235,11 +237,12 @@ function viewEntryClick(param) {
             createDataTableWithPermissions(configurations, renderOptionsForCampaign_TestCase, "#viewTestcampaignList", undefined, true);
         }
 
+        hideLoader("#testcampaignList");
+
+        formEdit.modal('show');
+
     });
 
-    var formEdit = $('#viewTestcampaignModal');
-
-    formEdit.modal('show');
 }
 
 function viewEntryModalCloseHandler() {
@@ -257,6 +260,8 @@ function editEntryClick(param) {
     $("#campaignKey").val(param);
 
     var formEdit = $('#editTestcampaignModal');
+
+    showLoader("#testcampaignList");
 
     var jqxhr = $.getJSON("ReadCampaign?battery=true&parameter=true&label=true", "campaign=" + param);
     $.when(jqxhr).then(function (data) {
@@ -334,11 +339,13 @@ function editEntryClick(param) {
         }
         renderOptionsForCampaign_Parameter("parameterTestcampaignsTable");
 
+        hideLoader("#testcampaignList");
+
+        $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
+        formEdit.modal('show');
+
     });
 
-    $('#editTestcampaignModal .nav-tabs a[href="#tabsCreate-1"]').tab('show');
-
-    formEdit.modal('show');
 }
 
 function editEntryModalSaveHandler() {
@@ -708,10 +715,9 @@ function aoColumnsFunc(tableId) {
                                         name="viewTestcampaign" title="' + doc.getDocLabel("page_testcampaign", "button_view") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-eye-open"></span></button>';
 
-                return '<div class="center btn-group width150">' + editTestcampaign + removeTestcampaign + viewTestcampaign + '</div>';
+                return '<div class="center btn-group">' + editTestcampaign + removeTestcampaign + viewTestcampaign + '</div>';
 
-            },
-            "width": "100px"
+            }
         },
         {"data": "campaign", "sName": "campaign", "title": doc.getDocLabel("page_testcampaign", "testcampaign_col")},
         {
@@ -739,10 +745,9 @@ function aoColumnsFunc_Battery(tableId) {
                                         name="removeTestbattery" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + removeButton + '</div>';
+                return '<div class="center btn-group">' + removeButton + '</div>';
 
-            },
-            "width": "100px"
+                }
         },
         {"data": "2", "sName": "testbattery", "title": doc.getDocLabel("page_testcampaign", "testbattery_col")}
     ];
@@ -766,14 +771,13 @@ function aoColumnsFunc_Label(tableId) {
                                         name="removeTestlabel" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + removeButton + '</div>';
+                return '<div class="center btn-group">' + removeButton + '</div>';
 
-            },
-            "width": "100px"
+            }
         },
-        {"data": "2", "sName": "labelId", "title": doc.getDocLabel("label", "id"), "width": "100px"},
-        {"data": "4", "sName": "system", "title": doc.getDocLabel("label", "system"), "width": "100px"},
-        {"data": "3", "sName": "label", "title": doc.getDocLabel("label", "label"), "width": "100px"}
+        {"data": "2", "sName": "labelId", "title": doc.getDocLabel("label", "id")},
+        {"data": "4", "sName": "system", "title": doc.getDocLabel("label", "system")},
+        {"data": "3", "sName": "label", "title": doc.getDocLabel("label", "label")}
     ];
     return aoColumns;
 }
@@ -793,10 +797,9 @@ function aoColumnsFunc_Parameter(tableId) {
                                         name="removeTestparameter" title="' + doc.getDocLabel("page_testcampaign", "button_remove") + '" type="button">\n\
                                         <span class="glyphicon glyphicon-trash"></span></button>';
 
-                return '<div class="center btn-group width150">' + removeButton + '</div>';
+                return '<div class="center btn-group">' + removeButton + '</div>';
 
-            },
-            "width": "100px"
+            }
         },
         {"data": "2", "sName": "parameter", "title": doc.getDocLabel("page_testcampaign", "parameter_col")},
         {"data": "3", "sName": "value", "title": doc.getDocLabel("page_testcampaign", "value_col")}
