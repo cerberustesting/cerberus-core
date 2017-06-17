@@ -50,7 +50,7 @@ public final class ServletUtil {
             try {
                 switch (request.getServletPath()) {
                     case "/ReadCampaign":
-                        Thread.sleep(2000);
+                        Thread.sleep(10);
                         break;
                     default:
                 }
