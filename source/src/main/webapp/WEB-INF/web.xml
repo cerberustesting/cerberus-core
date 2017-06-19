@@ -1925,6 +1925,10 @@
         <role-name>RunTest</role-name>
     </security-role>
     <security-role>
+        <description>Modify Labels.</description>
+        <role-name>Label</role-name>
+    </security-role>
+    <security-role>
         <description>Full access to any Test Data.</description>
         <role-name>TestDataManager</role-name>
     </security-role>
@@ -2064,16 +2068,27 @@
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/UpdateTestCase2</url-pattern>
             <url-pattern>/CreateTestCase2</url-pattern>
-            <url-pattern>/CreateLabel</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
-            <url-pattern>/UpdateLabel</url-pattern>
-            <url-pattern>/DeleteLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
             <role-name>Test</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Label</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/CreateLabel</url-pattern>
+            <url-pattern>/UpdateLabel</url-pattern>
+            <url-pattern>/DeleteLabel</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Label</description>
+            <role-name>Label</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>
