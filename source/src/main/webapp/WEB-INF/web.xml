@@ -185,10 +185,6 @@
         <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GenerateGraph</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.GenerateGraph</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReportData</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReportData</servlet-class>
     </servlet>
@@ -519,10 +515,6 @@
     <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <servlet-class>org.cerberus.servlet.guipages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
@@ -1101,10 +1093,6 @@
         <url-pattern>/TCEwwwDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GenerateGraph</servlet-name>
-        <url-pattern>/GenerateGraph</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetReportData</servlet-name>
         <url-pattern>/GetReportData</url-pattern>
     </servlet-mapping>
@@ -1463,10 +1451,6 @@
     <servlet-mapping>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <url-pattern>/ExecutionPerBuildRevision</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>

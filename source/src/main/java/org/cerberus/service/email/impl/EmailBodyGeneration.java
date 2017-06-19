@@ -213,7 +213,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
             }
-            contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
+            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
                     + " and application " + inSQL
                     + " GROUP BY gp1 "
@@ -228,7 +228,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
             }
-            contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
+            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
                     + " and application " + inSQL
                     + " GROUP BY gp1 , t1.test, t1.testcase"
@@ -244,7 +244,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t1.country='" + country + "'";
             }
-            contentSQL = contentSQL + " and test not in ('Business Activity Monitor','Performance Monitor') and Environment not in ('PROD','DEV') "
+            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
                     + " and application " + inSQL
                     + " GROUP BY gp1 , t1.application"
@@ -257,7 +257,7 @@ public class EmailBodyGeneration implements IEmailBodyGeneration {
             if (country.equalsIgnoreCase("ALL") == false) {
                 contentSQL = contentSQL + " and t.country='" + country + "'";
             }
-            contentSQL = contentSQL + " and t.test not in ('Business Activity Monitor','Performance Monitor')  and Environment not in ('PROD','DEV') "
+            contentSQL = contentSQL + " and Environment not in ('PROD','DEV') "
                     + " and (status='WORKING' or status is null) "
                     + " group by i.gp1 order by i.sort;";
 
