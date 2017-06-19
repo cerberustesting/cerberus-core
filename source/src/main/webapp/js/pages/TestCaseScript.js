@@ -2837,6 +2837,9 @@ function configureAceEditor(editor,mode,property){
     editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
     //set text previously input
     editor.setValue(property.value1);
+    //lose focus when loaded
+    var count = editor.getSession().getLength();
+    editor.gotoLine(count, editor.getSession().getLine(count-1).length);
 }
 /*
  * create an array of the current keyword with the keyword that precede them
