@@ -189,10 +189,10 @@
                                 <div id="propertiesModal">
                                     <div class="property-table">
                                         <div class="" id="propPanelWrapper">
-                                            <div class="panel-body collapse in" id="propertiesPanel">
+                                            <nav class="nav nav-pills nav-stacked" id="propertiesPanel">
                                                 <div id="propTable" class="list-group">
                                                 </div>
-                                            </div>
+                                            </nav>
                                         </div>
                                     </div>
                                 </div>
