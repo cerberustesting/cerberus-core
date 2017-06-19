@@ -161,7 +161,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     loadTestCaseInfo(data.info);
                     json = data.stepList;
                     sortData(json);
-                    createStepList(json, stepList, step, data.hasPermissionsUpdate);
+                    createStepList(json, stepList, step, data.hasPermissionsUpdate, data.hasPermissionsStepLibrary);
                     var inheritedProperties = drawInheritedProperty(data.inheritedProp);
 
                     var propertiesPromise = loadProperties(test, testcase, data.info, property, data.hasPermissionsUpdate);
@@ -243,7 +243,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                         autocompleteAllFields(Tags, data.info, test, testcase);
 
-                        // Manage authorities when data is fully lodade.
+                        // Manage authorities when data is fully loadable.
                         $("#deleteTestCase").attr("disabled", !data.hasPermissionsDelete);
                         $("#addStep").attr("disabled", !data.hasPermissionsUpdate);
                         $("#deleteStep").attr("disabled", !data.hasPermissionsUpdate);
@@ -1050,10 +1050,10 @@ function addStep(event) {
     });
 }
 
-function createStepList(data, stepList, stepIndex, canUpdate) {
+function createStepList(data, stepList, stepIndex, canUpdate, hasPermissionsStepLibrary) {
     for (var i = 0; i < data.length; i++) {
         var step = data[i];
-        var stepObj = new Step(step, stepList, canUpdate);
+        var stepObj = new Step(step, stepList, canUpdate, hasPermissionsStepLibrary);
 
         stepObj.draw();
         stepList.push(stepObj);
@@ -1362,7 +1362,7 @@ function sortData(agreg) {
 
 /** JAVASCRIPT OBJECT **/
 
-function Step(json, stepList, canUpdate) {
+function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.stepActionContainer = $("<div></div>").addClass("step-container").css("display", "none");
 
     this.test = json.test;
@@ -1382,11 +1382,18 @@ function Step(json, stepList, canUpdate) {
     this.inLibrary = json.inLibrary;
     this.isStepInUseByOtherTestCase = json.isStepInUseByOtherTestCase;
     this.actionList = [];
+    if (canUpdate) {
+        // If we can update the testcase we check whether we can still modify following the TestStepLibrary group.
+        if (!hasPermissionsStepLibrary && json.inLibrary === "Y"){
+            canUpdate = false;
+        }
+    }
     this.setActionList(json.actionList, canUpdate);
 
     this.stepList = stepList;
     this.toDelete = false;
     this.hasPermissionsUpdate = canUpdate;
+    this.hasPermissionsStepLibrary = hasPermissionsStepLibrary;
 
     this.html = $("<li></li>").addClass("list-group-item list-group-item-calm row").css("margin-left", "0px");
     this.textArea = $("<div></div>").addClass("col-sm-10").addClass("step-description").text(this.description);
@@ -1558,15 +1565,19 @@ Step.prototype.show = function () {
     $("#stepHeader").show()
 
     // Disable fields if Permission not allowing.
+    // Description and unlink the step with UseStep of the Step can be modified if hasPermitionUpdate is true.
     var activateDisable = !object.hasPermissionsUpdate;
-    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
     $("#stepDescription").attr("disabled", activateDisable);
     $("#isUseStep").attr("disabled", activateDisable);
+    // Flag the Step as a library if hasPermissionsUpdate and hasPermissionsStepLibrary is true.
+    var activateIsLib = !(object.hasPermissionsUpdate && object.hasPermissionsStepLibrary)
+    $("#isLib").attr("disabled", activateIsLib);
+    // Detail of the Step can be modified if hasPermitionUpdate is true and Step is not a useStep.
+    var activateDisableWithUseStep = !(object.hasPermissionsUpdate && !(object.useStep === "Y"));
     $("#stepLoop").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionOper").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal1").attr("disabled", activateDisableWithUseStep);
     $("#stepConditionVal2").attr("disabled", activateDisableWithUseStep);
-    $("#isLib").attr("disabled", activateDisable);
 
     object.stepActionContainer.find("div.fieldRow div:nth-child(n+2) input").trigger("input");
 
