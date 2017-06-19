@@ -433,6 +433,7 @@ public class ReadTestCase extends HttpServlet {
             object.put("countryList", new JSONObject());
             jsonResponse.put("hasPermissionsDelete", testCaseService.hasPermissionsDelete(tc, request));
             jsonResponse.put("hasPermissionsUpdate", testCaseService.hasPermissionsUpdate(tc, request));
+            jsonResponse.put("hasPermissionsStepLibrary", (request.isUserInRole("TestStepLibrary")));
         }
 
         for (TestCaseCountry country : (List<TestCaseCountry>) testCaseCountryList.getDataList()) {
