@@ -259,7 +259,7 @@ function loadTagExec() {
     }
     
     for (var index = 0; index < tagList.length; index++) {
-        let tagName = tagList[index];
+        let : tagName = tagList[index];
         //TODO find a way to remove the use for resendTag
         var requestToServlet = "ReadTestCaseExecutionByTag?Tag=" + tagName + "&" + "outputReport=totalStatsCharts" + "&" + "outputReport=resendTag";
         var jqxhr = $.get(requestToServlet , null, "json");

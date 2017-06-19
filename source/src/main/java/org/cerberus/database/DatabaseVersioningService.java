@@ -8775,6 +8775,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('INVARIANTPUBLIC', 'USERAGENT', '600', '', '', '', '', '', '', '', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Delete no longuer used parameter cerberus_homepage_nbbuildhistorydetail.
+        //-- ------------------------ 1155
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from parameter where param='cerberus_homepage_nbbuildhistorydetail';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
