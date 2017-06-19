@@ -8781,6 +8781,15 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("DELETE from parameter where param='cerberus_homepage_nbbuildhistorydetail';");
         SQLInstruction.add(SQLS.toString());
 
+        // Added Label User Group (copied from from Test Group) allowing to remove access to update, delete and create Label at user level.
+        //-- ------------------------ 1156-1157
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO usergroup Select Login, 'Label' from usergroup where GroupName = 'Test';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('USERGROUP', 'Label', '160', 'Can Create, update and delete Labels.', '');");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 
