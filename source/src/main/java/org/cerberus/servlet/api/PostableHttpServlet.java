@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.api;
 
+import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpMethod;
 
@@ -60,6 +61,9 @@ public abstract class PostableHttpServlet<REQUEST extends Validity, RESPONSE> ex
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         handleRequest(req, resp);
     }
+
+    @Override
+    protected abstract PostableHttpServletInfo getInfo();
 
     /**
      * Get the underlying {@link Class} to the associated REQUEST type

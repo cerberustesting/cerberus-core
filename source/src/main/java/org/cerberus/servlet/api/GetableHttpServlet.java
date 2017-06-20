@@ -19,6 +19,8 @@
  */
 package org.cerberus.servlet.api;
 
+import org.cerberus.servlet.api.info.GetableHttpServletInfo;
+import org.cerberus.servlet.api.info.SinglePointHttpServletInfo;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpMethod;
 
@@ -45,5 +47,8 @@ public abstract class GetableHttpServlet<REQUEST extends Validity, RESPONSE> ext
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         handleRequest(req, resp);
     }
+
+    @Override
+    protected abstract GetableHttpServletInfo getInfo();
 
 }

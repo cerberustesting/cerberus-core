@@ -19,17 +19,22 @@
  */
 package org.cerberus.servlet.engine.threadpool;
 
+import com.google.common.collect.Sets;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyResponse;
 import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.info.PostableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
+import org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue;
 import org.cerberus.util.validity.Validity;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import java.util.Collections;
 
 /**
  * @author abourdon
@@ -64,6 +69,8 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
         STOP
     }
 
+    private static final String VERSION = "V1";
+
     private HttpMapper httpMapper;
     private IExecutionThreadPoolService executionThreadPoolService;
 
@@ -76,6 +83,22 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
     @Override
     public HttpMapper getHttpMapper() {
         return httpMapper;
+    }
+
+    @Override
+    protected PostableHttpServletInfo getInfo() {
+        return new PostableHttpServletInfo(
+                DeleteExecutionInQueue.class.getSimpleName(),
+                VERSION,
+                "Apply a given ation to the given execution pool",
+                new PostableHttpServletInfo.PostableUsage(
+                        Collections.<RequestParameter>emptySet(),
+                        Sets.newHashSet(
+                                new RequestParameter("executionPoolKey", "the key of the execution pool to which apply the given action in the following format: system, application, country, environment"),
+                                new RequestParameter("action", "the action to apply to the given execution pool. Could be PAUSE (to pause it), RESUME (to resume it if previously in pause) or STOP (to stop and delete it)")
+                        )
+                )
+        );
     }
 
     @Override
@@ -97,12 +120,6 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
                 break;
         }
         return new EmptyResponse();
-    }
-
-    @Override
-    protected String getUsageDescription() {
-        // TODO describe the Json object structure
-        return "Need to have the action to execute and the thread pool key from which execute action";
     }
 
     private void pauseExecutionPool(final CountryEnvironmentParameters.Key executionPoolKey) {

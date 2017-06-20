@@ -19,11 +19,14 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.info.PostableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -31,6 +34,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -76,7 +80,6 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
     private static final Logger LOGGER = Logger.getLogger(DeleteExecutionInQueue.class);
 
     private HttpMapper httpMapper;
-
     private ITestCaseExecutionInQueueService executionInQueueService;
 
     @Override
@@ -88,6 +91,21 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
     @Override
     public HttpMapper getHttpMapper() {
         return httpMapper;
+    }
+
+    @Override
+    protected PostableHttpServletInfo getInfo() {
+        return new PostableHttpServletInfo(
+                DeleteExecutionInQueue.class.getSimpleName(),
+                getVersion(),
+                "Delete the given list of executions in queue",
+                new PostableHttpServletInfo.PostableUsage(
+                        Collections.<RequestParameter>emptySet(),
+                        Sets.newHashSet(
+                                new RequestParameter("ids", "the list of execution in queue' identifiers to delete")
+                        )
+                )
+        );
     }
 
     @Override
@@ -107,12 +125,6 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
             }
         }
         return response;
-    }
-
-    @Override
-    protected String getUsageDescription() {
-        // TODO describe the Json object structure
-        return "Need to have the list of execution in queue identifiers to delete";
     }
 
 }

@@ -17,34 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.api;
+package org.cerberus.servlet.api.info;
 
-import java.io.IOException;
+import org.springframework.http.HttpMethod;
 
-public interface HttpMapper {
+import java.util.Set;
 
-    class HttpSerializationException extends IOException {
-        public HttpSerializationException(final Throwable cause) {
-            super(cause);
+public class GetableHttpServletInfo extends SinglePointHttpServletInfo {
+
+    public static class GetableUsage extends Usage {
+        private final Set<RequestParameter> queryParameters;
+
+        public GetableUsage(final Set<RequestParameter> queryParameters) {
+            super(HttpMethod.GET);
+            this.queryParameters = queryParameters;
+        }
+
+        public Set<RequestParameter> getQueryParameters() {
+            return queryParameters;
         }
     }
 
-    class HttpDeserializationException extends IOException {
-        public HttpDeserializationException(final Throwable cause) {
-            super(cause);
-        }
+    public GetableHttpServletInfo(final String name, final String version, final String description, final GetableUsage usage) {
+        super(name, version, description, usage);
     }
-
-    <T, U> T serialize(U data) throws HttpSerializationException;
-
-    <T> T deserialize(String payload, Class<T> type) throws HttpDeserializationException;
-
-    String getRequestContentType();
-
-    String getRequestCharacterEncoding();
-
-    String getResponseContentType();
-
-    String getResponseCharacterEncoding();
 
 }

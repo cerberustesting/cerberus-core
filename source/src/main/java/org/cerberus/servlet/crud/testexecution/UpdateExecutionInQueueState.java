@@ -19,11 +19,14 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.collect.Sets;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.info.PostableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpStatus;
@@ -32,6 +35,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,6 +105,22 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     }
 
     @Override
+    protected PostableHttpServletInfo getInfo() {
+        return new PostableHttpServletInfo(
+                DeleteExecutionInQueue.class.getSimpleName(),
+                getVersion(),
+                "Move the given list of executions in queue to the given state",
+                new PostableHttpServletInfo.PostableUsage(
+                        Collections.<RequestParameter>emptySet(),
+                        Sets.newHashSet(
+                                new RequestParameter("ids", "the list of execution in queue's identifier to move"),
+                                new RequestParameter("state", "the state to which move the given list of execution in queue's. Could be WAITING (to wait for execution) or CANCELLED (to cancel execution).")
+                        )
+                )
+        );
+    }
+
+    @Override
     protected Class<Request> getRequestType() {
         return Request.class;
     }
@@ -119,12 +139,6 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
         } catch (CerberusException e) {
             throw new RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to set test case executon in queues' state", e);
         }
-    }
-
-    @Override
-    protected String getUsageDescription() {
-        // TODO describe the Json object structure
-        return "Need to have the state and list of execution in queue identifiers to set";
     }
 
 }

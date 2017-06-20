@@ -19,11 +19,14 @@
  */
 package org.cerberus.servlet.crud.testexecution;
 
+import com.google.common.collect.Sets;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.EmptyResponse;
 import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.info.PostableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpStatus;
@@ -31,6 +34,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,6 +75,21 @@ public class RunExecutionInQueue extends PostableHttpServlet<RunExecutionInQueue
     }
 
     @Override
+    protected PostableHttpServletInfo getInfo() {
+        return new PostableHttpServletInfo(
+                DeleteExecutionInQueue.class.getSimpleName(),
+                getVersion(),
+                "Run the given list of executions in queue",
+                new PostableHttpServletInfo.PostableUsage(
+                        Collections.<RequestParameter>emptySet(),
+                        Sets.newHashSet(
+                                new RequestParameter("ids", "the list of execution in queue's identifier to run")
+                        )
+                )
+        );
+    }
+
+    @Override
     protected Class<Request> getRequestType() {
         return Request.class;
     }
@@ -83,12 +102,6 @@ public class RunExecutionInQueue extends PostableHttpServlet<RunExecutionInQueue
         } catch (CerberusException e) {
             throw new RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to run executions in queue", e);
         }
-    }
-
-    @Override
-    protected String getUsageDescription() {
-        // TODO describe the Json object structure
-        return "Need to have the list of execution in queue identifiers to run";
     }
 
 }
