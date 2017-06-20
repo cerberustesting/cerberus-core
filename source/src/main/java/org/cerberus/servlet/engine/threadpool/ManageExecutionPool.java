@@ -71,9 +71,8 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
     private IExecutionThreadPoolService executionThreadPoolService;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-        executionThreadPoolService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(IExecutionThreadPoolService.class);
+    public void postInit() throws ServletException {
+        executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
     }
 
     @Override

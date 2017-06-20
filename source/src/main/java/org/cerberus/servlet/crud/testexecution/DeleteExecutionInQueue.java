@@ -81,11 +81,9 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
         super(new DefaultJsonHttpMapper());
     }
 
-
     @Override
-    public void init() throws ServletException {
-        super.init();
-        executionInQueueService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(ITestCaseExecutionInQueueService.class);
+    public void postInit() throws ServletException {
+        executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionInQueueService.class);
     }
 
     @Override

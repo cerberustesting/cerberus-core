@@ -20,11 +20,15 @@
 package org.cerberus.servlet.api;
 
 import org.apache.log4j.Logger;
+import org.cerberus.crud.entity.Application;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.validity.Validity;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,6 +101,11 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     private final HttpMapper httpMapper;
 
     /**
+     * The associated {@link ApplicationContext} to this servlet
+     */
+    private ApplicationContext applicationContext;
+
+    /**
      * Create a new {@link SinglePointHttpServlet} with its associated {@link HttpMapper}
      *
      * @param httpMapper the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
@@ -107,6 +116,26 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
 
     public HttpMapper getHttpMapper() {
         return httpMapper;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        initCore();
+        postInit();
+    }
+
+    /**
+     * Convenience method to apply initialization from specific class
+     *
+     * @throws ServletException
+     */
+    public void postInit() throws ServletException {
+
     }
 
     /**
@@ -177,6 +206,10 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      * @return the usage description of this {@link SinglePointHttpServlet}
      */
     protected abstract String getUsageDescription();
+
+    private void initCore() {
+        applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+    }
 
     private void handleRequestParsingError(final RequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
