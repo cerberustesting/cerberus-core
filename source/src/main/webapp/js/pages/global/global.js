@@ -666,7 +666,7 @@ function getSelectDeployType(forceReload) {
 /**
  * Get and cache a parameter value.
  * The forceReload boolean can force the refresh of the list from the server.
- * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbbuildhistorydetail"
+ * @param {string} param value of the parameter to get ex : "cerberus_homepage_nbdisplayedtag"
  * @param {string} sys system that will be used to get the parameter
  * @param {boolean} forceReload true if we want to force the reload on cache from the server
  * 

@@ -94,7 +94,7 @@ public class ReadLabel extends HttpServlet {
         // Nothing to do here as no parameter to check.
         //
         // Global boolean on the servlet that define if the user has permition to edit and delete object.
-        boolean userHasPermissions = request.isUserInRole("Test");
+        boolean userHasPermissions = request.isUserInRole("Label");
 
         //Get Parameters
         String columnName = ParameterParserUtil.parseStringParam(request.getParameter("columnName"), "");

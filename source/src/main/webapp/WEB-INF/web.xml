@@ -185,10 +185,6 @@
         <servlet-class>org.cerberus.servlet.reporting.TCEwwwDetail</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>GenerateGraph</servlet-name>
-        <servlet-class>org.cerberus.servlet.reporting.GenerateGraph</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>GetReportData</servlet-name>
         <servlet-class>org.cerberus.servlet.reporting.GetReportData</servlet-class>
     </servlet>
@@ -519,10 +515,6 @@
     <servlet>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <servlet-class>org.cerberus.servlet.crud.buildrevisionchange.DeleteBuildRevisionInvariant</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <servlet-class>org.cerberus.servlet.guipages.ExecutionPerBuildRevision</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
@@ -1101,10 +1093,6 @@
         <url-pattern>/TCEwwwDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GenerateGraph</servlet-name>
-        <url-pattern>/GenerateGraph</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>GetReportData</servlet-name>
         <url-pattern>/GetReportData</url-pattern>
     </servlet-mapping>
@@ -1463,10 +1451,6 @@
     <servlet-mapping>
         <servlet-name>DeleteBuildRevisionInvariant</servlet-name>
         <url-pattern>/DeleteBuildRevisionInvariant</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ExecutionPerBuildRevision</servlet-name>
-        <url-pattern>/ExecutionPerBuildRevision</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GetDataForTestCaseSearch</servlet-name>
@@ -1933,12 +1917,20 @@
         <role-name>Test</role-name>
     </security-role>
     <security-role>
+        <description>Can Flag a step as library and modify existing Step Libraries.</description>
+        <role-name>TestStepLibrary</role-name>
+    </security-role>
+    <security-role>
         <description>Delete access to any test and testcase.</description>
         <role-name>TestAdmin</role-name>
     </security-role>
     <security-role>
         <description>Execute testcase.</description>
         <role-name>RunTest</role-name>
+    </security-role>
+    <security-role>
+        <description>Modify Labels.</description>
+        <role-name>Label</role-name>
     </security-role>
     <security-role>
         <description>Full access to any Test Data.</description>
@@ -2080,16 +2072,39 @@
             <url-pattern>/UpdateTestCaseField</url-pattern>
             <url-pattern>/UpdateTestCase2</url-pattern>
             <url-pattern>/CreateTestCase2</url-pattern>
-            <url-pattern>/CreateLabel</url-pattern>
             <url-pattern>/ReadLabel</url-pattern>
-            <url-pattern>/UpdateLabel</url-pattern>
-            <url-pattern>/DeleteLabel</url-pattern>
             <url-pattern>/SaveTestCaseLabel</url-pattern>
             <url-pattern>/ReadTestCaseLabel</url-pattern>
         </web-resource-collection>
         <auth-constraint>
             <description>Test</description>
             <role-name>Test</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>Label</display-name>
+        <web-resource-collection>
+            <web-resource-name>servlet</web-resource-name>
+            <description>servlet</description>
+            <url-pattern>/CreateLabel</url-pattern>
+            <url-pattern>/UpdateLabel</url-pattern>
+            <url-pattern>/DeleteLabel</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>Label</description>
+            <role-name>Label</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <display-name>TestStepLibrary</display-name>
+        <web-resource-collection>
+            <web-resource-name>jsp</web-resource-name>
+            <description/>
+            <url-pattern>/ZZZ</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <description>TestStepLibrary</description>
+            <role-name>TestStepLibrary</role-name>
         </auth-constraint>
     </security-constraint>
     <security-constraint>

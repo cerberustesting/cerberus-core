@@ -198,9 +198,16 @@ function clickGroup(groupClicked, selected, formEdit) {
                     }
                 });
                 break;
-            case "TestAdmin":
+            case "TestStepLibrary":
                 formEdit.find("#groups option").each(function (i, e) {
                     if (("TestRO" === $(e).val()) || ("Test" === $(e).val())) {
+                        $(e).prop('selected', 'selected');
+                    }
+                });
+                break;
+            case "TestAdmin":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("TestRO" === $(e).val()) || ("Test" === $(e).val()) || ("TestStepLibrary" === $(e).val())) {
                         $(e).prop('selected', 'selected');
                     }
                 });
@@ -233,12 +240,19 @@ function clickGroup(groupClicked, selected, formEdit) {
         switch (groupClicked) {
             case "TestRO":
                 formEdit.find("#groups option").each(function (i, e) {
-                    if (("Test" === $(e).val()) || ("TestAdmin" === $(e).val())) {
+                    if (("Test" === $(e).val()) || ("TestAdmin" === $(e).val()) || ("TestStepLibrary" === $(e).val())) {
                         $(e).prop('selected', '');
                     }
                 });
                 break;
             case "Test":
+                formEdit.find("#groups option").each(function (i, e) {
+                    if (("TestAdmin" === $(e).val()) || ("TestStepLibrary" === $(e).val())) {
+                        $(e).prop('selected', '');
+                    }
+                });
+                break;
+            case "TestStepLibrary":
                 formEdit.find("#groups option").each(function (i, e) {
                     if ("TestAdmin" === $(e).val()) {
                         $(e).prop('selected', '');

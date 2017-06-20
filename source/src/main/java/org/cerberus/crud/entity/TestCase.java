@@ -467,8 +467,8 @@ public class TestCase {
             result.put("dateModif", this.getDateModif());
             JSONArray array = new JSONArray();
             if (this.getTestCaseStep() != null) {
-                for (Object testCaseStepExecution : this.getTestCaseStep()) {
-                    array.put(((TestCaseStep) testCaseStepExecution).toJson());
+                for (Object testCaseStepList : this.getTestCaseStep()) {
+                    array.put(((TestCaseStep) testCaseStepList).toJson());
                 }
             }
             result.put("testCaseStepList", array);
