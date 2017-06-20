@@ -22,7 +22,9 @@ package org.cerberus.servlet.crud.testexecution;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.EmptyResponse;
+import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -55,6 +57,10 @@ public class RunExecutionInQueue extends PostableHttpServlet<RunExecutionInQueue
     }
 
     private IExecutionThreadPoolService executionThreadPoolService;
+
+    public RunExecutionInQueue() {
+        super(new DefaultJsonHttpMapper());
+    }
 
     @Override
     public void init() throws ServletException {

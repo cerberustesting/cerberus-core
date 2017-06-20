@@ -22,7 +22,9 @@ package org.cerberus.servlet.crud.testexecution;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -74,6 +76,11 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
     private static final Logger LOGGER = Logger.getLogger(DeleteExecutionInQueue.class);
 
     private ITestCaseExecutionInQueueService executionInQueueService;
+
+    public DeleteExecutionInQueue(final HttpMapper httpMapper) {
+        super(new DefaultJsonHttpMapper());
+    }
+
 
     @Override
     public void init() throws ServletException {

@@ -36,6 +36,15 @@ import java.io.IOException;
  * @author abourdon
  */
 public abstract class PostableHttpServlet<REQUEST extends Validity, RESPONSE> extends SinglePointHttpServlet<REQUEST, RESPONSE> {
+    
+    /**
+     * Create a new {@link SinglePointHttpServlet} with its associated {@link HttpMapper}
+     *
+     * @param httpMapper the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
+     */
+    protected PostableHttpServlet(final HttpMapper httpMapper) {
+        super(httpMapper);
+    }
 
     @Override
     protected HttpMethod getHttpMethod() {
@@ -50,7 +59,7 @@ public abstract class PostableHttpServlet<REQUEST extends Validity, RESPONSE> ex
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 body.append(line);
             }
-            return getObjectMapper().readValue(body.toString(), getRequestType());
+            return getHttpMapper().deserialize(body.toString(), getRequestType());
         } catch (Exception e) {
             throw new RequestParsingException("Unable to get body from request", e);
         }

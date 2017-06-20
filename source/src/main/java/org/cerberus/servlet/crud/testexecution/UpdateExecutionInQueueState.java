@@ -22,7 +22,9 @@ package org.cerberus.servlet.crud.testexecution;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
+import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -84,6 +86,10 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     }
 
     private ITestCaseExecutionInQueueService executionInQueueService;
+
+    public UpdateExecutionInQueueState() {
+        super(new DefaultJsonHttpMapper());
+    }
 
     @Override
     public void init() throws ServletException {

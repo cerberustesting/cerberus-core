@@ -23,6 +23,8 @@ import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyRequest;
 import org.cerberus.servlet.api.GetableHttpServlet;
+import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
@@ -37,6 +39,10 @@ import java.util.Collection;
 public class ReadExecutionPools extends GetableHttpServlet<EmptyRequest, Collection<ExecutionThreadPoolStats>> {
 
     private IExecutionThreadPoolService executionThreadPoolService;
+
+    public ReadExecutionPools() {
+        super(new DefaultJsonHttpMapper());
+    }
 
     @Override
     public void init() throws ServletException {
