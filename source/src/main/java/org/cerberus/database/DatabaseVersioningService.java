@@ -8775,6 +8775,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append(",('INVARIANTPUBLIC', 'USERAGENT', '600', '', '', '', '', '', '', '', '', '', '', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // New design Login page
+        //-- ------------------------ 1155
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `parameter` SET value='<a href=\"mailto:support@domain.com?Subject=Cerberus%20Account\">Support</a>' where param='cerberus_support_email'");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
