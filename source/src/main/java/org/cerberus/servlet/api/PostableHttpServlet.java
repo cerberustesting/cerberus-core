@@ -38,7 +38,7 @@ import java.io.IOException;
 public abstract class PostableHttpServlet<REQUEST extends Validity, RESPONSE> extends SinglePointHttpServlet<REQUEST, RESPONSE> {
 
     @Override
-    protected HttpMethod getHttpMethod() {
+    protected final HttpMethod getHttpMethod() {
         return HttpMethod.POST;
     }
 
