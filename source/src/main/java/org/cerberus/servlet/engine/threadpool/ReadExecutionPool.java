@@ -23,7 +23,9 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
 import org.cerberus.engine.entity.threadpool.ManageableThreadPoolExecutor;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -39,6 +41,10 @@ import java.util.Map;
 public class ReadExecutionPool extends PostableHttpServlet<CountryEnvironmentParameters.Key, Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>>> {
 
     private IExecutionThreadPoolService executionThreadPoolService;
+
+    public ReadExecutionPool() {
+        super(new DefaultJsonHttpMapper());
+    }
 
     @Override
     public void init() throws ServletException {

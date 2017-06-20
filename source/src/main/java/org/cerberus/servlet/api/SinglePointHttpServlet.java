@@ -25,19 +25,20 @@ import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Base class for any single point {@link JsonHttpServlet}.
+ * Base class for any single point {@link HttpServlet}.
  * <p>
- * A single point {@link JsonHttpServlet} is a specific {@link JsonHttpServlet} that can be only reached through a given {@link HttpMethod}
+ * A single point {@link HttpServlet} is a specific {@link HttpServlet} that can be only reached through a given {@link HttpMethod}
  *
  * @param <REQUEST>  the request type, according to the associated {@link HttpMethod} (request parameters for {@link HttpMethod#GET}, request body for {@link HttpMethod#POST}, ...)
  * @param <RESPONSE> the response type
  */
-public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE> extends JsonHttpServlet {
+public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE> extends HttpServlet {
 
     /**
      * Raise when an error occurred during the request parsing
@@ -91,6 +92,24 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
 
     /**
+     * The associated {@link HttpMapper} to this servlet
+     */
+    private final HttpMapper httpMapper;
+
+    /**
+     * Create a new {@link SinglePointHttpServlet} with its associated {@link HttpMapper}
+     *
+     * @param httpMapper the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
+     */
+    protected SinglePointHttpServlet(final HttpMapper httpMapper) {
+        this.httpMapper = httpMapper;
+    }
+
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
+    }
+
+    /**
      * Handle the given {@link HttpServletRequest} according to the associated {@link HttpMethod} to this {@link SinglePointHttpServlet}
      * <p>
      * Any {@link SinglePointHttpServlet}'s implementation should call this method during its specific {@link javax.servlet.http.HttpServlet}'s action ({@link javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)}, {@link javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)}, ...)
@@ -100,29 +119,31 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      * @throws IOException if an I/O error occurred
      */
     protected void handleRequest(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        // First, parse and valid request
-        REQUEST request;
         try {
-            request = parseRequest(req);
+            // First, parse and valid request
+            final REQUEST request = parseRequest(req);
             if (!isRequestValid(request)) {
                 throw new RequestParsingException("Invalid request " + request);
             }
+
+            // Second, process request
+            final RESPONSE response = processRequest(request);
+
+            // Finally send response to client
+            resp.setContentType(getHttpMapper().getResponseContentType());
+            resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
+            resp.getWriter().print(getHttpMapper().serialize(response));
+            resp.getWriter().flush();
         } catch (RequestParsingException e) {
             handleRequestParsingError(e, req, resp);
             return;
-        }
-
-        // Then, process request
-        try {
-            final RESPONSE response = processRequest(request);
-            resp.getWriter().print(getObjectMapper().writeValueAsString(response));
-            resp.getWriter().flush();
         } catch (final RequestProcessException e) {
             handleRequestProcessError(e, req, resp);
         } catch (final Exception e) {
             LOG.warn("Handle unexpected exception", e);
             handleRequestProcessError(new RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e), req, resp);
         }
+
     }
 
     /**

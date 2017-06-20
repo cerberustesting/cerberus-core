@@ -22,7 +22,9 @@ package org.cerberus.servlet.engine.threadpool;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyResponse;
+import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.validity.Validity;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -60,6 +62,10 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
         PAUSE,
         RESUME,
         STOP
+    }
+
+    public ManageExecutionPool() {
+        super(new DefaultJsonHttpMapper());
     }
 
     private IExecutionThreadPoolService executionThreadPoolService;

@@ -31,6 +31,8 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.GetableHttpServlet;
+import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
 import org.cerberus.util.validity.Validity;
@@ -128,6 +130,10 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
      * @see #init() for more initialization details
      */
     private ApplicationContext applicationContext;
+
+    protected GetCampaignTestCases() {
+        super(new DefaultJsonHttpMapper());
+    }
 
     @Override
     public void init() throws ServletException {
