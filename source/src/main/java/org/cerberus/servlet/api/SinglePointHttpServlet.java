@@ -96,27 +96,9 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
 
     /**
-     * The associated {@link HttpMapper} to this servlet
-     */
-    private final HttpMapper httpMapper;
-
-    /**
      * The associated {@link ApplicationContext} to this servlet
      */
     private ApplicationContext applicationContext;
-
-    /**
-     * Create a new {@link SinglePointHttpServlet} with its associated {@link HttpMapper}
-     *
-     * @param httpMapper the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
-     */
-    protected SinglePointHttpServlet(final HttpMapper httpMapper) {
-        this.httpMapper = httpMapper;
-    }
-
-    public HttpMapper getHttpMapper() {
-        return httpMapper;
-    }
 
     public ApplicationContext getApplicationContext() {
         return applicationContext;
@@ -174,6 +156,13 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
         }
 
     }
+
+    /**
+     * Get the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
+     *
+     * @return the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
+     */
+    public abstract HttpMapper getHttpMapper();
 
     /**
      * Get the associated {@link HttpMethod} to this {@link SinglePointHttpServlet}

@@ -31,6 +31,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import java.util.List;
 
 /**
@@ -85,15 +86,18 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
         }
     }
 
+    private HttpMapper httpMapper;
     private ITestCaseExecutionInQueueService executionInQueueService;
-
-    public UpdateExecutionInQueueState() {
-        super(new DefaultJsonHttpMapper());
-    }
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionInQueueService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

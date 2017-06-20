@@ -64,15 +64,18 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
         STOP
     }
 
-    public ManageExecutionPool() {
-        super(new DefaultJsonHttpMapper());
-    }
-
+    private HttpMapper httpMapper;
     private IExecutionThreadPoolService executionThreadPoolService;
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

@@ -38,15 +38,18 @@ import java.util.Collection;
 @WebServlet(name = "ReadExecutionPools", urlPatterns = {"/ReadExecutionPools"})
 public class ReadExecutionPools extends GetableHttpServlet<EmptyRequest, Collection<ExecutionThreadPoolStats>> {
 
+    private HttpMapper httpMapper;
     private IExecutionThreadPoolService executionThreadPoolService;
-
-    public ReadExecutionPools() {
-        super(new DefaultJsonHttpMapper());
-    }
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override
