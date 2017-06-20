@@ -75,15 +75,19 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
 
     private static final Logger LOGGER = Logger.getLogger(DeleteExecutionInQueue.class);
 
-    private ITestCaseExecutionInQueueService executionInQueueService;
+    private HttpMapper httpMapper;
 
-    public DeleteExecutionInQueue(final HttpMapper httpMapper) {
-        super(new DefaultJsonHttpMapper());
-    }
+    private ITestCaseExecutionInQueueService executionInQueueService;
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionInQueueService = getApplicationContext().getBean(ITestCaseExecutionInQueueService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

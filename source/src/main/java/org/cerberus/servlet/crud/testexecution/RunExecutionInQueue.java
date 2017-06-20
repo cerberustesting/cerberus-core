@@ -56,15 +56,18 @@ public class RunExecutionInQueue extends PostableHttpServlet<RunExecutionInQueue
         }
     }
 
+    private HttpMapper httpMapper;
     private IExecutionThreadPoolService executionThreadPoolService;
-
-    public RunExecutionInQueue() {
-        super(new DefaultJsonHttpMapper());
-    }
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

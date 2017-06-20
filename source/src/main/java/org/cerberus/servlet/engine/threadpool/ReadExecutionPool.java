@@ -40,15 +40,18 @@ import java.util.Map;
 @WebServlet(name = "ReadExecutionPool", urlPatterns = {"/ReadExecutionPool"})
 public class ReadExecutionPool extends PostableHttpServlet<CountryEnvironmentParameters.Key, Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>>> {
 
+    private HttpMapper httpMapper;
     private IExecutionThreadPoolService executionThreadPoolService;
-
-    public ReadExecutionPool() {
-        super(new DefaultJsonHttpMapper());
-    }
 
     @Override
     public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
         executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

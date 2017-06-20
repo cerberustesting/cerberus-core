@@ -124,8 +124,16 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
      */
     private static final Logger LOGGER = Logger.getLogger(GetCampaignTestCases.class);
 
-    protected GetCampaignTestCases() {
-        super(new DefaultJsonHttpMapper());
+    private HttpMapper httpMapper;
+
+    @Override
+    public void postInit() throws ServletException {
+        httpMapper = new DefaultJsonHttpMapper();
+    }
+
+    @Override
+    public HttpMapper getHttpMapper() {
+        return httpMapper;
     }
 
     @Override

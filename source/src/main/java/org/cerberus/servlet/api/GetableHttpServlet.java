@@ -36,15 +36,6 @@ import java.io.IOException;
  */
 public abstract class GetableHttpServlet<REQUEST extends Validity, RESPONSE> extends SinglePointHttpServlet<REQUEST, RESPONSE> {
 
-    /**
-     * Create a new {@link SinglePointHttpServlet} with its associated {@link HttpMapper}
-     *
-     * @param httpMapper the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
-     */
-    protected GetableHttpServlet(final HttpMapper httpMapper) {
-        super(httpMapper);
-    }
-
     @Override
     protected HttpMethod getHttpMethod() {
         return HttpMethod.GET;
