@@ -45,7 +45,23 @@ import java.io.IOException;
 public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE> extends HttpServlet {
 
     /**
-     * Raise when an error occurred during the request parsing
+     * Raised when an error occured during pre-request parsing
+     *
+     * @see #preRequestParsing(HttpServletRequest)
+     */
+    public static class PreRequestParsingException extends Exception {
+
+        public PreRequestParsingException(final String message) {
+            super(message);
+        }
+
+        public PreRequestParsingException(final String message, final Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    /**
+     * Raised when an error occurred during the request parsing
      *
      * @see #parseRequest(HttpServletRequest)
      */
@@ -112,52 +128,6 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     }
 
     /**
-     * Convenience method to apply initialization from specific class
-     *
-     * @throws ServletException
-     */
-    public void postInit() throws ServletException {
-
-    }
-
-    /**
-     * Handle the given {@link HttpServletRequest} according to the associated {@link HttpMethod} to this {@link SinglePointHttpServlet}
-     * <p>
-     * Any {@link SinglePointHttpServlet}'s implementation should call this method during its specific {@link javax.servlet.http.HttpServlet}'s action ({@link javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)}, {@link javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)}, ...)
-     *
-     * @param req  the associated {@link HttpServletRequest} to this request
-     * @param resp the associated {@link HttpServletResponse} to this request
-     * @throws IOException if an I/O error occurred
-     */
-    protected void handleRequest(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        try {
-            // First, parse and valid request
-            final REQUEST request = parseRequest(req);
-            if (!isRequestValid(request)) {
-                throw new RequestParsingException("Invalid request " + request);
-            }
-
-            // Second, process request
-            final RESPONSE response = processRequest(request);
-
-            // Finally send response to client
-            resp.setContentType(getHttpMapper().getResponseContentType());
-            resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
-            resp.getWriter().print(getHttpMapper().serialize(response));
-            resp.getWriter().flush();
-        } catch (RequestParsingException e) {
-            handleRequestParsingError(e, req, resp);
-            return;
-        } catch (final RequestProcessException e) {
-            handleRequestProcessError(e, req, resp);
-        } catch (final Exception e) {
-            LOG.warn("Handle unexpected exception", e);
-            handleRequestProcessError(new RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e), req, resp);
-        }
-
-    }
-
-    /**
      * Get the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
      *
      * @return the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
@@ -196,11 +166,75 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      */
     protected abstract String getUsageDescription();
 
-    private void initCore() {
-        applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+    /**
+     * Convenience method to apply initialization from specific class
+     *
+     * @throws ServletException
+     */
+    protected void postInit() throws ServletException {
+        // Do nothing by default
     }
 
-    private void handleRequestParsingError(final RequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+    /**
+     * Convenience method to apply actions before the request parsing, i.e., before calling the {@link #parseRequest(HttpServletRequest)} method
+     *
+     * @param req the associated {@link HttpServletRequest} which is going to be parsed
+     * @throws PreRequestParsingException if an error occurred during the pre-request parsing
+     */
+    protected void preRequestParsing(final HttpServletRequest req) throws PreRequestParsingException {
+        // Do nothing by default
+    }
+
+    /**
+     * Handle the given {@link HttpServletRequest} according to the associated {@link HttpMethod} to this {@link SinglePointHttpServlet}
+     * <p>
+     * Any {@link SinglePointHttpServlet}'s implementation should call this method during its specific {@link javax.servlet.http.HttpServlet}'s action ({@link javax.servlet.http.HttpServlet#doGet(HttpServletRequest, HttpServletResponse)}, {@link javax.servlet.http.HttpServlet#doPost(HttpServletRequest, HttpServletResponse)}, ...)
+     *
+     * @param req  the associated {@link HttpServletRequest} to this request
+     * @param resp the associated {@link HttpServletResponse} to this request
+     * @throws IOException if an I/O error occurred
+     */
+    protected void handleRequest(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+        try {
+            // First, call pre-request parsing process
+            preRequestParsing(req);
+
+            // Second, parse and valid request
+            final REQUEST request = parseRequest(req);
+            if (!isRequestValid(request)) {
+                throw new RequestParsingException("Invalid request " + request);
+            }
+
+            // Third, process request
+            final RESPONSE response = processRequest(request);
+
+            // Finally send response to client
+            resp.setContentType(getHttpMapper().getResponseContentType());
+            resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
+            resp.getWriter().print(getHttpMapper().serialize(response));
+            resp.getWriter().flush();
+        } catch (PreRequestParsingException e) {
+            handlePreRequestParsingError(e, req, resp);
+        } catch (RequestParsingException e) {
+            handleRequestParsingError(e, req, resp);
+        } catch (final RequestProcessException e) {
+            handleRequestProcessError(e, req, resp);
+        } catch (final Exception e) {
+            LOG.warn("Handle unexpected exception", e);
+            handleRequestProcessError(new RequestProcessException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e), req, resp);
+        }
+
+    }
+
+    protected void handlePreRequestParsingError(final PreRequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+        resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        if (!StringUtil.isNullOrEmpty(getUsageDescription())) {
+            resp.getWriter().print(getUsageDescription());
+        }
+        resp.getWriter().flush();
+    }
+
+    protected void handleRequestParsingError(final RequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
         if (!StringUtil.isNullOrEmpty(getUsageDescription())) {
             resp.getWriter().print(getUsageDescription());
@@ -208,12 +242,16 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
         resp.getWriter().flush();
     }
 
-    private void handleRequestProcessError(final RequestProcessException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+    protected void handleRequestProcessError(final RequestProcessException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         resp.setStatus(e.getStatusToReturn().value());
         if (!StringUtil.isNullOrEmpty(e.getMessage())) {
             resp.getWriter().print(e.getMessage());
         }
         resp.getWriter().flush();
+    }
+
+    private void initCore() {
+        applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
     }
 
     private boolean isRequestValid(REQUEST request) {
