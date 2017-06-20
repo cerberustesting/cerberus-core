@@ -124,21 +124,8 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
      */
     private static final Logger LOGGER = Logger.getLogger(GetCampaignTestCases.class);
 
-    /**
-     * The associated {@link ApplicationContext}
-     *
-     * @see #init() for more initialization details
-     */
-    private ApplicationContext applicationContext;
-
     protected GetCampaignTestCases() {
         super(new DefaultJsonHttpMapper());
-    }
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        applicationContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
     }
 
     @Override
@@ -187,7 +174,7 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
     }
 
     private Campaign retrieveCampaign(final Integer campaignId) throws RequestProcessException {
-        final ICampaignService campaignService = applicationContext.getBean(ICampaignService.class);
+        final ICampaignService campaignService = getApplicationContext().getBean(ICampaignService.class);
         Campaign campaign;
         try {
             campaign = campaignService.findCampaignByKey(campaignId);
@@ -201,7 +188,7 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
     }
 
     private List<CampaignContent> retrieveCampaignContents(final Campaign campaign) throws RequestProcessException {
-        final ICampaignContentService campaignContentService = applicationContext.getBean(ICampaignContentService.class);
+        final ICampaignContentService campaignContentService = getApplicationContext().getBean(ICampaignContentService.class);
         final AnswerList<CampaignContent> campaignContents = campaignContentService.readByCampaign(campaign.getCampaign());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(campaignContents.getResultMessage().getSource())) {
             if (MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.equals(campaignContents.getResultMessage().getSource())) {
@@ -213,7 +200,7 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
     }
 
     private List<TestBatteryContent> retrieveTestBatteryContents(final CampaignContent campaignContent) throws RequestProcessException {
-        final ITestBatteryContentService testBatteryContentService = applicationContext.getBean(ITestBatteryContentService.class);
+        final ITestBatteryContentService testBatteryContentService = getApplicationContext().getBean(ITestBatteryContentService.class);
         final AnswerList<TestBatteryContent> testBatteryContents = testBatteryContentService.readByTestBattery(campaignContent.getTestbattery());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(testBatteryContents.getResultMessage().getSource())) {
             if (MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.equals(testBatteryContents.getResultMessage().getSource())) {
@@ -225,7 +212,7 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
     }
 
     private TestCase retrieveTestCase(final TestBatteryContent testBatteryContent) throws RequestProcessException {
-        final ITestCaseService testCaseService = applicationContext.getBean(ITestCaseService.class);
+        final ITestCaseService testCaseService = getApplicationContext().getBean(ITestCaseService.class);
         final AnswerItem<TestCase> testCase = testCaseService.readByKey(testBatteryContent.getTest(), testBatteryContent.getTestCase());
         if (!MessageEventEnum.DATA_OPERATION_OK.equals(testCase.getResultMessage().getSource())) {
             throw MessageEventEnum.DATA_OPERATION_NO_DATA_FOUND.equals(testCase.getResultMessage().getSource()) ?

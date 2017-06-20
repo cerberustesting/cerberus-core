@@ -45,9 +45,8 @@ public class ReadExecutionPools extends GetableHttpServlet<EmptyRequest, Collect
     }
 
     @Override
-    public void init() throws ServletException {
-        super.init();
-        executionThreadPoolService = WebApplicationContextUtils.getWebApplicationContext(getServletContext()).getBean(IExecutionThreadPoolService.class);
+    public void postInit() throws ServletException {
+        executionThreadPoolService = getApplicationContext().getBean(IExecutionThreadPoolService.class);
     }
 
     @Override
