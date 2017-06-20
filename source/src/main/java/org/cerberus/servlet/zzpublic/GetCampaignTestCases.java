@@ -19,6 +19,7 @@
  */
 package org.cerberus.servlet.zzpublic;
 
+import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.entity.Campaign;
 import org.cerberus.crud.entity.CampaignContent;
@@ -32,6 +33,8 @@ import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.GetableHttpServlet;
 import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.info.GetableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
@@ -164,21 +167,18 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
     }
 
     @Override
-    protected String getUsageDescription() {
-        return "Get the list of test cases associated to a campaign.\n" +
-                "\n" +
-                String.format("Usage: GET <Cerberus URL>/%s?id=<Campaign identifier>[&failIfMissing=true]\n", GetCampaignTestCases.class.getSimpleName()) +
-                "\n" +
-                "Request parameters:\n" +
-                "\n" +
-                "- id, mandatory: the campaign identifier\n" +
-                "- failIfMissing, optional: if campaign is containing test cases which cannot be found\n" +
-                "\n" +
-                "Expected response (in case of success):\n" +
-                "\n" +
-                "{\n" +
-                "  testCases: [List of campaign's test cases]\n" +
-                "}\n";
+    protected GetableHttpServletInfo getInfo() {
+        return new GetableHttpServletInfo(
+                GetCampaignTestCases.class.getSimpleName(),
+                getVersion(),
+                "Get the list of test cases associated to a campaign",
+                new GetableHttpServletInfo.GetableUsage(
+                        Sets.newHashSet(
+                                new RequestParameter("id", "the campaign identifier"),
+                                new RequestParameter("failIfMissing", "if campaign is containing test cases which cannot be found", false)
+                        )
+                )
+        );
     }
 
     private Campaign retrieveCampaign(final Integer campaignId) throws RequestProcessException {

@@ -24,6 +24,8 @@ import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyRequest;
 import org.cerberus.servlet.api.GetableHttpServlet;
 import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.info.GetableHttpServletInfo;
+import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -31,6 +33,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author abourdon
@@ -63,7 +66,14 @@ public class ReadExecutionPools extends GetableHttpServlet<EmptyRequest, Collect
     }
 
     @Override
-    protected String getUsageDescription() {
-        return "No parameter needed";
+    protected GetableHttpServletInfo getInfo() {
+        return new GetableHttpServletInfo(
+                ReadExecutionPools.class.getSimpleName(),
+                getVersion(),
+                "Get information about all execution pools",
+                new GetableHttpServletInfo.GetableUsage(
+                        Collections.<RequestParameter>emptySet()
+                )
+        );
     }
 }

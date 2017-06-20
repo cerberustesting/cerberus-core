@@ -20,7 +20,7 @@
 package org.cerberus.servlet.api;
 
 import org.apache.log4j.Logger;
-import org.cerberus.crud.entity.Application;
+import org.cerberus.servlet.api.info.SinglePointHttpServletInfo;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.validity.Validity;
 import org.springframework.context.ApplicationContext;
@@ -49,7 +49,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      *
      * @see #preRequestParsing(HttpServletRequest)
      */
-    public static class PreRequestParsingException extends Exception {
+    public static class PreRequestParsingException extends IOException {
 
         public PreRequestParsingException(final String message) {
             super(message);
@@ -65,7 +65,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      *
      * @see #parseRequest(HttpServletRequest)
      */
-    public static class RequestParsingException extends Exception {
+    public static class RequestParsingException extends IOException {
 
         public RequestParsingException(final String message) {
             super(message);
@@ -82,7 +82,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      *
      * @see #processRequest(Validity)
      */
-    public static class RequestProcessException extends Exception {
+    public static class RequestProcessException extends IOException {
 
         private HttpStatus statusToReturn;
 
@@ -106,14 +106,9 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
 
     }
 
-    /**
-     * The associated {@link Logger} to this class
-     */
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
+    protected static final String INTERNAL_VERSION = "internal";
 
-    /**
-     * The associated {@link ApplicationContext} to this servlet
-     */
     private ApplicationContext applicationContext;
 
     public ApplicationContext getApplicationContext() {
@@ -128,11 +123,27 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     }
 
     /**
+     * Get the associated {@link SinglePointHttpServletInfo} to this {@link SinglePointHttpServlet}
+     *
+     * @return the associated {@link SinglePointHttpServletInfo} to this {@link SinglePointHttpServlet}
+     */
+    protected abstract SinglePointHttpServletInfo getInfo();
+
+    /**
+     * Get the version of this {@link SinglePointHttpServlet}
+     *
+     * @return the version of this {@link SinglePointHttpServlet}
+     */
+    protected String getVersion() {
+        return INTERNAL_VERSION;
+    }
+
+    /**
      * Get the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
      *
      * @return the associated {@link HttpMapper} to this {@link SinglePointHttpServlet}
      */
-    public abstract HttpMapper getHttpMapper();
+    protected abstract HttpMapper getHttpMapper();
 
     /**
      * Get the associated {@link HttpMethod} to this {@link SinglePointHttpServlet}
@@ -158,13 +169,6 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
      * @throws RequestProcessException if an error occurred during request processing
      */
     protected abstract RESPONSE processRequest(final REQUEST request) throws RequestProcessException;
-
-    /**
-     * Get the usage description of this {@link SinglePointHttpServlet}
-     *
-     * @return the usage description of this {@link SinglePointHttpServlet}
-     */
-    protected abstract String getUsageDescription();
 
     /**
      * Convenience method to apply initialization from specific class
@@ -228,17 +232,17 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
 
     protected void handlePreRequestParsingError(final PreRequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        if (!StringUtil.isNullOrEmpty(getUsageDescription())) {
-            resp.getWriter().print(getUsageDescription());
+        if (!StringUtil.isNullOrEmpty(e.getMessage())) {
+            resp.getWriter().print(e.getMessage());
         }
         resp.getWriter().flush();
     }
 
     protected void handleRequestParsingError(final RequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        if (!StringUtil.isNullOrEmpty(getUsageDescription())) {
-            resp.getWriter().print(getUsageDescription());
-        }
+        resp.setContentType(getHttpMapper().getResponseContentType());
+        resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
+        resp.getWriter().print(getHttpMapper().serialize(getInfo()));
         resp.getWriter().flush();
     }
 
