@@ -46,6 +46,7 @@ import java.util.HashMap;
  *
  * @param <REQUEST>  the request type, according to the associated {@link HttpMethod} (request parameters for {@link HttpMethod#GET}, request body for {@link HttpMethod#POST}, ...)
  * @param <RESPONSE> the response type
+ * @author Aurelien Bourdon
  */
 public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE> extends ApplicationHttpServlet {
 
@@ -111,7 +112,14 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
 
     }
 
+    /**
+     * Default version for any internal servlet
+     */
     public static final String INTERNAL_VERSION = "internal";
+
+    /**
+     * The helper message query parameter for any {@link SinglePointHttpServlet}
+     */
     public static final String HELP_PARAMETER = "help";
 
     protected static final HttpMapper JSON_HTTP_MAPPER = new DefaultJsonHttpMapper();

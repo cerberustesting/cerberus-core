@@ -23,6 +23,11 @@ import org.springframework.http.HttpMethod;
 
 import java.util.Set;
 
+/**
+ * A specific {@link SinglePointHttpServletInfo} for a {@link org.cerberus.servlet.api.GetableHttpServlet}
+ *
+ * @author Aurelien Bourdon
+ */
 public class GetableHttpServletInfo extends SinglePointHttpServletInfo {
 
     public static class GetableUsage extends Usage {

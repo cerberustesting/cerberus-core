@@ -19,6 +19,11 @@
  */
 package org.cerberus.servlet.api.info;
 
+/**
+ * A request parameter that can be inserted into a {@link SinglePointHttpServletInfo}
+ *
+ * @author Aurelien Bourdon
+ */
 public class RequestParameter {
 
     private final String name;
