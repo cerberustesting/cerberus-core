@@ -21,7 +21,6 @@ package org.cerberus.servlet.api.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cerberus.servlet.api.HttpMapper;
 import org.cerberus.util.json.ObjectMapperUtil;
 import org.springframework.http.MediaType;
 

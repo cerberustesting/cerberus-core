@@ -23,13 +23,13 @@ import com.google.common.collect.Sets;
 import org.apache.log4j.Logger;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,7 +47,7 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
     /**
      * The associated request to this {@link DeleteExecutionInQueue}
      */
-    public static class Request implements Validity {
+    public static class Request implements Validable {
 
         private List<Long> ids;
 
@@ -55,10 +55,16 @@ public class DeleteExecutionInQueue extends PostableHttpServlet<DeleteExecutionI
             return ids;
         }
 
+
         @Override
-        public boolean isValid() {
-            return ids != null && !ids.isEmpty();
+        public Validity validate() {
+            final Validity.Builder validity = Validity.builder();
+            if (ids == null || ids.isEmpty()) {
+                validity.reason("`ids` is null or empty");
+            }
+            return validity.build();
         }
+
     }
 
     /**

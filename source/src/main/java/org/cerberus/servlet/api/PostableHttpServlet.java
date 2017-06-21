@@ -20,7 +20,7 @@
 package org.cerberus.servlet.api;
 
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
-import org.cerberus.util.validity.Validity;
+import org.cerberus.util.validity.Validable;
 import org.springframework.http.HttpMethod;
 
 import javax.servlet.ServletException;
@@ -36,7 +36,7 @@ import java.io.IOException;
  * @param <RESPONSE> the response type
  * @author abourdon
  */
-public abstract class PostableHttpServlet<REQUEST extends Validity, RESPONSE> extends SinglePointHttpServlet<REQUEST, RESPONSE> {
+public abstract class PostableHttpServlet<REQUEST extends Validable, RESPONSE> extends SinglePointHttpServlet<REQUEST, RESPONSE> {
 
     @Override
     protected final HttpMethod getHttpMethod() {

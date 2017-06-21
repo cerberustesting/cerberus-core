@@ -23,11 +23,10 @@ import org.cerberus.engine.entity.threadpool.ExecutionThreadPoolStats;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyRequest;
 import org.cerberus.servlet.api.GetableHttpServlet;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.info.GetableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

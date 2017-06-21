@@ -17,34 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.cerberus.servlet.api;
+package org.cerberus.util.validity;
 
-import java.io.IOException;
+/**
+ * Help to know if the implementing object if valid or not.
+ *
+ * @author abourdon
+ */
+public interface Validable {
 
-public interface HttpMapper {
-
-    class HttpSerializationException extends IOException {
-        public HttpSerializationException(final Throwable cause) {
-            super(cause);
-        }
-    }
-
-    class HttpDeserializationException extends IOException {
-        public HttpDeserializationException(final Throwable cause) {
-            super(cause);
-        }
-    }
-
-    <T, U> T serialize(U data) throws HttpSerializationException;
-
-    <T> T deserialize(String payload, Class<T> type) throws HttpDeserializationException;
-
-    String getRequestContentType();
-
-    String getRequestCharacterEncoding();
-
-    String getResponseContentType();
-
-    String getResponseCharacterEncoding();
+    /**
+     * Check if this object is valid or not.
+     *
+     * @return the {@link Validity} result of this object validation
+     */
+    Validity validate();
 
 }

@@ -24,14 +24,13 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
 import org.cerberus.engine.entity.threadpool.ManageableThreadPoolExecutor;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

@@ -23,18 +23,17 @@ import com.google.common.collect.Sets;
 import org.cerberus.crud.entity.TestCaseExecutionInQueue;
 import org.cerberus.crud.service.ITestCaseExecutionInQueueService;
 import org.cerberus.exception.CerberusException;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
     /**
      * The associated request body to this {@link UpdateExecutionInQueueState}
      */
-    public static class Request implements Validity {
+    public static class Request implements Validable {
 
         private TestCaseExecutionInQueue.State state;
 
@@ -63,15 +62,18 @@ public class UpdateExecutionInQueueState extends PostableHttpServlet<UpdateExecu
             return ids;
         }
 
-        @Override
-        public boolean isValid() {
-            boolean stateValidity = state != null && (state == TestCaseExecutionInQueue.State.WAITING || state == TestCaseExecutionInQueue.State.CANCELLED);
-            if (!stateValidity) {
-                return false;
-            }
-            return ids != null && !ids.isEmpty();
-        }
 
+        @Override
+        public Validity validate() {
+            final Validity.Builder validity = Validity.builder();
+            if (state == null || (state != TestCaseExecutionInQueue.State.WAITING && state != TestCaseExecutionInQueue.State.CANCELLED)) {
+                validity.reason("`state` null or invalid (not WAITING nor CANCELLED)");
+            }
+            if (ids == null || ids.isEmpty()) {
+                validity.reason("`ids` is null");
+            }
+            return validity.build();
+        }
     }
 
     /**

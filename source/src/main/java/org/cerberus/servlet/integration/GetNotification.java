@@ -137,7 +137,7 @@ public class GetNotification extends HttpServlet {
             msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_EXPECTED);
             msg.setDescription(msg.getDescription().replace("%ITEM%", "GetNotification")
                     .replace("%OPERATION%", "Get")
-                    .replace("%REASON%", "Unknown reason!"));
+                    .replace("%REASON%", "Unknown invalidityReason!"));
             answer.setResultMessage(msg);
         }
 
