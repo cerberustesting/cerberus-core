@@ -50,6 +50,8 @@ public interface ITestCaseService {
 
     List<TestCase> findTestCaseByTestSystem(String test, String system);
 
+    List<TestCase> findTestCaseByApplication(String application);
+
     List<TestCase> findTestCaseActiveByCriteria(String test, String application, String country);
 
     boolean updateTestCaseInformation(TestCase testCase);

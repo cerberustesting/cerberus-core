@@ -31,6 +31,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -118,7 +119,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
 
     @Override
-    public void init() throws ServletException {
+    public final void init() throws ServletException {
         super.init();
         postInit();
     }
