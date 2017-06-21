@@ -27,6 +27,11 @@ import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
+/**
+ * A {@link HttpMapper} that deals with UTF-8 JSON charset
+ *
+ * @author Aurelien Bourdon
+ */
 public class DefaultJsonHttpMapper implements HttpMapper {
 
     private static final String CONTENT_TYPE = MediaType.APPLICATION_JSON_VALUE;

@@ -23,6 +23,11 @@ import org.springframework.http.HttpMethod;
 
 import java.util.Set;
 
+/**
+ * A specific {@link SinglePointHttpServletInfo} for {@link org.cerberus.servlet.api.PostableHttpServlet}
+ *
+ * @author Aurelien Bourdon
+ */
 public class PostableHttpServletInfo extends SinglePointHttpServletInfo {
 
     public static class PostableUsage extends Usage {

@@ -21,6 +21,11 @@ package org.cerberus.servlet.api.mapper;
 
 import java.io.IOException;
 
+/**
+ * A mapper to serialize and deserialize data to/from HTTP transactions
+ *
+ * @author Aurelien Bourdon
+ */
 public interface HttpMapper {
 
     class HttpSerializationException extends IOException {

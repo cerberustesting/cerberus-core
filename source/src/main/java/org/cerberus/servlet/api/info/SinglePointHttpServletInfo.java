@@ -19,8 +19,15 @@
  */
 package org.cerberus.servlet.api.info;
 
+import org.cerberus.servlet.api.SinglePointHttpServlet;
 import org.springframework.http.HttpMethod;
 
+/**
+ * Information structure for a {@link org.cerberus.servlet.api.SinglePointHttpServlet}
+ *
+ * @author Aurelien Bourdon
+ * @see SinglePointHttpServlet#getInfo()
+ */
 public class SinglePointHttpServletInfo {
 
     public static class Usage {
