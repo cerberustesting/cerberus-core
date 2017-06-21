@@ -21,6 +21,7 @@ package org.cerberus.servlet.api;
 
 import org.apache.log4j.Logger;
 import org.cerberus.servlet.api.info.SinglePointHttpServletInfo;
+import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.util.StringUtil;
 import org.cerberus.util.validity.Validable;
@@ -38,14 +39,14 @@ import java.io.IOException;
 import java.util.HashMap;
 
 /**
- * Base class for any single point {@link HttpServlet}.
+ * Base class for any single point {@link ApplicationHttpServlet}.
  * <p>
- * A single point {@link HttpServlet} is a specific {@link HttpServlet} that can be only reached through a given {@link HttpMethod}
+ * A single point {@link ApplicationHttpServlet} is a specific {@link ApplicationHttpServlet} that can be only reached through a given {@link HttpMethod}
  *
  * @param <REQUEST>  the request type, according to the associated {@link HttpMethod} (request parameters for {@link HttpMethod#GET}, request body for {@link HttpMethod#POST}, ...)
  * @param <RESPONSE> the response type
  */
-public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE> extends HttpServlet {
+public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE> extends ApplicationHttpServlet {
 
     /**
      * Raised when an error occured during pre-request parsing
@@ -111,17 +112,11 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
 
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
     protected static final String INTERNAL_VERSION = "internal";
-
-    private ApplicationContext applicationContext;
-
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
+    private static final HttpMapper JSON_HTTP_MAPPER = new DefaultJsonHttpMapper();
 
     @Override
     public void init() throws ServletException {
         super.init();
-        initCore();
         postInit();
     }
 
@@ -235,36 +230,34 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
     }
 
     protected void handlePreRequestParsingError(final PreRequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        if (!StringUtil.isNullOrEmpty(e.getMessage())) {
-            resp.getWriter().print(e.getMessage());
-        }
-        resp.getWriter().flush();
+        writeError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), resp);
     }
 
     protected void handleRequestParsingError(final RequestParsingException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        resp.setStatus(HttpStatus.BAD_REQUEST.value());
-        resp.setContentType(getHttpMapper().getResponseContentType());
-        resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
-        resp.getWriter().print(getHttpMapper().serialize(new HashMap<String, Object>() {
-            {
-                put("reason", e.getMessage());
-                put("servletInfo", getInfo());
-            }
-        }));
-        resp.getWriter().flush();
+        writeError(
+                HttpStatus.BAD_REQUEST.value(),
+                new HashMap<String, Object>() {
+                    {
+                        put("reason", e.getMessage());
+                        put("serviceInfo", getInfo());
+                    }
+                },
+                resp
+        );
     }
 
     protected void handleRequestProcessError(final RequestProcessException e, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        resp.setStatus(e.getStatusToReturn().value());
-        if (!StringUtil.isNullOrEmpty(e.getMessage())) {
-            resp.getWriter().print(e.getMessage());
-        }
-        resp.getWriter().flush();
+        writeError(e.getStatusToReturn().value(), e.getMessage(), resp);
     }
 
-    private void initCore() {
-        applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+    protected void writeError(final int errorStatus, final Object errorMessage, final HttpServletResponse resp) throws IOException {
+        resp.setStatus(errorStatus);
+        resp.setContentType(JSON_HTTP_MAPPER.getResponseContentType());
+        resp.setCharacterEncoding(JSON_HTTP_MAPPER.getResponseCharacterEncoding());
+        if (errorMessage != null) {
+            resp.getWriter().print(JSON_HTTP_MAPPER.serialize(errorMessage));
+        }
+        resp.getWriter().flush();
     }
 
 }
