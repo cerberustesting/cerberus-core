@@ -19,18 +19,73 @@
  */
 package org.cerberus.util.validity;
 
-/**
- * Help to know if the implementing object if valid or not.
- *
- * @author abourdon
- */
-public interface Validity {
+import java.util.ArrayList;
+import java.util.List;
 
-    /**
-     * Check if this object is valid or not.
-     *
-     * @return <code>true</code> if this object is valid, <code>false</code> otherwise
-     */
-    boolean isValid();
+public class Validity {
+
+    public static Validity valid() {
+        return new Validity();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private Validity validity;
+
+        private Builder() {
+            this.validity = new Validity();
+        }
+
+        public Builder valid(final boolean valid) {
+            validity.setValid(valid);
+            return this;
+        }
+
+        public Builder reason(final String reason) {
+            validity.addReason(reason);
+            return this;
+        }
+
+        public Builder merge(final Validity other) {
+            if (!other.isValid()) {
+                validity.setValid(false);
+                validity.getReasons().addAll(other.getReasons());
+            }
+            return this;
+        }
+
+        public Validity build() {
+            if (validity.isValid() && !validity.getReasons().isEmpty()) {
+                validity.setValid(false);
+            }
+            return validity;
+        }
+    }
+
+    private boolean valid = true;
+    private List<String> reasons = new ArrayList<>();
+
+    private Validity() {
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public List<String> getReasons() {
+        return reasons;
+    }
+
+    private void setValid(final boolean valid) {
+        this.valid = valid;
+    }
+
+    private void addReason(final String reason) {
+        reasons.add(reason);
+    }
 
 }

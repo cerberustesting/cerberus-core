@@ -21,7 +21,9 @@ package org.cerberus.servlet.api;
 
 import org.apache.log4j.Logger;
 import org.cerberus.servlet.api.info.SinglePointHttpServletInfo;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.util.StringUtil;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpMethod;
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Base class for any single point {@link HttpServlet}.
@@ -42,7 +45,7 @@ import java.io.IOException;
  * @param <REQUEST>  the request type, according to the associated {@link HttpMethod} (request parameters for {@link HttpMethod#GET}, request body for {@link HttpMethod#POST}, ...)
  * @param <RESPONSE> the response type
  */
-public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE> extends HttpServlet {
+public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE> extends HttpServlet {
 
     /**
      * Raised when an error occured during pre-request parsing
@@ -80,7 +83,7 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
     /**
      * Raised when an error occurred during request processing
      *
-     * @see #processRequest(Validity)
+     * @see #processRequest(Validable)
      */
     public static class RequestProcessException extends IOException {
 
@@ -205,8 +208,9 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
 
             // Second, parse and valid request
             final REQUEST request = parseRequest(req);
-            if (!isRequestValid(request)) {
-                throw new RequestParsingException("Invalid request " + request);
+            final Validity validity = request.validate();
+            if (!validity.isValid()) {
+                throw new RequestParsingException("Parameter(s) invalid. " + validity.getReasons());
             }
 
             // Third, process request
@@ -242,7 +246,12 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
         resp.setContentType(getHttpMapper().getResponseContentType());
         resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
-        resp.getWriter().print(getHttpMapper().serialize(getInfo()));
+        resp.getWriter().print(getHttpMapper().serialize(new HashMap<String, Object>() {
+            {
+                put("reason", e.getMessage());
+                put("servletInfo", getInfo());
+            }
+        }));
         resp.getWriter().flush();
     }
 
@@ -256,10 +265,6 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validity, RESPONSE>
 
     private void initCore() {
         applicationContext = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
-    }
-
-    private boolean isRequestValid(REQUEST request) {
-        return request != null && request.isValid();
     }
 
 }

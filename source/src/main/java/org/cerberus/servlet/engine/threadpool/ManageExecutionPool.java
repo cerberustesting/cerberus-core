@@ -23,14 +23,14 @@ import com.google.common.collect.Sets;
 import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
 import org.cerberus.servlet.api.EmptyResponse;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -42,7 +42,7 @@ import java.util.Collections;
 @WebServlet(name = "ManageExecutionPool", urlPatterns = {"/ManageExecutionPool"})
 public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool.Request, EmptyResponse> {
 
-    /* default */ static class Request implements Validity {
+    /* default */ static class Request implements Validable {
 
         private Action action;
 
@@ -57,8 +57,16 @@ public class ManageExecutionPool extends PostableHttpServlet<ManageExecutionPool
         }
 
         @Override
-        public boolean isValid() {
-            return action != null && executionPoolKey != null && executionPoolKey.isValid();
+        public Validity validate() {
+            final Validity.Builder validity = Validity.builder();
+            if (action == null) {
+                validity.reason("null `action`");
+            }
+            if (executionPoolKey == null) {
+                validity.reason("null `executionPoolKey`");
+            }
+            validity.merge(executionPoolKey.validate());
+            return validity.build();
         }
 
     }

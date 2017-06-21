@@ -32,16 +32,15 @@ import org.cerberus.crud.service.ITestCaseService;
 import org.cerberus.enums.MessageEventEnum;
 import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.api.GetableHttpServlet;
-import org.cerberus.servlet.api.HttpMapper;
+import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.info.GetableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.util.answer.AnswerItem;
 import org.cerberus.util.answer.AnswerList;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +64,7 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
      *
      * @author Aurelien Bourdon
      */
-    public static class Request implements Validity {
+    public static class Request implements Validable {
         /**
          * The mandatory request's campaign identifier
          */
@@ -83,13 +82,14 @@ public class GetCampaignTestCases extends GetableHttpServlet<GetCampaignTestCase
         }
 
         @Override
-        public boolean isValid() {
+        public Validity validate() {
+            final Validity.Builder validity = Validity.builder();
             try {
                 Integer.parseInt(campaignId);
-                return true;
             } catch (final NumberFormatException e) {
-                return false;
+                validity.reason("bad integer format for `id`");
             }
+            return validity.build();
         }
 
         public Integer getCampaignId() {

@@ -19,6 +19,8 @@
  */
 package org.cerberus.crud.entity;
 
+import org.cerberus.util.StringUtil;
+import org.cerberus.util.validity.Validable;
 import org.cerberus.util.validity.Validity;
 
 /**
@@ -26,7 +28,7 @@ import org.cerberus.util.validity.Validity;
  */
 public class CountryEnvironmentParameters {
 
-    public static class Key implements Validity {
+    public static class Key implements Validable {
 
         public static Key fromCountryEnvironmentParameters(CountryEnvironmentParameters countryEnvironmentParameters) {
             return new Key(
@@ -77,11 +79,6 @@ public class CountryEnvironmentParameters {
         }
 
         @Override
-        public boolean isValid() {
-            return system != null && application != null && country != null && environment != null;
-        }
-
-        @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
@@ -115,6 +112,23 @@ public class CountryEnvironmentParameters {
                     '}';
         }
 
+        @Override
+        public Validity validate() {
+            final Validity.Builder validity = Validity.builder();
+            if (StringUtil.isNullOrEmpty(system)) {
+                validity.reason("null or empty `system`");
+            }
+            if (StringUtil.isNullOrEmpty(application)) {
+                validity.reason("null or empty `application`");
+            }
+            if (StringUtil.isNullOrEmpty(country)) {
+                validity.reason("null or empty `country`");
+            }
+            if (StringUtil.isNullOrEmpty(environment)) {
+                validity.reason("null or empty `environment`");
+            }
+            return validity.build();
+        }
     }
 
     private String system;

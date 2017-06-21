@@ -257,7 +257,7 @@ public class GetExecutionQueue extends HttpServlet {
                 exec.put("testcase", tce.getExecution().getTestCase());
                 exec.put("env", tce.getExecution().getEnvironment());
                 exec.put("country", tce.getExecution().getCountry());
-                exec.put("isValid", tce.isValid());
+                exec.put("validate", tce.isValid());
                 exec.put("message", tce.getMessage());
                 dataArray.put(exec);
             }
