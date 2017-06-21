@@ -144,6 +144,11 @@ public class TestCaseService implements ITestCaseService {
     }
 
     @Override
+    public List<TestCase> findTestCaseByApplication(final String application) {
+        return testCaseDao.findTestCaseByApplication(application);
+    }
+
+    @Override
     public boolean updateTestCaseInformation(TestCase testCase) {
         return testCaseDao.updateTestCaseInformation(testCase);
     }

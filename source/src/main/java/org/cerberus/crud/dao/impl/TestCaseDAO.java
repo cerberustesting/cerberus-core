@@ -69,6 +69,10 @@ public class TestCaseDAO implements ITestCaseDAO {
     @Autowired
     private IFactoryTestCase factoryTestCase;
 
+    public static class Query {
+        private static final String FIND_BY_APPLICATION = "SELECT * FROM `testcase` tec WHERE `application` = ?";
+    }
+
     private static final Logger LOG = Logger.getLogger(TestCaseDAO.class);
 
     private final String OBJECT_NAME = "TestCase";
@@ -577,6 +581,24 @@ public class TestCaseDAO implements ITestCaseDAO {
         return res;
 
         //throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<TestCase> findTestCaseByApplication(final String application) {
+        List<TestCase> testCases = null;
+        try (
+                final Connection connection = databaseSpring.connect();
+                final PreparedStatement statement = connection.prepareStatement(Query.FIND_BY_APPLICATION)
+        ) {
+            statement.setString(1, application);
+            testCases = new ArrayList<>();
+            for (final ResultSet resultSet = statement.executeQuery(); resultSet.next(); ) {
+                testCases.add(loadFromResultSet(resultSet));
+            }
+        } catch (SQLException e) {
+            LOG.warn("Unable to get test cases for application " + application, e);
+        }
+        return testCases;
     }
 
     @Override

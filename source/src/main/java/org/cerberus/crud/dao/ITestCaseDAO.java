@@ -50,6 +50,8 @@ public interface ITestCaseDAO {
 
     boolean createTestCase(TestCase testCase);
 
+    List<TestCase> findTestCaseByApplication(String application);
+
     List<TestCase> findTestCaseByCriteria(String test, String application, String country, String active);
 
     /**

@@ -812,9 +812,9 @@
         <servlet-class>org.cerberus.servlet.zzpublic.ExecuteNextInQueue</servlet-class>
     </servlet>
     <servlet>
-        <description>Get the list of test cases associated to a campaign.</description>
-        <servlet-name>GetCampaignTestCases</servlet-name>
-        <servlet-class>org.cerberus.servlet.zzpublic.GetCampaignTestCases</servlet-class>
+        <description>Get a list of test cases based on criteria.</description>
+        <servlet-name>GetTestCases</servlet-name>
+        <servlet-class>org.cerberus.servlet.zzpublic.GetTestCases</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>DeleteBuildRevisionParameters</servlet-name>
@@ -1725,8 +1725,8 @@
         <url-pattern>/ExecuteNextInQueue</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>GetCampaignTestCases</servlet-name>
-        <url-pattern>/GetCampaignTestCases</url-pattern>
+        <servlet-name>GetTestCases</servlet-name>
+        <url-pattern>/GetTestCases</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>GeneratePerformanceString</servlet-name>
@@ -2428,7 +2428,7 @@
             <url-pattern>/ChangeUserPassword</url-pattern>
             <url-pattern>/AddToExecutionQueue</url-pattern>
             <url-pattern>/ReadApplicationObjectImage</url-pattern>
-            <url-pattern>/GetCampaignTestCases</url-pattern>
+            <url-pattern>/GetTestCases</url-pattern>
         </web-resource-collection>
     </security-constraint>
     <security-constraint>
