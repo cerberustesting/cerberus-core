@@ -110,9 +110,12 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
 
     }
 
+    public static final String INTERNAL_VERSION = "internal";
+    public static final String HELP_PARAMETER = "help";
+
+    protected static final HttpMapper JSON_HTTP_MAPPER = new DefaultJsonHttpMapper();
+
     private static final Logger LOG = Logger.getLogger(SinglePointHttpServlet.class);
-    protected static final String INTERNAL_VERSION = "internal";
-    private static final HttpMapper JSON_HTTP_MAPPER = new DefaultJsonHttpMapper();
 
     @Override
     public void init() throws ServletException {
@@ -177,6 +180,10 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
         // Do nothing by default
     }
 
+    protected boolean helpRequired(final HttpServletRequest req) throws IOException {
+        return req.getParameter(HELP_PARAMETER) != null;
+    }
+
     /**
      * Convenience method to apply actions before the request parsing, i.e., before calling the {@link #parseRequest(HttpServletRequest)} method
      *
@@ -198,24 +205,26 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
      */
     protected void handleRequest(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
         try {
-            // First, call pre-request parsing process
+            // First of all, check if help message display is required
+            if (helpRequired(req)) {
+                writeHelperMessage(resp);
+                return;
+            }
+
+            // Then, process request by:
+
+            // 1. Applying pre-request parsing
             preRequestParsing(req);
 
-            // Second, parse and valid request
+            // 2. Applying request parsing
             final REQUEST request = parseRequest(req);
             final Validity validity = request.validate();
             if (!validity.isValid()) {
                 throw new RequestParsingException("Parameter(s) invalid. " + validity.getReasons());
             }
 
-            // Third, process request
-            final RESPONSE response = processRequest(request);
-
-            // Finally send response to client
-            resp.setContentType(getHttpMapper().getResponseContentType());
-            resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
-            resp.getWriter().print(getHttpMapper().serialize(response));
-            resp.getWriter().flush();
+            // 3. Applying request processing and send response to client
+            writeResponse(processRequest(request), resp);
         } catch (PreRequestParsingException e) {
             handlePreRequestParsingError(e, req, resp);
         } catch (RequestParsingException e) {
@@ -250,6 +259,13 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
         writeError(e.getStatusToReturn().value(), e.getMessage(), resp);
     }
 
+    protected void writeHelperMessage(final HttpServletResponse resp) throws IOException {
+        resp.setContentType(JSON_HTTP_MAPPER.getResponseContentType());
+        resp.setCharacterEncoding(JSON_HTTP_MAPPER.getResponseCharacterEncoding());
+        resp.getWriter().print(JSON_HTTP_MAPPER.serialize(getInfo()));
+        resp.getWriter().flush();
+    }
+
     protected void writeError(final int errorStatus, final Object errorMessage, final HttpServletResponse resp) throws IOException {
         resp.setStatus(errorStatus);
         resp.setContentType(JSON_HTTP_MAPPER.getResponseContentType());
@@ -257,6 +273,13 @@ public abstract class SinglePointHttpServlet<REQUEST extends Validable, RESPONSE
         if (errorMessage != null) {
             resp.getWriter().print(JSON_HTTP_MAPPER.serialize(errorMessage));
         }
+        resp.getWriter().flush();
+    }
+
+    protected void writeResponse(final Object response, final HttpServletResponse resp) throws IOException {
+        resp.setContentType(getHttpMapper().getResponseContentType());
+        resp.setCharacterEncoding(getHttpMapper().getResponseCharacterEncoding());
+        resp.getWriter().print(getHttpMapper().serialize(response));
         resp.getWriter().flush();
     }
 
