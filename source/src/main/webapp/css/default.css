@@ -197,8 +197,8 @@ td
 }
 
 #page-layout{
-    /*max-width: 1488px; */      
-    /*margin-left: auto;*/
+    max-width: 1488px;       
+    margin-left: auto;
     margin-right: auto;                
 }
 #page-layout table{
@@ -286,17 +286,13 @@ select option{
 }
 
 .page-title-line {
-    /*border-bottom: 2px solid #3D3D3D; */
-    border-bottom: 1px solid #eee;
+    border-bottom: 2px solid #3D3D3D; 
     color: #3D3D3D;
-    /*font-size: 20px;*/
-    font-size: 30px;
-    /*font-weight: 900;*/
-    font-weight: 600;
-    /*margin-bottom: 30px;
-    margin-top:10px;*/
-    margin: 40px 0 20px;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 30px;
     padding-bottom: 10px;
+    margin-top:10px;
     text-transform: uppercase;
 }
 
