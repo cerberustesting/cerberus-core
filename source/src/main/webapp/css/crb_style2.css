@@ -792,8 +792,12 @@ table.dataTable thead th {
 }
 
 .dataTables_scroll{
-    clear: both;
+    /*overflow: auto;
+    clear: both;*/
+    width: 100%;
+    overflow: auto;
 }
+
 
 .editable-checklist{
     max-height: 350px;

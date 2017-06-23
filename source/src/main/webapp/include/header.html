@@ -1,140 +1,166 @@
-<!--
-  ~ Cerberus  Copyright (C) 2013  vertigo17
-  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
-  ~
-  ~ This file is part of Cerberus.
-  ~
-  ~ Cerberus is free software: you can redistribute it and/or modify
-  ~ it under the terms of the GNU General Public License as published by
-  ~ the Free Software Foundation, either version 3 of the License, or
-  ~ (at your option) any later version.
-  ~
-  ~ Cerberus is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
--->
-<nav role="navigation" class="navbar navbar-inverse navbar-static-top">
-    <div class="container-fluid" id="page-layout">
-        <div class="navbar-header navbar-left">
-            <a class="navbar-brand" href="Homepage.jsp">
-                <img id="logo" alt="Cerberus" src="images/logo2.png"/>
+<!-- Navigation side bar -->
+<nav class="navbar-default sidebar" role="navigation" style="margin-bottom: 0">
+    <!-- /.navbar-top-links -->
+    <div class="sidebar-nav navbar">
+        <ul class="nav" id="side-menu">
+            <!-- cerberus title and logo -->
+            <li>
+                <a href="Homepage.jsp" class ="titleCase">
+                    <span class="nav-text">Cerberus</span>
+                    <span class="glyphicon glyphicon-copyright-mark"></span>
+                </a>
+            </li>                      
+            <li class ="navbar-side-choice">
+                <a href="#">
+                  <i class="glyphicon glyphicon-edit"></i>
+                  <span class="nav-text">Test</span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a href="Test.jsp">Test</a></li>
+                    <li><a href="TestCaseList.jsp">TestCase</a></li>
+                    <li><a href="TestCaseScript.jsp">Edit TestCase</a></li>
+                    <li><a href="TestBattery2.jsp">Test Battery</a></li>
+                    <li><a href="Label.jsp" >Label</a></li>
+
+                </ul>
+            </li>
+                <li class ="navbar-side-choice" >
+                    <a href="TestDataLib.jsp">
+                      <i class="glyphicon glyphicon-folder-open"></i>
+                      <span class="nav-text">Data </span>
+                      <span class="fa arrow"></span>
+                    </a>
+                    <!-- dropdown menu -->
+                    <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                        <li><a href="TestDataLib.jsp">Test Data Lib</a></li>
+                    </ul>
+                </li>
+            <li class ="navbar-side-choice">
+                <a href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-play"></i>
+                  <span class="nav-text">Run </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a  href="RunTests1.jsp">Run Tests</a></li>
+                    <li><a  href="ExecutionPending.jsp">See Execution In Queue</a></li>
+                    <li><a  href="Robot.jsp">Robot</a></li>
+                    <li><a  href="TestCampaign2.jsp">Test Campaign</a></li>
+                </ul>
+            </li>
+            <li class ="navbar-side-choice">
+                <a href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-stats"></i>
+                  <span class="nav-text">Execution Reporting </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a  href="TestCaseExecution.jsp">Execution List</a></li>
+                    <li><a  href="ReportingExecutionByTag.jsp">Execution Report By Tag</a></li>
+                </ul>
+            </li>
+            <li class ="navbar-side-choice">
+                <a href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-font"></i>
+                  <span class="nav-text">Application  </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a  href="Application.jsp">Applications</a></li>
+                    <li><a  href="ApplicationObject.jsp">Application Objects</a></li>
+                    <li><a  href="AppService.jsp">Service Library</a></li>
+                    <li><a  href="SqlLibrary.jsp">SQL Library</a></li>
+                    <li><a  href="DeployType.jsp">Deploy Type</a></li>
+                </ul>
+            </li>
+            <li class ="navbar-side-choice">
+                <a href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-italic"></i>
+                  <span class="nav-text">Integration   </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a  href="IntegrationStatus.jsp">Integration Status</a></li>
+                    <li><a  href="Environment.jsp">Environments</a></li>
+                    <li><a  href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
+                    <li><a  href="BuildContent.jsp">Build Content</a></li>
+                    <li><a  href="Project.jsp">Project</a></li>
+                    <li><a  href="BatchInvariant.jsp">Batch</a></li>
+                </ul>
+            </li>
+            <!-- admin-->
+            <li class ="navbar-side-choice">
+                <a href="TestDataLib.jsp" id="menuIntegration">
+                  <i class="glyphicon glyphicon-user"></i>
+                  <span class="nav-text">Admin </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a href="UserManager2.jsp">Users Manager</a></li>
+                    <li><a href="LogViewer.jsp">Log Viewer</a></li>
+                    <li><a href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
+                    <li><a href="Parameter.jsp">Parameters</a></li>
+                    <li><a href="Invariant.jsp">Invariants</a></li>
+                    <li><a href="CerberusInformation.jsp">Monitoring</a></li>
+                </ul>
+            </li>
+            <li class ="navbar-side-choice">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-question-sign"></i>
+                  <span class="nav-text">Help    </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <!-- dropdown menu -->
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a  href="Documentation1.jsp">Documentation</a></li>
+                </ul>
+            </li>
+        </ul>
+    <!-- /.navbar-static-side -->
+</nav>
+<!-- navbar for the top -->
+<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <span id ="controlToggle" class="navbar-toggle"></span>
+
+    </div>
+
+    <ul class="nav navbar-top-links navbar-right">
+        <li class="userConnected">
+            <a id="formSystem">
+                <span class=" glyphicon glyphicon-folder-open" style="margin-right: 3px;"></span>
+                <form style="display: inline-block; margin-left: 3px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
+                    <select class="form-control" id="MySystem" name="MySystem" onchange="ChangeSystem()">
+                    </select>
+                </form>
             </a>
-        </div>
-        <!-- button added for responsivness of the header-->
-        <span class="sr-only">Toggle navigation</span>  
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <div id="navbar" class="navbar-nav">
-            <ul class="nav navbar-nav" id="navlist">
-                <li class="dropdown TestRO" style="display:none"><a name="menu" id ="menuTest" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Test <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuEditTest" href="Test.jsp">Test</a></li>
-                        <li id="subactive"><a name="menu" id="menuTestCaseList" href="TestCaseList.jsp">TestCase</a></li>
-                        <li id="subactive"><a name="menu" id="menuEditTestCase" href="TestCaseScript.jsp">Edit TestCase</a></li>
-                        <li id="subactive"><a name="menu" id="menuTestBattery" href="TestBattery2.jsp">Test Battery</a></li>
-                        <li id="subactive"><a name="menu" id="menuLabel" href="Label.jsp">Label</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown TestDataManager" style="display:none"><a name="menu" id="menuData" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Data <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuTestDataLib" href="TestDataLib.jsp">Test Data Lib</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown RunTest" style="display:none"><a name="menu" id="menuRun" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Run <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuRunTestCase" href="RunTests1.jsp">Run Tests</a></li>
-                        <li id="subactive"><a name="menu" id="menuRunTestSeePendingExecution" href="ExecutionPending.jsp">See Execution In Queue</a></li>
-                        <li id="subactive"><a name="menu" id="menuRobot" href="Robot.jsp">Robot</a></li>
-                        <li id="subactive"><a name="menu" id="menuTestCampaign" href="TestCampaign2.jsp">Test Campaign</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown TestRO" style="display:none"><a name="menu" id="menuExecutionReporting" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Execution Reporting <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuReportingExecutionList" href="TestCaseExecution.jsp">Execution List</a></li>
-                        <li id="subactive"><a name="menu" id="menuReportingExecutionByTag" href="ReportingExecutionByTag.jsp">Execution Report By Tag</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown IntegratorRO" style="display:none"><a name="menu" id="menuApplications" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Application <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuApplications" href="Application.jsp">Applications</a></li>
-                        <li id="subactive"><a name="menu" id="menuApplicationObjects" href="ApplicationObject.jsp">Application Objects</a></li>
-                        <li id="subactive"><a name="menu" id="menuAppService" href="AppService.jsp">Service Library</a></li>
-                        <li id="subactive"><a name="menu" id="menuSqlLibrary" href="SqlLibrary.jsp">SQL Library</a></li>
-                        <li id="subactive"><a name="menu" id="menuDeployType" href="DeployType.jsp">Deploy Type</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown IntegratorRO" style="display:none"><a name="menu" id="menuIntegration" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Integration <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuIntegrationStatus" href="IntegrationStatus.jsp">Integration Status</a></li>
-                        <li id="subactive"><a name="menu" id="menuEnvironments" href="Environment.jsp">Environments</a></li>
-                        <li id="subactive"><a name="menu" id="menuBuildRevision" href="BuildRevDefinition.jsp">Build/Rev Definition</a></li>
-                        <li id="subactive"><a name="menu" id="menuBuildContent" href="BuildContent.jsp">Build Content</a></li>
-                        <li id="subactive"><a name="menu" id="menuProject" href="Project.jsp">Project</a></li>
-                        <li id="subactive"><a name="menu" id="menuBatchInvariant" href="BatchInvariant.jsp">Batch</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown Administrator" style="display:none"><a name="menu" id="menuAdmin" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuUsersManager" href="UserManager2.jsp">Users Manager</a></li>
-                        <li id="subactive"><a name="menu" id="menuLogViewer" href="LogViewer.jsp">Log Viewer</a></li>
-                        <li id="subactive"><a name="menu" id="menuDatabaseMaintenance" href="DatabaseMaintenance.jsp">Database Maintenance</a></li>
-                        <li id="subactive"><a name="menu" id="menuParameter" href="Parameter.jsp">Parameters</a></li>
-                        <li id="subactive"><a name="menu" id="menuInvariants" href="Invariant.jsp">Invariants</a></li>
-                        <li id="subactive"><a name="menu" id="menuReportingExecutionThreadMonitoring" href="CerberusInformation.jsp">Monitoring</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown TestRO" style="display:none"><a name="menu" id="menuHelp" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">Help <span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive"><a name="menu" id="menuDocumentation" href="Documentation1.jsp">Documentation</a></li>
-                    </ul>
+        </li>
+        <li>
+            <a>
+                <span class="glyphicon glyphicon-globe language-icon"></span>
+                <form style="display: inline-block;" class="form-group">
+                    <select class="form-control" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
+                    </select>
+                </form>
+            </a>
+        </li>
+        <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                <i class="fa fa-user fa-fw"></i>
+                <span id="headerUserName">user</span>
+                <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a id="Logout" href="Logout.jsp"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                 </li>
             </ul>
-        </div>
-        <div class="nav navbar-nav navbar-right">
-            <ul  class="nav navbar-nav" id="navlist">
-                <li class="userConnected">
-                    <a id="formSystem">
-                        <span class=" glyphicon glyphicon-folder-open" style="color: white; margin-right: 5px;"></span>
-                        <form style="display: inline-block; margin-left: 5px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
-                            <select class="form-control header-dropdown" id="MySystem" style="" name="MySystem" onchange="ChangeSystem()">
-                            </select>
-                        </form>
-                    </a>
-                </li>
-                <li class="userConnected">
-                    <a id="formLang">
-                        <form class="form-group">
-                            <select class="form-control header-dropdown f16" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
-                            </select>
-                        </form>
-                    </a>
-                </li>
-
-
-                <li class="dropdown userConnected">
-                    <a id="userInfo" class="dropdown-toggle" aria-expanded="true" aria-haspopup="true" role="button" data-toggle="dropdown" href="#">
-                        <span class="glyphicon glyphicon-user" style="color: white"></span>
-                        <p id="headerUserName">user</p><span class="caret"></span></a>
-                    <ul class="dropdown-menu" id="subnavlist">
-                        <li id="subactive">
-                            <a id="Logout" href="Logout.jsp">
-                                <div>
-                                    <img src="images/logout.png"/>
-                                    <span name="menu" id="logout">logout</span>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>  
-        </div>
-    </div>
+        </li>
+    </ul>
 </nav>
-

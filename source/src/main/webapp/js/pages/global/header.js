@@ -17,6 +17,91 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+
+$(document).ready(function(){
+    
+    //page-layout must take the whole page take the whole page
+    $("#page-layout").css('height','');
+    $("#page-layout").height($(document).height());
+    $("body").height($(document).height());
+    
+    $( window ).resize(function() {//when the screen size change
+        $("#page-layout").height($(document).height());
+        //reDraw table after the resize
+        var tables = $('.dataTable').DataTable();
+        tables.draw();
+    });
+
+    collaspeHandler( localStorage.getItem("navbar-toggle") );
+    for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
+        if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
+            document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className +=" active";
+            document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
+
+        }
+    }
+
+    $('.navbar-toggle').click(function() {
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            collaspeHandler("collaspe");
+        }else{
+            collaspeHandler("extended");
+        }
+        //reDraw table after the resize
+        var tables = $('.dataTable').DataTable();
+        tables.draw();
+    });
+
+    function collaspeHandler(action){
+        console.log(action)
+        if (action ==="collaspe"){
+            $('#controlToggle').removeClass( "glyphicon glyphicon-triangle-right" );
+            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-left" );
+            localStorage.setItem("navbar-toggle", "collaspe");
+
+            if ( $( "#page-layout" ).hasClass( "extended" ) ){
+                $('.navbar-default').toggleClass('collapsed');
+                $('.navbar-static-top').toggleClass('collapsed');
+                $('#page-layout').toggleClass('extended');
+            }
+            localStorage.setItem("navbar-toggle", true);
+            $('#page-layout').css('margin-left','250px');
+        }
+        else if (action ==="extended"){
+            $('#controlToggle').removeClass( "glyphicon glyphicon-triangle-left" );
+            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-right" );
+            localStorage.setItem("navbar-toggle", "extended");
+
+            if ( !$( "#page-layout" ).hasClass( "extended" ) ){
+                $('.navbar-default').toggleClass('collapsed');
+                $('.navbar-static-top').toggleClass('collapsed');
+                $('#page-layout').toggleClass('extended');
+            }
+            $('#page-layout').css('margin-left','60px');
+        }
+        else{//first loading
+            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-left" );
+        }
+    }
+
+    $('.navbar-side-choice').hover(function() {
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            $(this).find('> ul').addClass('in'); 
+            $(this).addClass('active');
+            //remove display bug
+            $(this).find('> ul').css("height", "");
+        }
+    }, function() {
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            $(this).find('> ul').removeClass('in'); 
+            $(this).removeClass('active');
+        }
+    });
+}) ;
+    
+
+
 function displayHeaderLabel(doc) {
     var user = getUser();
     displayMenuItem(doc);

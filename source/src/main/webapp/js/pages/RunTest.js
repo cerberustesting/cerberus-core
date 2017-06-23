@@ -1035,26 +1035,28 @@ function loadTestCaseEssentialData(test, testcase, environment, country) {
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
     $(".collapse").each(function () {
-        $(this).on('shown.bs.collapse', function () {
-            localStorage.setItem(this.id, true);
-            if ($(this)[0].id != "filtersPanel")
-                updateUserPreferences();
-            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
-        });
+        if ( this.id !== "sidenavbar-subnavlist" ){//don't add those listenner to the the navbar collaspe
+            $(this).on('shown.bs.collapse', function () {
+                localStorage.setItem(this.id, true);
+                if ($(this)[0].id != "filtersPanel")
+                    updateUserPreferences();
+                $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            });
 
-        $(this).on('hidden.bs.collapse', function () {
-            localStorage.setItem(this.id, false);
-            if ($(this)[0].id != "filtersPanel")
-                updateUserPreferences();
-            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
-        });
+            $(this).on('hidden.bs.collapse', function () {
+                localStorage.setItem(this.id, false);
+                if ($(this)[0].id != "filtersPanel")
+                    updateUserPreferences();
+                $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+            });
 
-        if (localStorage.getItem(this.id) === "false") {
-            $(this).removeClass('in');
-            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
-        } else {
-            $(this).addClass('in');
-            $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            if (localStorage.getItem(this.id) === "false") {
+                $(this).removeClass('in');
+                $(this).prev().find(".toggle").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
+            } else {
+                $(this).addClass('in');
+                $(this).prev().find(".toggle").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
+            }
         }
     });
 }
