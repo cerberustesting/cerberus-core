@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # Travis job configuration when checking a commit from a pull request
 
-cd source && mvn clean package
+set -ev
+
+cd source
+mvn clean package
