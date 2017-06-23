@@ -82,7 +82,7 @@
             	
             	<div class="col-md-12">
             		<div class="col-md-6">
-            			<img src="images/new-logo-cerberus.png" class="img-responsive center-block logo-login"></img>
+            			<img src="images/logo250.png" class="img-responsive center-block logo-login"></img>
             		</div>
             		<div class="col-md-6">
 		                <H2>Cerberus Login</H2>

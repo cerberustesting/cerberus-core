@@ -8801,8 +8801,8 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
 
         // New design Login page
         //-- ------------------------ 1158
-        SQLS = new StringBuilder();
-        SQLS.append("UPDATE `parameter` SET value='<a href=\"mailto:support@domain.com?Subject=Cerberus%20Account\">Support</a>' where param='cerberus_support_email'");
+        SQLS = new StringBuilder(); // replace color yellow by no color 
+        SQLS.append("UPDATE `parameter` SET value=replace(value,'style=\"color: yellow\"','') where param='cerberus_support_email");
         SQLInstruction.add(SQLS.toString());
         
         return SQLInstruction;
