@@ -1,0 +1,193 @@
+/*
+ * Cerberus  Copyright (C) 2013  vertigo17
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+ *
+ * This file is part of Cerberus.
+ *
+ * Cerberus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Cerberus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
+ *//* 
+    Created on : May 18, 2015, 2:18:04 PM
+    Author     : Ronpiche
+*/
+
+/* color setting */
+
+/* side navbarbar background color */
+.navbar,
+.navbar-default,
+body{
+    background-color:#2a4d69;
+}
+/* side navbarbar text color */
+.nav-second-level>li>a,
+.nav-second-level>li>a,
+#side-menu>li>a,
+#side-menu>li>a,
+.sidebar ul li a.active {
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    color: #a7b1c2;
+    padding: 14px 20px 14px 18px;
+}
+
+/* side navbarbar text color */
+.nav-second-level>li>a:focus,
+.nav-second-level>li>a:hover,
+#side-menu>li>a:focus,
+#side-menu>li>a:hover,
+
+.sidebar ul li a.active {
+    background-color: #293846;
+    color: white;
+}
+
+.navbar-side-choice.active{
+    border-left: 4px solid #008CDA;
+    background: #293846;
+    color: white;
+}
+.titleCase{
+    background-color:#2a4d69;
+    color: white !important;
+}
+/* generic setting */
+
+/* display  all the way to the top*/
+.sidebar {
+    margin-top: 0px;
+}
+/*make the title fit the crossing of the side navbar and the top navbar */
+.titleCase{
+    position: absolute;
+    display: block;
+    left: 0px;
+    bottom:0;
+    width: 100%;
+    padding: 8px 0;
+    font-size: 20px;
+    height: 50px;
+}
+
+/* =side navbar config= */
+.navbar{
+    -webkit-transition: all 0.1s ease-in-out;
+    -moz-transition: all 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
+}
+/* change size when collapsing*/
+.navbar-default.collapsed{
+    width: 60px;
+}
+
+/*enlarge the icon when collapsing side bar */
+.navbar-default.collapsed .glyphicon {
+    font-size: 20px;
+}
+/*hidde text */
+.navbar-default.collapsed .nav-text {
+    display: none;
+}
+/*hide dropdow arrow*/
+.navbar-default.collapsed .fa{
+    display: none;
+}
+
+/* toggle button style */
+.navbar-default .navbar-toggle {
+    margin-left: 15px;
+}
+
+/*whole topbar style */
+.navbar-static-top {
+    font-size: 16px;
+}
+/* resize the top bar */
+.navbar-static-top {
+    margin: 0 0 0 250px;
+    background-color:#f3f3f4;
+}
+.navbar-static-top.collapsed{
+    margin: 0 0 0 60px;
+}
+/*left part topbar style */
+.navbar-toggle {
+    position: relative;
+    float: right;
+    padding: 8px 8px;
+    margin-top: 5px;
+    margin-right: 15px;
+    margin-bottom: 5px;
+    background-color: transparent;
+    border: 1px solid transparent;
+}
+/*mouse over dropdown */
+.nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
+    margin-top: 0;
+}
+/* override bootstrap to always display this button */
+.navbar-toggle {
+    display: block;
+}
+/*topbar right part style */
+.navbar-right>li>a {
+    padding: 10px;
+    min-height: 40px;
+}
+.navbar-right select{
+    height: 28px;
+    padding: 5px 5px;
+    font-size: 12px;
+}
+.navbar-right .form-group {
+    margin-bottom: 0px;
+}
+.navbar-right .language-icon{
+    font-size: 18px;
+    top:4px;
+}
+/*space */
+.navbar-header{
+  margin-left: 15px;
+}
+.sidebar .nav-second-level li a.active {
+    padding-left: 37px;
+}
+/*display dropdow menu when navbar is collaspe*/
+.collapsed .nav-second-level li a {
+    padding-left: 10px;
+}
+.collapsed .nav-second-level li a.active {
+    padding-left: 10px;
+}
+.navbar-default.collapsed .nav-second-level {
+    position: absolute;
+    left: 54px;
+    min-width: 140px;
+    top: 0;
+    background-color: #2f4050;
+    font-size: 12px;
+    padding-left: 0px;
+    padding: 10px 10px 10px 10px;
+}
+/* fix a display bug */
+.nav nav-second-level{
+    overflow: hidden;
+}
+/* remove border */
+#page-layout {
+    border-left: 0px;
+}
+.sidebar ul li {
+    border-bottom: 0px;
+}
