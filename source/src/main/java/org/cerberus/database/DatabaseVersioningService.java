@@ -8799,6 +8799,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('USERGROUP', 'TestStepLibrary', '115', 'Can modify Step Library and flag Step as Library.', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // New design Login page
+        //-- ------------------------ 1158
+        SQLS = new StringBuilder(); // replace color yellow by no color 
+        SQLS.append("UPDATE `parameter` SET value=replace(value,'style=\"color: yellow\"','') where param='cerberus_support_email");
+        SQLInstruction.add(SQLS.toString());
+        
         return SQLInstruction;
     }
 
