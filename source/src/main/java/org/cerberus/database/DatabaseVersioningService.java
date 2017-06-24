@@ -8791,7 +8791,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLInstruction.add(SQLS.toString());
 
         // Added Label User Group (copied from from Test Group) allowing to remove access to update, delete and create Label at user level.
-        //-- ------------------------ 1156-1157
+        //-- ------------------------ 1158-1159
         SQLS = new StringBuilder();
         SQLS.append("INSERT INTO usergroup Select Login, 'TestStepLibrary' from usergroup where GroupName = 'Test';");
         SQLInstruction.add(SQLS.toString());
@@ -8799,15 +8799,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('USERGROUP', 'TestStepLibrary', '115', 'Can modify Step Library and flag Step as Library.', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // New design Login page
+        //-- ------------------------ 1160
+        SQLS = new StringBuilder(); // replace color yellow by no color 
+        SQLS.append("UPDATE `parameter` SET value=replace(value,'style=\"color: yellow\"','') where param='cerberus_support_email';");
+        SQLInstruction.add(SQLS.toString());
+        
         // Added ScreenSize on Execution Queue table.
-        //-- ------------------------ 1158
+        //-- ------------------------ 1161
         SQLS = new StringBuilder();
         SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
         SQLS.append("ADD COLUMN `ScreenSize` VARCHAR(45) NULL DEFAULT NULL AFTER `Platform`;");
         SQLInstruction.add(SQLS.toString());
 
         // Delete no longuer used parameter cerberus_executiondetail_use.
-        //-- ------------------------ 1159
+        //-- ------------------------ 1162
         SQLS = new StringBuilder();
         SQLS.append("DELETE from parameter where param='cerberus_executiondetail_use';");
         SQLInstruction.add(SQLS.toString());
