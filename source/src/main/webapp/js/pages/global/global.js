@@ -2817,12 +2817,10 @@ function defineAceMode(text) {
 /**
  * Do a JSON encoded HTTP POST call
  *
- * @param conf the configuration to apply for the POST. At least with a 'url' and 'data' attributes
- * @param success the callback in case of success
- * @param failure the callback in case of failure
+ * @param conf the same configuration as the Jquery's post method
  * @returns {undefined} void
  */
-function jsonPost(conf, success, failure) {
+function jsonPost(conf) {
     conf.contentType = 'application/json;charset=UTF-8';
     $.post(conf);
 }
