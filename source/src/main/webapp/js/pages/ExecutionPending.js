@@ -24,6 +24,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 });
 
 function initPage() {
+    var searchS = GetURLParameter("search");
+    
     displayPageLabel();
 
     // Display queue information
@@ -32,6 +34,10 @@ function initPage() {
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
     var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
+    
+    if (searchS !== null) {
+        table.search(searchS).draw();
+    }
 
     // React on table redraw
     table.on(

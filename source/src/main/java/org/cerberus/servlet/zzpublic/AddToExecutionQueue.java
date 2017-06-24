@@ -362,6 +362,7 @@ public class AddToExecutionQueue extends HttpServlet {
                                     browser,
                                     browserVersion,
                                     platform,
+                                    "",
                                     manualURL,
                                     manualHost,
                                     manualContextRoot,

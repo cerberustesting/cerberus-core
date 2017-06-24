@@ -27,7 +27,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         displayPageLabel(doc);
 
         appendCampaignList();
-
+//        $("#campaignSelect").select2();
+        
         var country = GetURLParameter("country");
         appendCountryList(country);
 
@@ -686,6 +687,7 @@ function appendCampaignList() {
             campaignList.append($('<option></option>').text(data.contentTable[index].campaign + " - " + data.contentTable[index].description)
                     .val(data.contentTable[index].campaign));
         }
+        
     });
 }
 

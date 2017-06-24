@@ -72,6 +72,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
     private static final String PARAMETER_ROBOT_PORT = "ss_p";
     private static final String PARAMETER_BROWSER_VERSION = "version";
     private static final String PARAMETER_PLATFORM = "platform";
+    private static final String PARAMETER_SCREENSIZE = "screensize";
     private static final String PARAMETER_MANUAL_URL = "manualurl";
     private static final String PARAMETER_MANUAL_HOST = "myhost";
     private static final String PARAMETER_MANUAL_CONTEXT_ROOT = "mycontextroot";
@@ -161,6 +162,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
         String robotPort = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_ROBOT_PORT), null, charset);
         String browserVersion = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_BROWSER_VERSION), null, charset);
         String platform = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_PLATFORM), null, charset);
+        String screenSize = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_SCREENSIZE), null, charset);
         boolean manualURL = ParameterParserUtil.parseBooleanParamAndDecode(request.getParameter(PARAMETER_MANUAL_URL), DEFAULT_VALUE_MANUAL_URL, charset);
         String manualHost = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_HOST), null, charset);
         String manualContextRoot = ParameterParserUtil.parseStringParamAndDecodeAndSanitize(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null, charset);
@@ -191,6 +193,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                 + "- " + PARAMETER_ROBOT_PORT + " : Robot Port that will be used for every execution triggered. [" + robotPort + "]\n"
                 + "- " + PARAMETER_BROWSER_VERSION + " : Browser Version that will be used for every execution triggered. [" + browserVersion + "]\n"
                 + "- " + PARAMETER_PLATFORM + " : Platform that will be used for every execution triggered. [" + platform + "]\n"
+                + "- " + PARAMETER_SCREENSIZE + " : Size of the screen that will be used for every execution triggered. [" + screenSize + "]\n"
                 + "- " + PARAMETER_MANUAL_URL + " : Activate or not the Manual URL of the application to execute. If activated the 4 parameters after are necessary. [" + manualURL + "]\n"
                 + "- " + PARAMETER_MANUAL_HOST + " : Host of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualHost + "]\n"
                 + "- " + PARAMETER_MANUAL_CONTEXT_ROOT + " : Context root of the application to test (only used when " + PARAMETER_MANUAL_URL + " is activated). [" + manualContextRoot + "]\n"
@@ -284,6 +287,7 @@ public class AddToExecutionQueueV001 extends HttpServlet {
                                         browser,
                                         browserVersion,
                                         platform,
+                                        screenSize,
                                         manualURL,
                                         manualHost,
                                         manualContextRoot,

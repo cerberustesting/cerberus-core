@@ -2480,12 +2480,7 @@ function openChangeTagPopin(value) {
                     var deferred = $.get("./SetTagToExecution", {executionId: id, newTag: tag});
 
                     deferred.success(function () {
-                        var data = getParameter("cerberus_executiondetail_use");
-                        if(data.value == "N"){
-                            $(location).attr('href', "./ExecutionDetail.jsp?id_tc=" + value);
-                        }else{
-                            $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
-                        }
+                        $(location).attr('href', "./ExecutionDetail2.jsp?executionId=" + value);
                     });
 
 //

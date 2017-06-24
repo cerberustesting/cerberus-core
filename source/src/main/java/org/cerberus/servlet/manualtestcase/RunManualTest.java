@@ -151,32 +151,9 @@ public class RunManualTest extends HttpServlet {
 
                 }
 
-                //Notify it's finnished
-//        WebsocketTest wst = new WebsocketTest();
-//        try {
-//            wst.handleMessage(execution.getTag());
-//        } catch (IOException ex) {
-//            MyLogger.log(SaveManualExecution.class.getName(), Level.FATAL, "" + ex);
-//        }
-                /**
-                 * Get Step Execution and insert them into Database
-                 */
-//            for (TestCaseExecutionData tced : getTestCaseExecutionData(req, appContext, test, testCase, executionId)){
-//            testCaseStepExecutionService.insertTestCaseStepExecution(null);
-//            }
             }
 
-            AnswerItem a = parameterService.readByKey("", "cerberus_executiondetail_use");
-            if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                Parameter p = (Parameter) a.getItem();
-                if (!p.getValue().equals("N")) {
-                    resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
-                } else {
-                    resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
-                }
-            } else {
-                resp.sendRedirect("ExecutionDetail.jsp?id_tc=" + executionId);
-            }
+            resp.sendRedirect("ExecutionDetail2.jsp?executionId=" + executionId);
 
         } catch (CerberusException e) {
             MyLogger.log(RunManualTest.class.getName(), Level.FATAL, "" + e.getMessageError().getDescription());

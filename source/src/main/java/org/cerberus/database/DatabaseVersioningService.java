@@ -8799,6 +8799,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("INSERT INTO `invariant` (`idname`, `value`, `sort`, `description`, `VeryShortDesc`) VALUES ('USERGROUP', 'TestStepLibrary', '115', 'Can modify Step Library and flag Step as Library.', '');");
         SQLInstruction.add(SQLS.toString());
 
+        // Added ScreenSize on Execution Queue table.
+        //-- ------------------------ 1158
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecutionqueue` ");
+        SQLS.append("ADD COLUMN `ScreenSize` VARCHAR(45) NULL DEFAULT NULL AFTER `Platform`;");
+        SQLInstruction.add(SQLS.toString());
+
+        // Delete no longuer used parameter cerberus_executiondetail_use.
+        //-- ------------------------ 1159
+        SQLS = new StringBuilder();
+        SQLS.append("DELETE from parameter where param='cerberus_executiondetail_use';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

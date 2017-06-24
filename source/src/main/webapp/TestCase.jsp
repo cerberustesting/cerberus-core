@@ -800,17 +800,7 @@
                         <%  // We are getting here the last execution that was done on the testcase with its associated status.
                             String LastExeMessage;
                             String redirecturl;
-                            AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
-                            if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                                Parameter p = (Parameter)a.getItem();
-                                if(!p.getValue().equals("N")) {
-                                    redirecturl = "ExecutionDetail2.jsp?executionId=";
-                                }else{
-                                    redirecturl = "ExecutionDetail.jsp?id_tc=";
-                                }
-                            }else{
-                                redirecturl = "ExecutionDetail.jsp?id_tc=";
-                            }
+                            redirecturl = "ExecutionDetail2.jsp?executionId=";
                             LastExeMessage = "<i>Never Executed</i>";
                             if (tce != null) {
                                 LastExeMessage = "Last <a width : 390px ; href=\"" + redirecturl + tce.getId() + "\">Execution</a> was ";

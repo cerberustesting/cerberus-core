@@ -94,7 +94,7 @@ public class RunTestCase extends HttpServlet {
     public static final String PARAMETER_SYSTEM = "MySystem";
     public static final String PARAMETER_NUMBER_OF_RETRIES = "retries";
     public static final String AUTOMATIC_RUN = "autoRun";
-    public static final String SCREEN_SIZE = "screenSize";
+    public static final String PARAMETER_SCREEN_SIZE = "screenSize";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -355,17 +355,7 @@ public class RunTestCase extends HttpServlet {
                 long runID = tCExecution.getId();
                 if (outputFormat.equalsIgnoreCase("gui")) { // HTML GUI output. either the detailed execution page or an error page when the execution is not created.
                     if (runID > 0) { // Execution has been created.
-                        AnswerItem a = parameterService.readByKey("", "cerberus_executiondetail_use");
-                        if (a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                            Parameter p = (Parameter) a.getItem();
-                            if (!p.getValue().equals("N")) {
-                                response.sendRedirect("ExecutionDetail2.jsp?executionId=" + runID);
-                            } else {
-                                response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
-                            }
-                        } else {
-                            response.sendRedirect("ExecutionDetail.jsp?id_tc=" + runID);
-                        }
+                        response.sendRedirect("ExecutionDetail2.jsp?executionId=" + runID);
                     } else { // Execution was not even created.
                         response.setContentType("text/html");
                         out.println("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"><title>Test Execution Result</title></head>");

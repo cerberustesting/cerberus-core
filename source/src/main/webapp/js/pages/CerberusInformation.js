@@ -180,12 +180,7 @@ function FormatedExeId(id) {
     if (id === 0) {
         return id
     } else {
-        var data = getParameter("cerberus_executiondetail_use");
-        if (data.value == "N") {
-            return "<a href='ExecutionDetail.jsp?id_tc=" + id + "'>" + id + "</a>";
-        } else {
-            return "<a href='ExecutionDetail2.jsp?executionId=" + id + "'>" + id + "</a>";
-        }
+        return "<a href='ExecutionDetail2.jsp?executionId=" + id + "'>" + id + "</a>";
     }
 }
 

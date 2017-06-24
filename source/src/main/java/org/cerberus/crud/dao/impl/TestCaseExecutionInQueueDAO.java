@@ -79,6 +79,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     private static final String COLUMN_BROWSER = "Browser";
     private static final String COLUMN_BROWSER_VERSION = "BrowserVersion";
     private static final String COLUMN_PLATFORM = "Platform";
+    private static final String COLUMN_SCREENSIZE = "ScreenSize";
     private static final String COLUMN_MANUAL_URL = "ManualURL";
     private static final String COLUMN_MANUAL_HOST = "ManualHost";
     private static final String COLUMN_MANUAL_CONTEXT_ROOT = "ManualContextRoot";
@@ -100,64 +101,64 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     private static final String VALUE_MANUAL_EXECUTION_FALSE = "N";
 
-    private static final String QUERY_FIND_BY_KEY =
-            "SELECT * FROM `" + TABLE + "` " +
-                    "WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_FIND_BY_KEY
+            = "SELECT * FROM `" + TABLE + "` "
+            + "WHERE `" + COLUMN_ID + "` = ?";
 
-    private static final String QUERY_FIND_BY_KEY_WITH_DEPENDENCIES =
-            "SELECT * FROM `" + TABLE + "` exq " +
-                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
-                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
-                    "WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_FIND_BY_KEY_WITH_DEPENDENCIES
+            = "SELECT * FROM `" + TABLE + "` exq "
+            + "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) "
+            + "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) "
+            + "WHERE `" + COLUMN_ID + "` = ?";
 
-    private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES =
-            "SELECT * FROM `" + TABLE + "` exq " +
-                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
-                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
-                    "WHERE `" + COLUMN_STATE + "` = ? " +
-                    "ORDER BY `" + COLUMN_ID + "` ASC";
+    private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES
+            = "SELECT * FROM `" + TABLE + "` exq "
+            + "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) "
+            + "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) "
+            + "WHERE `" + COLUMN_STATE + "` = ? "
+            + "ORDER BY `" + COLUMN_ID + "` ASC";
 
-    private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED =
-            "SELECT * FROM `" + TABLE + "` exq " +
-                    "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) " +
-                    "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) " +
-                    "WHERE `" + COLUMN_STATE + "` = ? " +
-                    "ORDER BY `" + COLUMN_ID + "` ASC " +
-                    "LIMIT ?";
+    private static final String QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED
+            = "SELECT * FROM `" + TABLE + "` exq "
+            + "INNER JOIN `" + TABLE_TEST_CASE + "` tec ON (exq.`" + COLUMN_TEST + "` = tec.`Test` AND exq.`" + COLUMN_TEST_CASE + "` = tec.`TestCase`) "
+            + "INNER JOIN `" + TABLE_APPLICATION + "` app ON (tec.`Application` = app.`Application`) "
+            + "WHERE `" + COLUMN_STATE + "` = ? "
+            + "ORDER BY `" + COLUMN_ID + "` ASC "
+            + "LIMIT ?";
 
-    private static final String QUERY_GET_ALL =
-            "SELECT * FROM `" + TABLE + "`;";
+    private static final String QUERY_GET_ALL
+            = "SELECT * FROM `" + TABLE + "`;";
 
-    private static final String QUERY_INSERT =
-            "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_STATE + "`) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    private static final String QUERY_INSERT
+            = "INSERT INTO `" + TABLE + "` (`" + COLUMN_TEST + "`, `" + COLUMN_TEST_CASE + "`, `" + COLUMN_COUNTRY + "`, `" + COLUMN_ENVIRONMENT + "`, `" + COLUMN_ROBOT + "`, `" + COLUMN_ROBOT_IP + "`, `" + COLUMN_ROBOT_PORT + "`, `" + COLUMN_BROWSER + "`, `" + COLUMN_BROWSER_VERSION + "`, `" + COLUMN_PLATFORM + "`, `" + COLUMN_SCREENSIZE + "`, `" + COLUMN_MANUAL_URL + "`, `" + COLUMN_MANUAL_HOST + "`, `" + COLUMN_MANUAL_CONTEXT_ROOT + "`, `" + COLUMN_MANUAL_LOGIN_RELATIVE_URL + "`, `" + COLUMN_MANUAL_ENV_DATA + "`, `" + COLUMN_TAG + "`, `" + COLUMN_OUTPUT_FORMAT + "`, `" + COLUMN_SCREENSHOT + "`, `" + COLUMN_VERBOSE + "`, `" + COLUMN_TIMEOUT + "`, `" + COLUMN_SYNCHRONEOUS + "`, `" + COLUMN_PAGE_SOURCE + "`, `" + COLUMN_SELENIUM_LOG + "`, `" + COLUMN_REQUEST_DATE + "`, `" + COLUMN_RETRIES + "`, `" + COLUMN_MANUAL_EXECUTION + "`, `" + COLUMN_STATE + "`) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-    private static final String QUERY_REMOVE =
-            "DELETE FROM `" + TABLE + "` " +
-                    "WHERE `" + COLUMN_ID + "` = ?";
+    private static final String QUERY_REMOVE
+            = "DELETE FROM `" + TABLE + "` "
+            + "WHERE `" + COLUMN_ID + "` = ?";
 
-    private static final String QUERY_UPDATE_STATE_FROM_STATE =
-            "UPDATE `" + TABLE + "` " +
-                    "SET `" + COLUMN_STATE + "` = ? " +
-                    "WHERE `" + COLUMN_ID + "` = ? " +
-                    "AND `" + COLUMN_STATE + "` = ?";
+    private static final String QUERY_UPDATE_STATE_FROM_STATE
+            = "UPDATE `" + TABLE + "` "
+            + "SET `" + COLUMN_STATE + "` = ? "
+            + "WHERE `" + COLUMN_ID + "` = ? "
+            + "AND `" + COLUMN_STATE + "` = ?";
 
-    private static final String QUERY_UPDATE_STATE_NOT_FROM_STATE =
-            "UPDATE `" + TABLE + "` " +
-                    "SET `" + COLUMN_STATE + "` = ? " +
-                    "WHERE `" + COLUMN_ID + "` = ? " +
-                    "AND `" + COLUMN_STATE + "` <> ?";
+    private static final String QUERY_UPDATE_STATE_NOT_FROM_STATE
+            = "UPDATE `" + TABLE + "` "
+            + "SET `" + COLUMN_STATE + "` = ? "
+            + "WHERE `" + COLUMN_ID + "` = ? "
+            + "AND `" + COLUMN_STATE + "` <> ?";
 
-    private static final String QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES =
-            "UPDATE `" + TABLE + "` " +
-                    "SET `" + COLUMN_STATE + "` = ? " +
-                    "WHERE `" + COLUMN_ID + "` = ? " +
-                    "AND `" + COLUMN_STATE + "` NOT IN (?, ?)";
+    private static final String QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES
+            = "UPDATE `" + TABLE + "` "
+            + "SET `" + COLUMN_STATE + "` = ? "
+            + "WHERE `" + COLUMN_ID + "` = ? "
+            + "AND `" + COLUMN_STATE + "` NOT IN (?, ?)";
 
-    private static final String QUERY_UPDATE_STATE_AND_COMMENT =
-            "UPDATE `" + TABLE + "` " +
-                    "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT +  "` = ? " +
-                    "WHERE `" + COLUMN_ID + "` = ? ";
+    private static final String QUERY_UPDATE_STATE_AND_COMMENT
+            = "UPDATE `" + TABLE + "` "
+            + "SET `" + COLUMN_STATE + "` = ?, `" + COLUMN_COMMENT + "` = ? "
+            + "WHERE `" + COLUMN_ID + "` = ? ";
 
     @Autowired
     private DatabaseSpring databaseSpring;
@@ -181,37 +182,41 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.NO_DATA_FOUND));
         }
 
+        LOG.debug("SQL : " + QUERY_INSERT);
+        LOG.debug("SQL.param.ScreenSize : " + inQueue.getScreenSize());
         PreparedStatement statementInsert = null;
 
         try {
             statementInsert = connection.prepareStatement(QUERY_INSERT);
-            statementInsert.setString(1, inQueue.getTest());
-            statementInsert.setString(2, inQueue.getTestCase());
-            statementInsert.setString(3, inQueue.getCountry());
-            statementInsert.setString(4, inQueue.getEnvironment());
-            statementInsert.setString(5, inQueue.getRobot());
-            statementInsert.setString(6, inQueue.getRobotIP());
-            statementInsert.setString(7, inQueue.getRobotPort());
-            statementInsert.setString(8, inQueue.getBrowser());
-            statementInsert.setString(9, inQueue.getBrowserVersion());
-            statementInsert.setString(10, inQueue.getPlatform());
-            statementInsert.setBoolean(11, inQueue.isManualURL());
-            statementInsert.setString(12, inQueue.getManualHost());
-            statementInsert.setString(13, inQueue.getManualContextRoot());
-            statementInsert.setString(14, inQueue.getManualLoginRelativeURL());
-            statementInsert.setString(15, inQueue.getManualEnvData());
-            statementInsert.setString(16, inQueue.getTag());
-            statementInsert.setString(17, inQueue.getOutputFormat());
-            statementInsert.setInt(18, inQueue.getScreenshot());
-            statementInsert.setInt(19, inQueue.getVerbose());
-            statementInsert.setString(20, inQueue.getTimeout());
-            statementInsert.setBoolean(21, inQueue.isSynchroneous());
-            statementInsert.setInt(22, inQueue.getPageSource());
-            statementInsert.setInt(23, inQueue.getSeleniumLog());
-            statementInsert.setTimestamp(24, new Timestamp(inQueue.getRequestDate().getTime()));
-            statementInsert.setInt(25, inQueue.getRetries());
-            statementInsert.setString(26, inQueue.isManualExecution() ? "Y" : "N");
-            statementInsert.setString(27, inQueue.getState() == null ? TestCaseExecutionInQueue.State.WAITING.name() : inQueue.getState().name());
+            int i = 1;
+            statementInsert.setString(i++, inQueue.getTest());
+            statementInsert.setString(i++, inQueue.getTestCase());
+            statementInsert.setString(i++, inQueue.getCountry());
+            statementInsert.setString(i++, inQueue.getEnvironment());
+            statementInsert.setString(i++, inQueue.getRobot());
+            statementInsert.setString(i++, inQueue.getRobotIP());
+            statementInsert.setString(i++, inQueue.getRobotPort());
+            statementInsert.setString(i++, inQueue.getBrowser());
+            statementInsert.setString(i++, inQueue.getBrowserVersion());
+            statementInsert.setString(i++, inQueue.getPlatform());
+            statementInsert.setString(i++, inQueue.getScreenSize());
+            statementInsert.setBoolean(i++, inQueue.isManualURL());
+            statementInsert.setString(i++, inQueue.getManualHost());
+            statementInsert.setString(i++, inQueue.getManualContextRoot());
+            statementInsert.setString(i++, inQueue.getManualLoginRelativeURL());
+            statementInsert.setString(i++, inQueue.getManualEnvData());
+            statementInsert.setString(i++, inQueue.getTag());
+            statementInsert.setString(i++, inQueue.getOutputFormat());
+            statementInsert.setInt(i++, inQueue.getScreenshot());
+            statementInsert.setInt(i++, inQueue.getVerbose());
+            statementInsert.setString(i++, inQueue.getTimeout());
+            statementInsert.setBoolean(i++, inQueue.isSynchroneous());
+            statementInsert.setInt(i++, inQueue.getPageSource());
+            statementInsert.setInt(i++, inQueue.getSeleniumLog());
+            statementInsert.setTimestamp(i++, new Timestamp(inQueue.getRequestDate().getTime()));
+            statementInsert.setInt(i++, inQueue.getRetries());
+            statementInsert.setString(i++, inQueue.isManualExecution() ? "Y" : "N");
+            statementInsert.setString(i++, inQueue.getState() == null ? TestCaseExecutionInQueue.State.WAITING.name() : inQueue.getState().name());
 
             statementInsert.executeUpdate();
         } catch (SQLException exception) {
@@ -243,6 +248,8 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         }
 
         PreparedStatement statementRemove = null;
+        LOG.debug("SQL : " + QUERY_REMOVE);
+        LOG.debug("SQL.param.id : " + id);
 
         try {
             statementRemove = connection.prepareStatement(QUERY_REMOVE);
@@ -384,8 +391,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public TestCaseExecutionInQueue findByKeyWithDependencies(long id) throws CerberusException {
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement selectStatement = connection.prepareStatement(QUERY_FIND_BY_KEY_WITH_DEPENDENCIES);
-        ) {
+                PreparedStatement selectStatement = connection.prepareStatement(QUERY_FIND_BY_KEY_WITH_DEPENDENCIES);) {
             selectStatement.setLong(1, id);
             ResultSet result = selectStatement.executeQuery();
             if (!result.next()) {
@@ -400,49 +406,48 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
     @Override
     public List<TestCaseExecutionInQueue> toQueued(int fetchSize) throws CerberusException {
-            List<TestCaseExecutionInQueue> result = new ArrayList<>();
-            final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE_WITH_DEPENDENCIES : QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED;
+        List<TestCaseExecutionInQueue> result = new ArrayList<>();
+        final String selectByStateQuery = UNLIMITED_FETCH_SIZE == fetchSize ? QUERY_FIND_BY_STATE_WITH_DEPENDENCIES : QUERY_FIND_BY_STATE_WITH_DEPENDENCIES_LIMITED;
 
-            try (
-                    Connection connection = this.databaseSpring.connect();
-                    PreparedStatement selectWaitingsStatement = connection.prepareStatement(selectByStateQuery);
-                    PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
-            ) {
-                // Select all executions in queue in WAITING state
-                selectWaitingsStatement.setString(1, TestCaseExecutionInQueue.State.WAITING.name());
-                if (UNLIMITED_FETCH_SIZE != fetchSize) {
-                    selectWaitingsStatement.setInt(2, fetchSize);
-                }
-                ResultSet waitings = selectWaitingsStatement.executeQuery();
+        try (
+                Connection connection = this.databaseSpring.connect();
+                PreparedStatement selectWaitingsStatement = connection.prepareStatement(selectByStateQuery);
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)) {
+            // Select all executions in queue in WAITING state
+            selectWaitingsStatement.setString(1, TestCaseExecutionInQueue.State.WAITING.name());
+            if (UNLIMITED_FETCH_SIZE != fetchSize) {
+                selectWaitingsStatement.setInt(2, fetchSize);
+            }
+            ResultSet waitings = selectWaitingsStatement.executeQuery();
 
-                // Then set their state to QUEUED by checking state is still the same
-                while (waitings.next()) {
-                    try {
-                        TestCaseExecutionInQueue waiting = loadWithDependenciesFromResultSet(waitings);
-                        fillUpdateStateFromStateStatement(waiting.getId(), TestCaseExecutionInQueue.State.WAITING, TestCaseExecutionInQueue.State.QUEUED, updateStateStatement);
-                        updateStateStatement.addBatch();
-                        result.add(waiting);
-                    } catch (SQLException | FactoryCreationException e) {
-                        LOG.warn("Unable to add execution in queue id " + waitings.getLong(COLUMN_ID) + " to the batch process from setting its state from WAITING to QUEUED", e);
-                    }
+            // Then set their state to QUEUED by checking state is still the same
+            while (waitings.next()) {
+                try {
+                    TestCaseExecutionInQueue waiting = loadWithDependenciesFromResultSet(waitings);
+                    fillUpdateStateFromStateStatement(waiting.getId(), TestCaseExecutionInQueue.State.WAITING, TestCaseExecutionInQueue.State.QUEUED, updateStateStatement);
+                    updateStateStatement.addBatch();
+                    result.add(waiting);
+                } catch (SQLException | FactoryCreationException e) {
+                    LOG.warn("Unable to add execution in queue id " + waitings.getLong(COLUMN_ID) + " to the batch process from setting its state from WAITING to QUEUED", e);
                 }
+            }
 
-                // And finally remove those which have not been updated
-                int[] batchExecutionResult = updateStateStatement.executeBatch();
-                for (int batchExecutionResultIndex = 0, removedCount = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
-                    if (Statement.EXECUTE_FAILED == batchExecutionResult[batchExecutionResultIndex]) {
-                        LOG.warn("Unable to move execution state from WAITING to QUEUED for id " + result.get(batchExecutionResultIndex));
-                    }
-                    if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
-                        int resultIndexToRemove = batchExecutionResultIndex - removedCount++;
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Removing execution id " + result.get(resultIndexToRemove) + " from result because of getting no successful result count (" + batchExecutionResult[batchExecutionResultIndex]);
-                        }
-                        result.remove(resultIndexToRemove);
-                    }
+            // And finally remove those which have not been updated
+            int[] batchExecutionResult = updateStateStatement.executeBatch();
+            for (int batchExecutionResultIndex = 0, removedCount = 0; batchExecutionResultIndex < batchExecutionResult.length; batchExecutionResultIndex++) {
+                if (Statement.EXECUTE_FAILED == batchExecutionResult[batchExecutionResultIndex]) {
+                    LOG.warn("Unable to move execution state from WAITING to QUEUED for id " + result.get(batchExecutionResultIndex));
                 }
-                return result;
-            } catch (SQLException e) {
+                if (batchExecutionResult[batchExecutionResultIndex] <= 0) {
+                    int resultIndexToRemove = batchExecutionResultIndex - removedCount++;
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Removing execution id " + result.get(resultIndexToRemove) + " from result because of getting no successful result count (" + batchExecutionResult[batchExecutionResultIndex]);
+                    }
+                    result.remove(resultIndexToRemove);
+                }
+            }
+            return result;
+        } catch (SQLException e) {
             LOG.warn("Unable to state from WAITING to QUEUED state for executions in queue", e);
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
@@ -455,8 +460,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
 
         try (
                 Connection connection = this.databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
-        ) {
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)) {
             // Then set their state to QUEUED by checking state is still the same
             for (Long id : ids) {
                 try {
@@ -493,8 +497,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public void toExecuting(long id) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)
-        ) {
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_FROM_STATE)) {
             fillUpdateStateFromStateStatement(id, TestCaseExecutionInQueue.State.QUEUED, TestCaseExecutionInQueue.State.EXECUTING, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -511,8 +514,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public void toWaiting(long id) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)
-        ) {
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)) {
             fillUpdateStateNotFromStateStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -531,10 +533,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         final List<Long> inError = new ArrayList<>();
         try (
                 final Connection connection = databaseSpring.connect();
-                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)
-        ) {
+                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_STATE)) {
             // First, create batch statement
-            for (final long id: ids) {
+            for (final long id : ids) {
                 try {
                     fillUpdateStateNotFromStateStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.WAITING, updateStateStatement);
                     updateStateStatement.addBatch();
@@ -563,8 +564,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public void toError(long id, String comment) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(QUERY_UPDATE_STATE_AND_COMMENT)
-        ) {
+                PreparedStatement updateStateAndCommentStatement = connection.prepareStatement(QUERY_UPDATE_STATE_AND_COMMENT)) {
             fillUpdateStateAndCommentStatement(id, TestCaseExecutionInQueue.State.ERROR, comment, updateStateAndCommentStatement);
             int updateResult = updateStateAndCommentStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -581,8 +581,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
     public void toCancelled(long id) throws CerberusException {
         try (
                 Connection connection = databaseSpring.connect();
-                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)
-        ) {
+                PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)) {
             fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
             int updateResult = updateStateStatement.executeUpdate();
             if (updateResult <= 0) {
@@ -601,10 +600,9 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         final List<Long> inError = new ArrayList<>();
         try (
                 final Connection connection = databaseSpring.connect();
-                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)
-        ) {
+                final PreparedStatement updateStateStatement = connection.prepareStatement(QUERY_UPDATE_STATE_NOT_FROM_BOTH_STATES)) {
             // First, create batch statement
-            for (final long id: ids) {
+            for (final long id : ids) {
                 try {
                     fillUpdateStateNotFromBothStatesStatement(id, TestCaseExecutionInQueue.State.EXECUTING, TestCaseExecutionInQueue.State.ERROR, TestCaseExecutionInQueue.State.CANCELLED, updateStateStatement);
                     updateStateStatement.addBatch();
@@ -628,7 +626,6 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.DATA_OPERATION_ERROR));
         }
     }
-
 
     @Override
     public List<TestCaseExecutionInQueue> findAll() throws CerberusException {
@@ -805,19 +802,19 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
         answer.setResultMessage(msg);
         return answer;
     }
-    
+
     @Override
     public AnswerList readByTag(String tag) throws CerberusException {
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
         AnswerList answer = new AnswerList();
-        
+
         final StringBuilder query = new StringBuilder();
 
         query.append("SELECT * FROM testcaseexecutionqueue exq ");
         query.append("left join testcase tec on exq.Test = tec.Test and exq.TestCase = tec.TestCase ");
         query.append("left join application app on tec.application = app.application ");
         query.append("where exq.tag = ? ");
-        
+
         // Debug message on SQL.
         if (LOG.isDebugEnabled()) {
             LOG.debug("SQL : " + query.toString());
@@ -829,7 +826,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             PreparedStatement preStat = connection.prepareStatement(query.toString());
 
             preStat.setString(1, tag);
-            
+
             try {
                 ResultSet resultSet = preStat.executeQuery();
                 try {
@@ -1645,7 +1642,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
             LOG.debug("SQL : " + query.toString());
         }
         try (Connection connection = databaseSpring.connect();
-             PreparedStatement preStat = connection.prepareStatement(query.toString())) {
+                PreparedStatement preStat = connection.prepareStatement(query.toString())) {
 
             int i = 1;
             if (!StringUtil.isNullOrEmpty(searchTerm)) {
@@ -1717,6 +1714,7 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
                 resultSet.getString(COLUMN_BROWSER),
                 resultSet.getString(COLUMN_BROWSER_VERSION),
                 resultSet.getString(COLUMN_PLATFORM),
+                resultSet.getString(COLUMN_SCREENSIZE),
                 resultSet.getBoolean(COLUMN_MANUAL_URL),
                 resultSet.getString(COLUMN_MANUAL_HOST),
                 resultSet.getString(COLUMN_MANUAL_CONTEXT_ROOT),
@@ -1774,11 +1772,11 @@ public class TestCaseExecutionInQueueDAO implements ITestCaseExecutionInQueueDAO
      * Uses data of ResultSet to create object {@link TestCaseExecutionInQueue}
      *
      * @param resultSet ResultSet relative to select from table
-     *                  TestCaseExecutionInQueue
+     * TestCaseExecutionInQueue
      * @return object {@link TestCaseExecutionInQueue} with objects
      * {@link ResultSet} and {@link Application}
      * @throws SQLException when trying to get value from
-     *                      {@link java.sql.ResultSet#getString(String)}
+     * {@link java.sql.ResultSet#getString(String)}
      * @see TestCaseExecutionInQueue
      */
     private TestCaseExecutionInQueue loadWithDependenciesFromResultSet(ResultSet resultSet) throws SQLException, FactoryCreationException {

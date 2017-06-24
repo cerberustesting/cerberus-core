@@ -2421,17 +2421,14 @@ function escapeHtml(unsafe) {
             .replace(/'/g, "\\'");
 }
 
-function generateExecutionLink(status, id) {
+function generateExecutionLink(status, id, tag) {
     var result = "";
     if (status === "NE") {
-        result = "./RunTests.jsp?queuedExecution=" + id;
+        // If not executed, we redirect to queue management in order to be able the see the error and restart the execution from the queue.
+        result = "./ExecutionPending.jsp?search=" + tag;
     } else {
-        var data = getParameter("cerberus_executiondetail_use")
-        if (data.value !== "N") {
-            result = "./ExecutionDetail2.jsp?executionId=" + id;
-        } else {
-            result = "./ExecutionDetail.jsp?id_tc=" + id;
-        }
+        // No longuer in the queue so we disply the result.
+        result = "./ExecutionDetail2.jsp?executionId=" + id;
     }
     return result;
 }
