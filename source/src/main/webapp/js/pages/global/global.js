@@ -2458,18 +2458,6 @@ function getRowClass(status) {
 }
 
 /**
- * Check if the given object parameter is defined or not.
- *
- * Object is defined where its value is NOT undefined AND NOT null.
- *
- * @param val the object to check
- * @returns {boolean} true if given object parameter is defined, false otherwise
- */
-function isDefined(obj) {
-    return obj !== undefined && obj !== null;
-}
-
-/**
  * Method that return true if val is null, undefined or empty
  * @param {String} val value to test
  * @returns {boolean} true if is null, undefined of len >= 0
@@ -2835,17 +2823,6 @@ function defineAceMode(text) {
  * @returns {undefined} void
  */
 function jsonPost(conf, success, failure) {
-    if (!(isDefined(conf.url) && isDefined(conf.data))) {
-        failure();
-        return;
-    }
-    $
-        .post({
-            url: conf.url,
-            data: conf.data,
-            contentType: 'application/json',
-            dataType: 'json'
-        })
-        .then(success)
-        .fail(failure);
+    conf.contentType = 'application/json;charset=UTF-8';
+    $.post(conf);
 }

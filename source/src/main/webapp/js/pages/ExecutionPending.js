@@ -360,12 +360,10 @@ function massActionModalSaveHandler_setState() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    jsonPost(
-        {
-            url: 'UpdateExecutionInQueueState',
-            data: requestBody
-        },
-        function (data) {
+    jsonPost({
+        url: 'UpdateExecutionInQueueState',
+        data: requestBody,
+        success: function (data) {
             refreshTable();
             hideLoaderInModal('#massActionBrpModal');
             $('#massActionBrpModal').modal('hide');
@@ -387,8 +385,8 @@ function massActionModalSaveHandler_setState() {
                 });
             }
         },
-        handleErrorAjaxAfterTimeout
-    );
+        error: handleErrorAjaxAfterTimeout
+    });
 }
 
 function massActionModalSaveHandler_run() {
@@ -400,12 +398,10 @@ function massActionModalSaveHandler_run() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    jsonPost(
-        {
-            url: 'RunExecutionInQueue',
-            data: requestBody
-        },
-        function (data) {
+    jsonPost({
+        url: 'RunExecutionInQueue',
+        data: requestBody,
+        success: function (data) {
             refreshTable();
             hideLoaderInModal('#massActionBrpModal');
             $('#massActionBrpModal').modal('hide');
@@ -422,8 +418,8 @@ function massActionModalSaveHandler_run() {
                 });
             }
         },
-        handleErrorAjaxAfterTimeout
-    );
+        error: handleErrorAjaxAfterTimeout
+    });
 }
 
 function massActionModalSaveHandler_delete() {
@@ -435,12 +431,10 @@ function massActionModalSaveHandler_delete() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    jsonPost(
-        {
-            url: 'DeleteExecutionInQueue',
-            data: requestBody
-        },
-        function (data) {
+    jsonPost({
+        url: 'DeleteExecutionInQueue',
+        data: requestBody,
+        success: function (data) {
             refreshTable();
             hideLoaderInModal('#massActionBrpModal');
             $('#massActionBrpModal').modal('hide');
@@ -462,8 +456,8 @@ function massActionModalSaveHandler_delete() {
                 });
             }
         },
-        handleErrorAjaxAfterTimeout
-    );
+        error: handleErrorAjaxAfterTimeout
+    });
 }
 
 function massActionModalCloseHandler() {
@@ -520,12 +514,10 @@ function filterAndDisplayTable(poolId) {
 }
 
 function filterTable(poolId) {
-    jsonPost(
-        {
-            url: 'ReadExecutionPool',
-            data: JSON.stringify(poolId)
-        },
-        function (data) {
+    jsonPost({
+        url: 'ReadExecutionPool',
+        data: JSON.stringify(poolId),
+        success: function (data) {
             // Get associated execution ids from pool
             var associcatedIds = [];
             data.EXECUTING.forEach(function (exec) {
@@ -555,8 +547,8 @@ function filterTable(poolId) {
                 refreshTable();
             }
         },
-        handleErrorAjaxAfterTimeout
-    );
+        error: handleErrorAjaxAfterTimeout
+    });
 }
 
 function displayTable() {
