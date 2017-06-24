@@ -360,29 +360,35 @@ function massActionModalSaveHandler_setState() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    var jqxhr = $.post("UpdateExecutionInQueueState", requestBody, "json");
-    $.when(jqxhr).then(function (data) {
-        refreshTable();
-        hideLoaderInModal('#massActionBrpModal');
-        $('#massActionBrpModal').modal('hide');
+    jsonPost(
+        {
+            url: 'UpdateExecutionInQueueState',
+            data: requestBody
+        },
+        function (data) {
+            refreshTable();
+            hideLoaderInModal('#massActionBrpModal');
+            $('#massActionBrpModal').modal('hide');
 
-        if (!data || !Array.isArray(data.inError)) {
-            showMessage({
-                messageType: 'KO',
-                message: 'Unexpected error. See logs'
-            });
-        } else if (data.inError.length > 0) {
-            showMessage({
-                messageType: 'WARNING',
-                message: 'Some executions have not been updated: ' + data.inError.toString()
-            });
-        } else {
-            showMessage({
-                messageType: 'OK',
-                message: 'Update successfully executed'
-            });
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+            if (!data || !Array.isArray(data.inError)) {
+                showMessage({
+                    messageType: 'KO',
+                    message: 'Unexpected error. See logs'
+                });
+            } else if (data.inError.length > 0) {
+                showMessage({
+                    messageType: 'WARNING',
+                    message: 'Some executions have not been updated: ' + data.inError.toString()
+                });
+            } else {
+                showMessage({
+                    messageType: 'OK',
+                    message: 'Update successfully executed'
+                });
+            }
+        },
+        handleErrorAjaxAfterTimeout
+    );
 }
 
 function massActionModalSaveHandler_run() {
@@ -394,24 +400,30 @@ function massActionModalSaveHandler_run() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    var jqxhr = $.post("RunExecutionInQueue", requestBody, "json");
-    $.when(jqxhr).then(function (data) {
-        refreshTable();
-        hideLoaderInModal('#massActionBrpModal');
-        $('#massActionBrpModal').modal('hide');
+    jsonPost(
+        {
+            url: 'RunExecutionInQueue',
+            data: requestBody
+        },
+        function (data) {
+            refreshTable();
+            hideLoaderInModal('#massActionBrpModal');
+            $('#massActionBrpModal').modal('hide');
 
-        if (data) {
-            showMessage({
-                messageType: 'OK',
-                message: 'In waiting selected executions are running'
-            });
-        } else {
-            showMessage({
-                messageType: 'KO',
-                message: 'Unexpected error. See logs'
-            });
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+            if (data) {
+                showMessage({
+                    messageType: 'OK',
+                    message: 'In waiting selected executions are running'
+                });
+            } else {
+                showMessage({
+                    messageType: 'KO',
+                    message: 'Unexpected error. See logs'
+                });
+            }
+        },
+        handleErrorAjaxAfterTimeout
+    );
 }
 
 function massActionModalSaveHandler_delete() {
@@ -423,29 +435,35 @@ function massActionModalSaveHandler_delete() {
 
     showLoaderInModal('#massActionBrpModal');
 
-    var jqxhr = $.post("DeleteExecutionInQueue", requestBody, "json");
-    $.when(jqxhr).then(function (data) {
-        refreshTable();
-        hideLoaderInModal('#massActionBrpModal');
-        $('#massActionBrpModal').modal('hide');
+    jsonPost(
+        {
+            url: 'DeleteExecutionInQueue',
+            data: requestBody
+        },
+        function (data) {
+            refreshTable();
+            hideLoaderInModal('#massActionBrpModal');
+            $('#massActionBrpModal').modal('hide');
 
-        if (!data || !Array.isArray(data.inError)) {
-            showMessage({
-                messageType: 'KO',
-                message: 'Unexpected error. See logs'
-            });
-        } else if (data.inError.length > 0) {
-            showMessage({
-                messageType: 'WARNING',
-                message: 'Some executions have not been deleted: ' + data.inError.toString()
-            });
-        } else {
-            showMessage({
-                messageType: 'OK',
-                message: 'Delete successfully executed'
-            });
-        }
-    }).fail(handleErrorAjaxAfterTimeout);
+            if (!data || !Array.isArray(data.inError)) {
+                showMessage({
+                    messageType: 'KO',
+                    message: 'Unexpected error. See logs'
+                });
+            } else if (data.inError.length > 0) {
+                showMessage({
+                    messageType: 'WARNING',
+                    message: 'Some executions have not been deleted: ' + data.inError.toString()
+                });
+            } else {
+                showMessage({
+                    messageType: 'OK',
+                    message: 'Delete successfully executed'
+                });
+            }
+        },
+        handleErrorAjaxAfterTimeout
+    );
 }
 
 function massActionModalCloseHandler() {
@@ -502,41 +520,43 @@ function filterAndDisplayTable(poolId) {
 }
 
 function filterTable(poolId) {
-    var jqxhr = $.post("ReadExecutionPool", JSON.stringify(poolId), "json");
-    $.when(jqxhr)
-        .then(
-            function (data) {
-                // Get associated execution ids from pool
-                var associcatedIds = [];
-                data.EXECUTING.forEach(function (exec) {
-                    associcatedIds.push(exec.toExecute.id);
-                });
-                data.QUEUED.forEach(function (exec) {
-                    associcatedIds.push(exec.toExecute.id);
-                });
+    jsonPost(
+        {
+            url: 'ReadExecutionPool',
+            data: JSON.stringify(poolId)
+        },
+        function (data) {
+            // Get associated execution ids from pool
+            var associcatedIds = [];
+            data.EXECUTING.forEach(function (exec) {
+                associcatedIds.push(exec.toExecute.id);
+            });
+            data.QUEUED.forEach(function (exec) {
+                associcatedIds.push(exec.toExecute.id);
+            });
 
-                if (associcatedIds.length == 0) {
-                    resetTableFilters();
-                    showMessage({
-                        messageType: 'WARNING',
-                        message: 'Execution pool is empty, showing the whole table'
-                    });
-                } else {
-                    // Apply filter
-                    applyFiltersOnMultipleColumns(
-                        'executionsTable',
-                        [
-                            {
-                                param: 'id',
-                                values: associcatedIds
-                            }
-                        ]
-                    );
-                    refreshTable();
-                }
+            if (associcatedIds.length == 0) {
+                resetTableFilters();
+                showMessage({
+                    messageType: 'WARNING',
+                    message: 'Execution pool is empty, showing the whole table'
+                });
+            } else {
+                // Apply filter
+                applyFiltersOnMultipleColumns(
+                    'executionsTable',
+                    [
+                        {
+                            param: 'id',
+                            values: associcatedIds
+                        }
+                    ]
+                );
+                refreshTable();
             }
-        )
-        .fail(handleErrorAjaxAfterTimeout);
+        },
+        handleErrorAjaxAfterTimeout
+    );
 }
 
 function displayTable() {
