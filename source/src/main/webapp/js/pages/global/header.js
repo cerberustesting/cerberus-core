@@ -219,8 +219,7 @@ function displayMenuItem(doc) {
      */
     var user = getUser();
     for (var group in user.group) {
-        console.log(user.group[group]);
-        $('#navlist'+ user.group[group]).removeAttr('style');
+        $('#navlist'+'.'+ user.group[group]).removeAttr('style');
     }
 
 }
