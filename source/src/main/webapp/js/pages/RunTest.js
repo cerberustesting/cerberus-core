@@ -1035,7 +1035,7 @@ function loadTestCaseEssentialData(test, testcase, environment, country) {
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
 function bindToggleCollapseCustom() {
     $(".collapse").each(function () {
-        if ( this.id !== "sidenavbar-subnavlist" ){//don't add those listenner to the the navbar collaspe
+        if (this.id !== "sidenavbar-subnavlist"){//disable interaction with the navbar
             $(this).on('shown.bs.collapse', function () {
                 localStorage.setItem(this.id, true);
                 if ($(this)[0].id != "filtersPanel")

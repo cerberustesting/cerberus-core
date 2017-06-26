@@ -787,8 +787,8 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
 */
 table.dataTable thead th {
     border-bottom-color: transparent;
-    border-top-color: transparent;
-    background-color: #E6E6E6;
+    border-top-color: transparent !important;
+    background-color: #E6E6E6 !important;
 }
 
 .dataTables_scroll{

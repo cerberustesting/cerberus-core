@@ -38,11 +38,17 @@ $(document).ready(function(){
         if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
             document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className +=" active";
             document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
-
         }
     }
+    /*for (var i in document.getElementsByClassName("active") ){
+        if ( document.getElementsByClassName("active")[i].parentElement !== undefined && document.getElementsByClassName("active")[i].parentElement.className === "navbar-side-choice" ){
+                console.log(document.getElementsByClassName("active")[i].className);
+                document.getElementsByClassName("active")[i].className = "";
+        }
+    }*/
 
-    $('.navbar-toggle').click(function() {
+    
+    $('#controlToggle').click(function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){
             collaspeHandler("collaspe");
         }else{
@@ -54,10 +60,9 @@ $(document).ready(function(){
     });
 
     function collaspeHandler(action){
-        console.log(action)
         if (action ==="collaspe"){
-            $('#controlToggle').removeClass( "glyphicon glyphicon-triangle-right" );
-            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-left" );
+            $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-right hit" );
+            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
             localStorage.setItem("navbar-toggle", "collaspe");
 
             if ( $( "#page-layout" ).hasClass( "extended" ) ){
@@ -69,8 +74,8 @@ $(document).ready(function(){
             $('#page-layout').css('margin-left','250px');
         }
         else if (action ==="extended"){
-            $('#controlToggle').removeClass( "glyphicon glyphicon-triangle-left" );
-            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-right" );
+            $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
+            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-right hit" );
             localStorage.setItem("navbar-toggle", "extended");
 
             if ( !$( "#page-layout" ).hasClass( "extended" ) ){
@@ -81,7 +86,7 @@ $(document).ready(function(){
             $('#page-layout').css('margin-left','60px');
         }
         else{//first loading
-            $('#controlToggle').addClass( "glyphicon glyphicon-triangle-left" );
+            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
         }
     }
 
@@ -90,7 +95,7 @@ $(document).ready(function(){
             $(this).find('> ul').addClass('in'); 
             $(this).addClass('active');
             //remove display bug
-            $(this).find('> ul').css("height", "");
+            //$(this).find('> ul').css("height", "");
         }
     }, function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){

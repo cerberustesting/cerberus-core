@@ -18,25 +18,23 @@
                 </a>
                 <!-- dropdown menu -->
                 <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                    <li><a href="Test.jsp">Test</a></li>
+                    <!--<li><a href="Test.jsp">Test</a></li>-->
                     <li><a href="TestCaseList.jsp">TestCase</a></li>
                     <li><a href="TestCaseScript.jsp">Edit TestCase</a></li>
                     <li><a href="TestBattery2.jsp">Test Battery</a></li>
                     <li><a href="Label.jsp" >Label</a></li>
-
                 </ul>
             </li>
-                <li class ="navbar-side-choice" >
-                    <a href="TestDataLib.jsp">
-                      <i class="glyphicon glyphicon-folder-open"></i>
-                      <span class="nav-text">Data </span>
-                      <span class="fa arrow"></span>
-                    </a>
-                    <!-- dropdown menu -->
-                    <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
-                        <li><a href="TestDataLib.jsp">Test Data Lib</a></li>
-                    </ul>
-                </li>
+            <li class ="navbar-side-choice" >
+                <a href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-folder-open"></i>
+                  <span class="nav-text">Data </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li><a href="TestDataLib2.jsp">Test Data Lib</a></li>
+                </ul>
+            </li>
             <li class ="navbar-side-choice">
                 <a href="TestDataLib.jsp">
                   <i class="glyphicon glyphicon-play"></i>
@@ -122,10 +120,65 @@
                     <li><a  href="Documentation1.jsp">Documentation</a></li>
                 </ul>
             </li>
+
+            <!-- navbar toggle button -->
+            <li class ="navbar-side-choice">
+                <span id="controlToggle" class ="controlToggle">
+                    <i class="controlToggleIcon"></i>
+                </span>
+            </li>
         </ul>
-    <!-- /.navbar-static-side -->
 </nav>
+<style>
+    .navbar-default .controlToggle {
+        border-bottom: 1px solid #302F2F;
+        background: #293846;
+        color: #a7b1c2;
+        text-align: center;
+        padding: 0;
+        width: 36px;
+        height: 28px;
+        display: block;
+        position: absolute;
+        right: 0;
+        border-radius: 5px 0 0 5px;
+        cursor: pointer;
+        margin-top: 20px;
+        font-size: 19px;
+        transition: all .1s linear 0s;
+    }
+    .navbar-default .controlToggle:hover {
+        color: #fff;
+    }
+    .navbar-default.collapsed .controlToggleIcon{
+        margin-top: 5px;
+        display: block;
+    } 
+    
+    /*
+    .no-padding .dataTables_wrapper table, .no-padding>table {
+        border: none!important;
+        margin-bottom: 0!important;
+        border-bottom-width: 0!important;
+    }
+    smartadmin-prod…ins.min.css:36
+    table.table-bordered.dataTable {
+        border-collapse: separate!important;
+    }
+    smartadmin-prod…ins.min.css:36
+    table.dataTable {
+        clear: both;
+        margin-top: 6px!important;
+        margin-bottom: 6px!important;
+        max-width: none!important;
+    }*/
+</style>
+
+
+
+
 <!-- navbar for the top -->
+
 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
     <div class="navbar-header">
         <span id ="controlToggle" class="navbar-toggle"></span>
