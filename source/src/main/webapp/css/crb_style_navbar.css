@@ -46,10 +46,13 @@ body{
 .nav-second-level>li>a:hover,
 #side-menu>li>a:focus,
 #side-menu>li>a:hover,
-
 .sidebar ul li a.active {
     background-color: #293846;
     color: white;
+}
+
+.navbar-right a {
+    color: #2a4d69;
 }
 
 .navbar-side-choice.active{
@@ -77,6 +80,7 @@ body{
     padding: 8px 0;
     font-size: 20px;
     height: 50px;
+    
 }
 
 /* =side navbar config= */
@@ -115,7 +119,7 @@ body{
 /* resize the top bar */
 .navbar-static-top {
     margin: 0 0 0 250px;
-    background-color:#f3f3f4;
+    background-color:#ddd;
 }
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
@@ -139,6 +143,48 @@ body{
 .navbar-toggle {
     display: block;
 }
+/* button to toggle navbar style */
+.navbar-default .controlToggle {
+    border-bottom: 1px solid #302F2F;
+    background: #293846;
+    color: #a7b1c2;
+    text-align: center;
+    padding: 0;
+    width: 36px;
+    height: 28px;
+    display: block;
+    /*position: absolute;
+    right: -3px;*/
+    position: fixed;
+    left: 220px;
+    bottom: 10%;
+    
+    border-radius: 5px 5px 5px 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 19px;
+    /*transition: all .1s linear 0s;*/
+}
+.navbar-default .controlToggle:hover {
+    /*right: -3px;*/
+    left:217px;
+    width: 40px;
+    color: #fff;
+}
+
+.navbar-default.collapsed .controlToggle {
+    left: 28px;
+}
+.navbar-default.collapsed .controlToggle:hover {
+    left: 25px;
+}
+
+
+.navbar-default.collapsed .controlToggleIcon{
+    margin-top: 5px;
+    display: block;
+} 
+
 /*topbar right part style */
 .navbar-right>li>a {
     padding: 10px;
@@ -186,9 +232,41 @@ body{
 }
 /* remove border */
 #page-layout {
-    overflow: hidden;
+    height: 100%;
     border-left: 0px;
 }
 .sidebar ul li {
     border-bottom: 0px;
 }
+
+/* ==style without topbar ==*/
+/*style for the user config section */
+/*
+.navbar-default select{
+    height: 28px;
+    padding: 5px 5px;
+    font-size: 11px;
+}
+
+.navbar-default .form-group {
+    margin-bottom: 0px;
+}
+.navbar-default.collapsed .form-group {
+    max-width: 75px;
+}
+
+
+.navbar-default .navbar-side-choice .glyphicon
+.navbar-default .navbar-side-choice .fa{
+    font-size: 15px;
+    top:4px;
+}
+.navbar-default .navbar-side-choice .language-icon{
+    margin-right: 5px;
+}
+.navbar-default .navbar-form-container{
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 10px 10px 10px 18px;
+}*/
+

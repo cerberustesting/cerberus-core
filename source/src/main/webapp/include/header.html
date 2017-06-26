@@ -1,5 +1,5 @@
 <!-- Navigation side bar -->
-<nav class="navbar-default sidebar" role="navigation" style="margin-bottom: 0">
+<nav class="navbar-default sidebar" id="sidebar" role="navigation" style="margin-bottom: 0">
     <!-- /.navbar-top-links -->
     <div class="sidebar-nav navbar">
         <ul class="nav" id="side-menu">
@@ -95,7 +95,7 @@
             <!-- admin-->
             <li class ="navbar-side-choice">
                 <a href="TestDataLib.jsp" id="menuIntegration">
-                  <i class="glyphicon glyphicon-user"></i>
+                  <i class="glyphicon glyphicon-cog"></i>
                   <span class="nav-text">Admin </span>
                   <span class="fa arrow"></span>
                 </a>
@@ -120,7 +120,39 @@
                     <li><a  href="Documentation1.jsp">Documentation</a></li>
                 </ul>
             </li>
-
+            <!-- ==without topbar
+            <li class ="navbar-side-choice">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="TestDataLib.jsp">
+                  <i class="glyphicon glyphicon-user"></i>
+                  <span class="nav-text">
+                      <span id="headerUserName">user</span>
+                  </span>
+                  <span class="fa arrow"></span>
+                </a>
+                <ul class="nav nav-second-level" id="sidenavbar-subnavlist">
+                    <li class="userConnected">
+                        <a class="navbar-form-container" id="formSystem">
+                            <span class=" glyphicon glyphicon-folder-open subMenuIcon" style="margin-right: 3px;"></span>
+                            <form style="display: inline-block; margin-left: 3px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
+                                <select class="form-control" id="MySystem" name="MySystem" onchange="ChangeSystem()">
+                                </select>
+                            </form>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="navbar-form-container">
+                            <span class="glyphicon glyphicon-globe language-icon subMenuIcon"></span>
+                            <form style="display: inline-block;" class="form-group">
+                                <select class="form-control" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
+                                </select>
+                            </form>
+                        </a>
+                    </li>
+                    <li><a id="Logout" href="Logout.jsp"><i class="fa fa-sign-out fa-fw subMenuIcon"></i> Logout</a>
+                    </li>
+                </ul>
+            </li>-->
+            
             <!-- navbar toggle button -->
             <li class ="navbar-side-choice">
                 <span id="controlToggle" class ="controlToggle">
@@ -129,50 +161,7 @@
             </li>
         </ul>
 </nav>
-<style>
-    .navbar-default .controlToggle {
-        border-bottom: 1px solid #302F2F;
-        background: #293846;
-        color: #a7b1c2;
-        text-align: center;
-        padding: 0;
-        width: 36px;
-        height: 28px;
-        display: block;
-        position: absolute;
-        right: 0;
-        border-radius: 5px 0 0 5px;
-        cursor: pointer;
-        margin-top: 20px;
-        font-size: 19px;
-        transition: all .1s linear 0s;
-    }
-    .navbar-default .controlToggle:hover {
-        color: #fff;
-    }
-    .navbar-default.collapsed .controlToggleIcon{
-        margin-top: 5px;
-        display: block;
-    } 
-    
-    /*
-    .no-padding .dataTables_wrapper table, .no-padding>table {
-        border: none!important;
-        margin-bottom: 0!important;
-        border-bottom-width: 0!important;
-    }
-    smartadmin-prod…ins.min.css:36
-    table.table-bordered.dataTable {
-        border-collapse: separate!important;
-    }
-    smartadmin-prod…ins.min.css:36
-    table.dataTable {
-        clear: both;
-        margin-top: 6px!important;
-        margin-bottom: 6px!important;
-        max-width: none!important;
-    }*/
-</style>
+
 
 
 

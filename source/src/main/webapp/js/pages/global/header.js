@@ -21,17 +21,25 @@
 
 $(document).ready(function(){
     
-    //page-layout must take the whole page take the whole page
-    $("#page-layout").css('height','');
-    $("#page-layout").height($(document).height());
-    $("body").height($(document).height());
+    //resize page layout to take all the remaining space
+    if ($(window).height() >= $("#page-layout").height()){
+        $("#page-layout").css('height','');
+        $("#page-layout").height($(document).height());
+    }else{
+        $("#page-layout").css('height','');
+        $("#page-layout").css('height','100%');
+    }
     
     $( window ).resize(function() {//when the screen size change
-        $("#page-layout").height($(document).height());
+        if ($(window).height() >= $("#page-layout").height()){
+            $("#page-layout").css('height','');
+            $("#page-layout").height($(document).height());
+        }
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
     });
+    
 
     collaspeHandler( localStorage.getItem("navbar-toggle") );
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
@@ -94,8 +102,7 @@ $(document).ready(function(){
         if( $( "#page-layout" ).hasClass( "extended" ) ){
             $(this).find('> ul').addClass('in'); 
             $(this).addClass('active');
-            //remove display bug
-            //$(this).find('> ul').css("height", "");
+            $(this).find('> ul').css("height", "");//remove display bug
         }
     }, function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){
