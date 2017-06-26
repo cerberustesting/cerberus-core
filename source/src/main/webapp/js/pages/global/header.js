@@ -48,13 +48,6 @@ $(document).ready(function(){
             document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
         }
     }
-    /*for (var i in document.getElementsByClassName("active") ){
-        if ( document.getElementsByClassName("active")[i].parentElement !== undefined && document.getElementsByClassName("active")[i].parentElement.className === "navbar-side-choice" ){
-                console.log(document.getElementsByClassName("active")[i].className);
-                document.getElementsByClassName("active")[i].className = "";
-        }
-    }*/
-
     
     $('#controlToggle').click(function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){
@@ -226,7 +219,8 @@ function displayMenuItem(doc) {
      */
     var user = getUser();
     for (var group in user.group) {
-        $('#navlist li[class="dropdown ' + user.group[group] + '"]').removeAttr('style');
+        console.log(user.group[group]);
+        $('#navlist'+ user.group[group]).removeAttr('style');
     }
 
 }
