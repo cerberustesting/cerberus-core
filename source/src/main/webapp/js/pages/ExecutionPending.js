@@ -514,9 +514,9 @@ function filterAndDisplayTable(poolId) {
 }
 
 function filterTable(poolId) {
-    jsonPost({
-        url: 'ReadExecutionPool',
-        data: JSON.stringify(poolId),
+    $.getJSON({
+        url: "ReadExecutionPool",
+        data: "system=" +poolId.system + "&application=" + poolId.application + "&country=" + poolId.country + "&environment=" + poolId.environment,
         success: function (data) {
             // Get associated execution ids from pool
             var associcatedIds = [];
