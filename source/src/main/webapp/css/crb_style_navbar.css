@@ -29,7 +29,7 @@
 body{
     background-color:#2a4d69;
 }
-/*remove the border*/
+/*remove the border and set the z-index*/
 .navbar {
     border: 0px;
 }
@@ -81,9 +81,10 @@ body{
 }
 /* generic setting */
 
-/* display  all the way to the top and remove the useless border*/
+/* display  all the way to the top and display it at the top of everything*/
 .sidebar {
     margin-top: 0px;
+    z-index: 10;
 }
 /*make the title fit the crossing of the side navbar and the top navbar */
 .titleCase{
