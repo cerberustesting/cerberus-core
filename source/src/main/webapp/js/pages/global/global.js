@@ -2078,6 +2078,7 @@ function displayColumnSearch(tableId, contentUrl, oSettings) {
 
 
     });
+    
 }
 
 function resetColReorder(tableId) {

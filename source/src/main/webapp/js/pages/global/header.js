@@ -18,30 +18,18 @@
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 $(document).ready(function(){
     
-    
-    resize();
+    $("#page-layout").css("min-height",$(window).height());
     
     $( window ).resize(function() {//when the screen size change
-        resize();
-    });
-    
-    function resize(){
-        //resize page layout to take all the remaining space
-        if ($(window).height() >= $("#page-layout").height()){
-            $("#page-layout").css('height','');
-            $("#page-layout").height($(document).height());
-        }else{
-            $("#page-layout").css('height','');
-            $("#page-layout").css('height','100%');
-        }
+        updateTheDisplayOfTheLayout();
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
-    }
-    
+    });
+
+
     collaspeHandler( localStorage.getItem("navbar-toggle") );
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
         if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
@@ -127,7 +115,17 @@ $(document).ready(function(){
     
 }) ;
     
-
+/**
+ * Change the height of the layout to make it fit the element inside the page
+ * @returns {void}
+ */
+function updateTheDisplayOfTheLayout(){
+    if( $( window ).height() < $( document ).height())
+        $("#page-layout").css("height","");//no need to set a height
+    else{
+        $("#page-layout").height($(window).height());
+    }
+}
 
 function displayHeaderLabel(doc) {
     var user = getUser();
