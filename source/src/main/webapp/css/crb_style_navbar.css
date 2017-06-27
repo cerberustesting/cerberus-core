@@ -94,12 +94,18 @@ body{
     
 }
 
-/* =side navbar config= */
+/*transition annimation setting */
+body,
+#sidebar,
+#page-layout,
 .navbar{
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
+
+/* =side navbar config= */
+
 /* change size when collapsing*/
 .navbar-default.collapsed{
     width: 60px;
@@ -231,7 +237,7 @@ body{
 .navbar-default.collapsed .nav-second-level {
     position: absolute;
     left: 54px;
-    min-width: 140px;
+    min-width: 220px;
     top: 0;
     background-color: #2f4050;
     font-size: 12px;

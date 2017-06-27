@@ -58,6 +58,8 @@ $(document).ready(function(){
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
+        $("#side-menu").css("opacity","0");
+        $("#side-menu").delay( 500 ).fadeTo( "quick" , 1);
     });
 
     function collaspeHandler(action){
