@@ -21,26 +21,27 @@
 
 $(document).ready(function(){
     
-    //resize page layout to take all the remaining space
-    if ($(window).height() >= $("#page-layout").height()){
-        $("#page-layout").css('height','');
-        $("#page-layout").height($(document).height());
-    }else{
-        $("#page-layout").css('height','');
-        $("#page-layout").css('height','100%');
-    }
+    
+    resize();
     
     $( window ).resize(function() {//when the screen size change
+        resize();
+    });
+    
+    function resize(){
+        //resize page layout to take all the remaining space
         if ($(window).height() >= $("#page-layout").height()){
             $("#page-layout").css('height','');
             $("#page-layout").height($(document).height());
+        }else{
+            $("#page-layout").css('height','');
+            $("#page-layout").css('height','100%');
         }
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
-    });
+    }
     
-
     collaspeHandler( localStorage.getItem("navbar-toggle") );
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
         if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
@@ -49,17 +50,23 @@ $(document).ready(function(){
         }
     }
     
+    
     $('#controlToggle').click(function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){
             collaspeHandler("collaspe");
         }else{
             collaspeHandler("extended");
         }
+        //set page layout transition style after the first drawing of the table
+        $("#page-layout").css("-webkit-transition","all 0.5s ease-in-out");
+        $("#page-layout").css("-moz-transition","all 0.5s ease-in-out");
+        $("#page-layout").css("transition","all 0.5s ease-in-out");
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
         $("#side-menu").css("opacity","0");
         $("#side-menu").delay( 500 ).fadeTo( "quick" , 1);
+        
     });
 
     function collaspeHandler(action){
@@ -105,6 +112,9 @@ $(document).ready(function(){
             $(this).removeClass('active');
         }
     });
+    
+    
+    
 }) ;
     
 

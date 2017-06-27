@@ -54,11 +54,15 @@ body{
     background-color: #293846;
     color: white;
 }
+.navbar-static-top {
+    color: white;
+}
 .navbar-right a {
     /*color: #2a4d69;*/
     color: white;
     cursor:pointer
 }
+
 /* side navbarbar hover text color */
 .navbar-right a:hover{
     color: #333;
@@ -97,7 +101,6 @@ body{
 /*transition annimation setting */
 body,
 #sidebar,
-#page-layout,
 .navbar{
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition: all 0.5s ease-in-out;
@@ -219,6 +222,9 @@ body,
 .navbar-right .language-icon{
     font-size: 18px;
     top:4px;
+}
+.navbar-top-links li {
+    padding-left: 20px;
 }
 /*space */
 .navbar-header{

@@ -43,7 +43,7 @@
         </script>
         <title>Login</title>
     </head>
-    <body style="background-color: white">
+    <body>
 
         <%
             ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());

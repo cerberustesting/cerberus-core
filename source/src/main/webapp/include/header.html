@@ -175,23 +175,19 @@
     </div>
 
     <ul class="nav navbar-top-links navbar-right">
-        <li class="userConnected">
-            <a id="formSystem">
-                <span class=" glyphicon glyphicon-folder-open" style="margin-right: 3px;"></span>
-                <form style="display: inline-block; margin-left: 3px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
-                    <select class="form-control" id="MySystem" name="MySystem" onchange="ChangeSystem()">
-                    </select>
-                </form>
-            </a>
+        <li class="userConnected" id="formSystem">
+            <span class=" glyphicon glyphicon-folder-open" style="margin-right: 3px;"></span>
+            <form style="display: inline-block; margin-left: 3px;" action="" method="post" name="SysFilter" id="SysFilter" class="form-group">
+                <select class="form-control" id="MySystem" name="MySystem" onchange="ChangeSystem()">
+                </select>
+            </form>
         </li>
         <li class="userLanguage" >
-            <a>
-                <span class="glyphicon glyphicon-globe language-icon"></span>
-                <form style="display: inline-block;" class="form-group">
-                    <select class="form-control" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
-                    </select>
-                </form>
-            </a>
+            <span class="glyphicon glyphicon-globe language-icon"></span>
+            <form style="display: inline-block;" class="form-group">
+                <select class="form-control" id="MyLang" name="MyLang" onchange="ChangeLanguage();">
+                </select>
+            </form>
         </li>
         <li class="dropdown userDropdown">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
