@@ -81,10 +81,12 @@ body{
 }
 /* generic setting */
 
-/* display  all the way to the top and display it at the top of everything*/
+/* display  all the way to the top and set the z layer at 0*/
 .sidebar {
     margin-top: 0px;
     z-index: 10;
+    position: fixed;
+    top: 0;
 }
 /*make the title fit the crossing of the side navbar and the top navbar */
 .titleCase{
