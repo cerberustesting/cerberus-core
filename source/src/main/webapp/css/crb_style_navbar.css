@@ -54,23 +54,23 @@ body{
     background-color: #293846;
     color: white;
 }
-
 .navbar-right a {
     /*color: #2a4d69;*/
     color: white;
     cursor:pointer
 }
-.navbar-right a:hover {
-    /*color: #2a4d69;*/
+/* side navbarbar hover text color */
+.navbar-right a:hover{
     color: #333;
-    background-color: #fff;
 }
+
 
 .navbar-side-choice.active{
     border-left: 4px solid #008CDA;
     background: #293846;
     color: white;
 }
+/* logo and title style */
 .titleCase{
     background-color:#2a4d69;
     color: white !important;
@@ -90,7 +90,7 @@ body{
     width: 100%;
     padding: 8px 0;
     font-size: 20px;
-    height: 50px;
+    height: 49px;
     
 }
 
