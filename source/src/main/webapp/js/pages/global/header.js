@@ -29,12 +29,17 @@ $(document).ready(function(){
         tables.draw();
     });
 
-
+    //show correctly the previous menu clicked if the navbar is extend and hide it if it's collasped
     collaspeHandler( localStorage.getItem("navbar-toggle") );
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
         if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
-            document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className +=" active";
-            document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
+            if ( !$( "#page-layout" ).hasClass( "extended" ) ){
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className +=" active";
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
+            }else{
+                console.log( document.getElementsByClassName("nav nav-second-level collapse in")[i]);
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].className = "nav nav-second-level collapse";
+            }
         }
     }
     
@@ -43,6 +48,7 @@ $(document).ready(function(){
         //set page layout transition style after the first drawing of the table
         setElementCssForTransition("#page-layout","0.5");
         setElementCssForTransition("#sidebar","0.5");
+        setElementCssForTransition("#topbar","0.5");
         
         if( $( "#page-layout" ).hasClass( "extended" ) ){
             collaspeHandler("collaspe");
@@ -58,6 +64,7 @@ $(document).ready(function(){
         
         setElementCssForTransition("#page-layout","0");
         setElementCssForTransition("#sidebar","0");
+        setElementCssForTransition("#topbar","0");
         
     });
     
