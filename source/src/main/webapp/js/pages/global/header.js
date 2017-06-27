@@ -52,22 +52,32 @@ $(document).ready(function(){
     
     
     $('#controlToggle').click(function() {
+        //set page layout transition style after the first drawing of the table
+        setElementCssForTransition("#page-layout","0.5");
+        setElementCssForTransition("#sidebar","0.5");
+        
         if( $( "#page-layout" ).hasClass( "extended" ) ){
             collaspeHandler("collaspe");
         }else{
             collaspeHandler("extended");
         }
-        //set page layout transition style after the first drawing of the table
-        $("#page-layout").css("-webkit-transition","all 0.5s ease-in-out");
-        $("#page-layout").css("-moz-transition","all 0.5s ease-in-out");
-        $("#page-layout").css("transition","all 0.5s ease-in-out");
+        
         //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
         $("#side-menu").css("opacity","0");
         $("#side-menu").delay( 500 ).fadeTo( "quick" , 1);
         
+        setElementCssForTransition("#page-layout","0");
+        setElementCssForTransition("#sidebar","0");
+        
     });
+    
+    function setElementCssForTransition(element, seconde){
+        $(element).css("-webkit-transition","all "+seconde+"s ease-in-out");
+        $(element).css("-moz-transition","all  "+seconde+"s ease-in-out");
+        $(element).css("transition","all  "+seconde+"s ease-in-out");
+    }
 
     function collaspeHandler(action){
         if (action ==="collaspe"){
