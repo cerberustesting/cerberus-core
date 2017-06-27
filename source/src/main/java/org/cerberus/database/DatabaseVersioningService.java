@@ -8804,7 +8804,7 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS = new StringBuilder(); // replace color yellow by no color 
         SQLS.append("UPDATE `parameter` SET value=replace(value,'style=\"color: yellow\"','') where param='cerberus_support_email';");
         SQLInstruction.add(SQLS.toString());
-        
+
         // Added ScreenSize on Execution Queue table.
         //-- ------------------------ 1161
         SQLS = new StringBuilder();
@@ -8816,6 +8816,12 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         //-- ------------------------ 1162
         SQLS = new StringBuilder();
         SQLS.append("DELETE from parameter where param='cerberus_executiondetail_use';");
+        SQLInstruction.add(SQLS.toString());
+
+        // Cleaned Test table.
+        //-- ------------------------ 1163
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE test SET TDateCrea = '1970-01-01 01:01:01' where TDateCrea = '0000-00-00 00:00:00';");
         SQLInstruction.add(SQLS.toString());
 
         return SQLInstruction;
