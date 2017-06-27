@@ -52,7 +52,14 @@ body{
 }
 
 .navbar-right a {
-    color: #2a4d69;
+    /*color: #2a4d69;*/
+    color: white;
+    cursor:pointer
+}
+.navbar-right a:hover {
+    /*color: #2a4d69;*/
+    color: #333;
+    background-color: #fff;
 }
 
 .navbar-side-choice.active{
@@ -119,7 +126,7 @@ body{
 /* resize the top bar */
 .navbar-static-top {
     margin: 0 0 0 250px;
-    background-color:#ddd;
+    background-color:#333;
 }
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
@@ -194,6 +201,7 @@ body{
     height: 28px;
     padding: 5px 5px;
     font-size: 12px;
+    cursor: pointer;
 }
 .navbar-right .form-group {
     margin-bottom: 0px;
