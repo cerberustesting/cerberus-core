@@ -87,7 +87,7 @@ body{
 /* display  all the way to the top and set the z layer at 0*/
 .sidebar {
     margin-top: 0px;
-    z-index: 10;
+    z-index: 200;/* z-index equal to 100 in testCaseScript*/
     position: fixed;
     top: 0;
 }

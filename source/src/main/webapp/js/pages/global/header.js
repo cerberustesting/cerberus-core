@@ -86,6 +86,7 @@ $(document).ready(function(){
             }
             localStorage.setItem("navbar-toggle", true);
             $('#page-layout').css('margin-left','250px');
+            $('#side-menu').css('min-width','250px');
         }
         else if (action ==="extended"){
             $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
@@ -98,6 +99,7 @@ $(document).ready(function(){
                 $('#page-layout').toggleClass('extended');
             }
             $('#page-layout').css('margin-left','60px');
+            $('#side-menu').css('min-width','60px');
             collaspeSubMenu();
         }
         else{//first loading
