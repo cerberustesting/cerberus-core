@@ -21,10 +21,11 @@
 $(document).ready(function(){
     
     $("#page-layout").css("min-height",$(window).height());
+    handleSmallScreenSize(770);
     
     $( window ).resize(function() {//when the screen size change
+        handleSmallScreenSize(770);
         updateTheDisplayOfTheLayout();
-        //reDraw table after the resize
         var tables = $('.dataTable').DataTable();
         tables.draw();
     });
@@ -44,6 +45,7 @@ $(document).ready(function(){
     
     
     $('#controlToggle').click(function() {
+        collaspeSubMenu();
         //set page layout transition style after the first drawing of the table
         setElementCssForTransition("#page-layout","0.5");
         setElementCssForTransition("#sidebar","0.5");
@@ -55,16 +57,20 @@ $(document).ready(function(){
             collaspeHandler("extended");
         }
         
-        //reDraw table after the resize
-        var tables = $('.dataTable').DataTable();
-        tables.draw();
         $("#side-menu").css("opacity","0");
-        $("#side-menu").delay( 500 ).fadeTo( "quick" , 1);
+        $("#side-menu").delay( 500 ).fadeTo( "quick" ,1, function() {
+            //reDraw the table if datable is not overflowing
+            if ( !($(".dataTable").prop('scrollWidth') > $(".dataTable").width() ) ){
+                updateTheDisplayOfTheLayout();
+                var tables = $('.dataTable').DataTable();
+                tables.draw();
+            }
+        });
         
         setElementCssForTransition("#page-layout","0");
         setElementCssForTransition("#sidebar","0");
         setElementCssForTransition("#topbar","0");
-        
+       
     });
     
     function setElementCssForTransition(element, seconde){
@@ -73,39 +79,6 @@ $(document).ready(function(){
         $(element).css("transition","all  "+seconde+"s ease-in-out");
     }
     
-    function collaspeHandler(action){
-        if (action ==="collaspe"){
-            $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-right hit" );
-            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
-            localStorage.setItem("navbar-toggle", "collaspe");
-
-            if ( $( "#page-layout" ).hasClass( "extended" ) ){
-                $('.navbar-default').toggleClass('collapsed');
-                $('.navbar-static-top').toggleClass('collapsed');
-                $('#page-layout').toggleClass('extended');
-            }
-            localStorage.setItem("navbar-toggle", true);
-            $('#page-layout').css('margin-left','250px');
-            $('#side-menu').css('min-width','250px');
-        }
-        else if (action ==="extended"){
-            $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
-            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-right hit" );
-            localStorage.setItem("navbar-toggle", "extended");
-
-            if ( !$( "#page-layout" ).hasClass( "extended" ) ){
-                $('.navbar-default').toggleClass('collapsed');
-                $('.navbar-static-top').toggleClass('collapsed');
-                $('#page-layout').toggleClass('extended');
-            }
-            $('#page-layout').css('margin-left','60px');
-            $('#side-menu').css('min-width','60px');
-            collaspeSubMenu();
-        }
-        else{//first loading
-            $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
-        }
-    }
 
     $('.navbar-side-choice').hover(function() {
         $(this).unbind( "click" );
@@ -121,23 +94,11 @@ $(document).ready(function(){
         }
     });
     $('.navbar-side-choice').click(function() {
-        /*if ( $(this).hasClass( "active" ) ){
+        if ( $(this).hasClass( "active" ) ){
             $(this).toggleClass("active");
-        }*/
-        console.log($(this) )
+        }
     });
     
-    function collaspeSubMenu(){
-        if ( document.getElementsByClassName("nav nav-second-level collapse in").length !== 0 ){
-            
-            console.log( document.getElementsByClassName("nav nav-second-level collapse in")[0] )
-            var dropdownMenu = document.getElementsByClassName("nav nav-second-level collapse in")[0];
-            var dropdownContainer = document.getElementsByClassName("nav nav-second-level collapse in")[0].parentElement;
-            //remove some class attribute to make them collaspe
-            dropdownMenu.className = dropdownMenu.className.replace("in", "");
-            dropdownContainer.className = dropdownContainer.className.replace("active", "");
-        }
-    }
     
 }) ;
     
@@ -145,13 +106,81 @@ $(document).ready(function(){
  * Change the height of the layout to make it fit the element inside the page
  * @returns {void}
  */
+
 function updateTheDisplayOfTheLayout(){
+    //resize to take the whole page space
     if( $( window ).height() < $( document ).height())
         $("#page-layout").css("height","");//no need to set a height
     else{
         $("#page-layout").height($(window).height());
     }
 }
+/*
+ * 
+ * @param {type} width
+ * @returns {undefined}
+ */
+function handleSmallScreenSize(width){
+    if ( $(window).width() <= width  ){
+        if ( $( "#page-layout" ).hasClass( "extended" ) )
+            collaspeHandler("collaspe");
+        $("#page-layout").css("margin-left","0px");
+        $(".navbar-static-top").css("margin","0px");
+    }else{
+        $("#page-layout").css("margin-left","");
+        $(".navbar-static-top").css("margin","");
+    }
+}
+
+/*
+ * 
+ * @param {type} action
+ * @returns {undefined}
+ */
+function collaspeHandler(action){
+    if (action ==="collaspe"){
+        $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-right hit" );
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
+        localStorage.setItem("navbar-toggle", "collaspe");
+
+        if ( $( "#page-layout" ).hasClass( "extended" ) ){
+            $('.navbar-default').toggleClass('collapsed');
+            $('.navbar-static-top').toggleClass('collapsed');
+            $('#page-layout').toggleClass('extended');
+        }
+        localStorage.setItem("navbar-toggle", true);
+        $('#page-layout').css('margin-left','250px');
+        $('#side-menu').css('min-width','250px');
+    }
+    else if (action ==="extended"){
+        $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-right hit" );
+        localStorage.setItem("navbar-toggle", "extended");
+
+        if ( !$( "#page-layout" ).hasClass( "extended" ) ){
+            $('.navbar-default').toggleClass('collapsed');
+            $('.navbar-static-top').toggleClass('collapsed');
+            $('#page-layout').toggleClass('extended');
+        }
+        $('#page-layout').css('margin-left','60px');
+        $('#side-menu').css('min-width','60px');
+    }
+    else{//first loading
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
+    }
+}
+/*
+ * 
+ * @returns {undefined}
+ */
+function collaspeSubMenu(){
+    for ( var i =0; i < $('#side-menu').children("li").length ; i++){
+        var currentSubNavbar = $ ($('#side-menu').children("li")[i] );
+        currentSubNavbar.find('> ul').removeClass('in'); 
+        currentSubNavbar.removeClass('active');
+    }
+}
+
 
 function displayHeaderLabel(doc) {
     var user = getUser();

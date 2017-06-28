@@ -88,9 +88,15 @@ body{
 .sidebar {
     margin-top: 0px;
     z-index: 200;/* z-index equal to 100 in testCaseScript*/
-    position: fixed;
     top: 0;
 }
+@media screen and (min-width: 770px) {
+    .sidebar {
+        position: fixed;/*follow the user if the screen is wide enought*/
+    }
+}
+
+
 /*make the title fit the crossing of the side navbar and the top navbar */
 .titleCase{
     position: absolute;
@@ -112,12 +118,10 @@ body{
 }*/
 
 /* =side navbar config= */
-
 /* change size when collapsing*/
 .navbar-default.collapsed{
     width: 60px;
 }
-
 /*enlarge the icon when collapsing side bar */
 .navbar-default.collapsed .glyphicon {
     font-size: 20px;
@@ -130,7 +134,6 @@ body{
 .navbar-default.collapsed .fa{
     display: none;
 }
-
 /* toggle button style */
 .navbar-default .navbar-toggle {
     margin-left: 15px;
@@ -141,6 +144,9 @@ body{
     font-size: 16px;
 }
 /* resize the top bar */
+
+/* screen IS NOT width enought to display the side-navbar at the left of the screen*/
+
 .navbar-static-top {
     margin: 0 0 0 250px;
     background-color:#333;
@@ -148,6 +154,8 @@ body{
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
 }
+
+
 /*left part topbar style */
 .navbar-toggle {
     position: relative;
@@ -176,7 +184,7 @@ body{
     padding: 0;
     width: 36px;
     height: 28px;
-    display: block;
+    display: none;
     /*position: absolute;
     right: -3px;*/
     position: fixed;
@@ -189,21 +197,26 @@ body{
     font-size: 19px;
     /*transition: all .1s linear 0s;*/
 }
+/*display the button if the screen is width enought*/
+@media screen and (min-width: 770px) {
+    .navbar-default .controlToggle {
+        display: block;
+    }
+}
+
+
 .navbar-default .controlToggle:hover {
     /*right: -3px;*/
     left:217px;
     width: 40px;
     color: #fff;
 }
-
 .navbar-default.collapsed .controlToggle {
     left: 28px;
 }
 .navbar-default.collapsed .controlToggle:hover {
     left: 25px;
 }
-
-
 .navbar-default.collapsed .controlToggleIcon{
     margin-top: 5px;
     display: block;
@@ -273,6 +286,8 @@ body{
 .sidebar .active>a>.fa.arrow:before {
     content: "\f105";/*angle right*/
 }
+
+
 
 /* ==style without topbar ==*/
 /*style for the user config section */
