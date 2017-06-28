@@ -44,7 +44,10 @@ body{
     color: #a7b1c2;
     padding: 14px 20px 14px 18px;
 }
-
+/*title padding style*/
+#side-menu>li>a.titleCase{
+    padding: 10px 20px 14px 18px;
+}
 /* side navbarbar text color */
 .nav-second-level>li>a:focus,
 .nav-second-level>li>a:hover,
@@ -97,7 +100,7 @@ body{
     width: 100%;
     padding: 8px 0;
     font-size: 20px;
-    height: 49px;
+    height: 42px;
     
 }
 
