@@ -25,9 +25,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         initPageModal("applicationObject");     
         pasteListennerForClipboardPicture();
     });
-    $("#page-layout").ready(function () {
-        console.log("yolo");
-    });
+    
 });
 
 function initPage() {

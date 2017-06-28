@@ -28,8 +28,7 @@ $(document).ready(function(){
         var tables = $('.dataTable').DataTable();
         tables.draw();
     });
-
-    //show correctly the previous menu clicked if the navbar is extend and hide it if it's collasped
+    
     collaspeHandler( localStorage.getItem("navbar-toggle") );
     for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
         if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
@@ -73,9 +72,11 @@ $(document).ready(function(){
         $(element).css("-moz-transition","all  "+seconde+"s ease-in-out");
         $(element).css("transition","all  "+seconde+"s ease-in-out");
     }
-
+    
+    var recentlyExtended =false;
     function collaspeHandler(action){
         if (action ==="collaspe"){
+            recentlyExtended =false;
             $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-right hit" );
             $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
             localStorage.setItem("navbar-toggle", "collaspe");
@@ -89,6 +90,7 @@ $(document).ready(function(){
             $('#page-layout').css('margin-left','250px');
         }
         else if (action ==="extended"){
+            recentlyExtended =true;
             $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
             $('.controlToggleIcon').addClass( "fa fa-arrow-circle-right hit" );
             localStorage.setItem("navbar-toggle", "extended");
@@ -107,6 +109,10 @@ $(document).ready(function(){
 
     $('.navbar-side-choice').hover(function() {
         if( $( "#page-layout" ).hasClass( "extended" ) ){
+            if (recentlyExtended){
+                recentlyExtended =false;
+                collaspeSubMenu();
+            }
             $(this).find('> ul').addClass('in'); 
             $(this).addClass('active');
             $(this).find('> ul').css("height", "");//remove display bug
@@ -118,7 +124,15 @@ $(document).ready(function(){
         }
     });
     
-    
+    function collaspeSubMenu(){
+        if ( document.getElementsByClassName("nav nav-second-level collapse in").length !== 0 ){
+            var dropdownMenu = document.getElementsByClassName("nav nav-second-level collapse in")[0];
+            var dropdownContainer = document.getElementsByClassName("nav nav-second-level collapse in")[0].parentElement;
+            //remove some class attribute to make them collaspe
+            dropdownMenu.className = dropdownMenu.className.replace("in", "");
+            dropdownContainer.className = dropdownContainer.className.replace("active", "");
+        }
+    }
     
 }) ;
     
