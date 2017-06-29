@@ -155,7 +155,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function() {
             }
         });
     });
-
+    
 });
 
 /**

@@ -58,7 +58,6 @@
                     </div>
                 </form>
             </div>
-        </div>
 
         <footer class="footer">
             <div class="container-fluid" id="footer"></div>

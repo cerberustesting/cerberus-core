@@ -408,7 +408,8 @@ input#submitButtonDuplicate {
 
 #logo {
     max-width: 100px; 
-    margin-top: -5px; 
+    /*margin-top: -5px;*/
+    margin-top:-15px;
     max-height: 28px;
 }
 
@@ -787,13 +788,17 @@ span.editable-empty,.editable-empty:hover,.editable-empty:focus {
 */
 table.dataTable thead th {
     border-bottom-color: transparent;
-    border-top-color: transparent;
-    background-color: #E6E6E6;
+    border-top-color: transparent !important;
+    background-color: #E6E6E6 !important;
 }
 
 .dataTables_scroll{
-    clear: both;
+    /*overflow: auto;
+    clear: both;*/
+    width: 100%;
+    overflow: auto;
 }
+
 
 .editable-checklist{
     max-height: 350px;

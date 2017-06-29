@@ -40,7 +40,7 @@
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
                 <div style="min-height:150px">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:100; top: 0;height:150px">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:10; top: 0;height:150px">
                         <div class="panel-heading" id="executionHeader"  style="z-index:2; top: 0">
                             <div class="progress">
                                 <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">

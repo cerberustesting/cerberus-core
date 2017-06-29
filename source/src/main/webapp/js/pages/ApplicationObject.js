@@ -24,8 +24,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         initPage();
         initPageModal("applicationObject");     
         pasteListennerForClipboardPicture();
-        
     });
+    
 });
 
 function initPage() {

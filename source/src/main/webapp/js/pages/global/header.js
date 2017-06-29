@@ -17,6 +17,211 @@
  * You should have received a copy of the GNU General Public License
  * along with Cerberus.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+$(document).ready(function(){
+    
+    //set the min height dynamically    
+    $("#page-layout").css("min-height",$(window).height());
+   
+    //collaspe if the navbar was collaspe in the previous page
+    collaspeHandler( localStorage.getItem("navbar-toggle") );
+    
+    //highlight the current page link
+    currentPageLinkHighlight();
+    
+    //set up the listenners
+    $(window).resize(function() {
+        adapteSize();
+    });
+    
+    $('#controlToggle').click(function() {
+        collaspePage();
+    });
+    
+    $('.navbar-side-choice').hover(function() {
+        $(this).unbind( "click" );
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            $(this).find('> ul').addClass('in'); 
+            $(this).addClass('active');
+            $(this).find('> ul').css("height", "");//remove display bug
+        }
+    }, function() {
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            $(this).find('> ul').removeClass('in'); 
+            $(this).removeClass('active');
+        }
+    });
+    
+    $('.navbar-side-choice').click(function() {
+        if ( $(this).hasClass( "active" ) ){
+            $(this).toggleClass("active");
+        }
+    });
+    
+}) ;
+
+/*
+ * highlight the current page link
+ * @returns {undefined}
+ */
+function currentPageLinkHighlight(){
+    for (var i in document.getElementsByClassName("nav nav-second-level collapse in") ){
+        if ( document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement !== undefined  ){
+            if ( !$( "#page-layout" ).hasClass( "extended" ) ){
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.className +=" active";
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].parentElement.style.color = "white";
+            }else{
+                console.log( document.getElementsByClassName("nav nav-second-level collapse in")[i]);
+                document.getElementsByClassName("nav nav-second-level collapse in")[i].className = "nav nav-second-level collapse";
+            }
+        }
+    }
+}
+
+
+/*
+ * Adapte the #page-layout and the dataTable size for the screen size
+ * @returns {undefined}
+ */
+function adapteSize(){
+    updateTheDisplayOfTheLayout();
+    handleSmallScreenSize(768);
+    if ( $(".dataTables_scrollHeadInner").width() < $(".dataTables_scrollHead").width() ){
+        var tables = $('.dataTable').DataTable();
+        tables.draw();
+    }
+    $("#page-layout").css("min-height",$(window).height());
+}
+    
+    
+/**
+ * Change the height of the layout to make it fit the element inside the page
+ * @returns {void}
+ */
+
+function updateTheDisplayOfTheLayout(){
+    //resize to take the whole page space
+    if( $( window ).height() < $( document ).height())
+        $("#page-layout").css("height","");//no need to set a height
+    else{
+        $("#page-layout").height($(window).height());
+    }
+}
+
+/*
+ * adapte the navbar for screen below the width size
+ * @param {type} width
+ * @returns {undefined}
+ */
+function handleSmallScreenSize(width){
+    
+    if ( $(window).width() <= width  ){
+        $("#page-layout").css("margin","0px");
+        $(".navbar-static-top").css("margin","0px");
+    }else{
+        $("#page-layout").css("margin","");
+        $(".navbar-static-top").css("margin","");
+    }
+}
+
+/*
+ * collaspe the navbar with collaspeHandler and set up the transition style and redraw the dataTable if needed at the end
+ * @returns {undefined}
+ */
+function collaspePage(){
+    
+    collaspeSubMenu();
+    //set page layout transition style after the first drawing of the table
+    setElementCssForTransition("#page-layout","0.5");
+    setElementCssForTransition("#sidebar","0.5");
+    setElementCssForTransition("#topbar","0.5");
+
+    if( $( "#page-layout" ).hasClass( "extended" ) ){
+        collaspeHandler("collaspe");
+    }else{
+        collaspeHandler("extended");
+    }
+
+    $("#side-menu").css("opacity","0");
+    $("#side-menu").delay( 500 ).fadeTo( "quick" ,1, function() {
+        //reDraw the table if datable is not overflowing
+        if ( $(".dataTables_scrollHeadInner").width() < $(".dataTables_scrollHead").width() ){
+            //updateTheDisplayOfTheLayout();
+            var tables = $('.dataTable').DataTable();
+            tables.draw();
+        }
+    });
+
+    setElementCssForTransition("#page-layout","0");
+    setElementCssForTransition("#sidebar","0");
+    setElementCssForTransition("#topbar","0");
+}
+
+
+/*
+ * 
+ * @param {type} action
+ * @returns {undefined}
+ */
+function collaspeHandler(action){
+    if (action ==="collaspe"){
+        $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-right hit" );
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
+        localStorage.setItem("navbar-toggle", "collaspe");
+
+        if ( $( "#page-layout" ).hasClass( "extended" ) ){
+            $('.navbar-default').toggleClass('collapsed');
+            $('.navbar-static-top').toggleClass('collapsed');
+            $('#page-layout').toggleClass('extended');
+        }
+        localStorage.setItem("navbar-toggle", true);
+        $('#page-layout').css('margin-left','250px');
+        $('#side-menu').css('min-width','250px');
+    }
+    else if (action ==="extended"){
+        $('.controlToggleIcon').removeClass( "fa fa-arrow-circle-left hit" );
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-right hit" );
+        localStorage.setItem("navbar-toggle", "extended");
+
+        if ( !$( "#page-layout" ).hasClass( "extended" ) ){
+            $('.navbar-default').toggleClass('collapsed');
+            $('.navbar-static-top').toggleClass('collapsed');
+            $('#page-layout').toggleClass('extended');
+        }
+        $('#page-layout').css('margin-left','60px');
+        $('#side-menu').css('min-width','60px');
+    }
+    else{//first loading
+        $('.controlToggleIcon').addClass( "fa fa-arrow-circle-left hit" );
+    }
+}
+
+/*
+ * Set up the transition style for the element
+ * @param {type} element
+ * @param {type} seconde
+ * @returns {undefined}
+ */
+function setElementCssForTransition(element, seconde){
+        $(element).css("-webkit-transition","all "+seconde+"s ease-in-out");
+        $(element).css("-moz-transition","all  "+seconde+"s ease-in-out");
+        $(element).css("transition","all  "+seconde+"s ease-in-out");
+    }
+
+
+/*
+ * collapse the submenu of the navbar
+ * @returns {undefined}
+ */
+function collaspeSubMenu(){
+    for ( var i =0; i < $('#side-menu').children("li").length ; i++){
+        var currentSubNavbar = $ ($('#side-menu').children("li")[i] );
+        currentSubNavbar.find('> ul').removeClass('in'); 
+        currentSubNavbar.removeClass('active');
+    }
+}
+
+
 function displayHeaderLabel(doc) {
     var user = getUser();
     displayMenuItem(doc);
@@ -129,7 +334,7 @@ function displayMenuItem(doc) {
      */
     var user = getUser();
     for (var group in user.group) {
-        $('#navlist li[class="dropdown ' + user.group[group] + '"]').removeAttr('style');
+        $('#navlist'+'.'+ user.group[group]).removeAttr('style');
     }
 
 }
