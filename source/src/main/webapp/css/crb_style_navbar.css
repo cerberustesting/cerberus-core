@@ -21,14 +21,7 @@
     Author     : Ronpiche
 */
 
-/* color setting */
-
-/* side navbarbar background color */
-
-.navbar-static-top{
-    background-color: #f8f8f8;
-}
-
+/* set the color for everything exept the page-layout and the topbar*/
 .navbar,
 .navbar-default,
 body{
@@ -38,6 +31,7 @@ body{
 .navbar {
     border: 0px;
 }
+
 /* side navbarbar text color */
 .nav-second-level>li>a,
 .nav-second-level>li>a,
@@ -49,10 +43,6 @@ body{
     color: #a7b1c2;
     padding: 14px 20px 14px 18px;
 }
-/*title padding style*/
-#side-menu>li>a.titleCase{
-    padding: 10px 20px 14px 18px;
-}
 /* side navbarbar text color */
 .nav-second-level>li>a:focus,
 .nav-second-level>li>a:hover,
@@ -62,12 +52,17 @@ body{
     background-color: #293846;
     color: white;
 }
+
+/*title padding style*/
+#side-menu>li>a.titleCase{
+    padding: 10px 20px 14px 18px;
+}
+
 .navbar-static-top {
     color: #008CDA;
 }
 .navbar-right a {
     color: #008CDA;
-    /*color: white;*/
     cursor:pointer
 }
 
@@ -76,17 +71,12 @@ body{
     color: #333;
 }
 
-
 .navbar-side-choice.active{
     border-left: 4px solid #008CDA;
     background: #293846;
     color: white;
 }
-/* logo and title style */
-.titleCase{
-    background-color:#2a4d69;
-    color: white !important;
-}
+
 /* generic setting */
 
 /* display  all the way to the top and set the z layer at 0*/
@@ -112,15 +102,10 @@ body{
     padding: 8px 0;
     font-size: 20px;
     height: 42px;
+    background-color:#2a4d69;
+    color: white !important;
     
 }
-
-/*transition annimation setting */
-/*body{
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition: all 0.5s ease-in-out;
-    transition: all 0.5s ease-in-out;
-}*/
 
 /* =side navbar config= */
 /* change size when collapsing*/
@@ -147,17 +132,14 @@ body{
     margin-left: 15px;
 }
 
-/*whole topbar style */
-.navbar-static-top {
-    font-size: 16px;
-}
 /* resize the top bar */
 
 /* screen IS NOT width enought to display the side-navbar at the left of the screen*/
 
 .navbar-static-top {
     margin: 0 0 0 250px;
-    background-color: #E6E6E6;
+    font-size: 16px;
+    background-color: #f5f5f5;
 }
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
@@ -211,7 +193,6 @@ body{
         display: block;
     }
 }
-
 
 .navbar-default .controlToggle:hover {
     /*right: -3px;*/
@@ -282,7 +263,7 @@ body{
 /* remove border */
 #page-layout {
     height: 100%;
-    border: 1px solid #e7e7e7;
+    border-top: 1px solid #e7e7e7;
 }
 @media (min-width: 768px){
     #page-layout.extended{
@@ -299,33 +280,3 @@ body{
 .sidebar .active>a>.fa.arrow:before {
     content: "\f105";/*angle right*/
 }
-
-
-
-/* ==style without topbar ==*/
-/*style for the user config section */
-/*
-.navbar-default select{
-    height: 28px;
-    padding: 5px 5px;
-    font-size: 11px;
-}
-.navbar-default .form-group {
-    margin-bottom: 0px;
-}
-.navbar-default.collapsed .form-group {
-    max-width: 75px;
-}
-.navbar-default .navbar-side-choice .glyphicon
-.navbar-default .navbar-side-choice .fa{
-    font-size: 15px;
-    top:4px;
-}
-.navbar-default .navbar-side-choice .language-icon{
-    margin-right: 5px;
-}
-.navbar-default .navbar-form-container{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 10px 10px 10px 18px;
-}*/
