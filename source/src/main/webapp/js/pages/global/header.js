@@ -26,8 +26,10 @@ $(document).ready(function(){
     $( window ).resize(function() {//when the screen size change
         handleSmallScreenSize(770);
         updateTheDisplayOfTheLayout();
-        var tables = $('.dataTable').DataTable();
-        tables.draw();
+        if ( $(".dataTables_scrollHeadInner").width() < $(".dataTables_scrollHead").width() ){
+            var tables = $('.dataTable').DataTable();
+            tables.draw();
+        }
     });
     
     collaspeHandler( localStorage.getItem("navbar-toggle") );
@@ -60,7 +62,7 @@ $(document).ready(function(){
         $("#side-menu").css("opacity","0");
         $("#side-menu").delay( 500 ).fadeTo( "quick" ,1, function() {
             //reDraw the table if datable is not overflowing
-            if ( !($(".dataTable").prop('scrollWidth') > $(".dataTable").width() ) ){
+            if ( $(".dataTables_scrollHeadInner").width() < $(".dataTables_scrollHead").width() ){
                 updateTheDisplayOfTheLayout();
                 var tables = $('.dataTable').DataTable();
                 tables.draw();
@@ -121,14 +123,14 @@ function updateTheDisplayOfTheLayout(){
  * @returns {undefined}
  */
 function handleSmallScreenSize(width){
+    
     if ( $(window).width() <= width  ){
         if ( $( "#page-layout" ).hasClass( "extended" ) )
             collaspeHandler("collaspe");
         $("#page-layout").css("margin-left","0px");
         $(".navbar-static-top").css("margin","0px");
     }else{
-        $("#page-layout").css("margin-left","");
-        $(".navbar-static-top").css("margin","");
+        updateTheDisplayOfTheLayout();
     }
 }
 

@@ -27,7 +27,11 @@
 .navbar,
 .navbar-default,
 body{
-    background-color:#2a4d69;
+    /*background-color:#2a4d69;*/
+    background-color: #f8f8f8;
+}
+.navbar>ul>li a {
+    color: #337ab7;
 }
 /*remove the border and set the z-index*/
 .navbar {
@@ -41,7 +45,7 @@ body{
 .sidebar ul li a.active {
     font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: 600;
-    color: #a7b1c2;
+    /*color: #a7b1c2;*/
     padding: 14px 20px 14px 18px;
 }
 /*title padding style*/
@@ -54,15 +58,16 @@ body{
 #side-menu>li>a:focus,
 #side-menu>li>a:hover,
 .sidebar ul li a.active {
-    background-color: #293846;
-    color: white;
+    /*background-color: #293846;*/
+    /*color: white;*/
+    color: #23527c;
 }
 .navbar-static-top {
-    color: white;
+    color: #008CDA;
 }
 .navbar-right a {
     /*color: #2a4d69;*/
-    color: white;
+    /*color: white;*/
     cursor:pointer
 }
 
@@ -73,14 +78,18 @@ body{
 
 
 .navbar-side-choice.active{
-    border-left: 4px solid #008CDA;
-    background: #293846;
+    border-left: 4px solid #337ab7;
+    /*background: #293846;*/
     color: white;
+}
+#side-menu> .active >a {
+    background-color: #eee;
 }
 /* logo and title style */
 .titleCase{
-    background-color:#2a4d69;
-    color: white !important;
+    /*background-color:#2a4d69;*/
+    background-color: #f8f8f8;
+    /*color: white !important;*/
 }
 /* generic setting */
 
@@ -123,8 +132,10 @@ body{
     width: 60px;
 }
 /*enlarge the icon when collapsing side bar */
+.navbar-default.collapsed i.fa,
 .navbar-default.collapsed .glyphicon {
     font-size: 20px;
+    display: block;
 }
 /*hidde text */
 .navbar-default.collapsed .nav-text {
@@ -142,6 +153,7 @@ body{
 /*whole topbar style */
 .navbar-static-top {
     font-size: 16px;
+    color: #337ab7;
 }
 /* resize the top bar */
 
@@ -149,7 +161,8 @@ body{
 
 .navbar-static-top {
     margin: 0 0 0 250px;
-    background-color:#333;
+    border-left: 1px solid #e7e7e7;
+    /*background-color:#333;*/
 }
 .navbar-static-top.collapsed{
     margin: 0 0 0 60px;
@@ -177,9 +190,9 @@ body{
 }
 /* button to toggle navbar style */
 .navbar-default .controlToggle {
-    border-bottom: 1px solid #302F2F;
-    background: #293846;
-    color: #a7b1c2;
+    border-bottom: 1px solid #23527c;
+    background: #337ab7;
+    color: #fff;
     text-align: center;
     padding: 0;
     width: 36px;
@@ -210,6 +223,7 @@ body{
     left:217px;
     width: 40px;
     color: #fff;
+    background-color: #23527c;
 }
 .navbar-default.collapsed .controlToggle {
     left: 28px;
@@ -259,10 +273,11 @@ body{
 }
 .navbar-default.collapsed .nav-second-level {
     position: absolute;
-    left: 54px;
+    left: 57px;
     min-width: 220px;
-    top: 0;
-    background-color: #2f4050;
+    top: 0px;
+    background-color: #f8f8f8;
+    border: 1px solid #e7e7e7;
     font-size: 12px;
     padding-left: 0px;
     padding: 10px 10px 10px 10px;
@@ -271,13 +286,13 @@ body{
 .nav nav-second-level{
     overflow: hidden;
 }
-/* remove border */
+
 #page-layout {
     height: 100%;
-    border-left: 0px;
+    border: 1px solid #e7e7e7;
 }
 .sidebar ul li {
-    border-bottom: 0px;
+    /*border-bottom: 0px;*/
 }
 /* overide sb-admin.css for the style of the toggle button for the subnavlist */
 .sidebar .fa.arrow:before {
@@ -286,37 +301,3 @@ body{
 .sidebar .active>a>.fa.arrow:before {
     content: "\f105";/*angle right*/
 }
-
-
-
-/* ==style without topbar ==*/
-/*style for the user config section */
-/*
-.navbar-default select{
-    height: 28px;
-    padding: 5px 5px;
-    font-size: 11px;
-}
-
-.navbar-default .form-group {
-    margin-bottom: 0px;
-}
-.navbar-default.collapsed .form-group {
-    max-width: 75px;
-}
-
-
-.navbar-default .navbar-side-choice .glyphicon
-.navbar-default .navbar-side-choice .fa{
-    font-size: 15px;
-    top:4px;
-}
-.navbar-default .navbar-side-choice .language-icon{
-    margin-right: 5px;
-}
-.navbar-default .navbar-form-container{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 10px 10px 10px 18px;
-}*/
-
