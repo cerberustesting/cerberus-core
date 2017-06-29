@@ -85,6 +85,8 @@ public class ReadTestCaseExecution extends HttpServlet {
     private IBuildRevisionInvariantService buildRevisionInvariantService;
     private IApplicationService applicationService;
 
+    private static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ReadTestCaseExecution.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -742,7 +744,25 @@ public class ReadTestCaseExecution extends HttpServlet {
         buildRevisionInvariantService = appContext.getBean(BuildRevisionInvariantService.class);
         applicationService = appContext.getBean(ApplicationService.class);
 
+        LOG.debug(columnName);
         switch (columnName) {
+            /**
+             * Columns from Status
+             */
+            case "exe.controlStatus":
+                List<String> dataList = new ArrayList<>();
+                dataList.add(TestCaseExecution.CONTROLSTATUS_CA);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_FA);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_KO);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_NA);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_NE);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_OK);
+                dataList.add(TestCaseExecution.CONTROLSTATUS_PE);
+                values.setDataList(dataList);
+                MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_OK);
+                msg.setDescription(msg.getDescription().replace("%ITEM%", "xecution").replace("%OPERATION%", "SELECT"));
+                values.setResultMessage(msg);
+                break;
             /**
              * For columns test and testcase, get distinct values from test
              * table
@@ -782,12 +802,11 @@ public class ReadTestCaseExecution extends HttpServlet {
             case "exe.build":
             case "exe.revision":
                 individualSearch = new HashMap();
-                individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build")?"1":"2")));
+                individualSearch.put("level", new ArrayList(Arrays.asList(columnName.equals("exe.build") ? "1" : "2")));
                 values = buildRevisionInvariantService.readDistinctValuesByCriteria(system, "", individualSearch, "versionName");
                 break;
             /**
-             * For columns application get values from
-             * application
+             * For columns application get values from application
              */
             case "exe.application":
                 values = applicationService.readDistinctValuesByCriteria(system, "", null, columnName.replace("exe.", ""));
