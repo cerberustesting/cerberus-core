@@ -37,7 +37,7 @@
         </script>
         <title>Logout</title>
     </head>
-    <body>
+    <body style="background-color: #fff">
         <div align="center" style="padding-top: 12%;">
             <h1>Logout Successfully</h1>
         </div>
