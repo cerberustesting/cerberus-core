@@ -33,56 +33,51 @@
         <%@ include file="include/dependenciesInclusions_old.html" %>
         <title>ExecutionThreadMonitoring</title>
         <script>
-            $(document).ready(function() {
-                $.get('ReadCerberusDetailInformation', function(data) {
+            $(document).ready(function () {
+                $.get('ReadCerberusDetailInformation', function (data) {
                     $("#sizeOfQueue").html(data.size_queue);
                     $("#QueueInExecution").html(data.queue_in_execution);
                     $("#NumberOfThread").html(data.number_of_thread);
                     $("#SimultaneousExecution").html(data.simultaneous_execution);
                     $("#SimultaneousSession").html(data.simultaneous_session);
-                    $.each(data.active_users, function (a, v){
-                        $("#ActiveUsers").append("<li>"+ v + "</li>");
+                    $.each(data.active_users, function (a, v) {
+                        $("#ActiveUsers").append("<li>" + v + "</li>");
                     });
-                    $.each(data.simultaneous_execution_list, function (a, v){
-                        function getParameter(param,sys,forceReload){
+                    $.each(data.simultaneous_execution_list, function (a, v) {
+                        function getParameter(param, sys, forceReload) {
                             var result;
-                            var cacheEntryName = "PARAMETER_"+param;
+                            var cacheEntryName = "PARAMETER_" + param;
                             if (forceReload) {
                                 sessionStorage.removeItem(cacheEntryName);
                             }
-                            var system = sys!=undefined?"&system="+sys:"";
+                            var system = sys != undefined ? "&system=" + sys : "";
                             var parameter = JSON.parse(sessionStorage.getItem(cacheEntryName));
-                            if(parameter === null){
+                            if (parameter === null) {
                                 $.ajax({
-                                    url: "ReadParameter?param="+param+system,
+                                    url: "ReadParameter?param=" + param + system,
                                     data: {},
                                     async: false,
                                     success: function (data) {
-                                        sessionStorage.setItem(cacheEntryName,JSON.stringify(data.contentTable))
+                                        sessionStorage.setItem(cacheEntryName, JSON.stringify(data.contentTable))
                                         result = data.contentTable;
                                     }
                                 });
-                            }else{
+                            } else {
                                 result = parameter;
                             }
                             return result;
                         }
 
-                        var data = getParameter("cerberus_executiondetail_use");
-                        if(data.value == "N"){
-                            $("#ExecutionList").append("<li>[<a href='./ExecutionDetail.jsp?id_tc="+ v.id + "'>"+ v.id + "</a>] : " + v.test + " " +v.testcase + "</li>");
-                        }else{
-                            $("#ExecutionList").append("<li>[<a href='./ExecutionDetail2.jsp?executionId="+ v.id + "'>"+ v.id + "</a>] : " + v.test + " " +v.testcase + "</li>");
-                        }
+                        $("#ExecutionList").append("<li>[<a href='./ExecutionDetail2.jsp?executionId=" + v.id + "'>" + v.id + "</a>] : " + v.test + " " + v.testcase + "</li>");
                     });
-                    
+
                 });
 
             });
         </script>
         <script>
-            function resetThreadPool(){
-                $.get('ExecutionThreadReset', function(data) {
+            function resetThreadPool() {
+                $.get('ExecutionThreadReset', function (data) {
                     alert('Thread Pool Cleaned');
                 });
             }

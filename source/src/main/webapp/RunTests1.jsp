@@ -56,9 +56,13 @@
                                 </label>
                             </div>
                             <form id="campaignSelection" style="display: none;">
-                                <div class="form-group col-lg-8">
+                                <div class="form-group col-lg-6">
                                     <div class="input-group">
-                                        <select class="form-control input-sm" id="campaignSelect"></select>
+                                        <select class="form-control col-lg-12" id="campaignSelect"></select>
+                                    </div>
+                                </div>
+                                <div class="form-group col-lg-2">
+                                    <div class="input-group">
                                         <div class="input-group-btn">
                                             <button type="button" class="btn btn-primary" id="loadCampaignBtn">Load</button>
                                         </div>

@@ -47,14 +47,14 @@
                 </div>
                 <div class="panel-body" id="executionList">
                     <ul id="tabsScriptEdit" class="nav nav-tabs" data-tabs="tabs">
-                    <li class="active"><a data-toggle="tab" href="#tabSummary" id="editTabSummary" name="tabSummary">Execution pools</a></li>
-                    <li><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
-                </ul>
+                        <li class="active"><a data-toggle="tab" href="#tabDetails" id="editTabDetails" name="tabDetails">Executions in queue</a></li>
+                        <li><a data-toggle="tab" href="#tabSummary" id="editTabSummary" name="tabSummary">Execution pools</a></li>
+                    </ul>
                     <div class="tab-content">
-                        <div class="center marginTop25 tab-pane fade in active" id="tabSummary">
+                        <div class="center marginTop25 tab-pane fade" id="tabSummary">
                             <div id="statusChart"></div>
                         </div>
-                        <div class="center marginTop25 tab-pane fade" id="tabDetails">
+                        <div class="center marginTop25 tab-pane fade in active" id="tabDetails">
                             <form id="massActionForm" name="massActionForm"  title="" role="form">
                                 <table id="executionsTable" class="table table-bordered table-hover display" name="executionsTable"></table>
                             </form>

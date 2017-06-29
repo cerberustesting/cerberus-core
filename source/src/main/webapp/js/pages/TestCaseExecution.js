@@ -146,7 +146,7 @@ function aoColumnsFunc() {
             "sName": "exe.id",
             "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "id"),
-            "sWidth": "120px",
+            "sWidth": "50px",
             "sDefaultContent": ""
         },
         {
@@ -167,7 +167,7 @@ function aoColumnsFunc() {
             "data": "country",
             "sName": "exe.country",
             "title": doc.getDocOnline("page_executiondetail", "country"),
-            "sWidth": "70px",
+            "sWidth": "50px",
             "sDefaultContent": ""
         },
         {
@@ -175,6 +175,13 @@ function aoColumnsFunc() {
             "sName": "exe.environment",
             "title": doc.getDocOnline("page_executiondetail", "environment"),
             "sWidth": "70px",
+            "sDefaultContent": ""
+        },
+        {
+            "data": "description",
+            "sName": "exe.description",
+            "title": doc.getDocOnline("testcase", "Description"),
+            "sWidth": "150px",
             "sDefaultContent": ""
         },
         {

@@ -66,14 +66,15 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 @WebServlet(name = "GetExecutionQueue", urlPatterns = {"/GetExecutionQueue"})
 public class GetExecutionQueue extends HttpServlet {
-
+    
     private static final String PARAMETER_ROBOT = "robot";
     private static final String PARAMETER_ROBOT_IP = "ss_ip";
     private static final String PARAMETER_ROBOT_PORT = "ss_p";
     private static final String PARAMETER_BROWSER = "Browser";
     private static final String PARAMETER_BROWSER_VERSION = "BrowserVersion";
     private static final String PARAMETER_PLATFORM = "Platform";
-
+    private static final String PARAMETER_SCREENSIZE = "screenSize";
+    
     private static final String PARAMETER_TAG = "Tag";
     private static final String PARAMETER_OUTPUT_FORMAT = "OutputFormat";
     private static final String PARAMETER_SCREENSHOT = "Screenshot";
@@ -84,7 +85,7 @@ public class GetExecutionQueue extends HttpServlet {
     private static final String PARAMETER_SELENIUM_LOG = "SeleniumLog";
     private static final String PARAMETER_RETRIES = "retries";
     private static final String PARAMETER_MANUAL_EXECUTION = "manualExecution";
-
+    
     private static final String DEFAULT_VALUE_OUTPUT_FORMAT = "compact";
     private static final int DEFAULT_VALUE_SCREENSHOT = 0;
     private static final boolean DEFAULT_VALUE_MANUAL_URL = false;
@@ -95,14 +96,14 @@ public class GetExecutionQueue extends HttpServlet {
     private static final int DEFAULT_VALUE_SELENIUM_LOG = 1;
     private static final int DEFAULT_VALUE_RETRIES = 0;
     private static final boolean DEFAULT_VALUE_MANUAL_EXECUTION = false;
-
+    
     private static final String PARAMETER_MANUAL_HOST = "ManualHost";
     private static final String PARAMETER_MANUAL_CONTEXT_ROOT = "ManualContextRoot";
     private static final String PARAMETER_MANUAL_LOGIN_RELATIVE_URL = "ManualLoginRelativeURL";
     private static final String PARAMETER_MANUAL_ENV_DATA = "ManualEnvData";
-
+    
     private ITestCaseExecutionService testCaseExecutionService;
-
+    
     private static final Logger LOG = Logger.getLogger(GetExecutionQueue.class);
 
     /**
@@ -121,10 +122,10 @@ public class GetExecutionQueue extends HttpServlet {
         AnswerItem answer = new AnswerItem(new MessageEvent(MessageEventEnum.DATA_OPERATION_OK));
         JSONObject jsonResponse = new JSONObject();
         ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(this.getServletContext());
-
+        
         boolean check = ParameterParserUtil.parseBooleanParam(request.getParameter("check"), false);
         boolean push = ParameterParserUtil.parseBooleanParam(request.getParameter("push"), false);
-
+        
         if (check) {
             IApplicationService applicationService = appContext.getBean(IApplicationService.class);
             IInvariantService invariantService = appContext.getBean(IInvariantService.class);
@@ -134,7 +135,7 @@ public class GetExecutionQueue extends HttpServlet {
             IParameterService parameterService = appContext.getBean(IParameterService.class);
             testCaseExecutionService = appContext.getBean(ITestCaseExecutionService.class);
             List<ExecutionValidator> inQueue = new ArrayList<ExecutionValidator>();
-
+            
             JSONArray testCaseList = new JSONArray(request.getParameter("testcase"));
             JSONArray environmentList = new JSONArray(request.getParameter("environment"));
             JSONArray countryList = new JSONArray(request.getParameter("countries"));
@@ -145,35 +146,34 @@ public class GetExecutionQueue extends HttpServlet {
             List<TestCase> TCList = new ArrayList<TestCase>();
             List<String> envList = new ArrayList<String>();
             List<String> countries = new ArrayList<String>();
-
+            
             for (int index = 0; index < testCaseList.length(); index++) {
                 JSONObject testCaseJson = testCaseList.getJSONObject(index);
                 TestCase tc = new TestCase();
-
+                
                 tc.setTest(testCaseJson.getString("test"));
                 tc.setTestCase(testCaseJson.getString("testcase"));
                 TCList.add(tc);
             }
-
+            
             for (int index = 0; index < environmentList.length(); index++) {
                 String environment = environmentList.getString(index);
-
                 envList.add(environment);
             }
-
+            
             for (int index = 0; index < countryList.length(); index++) {
                 String country = countryList.getString(index);
                 countries.add(country);
             }
-
+            
             List<TestCaseExecution> tceList = testCaseExecutionService.createAllTestCaseExecution(TCList, envList, countries);
-
+            
             IExecutionCheckService execCheckService = appContext.getBean(IExecutionCheckService.class);
-
+            
             for (TestCaseExecution execution : tceList) {
                 boolean exception = false;
                 ExecutionValidator validator = new ExecutionValidator();
-
+                
                 try {
                     execution.setTestObj(testService.convert(testService.readByKey(execution.getTest())));
                 } catch (CerberusException ex) {
@@ -183,7 +183,7 @@ public class GetExecutionQueue extends HttpServlet {
                     validator.setMessage(mes.getDescription());
                     exception = true;
                 }
-
+                
                 try {
                     execution.setTestCaseObj(testCaseService.findTestCaseByKey(execution.getTest(), execution.getTestCase()));
                 } catch (CerberusException ex) {
@@ -194,7 +194,7 @@ public class GetExecutionQueue extends HttpServlet {
                     validator.setMessage(mes.getDescription());
                     exception = true;
                 }
-
+                
                 try {
                     execution.setApplicationObj(applicationService.convert(applicationService.readByKey(execution.getTestCaseObj().getApplication())));
                 } catch (CerberusException ex) {
@@ -204,9 +204,9 @@ public class GetExecutionQueue extends HttpServlet {
                     validator.setMessage(mes.getDescription());
                     exception = true;
                 }
-
+                
                 execution.setEnvironmentData(execution.getEnvironment());
-
+                
                 try {
                     execution.setCountryEnvParam(cepService.convert(cepService.readByKey(execution.getApplicationObj().getSystem(), execution.getCountry(), execution.getEnvironment())));
                 } catch (CerberusException ex) {
@@ -218,7 +218,7 @@ public class GetExecutionQueue extends HttpServlet {
                     validator.setMessage(mes.getDescription());
                     exception = true;
                 }
-
+                
                 try {
                     execution.setEnvironmentDataObj(invariantService.findInvariantByIdValue("ENVIRONMENT", execution.getEnvironmentData()));
                 } catch (CerberusException ex) {
@@ -228,9 +228,9 @@ public class GetExecutionQueue extends HttpServlet {
                     validator.setMessage(mes.getDescription());
                     exception = true;
                 }
-
+                
                 execution.setBrowser("firefox");
-
+                
                 if (exception == false) {
                     /**
                      * Checking the execution as it would be checked in the
@@ -242,28 +242,28 @@ public class GetExecutionQueue extends HttpServlet {
                         validator.setMessage(message.getDescription());
                     } else {
                         validator.setValid(true);
-                        validator.setMessage(message.getDescription());
+                        validator.setMessage("Valid Execution.");
                     }
                 }
                 validator.setExecution(execution);
                 inQueue.add(validator);
             }
-
+            
             JSONArray dataArray = new JSONArray();
             for (ExecutionValidator tce : inQueue) {
                 JSONObject exec = new JSONObject();
-
+                
                 exec.put("test", tce.getExecution().getTest());
                 exec.put("testcase", tce.getExecution().getTestCase());
                 exec.put("env", tce.getExecution().getEnvironment());
                 exec.put("country", tce.getExecution().getCountry());
-                exec.put("validate", tce.isValid());
+                exec.put("isValid", tce.isValid());
                 exec.put("message", tce.getMessage());
                 dataArray.put(exec);
             }
             jsonResponse.put("contentTable", dataArray);
         }
-
+        
         if (push) {
             IExecutionThreadPoolService executionThreadService = appContext.getBean(IExecutionThreadPoolService.class);
             IParameterService parameterService = appContext.getBean(IParameterService.class);
@@ -282,6 +282,7 @@ public class GetExecutionQueue extends HttpServlet {
             String robotPort = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_ROBOT_PORT), null);
             String browserVersion = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_BROWSER_VERSION), null);
             String platform = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_PLATFORM), null);
+            String screenSize = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_SCREENSIZE), null);
             String outputFormat = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_OUTPUT_FORMAT), DEFAULT_VALUE_OUTPUT_FORMAT);
             /**
              * RETRIEVING EXECUTION SETTINGS *
@@ -302,14 +303,14 @@ public class GetExecutionQueue extends HttpServlet {
             String manualContextRoot = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_CONTEXT_ROOT), null);
             String manualLoginRelativeURL = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_LOGIN_RELATIVE_URL), null);
             String manualEnvData = ParameterParserUtil.parseStringParam(request.getParameter(PARAMETER_MANUAL_ENV_DATA), null);
-
+            
             for (int index = 0; index < toAddList.length(); index++) {
                 JSONObject toAdd = toAddList.getJSONObject(index);
                 boolean manualURL = false;
                 if (toAdd.getString("env").equals("MANUAL")) {
                     manualURL = true;
                 }
-
+                
                 try {
                     // Create the template
                     TestCaseExecutionInQueue tceiq = inQueueFactoryService.create(
@@ -323,6 +324,7 @@ public class GetExecutionQueue extends HttpServlet {
                             null,
                             browserVersion,
                             platform,
+                            screenSize,
                             manualURL,
                             manualHost,
                             manualContextRoot,
@@ -344,8 +346,7 @@ public class GetExecutionQueue extends HttpServlet {
                     if (browsers.length() == 0) {
                         inQueueService.insert(tceiq);
                         addedToQueue++;
-                    }
-                    // Or with required browsers
+                    } // Or with required browsers
                     else {
                         for (int iterBrowser = 0; iterBrowser < browsers.length(); iterBrowser++) {
                             tceiq.setBrowser(browsers.getString(iterBrowser));
@@ -372,14 +373,14 @@ public class GetExecutionQueue extends HttpServlet {
                     answer.setResultMessage(new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED));
                     answer.getResultMessage().setDescription(errorMessage);
                 }
-
+                
                 jsonResponse.put("messageType", answer.getResultMessage().getMessage().getCodeString());
                 jsonResponse.put("message", answer.getResultMessage().getDescription());
                 jsonResponse.put("addedToQueue", addedToQueue);
                 jsonResponse.put("redirect", "ReportingExecutionByTag.jsp?Tag=" + StringUtil.encodeAsJavaScriptURIComponent(tag));
             }
         }
-
+        
         response.setContentType("application/json");
         response.getWriter().print(jsonResponse.toString());
     }

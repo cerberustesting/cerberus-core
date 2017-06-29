@@ -73,13 +73,13 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
+                LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
         } else /**
          * Automatic application connectivity parameter (from database)
          */
-        {
-            if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
+         if (this.checkEnvironmentActive(tCExecution.getCountryEnvParam())
                     && this.checkTestCaseNotManual(tCExecution)
                     && this.checkRangeBuildRevision(tCExecution)
                     && this.checkTargetBuildRevision(tCExecution)
@@ -88,9 +88,9 @@ public class ExecutionCheckService implements IExecutionCheckService {
                     && this.checkTestActive(tCExecution.getTestObj())
                     && this.checkCountry(tCExecution)
                     && this.checkMaintenanceTime(tCExecution)) {
+                LOG.debug("Execution is checked and can proceed.");
                 return new MessageGeneral(MessageGeneralEnum.EXECUTION_PE_CHECKINGPARAMETERS);
             }
-        }
         return message;
     }
 

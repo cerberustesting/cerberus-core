@@ -716,7 +716,27 @@ img.selectedPicture{
     z-index: 5000;
 }
 
-/* footer style */
-#footer{
-    padding-bottom: 20px;
+.logo-login {
+	margin-top : 3%;
+	max-width: 250px;
+}
+.panel-login {
+	padding : 10px 0;
+}
+
+@media (min-width: 992px) {
+	.body-login {
+		padding-top : 10%;		
+	}
+	.panel-login {
+		background : #f9f9f9;
+	}
+}
+@media (max-width: 992px) {
+	.panel-login {
+		border : 0;		
+	}
+	.logo-login {
+		max-width: 150px;
+	}
 }

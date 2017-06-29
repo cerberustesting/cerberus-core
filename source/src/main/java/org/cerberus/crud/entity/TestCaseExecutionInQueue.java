@@ -42,6 +42,7 @@ public class TestCaseExecutionInQueue {
     private String browser;
     private String browserVersion;
     private String platform;
+    private String screenSize;
     private boolean manualURL;
     private String manualHost;
     private String manualContextRoot;
@@ -60,14 +61,21 @@ public class TestCaseExecutionInQueue {
     private int retries;
     private boolean manualExecution;
     private State state;
-    
+
     /**
      * From here are data outside database model.
      */
     private Application applicationObj;
     private TestCase testCaseObj;
 
-    
+    public String getScreenSize() {
+        return screenSize;
+    }
+
+    public void setScreenSize(String screenSize) {
+        this.screenSize = screenSize;
+    }
+
     public TestCase getTestCaseObj() {
         return testCaseObj;
     }

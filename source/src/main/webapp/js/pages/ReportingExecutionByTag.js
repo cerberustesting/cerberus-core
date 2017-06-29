@@ -877,21 +877,6 @@ function getRowClass(status) {
     return rowClass;
 }
 
-function generateExecutionLink(status, id) {
-    var result = "";
-    if (status === "NE") {
-        result = "./RunTests.jsp?queuedExecution=" + id;
-    } else {
-        var data = getParameter("cerberus_executiondetail_use");
-        if (data.value !== "N") {
-            result = "./ExecutionDetail2.jsp?executionId=" + id;
-        } else {
-            result = "./ExecutionDetail.jsp?id_tc=" + id;
-        }
-    }
-    return result;
-}
-
 function wrap(text, width) {
     text.each(function () {
         var text = d3.select(this),

@@ -206,6 +206,7 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
             paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, executionWorkerThread.getToExecute().getBrowser());
             paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, executionWorkerThread.getToExecute().getBrowserVersion());
             paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, executionWorkerThread.getToExecute().getPlatform());
+            paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, executionWorkerThread.getToExecute().getScreenSize());
             if (executionWorkerThread.getToExecute().isManualURL()) {
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
                 paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, executionWorkerThread.getToExecute().getManualHost());

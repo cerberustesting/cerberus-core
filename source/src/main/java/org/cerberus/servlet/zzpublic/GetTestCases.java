@@ -51,7 +51,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
      */
     public static class Request implements Validable {
 
-        private static final String APPLICATION_PARAMETER = "application";
+        public static final RequestParameter APPLICATION = new RequestParameter("application", "Application name criteria. Allow to search the list of test cases associated to an application.");
         private final String application;
 
         public Request(final String application) {
@@ -66,7 +66,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
         public Validity validate() {
             final Validity.Builder validity = Validity.builder();
             if (StringUtil.isNullOrEmpty(application)) {
-                validity.reason("null or empty `application` parameter");
+                validity.reason(String.format("null or empty `%s` parameter", APPLICATION.getName()));
             }
             return validity.build();
         }
@@ -153,7 +153,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
                 "Get a list of test cases based on criteria",
                 new GetableHttpServletInfo.GetableUsage(
                         Sets.newHashSet(
-                                new RequestParameter("application", "Application name criteria. Allow to search the list of test cases associated to an application.")
+                                Request.APPLICATION
                         )
                 )
         );
@@ -166,7 +166,7 @@ public class GetTestCases extends PublicGetableHttpServlet<GetTestCases.Request,
 
     @Override
     protected Request parseRequest(final HttpServletRequest req) throws RequestParsingException {
-        return new Request(req.getParameter(Request.APPLICATION_PARAMETER));
+        return new Request(req.getParameter(Request.APPLICATION.getName()));
     }
 
     @Override

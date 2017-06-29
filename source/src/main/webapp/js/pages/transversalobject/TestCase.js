@@ -488,8 +488,16 @@ function feedTestCaseData(testCase, modalId, mode, hasPermissionsUpdate, default
         formEdit.find("#test").removeAttr("disabled");
         formEdit.find("#testCase").removeAttr("readonly");
     }
-    //We desactivate or activate the access to the fields depending on if user has the credentials to edit.
-    if (!(hasPermissionsUpdate)) { // If readonly, we only readonly all fields
+
+    //We define here the rule that enable or nt the fields depending on if user has the credentials to edit.
+    var doBloackAllFields = false;
+    if (mode === "EDIT") {
+        doBloackAllFields = !(hasPermissionsUpdate);
+    } else { // DUPLICATE or ADD
+        doBloackAllFields = false;
+    }
+
+    if (doBloackAllFields) { // If readonly, we only readonly all fields
         //test case info
         formEdit.find("#implementer").prop("readonly", "readonly");
         formEdit.find("#origin").prop("disabled", "disabled");

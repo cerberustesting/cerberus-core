@@ -750,17 +750,7 @@
                                     <%
                                     String redirecturl = "";
                                     IParameterService parameterService = appContext.getBean(IParameterService.class);
-                                    AnswerItem a = parameterService.readByKey("","cerberus_executiondetail_use");
-                                    if(a.isCodeEquals(MessageEventEnum.DATA_OPERATION_OK.getCode()) && a.getItem() != null) {
-                                    Parameter p = (Parameter)a.getItem();
-                                    if(!p.getValue().equals("N")) {
                                     redirecturl = "ExecutionDetail2.jsp?executionId=";
-                                    }else{
-                                    redirecturl = "ExecutionDetail.jsp?id_tc=";
-                                    }
-                                    }else{
-                                    redirecturl = "ExecutionDetail.jsp?id_tc=";
-                                    }
                                     %>
                                     <a href="<%=redirecturl%><%=ID%>" title="Last Execution.">
                                         <img src="images/<%=cssTIME%>.png" border="0"/></a>

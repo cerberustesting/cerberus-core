@@ -24,16 +24,22 @@ import org.cerberus.crud.entity.CountryEnvironmentParameters;
 import org.cerberus.engine.entity.threadpool.ExecutionWorkerThread;
 import org.cerberus.engine.entity.threadpool.ManageableThreadPoolExecutor;
 import org.cerberus.engine.threadpool.IExecutionThreadPoolService;
+import org.cerberus.servlet.api.GetableHttpServlet;
+import org.cerberus.servlet.api.SinglePointHttpServlet;
+import org.cerberus.servlet.api.info.GetableHttpServletInfo;
 import org.cerberus.servlet.api.mapper.HttpMapper;
 import org.cerberus.servlet.api.PostableHttpServlet;
 import org.cerberus.servlet.api.info.PostableHttpServletInfo;
 import org.cerberus.servlet.api.info.RequestParameter;
 import org.cerberus.servlet.api.mapper.DefaultJsonHttpMapper;
 import org.cerberus.servlet.crud.testexecution.DeleteExecutionInQueue;
+import org.cerberus.util.ParameterParserUtil;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +48,12 @@ import java.util.Map;
  * @author abourdon
  */
 @WebServlet(name = "ReadExecutionPool", urlPatterns = {"/ReadExecutionPool"})
-public class ReadExecutionPool extends PostableHttpServlet<CountryEnvironmentParameters.Key, Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>>> {
+public class ReadExecutionPool extends GetableHttpServlet<CountryEnvironmentParameters.Key, Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>>> {
+    
+    public static final RequestParameter SYSTEM = new RequestParameter("system", "the execution pool's system from which getting information");
+    public static final RequestParameter APPLICATION = new RequestParameter("application", "the execution pool's application from which getting information");
+    public static final RequestParameter COUNTRY = new RequestParameter("country", "the execution pool's country from which getting information");
+    public static final RequestParameter ENVIRONMENT = new RequestParameter("environment", "the execution pool's environment from which getting information");
 
     private static final String VERSION = "V1";
 
@@ -61,6 +72,20 @@ public class ReadExecutionPool extends PostableHttpServlet<CountryEnvironmentPar
     }
 
     @Override
+    protected CountryEnvironmentParameters.Key parseRequest(final HttpServletRequest req) throws RequestParsingException {
+        try {
+            return new CountryEnvironmentParameters.Key(
+                    ParameterParserUtil.parseStringParamAndSanitize(req.getParameter(SYSTEM.getName()), null),
+                    ParameterParserUtil.parseStringParamAndSanitize(req.getParameter(APPLICATION.getName()), null),
+                    ParameterParserUtil.parseStringParamAndSanitize(req.getParameter(COUNTRY.getName()), null),
+                    ParameterParserUtil.parseStringParamAndSanitize(req.getParameter(ENVIRONMENT.getName()), null)
+            );
+        } catch (final UnsupportedEncodingException e) {
+            throw new RequestParsingException("Fail to decode parameter", e);
+        }
+    }
+
+    @Override
     protected Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>> processRequest(final CountryEnvironmentParameters.Key key) throws RequestProcessException {
         final Map<ManageableThreadPoolExecutor.TaskState, List<ExecutionWorkerThread>> tasks = executionThreadPoolService.getTasks(key);
         if (tasks == null) {
@@ -70,26 +95,20 @@ public class ReadExecutionPool extends PostableHttpServlet<CountryEnvironmentPar
     }
 
     @Override
-    protected PostableHttpServletInfo getInfo() {
-        return new PostableHttpServletInfo(
+    protected GetableHttpServletInfo getInfo() {
+        return new GetableHttpServletInfo(
                 DeleteExecutionInQueue.class.getSimpleName(),
                 VERSION,
-                "Apply a given ation to the given execution pool",
-                new PostableHttpServletInfo.PostableUsage(
-                        Collections.<RequestParameter>emptySet(),
+                "Read information of a given execution pool",
+                new GetableHttpServletInfo.GetableUsage(
                         Sets.newHashSet(
-                                new RequestParameter("system", "the execution pool's system from which getting information"),
-                                new RequestParameter("application", "the execution pool's application from which getting information"),
-                                new RequestParameter("country", "the execution pool's country from which getting information"),
-                                new RequestParameter("environment", "the execution pool's environment from which getting information")
+                                SYSTEM,
+                                APPLICATION,
+                                COUNTRY,
+                                ENVIRONMENT
                         )
                 )
         );
-    }
-
-    @Override
-    protected Class<CountryEnvironmentParameters.Key> getRequestType() {
-        return CountryEnvironmentParameters.Key.class;
     }
 
 }
