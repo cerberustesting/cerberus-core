@@ -21,11 +21,11 @@
 $(document).ready(function(){
     
     $("#page-layout").css("min-height",$(window).height());
-    handleSmallScreenSize(770);
+    handleSmallScreenSize(768);
     
-    $( window ).resize(function() {//when the screen size change
-        handleSmallScreenSize(770);
+    $(window).resize(function() {//when the screen size change
         updateTheDisplayOfTheLayout();
+        handleSmallScreenSize(768);
         if ( $(".dataTables_scrollHeadInner").width() < $(".dataTables_scrollHead").width() ){
             var tables = $('.dataTable').DataTable();
             tables.draw();
@@ -125,12 +125,11 @@ function updateTheDisplayOfTheLayout(){
 function handleSmallScreenSize(width){
     
     if ( $(window).width() <= width  ){
-        if ( $( "#page-layout" ).hasClass( "extended" ) )
-            collaspeHandler("collaspe");
-        $("#page-layout").css("margin-left","0px");
+        $("#page-layout").css("margin","0px");
         $(".navbar-static-top").css("margin","0px");
     }else{
-        updateTheDisplayOfTheLayout();
+        $("#page-layout").css("margin","");
+        $(".navbar-static-top").css("margin","");
     }
 }
 
