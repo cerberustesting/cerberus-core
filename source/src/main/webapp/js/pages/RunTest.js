@@ -43,20 +43,20 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
         var filterPanelDataLoaded = false;
         var filterPanel = document.getElementById("filtersPanel");
         if (filterPanel.className === "panel-body collapse in") {
-            loadTestCaseFilterData(system, tag, browser);
+            loadTestCaseFilterData(system);
             filterPanelDataLoaded = true;
             updateUserPreferences();
         }
         //add a listenner to load the data when needed
         $("#FilterPanelHeader").click(function () {
             if (!filterPanelDataLoaded) {
-                loadTestCaseFilterData(system, tag, browser);
+                loadTestCaseFilterData(system);
                 filterPanelDataLoaded = true
                 updateUserPreferences();
             }
         });
         //load the data that need to be display in any case
-        loadTestCaseEssentialData(test, testcase, environment, country);
+        loadTestCaseEssentialData(test, testcase, environment, country, tag, browser);
 
         var system = getUser().defaultSystem;
 
@@ -999,11 +999,9 @@ function enableRobotFields() {
 }
 
 //Load the data to put in Extended Test Case Filters panel
-function loadTestCaseFilterData(system, tag, browser) {
+function loadTestCaseFilterData(system) {
     showLoader("#filtersPanelContainer");
     $.when(
-            loadExecForm(tag),
-            loadRobotForm(browser),
             loadMultiSelect("ReadTest", "", "test", ["test", "description"], "test"),
             loadMultiSelect("ReadProject", "sEcho=1", "project", ["idProject"], "idProject"),
             loadMultiSelect("ReadApplication", "", "application", ["application"], "application"),
@@ -1024,14 +1022,16 @@ function loadTestCaseFilterData(system, tag, browser) {
 }
 
 
-function loadTestCaseEssentialData(test, testcase, environment, country) {
+function loadTestCaseEssentialData(test, testcase, environment, country, tag, browser) {
     showLoader("#chooseTest");
     $.when(
-            loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
-            )
-            .then(function () {
-                typeSelectHandler(test, testcase, environment, country);
-            });
+        loadExecForm(tag),
+        loadRobotForm(browser),
+        loadHardDefinedSingleSelect("length", [{label: '50', value: 50}, {label: '100', value: 100}, {label: '>100', value: -1}], 0)
+    )
+    .then(function () {
+        typeSelectHandler(test, testcase, environment, country);
+    });
 
 }
 //Remove the call to updateUserPreferences when no new data are loaded by the filter
