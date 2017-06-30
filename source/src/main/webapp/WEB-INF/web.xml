@@ -968,6 +968,10 @@
         <servlet-name>ResultCIV002</servlet-name>
         <servlet-class>org.cerberus.servlet.zzpublic.ResultCIV002</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateTestCaseExecution</servlet-name>
+        <servlet-class>org.cerberus.servlet.crud.testexecution.UpdateTestCaseExecution</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ReadCerberusDetailInformation</servlet-name>
         <url-pattern>/ReadCerberusDetailInformation</url-pattern>
@@ -1887,6 +1891,10 @@
     <servlet-mapping>
         <servlet-name>ResultCIV002</servlet-name>
         <url-pattern>/ResultCIV002</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateTestCaseExecution</servlet-name>
+        <url-pattern>/UpdateTestCaseExecution</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>

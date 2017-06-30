@@ -70,6 +70,7 @@
                             </div>
                             <div class="col-lg-6" style="padding: 0px;">
                                 <div id="TestCaseButton">
+                                    <!--<a href="#" class="btn btn-default pull-right" id="saveTestCaseExecution" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-save"></span> Save</a>-->
                                     <a href="#" class="btn btn-default pull-right" id="runTestCase" data-toggle="tooltip" style="margin-left: 1px;"><span class="glyphicon glyphicon-play"></span> Run</a>
                                     <div class="btn-group pull-right">
                                         <a href="#" class="btn btn-default" id="lastExecution" style="margin-left: 1px"><span class="glyphicon glyphicon-fast-backward"></span> Last Executions</a>
