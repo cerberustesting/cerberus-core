@@ -239,7 +239,11 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "start"),
             "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                    return new Date(obj.start);
+//                    return new Date(obj);
+            }
         },
         {
             "data": "end",
@@ -247,7 +251,11 @@ function aoColumnsFunc() {
             "bSearchable": false,
             "title": doc.getDocOnline("page_executiondetail", "end"),
             "sWidth": "70px",
-            "sDefaultContent": ""
+            "sDefaultContent": "",
+            "mRender": function (data, type, obj) {
+                    return new Date(obj.end);
+//                    return new Date(obj);
+            }
         },
         {
             "data": "controlMessage",
