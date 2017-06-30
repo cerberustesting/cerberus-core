@@ -113,12 +113,22 @@ function updateTheDisplayOfTheLayout(){
  * @param {type} width
  * @returns {undefined}
  */
+var pageCollapsedBeforeMinification =false;//global var
 function handleSmallScreenSize(width){
     
     if ( $(window).width() <= width  ){
+        if( $( "#page-layout" ).hasClass( "extended" ) ){
+            collaspeHandler("collaspe");
+            pageCollapsedBeforeMinification =true;
+        }
         $("#page-layout").css("margin","0px");
         $(".navbar-static-top").css("margin","0px");
     }else{
+        //reverse to the previous state
+        if (pageCollapsedBeforeMinification)
+            collaspeHandler("extended");
+        stateOfCollaspeBeforeMinification =false;
+        
         $("#page-layout").css("margin","");
         $(".navbar-static-top").css("margin","");
     }
