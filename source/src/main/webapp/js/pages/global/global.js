@@ -2801,7 +2801,7 @@ function isJson(str) {
  */
 function isHTMLorXML(str) {
     var doc = new DOMParser().parseFromString(str, "text/html");
-    return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
+    return Array.from(doc.body.childNodes).some(function(node){ return node.nodeType === 1 });// Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
 }
 
 /**
