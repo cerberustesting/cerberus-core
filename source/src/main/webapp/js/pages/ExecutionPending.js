@@ -109,6 +109,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "5px",
             "bSortable": false,
             "bSearchable": false,
+            "sClass": "overflowVisible",//change the overflow style for a display bug on chrome
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
