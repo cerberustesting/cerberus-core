@@ -111,7 +111,7 @@
                         out.print("<div class=\"form-group col-xs-2\">");
                         out.print("<label for=\"targetVersion\" name=\"targetVersion\">Target Database Version</label>");
                         out.print("<input type=\"text\" class=\"form-control\" name=\"targetDatabaseVersion\" aria-describedby=\"basic-addon1\" value=\"" + SQLInstruction.size() + "\" readonly></div></div>");
-                        out.print("<input class=\"btn btn-warning btn-lg\" type=\"submit\" value=\"" + ButtonText + "\" onClick=\"ExecApply.submit(); this.disabled=true; this.value='Processing...'; \">");
+                        out.print("<input id=\"buttonApplyDatabase\" class=\"btn btn-warning btn-lg\" type=\"submit\" disabled=\"disabled\" value=\"" + ButtonText + "\" onClick=\"ExecApply.submit(); this.disabled=true; this.value='Processing...'; \">");
 
                         if (DtbVersion.getValue() < NewVersion) {
                             out.print("<div class=\"panel panel-default marginTop20\"><div class=\"panel-heading\"><span class=\"glyphicon glyphicon-list\"></span><label>  SQL performed in that Batch :</label></div>");
@@ -133,13 +133,13 @@
                                         } else {
                                             colorClass = "danger";
                                         }
-                                        
-                                        out.print("<tr class=\""+colorClass+"\"><td>");
+
+                                        out.print("<tr class=\"" + colorClass + "\"><td>");
                                         out.print(i);
                                         out.print("</td><td class=\"wob\"><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
                                         out.print(MySQL.replace("</textarea>", "</text4rea>"));
                                         out.print("</textarea></td>");
-                                        
+
                                         if ((i >= 3) && (MySQLRC.equalsIgnoreCase("OK"))) { // The myversion table is only available after the Version 3
                                             // Update the myversion table to comit the execution of the SQL Instruction.
                                             DtbVersion.setValue(i);
@@ -149,8 +149,8 @@
                                             // Log the SQL execution here
                                         }
                                         out.print("<td><textarea class=\"form-control\" name=\"SQL\" rows=\"5\" style=\"background-color:transparent;border:0px;font-size:x-small;width: 100%\" readonly>");
-                                            out.print(MySQLRC);
-                                            out.print("</textarea></td>");
+                                        out.print(MySQLRC);
+                                        out.print("</textarea></td>");
                                         out.println("</tr>");
                                     }
                                 }
@@ -195,9 +195,12 @@
                     out.print("<h3>Database is now uptodate. Enjoy the tool.</h3><br>");
                     out.print("<h4>Show all SQL <a href=\"DatabaseMaintenance.jsp?ShowAll\">here</a>.</h4>");
             %>
-            <script>function clearSessionStorage() {
+            <script>
+                // Database Script is now finished. 
+                // We can purge the sessionstorage (to force reload of fresh data.)
+                function clearSessionStorage() {
                     sessionStorage.clear();
-                    console.log("sessionStorage cleared");
+                    console.info("sessionStorage cleared");
                 }
                 clearSessionStorage();
             </script>

@@ -8824,6 +8824,21 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE test SET TDateCrea = '1970-01-01 01:01:01' where TDateCrea = '0000-00-00 00:00:00';");
         SQLInstruction.add(SQLS.toString());
 
+        // Cleaned (reorder) CONTROL INVARIANT table.
+        //-- ------------------------ 1164-1167
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET sort = sort*10 where idname='CONTROL' and sort < 1500 and sort > 10;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE invariant SET sort = sort*10 where idname='ACTION' and sort <= 2500 and sort > 10;");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='4000' WHERE `idname`='ACTION' and`value`='mouseOver';");
+        SQLInstruction.add(SQLS.toString());
+        SQLS = new StringBuilder();
+        SQLS.append("UPDATE `invariant` SET `sort`='4100' WHERE `idname`='ACTION' and`value`='mouseOverAndWait';");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

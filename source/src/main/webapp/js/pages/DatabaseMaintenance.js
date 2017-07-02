@@ -20,6 +20,9 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+        // we can reactivate the button to allow next update.
+        $("#buttonApplyDatabase").removeAttr('disabled');
+        console.info("Apply Button Reenabled.");
     });
 });
 
@@ -33,6 +36,6 @@ function displayPageLabel() {
     displayHeaderLabel(doc);
     //$("#pageTitle").html(doc.getDocLabel("page_application", "title"));
     //$("#title").html(doc.getDocOnline("page_application", "title"));
-    
+
     displayFooter(doc);
 }

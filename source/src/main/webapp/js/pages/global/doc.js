@@ -78,7 +78,11 @@ function getDoc() {
     var doc;
     if (sessionStorage.getItem("doc") === null) {
         var user = getUser();
-        readDocFromDatabase(user.language);
+        if (user !== null) {
+            readDocFromDatabase(user.language);
+        } else {
+            readDocFromDatabase("en");
+        }
     }
     doc = sessionStorage.getItem("doc");
     doc = JSON.parse(doc);
