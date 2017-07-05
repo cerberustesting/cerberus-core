@@ -20,6 +20,8 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+        //correct the overflow display when everything is loaded (workaround)
+        $('.dataTable').DataTable().draw();
     });
 });
 
@@ -144,7 +146,7 @@ function initPage() {
     $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
-
+    
 }
 
 function activateSOAPServiceFields(modal, serviceValue) {
