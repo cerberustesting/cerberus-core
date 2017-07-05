@@ -1,39 +1,40 @@
 *Bug fixes*
 [square]
-* start and end date fixed on Execution reporting by tag screen
-* Condition that fail to execute (ex numeric control using string) now also fail the corresponding control/action/step/execution
-* @ character now allowed in robot definition.
-* On homepage, select box now works on selecting the favorites tags.
-* Testdatalib for SQL and CSV now support that 2 different SUBDATA gets the same column (SQL) or columnposition (CSV). That also fix the crash when the subdata key position was used on a different subdata resulting the key beeing null and crash the action result message on calculateProperty calculation.
-* Error message was sometime appearing when dispaying testcase list in campaign page.
-* When duplicating a testcase in WORKING status, we can now change the fields value.
+* [GUI] Start and End date fixed on Execution reporting by tag screen
+* [ENGINE] Condition that fail to execute (ex numeric control using string) now also fail the corresponding control/action/step/execution
+* [GUI] @ character now allowed in robot definition.
+* [GUI] On homepage, select box now works on selecting the favorites tags.
+* [ENGINE] Testdatalib for SQL and CSV now support that 2 different SUBDATA gets the same column (SQL) or columnposition (CSV). That also fix the crash when the subdata key position was used on a different subdata resulting the key beeing null and crash the action result message on calculateProperty calculation.
+* [GUI] Error message was sometime appearing when dispaying testcase list in campaign page.
+* [GUI] When duplicating a testcase in WORKING status, we can now change the fields value.
+* [ENGINE] Fixed a bug that was reporting an 'Unexpected error' when queuing any execution that has exotic characters in 'test' or 'testcase'.
 
 
 *Improvements / New features*
 [square]
-* Allow to link a list of label to a campaign (campaign will then include all testcases that refers to those labels + batteries)
-* Allow to filter by label inside the run page
-* Syntax coloring has been added for SQL, XML, Java, html
-* Added proxy support when Cerberus access external ressources. Parameters starting by cerberus_proxy_... needs to be defined.
-* switchToWindow action can now also use the url of the window to switch
-* SOAP with attachment is now supported again. attachement url can be specified in Service Library screen (under Request tab). Attachement URL are decoded.
-* massUpdate on testcase can now update status and function.
-* Added system column to testcaselist page. That will help to administer label that are system dependant.
-* GUI Notifications from master pages now automatically disappear after few second.
-* On reportExecutionByTag many improvements. Filter of slipt selection without reload the page.
-* On homepage, Performance improvement on loading the tag status.
-* You can now force the screensize to testcase definition (like userAgent).
-* UserAgent, on execution now retreived systematicly from real value of the browser.
-* added autocomplete from public invariant on function, useragent and screensize on all corresponding screens.
-* All modals are now responsive
-* Copy paste option for picture on Application Object page. Currently doesn't work for chrome browser
-* Added 'Label' Group in order to be able to remove the right at user level to create, update and delete Labels. Label group list of users is initialised with Test group.
-* Global search field in User screen now also filter the group name in order to filter all users that belong to Label group by typing Label on it.
-* Added TestStepLibrary Group in order to be able to manage StepLibrary at user level. TestStepLibrary group list of users is initialised with Test group.
-* New responsive Login page
-* Performance improvements on RunTests : load filter data only when displayed
-* New vertcal navbar
-* On TestCaseExecution List page: Optimized distinct column on exe status and Start and End now displayed in date format.
+* [GUI] Allow to link a list of label to a campaign (campaign will then include all testcases that refers to those labels + batteries)
+* [GUI] Allow to filter by label inside the run page
+* [GUI] Syntax coloring has been added for SQL, XML, Java, html
+* [ENGINE] Added proxy support when Cerberus access external ressources. Parameters starting by cerberus_proxy_... needs to be defined.
+* [ENGINE] switchToWindow action can now also use the url of the window to switch
+* [ENGINE] SOAP with attachment is now supported again. attachement url can be specified in Service Library screen (under Request tab). Attachement URL are decoded.
+* [GUI] massUpdate on testcase can now update status and function.
+* [GUI] Added system column to testcaselist page. That will help to administer label that are system dependant.
+* [GUI] GUI Notifications from master pages now automatically disappear after few second.
+* [GUI] On reportExecutionByTag many improvements. Filter of slipt selection without reload the page.
+* [GUI] On homepage, Performance improvement on loading the tag status.
+* [ENGINE] You can now force the screensize to testcase definition (like userAgent).
+* [ENGINE] UserAgent, on execution now retreived systematicly from real value of the browser.
+* [GUI] added autocomplete from public invariant on function, useragent and screensize on all corresponding screens.
+* [GUI] All modals are now responsive
+* [GUI] Copy paste option for picture on Application Object page. Currently doesn't work for chrome browser
+* [GUI] Added 'Label' Group in order to be able to remove the right at user level to create, update and delete Labels. Label group list of users is initialised with Test group.
+* [GUI] Global search field in User screen now also filter the group name in order to filter all users that belong to Label group by typing Label on it.
+* [GUI] Added TestStepLibrary Group in order to be able to manage StepLibrary at user level. TestStepLibrary group list of users is initialised with Test group.
+* [GUI] New responsive Login page
+* [GUI] Performance improvements on RunTests : load filter data only when displayed
+* [GUI] New menu that is now on a vertical navigation bar (that can be expand and collapse)
+* [GUI] On TestCaseExecution List page: Optimized distinct column on exe status and Start and End now displayed in date format.
 
 
 *Warning to be considered before applying the version (deprecated features)*

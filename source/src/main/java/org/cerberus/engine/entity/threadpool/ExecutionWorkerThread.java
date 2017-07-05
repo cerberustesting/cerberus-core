@@ -20,6 +20,12 @@
 package org.cerberus.engine.entity.threadpool;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.log4j.Logger;
@@ -32,11 +38,6 @@ import org.cerberus.exception.CerberusException;
 import org.cerberus.servlet.zzpublic.RunTestCase;
 import org.cerberus.util.ParamRequestMaker;
 import org.cerberus.util.ParameterParserUtil;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Execute a {@link TestCaseExecutionInQueue}
@@ -54,7 +55,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * The fixed value for {@link RunTestCase#PARAMETER_SYNCHRONEOUS}.
      * <p>
-     * Always {@link ParameterParserUtil#DEFAULT_BOOLEAN_TRUE_VALUE} to respect maximum thread pool size
+     * Always {@link ParameterParserUtil#DEFAULT_BOOLEAN_TRUE_VALUE} to respect
+     * maximum thread pool size
      */
     public static String PARAMETER_SYNCHRONEOUS_VALUE = ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE;
 
@@ -69,12 +71,14 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     private static final Logger LOG = Logger.getLogger(ExecutionWorkerThread.class);
 
     /**
-     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer output
+     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer
+     * output
      */
     private static final Pattern RETURN_CODE_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCode = (\\d+)$", Pattern.MULTILINE);
 
     /**
-     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer output
+     * The associated {@link Pattern} to the {@link RunTestCase} servlet answer
+     * output
      */
     private static final Pattern RETURN_CODE_DESCRIPTION_FROM_ANSWER_PATTERN = Pattern.compile("^ReturnCodeDescription = (.*)$", Pattern.MULTILINE);
 
@@ -196,41 +200,46 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
         private ParamRequestMaker makeParamRequest() {
             ParamRequestMaker paramRequestMaker = new ParamRequestMaker();
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, executionWorkerThread.getToExecute().getTest());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, executionWorkerThread.getToExecute().getTestCase());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, executionWorkerThread.getToExecute().getCountry());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, executionWorkerThread.getToExecute().getEnvironment());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, executionWorkerThread.getToExecute().getRobot());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, executionWorkerThread.getToExecute().getRobotIP());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, executionWorkerThread.getToExecute().getRobotPort());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, executionWorkerThread.getToExecute().getBrowser());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, executionWorkerThread.getToExecute().getBrowserVersion());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, executionWorkerThread.getToExecute().getPlatform());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, executionWorkerThread.getToExecute().getScreenSize());
-            if (executionWorkerThread.getToExecute().isManualURL()) {
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, executionWorkerThread.getToExecute().getManualHost());
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, executionWorkerThread.getToExecute().getManualContextRoot());
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, executionWorkerThread.getToExecute().getManualLoginRelativeURL());
-                paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, executionWorkerThread.getToExecute().getManualEnvData());
+            try {
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST, URLEncoder.encode(executionWorkerThread.getToExecute().getTest(), "UTF-8"));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_TEST_CASE, URLEncoder.encode(executionWorkerThread.getToExecute().getTestCase(), "UTF-8"));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_COUNTRY, executionWorkerThread.getToExecute().getCountry());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_ENVIRONMENT, executionWorkerThread.getToExecute().getEnvironment());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT, executionWorkerThread.getToExecute().getRobot());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_IP, executionWorkerThread.getToExecute().getRobotIP());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_ROBOT_PORT, executionWorkerThread.getToExecute().getRobotPort());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER, executionWorkerThread.getToExecute().getBrowser());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_BROWSER_VERSION, executionWorkerThread.getToExecute().getBrowserVersion());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_PLATFORM, executionWorkerThread.getToExecute().getPlatform());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREEN_SIZE, executionWorkerThread.getToExecute().getScreenSize());
+                if (executionWorkerThread.getToExecute().isManualURL()) {
+                    paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_URL, ParameterParserUtil.DEFAULT_BOOLEAN_TRUE_VALUE);
+                    paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_HOST, URLEncoder.encode(executionWorkerThread.getToExecute().getManualHost(), "UTF-8"));
+                    paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_CONTEXT_ROOT, URLEncoder.encode(executionWorkerThread.getToExecute().getManualContextRoot(), "UTF-8"));
+                    paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_LOGIN_RELATIVE_URL, URLEncoder.encode(executionWorkerThread.getToExecute().getManualLoginRelativeURL(), "UTF-8"));
+                    paramRequestMaker.addParam(RunTestCase.PARAMETER_MANUAL_ENV_DATA, executionWorkerThread.getToExecute().getManualEnvData());
+                }
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, URLEncoder.encode(executionWorkerThread.getToExecute().getTag(), "UTF-8"));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(executionWorkerThread.getToExecute().getScreenshot()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(executionWorkerThread.getToExecute().getVerbose()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, executionWorkerThread.getToExecute().getTimeout());
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, PARAMETER_SYNCHRONEOUS_VALUE);
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(executionWorkerThread.getToExecute().getPageSource()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(executionWorkerThread.getToExecute().getSeleniumLog()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(executionWorkerThread.getToExecute().getId()));
+                paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(executionWorkerThread.getToExecute().getRetries()));
+            } catch (UnsupportedEncodingException ex) {
+                LOG.error("Error when encoding string in URL : ", ex);
             }
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_TAG, executionWorkerThread.getToExecute().getTag());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_OUTPUT_FORMAT, PARAMETER_OUTPUT_FORMAT_VALUE);
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_SCREENSHOT, Integer.toString(executionWorkerThread.getToExecute().getScreenshot()));
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_VERBOSE, Integer.toString(executionWorkerThread.getToExecute().getVerbose()));
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_TIMEOUT, executionWorkerThread.getToExecute().getTimeout());
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_SYNCHRONEOUS, PARAMETER_SYNCHRONEOUS_VALUE);
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_PAGE_SOURCE, Integer.toString(executionWorkerThread.getToExecute().getPageSource()));
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_SELENIUM_LOG, Integer.toString(executionWorkerThread.getToExecute().getSeleniumLog()));
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_EXECUTION_QUEUE_ID, Long.toString(executionWorkerThread.getToExecute().getId()));
-            paramRequestMaker.addParam(RunTestCase.PARAMETER_NUMBER_OF_RETRIES, Long.toString(executionWorkerThread.getToExecute().getRetries()));
             return paramRequestMaker;
         }
 
     }
 
     /**
-     * The associated {@link RuntimeException} for any errors during the run process
+     * The associated {@link RuntimeException} for any errors during the run
+     * process
      */
     public static class RunProcessException extends RuntimeException {
 
@@ -306,9 +315,14 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * Process to the test case in queue execution by:
      * <ol>
-     * <li>Moving its state from its current ({@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#QUEUED}) to {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING}</li>
-     * <li>Following state moving result then process execution by requesting the associated {@link RunTestCase} servlet</li>
-     * <li>Following execution result then removing it from the execution in queue table or moving its state to ERROR in case of technical error</li>
+     * <li>Moving its state from its current
+     * ({@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#QUEUED})
+     * to
+     * {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING}</li>
+     * <li>Following state moving result then process execution by requesting
+     * the associated {@link RunTestCase} servlet</li>
+     * <li>Following execution result then removing it from the execution in
+     * queue table or moving its state to ERROR in case of technical error</li>
      * </ol>
      *
      * @see #runFromQueuedToExecuting()
@@ -340,7 +354,9 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     }
 
     /**
-     * Move the inner {@link TestCaseExecutionInQueue} to the {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING} state
+     * Move the inner {@link TestCaseExecutionInQueue} to the
+     * {@link org.cerberus.crud.entity.TestCaseExecutionInQueue.State#EXECUTING}
+     * state
      *
      * @see #run()
      */
@@ -355,7 +371,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     }
 
     /**
-     * Request execution of the inner {@link TestCaseExecutionInQueue} to the {@link RunTestCase} servlet
+     * Request execution of the inner {@link TestCaseExecutionInQueue} to the
+     * {@link RunTestCase} servlet
      *
      * @return the execution answer from the {@link RunTestCase} servlet
      * @throws RunProcessException if an error occurred during request execution
@@ -385,10 +402,12 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * Parse the answer given by the {@link RunTestCase}
      * <p>
-     * Assume answer has been written following the {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
+     * Assume answer has been written following the
+     * {@link #PARAMETER_OUTPUT_FORMAT_VALUE}
      *
      * @param answer the {@link RunTestCase}'s answer
-     * @throws RunProcessException if an error occurred if execution was on failure or if answer cannot be parsed
+     * @throws RunProcessException if an error occurred if execution was on
+     * failure or if answer cannot be parsed
      * @see #run()
      */
     private void runParseAnswer(String answer) {
@@ -421,7 +440,8 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
     /**
      * Remove the inner execution in queue from the execution in queue table
      *
-     * @throws RunProcessException if an error occurred during execution in queue removal
+     * @throws RunProcessException if an error occurred during execution in
+     * queue removal
      * @see #run()
      */
     private void runRemoveExecutionInQueue() {
@@ -434,12 +454,12 @@ public class ExecutionWorkerThread implements Runnable, Comparable {
 
     @Override
     public String toString() {
-        return "ExecutionWorkerThread{" +
-                "toExecute=" + toExecute +
-                ", name=" + name +
-                ", toExecuteUrl='" + toExecuteUrl + '\'' +
-                ", toExecuteTimeout=" + toExecuteTimeout +
-                '}';
+        return "ExecutionWorkerThread{"
+                + "toExecute=" + toExecute
+                + ", name=" + name
+                + ", toExecuteUrl='" + toExecuteUrl + '\''
+                + ", toExecuteTimeout=" + toExecuteTimeout
+                + '}';
     }
 
     @Override
