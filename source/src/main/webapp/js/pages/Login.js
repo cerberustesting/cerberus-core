@@ -31,7 +31,7 @@ function initPage() {
     if ($("#error").text() === "1") {
         showUnexpectedError(null, "Error", "Login or Password incorrect !");
     }
-
+    $("#forgotpassword-box").submit(function() { return false; });
 }
 
 function forgotPassword() {
@@ -58,6 +58,8 @@ function forgotPassword() {
             $("body").unblock();
         }
     });
+
+    return false;
 }
 
 function showForgotPasswordFormulary() {
@@ -66,4 +68,11 @@ function showForgotPasswordFormulary() {
     $("#alertMessageForgotPassword").hide();
     $("#forgot-password-box").show();
 
+}
+
+function showLoginBoxFormulary() {
+    $("#login-box").show();
+    $("#alertMessageLogin").hide();
+    $("#alertMessageForgotPassword").hide();
+    $("#forgot-password-box").hide();
 }
