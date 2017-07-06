@@ -724,6 +724,10 @@ img.selectedPicture{
 	padding : 10px 0;
 }
 
+.login-box-form {
+    margin-bottom: 20px;
+}
+
 @media (min-width: 992px) {
 	.body-login {
 		padding-top : 10%;		
