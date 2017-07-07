@@ -64,8 +64,8 @@ function executeACampaign($campaignName) {
     $URL = generate_url_list();
     # get list of tests
     $content = file_get_contents($URL);
-    # split it to an Array of test URL
-    $listOfTest = split("\r\n", $content);
+    # explode it to an Array of test URL
+    $listOfTest = explode("\r\n", $content);
 
     # Retrieve number of tests for the queue
     $numberOfTests = count($listOfTest) - 1;
