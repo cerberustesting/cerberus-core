@@ -413,18 +413,18 @@ function checkForms() {
     if ($("#queue li").length === 0) {
         type = getAlertType("KO");
         message = doc.getDocLabel("page_runtest", "empty_queue"); //Execution queue is empty !
-        showMessageMainPage(type, message);
+        showMessageMainPage(type, message, false);
         return false;
 // Browser is not mandatory when application is not GUI.        
 //    } else if ($("#browser").val() === null) {
 //        type = getAlertType("KO");
 //        message = "Please, select at least one browser.";
-//        showMessageMainPage(type, message);
+//        showMessageMainPage(type, message, false);
 //        return false;
     } else if ($("#queue li").length > 1 && $("#tag").val() === "") { // More than 1 excution and no Tag specified.
         type = getAlertType("KO");
         message = doc.getDocLabel("page_runtest", "more_than_one_execution_requested"); //More than 1 execution has been requested. It will be executed in batch mode so please, indicate a tag (to find it back)
-        showMessageMainPage(type, message);
+        showMessageMainPage(type, message, false);
         return false;
     }
     return true;

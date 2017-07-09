@@ -769,7 +769,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 $(labelDiv).append(option);
             }
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, true);
         }
         // Put the selected testcaselabel at the top and check them. 
         if (!(isEmpty(labelList))) {

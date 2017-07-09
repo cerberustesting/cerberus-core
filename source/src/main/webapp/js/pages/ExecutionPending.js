@@ -25,7 +25,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
 function initPage() {
     var searchS = GetURLParameter("search");
-    
+
     displayPageLabel();
 
     // Display queue information
@@ -34,18 +34,18 @@ function initPage() {
     // Display table
     var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
     var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
-    
+
     if (searchS !== null) {
         table.search(searchS).draw();
     }
 
     // React on table redraw
     table.on(
-        'draw.dt',
-        function () {
-            // Un-check the select all checkbox
-            $('#selectAll')[0].checked = false;
-        }
+            'draw.dt',
+            function () {
+                // Un-check the select all checkbox
+                $('#selectAll')[0].checked = false;
+            }
     );
 
     // React on select all click
@@ -109,7 +109,7 @@ function aoColumnsFunc(tableId) {
             "sWidth": "5px",
             "bSortable": false,
             "bSearchable": false,
-            "sClass": "overflowVisible",//change the overflow style for a display bug on chrome
+            "sClass": "overflowVisible", //change the overflow style for a display bug on chrome
             "mRender": function (data, type, obj) {
                 var hasPermissions = $("#" + tableId).attr("hasPermissions");
 
@@ -497,13 +497,13 @@ function drawQueueInformation() {
     $.when(jqxhr).then(function (data) {
         //var messageType = getAlertType(data.messageType);
         //if (messageType === "success") {
-        //redraw the datatable
-        for (var inc = 0; inc < data.length; inc++) {
-            generatePie("statusChart", inc, data[inc]);
-        }
+            //redraw the datatable
+            for (var inc = 0; inc < data.length; inc++) {
+                generatePie("statusChart", inc, data[inc]);
+            }
         //}
         //show message in the main page
-        //showMessageMainPage(messageType, data.message);
+        //showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         //$('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
@@ -517,7 +517,7 @@ function filterAndDisplayTable(poolId) {
 function filterTable(poolId) {
     $.getJSON({
         url: "ReadExecutionPool",
-        data: "system=" +poolId.system + "&application=" + poolId.application + "&country=" + poolId.country + "&environment=" + poolId.environment,
+        data: "system=" + poolId.system + "&application=" + poolId.application + "&country=" + poolId.country + "&environment=" + poolId.environment,
         success: function (data) {
             // Get associated execution ids from pool
             var associcatedIds = [];
@@ -537,14 +537,14 @@ function filterTable(poolId) {
             } else {
                 // Apply filter
                 applyFiltersOnMultipleColumns(
-                    'executionsTable',
-                    [
-                        {
-                            param: 'id',
-                            values: associcatedIds
-                        }
-                    ]
-                );
+                        'executionsTable',
+                        [
+                            {
+                                param: 'id',
+                                values: associcatedIds
+                            }
+                        ]
+                        );
                 refreshTable();
             }
         },
@@ -576,11 +576,11 @@ function generatePie(root, id, data) {
     var totalHeight = height + margin.vertical;
 
     var container = $('<div/>')
-        .attr('id', root + id)
-        .attr('role', 'button')
-        .addClass('pie')
-        .css('width', totalWidth)
-        .css('height', totalHeight);
+            .attr('id', root + id)
+            .attr('role', 'button')
+            .addClass('pie')
+            .css('width', totalWidth)
+            .css('height', totalHeight);
     container.click(function () {
         filterAndDisplayTable(data.id);
     });

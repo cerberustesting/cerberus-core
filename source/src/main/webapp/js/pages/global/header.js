@@ -296,7 +296,7 @@ function updateUserPreferences(objectWaitingLayer) {
                 readUserFromDatabase();
             }
             //show message in the main page
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, true);
         }
     });
     if (objectWaitingLayer !== undefined) {

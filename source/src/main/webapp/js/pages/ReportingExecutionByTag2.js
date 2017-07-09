@@ -200,7 +200,7 @@ function loadTagFilters(urlTag) {
                 //loadAllReports();
             }
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }

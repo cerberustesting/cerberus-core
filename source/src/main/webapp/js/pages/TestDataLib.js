@@ -305,7 +305,7 @@ function deleteTestDataLibHandlerClick() {
 
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
@@ -963,7 +963,7 @@ function uploadTestDataLibFromXMLFile() {
         var oTable = $("#listOfTestDataLib").dataTable();
         oTable.fnDraw(true);
         $('#modalUpload').modal('hide');
-        showMessageMainPage(getAlertType(data.messageType), data.message);
+        showMessageMainPage(getAlertType(data.messageType), data.message, false);
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

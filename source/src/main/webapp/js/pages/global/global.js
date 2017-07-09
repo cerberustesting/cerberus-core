@@ -771,7 +771,7 @@ function showMessage(obj, dialog) {
         elementAlert.fadeIn();
     } else {
         //shows the message in the main page
-        showMessageMainPage(code, obj.message);
+        showMessageMainPage(code, obj.message, false);
     }
 
     /*if(dialog !== null && obj.messageType==="success"){
@@ -798,11 +798,12 @@ function appendMessage(obj, dialog) {
  * Shows a message in the main page. The area is defined in the header.jsp
  * @param {type} type - type of message: success, info, ...
  * @param {type} message - message to show
+ * @param {boolean} silentMode - if true, message is not displayed if OK.
  */
-function showMessageMainPage(type, message) {
-    $("#mainAlert").addClass("alert-" + type);
-    $("#alertDescription").html(message);
-    $("#mainAlert").fadeIn();
+function showMessageMainPage(type, message, silentMode) {
+    if (isEmpty(silentMode)) {
+        silentMode = false;
+    }
     // Automatically fadeout after n second.
     var waitinMs = 10000; // Default wait to 10 seconds.
     if (type === "success") {
@@ -810,9 +811,14 @@ function showMessageMainPage(type, message) {
     } else if (type === "error") {
         waitinMs = 5000;
     }
-    $("#mainAlert").fadeTo(waitinMs, 500).slideUp(500, function () {
-        $("#mainAlert").slideUp(500);
-    });
+    if (!((type === "success") && (silentMode))) {
+        $("#mainAlert").addClass("alert-" + type);
+        $("#alertDescription").html(message);
+        $("#mainAlert").fadeIn();
+        $("#mainAlert").fadeTo(waitinMs, 500).slideUp(500, function () {
+            $("#mainAlert").slideUp(500);
+        });
+    }
 }
 
 /*****************************************************************************/
@@ -1150,7 +1156,7 @@ function returnMessageHandler(response) {
             var type = getAlertType(response.messageType);
 
             clearResponseMessageMainPage();
-            showMessageMainPage(type, response.message);
+            showMessageMainPage(type, response.message, false);
         }
     } else {
         showUnexpectedError();
@@ -1167,7 +1173,7 @@ function showUnexpectedError(jqXHR, textStatus, errorThrown) {
         message = "ERROR - An unexpected error occured, the servlet may not be available. Please check if your session is still active";
     }
 
-    showMessageMainPage(type, message);
+    showMessageMainPage(type, message, false);
 }
 
 /***

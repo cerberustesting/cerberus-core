@@ -468,7 +468,7 @@ function searchExecutionsClickHandler() {
     browsersSelected.sort();
 
     if (browsersSelected.length === 0 || countriesSelected.lenght === 0) {
-        showMessageMainPage("danger", "Browser and Country are mandatory filters!"); //TODO add translations
+        showMessageMainPage("danger", "Browser and Country are mandatory filters!", false); //TODO add translations
         return;
     }
     var system = $("#MySystem").val();
@@ -897,7 +897,7 @@ function setFiltersClickHandler() {
                 sessionStorage.setItem("user", JSON.stringify(user));
             }
         }
-        showMessageMainPage(code, dataJson.message);
+        showMessageMainPage(code, dataJson.message, false);
 
     }).fail(handleErrorAjaxAfterTimeout);
 }

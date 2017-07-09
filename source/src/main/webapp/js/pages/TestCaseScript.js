@@ -269,7 +269,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
                     $("#addProperty").click(function () {
 
                         if (myCountry.length <= 0) {
-                            showMessageMainPage("danger", "That Testcase has no country selected, please add at east one country (in 'Activation Criteria' Tab of the testcase) in order to be able to add and define properties.");
+                            showMessageMainPage("danger", "That Testcase has no country selected, please add at east one country (in 'Activation Criteria' Tab of the testcase) in order to be able to add and define properties.", false);
 
                         } else {
 
@@ -2427,7 +2427,7 @@ function deleteTestCaseHandlerClick() {
             window.location = "./TestCaseScript.jsp?test=" + test;
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
