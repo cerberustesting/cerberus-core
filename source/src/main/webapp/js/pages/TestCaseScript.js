@@ -267,6 +267,13 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     // Button Add Property insert a new Property
                     $("#addProperty").click(function () {
+
+                        if (myCountry.length <= 0) {
+                            showMessageMainPage("danger", "That Testcase has no country selected, please add at east one country (in 'Activation Criteria' Tab of the testcase) in order to be able to add and define properties.");
+
+                        } else {
+
+
                             // Store the current saveScript button status and disable it
                             var saveScriptOldStatus = $("#saveScript").attr("disabled");
                             $("#saveScript").attr("disabled", true);
@@ -293,6 +300,8 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                             // Restore the saveScript button status
                             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+                        }
+
                     });
 
                     $('[data-toggle="tooltip"]').tooltip();

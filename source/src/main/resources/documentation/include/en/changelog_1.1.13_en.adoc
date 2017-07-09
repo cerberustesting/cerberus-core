@@ -36,7 +36,7 @@
 * [GUI] New menu that is now on a vertical navigation bar (that can be expand and collapse)
 * [GUI] On TestCaseExecution List page: Optimized distinct column on exe status and Start and End now displayed in date format.
 * [GUI] On TestCase page: when creating a testcase, country selection can be configured with parameter : cerberus_testcase_defaultselectedcountry. Parameter can be ALL in order to select all, empty in order to select none or a coma separated list of countries in order to select some.
-
+* [GUI] On TestCaseScript page: Adding a property on a testcase that has no country selected now generates an error message.
 
 *Warning to be considered before applying the version (deprecated features)*
 [square]
