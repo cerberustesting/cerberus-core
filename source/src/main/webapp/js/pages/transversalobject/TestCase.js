@@ -644,18 +644,28 @@ function appendBuildRevListOnTestCase(system, editData) {
 function appendTestCaseCountryList(testCase, isReadOnly) {
     $("#testCaseCountryTableBody tr").empty();
 
+    var selectCountry = getParameter("cerberus_testcase_defaultselectedcountry", getUser().defaultSystem, false);
+    var selectCountryVal = "," + selectCountry.value + ",";
+
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
-
+            var deleteOpt = true;
+            
             var newCountry1 = {
                 country: country,
-                toDelete: true
+                toDelete: deleteOpt
             };
+            
             if (testCase === undefined) {
-                newCountry1.toDelete = false;
+                if ((selectCountryVal === ',ALL,') || (selectCountryVal.indexOf("," + country + ",") !== -1)) {
+                    deleteOpt = false;
+                } else {
+                    deleteOpt = true;
+                }
+                newCountry1.toDelete = deleteOpt;
             }
             appendTestCaseCountryCell(newCountry1, isReadOnly);
         }
