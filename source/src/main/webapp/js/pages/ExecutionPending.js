@@ -32,7 +32,7 @@ function initPage() {
     drawQueueInformation();
 
     // Display table
-    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'asc']);
+    var configurations = new TableConfigurationsServerSide("executionsTable", "ReadExecutionInQueue", "contentTable", aoColumnsFunc("executionsTable"), [1, 'desc']);
     var table = createDataTableWithPermissions(configurations, renderOptionsForApplication, "#executionList", undefined, true);
 
     if (searchS !== null) {
