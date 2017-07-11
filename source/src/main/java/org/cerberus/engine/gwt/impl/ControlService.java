@@ -155,10 +155,10 @@ public class ControlService implements IControlService {
             switch (testCaseStepActionControlExecution.getControl()) {
 
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGEQUAL:
-                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyStringEqual(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGDIFFERENT:
-                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue2(), testCaseStepActionControlExecution.getValue1());
+                    res = this.verifyStringDifferent(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
                     break;
                 case TestCaseStepActionControl.CONTROL_VERIFYSTRINGGREATER:
                     res = this.verifyStringGreater(testCaseStepActionControlExecution.getValue1(), testCaseStepActionControlExecution.getValue2());
@@ -279,31 +279,31 @@ public class ControlService implements IControlService {
         return testCaseStepActionControlExecution;
     }
 
-    private MessageEvent verifyStringDifferent(String object, String property) {
+    private MessageEvent verifyStringDifferent(String value1, String value2) {
         MessageEvent mes;
-        if (!object.equalsIgnoreCase(property)) {
+        if (!value1.equalsIgnoreCase(value2)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_DIFFERENT);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", object));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", property));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_DIFFERENT);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", object));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", property));
+        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
         return mes;
     }
 
-    private MessageEvent verifyStringEqual(String object, String property) {
+    private MessageEvent verifyStringEqual(String value1, String value2) {
         MessageEvent mes;
-        if (object.equalsIgnoreCase(property)) {
+        if (value1.equalsIgnoreCase(value2)) {
             mes = new MessageEvent(MessageEventEnum.CONTROL_SUCCESS_EQUAL);
-            mes.setDescription(mes.getDescription().replace("%STRING1%", object));
-            mes.setDescription(mes.getDescription().replace("%STRING2%", property));
+            mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+            mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
             return mes;
         }
         mes = new MessageEvent(MessageEventEnum.CONTROL_FAILED_EQUAL);
-        mes.setDescription(mes.getDescription().replace("%STRING1%", object));
-        mes.setDescription(mes.getDescription().replace("%STRING2%", property));
+        mes.setDescription(mes.getDescription().replace("%STRING1%", value1));
+        mes.setDescription(mes.getDescription().replace("%STRING2%", value2));
         return mes;
 
     }
