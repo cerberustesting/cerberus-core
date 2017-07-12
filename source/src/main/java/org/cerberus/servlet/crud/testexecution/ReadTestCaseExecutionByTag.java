@@ -194,6 +194,7 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             statusList.put("PE", ParameterParserUtil.parseStringParam(request.getParameter("PE"), "off"));
             statusList.put("FA", ParameterParserUtil.parseStringParam(request.getParameter("FA"), "off"));
             statusList.put("CA", ParameterParserUtil.parseStringParam(request.getParameter("CA"), "off"));
+            statusList.put("QU", ParameterParserUtil.parseStringParam(request.getParameter("QU"), "off"));
         } catch (JSONException ex) {
             Logger.getLogger(ReadTestCaseExecution.class.getName()).log(Level.ERROR, null, ex);
         }
@@ -455,6 +456,8 @@ public class ReadTestCaseExecutionByTag extends HttpServlet {
             color = "#34495E";
         } else if ("PE".equals(controlStatus)) {
             color = "#3498DB";
+        } else if ("QU".equals(controlStatus)) {
+            color = "#BF00BF";
         } else {
             color = "#000000";
         }

@@ -172,8 +172,8 @@ public class TestCaseExecutionInQueueService implements ITestCaseExecutionInQueu
         String platform = testCaseExecutionInQueue.getPlatform();
         long start = testCaseExecutionInQueue.getRequestDate() != null ? testCaseExecutionInQueue.getRequestDate().getTime() : 0;
         long end = 0;
-        String controlStatus = "NE";
-        String controlMessage = "Not Executed";
+        String controlStatus = TestCaseExecution.CONTROLSTATUS_QU;
+        String controlMessage = "In Queue";
         Application applicationObj = testCaseExecutionInQueue.getApplicationObj();
         String application = testCaseExecutionInQueue.getApplicationObj() != null ? testCaseExecutionInQueue.getApplicationObj().getApplication() : "";
         String ip = testCaseExecutionInQueue.getRobotIP();

@@ -21,13 +21,13 @@
     Author     : cerberus
 */
 
-.panelOK {
-    border-color: #5CB85C;
-}
-
 .statusEnvCountryBrowser {
     display: inline-block;
     font-size: 1.5em;
+}
+
+.panelOK {
+    border-color: #5CB85C;
 }
 
 .panelOK .panel-heading {
@@ -96,6 +96,16 @@
     background-color: #3498DB;
 }
 
+.panelQU {
+    border-color: #BF00BF;
+}
+
+.panelQU .panel-heading {
+    border-color: #BF00BF;
+    color: #FFF;
+    background-color: #BF00BF;
+}
+
 .status {
     font-weight: 900;
     font-size: 20px;
@@ -158,6 +168,10 @@ text {
 
 .statusCA {
     background-color: #F0AD4E; 
+}
+
+.statusQU {
+    background-color: #BF00BF; 
 }
 
 #statusByEnvCountryBrowser span {

@@ -2437,11 +2437,14 @@ function escapeHtml(unsafe) {
 
 function generateExecutionLink(status, id, tag) {
     var result = "";
-    if (status === "NE") {
-        // If not executed, we redirect to queue management in order to be able the see the error and restart the execution from the queue.
+    if (status === "QU") {
+        // If in queue, we redirect to queue management in order to be able the see the error and restart the execution from the queue.
         result = "./ExecutionPending.jsp?search=" + tag;
+    } else if (status === "NE") {
+        // Not executed (means manual execution).
+        result = "./ExecutionManual.jsp?executionId=" + id;
     } else {
-        // No longuer in the queue so we disply the result.
+        // No longuer in the queue so we display the result.
         result = "./ExecutionDetail2.jsp?executionId=" + id;
     }
     return result;
@@ -2462,9 +2465,11 @@ function getRowClass(status) {
     } else if (status === "PE") {
         rowClass["glyph"] = "fa fa-hourglass-half";
     } else if (status === "NE") {
-        rowClass["glyph"] = "fa fa-clock-o";
+        rowClass["glyph"] = "fa fa-hand-lizard-o";
     } else if (status === "NA") {
         rowClass["glyph"] = "fa fa-question";
+    } else if (status === "QU") {
+        rowClass["glyph"] = "glyphicon glyphicon-tasks";
     } else {
         rowClass["glyph"] = "";
     }

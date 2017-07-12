@@ -91,6 +91,10 @@
                                     NE
                                 </label>
                                 <label class="checkbox-inline">
+                                    <input type="checkbox" name="QU" checked/>
+                                    QU
+                                </label>
+                                <label class="checkbox-inline">
                                     <input type="checkbox" name="PE" checked/>
                                     PE
                                 </label>
