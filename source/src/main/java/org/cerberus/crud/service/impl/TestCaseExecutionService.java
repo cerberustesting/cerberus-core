@@ -97,6 +97,11 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     }
 
     @Override
+    public void updateTCExecutionStatus(Long id, String controlstatus, String controlMessage){
+        testCaseExecutionDao.updateTCExecutionStatus(id, controlstatus, controlMessage);
+    }
+    
+    @Override
     public AnswerItem readLastByCriteria(String application) {
         return testCaseExecutionDao.readLastByCriteria(application);
     }

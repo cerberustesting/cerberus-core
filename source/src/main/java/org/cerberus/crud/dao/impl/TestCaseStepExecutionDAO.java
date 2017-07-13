@@ -166,9 +166,7 @@ public class TestCaseStepExecutionDAO implements ITestCaseStepExecutionDAO {
                 preStat.setString(i++, testCaseStepExecution.getTestCase());
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.DEBUG, "Update testcasestepexecution " + testCaseStepExecution.getId() + "-"
                         + testCaseStepExecution.getTest() + "-" + testCaseStepExecution.getTestCase() + "-" + testCaseStepExecution.getStep());
-
                 preStat.executeUpdate();
-
             } catch (SQLException exception) {
                 MyLogger.log(TestCaseStepExecutionDAO.class.getName(), Level.ERROR, "Unable to execute query : " + exception.toString());
             } finally {

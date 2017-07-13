@@ -267,32 +267,41 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
 
                     // Button Add Property insert a new Property
                     $("#addProperty").click(function () {
-                        // Store the current saveScript button status and disable it
-                        var saveScriptOldStatus = $("#saveScript").attr("disabled");
-                        $("#saveScript").attr("disabled", true);
 
-                        var newProperty = {
-                            property: "",
-                            description: "",
-                            country: myCountry,
-                            type: "text",
-                            database: "",
-                            value1: "",
-                            value2: "",
-                            length: 0,
-                            rowLimit: 0,
-                            nature: "STATIC",
-                            retryNb: "",
-                            retryPeriod: "",
-                            toDelete: false
-                        };
+                        if (myCountry.length <= 0) {
+                            showMessageMainPage("danger", "That Testcase has no country selected, please add at east one country (in 'Activation Criteria' Tab of the testcase) in order to be able to add and define properties.", false);
 
-                        var prop = drawProperty(newProperty, testcaseinfo, true);
-                        setPlaceholderProperty(prop[0],prop[1]);
-                        //autocompleteAllFields();
+                        } else {
 
-                        // Restore the saveScript button status
-                        $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+
+                            // Store the current saveScript button status and disable it
+                            var saveScriptOldStatus = $("#saveScript").attr("disabled");
+                            $("#saveScript").attr("disabled", true);
+
+                            var newProperty = {
+                                property: "",
+                                description: "",
+                                country: myCountry,
+                                type: "text",
+                                database: "",
+                                value1: "",
+                                value2: "",
+                                length: 0,
+                                rowLimit: 0,
+                                nature: "STATIC",
+                                retryNb: "",
+                                retryPeriod: "",
+                                toDelete: false
+                            };
+
+                            var prop = drawProperty(newProperty, testcaseinfo, true);
+                            setPlaceholderProperty(prop[0], prop[1]);
+                            //autocompleteAllFields();
+
+                            // Restore the saveScript button status
+                            $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
+                        }
+
                     });
 
                     $('[data-toggle="tooltip"]').tooltip();
@@ -670,13 +679,13 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     selectType.change(function () {
         property.type = $(this).val();
-        setPlaceholderProperty($(this).parents(".property"),property);
+        setPlaceholderProperty($(this).parents(".property"), property);
     });
 
     selectDB.change(function () {
         property.database = $(this).val();
     });
-    
+
     valueInput.change(function () {
         property.value1 = $(this).val();
     });
@@ -732,7 +741,7 @@ function drawProperty(property, testcaseinfo, canUpdate, index) {
 
     content.append(props).append(right);
     table.append(content);
-    return [props,property];
+    return [props, property];
 }
 
 function drawInheritedProperty(propList) {
@@ -861,7 +870,7 @@ function loadProperties(test, testcase, testcaseinfo, propertyToFocus, canUpdate
                     array.push(data[index].property);
                     property.toDelete = false;
                     var prop = drawProperty(property, testcaseinfo, canUpdate, index);
-                    setPlaceholderProperty(prop[0],prop[1]);
+                    setPlaceholderProperty(prop[0], prop[1]);
                     propertyList.push(property.property);
                 }
 
@@ -1122,7 +1131,7 @@ function loadLibraryStep(search) {
             for (var index = 0; index < data.testCaseStepList.length; index++) {
                 var step = data.testCaseStepList[index];
 
-                if (search == undefined || search == "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
+                if (search == undefined || search == "" || step.description.toLowerCase().indexOf(search_lower) > -1 || step.testCase.toLowerCase().indexOf(search_lower) > -1 || step.test.toLowerCase().indexOf(search_lower) > -1) {
                     if (!test.hasOwnProperty(step.test)) {
                         $("#lib").append($("<a></a>").addClass("list-group-item").attr("data-toggle", "collapse").attr("href", "[data-test='" + step.test + "']")
                                 .text(step.test).prepend($("<span></span>").addClass("glyphicon glyphicon-chevron-right")));
@@ -1384,7 +1393,7 @@ function Step(json, stepList, canUpdate, hasPermissionsStepLibrary) {
     this.actionList = [];
     if (canUpdate) {
         // If we can update the testcase we check whether we can still modify following the TestStepLibrary group.
-        if (!hasPermissionsStepLibrary && json.inLibrary === "Y"){
+        if (!hasPermissionsStepLibrary && json.inLibrary === "Y") {
             canUpdate = false;
         }
     }
@@ -2418,7 +2427,7 @@ function deleteTestCaseHandlerClick() {
             window.location = "./TestCaseScript.jsp?test=" + test;
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
@@ -2453,7 +2462,7 @@ editPropertiesModalClick = function (test, testcase, info, propertyToAdd, proper
         };
 
         var prop = drawProperty(newProperty, info, true, $("div[name='propertyLine']").length);
-        setPlaceholderProperty(prop[0],prop[1]);
+        setPlaceholderProperty(prop[0], prop[1]);
     }
 
     //$("#propertiesModal").modal('show');
@@ -2711,7 +2720,7 @@ function setPlaceholderControl(controlElement) {
     });
 }
 
-function setPlaceholderProperty(propertyElement,property) {
+function setPlaceholderProperty(propertyElement, property) {
     /**
      * Todo : GetFromDatabase
      * Translate for FR
@@ -2767,8 +2776,8 @@ function setPlaceholderProperty(propertyElement,property) {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").addClass(placeHolders[i].value1Class);
                     //Ace module management
                     var editor = ace.edit($($(e).parents("div[name='propertyLine']").find("pre[name='propertyValue']"))[0]);
-                    configureAceEditor(editor,placeHolders[i].value1EditorMode, property);
-                    
+                    configureAceEditor(editor, placeHolders[i].value1EditorMode, property);
+
                 } else {
                     $(e).parents("div[name='propertyLine']").find("div[name='fieldValue1']").hide();
                 }
@@ -2816,19 +2825,19 @@ function setPlaceholderProperty(propertyElement,property) {
 /*
  * main function of ace editor
  */
-function configureAceEditor(editor,mode,property){
+function configureAceEditor(editor, mode, property) {
 
     //command Name
     var commandNameForAutoCompletePopup = "cerberusPopup";
     var commandNameForIssueDetection = "cerberusIssueDetection";
     //event listenner
-    editor.commands.on("afterExec", function(e){
-        
-        if( e.command.name == "insertstring" || e.command.name == "paste" ||  e.command.name == "backspace"){
-            //recreate the array at each loop
-            var allKeyword =createAllKeywordList( getKeywordList("object"), getKeywordList("property") );
+    editor.commands.on("afterExec", function (e) {
 
-            if (e.command.name != "backspace" ){
+        if (e.command.name == "insertstring" || e.command.name == "paste" || e.command.name == "backspace") {
+            //recreate the array at each loop
+            var allKeyword = createAllKeywordList(getKeywordList("object"), getKeywordList("property"));
+
+            if (e.command.name != "backspace") {
                 addCommandForCustomAutoCompletePopup(editor, allKeyword, commandNameForAutoCompletePopup);
                 editor.commands.exec(commandNameForAutoCompletePopup);//set autocomplete popup
             }
@@ -2836,26 +2845,26 @@ function configureAceEditor(editor,mode,property){
             addCommandToDetectKeywordIssue(editor, allKeyword, commandNameForIssueDetection);
             editor.commands.exec(commandNameForIssueDetection);//set annotation
 
-            createGuterCellListenner( editor );
+            createGuterCellListenner(editor);
             property.value1 = editor.session.getValue();
         }
     });
-    
+
     //editor option
     editor.getSession().setMode(mode);
     editor.setTheme("ace/theme/chrome");
-    editor.$blockScrolling ="Infinity";//disable error message
-    editor.setOptions({maxLines: 10,enableBasicAutocompletion: true});
+    editor.$blockScrolling = "Infinity";//disable error message
+    editor.setOptions({maxLines: 10, enableBasicAutocompletion: true});
     //set text previously input
     editor.setValue(property.value1);
     //lose focus when loaded
     var count = editor.getSession().getLength();
-    editor.gotoLine(count, editor.getSession().getLine(count-1).length);
+    editor.gotoLine(count, editor.getSession().getLine(count - 1).length);
 }
 /*
  * create an array of the current keyword with the keyword that precede them
  */
-function createAllKeywordList(objectList,propertyList ){
+function createAllKeywordList(objectList, propertyList) {
     var availableObjectProperties = [
         "value",
         "picturepath",
@@ -2882,98 +2891,98 @@ function createAllKeywordList(objectList,propertyList ){
     ];
     var availableTags = [
         "property", // 0
-        "object",   // 1
+        "object", // 1
         "system"    // 2
     ];
 
-    var allKeyword =[];
-    allKeyword.push( {"motherKeyword" : null, "listKeyword": availableTags } );
+    var allKeyword = [];
+    allKeyword.push({"motherKeyword": null, "listKeyword": availableTags});
     //property
-    allKeyword.push( {"motherKeyword" : availableTags["0"], "listKeyword": propertyList } );
+    allKeyword.push({"motherKeyword": availableTags["0"], "listKeyword": propertyList});
     //object
-    allKeyword.push( {"motherKeyword" : availableTags["1"], "listKeyword": objectList } );
+    allKeyword.push({"motherKeyword": availableTags["1"], "listKeyword": objectList});
     //system
-    allKeyword.push( {"motherKeyword" : availableTags["2"], "listKeyword": availableSystemValues } );
+    allKeyword.push({"motherKeyword": availableTags["2"], "listKeyword": availableSystemValues});
     //object tag
     for (var i in objectList) {
-      allKeyword.push( {"motherKeyword" : objectList[i], "listKeyword": availableObjectProperties } );
+        allKeyword.push({"motherKeyword": objectList[i], "listKeyword": availableObjectProperties});
     }
     return allKeyword;
 }
 /*
  * add an ace command to display autocomplete popup
  */
-function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
+function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName) {
 
     editor.commands.addCommand({
         name: commandName,
         exec: function () {
 
-            var cursorPositionY =editor.getCursorPosition().row;
-            var editorValueAtTheLine =editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
-            var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
+            var cursorPositionY = editor.getCursorPosition().row;
+            var editorValueAtTheLine = editor.session.getLine(cursorPositionY);//value on the line the cursor is currently in
+            var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;//start autocomplete when there is an odd number of %
 
-            if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 1){
-                var cursorPositionX =editor.getCursorPosition().column;
-                var subStringCursorOn = editorValueAtTheLine.slice( editorValueAtTheLine.lastIndexOf('%',cursorPositionX)+1,cursorPositionX);
+            if (numberOfPercentCaractereAtLine != 0 && numberOfPercentCaractereAtLine % 2 == 1) {
+                var cursorPositionX = editor.getCursorPosition().column;
+                var subStringCursorOn = editorValueAtTheLine.slice(editorValueAtTheLine.lastIndexOf('%', cursorPositionX) + 1, cursorPositionX);
                 //Create an array of all the word separated by "." contain between "%" caractere
-                var keywordInputList =subStringCursorOn.split(".");
-                
-                var potentiallyNeddApoint =true;
-                var allKeywordCorrect =true;
+                var keywordInputList = subStringCursorOn.split(".");
+
+                var potentiallyNeddApoint = true;
+                var allKeywordCorrect = true;
                 //Check all the keywordInput
-                for (var idKeywordToCheck in keywordInputList){
-                    
+                for (var idKeywordToCheck in keywordInputList) {
+
                     var keywordInputByUserExist;
                     //Just after a "." or a blank line
-                    if( keywordInputList[idKeywordToCheck] ==""){
-                        keywordInputByUserExist =true;//blank is a valid keyword
+                    if (keywordInputList[idKeywordToCheck] == "") {
+                        keywordInputByUserExist = true;//blank is a valid keyword
                         keywordInputList.pop();//remove blank caractere
-                        potentiallyNeddApoint =false;
-                    }else{
+                        potentiallyNeddApoint = false;
+                    } else {
                         keywordInputByUserExist = checkIfTheKeywordIsCorrect(allKeyword, keywordInputList, idKeywordToCheck);
                     }
                     //if at least on keyword between the "%" by default autocompletion is diable
                     if (keywordInputByUserExist == false)
-                        allKeywordCorrect =false;
-                    
+                        allKeywordCorrect = false;
+
                 }
-                var currentKeyword =keywordInputList[keywordInputList.length-1];
+                var currentKeyword = keywordInputList[keywordInputList.length - 1];
                 //All the keyword are correct set autocompletion
-                if (allKeywordCorrect){
+                if (allKeywordCorrect) {
                     var idNextKeyword = getNextKeywordId(currentKeyword, allKeyword, keywordInputList);
                     //add the special caractere
-                    if (potentiallyNeddApoint && currentKeyword !=undefined && idNextKeyword !=-1){
-                        editor.session.insert( editor.getCursorPosition() ,".");
+                    if (potentiallyNeddApoint && currentKeyword != undefined && idNextKeyword != -1) {
+                        editor.session.insert(editor.getCursorPosition(), ".");
                     }
-                    if (currentKeyword !=undefined && idNextKeyword ==-1 ){
-                        editor.session.insert( editor.getCursorPosition() ,"%");
+                    if (currentKeyword != undefined && idNextKeyword == -1) {
+                        editor.session.insert(editor.getCursorPosition(), "%");
                     }
                     //change the autocompletionList
-                    if (currentKeyword == undefined){
-                        changeAceCompletionList(allKeyword[0]["listKeyword"],"",editor);
+                    if (currentKeyword == undefined) {
+                        changeAceCompletionList(allKeyword[0]["listKeyword"], "", editor);
                         editor.execCommand("startAutocomplete");
                     }
-                    if (idNextKeyword !=-1 && currentKeyword != undefined ){
-                        changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"],editor);
+                    if (idNextKeyword != -1 && currentKeyword != undefined) {
+                        changeAceCompletionList(allKeyword[idNextKeyword]["listKeyword"], allKeyword[idNextKeyword]["motherKeyword"], editor);
                         editor.execCommand("startAutocomplete");
                     }
                 }
                 //The user tryed to add an new object set autocompletion for this specifique part
-                if ( !allKeywordCorrect && keywordInputList[0] == "object" && keywordInputList.length <4){
+                if (!allKeywordCorrect && keywordInputList[0] == "object" && keywordInputList.length < 4) {
                     var availableObjectProperties = [
                         "value",
                         "picturepath",
                         "pictureurl"
                     ];
                     // if the user want to defined a new object
-                    if( keywordInputList.length == 2 && potentiallyNeddApoint == false){
-                        changeAceCompletionList(availableObjectProperties,keywordInputList[1],editor);
+                    if (keywordInputList.length == 2 && potentiallyNeddApoint == false) {
+                        changeAceCompletionList(availableObjectProperties, keywordInputList[1], editor);
                         editor.execCommand("startAutocomplete");
                     }
                     // add '%' when an availableObjectProperties was selected
-                    if (keywordInputList.length == 3 && availableObjectProperties.indexOf(keywordInputList[2]) != -1){
-                        editor.session.insert( editor.getCursorPosition() ,"%");
+                    if (keywordInputList.length == 3 && availableObjectProperties.indexOf(keywordInputList[2]) != -1) {
+                        editor.session.insert(editor.getCursorPosition(), "%");
                     }
                 }
             }
@@ -2982,16 +2991,16 @@ function addCommandForCustomAutoCompletePopup(editor, allKeyword, commandName){
 
 }
 /*
-*check if the keywordInputByUser and the keyword designated by the idKeywordToCheck share the same motherKeyword (resolve issue with duplicate)
-*/
-function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToCheck){
-    
+ *check if the keywordInputByUser and the keyword designated by the idKeywordToCheck share the same motherKeyword (resolve issue with duplicate)
+ */
+function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToCheck) {
+
     for (var y in allKeyword) {
-        for (var n in allKeyword[y]["listKeyword"]){
-            if ( allKeyword[y]["listKeyword"][n] == keywordInputByUser[idKeywordToCheck] ){
+        for (var n in allKeyword[y]["listKeyword"]) {
+            if (allKeyword[y]["listKeyword"][n] == keywordInputByUser[idKeywordToCheck]) {
                 //check if the keyword matching posses the same mother keyword
                 var listMotherKeywordPossible = getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword);
-                if (!( idKeywordToCheck>=1 && listMotherKeywordPossible[0] !=null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n] ,allKeyword).indexOf(  keywordInputByUser[idKeywordToCheck-1] ) == -1) ){
+                if (!(idKeywordToCheck >= 1 && listMotherKeywordPossible[0] != null && getPossibleMotherKeyword(allKeyword[y]["listKeyword"][n], allKeyword).indexOf(keywordInputByUser[idKeywordToCheck - 1]) == -1)) {
                     return true;
                 }
             }
@@ -3002,34 +3011,34 @@ function checkIfTheKeywordIsCorrect(allKeyword, keywordInputByUser, idKeywordToC
 /*
  * Get the list of all the previous keyword possible for this keyword
  */
-function getPossibleMotherKeyword(keyword,allKeyword){
-  var idmotherKeyword =[];
-  for (i in allKeyword){
-    for (y in allKeyword[i]["listKeyword"]){
-      if( allKeyword[i]["listKeyword"][y] == keyword){
-        idmotherKeyword.push( allKeyword[i]["motherKeyword"] );
-      }
+function getPossibleMotherKeyword(keyword, allKeyword) {
+    var idmotherKeyword = [];
+    for (i in allKeyword) {
+        for (y in allKeyword[i]["listKeyword"]) {
+            if (allKeyword[i]["listKeyword"][y] == keyword) {
+                idmotherKeyword.push(allKeyword[i]["motherKeyword"]);
+            }
+        }
     }
-  }
-  if (idmotherKeyword.length == 0)
-    return -1;
-  else
-    return idmotherKeyword;
+    if (idmotherKeyword.length == 0)
+        return -1;
+    else
+        return idmotherKeyword;
 }
 /*
  * Get the id of the next list of keyword by finding which one has keyword as a motherKeyword
  */
-function getNextKeywordId(keyword,allKeyword, keywordInputList){
+function getNextKeywordId(keyword, allKeyword, keywordInputList) {
     // resolve issue with duplicate
-    if ( keywordInputList[0] !="object" && keywordInputList.length == 2){
+    if (keywordInputList[0] != "object" && keywordInputList.length == 2) {
         return -1;
     }
     //no duplicate
-    else{
+    else {
         var idCurrentKeyword = -1;
-        for (i in allKeyword){
-            if( allKeyword[i]["motherKeyword"] == keyword ){
-                idCurrentKeyword =i;
+        for (i in allKeyword) {
+            if (allKeyword[i]["motherKeyword"] == keyword) {
+                idCurrentKeyword = i;
             }
         }
         return idCurrentKeyword;
@@ -3038,17 +3047,17 @@ function getNextKeywordId(keyword,allKeyword, keywordInputList){
 /*
  * Replace the autocompletion list of ace editor
  */
-function changeAceCompletionList(keywordList,label,editor){
+function changeAceCompletionList(keywordList, label, editor) {
     var langTools = ace.require("ace/ext/language_tools");
     langTools.setCompleters([]);//clear the autocompleter list
-    var completer= {
-      getCompletions: function(editor, session, pos, prefix, callback) {
-        var completions = [];
-        for (var i in keywordList) {
-          completions.push({ name:"default_name", value:keywordList[i], meta: label });
+    var completer = {
+        getCompletions: function (editor, session, pos, prefix, callback) {
+            var completions = [];
+            for (var i in keywordList) {
+                completions.push({name: "default_name", value: keywordList[i], meta: label});
+            }
+            callback(null, completions);
         }
-        callback(null, completions);
-      }
     }
     langTools.addCompleter(completer);
 }
@@ -3056,50 +3065,49 @@ function changeAceCompletionList(keywordList,label,editor){
 /*
  * Create a command to find and display (with annotation) the issue in ace
  */
-function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
+function addCommandToDetectKeywordIssue(editor, allKeyword, commandName) {
 
-  editor.commands.addCommand({
+    editor.commands.addCommand({
         name: commandName,
         exec: function () {
             var numberOfLine = editor.session.getLength();
-            var annotationObjectList =[];
+            var annotationObjectList = [];
             //var warningKeywordList =[];
             for (var line = 0; line < numberOfLine; line++) {
                 var editorValueAtTheLine = editor.session.getLine(line);
-                var numberOfPercentCaractereAtLine =(editorValueAtTheLine.match(/\%/g) || []).length;
-                if ( numberOfPercentCaractereAtLine!= 0 && numberOfPercentCaractereAtLine%2 == 0){
+                var numberOfPercentCaractereAtLine = (editorValueAtTheLine.match(/\%/g) || []).length;
+                if (numberOfPercentCaractereAtLine != 0 && numberOfPercentCaractereAtLine % 2 == 0) {
                     var editorValueSplit = editorValueAtTheLine.split("%");
-                    var cerberusVarAtLine =[]
+                    var cerberusVarAtLine = []
                     for (var i = 0; i < editorValueSplit.length; i++) {
-                       if ( i%2 == 1)
-                          cerberusVarAtLine.push(editorValueSplit[i]);
+                        if (i % 2 == 1)
+                            cerberusVarAtLine.push(editorValueSplit[i]);
                     }
                     //Check if each cerberus var is correct
                     for (var i in cerberusVarAtLine) {
                         var cerberusVarCurrentlyCheck = cerberusVarAtLine[i];
-                        var keywordsListCurrentlyCheck =cerberusVarCurrentlyCheck.split(".");
+                        var keywordsListCurrentlyCheck = cerberusVarCurrentlyCheck.split(".");
 
                         var issueWithKeyword = "none";
 
-                        if (keywordsListCurrentlyCheck.length >= 2){
+                        if (keywordsListCurrentlyCheck.length >= 2) {
                             var startKeyword = keywordsListCurrentlyCheck[0];
                             var secondKeyword = keywordsListCurrentlyCheck[1];
 
-                            if ( startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length ==2){
-                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
-                                    issueWithKeyword ="warning";
-                                }else {
-                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
-                                      issueWithKeyword ="warning";//keyword exist but not correct
+                            if (startKeyword == "property" || startKeyword == "system" && keywordsListCurrentlyCheck.length == 2) {
+                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) == -1) {
+                                    issueWithKeyword = "warning";
+                                } else {
+                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
+                                        issueWithKeyword = "warning";//keyword exist but not correct
                                 }
-                            }
-                            else if ( startKeyword == "object" && keywordsListCurrentlyCheck.length ==3){
+                            } else if (startKeyword == "object" && keywordsListCurrentlyCheck.length == 3) {
 
-                                if ( getPossibleMotherKeyword(secondKeyword ,allKeyword) == -1 ){
-                                    issueWithKeyword ="warning";
-                                }else {
-                                    if ( getPossibleMotherKeyword(secondKeyword ,allKeyword).indexOf(startKeyword) == -1 )
-                                      issueWithKeyword ="warning";//keyword exist but not correct
+                                if (getPossibleMotherKeyword(secondKeyword, allKeyword) == -1) {
+                                    issueWithKeyword = "warning";
+                                } else {
+                                    if (getPossibleMotherKeyword(secondKeyword, allKeyword).indexOf(startKeyword) == -1)
+                                        issueWithKeyword = "warning";//keyword exist but not correct
                                 }
                                 var thirdKeyword = keywordsListCurrentlyCheck[2];
                                 var availableObjectProperties = [
@@ -3107,77 +3115,76 @@ function addCommandToDetectKeywordIssue(editor, allKeyword, commandName){
                                     "picturepath",
                                     "pictureurl"
                                 ];
-                                if ( availableObjectProperties.indexOf(thirdKeyword) == -1 ){
-                                    issueWithKeyword ="error";
+                                if (availableObjectProperties.indexOf(thirdKeyword) == -1) {
+                                    issueWithKeyword = "error";
                                 }
+                            } else {
+                                issueWithKeyword = "error";
                             }
-                            else {
-                                  issueWithKeyword ="error";
-                            }
-                        }else{
-                            issueWithKeyword ="error";
+                        } else {
+                            issueWithKeyword = "error";
                         }
-                        if ( issueWithKeyword == "error" ){
-                            var messageOfAnnotion ="error invalid keyword";
-                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"error", null , null) );
+                        if (issueWithKeyword == "error") {
+                            var messageOfAnnotion = "error invalid keyword";
+                            annotationObjectList.push(createAceAnnotationObject(line, messageOfAnnotion, "error", null, null));
                         }
-                        if (issueWithKeyword == "warning"){
-                            var messageOfAnnotion = "warning the "+ keywordsListCurrentlyCheck[0] +" : " + keywordsListCurrentlyCheck[1] + " don't exist" ;
-                            annotationObjectList.push( createAceAnnotationObject(line,messageOfAnnotion,"warning" , keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]) );
-                      }
-                  }
-              }
-          }
-          setAceAnnotation(editor,annotationObjectList);
-      }
-  });
+                        if (issueWithKeyword == "warning") {
+                            var messageOfAnnotion = "warning the " + keywordsListCurrentlyCheck[0] + " : " + keywordsListCurrentlyCheck[1] + " don't exist";
+                            annotationObjectList.push(createAceAnnotationObject(line, messageOfAnnotion, "warning", keywordsListCurrentlyCheck[0], keywordsListCurrentlyCheck[1]));
+                        }
+                    }
+                }
+            }
+            setAceAnnotation(editor, annotationObjectList);
+        }
+    });
 
 }
 
 /*
  *object use to highlight line
  */
-function createAceAnnotationObject(lineNumber,annotationText,annotationType, keywordTypeVar, keywordValueVar){
+function createAceAnnotationObject(lineNumber, annotationText, annotationType, keywordTypeVar, keywordValueVar) {
 
     return {row: lineNumber,
-            column: 0,
-            text: annotationText,
-            type: annotationType,
-            lineNumber: lineNumber,
-            keywordType: keywordTypeVar,
-            keywordValue: keywordValueVar
-          }
+        column: 0,
+        text: annotationText,
+        type: annotationType,
+        lineNumber: lineNumber,
+        keywordType: keywordTypeVar,
+        keywordValue: keywordValueVar
+    }
 }
 
 //set the list of ace annotion object as annotation
-function setAceAnnotation(editor,annotationObjectList){
+function setAceAnnotation(editor, annotationObjectList) {
     //Set annotation replace all the annotation so if you use it you need to resend every annotation for each change
-    editor.getSession().setAnnotations( annotationObjectList );
+    editor.getSession().setAnnotations(annotationObjectList);
 }
 /*
  * Set a listenner for every left part of ace's lines in each line that will resolve issue
  */
-function createGuterCellListenner( editor ){
+function createGuterCellListenner(editor) {
 
-    var currentEditorGutter =editor.container.getElementsByClassName("ace_gutter")[0];
-    var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell") ;
+    var currentEditorGutter = editor.container.getElementsByClassName("ace_gutter")[0];
+    var cellList = currentEditorGutter.getElementsByClassName("ace_gutter-cell");
     for (var i = 0; i < cellList.length; i++) {
 
         cellList[i].setAttribute("style", "cursor: pointer");
-        cellList[i].onclick = function() {
+        cellList[i].onclick = function () {
 
-            var lineClickedId = this.innerHTML -1;//start at 1
+            var lineClickedId = this.innerHTML - 1;//start at 1
             var annotationObjectList = editor.getSession().getAnnotations();
 
             for (var y = 0; y < annotationObjectList.length; y++) {
-                if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning"){
+                if (annotationObjectList[y].lineNumber == lineClickedId && annotationObjectList[y].type == "warning") {
 
                     var keywordType = annotationObjectList[y].keywordType;
-                    var keywordValue =  annotationObjectList[y].keywordValue;
-                    if ( keywordType == "property" ){
+                    var keywordValue = annotationObjectList[y].keywordValue;
+                    if (keywordType == "property") {
                         addPropertyWithAce(keywordValue);
                     }
-                    if ( keywordType == "object" ){
+                    if (keywordType == "object") {
                         addObjectWithAce(keywordValue);
                     }
                 }
@@ -3188,14 +3195,14 @@ function createGuterCellListenner( editor ){
 }
 
 //Add keywordValue as a new property
-function addPropertyWithAce(keywordValue){
+function addPropertyWithAce(keywordValue) {
 
-  var test = GetURLParameter("test");
-  var testcase = GetURLParameter("testcase");
-  var info = GetURLParameter("testcase");
-  var property = GetURLParameter("property");
+    var test = GetURLParameter("test");
+    var testcase = GetURLParameter("testcase");
+    var info = GetURLParameter("testcase");
+    var property = GetURLParameter("property");
 
-  $.ajax({
+    $.ajax({
         url: "ReadTestCase",
         data: {test: test, testCase: testcase, withStep: true},
         dataType: "json",
@@ -3228,8 +3235,8 @@ function addPropertyWithAce(keywordValue){
                 toDelete: false
             };
 
-            var prop =drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
-            setPlaceholderProperty(prop[0],prop[1]);
+            var prop = drawProperty(newProperty, testcaseinfo, true, $("div[name='propertyLine']").length);
+            setPlaceholderProperty(prop[0], prop[1]);
 
             // Restore the saveScript button status
             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
@@ -3238,7 +3245,7 @@ function addPropertyWithAce(keywordValue){
     getKeywordList("property").push(keywordValue);
 }
 //Add keywordValue as a new object
-function addObjectWithAce(keywordValue){
+function addObjectWithAce(keywordValue) {
 
     var test = GetURLParameter("test");
     var testcase = GetURLParameter("testcase");
@@ -3253,8 +3260,8 @@ function addObjectWithAce(keywordValue){
             var saveScriptOldStatus = $("#saveScript").attr("disabled");
             $("#saveScript").attr("disabled", true);
 
-            var applicationName =data.info.application;
-            addApplicationObjectModalClick(undefined, keywordValue,applicationName);
+            var applicationName = data.info.application;
+            addApplicationObjectModalClick(undefined, keywordValue, applicationName);
 
             // Restore the saveScript button status
             $("#saveScript").attr("disabled", typeof saveScriptOldStatus !== typeof undefined && saveScriptOldStatus !== false);
@@ -3262,8 +3269,8 @@ function addObjectWithAce(keywordValue){
     });
 }
 //Get the CURRENT list of keyword for each type
-function getKeywordList(type){
-    if ( getTags() != undefined ){
+function getKeywordList(type) {
+    if (getTags() != undefined) {
         var idType = -1;
         switch (type) {
             case "object":
@@ -3272,11 +3279,11 @@ function getKeywordList(type){
                 return getTags()[2].array;
             case "system":
                 return getTags()[3].array;
-            break;
+                break;
             default:
                 return null;
-    }
-    }else{
+        }
+    } else {
         return null;
     }
 }

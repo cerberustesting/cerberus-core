@@ -69,9 +69,9 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
      * @throws IOException if an I/O error occurs
      * @throws CerberusException
      */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, CerberusException, JSONException {
-
         JSONObject jsonResponse = new JSONObject();
         Answer ans = new Answer();
         MessageEvent msg = new MessageEvent(MessageEventEnum.DATA_OPERATION_ERROR_UNEXPECTED);
@@ -92,7 +92,7 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
         String test = request.getParameter("informationTest");
         String testCase = request.getParameter("informationTestCase");
         boolean duplicate = false;
-
+        
         /**
          * Checking all constrains before calling the services.
          */
@@ -160,10 +160,9 @@ public class UpdateTestCaseProperties1 extends HttpServlet {
          */
         jsonResponse.put("messageType", ans.getResultMessage().getMessage().getCodeString());
         jsonResponse.put("message", ans.getResultMessage().getDescription());
-
+        
         response.getWriter().print(jsonResponse);
         response.getWriter().flush();
-
     }
 
     private List<TestCaseCountryProperties> getTestCaseCountryPropertiesFromParameter(HttpServletRequest request, ApplicationContext appContext, String test, String testCase) throws JSONException {

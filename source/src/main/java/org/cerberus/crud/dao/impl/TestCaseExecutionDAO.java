@@ -233,6 +233,39 @@ public class TestCaseExecutionDAO implements ITestCaseExecutionDAO {
             throw new CerberusException(new MessageGeneral(MessageGeneralEnum.EXECUTION_FA));
         }
     }
+    
+    @Override
+    public void updateTCExecutionStatus(Long id, String controlstatus, String controlMessage){
+        System.out.println("yolo");
+        final String query = "UPDATE testcaseexecution SET controlstatus = ?, controlMessage = ? WHERE id = ?";
+        Connection connection = this.databaseSpring.connect();
+        try {
+            PreparedStatement preStat = connection.prepareStatement(query);
+            try {
+                int i = 1;
+                preStat.setString(i++, controlstatus);
+                preStat.setString(i++, controlMessage);
+                preStat.setLong(i++, id);
+                preStat.executeUpdate();
+            } catch (SQLException exception) {
+                LOG.error("Unable to execute query : " + exception.toString());
+            } finally {
+                preStat.close();
+            }
+        } catch (SQLException exception) {
+            LOG.error("Unable to execute query : " + exception.toString());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                LOG.warn(e.toString());
+            }
+        }
+    }
+    
+    
 
     @Override
     public List<String> getIDListOfLastExecutions(String test, String testcase, String country) {

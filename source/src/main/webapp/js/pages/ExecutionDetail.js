@@ -129,18 +129,6 @@ function initPage(id) {
     $("#duplicateButtons").hide();
 
     var wrap = $(window);
-
-//    wrap.on("scroll", function (e) {
-//        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    });
-//
-//    wrap.resize(function (e) {
-//        if ($("#list-wrapper").width() != $("#nav-execution").parent().width() - 30) {
-//            $("#list-wrapper").width($("#nav-execution").width());
-//        }
-//    })
 }
 
 function displayPageLabel(doc) {
@@ -185,7 +173,7 @@ function displayPageLabel(doc) {
 }
 
 function updatePage(data, stepList) {
-
+    
     sortData(data.testCaseStepExecutionList);
 
     $("#editTcInfo").prop("disabled", false);
@@ -202,69 +190,9 @@ function updatePage(data, stepList) {
     $("#ExecutionByTag").attr("href", "ReportingExecutionByTag.jsp?Tag=" + data.tag);
     $("#lastExecution").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase);
     $("#lastExecutionwithEnvCountry").attr("href", "TestCaseExecution.jsp?test=" + data.test + "&testcase=" + data.testcase + "&country=" + data.country + "&environment=" + data.environment + "&application=" + data.application);
-    $("#saveTestCaseExecution").click(function(){
-        saveExecution();
-    });
 
-    var configPanel = $("#testCaseConfig");
-    configPanel.find("#idlabel").text(data.id);
-    configPanel.find("#test").text(data.test);
-    configPanel.find("#testcase").text(data.testcase);
-    configPanel.find("#controlstatus").text(data.controlStatus);
-    configPanel.find("#environment").text(data.environment);
-    configPanel.find("#country").text(data.country);
-    configPanel.find("#exReturnMessage").text(data.controlMessage);
-    configPanel.find("#tcDescription").text(data.description);
-    configPanel.find("#controlstatus").removeClass("text-primary");
-    if (data.controlStatus === "PE") {
-        configPanel.find("#controlstatus").addClass("text-primary");
-        configPanel.find("#exReturnMessage").addClass("text-primary");
-    } else if (data.controlStatus === "OK") {
-        configPanel.find("#controlstatus").addClass("text-success");
-        configPanel.find("#exReturnMessage").addClass("text-success");
-    } else if (data.controlStatus === "KO") {
-        configPanel.find("#controlstatus").addClass("text-danger");
-        configPanel.find("#exReturnMessage").addClass("text-danger");
-    } else if (data.controlStatus === "NE") {
-        configPanel.find("#controlstatus").addClass("text-black");
-        configPanel.find("#exReturnMessage").addClass("text-black");
-    } else {
-        configPanel.find("#controlstatus").addClass("text-warning");
-        configPanel.find("#exReturnMessage").addClass("text-warning");
-    }
-    configPanel.find("input#application").val(data.application);
-    configPanel.find("input#browser").val(data.browser);
-    configPanel.find("input#browserfull").val(data.browserFullVersion);
-    configPanel.find("input#build").val(data.build);
-    configPanel.find("input#country").val(data.country);
-    configPanel.find("input#environment").val(data.environment);
-    configPanel.find("input#environmentData").val(data.environmentData);
-    configPanel.find("input#status").val(data.status);
-    configPanel.find("input#controlstatus2").val(data.controlStatus);
-    configPanel.find("input#controlmessage").val(data.controlMessage);
-    configPanel.find("input#end").val(new Date(data.end));
-    configPanel.find("input#finished").val(data.finished);
-    configPanel.find("input#id").val(data.id);
-    configPanel.find("input#ip").val(data.ip);
-    configPanel.find("input#port").val(data.port);
-    configPanel.find("input#platform").val(data.platform);
-    configPanel.find("input#revision").val(data.revision);
-    configPanel.find("input#cerberusversion").val(data.crbVersion);
-    configPanel.find("input#executor").val(data.executor);
-    configPanel.find("input#screenSize").val(data.screenSize);
-    configPanel.find("input#userAgent").val(data.userAgent);
-    configPanel.find("input#start").val(new Date(data.start));
-    configPanel.find("input#tag").val(data.tag);
-    configPanel.find("input#url").val(data.url);
-    configPanel.find("input#verbose").val(data.verbose);
-    configPanel.find("input#version").val(data.version);
-
-    configPanel.find("input#conditionOperTC").val(data.conditionOper);
-    configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
-    configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
-    configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
-    configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
-
+    updateConfigPanel(data);
+    
     // Adding all media attached to execution.
     var fileContainer = $("#testCaseConfig #tcFileContentField");
     addFileLink(data.fileList, fileContainer);
@@ -309,8 +237,103 @@ function updatePage(data, stepList) {
 
     createStepList(data.testCaseStepExecutionList, stepList);
     createProperties(data.testCaseExecutionDataList);
-    updateLoadBar(data);
+    setUpClickFunctionToSaveTestCaseExecutionButton(data);
+    updateExecutionStatus();
 }
+
+function updateConfigPanel(data){
+    
+    var configPanel = $("#testCaseConfig");
+    configPanel.find("#idlabel").text(data.id);
+    configPanel.find("#test").text(data.test);
+    configPanel.find("#testcase").text(data.testcase);
+    configPanel.find("#controlstatus").text(data.controlStatus);
+    configPanel.find("#environment").text(data.environment);
+    configPanel.find("#country").text(data.country);
+    configPanel.find("#tcDescription").text(data.description);
+    configPanel.find("#controlstatus").removeClass("text-primary");
+    
+    if (data.controlStatus === "PE") {
+        configPanel.find("#controlstatus").addClass("text-primary");
+        configPanel.find("#exReturnMessage").addClass("text-primary");
+    } else if (data.controlStatus === "OK") {
+        configPanel.find("#controlstatus").addClass("text-success");
+        configPanel.find("#exReturnMessage").addClass("text-success");
+        data.controlMessage ="The test case finished successfully";
+    } else if (data.controlStatus === "KO") {
+        configPanel.find("#controlstatus").addClass("text-danger");
+        configPanel.find("#exReturnMessage").addClass("text-danger");
+        data.controlMessage ="The test case failed on validations."
+    } else if (data.controlStatus === "NE") {
+        configPanel.find("#controlstatus").addClass("text-black");
+        configPanel.find("#exReturnMessage").addClass("text-black");
+         data.controlMessage ="The test case not executed";
+    } else if (data.controlStatus === "FA") {
+        configPanel.find("#controlstatus").addClass("text-black");
+        configPanel.find("#exReturnMessage").addClass("text-black");
+        data.controlMessage ="The test case failed to be executed because of an action.";
+    }else {
+        configPanel.find("#controlstatus").addClass("text-warning");
+        configPanel.find("#exReturnMessage").addClass("text-warning");
+    }
+    configPanel.find("#exReturnMessage").text(data.controlMessage);
+    
+    configPanel.find("input#application").val(data.application);
+    configPanel.find("input#browser").val(data.browser);
+    configPanel.find("input#browserfull").val(data.browserFullVersion);
+    configPanel.find("input#build").val(data.build);
+    configPanel.find("input#country").val(data.country);
+    configPanel.find("input#environment").val(data.environment);
+    configPanel.find("input#environmentData").val(data.environmentData);
+    configPanel.find("input#status").val(data.status);
+    configPanel.find("input#controlstatus2").val(data.controlStatus);
+    configPanel.find("input#controlmessage").val(data.controlMessage);
+    configPanel.find("input#end").val(new Date(data.end));
+    configPanel.find("input#finished").val(data.finished);
+    configPanel.find("input#id").val(data.id);
+    configPanel.find("input#ip").val(data.ip);
+    configPanel.find("input#port").val(data.port);
+    configPanel.find("input#platform").val(data.platform);
+    configPanel.find("input#revision").val(data.revision);
+    configPanel.find("input#cerberusversion").val(data.crbVersion);
+    configPanel.find("input#executor").val(data.executor);
+    configPanel.find("input#screenSize").val(data.screenSize);
+    configPanel.find("input#userAgent").val(data.userAgent);
+    configPanel.find("input#start").val(new Date(data.start));
+    configPanel.find("input#tag").val(data.tag);
+    configPanel.find("input#url").val(data.url);
+    configPanel.find("input#verbose").val(data.verbose);
+    configPanel.find("input#version").val(data.version);
+
+    configPanel.find("input#conditionOperTC").val(data.conditionOper);
+    configPanel.find("input#conditionVal1InitTC").val(data.conditionVal1Init);
+    configPanel.find("input#conditionVal2InitTC").val(data.conditionVal2Init);
+    configPanel.find("input#conditionVal1TC").val(data.conditionVal1);
+    configPanel.find("input#conditionVal2TC").val(data.conditionVal2);
+}
+
+
+/*
+ * show the save button call if an action step or control have a controlStatus NE
+ * @returns {undefined}
+ */
+function showSaveTestCaseExecutionButton(){
+    $("#saveTestCaseExecution").css("display", "inherit");
+}
+/*
+ * 
+ * set up click function if the button is visible ( visible if alt least one action or step or control have a controlStatus NE )
+ * @param {type} data
+ * @returns {undefined}
+ */
+function setUpClickFunctionToSaveTestCaseExecutionButton(data){
+    if (  $("#saveTestCaseExecution").is(":visible")  ){
+        $("#saveTestCaseExecution").click(function(){
+            saveExecution(data);
+        });
+    }
+}
+
 
 function setLinkOnEditTCStepInfoButton() {
     var currentStep = $('#stepInfo');
@@ -531,7 +554,13 @@ function getPropertyContent(property) {
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var valueField = $("<textarea type='text' rows='1' class='form-control' id='value'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control input-sm' id='returnmessage'>");
+//    returnMessageField.prop("readonly", true);
+//    if (this.returnCode === "NE")
+//        returnMessageField.prop("readonly", false);
+//    this.returnMessageField = returnMessageField;
+    
     var indexField = $("<input type='text' class='form-control' id='index'>").prop("readonly", true);
     var natureField = $("<input type='text' class='form-control' id='nature'>").prop("readonly", true);
     var databaseField = $("<input type='text' class='form-control' id='database'>").prop("readonly", true);
@@ -605,7 +634,6 @@ function getPropertyContent(property) {
     container.append(row4);
     container.append(row5);
     container.append(row6);
-//    container.append(row7);
 
     return container;
 
@@ -766,20 +794,28 @@ function createStepList(data, stepList) {
     $("#stepList").empty();
 
     for (var i = 0; i < data.length; i++) {
+        
         var step = data[i];
-        var stepObj = new Step(step, stepList);
-
+        var stepObj = new Step(step, stepList, i);
+        
+        $(stepObj).data("id",  {stepId: i, actionId: -1, controlId: -1} );
+        
+        stepObj.addElements();
+        stepObj.updateReturnCode(i);
         stepObj.draw();
+        
         stepList.push(stepObj);
+        
     }
     if (stepList.length > 0) {
         $("#stepList a:last-child").trigger("click");
     }
+    $("#stepList").data("listOfStep", stepList);
 }
 
 /** JAVASCRIPT OBJECT **/
 
-function Step(json, stepList) {
+function Step(json, stepList, id) {
     this.stepActionContainer = $("<div></div>").addClass("list-group").css("display", "none");
 
     this.description = json.description;
@@ -809,7 +845,7 @@ function Step(json, stepList) {
     this.useStepStep = json.useStepStep;
     this.inLibrary = json.inLibrary;
     this.actionList = [];
-    this.setActionList(json.testCaseStepActionExecutionList);
+    this.setActionList(json.testCaseStepActionExecutionList, id);
 
     this.stepList = stepList;
     this.toDelete = false;
@@ -824,13 +860,55 @@ function Step(json, stepList) {
 
 }
 
-Step.prototype.draw = function () {
+Step.prototype.addElements = function () {
     var htmlElement = this.html;
-
-
+    
     htmlElement.data("item", this);
     htmlElement.click(this.show);
+    
+    htmlElement.append(this.textArea);
+    $("#stepList").append(htmlElement);
+    $("#actionContainer").append(this.stepActionContainer);
+   
+};
+
+//Get the correct return code from added action list
+Step.prototype.updateReturnCode = function () {
+    var newReturnCode = "OK";
+    var everyActionAndControlCheck = true;
+    var idCurrentStep =  $(this).data("id");
+    
+    $(".itemContainer").each(function () {
+        var idCurrentActionControl =  $(this).data("id");
+        var elementBelongToCurrentStep = (idCurrentStep.stepId == idCurrentActionControl.stepId );
+        
+        if (elementBelongToCurrentStep){
+            
+            if ($(this).data("item").returnCode === "NE"){
+                everyActionAndControlCheck = false;
+            }
+            else if ($(this).data("item").returnCode === "KO"){
+                newReturnCode = "KO";
+            }
+            else if ($(this).data("item").returnCode === "FA" && newReturnCode !== "KO"){
+                newReturnCode = "FA";
+            }
+        }
+    });
+    
+    if (!everyActionAndControlCheck && newReturnCode === "OK"  )
+        newReturnCode = "NE";
+    
+    var htmlElement = this.html;
     var object = htmlElement.data("item");
+    object.returnCode = newReturnCode;
+}
+
+Step.prototype.draw = function () {
+    
+    var htmlElement = this.html;
+    var object = htmlElement.data("item");
+    
     if (object.returnCode === "OK") {
         htmlElement.append($("<span>").addClass("glyphicon glyphicon-ok pull-left"));
         object.html.addClass("list-group-item-success");
@@ -850,29 +928,24 @@ Step.prototype.draw = function () {
         htmlElement.prepend($("<span>").addClass("glyphicon glyphicon-alert pull-left"));
         object.html.addClass("list-group-item-warning");
     }
-    htmlElement.append(this.textArea);
-    $("#stepList").append(htmlElement);
-    $("#actionContainer").append(this.stepActionContainer);
-};
+}
+
+
 
 Step.prototype.show = function () {
     var doc = new Doc();
     var object = $(this).data("item");
     var stepDesc = $("<div>").addClass("col-sm-10");
     var stepButton = $("<div id='stepPlus'></a>").addClass("col-sm-1").addClass("paddingLeft0").addClass("paddingTop30").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
-//    var stepButton1 = $("<div id='stepPlus'></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
-//    stepButton.append(stepButton1);
 
     for (var i = 0; i < object.stepList.length; i++) {
         var step = object.stepList[i];
-
         step.stepActionContainer.hide();
         step.html.removeClass("active");
     }
     $("#stepInfo").empty();
     $("#stepContent").removeClass();
     $(this).addClass("active");
-
     if (object.returnCode === "OK") {
         $("#stepInfo").prepend($("<div>").addClass("col-sm-1").append($("<h2>").addClass("glyphicon glyphicon-ok pull-left text-success").attr("style", "font-size:3em")));
         // $("#stepContent").addClass("col-lg-9");
@@ -909,9 +982,9 @@ Step.prototype.show = function () {
     $("#stepConditionVal2").val(object.conditionVal2);
     $("#stepConditionVal1Init").val(object.conditionVal1Init);
     $("#stepConditionVal2Init").val(object.conditionVal2Init);
-    $("#stepMessage").val(object.returnMessage);
-
-
+    
+    returnMessageWritableForStep( object, $("#stepMessage"));
+    
     $("#stepInfo").unbind("click").click(function () {
         $("#stepHiddenRow").toggle();
         if ($(this).find("span").hasClass("glyphicon-chevron-down")) {
@@ -924,13 +997,13 @@ Step.prototype.show = function () {
     return false;
 };
 
-Step.prototype.setActionList = function (actionList) {
+Step.prototype.setActionList = function (actionList, idMotherStep) {
     for (var i = 0; i < actionList.length; i++) {
-        this.setAction(actionList[i]);
+        this.setAction(actionList[i], idMotherStep, i);
     }
 };
 
-Step.prototype.setAction = function (action) {
+Step.prototype.setAction = function (action,idMotherStep, idAction) {
     var actionObj;
     if (action instanceof Action) {
         actionObj = action;
@@ -940,9 +1013,9 @@ Step.prototype.setAction = function (action) {
 
     this.actionList.push(actionObj);
 
-    actionObj.draw();
+    actionObj.draw(idMotherStep, idAction);
 
-    actionObj.setControlList(actionObj.controlListJson);
+    actionObj.setControlList(actionObj.controlListJson, idMotherStep, idAction);
 };
 
 Step.prototype.setDescription = function (description) {
@@ -955,22 +1028,65 @@ Step.prototype.setStep = function (step) {
     this.step = step;
 };
 
+Step.prototype.setReturnMessage = function (returnMessage) {
+    this.returnMessage = returnMessage;
+};
+
+/*
+ * Set the returnMessage for object with the field object for the step object
+ * @param {type} object
+ * @param {type} field
+ * @returns {undefined}
+ */
+function returnMessageWritableForStep(object, field){
+
+    field.empty();
+    field.data("currentStep", object);
+    
+    field.prop("readonly", true);
+    if (object.returnCode === "NE"){
+        field.prop("readonly", false);
+        field.change(function() {
+            var currentObject = field.data("currentStep");
+            currentObject.setReturnMessage( field.val() );
+        });
+    }
+    field.val(object.returnMessage);
+}
+
+
+
+//Get the json data from the input of the field
 Step.prototype.getJsonData = function () {
     var json = {};
-
-    json.toDelete = this.toDelete;
+    json.conditionOper = this.conditionOper;
+    json.conditionVal1 = this.conditionVal1;
+    json.conditionVal1Init = this.conditionVal1Init;
+    json.conditionVal2 = this.conditionVal2;
+    json.conditionVal2Init = this.conditionVal2Init;
+    json.description = this.description;
+    json.end = this.end;
+    json.fullEnd = this.fullEnd;
+    json.fullStart = this.fullStart;
+    json.id = this.id;
+    json.inLibrary = this.inLibrary;
+    json.index =  this.index;
+    json.loop = this.loop;
+    json.returnCode = this.returnCode;
+    json.sort = this.sort;
+    json.start = this.start;
+    json.step = this.step;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
-    json.index = this.index;
-    json.description = this.description;
+    json.toDelete = this.toDelete;
     json.useStep = this.useStep;
+    json.useStepStep = this.useStepStep;
     json.useStepTest = this.useStepTest;
     json.useStepTestCase = this.useStepTestCase;
-    json.useStepStep = this.useStepStep;
-    json.inLibrary = this.inLibrary;
-    json.returnCode = this.returnCode;
-    json.returnMessage = this.returnMessage; 
+    json.useStepTestCaseStep = this.useStepTestCaseStep;
+    json.screenshotFileName = "";
+    //Value the user is able to modified
+    json.returnMessage = this.returnMessage;
     
     return json;
 };
@@ -1044,25 +1160,30 @@ function Action(json, parentStep) {
     this.toDelete = false;
 }
 
-Action.prototype.draw = function () {
+Action.prototype.draw = function (idMotherStep, id) {
+    
     var fullActionElement = $("<div name='fullActionDiv'></div>");
     var htmlElement = this.html;
     var action = this;
+    var idCurrentElement = {stepId: idMotherStep, actionId: id, controlId: -1};
+    
     var row = $("<div class='itemContainer'></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
 
-    var header = this.generateHeader();
+    var header = this.generateHeader(idCurrentElement);
 
     row.append(header);
     row.data("item", this);
-
+    //give the action an idid
+    row.data("id",idCurrentElement );
+    
     var button = $("<div></div>").addClass("marginLeft-15 col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
 
     var content = this.generateContent();
-
+    
     if (action.returnCode === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
@@ -1109,20 +1230,20 @@ Action.prototype.draw = function () {
     //this.parentStep.stepActionContainer.append(content);
 };
 
-Action.prototype.setControlList = function (controlList) {
+Action.prototype.setControlList = function (controlList, idMotherStep, idMotherAction) {
     for (var i = 0; i < controlList.length; i++) {
-        this.setControl(controlList[i]);
+        this.setControl(controlList[i],idMotherStep ,idMotherAction, i);
     }
 };
 
-Action.prototype.setControl = function (control) {
+Action.prototype.setControl = function (control, idMotherStep, idMotherAction, id) {
     if (control instanceof Control) {
-        control.draw();
+        control.draw(idMotherStep, idMotherAction, id);
         this.controlList.push(control);
     } else {
         var controlObj = new Control(control, this);
 
-        controlObj.draw();
+        controlObj.draw(idMotherStep, idMotherAction, id);
         this.controlList.push(controlObj);
     }
 };
@@ -1135,7 +1256,28 @@ Action.prototype.setSequence = function (sequence) {
     this.sequence = sequence;
 };
 
-Action.prototype.generateHeader = function () {
+Action.prototype.setReturnMessage = function (returnMessage) {
+    this.returnMessage = returnMessage;
+};
+/*
+ * * Set the returnMessage for object with the field object for the action and control object
+ * @param {type} object
+ * @param {type} field
+ * @returns {undefined}
+ */
+function returnMessageWritable(object, field){
+    
+    field.empty();
+    field.prop("readonly", true);
+    if (object.returnCode === "NE"){
+        field.prop("readonly", false);
+        field.change(function() {
+            object.setReturnMessage( field.val() );
+        });
+    }
+}
+
+Action.prototype.generateHeader = function (id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -1143,7 +1285,6 @@ Action.prototype.generateHeader = function () {
     var elapsedTime = $("<h4>").attr("style", "font-size:0.9em;margin:0px;line-height:1;height:0.9em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var returnMessageField = $("<h4>").attr("style", "font-size:.9em;margin:0px;line-height:1;height:.95em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
     var descriptionField = $("<h4>").attr("style", "font-size:1.2em;margin:0px;line-height:1;height:1.2em;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;");
-
     returnMessageField.append(safeLinkify(this.returnMessage));
     descriptionField.append(this.description);
 
@@ -1157,17 +1298,32 @@ Action.prototype.generateHeader = function () {
      * If returnCode is NE, display button, else display elapsed time
      */
     if (this.returnCode === "NE") {
-        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK")).click(function (event) {
+        var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA"));
+        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
+        buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
-            triggerActionExecution(this, "OK");
+            triggerActionExecution(this, id, "OK");
+            //toggle style of both buttons
+//            if (  ($(this).attr("class").indexOf("btn-inverse") !== -1)  !==   ($(buttonFA).attr("class").indexOf("btn-inverse") !== -1) ){
+//                $(buttonFA).toggleClass("btn-inverse ");
+//            }
+//            $(this).toggleClass(" btn-inverse ");
         });
-        var buttonFA = $($("<button>").addClass("btn btn-warning btn-inverse").attr("type", "button").text("FA")).click(function (event) {
+        buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
-            triggerActionExecution(this, "FA");
+            triggerActionExecution(this, id, "FA");
+//            //toggle style of both buttons
+//            if (  ($(this).attr("class").indexOf("btn-inverse") !== -1)  !==   ($(buttonOK).attr("class").indexOf("btn-inverse") !== -1) ){
+//                $(buttonOK).toggleClass("btn-inverse ");
+//            }
+//            $(this).toggleClass(" btn-inverse ");
+            
         });
         contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        //hide save button
+        showSaveTestCaseExecutionButton();
     } else {
         contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
     }
@@ -1182,8 +1338,9 @@ Action.prototype.generateHeader = function () {
 
 };
 
-function triggerActionExecution(element, status) {
+function triggerActionExecution(element, id, status) {
     var currentElement = $($(element).closest(".action")[0]);
+    var newReturnCode ="NE";
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1191,10 +1348,7 @@ function triggerActionExecution(element, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-ok");
-        //Modify Status of current action 
-        $(currentElement).next("div").find("input[id='returncode']").val("OK").change();
-        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+        newReturnCode ="OK";
     } else {
         currentElement.removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
@@ -1202,12 +1356,11 @@ function triggerActionExecution(element, status) {
         $(currentElement.find("span")[0]).removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass("glyphicon-alert");
-        //Modify Status of current action 
-        $(currentElement).next("div").find("input[id='returncode']").val("FA").change();
-        $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
-        $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+        newReturnCode ="FA";
     }
-
+    $(currentElement).next("div").find("input[id='returncode']").attr("data-modified", "true");
+    $(currentElement).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
+    
     //Modify style of all previous action and control of the current step that have not been modified yet
     var prevElementCurrentStep = $($($(element).closest(".action")[0]).parent().prevAll().find(".list-group-item-black"));
     prevElementCurrentStep.removeClass(function (index, className) {
@@ -1218,7 +1371,7 @@ function triggerActionExecution(element, status) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
     //Modify Status of all previous action and control of the current step that have not been modified yet
-    $(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    //$(prevElementCurrentStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
     $(prevElementCurrentStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
 
     //Modify style of all previous action and control of the previous steps that have not been modified yet
@@ -1230,58 +1383,88 @@ function triggerActionExecution(element, status) {
     $($($($(element).closest(".action")[0]).parent().parent().prevAll().find(".list-group-item")).find(".glyphicon-question-sign")).removeClass(function (index, className) {
         return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
     }).addClass("glyphicon-ok");
+    
     //Modify Status of all previous action and control of the previous step that have not been modified yet
-    $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
+    //$(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
     $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-
     //Check Step Status
-    updateStepStatus(currentElement);
+    updateReturnCode( id, newReturnCode );
+    updateStepStatus( id );
+    
 }
 
-function updateStepStatus(currentElement) {
-    currentElement.parent().parent().parent().children().each(function (index, element) {
-        var status = $(element).find("input[id='returncode']").map(function (i, v) {
-            return $(this).val();
-        }).toArray();
-        var className = "list-group-item-success";
-        var glyphiconName = "glyphicon-ok";
-        var stepStatus = "OK";
+function updateReturnCode(idElementTriggers, newReturnCode){
+    //
+    $(".itemContainer").each(function () {
+        var idCurrentElement =  $(this).data("id");
+        //current element
+        if ( idCurrentElement === idElementTriggers ){
+            $(this).data("item").returnCode = newReturnCode;
+            return ;
+        }
+        //look for the previous elements untouch
+        var idName = ["stepId", "actionId", "controlId"];
+        if ($(this).data("item").returnCode ==="NE"){
+            for(var i =0; i < 3 ; i++){
+                if (  idCurrentElement[ idName[i] ] !== idElementTriggers[ idName[i] ]  ){
+                    //element before the one clicked
+                    if ( ( idCurrentElement[ idName[i] ] === -1) || ( idCurrentElement[ idName[i] ] < idElementTriggers[idName[i] ] ) )  {
+                        $(this).data("item").returnCode = "OK";
+                    }
+                    return ;
+                }
+            }
+        }else
+            return;
+    });
+}
 
-        if (status.indexOf("NE") > -1) {
-            className = "list-group-item-black";
-            glyphiconName = "glyphicon-question-sign";
-            stepStatus = "NE";
+function updateStepStatus(idElementTrigger) {
+    
+    for (var idStep =idElementTrigger.stepId; idStep >= 0 ; idStep--){// update all the step below the element trigger
+
+        var stepElementTriggerBelongTo = $("#stepList").data("listOfStep")[ idStep ];
+        stepElementTriggerBelongTo.updateReturnCode();
+        var returnCodeStep = stepElementTriggerBelongTo.html.data("item").returnCode;
+        
+        var className = "list-group-item-black";
+        var glyphiconName = "glyphicon-question-sign";
+        if (returnCodeStep ==="OK") {
+            className = "list-group-item-success";
+            glyphiconName = "glyphicon-ok";
         }
-        if (status.indexOf("FA") > -1) {
-            className = "list-group-item-warning"
+        if (returnCodeStep ==="FA") {
+            className = "list-group-item-warning";
             glyphiconName = "glyphicon-alert";
-            stepStatus = "FA";
         }
-        if (status.indexOf("KO") > -1) {
+        if (returnCodeStep ==="KO") {
             className = "list-group-item-danger";
             glyphiconName = "glyphicon-remove";
-            stepStatus = "KO";
         }
-
-
-        $($("#steps").find("a")[index]).removeClass(function (index, className) {
+        
+        $($("#steps").find("a")[idStep]).removeClass(function (index, className) {
             return (className.match(/(^|\s)list-group-item-\S+/g) || []).join(' ');
         }).addClass(className);
-        $($("#steps").find("a")[index]).find("span").removeClass(function (index, className) {
+        
+        $($("#steps").find("a")[idStep]).find("span").removeClass(function (index, className) {
             return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
         }).addClass(glyphiconName);
-        $($("#stepInfo h2")[0]).removeClass(function (index, className) {
-            return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
-        }).addClass(glyphiconName);
-
-        //Update Step Status
-        $($("#stepList a")[index]).data("item").returnCode = stepStatus;
-    });
+        
+        //if is the step focus
+        if (idStep === idElementTrigger.stepId){     
+            
+            $($("#stepInfo h2")[0]).removeClass(function (index, className) {
+                return (className.match(/(^|\s)glyphicon-\S+/g) || []).join(' ');
+            }).addClass(glyphiconName);
+        }
+        
+    }
     updateExecutionStatus();
 }
 
 function updateExecutionStatus() {
     var globalStatus = "OK";
+    //update step
     $("#stepList a").each(function (index, element) {
         var stepStatus = $($("#stepList a")[index]).data("item").returnCode;
         if (globalStatus === "OK" && stepStatus === "NE") {
@@ -1293,9 +1476,12 @@ function updateExecutionStatus() {
         if (stepStatus === "KO") {
             globalStatus = "KO";
         }
+        
     });
     var data = {controlStatus: globalStatus};
-    updateLoadBar(data);
+    updateLoadBar(data); 
+    updateConfigPanel(data);
+    updateLoadBar(data); 
 }
 
 Action.prototype.generateContent = function () {
@@ -1320,7 +1506,10 @@ Action.prototype.generateContent = function () {
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
     var forceexecField = $("<input type='text' class='form-control' id='forceexec'>").prop("readonly", true);
     var returnCodeField = $("<input type='text' class='form-control' id='returncode'>").prop("readonly", true);
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control input-sm' id='returnmessage'>");
+    returnMessageWritable(this, returnMessageField);
+    
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
     var conditionVal1InitField = $("<textarea type='text' rows='1' class='form-control' id='conditionVal1Init'>").prop("readonly", true);
@@ -1397,21 +1586,37 @@ Action.prototype.generateContent = function () {
     return container;
 };
 
+
 Action.prototype.getJsonData = function () {
     var json = {};
-
-    json.toDelete = this.toDelete;
+    
+    json.action = this.action;
+    json.conditionOper = this.conditionOper;
+    json.conditionVal1 = this.conditionVal1;
+    json.conditionVal1Init = this.conditionVal1Init;
+    json.conditionVal2 = this.conditionVal2;
+    json.conditionVal2Init = this.conditionVal2Init;
+    json.description = this.description;
+    json.end = this.end;
+    json.endlong = this.endlong;
+    json.forceExeStatus = this.forceExeStatus;
+    json.id = this.id;
+    json.index = this.index;
+    json.returnCode = this.returnCode;
+    json.returnMessage = this.returnMessage;
+    json.screenshotFileName = this.screenshotFileName;
+    json.sequence = this.sequence;
+    json.sort = this.sort;
+    json.start = this.start;
+    json.step = this.step;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
-    json.index = this.index;
-    json.sequence = this.sequence;
-    json.description = this.description;
-    json.action = this.action;
+    json.toDelete = this.toDelete;
     json.value1 = this.value1;
+    json.value1init = this.value1init;
     json.value2 = this.value2;
-    json.screenshotFileName = "";
-
+    json.value2init = this.value2init;
+    //Value the user is able to modified
     return json;
 };
 
@@ -1419,6 +1624,7 @@ function Control(json, parentAction) {
     if (json !== null) {
         this.control = json.control;
         this.controlType = json.controlType;
+        this.controlSequence = json.controlSequence;
         this.value1 = json.controlProperty;
         this.value2 = json.controlValue;
         this.value1init = json.controlPropertyInit;
@@ -1448,6 +1654,7 @@ function Control(json, parentAction) {
     } else {
         this.control = "";
         this.controlType = "Unknown";
+        this.controlSequence = 1;
         this.value1 = "";
         this.value2 = "";
         this.value1init = "";
@@ -1484,23 +1691,25 @@ function Control(json, parentAction) {
     this.html = $("<a href='#'></a>").addClass("action-group control").css("margin-left", "0px");
 }
 
-Control.prototype.draw = function () {
+Control.prototype.draw = function (idMotherStep, idMotherAction, idControl) {
     var htmlElement = this.html;
     var row = $("<div class='itemContainer'></div>").addClass("col-sm-10");
     var type = $("<div></div>").addClass("type");
-
-    var header = this.generateHeader();
-
+    var currentControlId = {stepId: idMotherStep, actionId: idMotherAction, controlId: idControl};
+    
+    var header = this.generateHeader(currentControlId);
     row.append(header);
     row.data("item", this);
-
+    row.data("id", currentControlId );
+    //set the control Sequence
+    this.controlSequence = idControl+1;//start at 1
+    
     var button = $("<div></div>").addClass("col-sm-1").append($("<span class='glyphicon glyphicon-chevron-down'></span>").attr("style", "font-size:1.5em"));
 
     htmlElement.prepend(button);
     htmlElement.prepend(row);
 
     var content = this.generateContent();
-
     if (this.returnCode === "OK") {
         htmlElement.prepend($("<div>").addClass("col-sm-1").append($("<span>").addClass("glyphicon glyphicon-ok").attr("style", "font-size:1.5em")));
         htmlElement.addClass("row list-group-item list-group-item-success");
@@ -1526,8 +1735,6 @@ Control.prototype.draw = function () {
         htmlElement.addClass("row list-group-item list-group-item-warning");
         content.hide();
     }
-
-
     // Starting to reduce the size of the row by the length of elements.
     $(header).find("#contentField").removeClass("col-sm-12").addClass("col-sm-" + (12 - this.fileList.length));
     // Adding all media attached to control execution.
@@ -1559,7 +1766,11 @@ Control.prototype.setControl = function (control) {
     this.control = control;
 };
 
-Control.prototype.generateHeader = function () {
+Control.prototype.setReturnMessage = function (returnMessage) {
+    this.returnMessage = returnMessage;
+};
+
+Control.prototype.generateHeader = function (id) {
     var scope = this;
     var content = $("<div></div>").addClass("content");
     var firstRow = $("<div></div>").addClass("row ");
@@ -1578,19 +1789,23 @@ Control.prototype.generateHeader = function () {
     }
 
     if (this.returnCode === "NE") {
-        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK")).click(function (event) {
+        var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO"));
+        var buttonOK = $($("<button>").addClass("btn btn-success btn-inverse").attr("type", "button").text("OK"));
+        buttonOK.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
-            triggerControlExecution(this, "OK");
+            triggerControlExecution(this, id, "OK");
         });
-        var buttonFA = $($("<button>").addClass("btn btn-danger btn-inverse").attr("type", "button").text("KO")).click(function (event) {
+        buttonFA.click(function (event) {
             event.preventDefault();
             event.stopPropagation();
-            triggerControlExecution(this, "KO");
+            triggerControlExecution(this, id, "KO");
         });
         contentField.append($("<div class='col-sm-2'>").addClass("btn-group btn-group-xs").attr("role", "group").append(buttonOK).append(buttonFA));
+        showSaveTestCaseExecutionButton();
     } else {
         contentField.append($("<div class='col-sm-2'>").append(elapsedTime));
+        
     }
 
     contentField.append($("<div class='col-sm-10'>").append(descriptionField).append(returnMessageField));
@@ -1602,7 +1817,7 @@ Control.prototype.generateHeader = function () {
     return content;
 };
 
-function triggerControlExecution(element, status) {
+function triggerControlExecution(element, id, status) {
     var currentElement = $($(element).closest(".control")[0]);
     if (status === "OK") {
         currentElement.removeClass(function (index, className) {
@@ -1667,11 +1882,11 @@ function triggerControlExecution(element, status) {
     //Modify Status of all previous action and control of the previous step that have not been modified yet
     $(prevElementPreviousStep).next("div").find("input[id='returncode']:not([data-modified])").val("OK").change();
     $(prevElementPreviousStep).next("div").find("input[id='returnmessage']").val("Action manually executed").change();
-
     //Check Step Status
-    updateStepStatus(currentElement);
+    
+    updateReturnCode(id, status);
+    updateStepStatus(id);
 }
-
 
 Control.prototype.generateContent = function () {
     var doc = new Doc();
@@ -1694,7 +1909,10 @@ Control.prototype.generateContent = function () {
     var value2Field = $("<textarea type='text' rows='1' class='form-control' id='value2'>").prop("readonly", true);
     var value2InitField = $("<textarea type='text' rows='1' class='form-control' id='value2init'>").prop("readonly", true);
     var timeField = $("<input type='text' class='form-control' id='time'>").prop("readonly", true);
-    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>").prop("readonly", true);
+    
+    var returnMessageField = $("<textarea style='width:100%;' class='form-control' id='returnmessage'>");
+    returnMessageWritable(this, returnMessageField);
+    
     var fatalField = $("<input type='text' class='form-control' id='fatal'>").prop("readonly", true);
     var sortField = $("<input type='text' class='form-control' id='sort'>").prop("readonly", true);
     var conditionOperField = $("<textarea type='text' rows='1' class='form-control' id='conditionOper'>").prop("readonly", true);
@@ -1775,20 +1993,41 @@ Control.prototype.generateContent = function () {
 
 Control.prototype.getJsonData = function () {
     var json = {};
-
-    json.toDelete = this.toDelete;
+    
+    json.conditionOper = this.conditionOper;
+    json.conditionVal1 = this.conditionVal1;
+    json.conditionVal1Init = this.conditionVal1Init;
+    json.conditionVal2 = this.conditionVal2;
+    json.conditionVal2Init = this.conditionVal2Init;
+    json.control = this.control;
+    json.controlType = this.controlType;
+    json.controlSequence = this.controlSequence;
+    json.description = this.description;
+    json.end = this.end;
+    json.endlong = this.endlong;
+    json.fatal = this.fatal;
+    json.id = this.id;
+    json.index = this.index;
+    json.returnCode = this.returnCode;
+    json.screenshotFileName = this.screenshotFileName;
+    json.sequence = this.sequence;
+    json.sort = this.sort;
+    json.start = this.start;
+    json.startlong = this.startlong;
+    json.step = this.step;
     json.test = this.test;
     json.testcase = this.testcase;
-    json.step = this.step;
-    json.sequence = this.sequence;
-    json.control = this.control;
-    json.description = this.description;
+    json.toDelete = this.toDelete;
+    json.value1 = this.value1;
+    json.value1init = this.value1init;
+    json.value2 = this.value2;
+    json.value2init = this.value2init;
     json.type = this.type;
     json.controlProperty = this.value1;
     json.controlValue = this.value2;
-    json.fatal = this.fatal;
-    json.screenshotFileName = this.screenshotFileName;
-
+    //Value the user is able to modified
+    json.returnMessage =this.returnMessage;
+    
     return json;
 };
 
@@ -1845,51 +2084,43 @@ function addFileLink(fileList, container) {
     }
 }
 
-function saveExecution() {
+/*
+ * save the parameter enter by the user
+ * @param {type} data
+ * @returns {undefined}
+ */
+function saveExecution(data) {
     // Disable the save button to avoid double click.
     $("#saveScript").attr("disabled", true);
-
-    var stepArr = getScriptInformation();
+    
     var doc = new Doc();
-
-    //var properties = $("#propTable #masterProp");
-    //var propArr = [];
-    //
-    //
+    
     var propertyWithoutCountry = false;
-//    for (var i = 0; i < properties.length; i++) {
-//        if ($(properties[i]).data("property").country.length <= 0) {
-//            propertyWithoutCountry = true;
-//        }
-//        propArr.push($(properties[i]).data("property"));
-//    }
-
+    
     var saveProp = function () {
         showLoaderInModal('#propertiesModal');
+        getScriptInformationOfStep()
         $.ajax({
             url: "UpdateTestCaseExecution",
             async: true,
             method: "POST",
             contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
+            //dataType: 'json',
             data: JSON.stringify({
                 executionId: GetURLParameter("executionId"),
-                stepArray: stepArr
+                stepArray: getScriptInformationOfStep()
             }),
             success: function () {
-
-                var stepHtml = $("#stepList li.active");
+                
+                /*var stepHtml = $("#stepList li.active");
                 var stepData = stepHtml.data("item");
-
-                var tabActive = $("#tabsScriptEdit li.active a").attr("name");
+                var tabActive = $("#tabsScriptEdit li.active a").attr("name");*/
 
                 var parser = document.createElement('a');
                 parser.href = window.location.href;
 
-                var new_uri = parser.pathname + "?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + stepData.sort + "&tabactive=" + tabActive;
-
-                setModif(false);
-
+                var new_uri = parser.pathname + "?executionId=" + GetURLParameter("executionId"); //"?test=" + GetURLParameter("test") + "&testcase=" + GetURLParameter("testcase") + "&step=" + 0/*stepData.sort*/ + "&tabactive=" + tabActive;
+                //setModif(false);
                 window.location.href = new_uri;
             },
             error: showUnexpectedError
@@ -1907,7 +2138,13 @@ function saveExecution() {
 
 }
 
-function getScriptInformation() {
+/*
+ * 
+ * @param {type} stepListData
+ * @returns {Array}
+ */
+
+function getScriptInformationOfStep() {
     var stepList = $("#stepList a");
     var stepArr = [];
 
@@ -1916,8 +2153,6 @@ function getScriptInformation() {
     for (var i = 0; i < stepList.length; i++) {
         var step = $(stepList[i]).data("item");
         var actionArr = [];
-        
-
         // Get step's actions
         var actionList = step.stepActionContainer.find("[name='fullActionDiv']");
         
@@ -1933,22 +2168,15 @@ function getScriptInformation() {
             // Iterate over controls
             for (var k = 0; k < controlList.length; k++) {
                 var control = $(controlList[k]).find("div.itemContainer").data("item");
-                console.log(control);
                 controlArr.push(control.getJsonData());
             }
             var actionJson = action.getJsonData();
             actionJson.controlArr = controlArr;
             actionArr.push(actionJson);
         }
-
-
-
         var stepJson = step.getJsonData();
         stepJson.actionArr = actionArr;
         stepArr.push(stepJson);
     }
-    
     return stepArr;
 }
-
-
