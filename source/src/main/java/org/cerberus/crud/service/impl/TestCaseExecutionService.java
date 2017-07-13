@@ -95,11 +95,6 @@ public class TestCaseExecutionService implements ITestCaseExecutionService {
     public void updateTCExecution(TestCaseExecution tCExecution) throws CerberusException {
         testCaseExecutionDao.updateTCExecution(tCExecution);
     }
-
-    @Override
-    public void updateTCExecutionStatus(Long id, String controlstatus, String controlMessage){
-        testCaseExecutionDao.updateTCExecutionStatus(id, controlstatus, controlMessage);
-    }
     
     @Override
     public AnswerItem readLastByCriteria(String application) {

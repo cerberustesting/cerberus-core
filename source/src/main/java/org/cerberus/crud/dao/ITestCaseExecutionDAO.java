@@ -260,6 +260,4 @@ public interface ITestCaseExecutionDAO {
      */
     public AnswerList<List<String>> readDistinctValuesByCriteria(String system, String test, String searchParameter, Map<String, List<String>> individualSearch, String columnName);
 
-    public void updateTCExecutionStatus(Long id, String controlstatus, String controlMessage);
-
 }

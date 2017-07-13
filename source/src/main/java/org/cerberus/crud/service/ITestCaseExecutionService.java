@@ -237,12 +237,5 @@ public interface ITestCaseExecutionService {
      * @throws CerberusException 
      */
     public List<TestCaseExecution> readLastExecutionAndExecutionInQueueByTag(String tag) throws ParseException, CerberusException;
-    
-    /**
-     * @param id 
-     * @param controlMessage 
-     * @param controlstatus
-     */
-    public void  updateTCExecutionStatus(Long id, String controlMessage, String controlstatus);
-
+   
 }
