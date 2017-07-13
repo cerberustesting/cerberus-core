@@ -130,6 +130,7 @@ public class TestCaseExecution {
     public static final String CONTROLSTATUS_PE = "PE";
     public static final String CONTROLSTATUS_CA = "CA";
     public static final String CONTROLSTATUS_FA = "FA";
+    public static final String CONTROLSTATUS_QU = "QU";
 
     public String getDescription() {
         return description;

@@ -8839,6 +8839,19 @@ public class DatabaseVersioningService implements IDatabaseVersioningService {
         SQLS.append("UPDATE `invariant` SET `sort`='4100' WHERE `idname`='ACTION' and`value`='mouseOverAndWait';");
         SQLInstruction.add(SQLS.toString());
 
+        // Parameter proxy for callService in rest
+        //-- ------------------------ 1168
+        SQLS = new StringBuilder();
+        SQLS.append("INSERT INTO `parameter` ");
+        SQLS.append("VALUES ('','cerberus_testcase_defaultselectedcountry','ALL','Parameter that define the default list of countries selected when creating a new testcase. \\'ALL\\' select all countries. Leave the parameter empty to select none. You can also specify a list of countries separated by \\',\\' in order to select some.');");
+        SQLInstruction.add(SQLS.toString());
+
+        // Removed forein key on testcaseexecution.
+        //-- ------------------------ 1169
+        SQLS = new StringBuilder();
+        SQLS.append("ALTER TABLE `testcaseexecution` DROP FOREIGN KEY `FK_testcaseexecution_02`, DROP FOREIGN KEY `FK_testcaseexecution_01`; ");
+        SQLInstruction.add(SQLS.toString());
+
         return SQLInstruction;
     }
 

@@ -82,6 +82,10 @@ function displayTestCaseLabel(doc) {
  * @returns {null}
  */
 function editTestCaseClick(test, testCase) {
+    $("#buttonInvert").off("click");
+    $("#buttonInvert").click(function () {
+        invertCountrySelection();
+    });
     $("#editTestCaseButton").off("click");
     $("#editTestCaseButton").click(function () {
         confirmTestCaseModalHandler("EDIT");
@@ -104,6 +108,10 @@ function editTestCaseClick(test, testCase) {
  * @returns {null}
  */
 function duplicateTestCaseClick(test, testCase) {
+    $("#buttonInvert").off("click");
+    $("#buttonInvert").click(function () {
+        invertCountrySelection();
+    });
     $("#duplicateTestCaseButton").off("click");
     $("#duplicateTestCaseButton").click(function () {
         confirmTestCaseModalHandler("DUPLICATE");
@@ -131,6 +139,10 @@ function duplicateTestCaseClick(test, testCase) {
  * @returns {null}
  */
 function addTestCaseClick(defaultTest) {
+    $("#buttonInvert").off("click");
+    $("#buttonInvert").click(function () {
+        invertCountrySelection();
+    });
     $("#addTestCaseButton").off("click");
     $("#addTestCaseButton").click(function () {
         confirmTestCaseModalHandler("ADD");
@@ -644,18 +656,28 @@ function appendBuildRevListOnTestCase(system, editData) {
 function appendTestCaseCountryList(testCase, isReadOnly) {
     $("#testCaseCountryTableBody tr").empty();
 
+    var selectCountry = getParameter("cerberus_testcase_defaultselectedcountry", getUser().defaultSystem, false);
+    var selectCountryVal = "," + selectCountry.value + ",";
+
     var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
     $.when(jqxhr).then(function (data) {
 
         for (var index = 0; index < data.length; index++) {
             var country = data[index].value;
+            var deleteOpt = true;
 
             var newCountry1 = {
                 country: country,
-                toDelete: true
+                toDelete: deleteOpt
             };
+
             if (testCase === undefined) {
-                newCountry1.toDelete = false;
+                if ((selectCountryVal === ',ALL,') || (selectCountryVal.indexOf("," + country + ",") !== -1)) {
+                    deleteOpt = false;
+                } else {
+                    deleteOpt = true;
+                }
+                newCountry1.toDelete = deleteOpt;
             }
             appendTestCaseCountryCell(newCountry1, isReadOnly);
         }
@@ -672,10 +694,11 @@ function appendTestCaseCountryList(testCase, isReadOnly) {
 
 function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
     var doc = new Doc();
+    var btnid = "btn_" + testCaseCountry.country;
     if (isReadOnly) {
-        var checkBox = $("<button type=\"button\" disabled=\"disabled\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+        var checkBox = $("<button id=\"" + btnid + "\" type=\"button\" disabled=\"disabled\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
     } else {
-        var checkBox = $("<button type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
+        var checkBox = $("<button id=\"" + btnid + "\" type=\"button\"></button>").append(testCaseCountry.country).val(testCaseCountry.country);
     }
     var tableRow = $("#testCaseCountryTableBody tr");
 
@@ -697,6 +720,17 @@ function appendTestCaseCountryCell(testCaseCountry, isReadOnly) {
 
     checkBoxCell.data("country", testCaseCountry);
     tableRow.append(checkBoxCell);
+}
+
+function invertCountrySelection() {
+    var jqxhr = $.getJSON("FindInvariantByID", "idName=COUNTRY");
+    $.when(jqxhr).then(function (data) {
+
+        for (var index = 0; index < data.length; index++) {
+            var country = data[index].value;
+            document.getElementById('btn_' + country).click();
+        }
+    });
 }
 
 /***
@@ -735,7 +769,7 @@ function loadLabel(labelList, mySystem, myLabelDiv, labelSize) {
                 $(labelDiv).append(option);
             }
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, true);
         }
         // Put the selected testcaselabel at the top and check them. 
         if (!(isEmpty(labelList))) {

@@ -19,10 +19,7 @@
  */
 
 $(document).ready(function () {
-
-    //set the min height dynamically    
-    $("#page-layout").css("min-height", $(window).height());
-
+    
     //collaspe if the navbar was collaspe in the previous page
     collaspeHandler(localStorage.getItem("navbar-toggle"));
 
@@ -90,7 +87,6 @@ function adapteSize() {
         var tables = $('.dataTable').DataTable();
         tables.draw();
     }
-    $("#page-layout").css("min-height", $(window).height());
 }
 
 
@@ -300,7 +296,7 @@ function updateUserPreferences(objectWaitingLayer) {
                 readUserFromDatabase();
             }
             //show message in the main page
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, true);
         }
     });
     if (objectWaitingLayer !== undefined) {

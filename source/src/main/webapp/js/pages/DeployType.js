@@ -85,7 +85,7 @@ function deleteEntryHandlerClick() {
 
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);

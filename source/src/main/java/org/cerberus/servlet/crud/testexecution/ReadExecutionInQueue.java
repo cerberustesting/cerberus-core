@@ -157,7 +157,7 @@ public class ReadExecutionInQueue extends HttpServlet {
         String sColumns = ParameterParserUtil.parseStringParam(request.getParameter("sColumns"), "id,test,testcase,country,environment,browser,tag");
         String columnToSort[] = sColumns.split(",");
         String columnName = columnToSort[columnToSortParameter];
-        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "asc");
+        String sort = ParameterParserUtil.parseStringParam(request.getParameter("sSortDir_0"), "desc");
 
         Map<String, List<String>> individualSearch = new HashMap<>();
         for (int a = 0; a < columnToSort.length; a++) {

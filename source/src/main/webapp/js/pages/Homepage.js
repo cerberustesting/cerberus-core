@@ -196,7 +196,7 @@ function loadTagFilter() {
             }
             $('#selectTag').select2();
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }

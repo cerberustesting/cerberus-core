@@ -40,7 +40,7 @@
             <h1 class="page-title-line">Execution Detail</h1>
             <div class="panel panel-default" id="testCaseConfig">
                 <div style="min-height:150px">
-                    <div id="divPanelDefault" class="panel-default" style="z-index:10; top: 0;height:150px">
+                    <div id="divPanelDefault" class="panel-default" style="z-index:10; top: 0">
                         <div class="panel-heading" id="executionHeader"  style="z-index:2; top: 0">
                             <div class="progress">
                                 <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
@@ -67,7 +67,7 @@
                                 <div class="">
                                     <span id="exReturnMessage" style="font-size:.9em;margin:0px;line-height:1;height:.95em;">Descr</span>
                                 </div>
-                            </div>
+                                </div>
                             <div class="col-lg-6" style="padding: 0px;">
                                 <div id="TestCaseButton">
                                     <a href="#" class="btn btn-default pull-right" id="saveTestCaseExecution" data-toggle="tooltip" style="margin-left: 1px; display: none;"><span class="glyphicon glyphicon-save"></span> Save</a>

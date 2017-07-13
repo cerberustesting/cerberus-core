@@ -31,7 +31,7 @@ $.when($.getScript("js/pages/global/global.js")).then(function () {
             var obj = convertSerialToJSONObject(serial);
             sessionStorage.setItem("splitFilter", JSON.stringify(obj));
         });
-        
+
         splitFilterPreferences();
 
         $("#reportByEnvCountryBrowser .nav li").on("click", function (event) {
@@ -192,7 +192,7 @@ function loadTagFilters(urlTag) {
                 loadAllReports();
             }
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
@@ -471,7 +471,7 @@ function loadReportByFunctionChart(dataset) {
     var data = convertData(dataset.axis);
 
     var margin = {top: 20, right: 20, bottom: 200, left: 150},
-    width = 1200 - margin.left - margin.right,
+            width = 1200 - margin.left - margin.right,
             height = 600 - margin.top - margin.bottom;
 
     var x = d3.scale.ordinal()
@@ -862,7 +862,8 @@ function getRowClass(status) {
     } else if (status === "KO") {
         rowClass["glyph"] = "glyphicon glyphicon-remove";
     } else if (status === "FA") {
-        rowClass["glyph"] = "fa fa-bug";
+        rowClass["glyph"] = "fa fa-hand-lizard-o";
+//        rowClass["glyph"] = "fa fa-bug";
     } else if (status === "CA") {
         rowClass["glyph"] = "fa fa-life-ring";
     } else if (status === "PE") {
@@ -871,9 +872,13 @@ function getRowClass(status) {
         rowClass["glyph"] = "fa fa-clock-o";
     } else if (status === "NA") {
         rowClass["glyph"] = "fa fa-question";
+    } else if (status === "QU") {
+        rowClass["glyph"] = "fa fa-hand-lizard-o";
+//        rowClass["glyph"] = "glyphicon glyphicon-tasks";
     } else {
         rowClass["glyph"] = "";
     }
+
     return rowClass;
 }
 

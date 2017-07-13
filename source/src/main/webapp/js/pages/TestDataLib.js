@@ -20,6 +20,8 @@
 $.when($.getScript("js/pages/global/global.js")).then(function () {
     $(document).ready(function () {
         initPage();
+        //correct the overflow display when everything is loaded (workaround)
+        $('.dataTable').DataTable().draw();
     });
 });
 
@@ -144,7 +146,7 @@ function initPage() {
     $.when(createDataTableWithPermissions(configurations, renderOptionsForTestDataLib, "#testdatalib", undefined, true)).then(function () {
         $("#listOfTestDataLib_wrapper div.ColVis .ColVis_MasterButton").addClass("btn btn-default");
     });
-
+    
 }
 
 function activateSOAPServiceFields(modal, serviceValue) {
@@ -303,7 +305,7 @@ function deleteTestDataLibHandlerClick() {
 
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
@@ -961,7 +963,7 @@ function uploadTestDataLibFromXMLFile() {
         var oTable = $("#listOfTestDataLib").dataTable();
         oTable.fnDraw(true);
         $('#modalUpload').modal('hide');
-        showMessageMainPage(getAlertType(data.messageType), data.message);
+        showMessageMainPage(getAlertType(data.messageType), data.message, false);
     }).fail(handleErrorAjaxAfterTimeout);
 }
 

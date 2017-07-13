@@ -23,8 +23,7 @@
 
 /* set the color for everything exept the page-layout and the topbar*/
 .navbar,
-.navbar-default,
-body{
+.navbar-default{
     background-color:#2a4d69;
 }
 /*remove the border and set the z-index*/
@@ -76,6 +75,14 @@ body{
     background: #293846;
     color: white;
 }
+/* glyphicon position */
+.navbar-right .marginRight3px{
+    margin-left: 3px;
+}
+/*form display */
+.navbar-right .form-group{
+    display: inline-block;
+}
 
 /* generic setting */
 
@@ -108,6 +115,10 @@ body{
 }
 
 /* =side navbar config= */
+.navbar-default{
+    height: 100%;
+}
+
 /* change size when collapsing*/
 .navbar-default.collapsed{
     width: 60px;

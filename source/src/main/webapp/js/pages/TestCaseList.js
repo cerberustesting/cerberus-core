@@ -238,7 +238,7 @@ function deleteEntryHandlerClick() {
 
         }
         //show message in the main page
-        showMessageMainPage(messageType, data.message);
+        showMessageMainPage(messageType, data.message, false);
         //close confirmation window
         $('#confirmationModal').modal('hide');
     }).fail(handleErrorAjaxAfterTimeout);
@@ -376,7 +376,7 @@ function loadTestFilters(selectTest) {
 
                 var selectTestNew = $("#selectTest option:selected").attr("value");
                 if (selectTestNew !== selectTest) { // If the url test value does not exist in the combobox --> we display a warning message.
-                    showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.");
+                    showMessageMainPage("warning", "The test \"" + selectTest + "\" contains no testcase on application that belong to " + getUser().defaultSystem + " system.", false);
                     option = $('<option></option>').attr("value", selectTest).text(selectTest);
                     $('#selectTest').append(option);
 //                    $('#selectTest').val(selectTest);
@@ -384,7 +384,7 @@ function loadTestFilters(selectTest) {
                 }
             }
         } else {
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, false);
         }
     }).fail(handleErrorAjaxAfterTimeout);
 }
@@ -414,7 +414,7 @@ function setActive(checkbox) {
             clearResponseMessageMainPage();
             var messageType = getAlertType(data.messageType);
             //show message in the main page
-            showMessageMainPage(messageType, data.message);
+            showMessageMainPage(messageType, data.message, false);
         },
         error: showUnexpectedError
     });
@@ -436,7 +436,7 @@ function setCountry(checkbox) {
                 clearResponseMessageMainPage();
                 var messageType = getAlertType(data.messageType);
                 //show message in the main page
-                showMessageMainPage(messageType, data.message);
+                showMessageMainPage(messageType, data.message, false);
             },
             error: showUnexpectedError
         });
@@ -451,7 +451,7 @@ function setCountry(checkbox) {
                 clearResponseMessageMainPage();
                 var messageType = getAlertType(data.messageType);
                 //show message in the main page
-                showMessageMainPage(messageType, data.message);
+                showMessageMainPage(messageType, data.message, false);
             },
             error: showUnexpectedError
         });
