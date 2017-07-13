@@ -115,7 +115,7 @@ public class ControlServiceTest {
     public void testDoControlStringEqualWhenFail() {
         String property = "test";
         String value = "test fail";
-        String msg = "'" + value + "' is not equal to '" + property + "'.";
+        String msg = "'" + property + "' is not equal to '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControl("verifyStringEqual");
@@ -139,7 +139,7 @@ public class ControlServiceTest {
     public void testDoControlStringDifferentWhenSuccess() {
         String property = "test";
         String value = "test success";
-        String msg = "'" + value + "' is different from '" + property + "'.";
+        String msg = "'" + property + "' is different from '" + value + "'.";
 
         TestCaseStepActionControlExecution tcsace = new TestCaseStepActionControlExecution();
         tcsace.setControl("verifyStringDifferent");
